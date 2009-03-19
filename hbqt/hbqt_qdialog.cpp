@@ -49,13 +49,16 @@
  * If you do not wish that, delete this exception notice.
  *
  */
+/*----------------------------------------------------------------------*/
 
 #include "hbapi.h"
-
 #include "hbqt.h"
 
 #if QT_VERSION >= 0x040500
 
+#include  <QtGui/QDialog>
+
+/*----------------------------------------------------------------------*/
 /*
 QDialog ( QWidget * parent = 0, Qt::WindowFlags f = 0 )
 */
@@ -66,13 +69,15 @@ HB_FUNC( QT_QDIALOG )
 
 /*
 bool isModal () const
-void setModal ( bool modal )
 */
 HB_FUNC( QT_QDIALOG_ISMODAL )
 {
    hb_retl( hbqt_par_QDialog( 1 )->isModal() );
 }
 
+/*
+void setModal ( bool modal )
+*/
 HB_FUNC( QT_QDIALOG_SETMODAL )
 {
    hbqt_par_QDialog( 1 )->setModal( hb_parl( 2 ) );
@@ -80,13 +85,15 @@ HB_FUNC( QT_QDIALOG_SETMODAL )
 
 /*
 bool isSizeGripEnabled () const
-void setSizeGripEnabled ( bool )
 */
 HB_FUNC( QT_QDIALOG_ISSIZEGRIPENABLED )
 {
    hb_retl( hbqt_par_QDialog( 1 )->isSizeGripEnabled() );
 }
 
+/*
+void setSizeGripEnabled ( bool )
+*/
 HB_FUNC( QT_QDIALOG_SETSIZEGRIPENABLED )
 {
    hbqt_par_QDialog( 1 )->setSizeGripEnabled( hb_parl( 2 ) );
@@ -134,16 +141,19 @@ HB_FUNC( QT_QDIALOG_REJECT )
 
 /*
 int QDialog::result () const
-void QDialog::setResult ( int i )
 */
 HB_FUNC( QT_QDIALOG_RESULT )
 {
    hb_retni( hbqt_par_QDialog( 1 )->result() );
 }
 
+/*
+void QDialog::setResult ( int i )
+*/
 HB_FUNC( QT_QDIALOG_SETRESULT )
 {
    hbqt_par_QDialog( 1 )->setResult( hb_parni( 2 ) );
 }
 
+/*----------------------------------------------------------------------*/
 #endif
