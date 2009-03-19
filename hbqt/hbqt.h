@@ -53,12 +53,18 @@
 #ifndef __HBQT_H
 #define __HBQT_H
 
-#include <QtGui\QDialog>
+#include <Qt/qglobal.h>
+
+#if QT_VERSION >= 0x040500
+
+#include <QtGui/QDialog>
 
 #define hbqt_par_QWidget( n )          ( ( QWidget* ) hb_parptr( n ) )
 #define hbqt_par_QDialog( n )          ( ( QDialog* ) hb_parptr( n ) )
 #define hbqt_par_QAbstractButton( n )  ( ( QAbstractButton* ) hb_parptr( n ) )
 #define hbqt_par_QString( n )          ( ( QString ) hb_parc( n ) )
 #define hbqt_par_WindowFlags( n )      ( ( Qt::WindowFlags ) hb_parni( n ) )
+
+#endif
 
 #endif /* __HBQT_H */
