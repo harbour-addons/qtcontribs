@@ -63,16 +63,16 @@
 
 HB_FUNC( QT_QMESSAGEBOX )
 {
-  hb_retptr( ( QMessageBox* ) new QMessageBox() );
+   hb_retptr( ( QMessageBox* ) new QMessageBox() );
 }
 
 // function added only for tests
 // a better implementation will be done
 HB_FUNC( MSGINFO )
 {
-  QMessageBox msgBox;
-  msgBox.setText( hb_parc( 1 ) );
-  msgBox.exec();
+   QMessageBox msgBox;
+   msgBox.setText( hb_parc( 1 ) );
+   msgBox.exec();
 }
 
 /*----------------------------------------------------------------------*/
