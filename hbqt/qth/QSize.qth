@@ -55,7 +55,8 @@
 ;
 
 <CLASS>
-New      = iWidth, iHeight
+Type     = Core
+New      = nWidth, nHeight
 </CLASS>
 
 <CODE>
