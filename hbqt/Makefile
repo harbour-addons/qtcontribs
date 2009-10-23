@@ -61,9 +61,10 @@ ifneq ($(HB_HAS_QT),)
    ifneq ($(filter $(HB_PLATFORM),win wce),)
       ifneq ($(HB_QT_STATIC),)
          DIRS += hbqts
-         include $(TOP)$(ROOT)config/dir.mk
       endif
    endif
+
+   include $(TOP)$(ROOT)config/dir.mk
 else
    HB_SKIP_REASON := $(_DET_RES_TEXT)
    include $(TOP)$(ROOT)config/none.mk
