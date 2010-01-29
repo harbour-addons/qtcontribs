@@ -56,7 +56,7 @@
  *                               EkOnkar
  *                         ( The LORD is ONE )
  *
- *                     Harbour Parts HbpQtUI Class
+ *                     Harbour Parts HbQtUI Class
  *
  *                 Pritpal Bedi <pritpal@vouchcac.com>
  *                              28Jan2010
@@ -70,7 +70,7 @@
 
 /*----------------------------------------------------------------------*/
 
-CLASS HbpQtUI
+CLASS HbQtUI
 
    DATA     pSlots
    DATA     oWidget
@@ -95,7 +95,7 @@ CLASS HbpQtUI
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:new( cFile, qParent )
+METHOD HbQtUI:new( cFile, qParent )
 
    IF !empty( cFile ) .and. file( cFile )
       hb_hCaseMatch( ::qObj, .f. )
@@ -113,7 +113,7 @@ METHOD HbpQtUI:new( cFile, qParent )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:destroy()
+METHOD HbQtUI:destroy()
    LOCAL a_, qObj
 
    ::oWidget:hide()
@@ -126,13 +126,12 @@ METHOD HbpQtUI:destroy()
    NEXT
 
    FOR EACH qObj IN ::qObj
-      qObj:pPtr := 0
       qObj:pPtr := NIL
    NEXT
 
    ::oWidget:close()
 
-   ::oWidget:pPtr := 0
+   ::oWidget:pPtr := NIL
    ::oWidget      := NIL
    ::aEvents      := NIL
    ::aSignals     := NIL
@@ -141,7 +140,7 @@ METHOD HbpQtUI:destroy()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:event( cWidget, nEvent, bBlock )
+METHOD HbQtUI:event( cWidget, nEvent, bBlock )
 
    IF hb_hHasKey( ::qObj, cWidget )
       IF Qt_Events_Connect( ::pEvents, ::qObj[ cWidget ], nEvent, bBlock )
@@ -153,7 +152,7 @@ METHOD HbpQtUI:event( cWidget, nEvent, bBlock )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:signal( cWidget, cSignal, bBlock )
+METHOD HbQtUI:signal( cWidget, cSignal, bBlock )
 
    IF hb_hHasKey( ::qObj, cWidget )
       IF empty( ::pSlots )
@@ -168,7 +167,7 @@ METHOD HbpQtUI:signal( cWidget, cSignal, bBlock )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:loadWidgets()
+METHOD HbQtUI:loadWidgets()
    LOCAL a_, pPtr, bBlock, x, cBlock
 
    FOR EACH a_ IN ::widgets
@@ -192,7 +191,7 @@ METHOD HbpQtUI:loadWidgets()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:loadContents( cUiFull )
+METHOD HbQtUI:loadContents( cUiFull )
    LOCAL cBuffer := memoread( cUiFull )
    LOCAL n, cClass, cWidget
 
@@ -217,10 +216,20 @@ METHOD HbpQtUI:loadContents( cUiFull )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:loadUI( cUiFull, qParent )
+METHOD HbQtUI:loadUI( cUiFull, qParent )
    LOCAL oWidget, qUiLoader, qFile, pWidget
+   #if 1
+   LOCAL cBuffer
 
+   /* This method allows to use ui components stored in a
+    * database or embedded into sources as a text file stream
+    */
+   cBuffer := hb_memoRead( cUiFull )
+   qFile := QBuffer():new()
+   qFile:setData( cBuffer, len( cBuffer ) )
+   #else
    qFile := QFile():new( cUiFull )
+   #endif
    IF qFile:open( 1 )
       qUiLoader  := QUiLoader():new()
       pWidget    := qUiLoader:load( qFile, qParent )
@@ -243,7 +252,7 @@ METHOD HbpQtUI:loadUI( cUiFull, qParent )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpQtUI:OnError( ... )
+METHOD HbQtUI:OnError( ... )
    LOCAL cMsg, xReturn
 
    cMsg := __GetMessage()
