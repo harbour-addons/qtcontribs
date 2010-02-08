@@ -174,6 +174,14 @@ HB_FUNC( QT_HBQSYNTAXHIGHLIGHTER_HBSETFORMAT )
    hbqt_par_HBQSyntaxHighlighter( 1 )->hbSetFormat( HBQSyntaxHighlighter::tr( hb_parc( 2 ) ), *hbqt_par_QTextCharFormat( 3 ) );
 }
 
+/*
+ * void hbSetFormatColumnSelection( int start, int count, const QColor & color )
+ */
+HB_FUNC( QT_HBQSYNTAXHIGHLIGHTER_HBSETFORMATCOLUMNSELECTION )
+{
+   hbqt_par_HBQSyntaxHighlighter( 1 )->hbSetFormatColumnSelection( hb_parni( 2 ), hb_parni( 3 ), *hbqt_par_QColor( 4 ) );
+}
+
 
 /*----------------------------------------------------------------------*/
 #endif             /* #if QT_VERSION >= 0x040500 */

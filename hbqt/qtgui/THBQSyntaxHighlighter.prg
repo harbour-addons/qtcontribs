@@ -71,6 +71,7 @@ CREATE CLASS HBQSyntaxHighlighter INHERIT HbQtObjectHandler, QSyntaxHighlighter
    METHOD  hbSetSingleLineCommentFormat( pFormat )
    METHOD  hbSetRule( cName, cPattern, pFormat )
    METHOD  hbSetFormat( cName, pFormat )
+   METHOD  hbSetFormatColumnSelection( nStart, nCount, pColor )
 
    ENDCLASS
 
@@ -98,4 +99,8 @@ METHOD HBQSyntaxHighlighter:hbSetRule( cName, cPattern, pFormat )
 
 METHOD HBQSyntaxHighlighter:hbSetFormat( cName, pFormat )
    RETURN Qt_HBQSyntaxHighlighter_hbSetFormat( ::pPtr, cName, hbqt_ptr( pFormat ) )
+
+
+METHOD HBQSyntaxHighlighter:hbSetFormatColumnSelection( nStart, nCount, pColor )
+   RETURN Qt_HBQSyntaxHighlighter_hbSetFormatColumnSelection( ::pPtr, nStart, nCount, hbqt_ptr( pColor ) )
 
