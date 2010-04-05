@@ -77,8 +77,8 @@
 /*----------------------------------------------------------------------*/
 
 FUNCTION hbide_startOpenWizard()
-
    STATIC oWz
+
    oWz := IdeWizard():new():create()
 
    RETURN NIL
