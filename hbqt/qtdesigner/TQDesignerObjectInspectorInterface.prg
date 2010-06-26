@@ -2,12 +2,20 @@
  * $Id$
  */
 
+/* -------------------------------------------------------------------- */
+/* WARNING: Automatically generated source file. DO NOT EDIT!           */
+/*          Instead, edit corresponding .qth file,                      */
+/*          or the generator tool itself, and run regenarate.           */
+/* -------------------------------------------------------------------- */
+
 /*
  * Harbour Project source code:
- * QT Source Generator for Harbour
+ * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
- * www - http://www.harbour-project.org
+ * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
+ *
+ * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,47 +58,34 @@
  *
  */
 /*----------------------------------------------------------------------*/
-;
-;              Header File to Generate QT Wrapper Sources
-;
-
-<CLASS>
-QObject  = 
-Inherits = QItemEditorCreatorBase
-Type     = 
-New      =
-</CLASS>
-
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
-<CODE>
-#include <QtGui/QItemEditorCreator>
 
 
-/*
- * QItemEditorCreator ( const QByteArray & valuePropertyName )
- * 
- */
-HB_FUNC( QT_QITEMEDITORCREATOR )
-{
-//   hb_retptr( new QItemEditorCreator( hbqt_par_QByteArray( 1 ) ) );
-}
-</CODE>
+#include "hbclass.ch"
 
-<ENUMS>
-</ENUMS>
 
-<PROTOS>
-virtual QWidget * createWidget ( QWidget * parent ) const
-virtual QByteArray valuePropertyName () const
-</PROTOS>
+CREATE CLASS QDesignerObjectInspectorInterface INHERIT HbQtObjectHandler, QWidget
 
-<SLOTS>
-</SLOTS>
+   METHOD  new( ... )
 
-<SIGNALS>
-</SIGNALS>
+   METHOD  core()
+   METHOD  setFormWindow( pFormWindow )
+
+   ENDCLASS
+
+
+METHOD QDesignerObjectInspectorInterface:new( ... )
+   LOCAL p
+   FOR EACH p IN { ... }
+      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
+   NEXT
+   ::pPtr := Qt_QDesignerObjectInspectorInterface( ... )
+   RETURN Self
+
+
+METHOD QDesignerObjectInspectorInterface:core()
+   RETURN Qt_QDesignerObjectInspectorInterface_core( ::pPtr )
+
+
+METHOD QDesignerObjectInspectorInterface:setFormWindow( pFormWindow )
+   RETURN Qt_QDesignerObjectInspectorInterface_setFormWindow( ::pPtr, hbqt_ptr( pFormWindow ) )
+
