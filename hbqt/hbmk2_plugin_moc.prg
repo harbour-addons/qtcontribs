@@ -48,10 +48,14 @@ FUNCTION hbmk2_plugin_moc( hbmk2 )
          IF Empty( cMOC_BIN )
             IF Empty( GetEnv( "HB_QT_MOC_BIN" ) )
                IF hbmk2[ "cPLAT" ] == "win"
-                  cMOC_BIN := GetEnv( "HB_WITH_QT" ) + "\..\bin\moc.exe"
-                  IF ! hb_FileExists( cMOC_BIN )
-                     hbmk2_OutErr( hbmk2, "HB_WITH_QT points to incomplete QT installation. moc executable not found." )
+                  IF GetEnv( "HB_WITH_QT" ) == "no"
                      RETURN NIL
+                  ELSE
+                     cMOC_BIN := GetEnv( "HB_WITH_QT" ) + "\..\bin\moc.exe"
+                     IF ! hb_FileExists( cMOC_BIN )
+                        hbmk2_OutErr( hbmk2, "HB_WITH_QT points to incomplete QT installation. moc executable not found." )
+                        RETURN NIL
+                     ENDIF
                   ENDIF
                ELSE
                   cMOC_BIN := hbmk2_FindInPath( "moc", GetEnv( "PATH" ) + hb_osPathListSeparator() + "/opt/qtsdk/qt/bin" )
@@ -89,7 +93,7 @@ FUNCTION hbmk2_plugin_moc( hbmk2 )
                lBuildIt := .T.
             ENDIF
 
-            IF lBuildIt
+            IF lBuildIt .AND. ! hbmk2[ "lCLEAN" ]
                cCommand := cMOC_BIN +;
                            " " + hbmk2_FNameEscape( hbmk2_PathSepToTarget( hbmk2, tmp ), hbmk2[ "nCmd_Esc" ], hbmk2[ "nCmd_FNF" ] ) +;
                            " -o " + hbmk2_FNameEscape( hbmk2_PathSepToTarget( hbmk2, cDst ), hbmk2[ "nCmd_Esc" ], hbmk2[ "nCmd_FNF" ] )
