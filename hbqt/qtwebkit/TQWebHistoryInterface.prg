@@ -2,12 +2,20 @@
  * $Id$
  */
 
+/* -------------------------------------------------------------------- */
+/* WARNING: Automatically generated source file. DO NOT EDIT!           */
+/*          Instead, edit corresponding .qth file,                      */
+/*          or the generator tool itself, and run regenarate.           */
+/* -------------------------------------------------------------------- */
+
 /*
  * Harbour Project source code:
- * QT Source Generator for Harbour
+ * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
- * www - http://www.harbour-project.org
+ * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
+ *
+ * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,55 +58,44 @@
  *
  */
 /*----------------------------------------------------------------------*/
-;
-;              Header File to Generate QT Wrapper Sources
-;
-
-<CLASS>
-QObject  = no
-Inherits = 
-Type     = Core
-New      = 
-</CLASS>
-
-<CODE>
-#include <QtWebKit/QWebSecurityOrigin>
 
 
-/*
- * QWebSecurityOrigin ( const QWebSecurityOrigin & other )
- * ~QWebSecurityOrigin ()
- */
-HB_FUNC( QT_QWEBSECURITYORIGIN )
-{
-   if( hb_pcount() == 1 && HB_ISPOINTER( 1 ) )
-   {
-      hb_retptr( new QWebSecurityOrigin( *hbqt_par_QWebSecurityOrigin( 1 ) ) );
-   }
-}
-</CODE>
-
-<ENUMS>
-</ENUMS>
-
-<PROTOS>
-qint64 databaseQuota () const
-qint64 databaseUsage () const
-QList<QWebDatabase> databases () const
-QString host () const
-int port () const
-QString scheme () const
-void setDatabaseQuota ( qint64 quota )
-
-QList<QWebSecurityOrigin> allOrigins ()
-</PROTOS>
-
-<SLOTS>
-</SLOTS>
-
-<SIGNALS>
-</SIGNALS>
+#include "hbclass.ch"
 
 
+CREATE CLASS QWebHistoryInterface INHERIT HbQtObjectHandler, QObject
 
+   METHOD  new( ... )
+
+   METHOD  addHistoryEntry( cUrl )
+   METHOD  historyContains( cUrl )
+   METHOD  defaultInterface()
+   METHOD  setDefaultInterface( pDefaultInterface )
+
+   ENDCLASS
+
+
+METHOD QWebHistoryInterface:new( ... )
+   LOCAL p
+   FOR EACH p IN { ... }
+      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
+   NEXT
+   ::pPtr := Qt_QWebHistoryInterface( ... )
+   RETURN Self
+
+
+METHOD QWebHistoryInterface:addHistoryEntry( cUrl )
+   RETURN Qt_QWebHistoryInterface_addHistoryEntry( ::pPtr, cUrl )
+
+
+METHOD QWebHistoryInterface:historyContains( cUrl )
+   RETURN Qt_QWebHistoryInterface_historyContains( ::pPtr, cUrl )
+
+
+METHOD QWebHistoryInterface:defaultInterface()
+   RETURN Qt_QWebHistoryInterface_defaultInterface( ::pPtr )
+
+
+METHOD QWebHistoryInterface:setDefaultInterface( pDefaultInterface )
+   RETURN Qt_QWebHistoryInterface_setDefaultInterface( ::pPtr, hbqt_ptr( pDefaultInterface ) )
 

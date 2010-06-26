@@ -2,12 +2,20 @@
  * $Id$
  */
 
+/* -------------------------------------------------------------------- */
+/* WARNING: Automatically generated source file. DO NOT EDIT!           */
+/*          Instead, edit corresponding .qth file,                      */
+/*          or the generator tool itself, and run regenarate.           */
+/* -------------------------------------------------------------------- */
+
 /*
  * Harbour Project source code:
- * QT Source Generator for Harbour
+ * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
- * www - http://www.harbour-project.org
+ * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
+ *
+ * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,58 +58,64 @@
  *
  */
 /*----------------------------------------------------------------------*/
-;
-;              Header File to Generate QT Wrapper Sources
-;
-
-<CLASS>
-QObject  = no
-Inherits = 
-Type     = Core
-New      = 
-</CLASS>
-
-<CODE>
-#include <QtWebKit/QWebHitTestResult>
 
 
-/*
- * QWebHitTestResult ()
- * QWebHitTestResult ( const QWebHitTestResult & other )
- * ~QWebHitTestResult ()
- */
-HB_FUNC( QT_QWEBHITTESTRESULT )
-{
-   hb_retptr( ( QWebHitTestResult* ) new QWebHitTestResult() );
-}
-</CODE>
-
-<ENUMS>
-</ENUMS>
-
-<PROTOS>
-QString alternateText () const
-QRect boundingRect () const
-QWebFrame * frame () const
-QUrl imageUrl () const
-bool isContentEditable () const
-bool isContentSelected () const
-bool isNull () const
-QWebFrame * linkTargetFrame () const
-QString linkText () const
-QUrl linkTitle () const
-QUrl linkUrl () const
-QPixmap pixmap () const
-QPoint pos () const
-QString title () const
-</PROTOS>
-
-<SLOTS>
-</SLOTS>
-
-<SIGNALS>
-</SIGNALS>
+#include "hbclass.ch"
 
 
+CREATE CLASS QWebHistoryItem INHERIT HbQtObjectHandler
 
+   METHOD  new( ... )
+
+   METHOD  icon()
+   METHOD  isValid()
+   METHOD  lastVisited()
+   METHOD  originalUrl()
+   METHOD  setUserData( pUserData )
+   METHOD  title()
+   METHOD  url()
+   METHOD  userData()
+
+   ENDCLASS
+
+
+METHOD QWebHistoryItem:new( ... )
+   LOCAL p
+   FOR EACH p IN { ... }
+      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
+   NEXT
+   ::pPtr := Qt_QWebHistoryItem( ... )
+   RETURN Self
+
+
+METHOD QWebHistoryItem:icon()
+   RETURN Qt_QWebHistoryItem_icon( ::pPtr )
+
+
+METHOD QWebHistoryItem:isValid()
+   RETURN Qt_QWebHistoryItem_isValid( ::pPtr )
+
+
+METHOD QWebHistoryItem:lastVisited()
+   RETURN Qt_QWebHistoryItem_lastVisited( ::pPtr )
+
+
+METHOD QWebHistoryItem:originalUrl()
+   RETURN Qt_QWebHistoryItem_originalUrl( ::pPtr )
+
+
+METHOD QWebHistoryItem:setUserData( pUserData )
+   RETURN Qt_QWebHistoryItem_setUserData( ::pPtr, hbqt_ptr( pUserData ) )
+
+
+METHOD QWebHistoryItem:title()
+   RETURN Qt_QWebHistoryItem_title( ::pPtr )
+
+
+METHOD QWebHistoryItem:url()
+   RETURN Qt_QWebHistoryItem_url( ::pPtr )
+
+
+METHOD QWebHistoryItem:userData()
+   RETURN Qt_QWebHistoryItem_userData( ::pPtr )
 

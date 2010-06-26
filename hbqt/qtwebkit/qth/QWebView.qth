@@ -55,44 +55,68 @@
 ;
 
 <CLASS>
-Inherits = QObject
-Type     = Core
-New      = 
+Inherit  = QWidget
+New      = pParent
+folder   = qtwebkit
 </CLASS>
 
 <CODE>
-#include <QtWebKit/QWebPluginFactory>
+#include <QtWebKit/QWebView>
+#include "hbqt_garbage.h"
+#include "hbqt_local.h"
 
 
 /*
- * QWebPluginFactory ( QObject * parent = 0 )
- * virtual ~QWebPluginFactory ()
+ * QWebView ( QWidget * parent = 0 )
+ * virtual ~QWebView ()
  */
-HB_FUNC( QT_QWEBPLUGINFACTORY )
+HB_FUNC( QT_QWEBVIEW )
 {
-   //hb_retptr( ( QWebPluginFactory* ) new QWebPluginFactory() );
+   hb_retptr( new QWebView( hbqt_par_QWidget( 1 ) ) );
 }
 </CODE>
 
-<ENUMS>
-class ExtensionOption
-enum Extension { }
-</ENUMS>
-
 <PROTOS>
-virtual QObject * create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues ) const = 0
-// virtual bool extension ( Extension extension, const ExtensionOption * option = 0, ExtensionReturn * output = 0 )
-virtual QList<Plugin> plugins () const = 0
-virtual void refreshPlugins ()
-virtual bool supportsExtension ( Extension extension ) const
+bool findText ( const QString & subString, QWebPage::FindFlags options = 0 )
+QWebHistory * history () const
+QIcon icon () const
+bool isModified () const
+void load ( const QUrl & url )
+void load ( const QNetworkRequest & request, QNetworkAccessManager::Operation operation = QNetworkAccessManager::GetOperation, const QByteArray & body = QByteArray() )
+QWebPage * page () const
+QAction * pageAction ( QWebPage::WebAction action ) const
+QString selectedText () const
+void setContent ( const QByteArray & data, const QString & mimeType = QString(), const QUrl & baseUrl = QUrl() )
+void setHtml ( const QString & html, const QUrl & baseUrl = QUrl() )
+void setPage ( QWebPage * page )
+void setTextSizeMultiplier ( qreal factor )
+void setUrl ( const QUrl & url )
+void setZoomFactor ( qreal factor )
+QWebSettings * settings () const
+qreal textSizeMultiplier () const
+QString title () const
+void triggerPageAction ( QWebPage::WebAction action, bool checked = false )
+QUrl url () const
+qreal zoomFactor () const
 </PROTOS>
 
 <SLOTS>
+void back ()
+void forward ()
+void print ( QPrinter * printer ) const
+void reload ()
+void stop ()
 </SLOTS>
 
 <SIGNALS>
+void iconChanged ()
+void linkClicked ( const QUrl & url )
+void loadFinished ( bool ok )
+void loadProgress ( int progress )
+void loadStarted ()
+void selectionChanged ()
+void statusBarMessage ( const QString & text )
+void titleChanged ( const QString & title )
+void urlChanged ( const QUrl & url )
 </SIGNALS>
-
-
-
 

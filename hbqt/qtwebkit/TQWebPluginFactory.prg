@@ -2,12 +2,20 @@
  * $Id$
  */
 
+/* -------------------------------------------------------------------- */
+/* WARNING: Automatically generated source file. DO NOT EDIT!           */
+/*          Instead, edit corresponding .qth file,                      */
+/*          or the generator tool itself, and run regenarate.           */
+/* -------------------------------------------------------------------- */
+
 /*
  * Harbour Project source code:
- * QT Source Generator for Harbour
+ * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
- * www - http://www.harbour-project.org
+ * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
+ *
+ * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,73 +58,39 @@
  *
  */
 /*----------------------------------------------------------------------*/
-;
-;              Header File to Generate QT Wrapper Sources
-;
-
-<CLASS>
-Inherits = 
-Type     = Core
-New      = 
-Destructor = no
-</CLASS>
-
-<CODE>
-#include <QtWebKit/QWebSettings>
-#include <QtCore/QUrl>
 
 
-/*
- * 
- */
-HB_FUNC( QT_QWEBSETTINGS )
-{
-   //hb_retptr( ( QWebSettings* ) new QWebSettings() );
-}
-</CODE>
-
-<ENUMS>
-enum FontFamily { StandardFont, FixedFont, SerifFont, SansSerifFont, CursiveFont, FantasyFont }
-enum FontSize { MinimumFontSize, MinimumLogicalFontSize, DefaultFontSize, DefaultFixedFontSize }
-enum WebAttribute { AutoLoadImages, JavascriptEnabled, JavaEnabled, PluginsEnabled, ..., LocalStorageDatabaseEnabled }
-enum WebGraphic { MissingImageGraphic, MissingPluginGraphic, DefaultFrameIconGraphic, TextAreaSizeGripCornerGraphic }
-</ENUMS>
-
-<PROTOS>
-QString fontFamily ( FontFamily which ) const
-int fontSize ( FontSize type ) const
-void resetAttribute ( WebAttribute attribute )
-void resetFontFamily ( FontFamily which )
-void resetFontSize ( FontSize type )
-void setAttribute ( WebAttribute attribute, bool on )
-void setFontFamily ( FontFamily which, const QString & family )
-void setFontSize ( FontSize type, int size )
-void setUserStyleSheetUrl ( const QUrl & location )
-bool testAttribute ( WebAttribute attribute ) const
-QUrl userStyleSheetUrl () const
-
-void clearIconDatabase ()
-QWebSettings * globalSettings ()
-QString iconDatabasePath ()
-QIcon iconForUrl ( const QUrl & url )
-int maximumPagesInCache ()
-qint64 offlineStorageDefaultQuota ()
-QString offlineStoragePath ()
-void setIconDatabasePath ( const QString & path )
-void setMaximumPagesInCache ( int pages )
-void setObjectCacheCapacities ( int cacheMinDeadCapacity, int cacheMaxDead, int totalCapacity )
-void setOfflineStorageDefaultQuota ( qint64 maximumSize )
-void setOfflineStoragePath ( const QString & path )
-void setWebGraphic ( WebGraphic type, const QPixmap & graphic )
-QPixmap webGraphic ( WebGraphic type )
-</PROTOS>
-
-<SLOTS>
-</SLOTS>
-
-<SIGNALS>
-</SIGNALS>
+#include "hbclass.ch"
 
 
+CREATE CLASS QWebPluginFactory INHERIT HbQtObjectHandler, QObject
 
+   METHOD  new( ... )
+
+   METHOD  create( cMimeType, pUrl, pArgumentNames, pArgumentValues )
+   METHOD  refreshPlugins()
+   METHOD  supportsExtension( nExtension )
+
+   ENDCLASS
+
+
+METHOD QWebPluginFactory:new( ... )
+   LOCAL p
+   FOR EACH p IN { ... }
+      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
+   NEXT
+   ::pPtr := Qt_QWebPluginFactory( ... )
+   RETURN Self
+
+
+METHOD QWebPluginFactory:create( cMimeType, pUrl, pArgumentNames, pArgumentValues )
+   RETURN Qt_QWebPluginFactory_create( ::pPtr, cMimeType, hbqt_ptr( pUrl ), hbqt_ptr( pArgumentNames ), hbqt_ptr( pArgumentValues ) )
+
+
+METHOD QWebPluginFactory:refreshPlugins()
+   RETURN Qt_QWebPluginFactory_refreshPlugins( ::pPtr )
+
+
+METHOD QWebPluginFactory:supportsExtension( nExtension )
+   RETURN Qt_QWebPluginFactory_supportsExtension( ::pPtr, nExtension )
 

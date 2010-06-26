@@ -55,22 +55,27 @@
 ;
 
 <CLASS>
-Inherits = QObject
+QObject  = no
+Inherits = 
 Type     = Core
 New      = 
+folder   = qtwebkit
 </CLASS>
 
 <CODE>
-#include <QtWebKit/QWebHistoryInterface>
+#include <QtWebKit/QWebHitTestResult>
+#include "hbqt_garbage.h"
+#include "hbqt_local.h"
 
 
 /*
- * QWebHistoryInterface ( QObject * parent = 0 )
- * ~QWebHistoryInterface ()
+ * QWebHitTestResult ()
+ * QWebHitTestResult ( const QWebHitTestResult & other )
+ * ~QWebHitTestResult ()
  */
-HB_FUNC( QT_QWEBHISTORYINTERFACE )
+HB_FUNC( QT_QWEBHITTESTRESULT )
 {
-   //hb_retptr( ( QWebHistoryInterface* ) new QWebHistoryInterface( hbqt_par_QObject( 1 ) ) );
+   hb_retptr( ( QWebHitTestResult* ) new QWebHitTestResult() );
 }
 </CODE>
 
@@ -78,11 +83,20 @@ HB_FUNC( QT_QWEBHISTORYINTERFACE )
 </ENUMS>
 
 <PROTOS>
-virtual void addHistoryEntry ( const QString & url ) = 0
-virtual bool historyContains ( const QString & url ) const = 0
-
-QWebHistoryInterface * defaultInterface ()
-void setDefaultInterface ( QWebHistoryInterface * defaultInterface )
+QString alternateText () const
+QRect boundingRect () const
+QWebFrame * frame () const
+QUrl imageUrl () const
+bool isContentEditable () const
+bool isContentSelected () const
+bool isNull () const
+QWebFrame * linkTargetFrame () const
+QString linkText () const
+QUrl linkTitle () const
+QUrl linkUrl () const
+QPixmap pixmap () const
+QPoint pos () const
+QString title () const
 </PROTOS>
 
 <SLOTS>

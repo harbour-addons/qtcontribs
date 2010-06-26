@@ -57,11 +57,14 @@
 <CLASS>
 Inherit  = QObject
 New      = pParent
+folder   = qtwebkit
 </CLASS>
 
 <CODE>
 #include <QtWebKit/QWebPage>
 #include <QtCore/QVariant>
+#include "hbqt_garbage.h"
+#include "hbqt_local.h"
 
 
 /*
@@ -116,7 +119,7 @@ virtual bool supportsExtension ( Extension extension ) const
 bool swallowContextMenuEvent ( QContextMenuEvent * event )
 quint64 totalBytes () const
 virtual void triggerAction ( WebAction action, bool checked = false )
-QUndoStack * undoStack () const
+//QUndoStack * undoStack () const
 void updatePositionDependentActions ( const QPoint & pos )
 QWidget * view () const
 QSize viewportSize () const
