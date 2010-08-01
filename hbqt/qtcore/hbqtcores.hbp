@@ -2,11 +2,10 @@
 # $Id$
 #
 
-hbqt_common.hbm
+../hbqt_common.hbm
 
-qtnetwork/filelist.hbm
-
-hbqtcore.hbc
+filelist.hbm
+hbqtcore.hbm
 
 -stop{!HB_QT_BUILD_STATIC|!allwin}
 

@@ -2,12 +2,12 @@
 # $Id$
 #
 
-hbqt_common.hbm
+../hbqt_common.hbm
 
-qtgui/filelist.hbm
-hbqtgui_filelist.hbm
+filelist.hbm
+hbqtgui.hbm
 
-hbqtcore.hbc
+../qtcore/hbqtcore.hbc
 
 -stop{!HB_QT_BUILD_STATIC|!allwin}
 
