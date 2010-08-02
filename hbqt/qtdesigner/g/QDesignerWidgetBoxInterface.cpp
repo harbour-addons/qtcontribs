@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtdesigner_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -67,25 +69,25 @@
 
 #include <QtCore/QPointer>
 
-#include <QtDesigner/QDesignerObjectInspectorInterface>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include <QtDesigner/QDesignerWidgetBoxInterface>
+#include "../hbqt_local.h"
 
 
 /*
- * QDesignerObjectInspectorInterface ( QWidget * parent, Qt::WindowFlags flags = 0 )
- * ~QDesignerObjectInspectorInterface ()
+ * QDesignerWidgetBoxInterface ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
+ * ~QDesignerWidgetBoxInterface ()
  *
  */
 
 typedef struct
 {
-   QPointer< QDesignerObjectInspectorInterface > ph;
+   QPointer< QDesignerWidgetBoxInterface > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
-} QGC_POINTER_QDesignerObjectInspectorInterface;
+   int type;
+} QGC_POINTER_QDesignerWidgetBoxInterface;
 
-QT_G_FUNC( hbqt_gcRelease_QDesignerObjectInspectorInterface )
+QT_G_FUNC( hbqt_gcRelease_QDesignerWidgetBoxInterface )
 {
    HB_SYMBOL_UNUSED( Cargo );
    QGC_POINTER * p = ( QGC_POINTER * ) Cargo;
@@ -96,55 +98,84 @@ QT_G_FUNC( hbqt_gcRelease_QDesignerObjectInspectorInterface )
    }
 }
 
-void * hbqt_gcAllocate_QDesignerObjectInspectorInterface( void * pObj, bool bNew )
+void * hbqt_gcAllocate_QDesignerWidgetBoxInterface( void * pObj, bool bNew )
 {
-   QGC_POINTER_QDesignerObjectInspectorInterface * p = ( QGC_POINTER_QDesignerObjectInspectorInterface * ) hb_gcAllocate( sizeof( QGC_POINTER_QDesignerObjectInspectorInterface ), hbqt_gcFuncs() );
+   QGC_POINTER_QDesignerWidgetBoxInterface * p = ( QGC_POINTER_QDesignerWidgetBoxInterface * ) hb_gcAllocate( sizeof( QGC_POINTER_QDesignerWidgetBoxInterface ), hbqt_gcFuncs() );
 
-   new( & p->ph ) QPointer< QDesignerObjectInspectorInterface >( ( QDesignerObjectInspectorInterface * ) pObj );
+   new( & p->ph ) QPointer< QDesignerWidgetBoxInterface >( ( QDesignerWidgetBoxInterface * ) pObj );
    p->bNew = bNew;
-   p->func = hbqt_gcRelease_QDesignerObjectInspectorInterface;
+   p->func = hbqt_gcRelease_QDesignerWidgetBoxInterface;
+   p->type = HBQT_TYPE_QDesignerWidgetBoxInterface;
 
    if( bNew )
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QDesignerObjectInspectorInterface  under p->pq", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QDesignerWidgetBoxInterface  under p->pq", pObj ) );
    }
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QDesignerObjectInspectorInterface", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QDesignerWidgetBoxInterface", pObj ) );
    }
    return p;
 }
 
-HB_FUNC( QT_QDESIGNEROBJECTINSPECTORINTERFACE )
+HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE )
 {
-   //hb_retptr( new QDesignerObjectInspectorInterface() );
+   //hb_retptr( new QDesignerWidgetBoxInterface() );
 }
 
 /*
- * virtual QDesignerFormEditorInterface * core () const
+ * virtual QString fileName () const = 0
  */
-HB_FUNC( QT_QDESIGNEROBJECTINSPECTORINTERFACE_CORE )
+HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_FILENAME )
 {
-   QDesignerObjectInspectorInterface * p = hbqt_par_QDesignerObjectInspectorInterface( 1 );
+   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
    if( p )
-      hb_retptrGC( hbqt_gcAllocate_QDesignerFormEditorInterface( ( p )->core(), false ) );
+      hb_retc( ( p )->fileName().toAscii().data() );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNEROBJECTINSPECTORINTERFACE_CORE FP=hb_retptrGC( hbqt_gcAllocate_QDesignerFormEditorInterface( ( p )->core(), false ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_FILENAME FP=hb_retc( ( p )->fileName().toAscii().data() ); p is NULL" ) );
    }
 }
 
 /*
- * virtual void setFormWindow ( QDesignerFormWindowInterface * formWindow ) = 0
+ * virtual bool load () = 0
  */
-HB_FUNC( QT_QDESIGNEROBJECTINSPECTORINTERFACE_SETFORMWINDOW )
+HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_LOAD )
 {
-   QDesignerObjectInspectorInterface * p = hbqt_par_QDesignerObjectInspectorInterface( 1 );
+   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
    if( p )
-      ( p )->setFormWindow( hbqt_par_QDesignerFormWindowInterface( 2 ) );
+      hb_retl( ( p )->load() );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNEROBJECTINSPECTORINTERFACE_SETFORMWINDOW FP=( p )->setFormWindow( hbqt_par_QDesignerFormWindowInterface( 2 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_LOAD FP=hb_retl( ( p )->load() ); p is NULL" ) );
+   }
+}
+
+/*
+ * virtual bool save () = 0
+ */
+HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_SAVE )
+{
+   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
+   if( p )
+      hb_retl( ( p )->save() );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_SAVE FP=hb_retl( ( p )->save() ); p is NULL" ) );
+   }
+}
+
+/*
+ * virtual void setFileName ( const QString & fileName ) = 0
+ */
+HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_SETFILENAME )
+{
+   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
+   if( p )
+      ( p )->setFileName( QDesignerWidgetBoxInterface::tr( hb_parc( 2 ) ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_SETFILENAME FP=( p )->setFileName( QDesignerWidgetBoxInterface::tr( hb_parc( 2 ) ) ); p is NULL" ) );
    }
 }
 

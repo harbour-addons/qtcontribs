@@ -69,10 +69,12 @@ CREATE CLASS QWebSecurityOrigin INHERIT HbQtObjectHandler
 
    METHOD  databaseQuota()
    METHOD  databaseUsage()
+   METHOD  databases()
    METHOD  host()
    METHOD  port()
    METHOD  scheme()
    METHOD  setDatabaseQuota( nQuota )
+   METHOD  allOrigins()
 
    ENDCLASS
 
@@ -94,6 +96,10 @@ METHOD QWebSecurityOrigin:databaseUsage()
    RETURN Qt_QWebSecurityOrigin_databaseUsage( ::pPtr )
 
 
+METHOD QWebSecurityOrigin:databases()
+   RETURN Qt_QWebSecurityOrigin_databases( ::pPtr )
+
+
 METHOD QWebSecurityOrigin:host()
    RETURN Qt_QWebSecurityOrigin_host( ::pPtr )
 
@@ -108,4 +114,8 @@ METHOD QWebSecurityOrigin:scheme()
 
 METHOD QWebSecurityOrigin:setDatabaseQuota( nQuota )
    RETURN Qt_QWebSecurityOrigin_setDatabaseQuota( ::pPtr, nQuota )
+
+
+METHOD QWebSecurityOrigin:allOrigins()
+   RETURN Qt_QWebSecurityOrigin_allOrigins( ::pPtr )
 

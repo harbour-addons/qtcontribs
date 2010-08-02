@@ -59,50 +59,35 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtdesigner_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
-/*
- *  class ExtensionOption
- *  enum Extension { }
- */
-
-/*
- *  Constructed[ 3/5 [ 60.00% ] ]
- *
- *  *** Unconvered Prototypes ***
- *  -----------------------------
- *
- *  virtual QList<Plugin> plugins () const = 0
- *
- *  *** Commented out protos which construct fine but do not compile ***
- *
- *  // virtual bool extension ( Extension extension, const ExtensionOption * option = 0, ExtensionReturn * output = 0 )
- */
-
 #include <QtCore/QPointer>
 
-#include <QtWebKit/QWebPluginFactory>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include <QtDesigner/QDesignerObjectInspectorInterface>
+#include "../hbqt_local.h"
 
 
 /*
- * QWebPluginFactory ( QObject * parent = 0 )
- * virtual ~QWebPluginFactory ()
+ * QDesignerObjectInspectorInterface ( QWidget * parent, Qt::WindowFlags flags = 0 )
+ * ~QDesignerObjectInspectorInterface ()
+ *
  */
 
 typedef struct
 {
-   QPointer< QWebPluginFactory > ph;
+   QPointer< QDesignerObjectInspectorInterface > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
-} QGC_POINTER_QWebPluginFactory;
+   int type;
+} QGC_POINTER_QDesignerObjectInspectorInterface;
 
-QT_G_FUNC( hbqt_gcRelease_QWebPluginFactory )
+QT_G_FUNC( hbqt_gcRelease_QDesignerObjectInspectorInterface )
 {
    HB_SYMBOL_UNUSED( Cargo );
    QGC_POINTER * p = ( QGC_POINTER * ) Cargo;
@@ -113,69 +98,56 @@ QT_G_FUNC( hbqt_gcRelease_QWebPluginFactory )
    }
 }
 
-void * hbqt_gcAllocate_QWebPluginFactory( void * pObj, bool bNew )
+void * hbqt_gcAllocate_QDesignerObjectInspectorInterface( void * pObj, bool bNew )
 {
-   QGC_POINTER_QWebPluginFactory * p = ( QGC_POINTER_QWebPluginFactory * ) hb_gcAllocate( sizeof( QGC_POINTER_QWebPluginFactory ), hbqt_gcFuncs() );
+   QGC_POINTER_QDesignerObjectInspectorInterface * p = ( QGC_POINTER_QDesignerObjectInspectorInterface * ) hb_gcAllocate( sizeof( QGC_POINTER_QDesignerObjectInspectorInterface ), hbqt_gcFuncs() );
 
-   new( & p->ph ) QPointer< QWebPluginFactory >( ( QWebPluginFactory * ) pObj );
+   new( & p->ph ) QPointer< QDesignerObjectInspectorInterface >( ( QDesignerObjectInspectorInterface * ) pObj );
    p->bNew = bNew;
-   p->func = hbqt_gcRelease_QWebPluginFactory;
+   p->func = hbqt_gcRelease_QDesignerObjectInspectorInterface;
+   p->type = HBQT_TYPE_QDesignerObjectInspectorInterface;
 
    if( bNew )
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QWebPluginFactory  under p->pq", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QDesignerObjectInspectorInterface  under p->pq", pObj ) );
    }
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QWebPluginFactory", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QDesignerObjectInspectorInterface", pObj ) );
    }
    return p;
 }
 
-HB_FUNC( QT_QWEBPLUGINFACTORY )
+HB_FUNC( QT_QDESIGNEROBJECTINSPECTORINTERFACE )
 {
-   //hb_retptr( ( QWebPluginFactory* ) new QWebPluginFactory() );
+   //hb_retptr( new QDesignerObjectInspectorInterface() );
 }
 
 /*
- * virtual QObject * create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues ) const = 0
+ * virtual QDesignerFormEditorInterface * core () const
  */
-HB_FUNC( QT_QWEBPLUGINFACTORY_CREATE )
+HB_FUNC( QT_QDESIGNEROBJECTINSPECTORINTERFACE_CORE )
 {
-   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
+   QDesignerObjectInspectorInterface * p = hbqt_par_QDesignerObjectInspectorInterface( 1 );
    if( p )
-      hb_retptrGC( hbqt_gcAllocate_QObject( ( p )->create( QWebPluginFactory::tr( hb_parc( 2 ) ), *hbqt_par_QUrl( 3 ), *hbqt_par_QStringList( 4 ), *hbqt_par_QStringList( 5 ) ), false ) );
+      hb_retptrGC( hbqt_gcAllocate_QDesignerFormEditorInterface( ( p )->core(), false ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_CREATE FP=hb_retptrGC( hbqt_gcAllocate_QObject( ( p )->create( QWebPluginFactory::tr( hb_parc( 2 ) ), *hbqt_par_QUrl( 3 ), *hbqt_par_QStringList( 4 ), *hbqt_par_QStringList( 5 ) ), false ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNEROBJECTINSPECTORINTERFACE_CORE FP=hb_retptrGC( hbqt_gcAllocate_QDesignerFormEditorInterface( ( p )->core(), false ) ); p is NULL" ) );
    }
 }
 
 /*
- * virtual void refreshPlugins ()
+ * virtual void setFormWindow ( QDesignerFormWindowInterface * formWindow ) = 0
  */
-HB_FUNC( QT_QWEBPLUGINFACTORY_REFRESHPLUGINS )
+HB_FUNC( QT_QDESIGNEROBJECTINSPECTORINTERFACE_SETFORMWINDOW )
 {
-   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
+   QDesignerObjectInspectorInterface * p = hbqt_par_QDesignerObjectInspectorInterface( 1 );
    if( p )
-      ( p )->refreshPlugins();
+      ( p )->setFormWindow( hbqt_par_QDesignerFormWindowInterface( 2 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_REFRESHPLUGINS FP=( p )->refreshPlugins(); p is NULL" ) );
-   }
-}
-
-/*
- * virtual bool supportsExtension ( Extension extension ) const
- */
-HB_FUNC( QT_QWEBPLUGINFACTORY_SUPPORTSEXTENSION )
-{
-   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
-   if( p )
-      hb_retl( ( p )->supportsExtension( ( QWebPluginFactory::Extension ) hb_parni( 2 ) ) );
-   else
-   {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_SUPPORTSEXTENSION FP=hb_retl( ( p )->supportsExtension( ( QWebPluginFactory::Extension ) hb_parni( 2 ) ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNEROBJECTINSPECTORINTERFACE_SETFORMWINDOW FP=( p )->setFormWindow( hbqt_par_QDesignerFormWindowInterface( 2 ) ); p is NULL" ) );
    }
 }
 

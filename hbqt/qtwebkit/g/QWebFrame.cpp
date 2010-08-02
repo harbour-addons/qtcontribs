@@ -59,19 +59,20 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
 /*
- *  Constructed[ 37/40 [ 92.50% ] ]
+ *  Constructed[ 38/40 [ 95.00% ] ]
  *
  *  *** Unconvered Prototypes ***
  *  -----------------------------
  *
- *  QList<QWebFrame *> childFrames () const
  *  QMultiMap<QString, QString> metaData () const
  *
  *  *** Commented out protos which construct fine but do not compile ***
@@ -83,8 +84,7 @@
 
 #include <QtWebKit/QWebFrame>
 #include <QtWebKit/QWebSecurityOrigin>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 /*
  *
@@ -95,6 +95,7 @@ typedef struct
    QPointer< QWebFrame > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebFrame;
 
 QT_G_FUNC( hbqt_gcRelease_QWebFrame )
@@ -115,6 +116,7 @@ void * hbqt_gcAllocate_QWebFrame( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QWebFrame >( ( QWebFrame * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebFrame;
+   p->type = HBQT_TYPE_QWebFrame;
 
    if( bNew )
    {
@@ -157,6 +159,20 @@ HB_FUNC( QT_QWEBFRAME_ADDTOJAVASCRIPTWINDOWOBJECT_1 )
    else
    {
       HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBFRAME_ADDTOJAVASCRIPTWINDOWOBJECT_1 FP=( p )->addToJavaScriptWindowObject( QWebFrame::tr( hb_parc( 2 ) ), hbqt_par_QObject( 3 ), ( QScriptEngine::ValueOwnership ) hb_parni( 4 ) ); p is NULL" ) );
+   }
+}
+
+/*
+ * QList<QWebFrame *> childFrames () const
+ */
+HB_FUNC( QT_QWEBFRAME_CHILDFRAMES )
+{
+   QWebFrame * p = hbqt_par_QWebFrame( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebFrame *>( ( p )->childFrames() ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBFRAME_CHILDFRAMES FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebFrame *>( ( p )->childFrames() ), true ) ); p is NULL" ) );
    }
 }
 

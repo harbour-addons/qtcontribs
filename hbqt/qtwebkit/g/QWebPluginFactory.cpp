@@ -59,33 +59,39 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
+/*
+ *  class ExtensionOption
+ *  enum Extension { }
+ */
+
 #include <QtCore/QPointer>
 
-#include <QtDesigner/QDesignerWidgetBoxInterface>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include <QtWebKit/QWebPluginFactory>
+#include "../hbqt_local.h"
 
 
 /*
- * QDesignerWidgetBoxInterface ( QWidget * parent = 0, Qt::WindowFlags flags = 0 )
- * ~QDesignerWidgetBoxInterface ()
- *
+ * QWebPluginFactory ( QObject * parent = 0 )
+ * virtual ~QWebPluginFactory ()
  */
 
 typedef struct
 {
-   QPointer< QDesignerWidgetBoxInterface > ph;
+   QPointer< QWebPluginFactory > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
-} QGC_POINTER_QDesignerWidgetBoxInterface;
+   int type;
+} QGC_POINTER_QWebPluginFactory;
 
-QT_G_FUNC( hbqt_gcRelease_QDesignerWidgetBoxInterface )
+QT_G_FUNC( hbqt_gcRelease_QWebPluginFactory )
 {
    HB_SYMBOL_UNUSED( Cargo );
    QGC_POINTER * p = ( QGC_POINTER * ) Cargo;
@@ -96,83 +102,84 @@ QT_G_FUNC( hbqt_gcRelease_QDesignerWidgetBoxInterface )
    }
 }
 
-void * hbqt_gcAllocate_QDesignerWidgetBoxInterface( void * pObj, bool bNew )
+void * hbqt_gcAllocate_QWebPluginFactory( void * pObj, bool bNew )
 {
-   QGC_POINTER_QDesignerWidgetBoxInterface * p = ( QGC_POINTER_QDesignerWidgetBoxInterface * ) hb_gcAllocate( sizeof( QGC_POINTER_QDesignerWidgetBoxInterface ), hbqt_gcFuncs() );
+   QGC_POINTER_QWebPluginFactory * p = ( QGC_POINTER_QWebPluginFactory * ) hb_gcAllocate( sizeof( QGC_POINTER_QWebPluginFactory ), hbqt_gcFuncs() );
 
-   new( & p->ph ) QPointer< QDesignerWidgetBoxInterface >( ( QDesignerWidgetBoxInterface * ) pObj );
+   new( & p->ph ) QPointer< QWebPluginFactory >( ( QWebPluginFactory * ) pObj );
    p->bNew = bNew;
-   p->func = hbqt_gcRelease_QDesignerWidgetBoxInterface;
+   p->func = hbqt_gcRelease_QWebPluginFactory;
+   p->type = HBQT_TYPE_QWebPluginFactory;
 
    if( bNew )
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QDesignerWidgetBoxInterface  under p->pq", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QWebPluginFactory  under p->pq", pObj ) );
    }
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QDesignerWidgetBoxInterface", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QWebPluginFactory", pObj ) );
    }
    return p;
 }
 
-HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE )
+HB_FUNC( QT_QWEBPLUGINFACTORY )
 {
-   //hb_retptr( new QDesignerWidgetBoxInterface() );
+   //hb_retptr( ( QWebPluginFactory* ) new QWebPluginFactory() );
 }
 
 /*
- * virtual QString fileName () const = 0
+ * virtual QObject * create ( const QString & mimeType, const QUrl & url, const QStringList & argumentNames, const QStringList & argumentValues ) const = 0
  */
-HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_FILENAME )
+HB_FUNC( QT_QWEBPLUGINFACTORY_CREATE )
 {
-   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
+   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
    if( p )
-      hb_retc( ( p )->fileName().toAscii().data() );
+      hb_retptrGC( hbqt_gcAllocate_QObject( ( p )->create( QWebPluginFactory::tr( hb_parc( 2 ) ), *hbqt_par_QUrl( 3 ), *hbqt_par_QStringList( 4 ), *hbqt_par_QStringList( 5 ) ), false ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_FILENAME FP=hb_retc( ( p )->fileName().toAscii().data() ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_CREATE FP=hb_retptrGC( hbqt_gcAllocate_QObject( ( p )->create( QWebPluginFactory::tr( hb_parc( 2 ) ), *hbqt_par_QUrl( 3 ), *hbqt_par_QStringList( 4 ), *hbqt_par_QStringList( 5 ) ), false ) ); p is NULL" ) );
    }
 }
 
 /*
- * virtual bool load () = 0
+ * virtual QList<Plugin> plugins () const = 0
  */
-HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_LOAD )
+HB_FUNC( QT_QWEBPLUGINFACTORY_PLUGINS )
 {
-   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
+   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
    if( p )
-      hb_retl( ( p )->load() );
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<Plugin>( ( p )->plugins() ), true ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_LOAD FP=hb_retl( ( p )->load() ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_PLUGINS FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<Plugin>( ( p )->plugins() ), true ) ); p is NULL" ) );
    }
 }
 
 /*
- * virtual bool save () = 0
+ * virtual void refreshPlugins ()
  */
-HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_SAVE )
+HB_FUNC( QT_QWEBPLUGINFACTORY_REFRESHPLUGINS )
 {
-   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
+   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
    if( p )
-      hb_retl( ( p )->save() );
+      ( p )->refreshPlugins();
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_SAVE FP=hb_retl( ( p )->save() ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_REFRESHPLUGINS FP=( p )->refreshPlugins(); p is NULL" ) );
    }
 }
 
 /*
- * virtual void setFileName ( const QString & fileName ) = 0
+ * virtual bool supportsExtension ( Extension extension ) const
  */
-HB_FUNC( QT_QDESIGNERWIDGETBOXINTERFACE_SETFILENAME )
+HB_FUNC( QT_QWEBPLUGINFACTORY_SUPPORTSEXTENSION )
 {
-   QDesignerWidgetBoxInterface * p = hbqt_par_QDesignerWidgetBoxInterface( 1 );
+   QWebPluginFactory * p = hbqt_par_QWebPluginFactory( 1 );
    if( p )
-      ( p )->setFileName( QDesignerWidgetBoxInterface::tr( hb_parc( 2 ) ) );
+      hb_retl( ( p )->supportsExtension( ( QWebPluginFactory::Extension ) hb_parni( 2 ) ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QDESIGNERWIDGETBOXINTERFACE_SETFILENAME FP=( p )->setFileName( QDesignerWidgetBoxInterface::tr( hb_parc( 2 ) ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBPLUGINFACTORY_SUPPORTSEXTENSION FP=hb_retl( ( p )->supportsExtension( ( QWebPluginFactory::Extension ) hb_parni( 2 ) ) ); p is NULL" ) );
    }
 }
 

@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +70,7 @@
 #include <QtCore/QPointer>
 
 #include <QtWebKit/QWebHistoryInterface>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -82,6 +83,7 @@ typedef struct
    QPointer< QWebHistoryInterface > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebHistoryInterface;
 
 QT_G_FUNC( hbqt_gcRelease_QWebHistoryInterface )
@@ -102,6 +104,7 @@ void * hbqt_gcAllocate_QWebHistoryInterface( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QWebHistoryInterface >( ( QWebHistoryInterface * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebHistoryInterface;
+   p->type = HBQT_TYPE_QWebHistoryInterface;
 
    if( bNew )
    {

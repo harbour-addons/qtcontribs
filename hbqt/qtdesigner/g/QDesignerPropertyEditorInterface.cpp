@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtdesigner_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +70,7 @@
 #include <QtCore/QPointer>
 
 #include <QtDesigner/QDesignerPropertyEditorInterface>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -83,6 +84,7 @@ typedef struct
    QPointer< QDesignerPropertyEditorInterface > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QDesignerPropertyEditorInterface;
 
 QT_G_FUNC( hbqt_gcRelease_QDesignerPropertyEditorInterface )
@@ -103,6 +105,7 @@ void * hbqt_gcAllocate_QDesignerPropertyEditorInterface( void * pObj, bool bNew 
    new( & p->ph ) QPointer< QDesignerPropertyEditorInterface >( ( QDesignerPropertyEditorInterface * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QDesignerPropertyEditorInterface;
+   p->type = HBQT_TYPE_QDesignerPropertyEditorInterface;
 
    if( bNew )
    {

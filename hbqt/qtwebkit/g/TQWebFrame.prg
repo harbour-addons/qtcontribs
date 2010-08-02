@@ -69,6 +69,7 @@ CREATE CLASS QWebFrame INHERIT HbQtObjectHandler, QObject
 
    METHOD  addToJavaScriptWindowObject( cName, pObject )
    METHOD  addToJavaScriptWindowObject_1( cName, pObject, nOwn )
+   METHOD  childFrames()
    METHOD  contentsSize()
    METHOD  frameName()
    METHOD  geometry()
@@ -123,6 +124,10 @@ METHOD QWebFrame:addToJavaScriptWindowObject( cName, pObject )
 
 METHOD QWebFrame:addToJavaScriptWindowObject_1( cName, pObject, nOwn )
    RETURN Qt_QWebFrame_addToJavaScriptWindowObject_1( ::pPtr, cName, hbqt_ptr( pObject ), nOwn )
+
+
+METHOD QWebFrame:childFrames()
+   RETURN Qt_QWebFrame_childFrames( ::pPtr )
 
 
 METHOD QWebFrame:contentsSize()

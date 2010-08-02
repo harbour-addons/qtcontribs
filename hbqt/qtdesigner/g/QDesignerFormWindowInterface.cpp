@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtdesigner_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -73,8 +75,7 @@
 #include <QtCore/QPointer>
 
 #include <QtDesigner/QDesignerFormWindowInterface>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -88,6 +89,7 @@ typedef struct
    QPointer< QDesignerFormWindowInterface > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QDesignerFormWindowInterface;
 
 QT_G_FUNC( hbqt_gcRelease_QDesignerFormWindowInterface )
@@ -108,6 +110,7 @@ void * hbqt_gcAllocate_QDesignerFormWindowInterface( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QDesignerFormWindowInterface >( ( QDesignerFormWindowInterface * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QDesignerFormWindowInterface;
+   p->type = HBQT_TYPE_QDesignerFormWindowInterface;
 
    if( bNew )
    {

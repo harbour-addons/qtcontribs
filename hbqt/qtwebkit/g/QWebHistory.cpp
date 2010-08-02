@@ -59,28 +59,18 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
-/*
- *  Constructed[ 14/17 [ 82.35% ] ]
- *
- *  *** Unconvered Prototypes ***
- *  -----------------------------
- *
- *  QList<QWebHistoryItem> backItems ( int maxItems ) const
- *  QList<QWebHistoryItem> forwardItems ( int maxItems ) const
- *  QList<QWebHistoryItem> items () const
- */
-
 #include <QtCore/QPointer>
 
 #include <QtWebKit/QWebHistory>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -92,6 +82,7 @@ typedef struct
    QWebHistory * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebHistory;
 
 QT_G_FUNC( hbqt_gcRelease_QWebHistory )
@@ -112,6 +103,7 @@ void * hbqt_gcAllocate_QWebHistory( void * pObj, bool bNew )
    p->ph = ( QWebHistory * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebHistory;
+   p->type = HBQT_TYPE_QWebHistory;
 
    if( bNew )
    {
@@ -154,6 +146,20 @@ HB_FUNC( QT_QWEBHISTORY_BACKITEM )
    else
    {
       HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBHISTORY_BACKITEM FP=hb_retptrGC( hbqt_gcAllocate_QWebHistoryItem( new QWebHistoryItem( ( p )->backItem() ), true ) ); p is NULL" ) );
+   }
+}
+
+/*
+ * QList<QWebHistoryItem> backItems ( int maxItems ) const
+ */
+HB_FUNC( QT_QWEBHISTORY_BACKITEMS )
+{
+   QWebHistory * p = hbqt_par_QWebHistory( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebHistoryItem>( ( p )->backItems( hb_parni( 2 ) ) ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBHISTORY_BACKITEMS FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebHistoryItem>( ( p )->backItems( hb_parni( 2 ) ) ), true ) ); p is NULL" ) );
    }
 }
 
@@ -270,6 +276,20 @@ HB_FUNC( QT_QWEBHISTORY_FORWARDITEM )
 }
 
 /*
+ * QList<QWebHistoryItem> forwardItems ( int maxItems ) const
+ */
+HB_FUNC( QT_QWEBHISTORY_FORWARDITEMS )
+{
+   QWebHistory * p = hbqt_par_QWebHistory( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebHistoryItem>( ( p )->forwardItems( hb_parni( 2 ) ) ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBHISTORY_FORWARDITEMS FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebHistoryItem>( ( p )->forwardItems( hb_parni( 2 ) ) ), true ) ); p is NULL" ) );
+   }
+}
+
+/*
  * void goToItem ( const QWebHistoryItem & item )
  */
 HB_FUNC( QT_QWEBHISTORY_GOTOITEM )
@@ -294,6 +314,20 @@ HB_FUNC( QT_QWEBHISTORY_ITEMAT )
    else
    {
       HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBHISTORY_ITEMAT FP=hb_retptrGC( hbqt_gcAllocate_QWebHistoryItem( new QWebHistoryItem( ( p )->itemAt( hb_parni( 2 ) ) ), true ) ); p is NULL" ) );
+   }
+}
+
+/*
+ * QList<QWebHistoryItem> items () const
+ */
+HB_FUNC( QT_QWEBHISTORY_ITEMS )
+{
+   QWebHistory * p = hbqt_par_QWebHistory( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebHistoryItem>( ( p )->items() ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBHISTORY_ITEMS FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebHistoryItem>( ( p )->items() ), true ) ); p is NULL" ) );
    }
 }
 

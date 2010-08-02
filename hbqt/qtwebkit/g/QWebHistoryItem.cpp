@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -69,8 +71,7 @@
 
 #include <QtWebKit/QWebHistoryItem>
 #include <QtCore/QVariant>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -83,6 +84,7 @@ typedef struct
    QWebHistoryItem * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebHistoryItem;
 
 QT_G_FUNC( hbqt_gcRelease_QWebHistoryItem )
@@ -118,6 +120,7 @@ void * hbqt_gcAllocate_QWebHistoryItem( void * pObj, bool bNew )
    p->ph = ( QWebHistoryItem * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebHistoryItem;
+   p->type = HBQT_TYPE_QWebHistoryItem;
 
    if( bNew )
    {

@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -79,8 +81,7 @@
 
 #include <QtWebKit/QWebPage>
 #include <QtCore/QVariant>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -93,6 +94,7 @@ typedef struct
    QPointer< QWebPage > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebPage;
 
 QT_G_FUNC( hbqt_gcRelease_QWebPage )
@@ -139,6 +141,7 @@ void * hbqt_gcAllocate_QWebPage( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QWebPage >( ( QWebPage * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebPage;
+   p->type = HBQT_TYPE_QWebPage;
 
    if( bNew )
    {

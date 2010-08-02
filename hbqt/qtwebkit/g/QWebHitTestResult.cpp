@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +70,7 @@
 #include <QtCore/QPointer>
 
 #include <QtWebKit/QWebHitTestResult>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -83,6 +84,7 @@ typedef struct
    QWebHitTestResult * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebHitTestResult;
 
 QT_G_FUNC( hbqt_gcRelease_QWebHitTestResult )
@@ -118,6 +120,7 @@ void * hbqt_gcAllocate_QWebHitTestResult( void * pObj, bool bNew )
    p->ph = ( QWebHitTestResult * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebHitTestResult;
+   p->type = HBQT_TYPE_QWebHitTestResult;
 
    if( bNew )
    {

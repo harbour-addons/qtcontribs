@@ -63,89 +63,39 @@
 #include "hbclass.ch"
 
 
-CREATE CLASS QWebHistory INHERIT HbQtObjectHandler
+CREATE CLASS QWebPluginFactory INHERIT HbQtObjectHandler, QObject
 
    METHOD  new( ... )
 
-   METHOD  back()
-   METHOD  backItem()
-   METHOD  canGoBack()
-   METHOD  canGoForward()
-   METHOD  clear()
-   METHOD  count()
-   METHOD  currentItem()
-   METHOD  currentItemIndex()
-   METHOD  forward()
-   METHOD  forwardItem()
-   METHOD  goToItem( pItem )
-   METHOD  itemAt( nI )
-   METHOD  maximumItemCount()
-   METHOD  setMaximumItemCount( nCount )
+   METHOD  create( cMimeType, pUrl, pArgumentNames, pArgumentValues )
+   METHOD  plugins()
+   METHOD  refreshPlugins()
+   METHOD  supportsExtension( nExtension )
 
    ENDCLASS
 
 
-METHOD QWebHistory:new( ... )
+METHOD QWebPluginFactory:new( ... )
    LOCAL p
    FOR EACH p IN { ... }
       hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
    NEXT
-   ::pPtr := Qt_QWebHistory( ... )
+   ::pPtr := Qt_QWebPluginFactory( ... )
    RETURN Self
 
 
-METHOD QWebHistory:back()
-   RETURN Qt_QWebHistory_back( ::pPtr )
+METHOD QWebPluginFactory:create( cMimeType, pUrl, pArgumentNames, pArgumentValues )
+   RETURN Qt_QWebPluginFactory_create( ::pPtr, cMimeType, hbqt_ptr( pUrl ), hbqt_ptr( pArgumentNames ), hbqt_ptr( pArgumentValues ) )
 
 
-METHOD QWebHistory:backItem()
-   RETURN Qt_QWebHistory_backItem( ::pPtr )
+METHOD QWebPluginFactory:plugins()
+   RETURN Qt_QWebPluginFactory_plugins( ::pPtr )
 
 
-METHOD QWebHistory:canGoBack()
-   RETURN Qt_QWebHistory_canGoBack( ::pPtr )
+METHOD QWebPluginFactory:refreshPlugins()
+   RETURN Qt_QWebPluginFactory_refreshPlugins( ::pPtr )
 
 
-METHOD QWebHistory:canGoForward()
-   RETURN Qt_QWebHistory_canGoForward( ::pPtr )
-
-
-METHOD QWebHistory:clear()
-   RETURN Qt_QWebHistory_clear( ::pPtr )
-
-
-METHOD QWebHistory:count()
-   RETURN Qt_QWebHistory_count( ::pPtr )
-
-
-METHOD QWebHistory:currentItem()
-   RETURN Qt_QWebHistory_currentItem( ::pPtr )
-
-
-METHOD QWebHistory:currentItemIndex()
-   RETURN Qt_QWebHistory_currentItemIndex( ::pPtr )
-
-
-METHOD QWebHistory:forward()
-   RETURN Qt_QWebHistory_forward( ::pPtr )
-
-
-METHOD QWebHistory:forwardItem()
-   RETURN Qt_QWebHistory_forwardItem( ::pPtr )
-
-
-METHOD QWebHistory:goToItem( pItem )
-   RETURN Qt_QWebHistory_goToItem( ::pPtr, hbqt_ptr( pItem ) )
-
-
-METHOD QWebHistory:itemAt( nI )
-   RETURN Qt_QWebHistory_itemAt( ::pPtr, nI )
-
-
-METHOD QWebHistory:maximumItemCount()
-   RETURN Qt_QWebHistory_maximumItemCount( ::pPtr )
-
-
-METHOD QWebHistory:setMaximumItemCount( nCount )
-   RETURN Qt_QWebHistory_setMaximumItemCount( ::pPtr, nCount )
+METHOD QWebPluginFactory:supportsExtension( nExtension )
+   RETURN Qt_QWebPluginFactory_supportsExtension( ::pPtr, nExtension )
 

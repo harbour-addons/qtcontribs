@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtdesigner_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +70,7 @@
 #include <QtCore/QPointer>
 
 #include <QtDesigner/QDesignerFormEditorInterface>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -83,6 +84,7 @@ typedef struct
    QPointer< QDesignerFormEditorInterface > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QDesignerFormEditorInterface;
 
 QT_G_FUNC( hbqt_gcRelease_QDesignerFormEditorInterface )
@@ -129,6 +131,7 @@ void * hbqt_gcAllocate_QDesignerFormEditorInterface( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QDesignerFormEditorInterface >( ( QDesignerFormEditorInterface * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QDesignerFormEditorInterface;
+   p->type = HBQT_TYPE_QDesignerFormEditorInterface;
 
    if( bNew )
    {

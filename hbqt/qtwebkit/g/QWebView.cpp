@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +70,7 @@
 #include <QtCore/QPointer>
 
 #include <QtWebKit/QWebView>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -82,6 +83,7 @@ typedef struct
    QPointer< QWebView > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebView;
 
 QT_G_FUNC( hbqt_gcRelease_QWebView )
@@ -128,6 +130,7 @@ void * hbqt_gcAllocate_QWebView( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QWebView >( ( QWebView * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebView;
+   p->type = HBQT_TYPE_QWebView;
 
    if( bNew )
    {

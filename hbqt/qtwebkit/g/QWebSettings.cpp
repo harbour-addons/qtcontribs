@@ -59,7 +59,9 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -76,8 +78,7 @@
 
 #include <QtWebKit/QWebSettings>
 #include <QtCore/QUrl>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -89,6 +90,7 @@ typedef struct
    QWebSettings * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebSettings;
 
 QT_G_FUNC( hbqt_gcRelease_QWebSettings )
@@ -109,6 +111,7 @@ void * hbqt_gcAllocate_QWebSettings( void * pObj, bool bNew )
    p->ph = ( QWebSettings * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebSettings;
+   p->type = HBQT_TYPE_QWebSettings;
 
    if( bNew )
    {

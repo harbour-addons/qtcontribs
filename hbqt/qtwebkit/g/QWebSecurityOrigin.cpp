@@ -59,27 +59,18 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqt.h"
+#include "hbqtwebkit_garbage.h"
+#include "hbqtcore_garbage.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
-/*
- *  Constructed[ 6/8 [ 75.00% ] ]
- *
- *  *** Unconvered Prototypes ***
- *  -----------------------------
- *
- *  QList<QWebDatabase> databases () const
- *  QList<QWebSecurityOrigin> allOrigins ()
- */
-
 #include <QtCore/QPointer>
 
 #include <QtWebKit/QWebSecurityOrigin>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include "../hbqt_local.h"
 
 
 /*
@@ -92,6 +83,7 @@ typedef struct
    QWebSecurityOrigin * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QWebSecurityOrigin;
 
 QT_G_FUNC( hbqt_gcRelease_QWebSecurityOrigin )
@@ -127,6 +119,7 @@ void * hbqt_gcAllocate_QWebSecurityOrigin( void * pObj, bool bNew )
    p->ph = ( QWebSecurityOrigin * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QWebSecurityOrigin;
+   p->type = HBQT_TYPE_QWebSecurityOrigin;
 
    if( bNew )
    {
@@ -176,6 +169,20 @@ HB_FUNC( QT_QWEBSECURITYORIGIN_DATABASEUSAGE )
    else
    {
       HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBSECURITYORIGIN_DATABASEUSAGE FP=hb_retnint( ( p )->databaseUsage() ); p is NULL" ) );
+   }
+}
+
+/*
+ * QList<QWebDatabase> databases () const
+ */
+HB_FUNC( QT_QWEBSECURITYORIGIN_DATABASES )
+{
+   QWebSecurityOrigin * p = hbqt_par_QWebSecurityOrigin( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebDatabase>( ( p )->databases() ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBSECURITYORIGIN_DATABASES FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebDatabase>( ( p )->databases() ), true ) ); p is NULL" ) );
    }
 }
 
@@ -232,6 +239,20 @@ HB_FUNC( QT_QWEBSECURITYORIGIN_SETDATABASEQUOTA )
    else
    {
       HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBSECURITYORIGIN_SETDATABASEQUOTA FP=( p )->setDatabaseQuota( hb_parnint( 2 ) ); p is NULL" ) );
+   }
+}
+
+/*
+ * QList<QWebSecurityOrigin> allOrigins ()
+ */
+HB_FUNC( QT_QWEBSECURITYORIGIN_ALLORIGINS )
+{
+   QWebSecurityOrigin * p = hbqt_par_QWebSecurityOrigin( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebSecurityOrigin>( ( p )->allOrigins() ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QWEBSECURITYORIGIN_ALLORIGINS FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList<QWebSecurityOrigin>( ( p )->allOrigins() ), true ) ); p is NULL" ) );
    }
 }
 
