@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -115,8 +116,6 @@
 
 
 #include "qsciscintilla.h"
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
 
 
 /*
@@ -129,6 +128,7 @@ typedef struct
    QPointer< QsciScintilla > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QsciScintilla;
 
 QT_G_FUNC( hbqt_gcRelease_QsciScintilla )
@@ -175,6 +175,7 @@ void * hbqt_gcAllocate_QsciScintilla( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QsciScintilla >( ( QsciScintilla * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QsciScintilla;
+   p->type = HBQT_TYPE_QsciScintilla;
 
    if( bNew )
    {
@@ -280,10 +281,10 @@ HB_FUNC( QT_QSCISCINTILLA_CLEARANNOTATIONS )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->clearAnnotations( ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : -1 ) );
+      ( p )->clearAnnotations( hb_parnidef( 2, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_CLEARANNOTATIONS FP=( p )->clearAnnotations( ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_CLEARANNOTATIONS FP=( p )->clearAnnotations( hb_parnidef( 2, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -658,10 +659,10 @@ HB_FUNC( QT_QSCISCINTILLA_FINDFIRST )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      hb_retl( ( p )->findFirst( QsciScintilla::tr( hb_parc( 2 ) ), hb_parl( 3 ), hb_parl( 4 ), hb_parl( 5 ), hb_parl( 6 ), hb_parl( 7 ), ( HB_ISNUM( 8 ) ? hb_parni( 8 ) : -1 ), ( HB_ISNUM( 9 ) ? hb_parni( 9 ) : -1 ), hb_parl( 10 ) ) );
+      hb_retl( ( p )->findFirst( QsciScintilla::tr( hb_parc( 2 ) ), hb_parl( 3 ), hb_parl( 4 ), hb_parl( 5 ), hb_parl( 6 ), hb_parl( 7 ), hb_parnidef( 8, -1 ), hb_parnidef( 9, -1 ), hb_parl( 10 ) ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_FINDFIRST FP=hb_retl( ( p )->findFirst( QsciScintilla::tr( hb_parc( 2 ) ), hb_parl( 3 ), hb_parl( 4 ), hb_parl( 5 ), hb_parl( 6 ), hb_parl( 7 ), ( HB_ISNUM( 8 ) ? hb_parni( 8 ) : -1 ), ( HB_ISNUM( 9 ) ? hb_parni( 9 ) : -1 ), hb_parl( 10 ) ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_FINDFIRST FP=hb_retl( ( p )->findFirst( QsciScintilla::tr( hb_parc( 2 ) ), hb_parl( 3 ), hb_parl( 4 ), hb_parl( 5 ), hb_parl( 6 ), hb_parl( 7 ), hb_parnidef( 8, -1 ), hb_parnidef( 9, -1 ), hb_parl( 10 ) ) ); p is NULL" ) );
    }
 }
 
@@ -1100,10 +1101,10 @@ HB_FUNC( QT_QSCISCINTILLA_MARKERDEFINE )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      hb_retni( ( p )->markerDefine( ( QsciScintilla::MarkerSymbol ) hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ) );
+      hb_retni( ( p )->markerDefine( ( QsciScintilla::MarkerSymbol ) hb_parni( 2 ), hb_parnidef( 3, -1 ) ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDEFINE FP=hb_retni( ( p )->markerDefine( ( QsciScintilla::MarkerSymbol ) hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDEFINE FP=hb_retni( ( p )->markerDefine( ( QsciScintilla::MarkerSymbol ) hb_parni( 2 ), hb_parnidef( 3, -1 ) ) ); p is NULL" ) );
    }
 }
 
@@ -1114,10 +1115,10 @@ HB_FUNC( QT_QSCISCINTILLA_MARKERDEFINE_1 )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      hb_retni( ( p )->markerDefine( ( char ) hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ) );
+      hb_retni( ( p )->markerDefine( ( char ) hb_parni( 2 ), hb_parnidef( 3, -1 ) ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDEFINE_1 FP=hb_retni( ( p )->markerDefine( ( char ) hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDEFINE_1 FP=hb_retni( ( p )->markerDefine( ( char ) hb_parni( 2 ), hb_parnidef( 3, -1 ) ) ); p is NULL" ) );
    }
 }
 
@@ -1128,10 +1129,10 @@ HB_FUNC( QT_QSCISCINTILLA_MARKERDEFINE_2 )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      hb_retni( ( p )->markerDefine( *hbqt_par_QPixmap( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ) );
+      hb_retni( ( p )->markerDefine( *hbqt_par_QPixmap( 2 ), hb_parnidef( 3, -1 ) ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDEFINE_2 FP=hb_retni( ( p )->markerDefine( *hbqt_par_QPixmap( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDEFINE_2 FP=hb_retni( ( p )->markerDefine( *hbqt_par_QPixmap( 2 ), hb_parnidef( 3, -1 ) ) ); p is NULL" ) );
    }
 }
 
@@ -1170,10 +1171,10 @@ HB_FUNC( QT_QSCISCINTILLA_MARKERDELETE )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->markerDelete( hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->markerDelete( hb_parni( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDELETE FP=( p )->markerDelete( hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDELETE FP=( p )->markerDelete( hb_parni( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -1184,10 +1185,10 @@ HB_FUNC( QT_QSCISCINTILLA_MARKERDELETEALL )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->markerDeleteAll( ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : -1 ) );
+      ( p )->markerDeleteAll( hb_parnidef( 2, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDELETEALL FP=( p )->markerDeleteAll( ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_MARKERDELETEALL FP=( p )->markerDeleteAll( hb_parnidef( 2, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -1296,10 +1297,10 @@ HB_FUNC( QT_QSCISCINTILLA_RECOLOR )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->recolor( hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->recolor( hb_parni( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_RECOLOR FP=( p )->recolor( hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_RECOLOR FP=( p )->recolor( hb_parni( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -1604,10 +1605,10 @@ HB_FUNC( QT_QSCISCINTILLA_CLEARMARGINTEXT )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->clearMarginText( ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : -1 ) );
+      ( p )->clearMarginText( hb_parnidef( 2, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_CLEARMARGINTEXT FP=( p )->clearMarginText( ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_CLEARMARGINTEXT FP=( p )->clearMarginText( hb_parnidef( 2, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -1618,10 +1619,10 @@ HB_FUNC( QT_QSCISCINTILLA_SETMARKERBACKGROUNDCOLOR )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->setMarkerBackgroundColor( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->setMarkerBackgroundColor( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_SETMARKERBACKGROUNDCOLOR FP=( p )->setMarkerBackgroundColor( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_SETMARKERBACKGROUNDCOLOR FP=( p )->setMarkerBackgroundColor( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -1632,10 +1633,10 @@ HB_FUNC( QT_QSCISCINTILLA_SETMARKERFOREGROUNDCOLOR )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->setMarkerForegroundColor( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->setMarkerForegroundColor( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_SETMARKERFOREGROUNDCOLOR FP=( p )->setMarkerForegroundColor( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_SETMARKERFOREGROUNDCOLOR FP=( p )->setMarkerForegroundColor( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -2472,10 +2473,10 @@ HB_FUNC( QT_QSCISCINTILLA_SETFOLDING )
 {
    QsciScintilla * p = hbqt_par_QsciScintilla( 1 );
    if( p )
-      ( p )->setFolding( ( QsciScintilla::FoldStyle ) hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : 2 ) );
+      ( p )->setFolding( ( QsciScintilla::FoldStyle ) hb_parni( 2 ), hb_parnidef( 3, 2 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_SETFOLDING FP=( p )->setFolding( ( QsciScintilla::FoldStyle ) hb_parni( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : 2 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISCINTILLA_SETFOLDING FP=( p )->setFolding( ( QsciScintilla::FoldStyle ) hb_parni( 2 ), hb_parnidef( 3, 2 ) ); p is NULL" ) );
    }
 }
 

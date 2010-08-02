@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +69,6 @@
 #include <QtCore/QPointer>
 
 #include <qscilexer.h>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
 
 
 /*
@@ -83,6 +82,7 @@ typedef struct
    QPointer< QsciLexer > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QsciLexer;
 
 QT_G_FUNC( hbqt_gcRelease_QsciLexer )
@@ -103,6 +103,7 @@ void * hbqt_gcAllocate_QsciLexer( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QsciLexer >( ( QsciLexer * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QsciLexer;
+   p->type = HBQT_TYPE_QsciLexer;
 
    if( bNew )
    {
@@ -699,10 +700,10 @@ HB_FUNC( QT_QSCILEXER_SETCOLOR )
 {
    QsciLexer * p = hbqt_par_QsciLexer( 1 );
    if( p )
-      ( p )->setColor( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->setColor( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETCOLOR FP=( p )->setColor( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETCOLOR FP=( p )->setColor( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -713,10 +714,10 @@ HB_FUNC( QT_QSCILEXER_SETEOLFILL )
 {
    QsciLexer * p = hbqt_par_QsciLexer( 1 );
    if( p )
-      ( p )->setEolFill( hb_parl( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->setEolFill( hb_parl( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETEOLFILL FP=( p )->setEolFill( hb_parl( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETEOLFILL FP=( p )->setEolFill( hb_parl( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -727,10 +728,10 @@ HB_FUNC( QT_QSCILEXER_SETFONT )
 {
    QsciLexer * p = hbqt_par_QsciLexer( 1 );
    if( p )
-      ( p )->setFont( *hbqt_par_QFont( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->setFont( *hbqt_par_QFont( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETFONT FP=( p )->setFont( *hbqt_par_QFont( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETFONT FP=( p )->setFont( *hbqt_par_QFont( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 
@@ -741,10 +742,10 @@ HB_FUNC( QT_QSCILEXER_SETPAPER )
 {
    QsciLexer * p = hbqt_par_QsciLexer( 1 );
    if( p )
-      ( p )->setPaper( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) );
+      ( p )->setPaper( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETPAPER FP=( p )->setPaper( *hbqt_par_QColor( 2 ), ( HB_ISNUM( 3 ) ? hb_parni( 3 ) : -1 ) ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCILEXER_SETPAPER FP=( p )->setPaper( *hbqt_par_QColor( 2 ), hb_parnidef( 3, -1 ) ); p is NULL" ) );
    }
 }
 

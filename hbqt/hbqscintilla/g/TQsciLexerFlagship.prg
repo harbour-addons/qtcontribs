@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@
 #include "hbclass.ch"
 
 
-CREATE CLASS QsciLexerCPP INHERIT HbQtObjectHandler, QsciLexer
+CREATE CLASS QsciLexerFlagship INHERIT HbQtObjectHandler, QsciLexer
 
    METHOD  new( ... )
 
@@ -98,119 +98,119 @@ CREATE CLASS QsciLexerCPP INHERIT HbQtObjectHandler, QsciLexer
    ENDCLASS
 
 
-METHOD QsciLexerCPP:new( ... )
+METHOD QsciLexerFlagship:new( ... )
    LOCAL p
    FOR EACH p IN { ... }
       hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
    NEXT
-   ::pPtr := Qt_QsciLexerCPP( ... )
+   ::pPtr := Qt_QsciLexerFlagship( ... )
    RETURN Self
 
 
-METHOD QsciLexerCPP:language()
-   RETURN Qt_QsciLexerCPP_language( ::pPtr )
+METHOD QsciLexerFlagship:language()
+   RETURN Qt_QsciLexerFlagship_language( ::pPtr )
 
 
-METHOD QsciLexerCPP:lexer()
-   RETURN Qt_QsciLexerCPP_lexer( ::pPtr )
+METHOD QsciLexerFlagship:lexer()
+   RETURN Qt_QsciLexerFlagship_lexer( ::pPtr )
 
 
-METHOD QsciLexerCPP:autoCompletionWordSeparators()
-   RETURN Qt_QsciLexerCPP_autoCompletionWordSeparators( ::pPtr )
+METHOD QsciLexerFlagship:autoCompletionWordSeparators()
+   RETURN Qt_QsciLexerFlagship_autoCompletionWordSeparators( ::pPtr )
 
 
-METHOD QsciLexerCPP:blockEnd( nStyle )
-   RETURN Qt_QsciLexerCPP_blockEnd( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:blockEnd( nStyle )
+   RETURN Qt_QsciLexerFlagship_blockEnd( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:blockStart( nStyle )
-   RETURN Qt_QsciLexerCPP_blockStart( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:blockStart( nStyle )
+   RETURN Qt_QsciLexerFlagship_blockStart( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:blockStartKeyword( nStyle )
-   RETURN Qt_QsciLexerCPP_blockStartKeyword( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:blockStartKeyword( nStyle )
+   RETURN Qt_QsciLexerFlagship_blockStartKeyword( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:braceStyle()
-   RETURN Qt_QsciLexerCPP_braceStyle( ::pPtr )
+METHOD QsciLexerFlagship:braceStyle()
+   RETURN Qt_QsciLexerFlagship_braceStyle( ::pPtr )
 
 
-METHOD QsciLexerCPP:wordCharacters()
-   RETURN Qt_QsciLexerCPP_wordCharacters( ::pPtr )
+METHOD QsciLexerFlagship:wordCharacters()
+   RETURN Qt_QsciLexerFlagship_wordCharacters( ::pPtr )
 
 
-METHOD QsciLexerCPP:defaultColor( nStyle )
-   RETURN Qt_QsciLexerCPP_defaultColor( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:defaultColor( nStyle )
+   RETURN Qt_QsciLexerFlagship_defaultColor( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:defaultEolFill( nStyle )
-   RETURN Qt_QsciLexerCPP_defaultEolFill( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:defaultEolFill( nStyle )
+   RETURN Qt_QsciLexerFlagship_defaultEolFill( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:defaultFont( nStyle )
-   RETURN Qt_QsciLexerCPP_defaultFont( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:defaultFont( nStyle )
+   RETURN Qt_QsciLexerFlagship_defaultFont( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:defaultPaper( nStyle )
-   RETURN Qt_QsciLexerCPP_defaultPaper( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:defaultPaper( nStyle )
+   RETURN Qt_QsciLexerFlagship_defaultPaper( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:keywords( nSet )
-   RETURN Qt_QsciLexerCPP_keywords( ::pPtr, nSet )
+METHOD QsciLexerFlagship:keywords( nSet )
+   RETURN Qt_QsciLexerFlagship_keywords( ::pPtr, nSet )
 
 
-METHOD QsciLexerCPP:description( nStyle )
-   RETURN Qt_QsciLexerCPP_description( ::pPtr, nStyle )
+METHOD QsciLexerFlagship:description( nStyle )
+   RETURN Qt_QsciLexerFlagship_description( ::pPtr, nStyle )
 
 
-METHOD QsciLexerCPP:refreshProperties()
-   RETURN Qt_QsciLexerCPP_refreshProperties( ::pPtr )
+METHOD QsciLexerFlagship:refreshProperties()
+   RETURN Qt_QsciLexerFlagship_refreshProperties( ::pPtr )
 
 
-METHOD QsciLexerCPP:foldAtElse()
-   RETURN Qt_QsciLexerCPP_foldAtElse( ::pPtr )
+METHOD QsciLexerFlagship:foldAtElse()
+   RETURN Qt_QsciLexerFlagship_foldAtElse( ::pPtr )
 
 
-METHOD QsciLexerCPP:foldComments()
-   RETURN Qt_QsciLexerCPP_foldComments( ::pPtr )
+METHOD QsciLexerFlagship:foldComments()
+   RETURN Qt_QsciLexerFlagship_foldComments( ::pPtr )
 
 
-METHOD QsciLexerCPP:foldCompact()
-   RETURN Qt_QsciLexerCPP_foldCompact( ::pPtr )
+METHOD QsciLexerFlagship:foldCompact()
+   RETURN Qt_QsciLexerFlagship_foldCompact( ::pPtr )
 
 
-METHOD QsciLexerCPP:foldPreprocessor()
-   RETURN Qt_QsciLexerCPP_foldPreprocessor( ::pPtr )
+METHOD QsciLexerFlagship:foldPreprocessor()
+   RETURN Qt_QsciLexerFlagship_foldPreprocessor( ::pPtr )
 
 
-METHOD QsciLexerCPP:stylePreprocessor()
-   RETURN Qt_QsciLexerCPP_stylePreprocessor( ::pPtr )
+METHOD QsciLexerFlagship:stylePreprocessor()
+   RETURN Qt_QsciLexerFlagship_stylePreprocessor( ::pPtr )
 
 
-METHOD QsciLexerCPP:setDollarsAllowed( lAllowed )
-   RETURN Qt_QsciLexerCPP_setDollarsAllowed( ::pPtr, lAllowed )
+METHOD QsciLexerFlagship:setDollarsAllowed( lAllowed )
+   RETURN Qt_QsciLexerFlagship_setDollarsAllowed( ::pPtr, lAllowed )
 
 
-METHOD QsciLexerCPP:dollarsAllowed()
-   RETURN Qt_QsciLexerCPP_dollarsAllowed( ::pPtr )
+METHOD QsciLexerFlagship:dollarsAllowed()
+   RETURN Qt_QsciLexerFlagship_dollarsAllowed( ::pPtr )
 
 
-METHOD QsciLexerCPP:setFoldAtElse( lFold )
-   RETURN Qt_QsciLexerCPP_setFoldAtElse( ::pPtr, lFold )
+METHOD QsciLexerFlagship:setFoldAtElse( lFold )
+   RETURN Qt_QsciLexerFlagship_setFoldAtElse( ::pPtr, lFold )
 
 
-METHOD QsciLexerCPP:setFoldComments( lFold )
-   RETURN Qt_QsciLexerCPP_setFoldComments( ::pPtr, lFold )
+METHOD QsciLexerFlagship:setFoldComments( lFold )
+   RETURN Qt_QsciLexerFlagship_setFoldComments( ::pPtr, lFold )
 
 
-METHOD QsciLexerCPP:setFoldCompact( lFold )
-   RETURN Qt_QsciLexerCPP_setFoldCompact( ::pPtr, lFold )
+METHOD QsciLexerFlagship:setFoldCompact( lFold )
+   RETURN Qt_QsciLexerFlagship_setFoldCompact( ::pPtr, lFold )
 
 
-METHOD QsciLexerCPP:setFoldPreprocessor( lFold )
-   RETURN Qt_QsciLexerCPP_setFoldPreprocessor( ::pPtr, lFold )
+METHOD QsciLexerFlagship:setFoldPreprocessor( lFold )
+   RETURN Qt_QsciLexerFlagship_setFoldPreprocessor( ::pPtr, lFold )
 
 
-METHOD QsciLexerCPP:setStylePreprocessor( lStyle )
-   RETURN Qt_QsciLexerCPP_setStylePreprocessor( ::pPtr, lStyle )
+METHOD QsciLexerFlagship:setStylePreprocessor( lStyle )
+   RETURN Qt_QsciLexerFlagship_setStylePreprocessor( ::pPtr, lStyle )
 

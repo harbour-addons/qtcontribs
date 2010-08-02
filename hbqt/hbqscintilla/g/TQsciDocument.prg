@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -63,34 +63,19 @@
 #include "hbclass.ch"
 
 
-CREATE CLASS QsciAbstractAPIs INHERIT HbQtObjectHandler
+CREATE CLASS QsciDocument INHERIT HbQtObjectHandler
 
    METHOD  new( ... )
 
-   METHOD  lexer()
-   METHOD  updateAutoCompletionList( pContext, pList )
-   METHOD  autoCompletionSelected( cSelection )
 
    ENDCLASS
 
 
-METHOD QsciAbstractAPIs:new( ... )
+METHOD QsciDocument:new( ... )
    LOCAL p
    FOR EACH p IN { ... }
       hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
    NEXT
-   ::pPtr := Qt_QsciAbstractAPIs( ... )
+   ::pPtr := Qt_QsciDocument( ... )
    RETURN Self
-
-
-METHOD QsciAbstractAPIs:lexer()
-   RETURN Qt_QsciAbstractAPIs_lexer( ::pPtr )
-
-
-METHOD QsciAbstractAPIs:updateAutoCompletionList( pContext, pList )
-   RETURN Qt_QsciAbstractAPIs_updateAutoCompletionList( ::pPtr, hbqt_ptr( pContext ), hbqt_ptr( pList ) )
-
-
-METHOD QsciAbstractAPIs:autoCompletionSelected( cSelection )
-   RETURN Qt_QsciAbstractAPIs_autoCompletionSelected( ::pPtr, cSelection )
 

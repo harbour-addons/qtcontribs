@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -68,8 +69,6 @@
 #include <QtCore/QPointer>
 
 #include <qscicommand.h>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
 
 
 /*
@@ -82,6 +81,7 @@ typedef struct
    QsciCommand * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QsciCommand;
 
 QT_G_FUNC( hbqt_gcRelease_QsciCommand )
@@ -102,6 +102,7 @@ void * hbqt_gcAllocate_QsciCommand( void * pObj, bool bNew )
    p->ph = ( QsciCommand * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QsciCommand;
+   p->type = HBQT_TYPE_QsciCommand;
 
    if( bNew )
    {

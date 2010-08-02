@@ -2,11 +2,17 @@
  * $Id$
  */
 
+/* -------------------------------------------------------------------- */
+/* WARNING: Automatically generated source file. DO NOT EDIT!           */
+/*          Instead, edit corresponding .qth file,                      */
+/*          or the generator tool itself, and run regenarate.           */
+/* -------------------------------------------------------------------- */
+
 /*
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
  * www - http://harbour-project.org
@@ -51,62 +57,35 @@
  * If you do not wish that, delete this exception notice.
  *
  */
+/*----------------------------------------------------------------------*/
 
-#ifndef __HBQT_H
-#define __HBQT_H
 
-#include "hbapi.h"
+#include "hbclass.ch"
 
-#if defined( HB_OS_OS2 )
-#  define OS2EMX_PLAIN_CHAR
-#  define INCL_BASE
-#  define INCL_PM
-#  include <os2.h>
-#endif
 
-#include <QtCore/qglobal.h>
+CREATE CLASS QsciStyledText INHERIT HbQtObjectHandler
 
-#if !( QT_VERSION >= 0x040500 )
-#  error QT library version 4.5.0 or upper is required for hbqt.
-#endif
+   METHOD  new( ... )
 
-#define QT_G_FUNC( hbfunc )   void hbfunc( void * Cargo ) /* callback function for cleaning garbage memory pointer */
-typedef QT_G_FUNC( QT_G_FUNC_ );
-typedef QT_G_FUNC_ * QT_G_FUNC_PTR;
+   METHOD  text()
+   METHOD  style()
 
-typedef struct
-{
-   void * ph;
-   bool bNew;
-   QT_G_FUNC_PTR func;
-   int type;
-} QGC_POINTER;
+   ENDCLASS
 
-HB_GARBAGE_FUNC( Q_release );
 
-extern HB_EXPORT void * hbqt_gcpointer( int iParam );
-extern HB_EXPORT const HB_GC_FUNCS * hbqt_gcFuncs( void );
+METHOD QsciStyledText:new( ... )
+   LOCAL p
+   FOR EACH p IN { ... }
+      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
+   NEXT
+   ::pPtr := Qt_QsciStyledText( ... )
+   RETURN Self
 
-extern HB_EXPORT void * hbqt_pPtrFromObj( int iParam );
-extern HB_EXPORT void * hbqt_pPtrFromItem( PHB_ITEM pObj );
 
-#define hbqt_par_QString( n )                       ( ( QString ) hb_parcx( n ) )
-#define hbqt_par_uchar( n )                         ( ( uchar * ) hb_parcx( n ) )
-#define hbqt_par_QRgb( n )                          ( hb_parnint( n ) )
-#define hbqt_par_Bool( n )                          ( hb_parl( n ) )
-#define hbqt_par_char( n )                          ( hb_parcx( n ) )
+METHOD QsciStyledText:text()
+   RETURN Qt_QsciStyledText_text( ::pPtr )
 
-/*
- * DEFINES HBQt CODEBLOCKs
- *
- * Format:
- * HBQT_(Qt class initials)_(Qt overloaded member)
- */
 
-#define HBQT_QAIM_data                              1001
-#define HBQT_QAIM_flags                             1003
-#define HBQT_QAIM_headerData                        2001
-#define HBQT_QAIM_rowCount                          3001
-#define HBQT_QAIM_columnCount                       3002
+METHOD QsciStyledText:style()
+   RETURN Qt_QsciStyledText_style( ::pPtr )
 
-#endif /* __HBQT_H */

@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,97 +59,53 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
 
-/*----------------------------------------------------------------------*/
-#if QT_VERSION >= 0x040500
-/*----------------------------------------------------------------------*/
-
-#include <QtCore/QPointer>
+#include "hbclass.ch"
 
 
-#include "hbqt_hbqsciscintilla.h"
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+CREATE CLASS QsciCommand INHERIT HbQtObjectHandler
+
+   METHOD  new( ... )
+
+   METHOD  setKey( nKey )
+   METHOD  setAlternateKey( nAltkey )
+   METHOD  key()
+   METHOD  alternateKey()
+   METHOD  description()
+   METHOD  validKey( nKey )
+
+   ENDCLASS
 
 
-/*
- *
- */
-
-typedef struct
-{
-   QPointer< HBQsciScintilla > ph;
-   bool bNew;
-   QT_G_FUNC_PTR func;
-} QGC_POINTER_HBQsciScintilla;
-
-QT_G_FUNC( hbqt_gcRelease_HBQsciScintilla )
-{
-   HBQsciScintilla  * ph = NULL ;
-   QGC_POINTER_HBQsciScintilla * p = ( QGC_POINTER_HBQsciScintilla * ) Cargo;
-
-   if( p && p->bNew && p->ph )
-   {
-      ph = p->ph;
-      if( ph )
-      {
-         const QMetaObject * m = ( ph )->metaObject();
-         if( ( QString ) m->className() != ( QString ) "QObject" )
-         {
-            HB_TRACE( HB_TR_DEBUG, ( "ph=%p %p YES_rel_HBQsciScintilla   /.\\   ", (void*) ph, (void*) p->ph ) );
-            delete ( p->ph );
-            HB_TRACE( HB_TR_DEBUG, ( "ph=%p %p YES_rel_HBQsciScintilla   \\./   ", (void*) ph, (void*) p->ph ) );
-            p->ph = NULL;
-         }
-         else
-         {
-            HB_TRACE( HB_TR_DEBUG, ( "ph=%p NO__rel_HBQsciScintilla          ", ph ) );
-            p->ph = NULL;
-         }
-      }
-      else
-      {
-         HB_TRACE( HB_TR_DEBUG, ( "ph=%p DEL_rel_HBQsciScintilla    :     Object already deleted!", ph ) );
-         p->ph = NULL;
-      }
-   }
-   else
-   {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p PTR_rel_HBQsciScintilla    :    Object not created with new=true", ph ) );
-      p->ph = NULL;
-   }
-}
-
-void * hbqt_gcAllocate_HBQsciScintilla( void * pObj, bool bNew )
-{
-   QGC_POINTER_HBQsciScintilla * p = ( QGC_POINTER_HBQsciScintilla * ) hb_gcAllocate( sizeof( QGC_POINTER_HBQsciScintilla ), hbqt_gcFuncs() );
-
-   new( & p->ph ) QPointer< HBQsciScintilla >( ( HBQsciScintilla * ) pObj );
-   p->bNew = bNew;
-   p->func = hbqt_gcRelease_HBQsciScintilla;
-
-   if( bNew )
-   {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_HBQsciScintilla  under p->pq", pObj ) );
-   }
-   else
-   {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_HBQsciScintilla", pObj ) );
-   }
-   return p;
-}
-
-HB_FUNC( QT_HBQSCISCINTILLA )
-{
-   HBQsciScintilla * pObj = NULL;
-
-   pObj = new HBQsciScintilla( hbqt_par_QWidget( 1 ) ) ;
-
-   hb_retptrGC( hbqt_gcAllocate_HBQsciScintilla( ( void * ) pObj, true ) );
-}
+METHOD QsciCommand:new( ... )
+   LOCAL p
+   FOR EACH p IN { ... }
+      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
+   NEXT
+   ::pPtr := Qt_QsciCommand( ... )
+   RETURN Self
 
 
-/*----------------------------------------------------------------------*/
-#endif             /* #if QT_VERSION >= 0x040500 */
-/*----------------------------------------------------------------------*/
+METHOD QsciCommand:setKey( nKey )
+   RETURN Qt_QsciCommand_setKey( ::pPtr, nKey )
+
+
+METHOD QsciCommand:setAlternateKey( nAltkey )
+   RETURN Qt_QsciCommand_setAlternateKey( ::pPtr, nAltkey )
+
+
+METHOD QsciCommand:key()
+   RETURN Qt_QsciCommand_key( ::pPtr )
+
+
+METHOD QsciCommand:alternateKey()
+   RETURN Qt_QsciCommand_alternateKey( ::pPtr )
+
+
+METHOD QsciCommand:description()
+   RETURN Qt_QsciCommand_description( ::pPtr )
+
+
+METHOD QsciCommand:validKey( nKey )
+   RETURN Qt_QsciCommand_validKey( ::pPtr, nKey )
+

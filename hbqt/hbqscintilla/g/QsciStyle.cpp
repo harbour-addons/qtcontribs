@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,8 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -72,8 +73,6 @@
 #include <QtCore/QPointer>
 
 #include <qscistyle.h>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
 
 /*
  * QsciStyle (int style=-1)
@@ -86,6 +85,7 @@ typedef struct
    QPointer< QsciStyle > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QsciStyle;
 
 QT_G_FUNC( hbqt_gcRelease_QsciStyle )
@@ -132,6 +132,7 @@ void * hbqt_gcAllocate_QsciStyle( void * pObj, bool bNew )
    new( & p->ph ) QPointer< QsciStyle >( ( QsciStyle * ) pObj );
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QsciStyle;
+   p->type = HBQT_TYPE_QsciStyle;
 
    if( bNew )
    {

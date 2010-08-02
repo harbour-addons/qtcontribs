@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,43 +59,95 @@
  */
 /*----------------------------------------------------------------------*/
 
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
-#include "hbclass.ch"
+/*----------------------------------------------------------------------*/
+#if QT_VERSION >= 0x040500
+/*----------------------------------------------------------------------*/
 
+#include <QtCore/QPointer>
 
-CREATE CLASS QsciCommandSet INHERIT HbQtObjectHandler
-
-   METHOD  new( ... )
-
-   METHOD  readSettings( pQs, pPrefix )
-   METHOD  writeSettings( pQs, pPrefix )
-   METHOD  clearKeys()
-   METHOD  clearAlternateKeys()
-
-   ENDCLASS
+#include <qscidocument.h>
 
 
-METHOD QsciCommandSet:new( ... )
-   LOCAL p
-   FOR EACH p IN { ... }
-      hb_pvalue( p:__enumIndex(), hbqt_ptr( p ) )
-   NEXT
-   ::pPtr := Qt_QsciCommandSet( ... )
-   RETURN Self
+/*
+ * QsciDocument ()
+ * QsciDocument (const QsciDocument &)
+ *
+ */
+
+typedef struct
+{
+   QsciDocument * ph;
+   bool bNew;
+   QT_G_FUNC_PTR func;
+   int type;
+} QGC_POINTER_QsciDocument;
+
+QT_G_FUNC( hbqt_gcRelease_QsciDocument )
+{
+   QGC_POINTER * p = ( QGC_POINTER * ) Cargo;
+
+   if( p && p->bNew )
+   {
+      if( p->ph )
+      {
+         HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _rel_QsciDocument   /.\\", p->ph ) );
+         delete ( ( QsciDocument * ) p->ph );
+         HB_TRACE( HB_TR_DEBUG, ( "ph=%p YES_rel_QsciDocument   \\./", p->ph ) );
+         p->ph = NULL;
+      }
+      else
+      {
+         HB_TRACE( HB_TR_DEBUG, ( "ph=%p DEL_rel_QsciDocument    :     Object already deleted!", p->ph ) );
+         p->ph = NULL;
+      }
+   }
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p PTR_rel_QsciDocument    :    Object not created with new=true", p->ph ) );
+      p->ph = NULL;
+   }
+}
+
+void * hbqt_gcAllocate_QsciDocument( void * pObj, bool bNew )
+{
+   QGC_POINTER * p = ( QGC_POINTER * ) hb_gcAllocate( sizeof( QGC_POINTER ), hbqt_gcFuncs() );
+
+   p->ph = ( QsciDocument * ) pObj;
+   p->bNew = bNew;
+   p->func = hbqt_gcRelease_QsciDocument;
+   p->type = HBQT_TYPE_QsciDocument;
+
+   if( bNew )
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QsciDocument", pObj ) );
+   }
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QsciDocument", pObj ) );
+   }
+   return p;
+}
+
+HB_FUNC( QT_QSCIDOCUMENT )
+{
+   QsciDocument * pObj = NULL;
+
+   if( HB_ISPOINTER( 1 ) )
+   {
+      pObj = new QsciDocument( *hbqt_par_QsciDocument( 1 ) ) ;
+   }
+   else
+   {
+      pObj = new QsciDocument() ;
+   }
+
+   hb_retptrGC( hbqt_gcAllocate_QsciDocument( ( void * ) pObj, true ) );
+}
 
 
-METHOD QsciCommandSet:readSettings( pQs, pPrefix )
-   RETURN Qt_QsciCommandSet_readSettings( ::pPtr, hbqt_ptr( pQs ), hbqt_ptr( pPrefix ) )
-
-
-METHOD QsciCommandSet:writeSettings( pQs, pPrefix )
-   RETURN Qt_QsciCommandSet_writeSettings( ::pPtr, hbqt_ptr( pQs ), hbqt_ptr( pPrefix ) )
-
-
-METHOD QsciCommandSet:clearKeys()
-   RETURN Qt_QsciCommandSet_clearKeys( ::pPtr )
-
-
-METHOD QsciCommandSet:clearAlternateKeys()
-   RETURN Qt_QsciCommandSet_clearAlternateKeys( ::pPtr )
-
+/*----------------------------------------------------------------------*/
+#endif             /* #if QT_VERSION >= 0x040500 */
+/*----------------------------------------------------------------------*/

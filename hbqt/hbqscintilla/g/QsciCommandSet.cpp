@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,26 +59,16 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
-/*
- *  Constructed[ 4/5 [ 80.00% ] ]
- *
- *  *** Unconvered Prototypes ***
- *  -----------------------------
- *
- *  QList< QsciCommand * > & commands ()
- */
-
 #include <QtCore/QPointer>
 
 #include <qscicommandset.h>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
 
 
 /*
@@ -91,6 +81,7 @@ typedef struct
    QsciCommandSet * ph;
    bool bNew;
    QT_G_FUNC_PTR func;
+   int type;
 } QGC_POINTER_QsciCommandSet;
 
 QT_G_FUNC( hbqt_gcRelease_QsciCommandSet )
@@ -111,6 +102,7 @@ void * hbqt_gcAllocate_QsciCommandSet( void * pObj, bool bNew )
    p->ph = ( QsciCommandSet * ) pObj;
    p->bNew = bNew;
    p->func = hbqt_gcRelease_QsciCommandSet;
+   p->type = HBQT_TYPE_QsciCommandSet;
 
    if( bNew )
    {
@@ -153,6 +145,20 @@ HB_FUNC( QT_QSCICOMMANDSET_WRITESETTINGS )
    else
    {
       HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCICOMMANDSET_WRITESETTINGS FP=hb_retl( ( p )->writeSettings( *hbqt_par_QSettings( 2 ), hbqt_par_char( 3 ) ) ); p is NULL" ) );
+   }
+}
+
+/*
+ * QList< QsciCommand * > & commands ()
+ */
+HB_FUNC( QT_QSCICOMMANDSET_COMMANDS )
+{
+   QsciCommandSet * p = hbqt_par_QsciCommandSet( 1 );
+   if( p )
+      hb_retptrGC( hbqt_gcAllocate_QList( new QList< QsciCommand * > &( ( p )->commands() ), true ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCICOMMANDSET_COMMANDS FP=hb_retptrGC( hbqt_gcAllocate_QList( new QList< QsciCommand * > &( ( p )->commands() ), true ) ); p is NULL" ) );
    }
 }
 

@@ -2,17 +2,9 @@
 ; $Id$
 ;
 
-;
-; Harbour Source Wrapper Generator's Project File for QT v4.5
-;
-; Pritpal Bedi <bedipritpal@hotmail.com>
-;
-
--I=qth
-
--O=
-
--D=doc
+-I=../hbqscintilla/qth
+-O=../hbqscintilla/g
+-D=../hbqscintilla/doc
 
 HBQsciScintilla.qth
 

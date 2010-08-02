@@ -15,7 +15,7 @@
  * Copyright 2009-2010 Pritpal Bedi <pritpal@vouchcac.com>
  *
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
- * www - http://www.harbour-project.org
+ * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,118 +59,116 @@
  */
 /*----------------------------------------------------------------------*/
 
-#include "../hbqt.h"
+#include "hbqtcore.h"
+#include "hbqscintilla.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
 /*----------------------------------------------------------------------*/
 
+/*
+ *  Constructed[ 3/4 [ 75.00% ] ]
+ *
+ *  *** Unconvered Prototypes ***
+ *  -----------------------------
+ *
+ *  virtual QStringList callTips (const QStringList &context, int commas, QsciScintilla::CallTipsStyle style, QList< int > &shifts)=0
+ */
+
 #include <QtCore/QPointer>
 
-#include <qscistyledtext.h>
-#include "hbqt_garbage.h"
-#include "hbqt_local.h"
+#include <qsciabstractapis.h>
 
 
 /*
- * QsciStyledText (const QString &text, int style)
- * QsciStyledText (const QString &text, const QsciStyle &style)
+ * QsciAbstractAPIs (QsciLexer *lexer)
+ * virtual ~QsciAbstractAPIs ()
  *
  */
 
 typedef struct
 {
-   QsciStyledText * ph;
+   QPointer< QsciAbstractAPIs > ph;
    bool bNew;
    QT_G_FUNC_PTR func;
-} QGC_POINTER_QsciStyledText;
+   int type;
+} QGC_POINTER_QsciAbstractAPIs;
 
-QT_G_FUNC( hbqt_gcRelease_QsciStyledText )
+QT_G_FUNC( hbqt_gcRelease_QsciAbstractAPIs )
 {
+   HB_SYMBOL_UNUSED( Cargo );
    QGC_POINTER * p = ( QGC_POINTER * ) Cargo;
 
    if( p && p->bNew )
    {
-      if( p->ph )
-      {
-         HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _rel_QsciStyledText   /.\\", p->ph ) );
-         delete ( ( QsciStyledText * ) p->ph );
-         HB_TRACE( HB_TR_DEBUG, ( "ph=%p YES_rel_QsciStyledText   \\./", p->ph ) );
-         p->ph = NULL;
-      }
-      else
-      {
-         HB_TRACE( HB_TR_DEBUG, ( "ph=%p DEL_rel_QsciStyledText    :     Object already deleted!", p->ph ) );
-         p->ph = NULL;
-      }
-   }
-   else
-   {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p PTR_rel_QsciStyledText    :    Object not created with new=true", p->ph ) );
       p->ph = NULL;
    }
 }
 
-void * hbqt_gcAllocate_QsciStyledText( void * pObj, bool bNew )
+void * hbqt_gcAllocate_QsciAbstractAPIs( void * pObj, bool bNew )
 {
-   QGC_POINTER * p = ( QGC_POINTER * ) hb_gcAllocate( sizeof( QGC_POINTER ), hbqt_gcFuncs() );
+   QGC_POINTER_QsciAbstractAPIs * p = ( QGC_POINTER_QsciAbstractAPIs * ) hb_gcAllocate( sizeof( QGC_POINTER_QsciAbstractAPIs ), hbqt_gcFuncs() );
 
-   p->ph = ( QsciStyledText * ) pObj;
+   new( & p->ph ) QPointer< QsciAbstractAPIs >( ( QsciAbstractAPIs * ) pObj );
    p->bNew = bNew;
-   p->func = hbqt_gcRelease_QsciStyledText;
+   p->func = hbqt_gcRelease_QsciAbstractAPIs;
+   p->type = HBQT_TYPE_QsciAbstractAPIs;
 
    if( bNew )
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QsciStyledText", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p    _new_QsciAbstractAPIs  under p->pq", pObj ) );
    }
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QsciStyledText", pObj ) );
+      HB_TRACE( HB_TR_DEBUG, ( "ph=%p NOT_new_QsciAbstractAPIs", pObj ) );
    }
    return p;
 }
 
-HB_FUNC( QT_QSCISTYLEDTEXT )
+HB_FUNC( QT_QSCIABSTRACTAPIS )
 {
-   QsciStyledText * pObj = NULL;
 
-   if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && HB_ISNUM( 2 ) )
-   {
-      pObj = new QsciStyledText( hbqt_par_QString( 1 ), hb_parni( 2 ) ) ;
-   }
-   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && HB_ISPOINTER( 2 ) )
-   {
-      pObj = new QsciStyledText( hbqt_par_QString( 1 ), *hbqt_par_QsciStyle( 2 ) ) ;
-   }
-
-   hb_retptrGC( hbqt_gcAllocate_QsciStyledText( ( void * ) pObj, true ) );
 }
 
 /*
- * const QString & text () const
+ * QsciLexer * lexer () const
  */
-HB_FUNC( QT_QSCISTYLEDTEXT_TEXT )
+HB_FUNC( QT_QSCIABSTRACTAPIS_LEXER )
 {
-   QsciStyledText * p = hbqt_par_QsciStyledText( 1 );
+   QsciAbstractAPIs * p = hbqt_par_QsciAbstractAPIs( 1 );
    if( p )
-      hb_retc( ( p )->text().toAscii().data() );
+      hb_retptrGC( hbqt_gcAllocate_QsciLexer( ( p )->lexer(), false ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISTYLEDTEXT_TEXT FP=hb_retc( ( p )->text().toAscii().data() ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCIABSTRACTAPIS_LEXER FP=hb_retptrGC( hbqt_gcAllocate_QsciLexer( ( p )->lexer(), false ) ); p is NULL" ) );
    }
 }
 
 /*
- * int style () const
+ * virtual void updateAutoCompletionList (const QStringList &context, QStringList &list)=0
  */
-HB_FUNC( QT_QSCISTYLEDTEXT_STYLE )
+HB_FUNC( QT_QSCIABSTRACTAPIS_UPDATEAUTOCOMPLETIONLIST )
 {
-   QsciStyledText * p = hbqt_par_QsciStyledText( 1 );
+   QsciAbstractAPIs * p = hbqt_par_QsciAbstractAPIs( 1 );
    if( p )
-      hb_retni( ( p )->style() );
+      ( p )->updateAutoCompletionList( *hbqt_par_QStringList( 2 ), *hbqt_par_QStringList( 3 ) );
    else
    {
-      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCISTYLEDTEXT_STYLE FP=hb_retni( ( p )->style() ); p is NULL" ) );
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCIABSTRACTAPIS_UPDATEAUTOCOMPLETIONLIST FP=( p )->updateAutoCompletionList( *hbqt_par_QStringList( 2 ), *hbqt_par_QStringList( 3 ) ); p is NULL" ) );
+   }
+}
+
+/*
+ * virtual void autoCompletionSelected (const QString &selection)
+ */
+HB_FUNC( QT_QSCIABSTRACTAPIS_AUTOCOMPLETIONSELECTED )
+{
+   QsciAbstractAPIs * p = hbqt_par_QsciAbstractAPIs( 1 );
+   if( p )
+      ( p )->autoCompletionSelected( QsciAbstractAPIs::tr( hb_parc( 2 ) ) );
+   else
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "............................... F=QT_QSCIABSTRACTAPIS_AUTOCOMPLETIONSELECTED FP=( p )->autoCompletionSelected( QsciAbstractAPIs::tr( hb_parc( 2 ) ) ); p is NULL" ) );
    }
 }
 
