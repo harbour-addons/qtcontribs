@@ -11,13 +11,8 @@
 #ifndef __HBQTDESIGNER_EXTERN_CH
 #define __HBQTDESIGNER_EXTERN_CH
 
-EXTERNAL QDesignerActionEditorInterface
-EXTERNAL QDesignerFormEditorInterface
-EXTERNAL QDesignerFormWindowCursorInterface
-EXTERNAL QDesignerFormWindowInterface
-EXTERNAL QDesignerFormWindowManagerInterface
-EXTERNAL QDesignerObjectInspectorInterface
-EXTERNAL QDesignerPropertyEditorInterface
-EXTERNAL QDesignerWidgetBoxInterface
+#define __HBEXTERN__HBQTDESIGNER__ANNOUNCE
+#define __HBEXTERN__HBQTDESIGNER__REQUEST
+#include "hbqtdesigner.hbx"
 
 #endif /* __HBQTDESIGNER_EXTERN_CH */

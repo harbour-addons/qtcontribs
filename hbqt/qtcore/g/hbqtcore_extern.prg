@@ -8,20 +8,11 @@
 /*          or the generator tool itself, and run regenarate.           */
 /* -------------------------------------------------------------------- */
 
-#ifndef __HBQSCINTILLA_EXTERN_CH
-#define __HBQSCINTILLA_EXTERN_CH
+#ifndef __HBQTCORE_EXTERN_CH
+#define __HBQTCORE_EXTERN_CH
 
-EXTERNAL HBQsciScintilla
-EXTERNAL QsciAbstractAPIs
-EXTERNAL QsciAPIs
-EXTERNAL QsciCommand
-EXTERNAL QsciCommandSet
-EXTERNAL QsciDocument
-EXTERNAL QsciLexer
-EXTERNAL QsciLexerCPP
-EXTERNAL QsciLexerFlagship
-EXTERNAL QsciScintilla
-EXTERNAL QsciStyle
-EXTERNAL QsciStyledText
+#define __HBEXTERN__HBQTCORE__ANNOUNCE
+#define __HBEXTERN__HBQTCORE__REQUEST
+#include "hbqtcore.hbx"
 
-#endif /* __HBQSCINTILLA_EXTERN_CH */
+#endif /* __HBQTCORE_EXTERN_CH */

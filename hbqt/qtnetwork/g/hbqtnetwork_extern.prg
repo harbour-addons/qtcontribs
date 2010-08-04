@@ -8,18 +8,11 @@
 /*          or the generator tool itself, and run regenarate.           */
 /* -------------------------------------------------------------------- */
 
-#ifndef __HBQTWEBKIT_EXTERN_CH
-#define __HBQTWEBKIT_EXTERN_CH
+#ifndef __HBQTNETWORK_EXTERN_CH
+#define __HBQTNETWORK_EXTERN_CH
 
-EXTERNAL QWebFrame
-EXTERNAL QWebHistory
-EXTERNAL QWebHistoryInterface
-EXTERNAL QWebHistoryItem
-EXTERNAL QWebHitTestResult
-EXTERNAL QWebPage
-EXTERNAL QWebPluginFactory
-EXTERNAL QWebSecurityOrigin
-EXTERNAL QWebSettings
-EXTERNAL QWebView
+#define __HBEXTERN__HBQTNETWORK__ANNOUNCE
+#define __HBEXTERN__HBQTNETWORK__REQUEST
+#include "hbqtnetwork.hbx"
 
-#endif /* __HBQTWEBKIT_EXTERN_CH */
+#endif /* __HBQTNETWORK_EXTERN_CH */
