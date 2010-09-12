@@ -9,6 +9,7 @@
 
 -hbcontainer
 
+# Do not change this to hbqt.hbc reference.
 hbqtcore.hbc
 # hbqtdesigner.hbc
 hbqtgui.hbc
