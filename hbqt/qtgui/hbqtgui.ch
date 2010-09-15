@@ -6,7 +6,6 @@
  * Harbour Project source code:
  *
  * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
- *
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,35 +48,9 @@
  * If you do not wish that, delete this exception notice.
  *
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*
- *                               EkOnkar
- *                         ( The LORD is ONE )
- *
- *                             QT Headers
- *
- *                  Pritpal Bedi <pritpal@vouchcac.com>
- *                              10Jun2009
- */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
-#ifndef _HBQT_CH
-#define _HBQT_CH
-
-/*----------------------------------------------------------------------*/
-
-#include "hbtrace.ch"
-
-/*----------------------------------------------------------------------*/
-
-/* Retained for compatibility */
-#define QT_PTROF( oObj )                          ( oObj )
-
-/*----------------------------------------------------------------------*/
+#ifndef _HBQTGUI_CH
+#define _HBQTGUI_CH
 
 #define QEvent_None                               0        // Not an event.
 #define QEvent_Timer                              1        // Regular timer events (QTimerEvent).
@@ -1450,101 +1423,6 @@
 #define QFrame_Shape_Mask                         0x000f   // The Shape part of frameStyle()
 
 
-// enum #define QWebPage_Extension
-// This enum describes the types of extensions that the page can support. Before using these extensions, you should verify that the extension is supported by calling supportsExtension().
-//
-#define QWebPage_ChooseMultipleFilesExtension     0    // Whether the web page supports multiple file selection. This extension is invoked when the web content requests one or more file names, for example as a result of the user clicking on a "file upload" button in a HTML form where multiple file selection is allowed.
-
-// enum QWebPage::FindFlag
-// flags QWebPage::FindFlags
-// This enum describes the options available to QWebPage's findText() function. The options can be OR-ed together from the following list:
-//
-#define QWebPage_FindBackward                     1    // Searches backwards instead of forwards.
-#define QWebPage_FindCaseSensitively              2    // By default findText() works case insensitive. Specifying this option changes the behaviour to a case sensitive find operation.
-#define QWebPage_FindWrapsAroundDocument          4    // Makes findText() restart from the beginning of the document if the end was reached and the text was not found.
-// The FindFlags type is a typedef for QFlags<FindFlag>. It stores an OR combination of FindFlag values.
-
-// enum QWebPage::LinkDelegationPolicy
-// This enum defines the delegation policies a webpage can have when activating links and emitting the linkClicked() signal.
-//
-#define QWebPage_DontDelegateLinks                0    // No links are delegated. Instead, QWebPage tries to handle them all.
-#define QWebPage_DelegateExternalLinks            1    // When activating links that point to documents not stored on the local filesystem or an equivalent - such as the Qt resource system - then linkClicked() is emitted.
-#define QWebPage_DelegateAllLinks                 2    // Whenever a link is activated the linkClicked() signal is emitted.
-
-// enum QWebPage::NavigationType
-// This enum describes the types of navigation available when browsing through hyperlinked documents.
-//
-#define QWebPage_NavigationTypeLinkClicked        0    // The user clicked on a link or pressed return on a focused link.
-#define QWebPage_NavigationTypeFormSubmitted      1    // The user activated a submit button for an HTML form.
-#define QWebPage_NavigationTypeBackOrForward      2    // Navigation to a previously shown document in the back or forward history is requested.
-#define QWebPage_NavigationTypeReload             3    // The user activated the reload action.
-#define QWebPage_NavigationTypeFormResubmitted    4    // An HTML form was submitted a second time.
-#define QWebPage_NavigationTypeOther              5    // A navigation to another document using a method not listed above.
-
-// enum QWebPage::WebAction
-// This enum describes the types of action which can be performed on the web page. Actions which are related to text editing, cursor movement, and text selection only have an effect if contentEditable is true.
-//
-#define QWebPage_NoWebAction                      -1   // No action is triggered.
-#define QWebPage_OpenLink                         0    // Open the current link.
-#define QWebPage_OpenLinkInNewWindow              1    // Open the current link in a new window.
-#define QWebPage_OpenFrameInNewWindow             2    // Replicate the current frame in a new window.
-#define QWebPage_DownloadLinkToDisk               3    // Download the current link to the disk.
-#define QWebPage_CopyLinkToClipboard              4    // Copy the current link to the clipboard.
-#define QWebPage_OpenImageInNewWindow             5    // Open the highlighted image in a new window.
-#define QWebPage_DownloadImageToDisk              6    // Download the highlighted image to the disk.
-#define QWebPage_CopyImageToClipboard             7    // Copy the highlighted image to the clipboard.
-#define QWebPage_Back                             8    // Navigate back in the history of navigated links.
-#define QWebPage_Forward                          9    // Navigate forward in the history of navigated links.
-#define QWebPage_Stop                             10   // Stop loading the current page.
-#define QWebPage_Reload                           11   // Reload the current page.
-#define QWebPage_Cut                              12   // Cut the content currently selected into the clipboard.
-#define QWebPage_Copy                             13   // Copy the content currently selected into the clipboard.
-#define QWebPage_Paste                            14   // Paste content from the clipboard.
-#define QWebPage_Undo                             15   // Undo the last editing action.
-#define QWebPage_Redo                             16   // Redo the last editing action.
-#define QWebPage_MoveToNextChar                   17   // Move the cursor to the next character.
-#define QWebPage_MoveToPreviousChar               18   // Move the cursor to the previous character.
-#define QWebPage_MoveToNextWord                   19   // Move the cursor to the next word.
-#define QWebPage_MoveToPreviousWord               20   // Move the cursor to the previous word.
-#define QWebPage_MoveToNextLine                   21   // Move the cursor to the next line.
-#define QWebPage_MoveToPreviousLine               22   // Move the cursor to the previous line.
-#define QWebPage_MoveToStartOfLine                23   // Move the cursor to the start of the line.
-#define QWebPage_MoveToEndOfLine                  24   // Move the cursor to the end of the line.
-#define QWebPage_MoveToStartOfBlock               25   // Move the cursor to the start of the block.
-#define QWebPage_MoveToEndOfBlock                 26   // Move the cursor to the end of the block.
-#define QWebPage_MoveToStartOfDocument            27   // Move the cursor to the start of the document.
-#define QWebPage_MoveToEndOfDocument              28   // Move the cursor to the end of the document.
-#define QWebPage_SelectNextChar                   29   // Select to the next character.
-#define QWebPage_SelectPreviousChar               30   // Select to the previous character.
-#define QWebPage_SelectNextWord                   31   // Select to the next word.
-#define QWebPage_SelectPreviousWord               32   // Select to the previous word.
-#define QWebPage_SelectNextLine                   33   // Select to the next line.
-#define QWebPage_SelectPreviousLine               34   // Select to the previous line.
-#define QWebPage_SelectStartOfLine                35   // Select to the start of the line.
-#define QWebPage_SelectEndOfLine                  36   // Select to the end of the line.
-#define QWebPage_SelectStartOfBlock               37   // Select to the start of the block.
-#define QWebPage_SelectEndOfBlock                 38   // Select to the end of the block.
-#define QWebPage_SelectStartOfDocument            39   // Select to the start of the document.
-#define QWebPage_SelectEndOfDocument              40   // Select to the end of the document.
-#define QWebPage_DeleteStartOfWord                41   // Delete to the start of the word.
-#define QWebPage_DeleteEndOfWord                  42   // Delete to the end of the word.
-#define QWebPage_SetTextDirectionDefault          43   // Set the text direction to the default direction.
-#define QWebPage_SetTextDirectionLeftToRight      44   // Set the text direction to left-to-right.
-#define QWebPage_SetTextDirectionRightToLeft      45   // Set the text direction to right-to-left.
-#define QWebPage_ToggleBold                       46   // Toggle the formatting between bold and normal weight.
-#define QWebPage_ToggleItalic                     47   // Toggle the formatting between italic and normal style.
-#define QWebPage_ToggleUnderline                  48   // Toggle underlining.
-#define QWebPage_InspectElement                   49   // Show the Web Inspector with the currently highlighted HTML element.
-#define QWebPage_InsertParagraphSeparator         50   // Insert a new paragraph.
-#define QWebPage_InsertLineSeparator              51   // Insert a new line.
-#define QWebPage_SelectAll                        52   // Selects all content.
-
-// enum QWebPage::WebWindowType
-//
-#define QWebPage_WebBrowserWindow                 0    // The window is a regular web browser window.
-#define QWebPage_WebModalDialog                   1    // The window acts as modal dialog.
-
-
 #define QStyle_SP_TitleBarMinButton               1    // Minimize button on title bars (e.g., in QWorkspace).
 #define QStyle_SP_TitleBarMenuButton              0    // Menu button on a title bar.
 #define QStyle_SP_TitleBarMaxButton               2    // Maximize button on title bars.
@@ -2168,39 +2046,6 @@
 #define QTextDocument_StyleSheetResource          3         // The resource contains CSS.
 #define QTextDocument_UserResource                100       // The first available value for user defined resource types.
 
-// This enum describes the errors that may be returned by the error() function.
-#define QFile_NoError                             0        // No error occurred.
-#define QFile_ReadError                           1        // An error occurred when reading from the file.
-#define QFile_WriteError                          2        // An error occurred when writing to the file.
-#define QFile_FatalError                          3        // A fatal error occurred.
-#define QFile_ResourceError                       4        //
-#define QFile_OpenError                           5        // The file could not be opened.
-#define QFile_AbortError                          6        // The operation was aborted.
-#define QFile_TimeOutError                        7        // A timeout occurred.
-#define QFile_UnspecifiedError                    8        // An unspecified error occurred.
-#define QFile_RemoveError                         9        // The file could not be removed.
-#define QFile_RenameError                         10       // The file could not be renamed.
-#define QFile_PositionError                       11       // The position in the file could not be changed.
-#define QFile_ResizeError                         12       // The file could not be resized.
-#define QFile_PermissionsError                    13       // The file could not be accessed.
-#define QFile_CopyError                           14       // The file could not be copied.
-
-#define QFile_NoOptions                           0        // No options.
-
-// This enum is used by the permission() function to report the permissions and ownership of a file. The values may be OR-ed together to test multiple permissions and ownership values.
-#define QFile_ReadOwner                           0x4000   // The file is readable by the owner of the file.
-#define QFile_WriteOwner                          0x2000   // The file is writable by the owner of the file.
-#define QFile_ExeOwner                            0x1000   // The file is executable by the owner of the file.
-#define QFile_ReadUser                            0x0400   // The file is readable by the user.
-#define QFile_WriteUser                           0x0200   // The file is writable by the user.
-#define QFile_ExeUser                             0x0100   // The file is executable by the user.
-#define QFile_ReadGroup                           0x0040   // The file is readable by the group.
-#define QFile_WriteGroup                          0x0020   // The file is writable by the group.
-#define QFile_ExeGroup                            0x0010   // The file is executable by the group.
-#define QFile_ReadOther                           0x0004   // The file is readable by anyone.
-#define QFile_WriteOther                          0x0002   // The file is writable by anyone.
-#define QFile_ExeOther                            0x0001   // The file is executable by anyone.
-
 #define QPlainTextEdit_NoWrap                     0
 #define QPlainTextEdit_WidgetWidth                1
 
@@ -2467,4 +2312,3 @@
 /*----------------------------------------------------------------------*/
 
 #endif
-
