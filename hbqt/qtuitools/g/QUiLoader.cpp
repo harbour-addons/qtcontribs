@@ -92,7 +92,7 @@
 /*----------------------------------------------------------------------*/
 
 #include "hbqtcore.h"
-#include "hbqtgui.h"
+#include "hbqtuitools.h"
 
 /*----------------------------------------------------------------------*/
 #if QT_VERSION >= 0x040500
@@ -104,6 +104,8 @@
  */
 
 #include <QtCore/QPointer>
+
+#include "hbqtgui.h"
 
 #include <QtUiTools/QUiLoader>
 #include <QtCore/QDir>

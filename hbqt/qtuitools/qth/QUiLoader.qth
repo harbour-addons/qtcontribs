@@ -57,10 +57,12 @@
 <CLASS>
 Inherits = QObject
 Type     = Core
-New      = 
+New      =
 </CLASS>
 
 <CODE>
+#include "hbqtgui.h"
+
 #include <QtUiTools/QUiLoader>
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
@@ -107,7 +109,3 @@ QDir workingDirectory () const
 
 <SIGNALS>
 </SIGNALS>
-
-
-
-
