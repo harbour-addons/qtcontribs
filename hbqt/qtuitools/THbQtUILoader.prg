@@ -727,16 +727,6 @@ STATIC FUNCTION hbq_setObjects( cCmd, aObj_ )
 
 /*----------------------------------------------------------------------*/
 
-FUNCTION q__tr( p1, p2, p3, p4 )
-
-   HB_SYMBOL_UNUSED( p1 )
-   HB_SYMBOL_UNUSED( p3 )
-   HB_SYMBOL_UNUSED( p4 )
-
-   RETURN p2
-
-/*----------------------------------------------------------------------*/
-
 STATIC FUNCTION hbq_pullText( org_, nFrom )
    LOCAL s := "", nLen := len( org_ )
    LOCAL a_:= { "setText(", "setPlainText(", "setStyleSheet(", "setWhatsThis(" }
