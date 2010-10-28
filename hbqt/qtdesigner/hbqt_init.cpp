@@ -63,74 +63,38 @@
 
 #if QT_VERSION >= 0x040500
 
-#include <QtNetwork/QUrlInfo>
-#include <QtNetwork/QNetworkProxy>
-#include <QtNetwork/QHttpResponseHeader>
-#include <QtNetwork/QNetworkRequest>
-
 /*----------------------------------------------------------------------*/
 
-static void hbqt_SlotsExecQHttpResponseHeader( PHB_ITEM * codeBlock, void ** arguments )
+static void hbqt_registerCallbacks( void )
 {
-   hb_vmPushEvalSym();
-   hb_vmPush( codeBlock );
-   hb_vmPushPointer( new QHttpResponseHeader( ( *reinterpret_cast< QHttpResponseHeader( * )>( arguments[ 1 ] ) ) ) ); /* TOFIX: Pass .prg level object to callback */
-   hb_vmSend( 1 );
-}
-
-static void hbqt_SlotsExecQNetworkProxyPointer( PHB_ITEM * codeBlock, void ** arguments )
-{
-   hb_vmPushEvalSym();
-   hb_vmPush( codeBlock );
-   hb_vmPushPointer( new QNetworkProxy( ( *reinterpret_cast< QNetworkProxy( * )>( arguments[ 1 ] ) ) ) ); /* TOFIX: Pass .prg level object to callback */
-   hb_vmPushPointer( *reinterpret_cast< void*( * )>( arguments[ 2 ] ) ); /* TOFIX: Pass .prg level object to callback */
-   hb_vmSend( 2 );
-}
-
-static void hbqt_SlotsExecQNetworkRequest( PHB_ITEM * codeBlock, void ** arguments )
-{
-   hb_vmPushEvalSym();
-   hb_vmPush( codeBlock );
-   hb_vmPushPointer( new QNetworkRequest( ( *reinterpret_cast< QNetworkRequest( * )>( arguments[ 1 ] ) ) ) ); /* TOFIX: Pass .prg level object to callback */
-   hb_vmSend( 1 );
-}
-
-static void hbqt_SlotsExecQUrlInfo( PHB_ITEM * codeBlock, void ** arguments )
-{
-   hb_vmPushEvalSym();
-   hb_vmPush( codeBlock );
-   hb_vmPushPointer( new QUrlInfo( ( *reinterpret_cast< QUrlInfo( * )>( arguments[ 1 ] ) ) ) ); /* TOFIX: Pass .prg level object to callback */
-   hb_vmSend( 1 );
 }
 
 /*----------------------------------------------------------------------*/
 
-static void hbqt_registerCallbacks( void * cargo )
+HB_FUNC( __HBQTDESIGNER ) {;}
+
+static void hbqt_lib_init( void * cargo )
 {
    HB_SYMBOL_UNUSED( cargo );
 
-   hbqt_slots_register_callback( "QHttpResponseHeader"   , hbqt_SlotsExecQHttpResponseHeader  );
-   hbqt_slots_register_callback( "QNetworkProxy$pointer" , hbqt_SlotsExecQNetworkProxyPointer );
-   hbqt_slots_register_callback( "QNetworkRequest"       , hbqt_SlotsExecQNetworkRequest      );
-   hbqt_slots_register_callback( "QUrlInfo"              , hbqt_SlotsExecQUrlInfo             );
+   hbqt_registerCallbacks();
 }
 
-HB_CALL_ON_STARTUP_BEGIN( _hb_hbqtnetwork_register_init_ )
-   hb_vmAtInit( hbqt_registerCallbacks, NULL );
-HB_CALL_ON_STARTUP_END( _hb_hbqtnetwork_register_init_ )
+static void hbqt_lib_exit( void * cargo )
+{
+   HB_SYMBOL_UNUSED( cargo );
+}
+
+HB_CALL_ON_STARTUP_BEGIN( _hbqtdesigner_init_ )
+   hb_vmAtInit( hbqt_lib_init, NULL );
+   hb_vmAtExit( hbqt_lib_exit, NULL );
+HB_CALL_ON_STARTUP_END( _hbqtdesigner_init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
-   #pragma startup _hb_hbqtnetwork_register_init_
+   #pragma startup _hbqtdesigner_init_
 #elif defined( HB_DATASEG_STARTUP )
-   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hb_hbqtnetwork_register_init_ )
+   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hbqtdesigner_init_ )
    #include "hbiniseg.h"
 #endif
-
-/*----------------------------------------------------------------------*/
-
-HB_FUNC( __HBQT_REGISTERNETWORKCALLBACKS )
-{
-   hbqt_registerCallbacks( NULL );
-}
 
 #endif

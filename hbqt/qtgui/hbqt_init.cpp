@@ -56,12 +56,15 @@
 
 #include "hbqt.h"
 
+#include "hbapierr.h"
 #include "hbapiitm.h"
 #include "hbstack.h"
 #include "hbvm.h"
 #include "hbinit.h"
 
 #if QT_VERSION >= 0x040500
+
+#include <QtGui/QApplication>
 
 #include <QtGui/QItemSelection>
 #include <QtGui/QTextCursor>
@@ -123,10 +126,8 @@ static void hbqt_SlotsExecQTextBlock( PHB_ITEM * codeBlock, void ** arguments )
 
 /*----------------------------------------------------------------------*/
 
-static void hbqt_registerCallbacks( void * cargo )
+static void hbqt_registerCallbacks( void )
 {
-   HB_SYMBOL_UNUSED( cargo );
-
    hbqt_slots_register_callback( "QColor"                           , hbqt_SlotsExecQColor          );
    hbqt_slots_register_callback( "QFont"                            , hbqt_SlotsExecQFont           );
    hbqt_slots_register_callback( "QItemSelection$QItemSelection"    , hbqt_SlotsExecItemSelItemSel  );
@@ -135,22 +136,59 @@ static void hbqt_registerCallbacks( void * cargo )
    hbqt_slots_register_callback( "QTextCursor"                      , hbqt_SlotsExecQTextCursor     );
 }
 
-HB_CALL_ON_STARTUP_BEGIN( _hb_hbqtgui_register_init_ )
-   hb_vmAtInit( hbqt_registerCallbacks, NULL );
-HB_CALL_ON_STARTUP_END( _hb_hbqtgui_register_init_ )
-
-#if defined( HB_PRAGMA_STARTUP )
-   #pragma startup _hb_hbqtgui_register_init_
-#elif defined( HB_DATASEG_STARTUP )
-   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hb_hbqtgui_register_init_ )
-   #include "hbiniseg.h"
-#endif
-
 /*----------------------------------------------------------------------*/
 
-HB_FUNC( __HBQT_REGISTERGUICALLBACKS )
+static QApplication * s_app = NULL;
+
+static int s_argc;
+static char ** s_argv;
+
+HB_FUNC_EXTERN( __HBQTCORE );
+
+HB_FUNC( __HBQTGUI )
 {
-   hbqt_registerCallbacks( NULL );
+   HB_FUNC_EXEC( __HBQTCORE );
 }
+
+extern HB_EXPORT QApplication * __hbqtgui_app( void );
+
+QApplication * __hbqtgui_app( void )
+{
+   return s_app;
+}
+
+static void hbqt_lib_init( void * cargo )
+{
+   HB_SYMBOL_UNUSED( cargo );
+
+   s_argc = hb_cmdargARGC();
+   s_argv = hb_cmdargARGV();
+
+   s_app = new QApplication( s_argc, s_argv );
+
+   if( ! s_app )
+      hb_errInternal( 11001, "hbqt_lib_init(): HBQTGUI Initilization Error.", NULL, NULL );
+
+   hb_cmdargInit( s_argc, s_argv );
+
+   hbqt_registerCallbacks();
+}
+
+static void hbqt_lib_exit( void * cargo )
+{
+   HB_SYMBOL_UNUSED( cargo );
+}
+
+HB_CALL_ON_STARTUP_BEGIN( _hbqtgui_init_ )
+   hb_vmAtInit( hbqt_lib_init, NULL );
+   hb_vmAtExit( hbqt_lib_exit, NULL );
+HB_CALL_ON_STARTUP_END( _hbqtgui_init_ )
+
+#if defined( HB_PRAGMA_STARTUP )
+   #pragma startup _hbqtgui_init_
+#elif defined( HB_DATASEG_STARTUP )
+   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hbqtgui_init_ )
+   #include "hbiniseg.h"
+#endif
 
 #endif

@@ -63,6 +63,8 @@
 
 #if QT_VERSION >= 0x040500
 
+#include <QtCore/QTextCodec>
+
 #include <QtCore/QProcess>
 #include <QtCore/QUrl>
 #include <QtCore/QDate>
@@ -282,10 +284,8 @@ static void hbqt_SlotsExecModelIndexList( PHB_ITEM * codeBlock, void ** argument
 
 /*----------------------------------------------------------------------*/
 
-static void hbqt_registerCallbacks( void * cargo )
+static void hbqt_registerCallbacks( void )
 {
-   HB_SYMBOL_UNUSED( cargo );
-
    hbqt_slots_register_callback( "qint64"                  , hbqt_SlotsExecInt              );
    hbqt_slots_register_callback( "qint64$qint64"           , hbqt_SlotsExecIntInt           );
    hbqt_slots_register_callback( "int"                     , hbqt_SlotsExecInt              );
@@ -314,22 +314,36 @@ static void hbqt_registerCallbacks( void * cargo )
    hbqt_slots_register_callback( "QUrl"                    , hbqt_SlotsExecQUrl             );
 }
 
-HB_CALL_ON_STARTUP_BEGIN( _hb_hbqtcore_register_init_ )
-   hb_vmAtInit( hbqt_registerCallbacks, NULL );
-HB_CALL_ON_STARTUP_END( _hb_hbqtcore_register_init_ )
-
-#if defined( HB_PRAGMA_STARTUP )
-   #pragma startup _hb_hbqtcore_register_init_
-#elif defined( HB_DATASEG_STARTUP )
-   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hb_hbqtcore_register_init_ )
-   #include "hbiniseg.h"
-#endif
-
 /*----------------------------------------------------------------------*/
 
-HB_FUNC( __HBQT_REGISTERCORECALLBACKS )
+HB_FUNC( __HBQTCORE ) {;}
+
+static void hbqt_lib_init( void * cargo )
 {
-   hbqt_registerCallbacks( NULL );
+   HB_SYMBOL_UNUSED( cargo );
+
+   QTextCodec * codec = QTextCodec::codecForName( "UTF8" );
+   QTextCodec::setCodecForTr( codec );
+   QTextCodec::setCodecForCStrings( codec );
+
+   hbqt_registerCallbacks();
 }
+
+static void hbqt_lib_exit( void * cargo )
+{
+   HB_SYMBOL_UNUSED( cargo );
+}
+
+HB_CALL_ON_STARTUP_BEGIN( _hbqtcore_init_ )
+   hb_vmAtInit( hbqt_lib_init, NULL );
+   hb_vmAtExit( hbqt_lib_exit, NULL );
+HB_CALL_ON_STARTUP_END( _hbqtcore_init_ )
+
+#if defined( HB_PRAGMA_STARTUP )
+   #pragma startup _hbqtcore_init_
+#elif defined( HB_DATASEG_STARTUP )
+   #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hbqtcore_init_ )
+   #include "hbiniseg.h"
+#endif
 
 #endif
