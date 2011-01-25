@@ -2,23 +2,17 @@
 # $Id$
 #
 
--3rd=hbide_version=1.0
--3rd=hbide_title=NetIOServerQt
--3rd=hbide_output=netiosrvqt
-
--gui
 -mt
--w3
--prgflag=-l-
--icon={allwin}harbour.ico
 
-../../hbqt/hbqtuitools.hbc
-../../hbxbp/hbxbp.hbc
-../../hbnetio/hbnetio.hbc
+-w3 -es2 -l
 
-netiosrvq.prg
-netiosrvq.qrc
+-o${hb_name}
 
+-icon={allwin}../../../package/harb_win.ico
 
+../../../hbqt/hbqtuitools.hbc
+../../../hbxbp/hbxbp.hbc
+../../../hbnetio/hbnetio.hbc
 
- 
+netiosrq.prg
+netiosrq.qrc

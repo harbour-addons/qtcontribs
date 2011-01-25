@@ -722,7 +722,7 @@ METHOD NetIOServer:buildColumns()
    //
    oXbpColumn            := XbpColumn():new()
    oXbpColumn:dataLink   := {|| str( iif( empty( ::aData[ ::recNo(), DAT_CONNSOCKET ] ), 0, ;
-                                   netio_srvOpenFiles( ::aData[ ::recNo(), DAT_CONNSOCKET ] ) ), 6, 0 ) }
+                                   netio_srvOpenFilesCount( ::aData[ ::recNo(), DAT_CONNSOCKET ] ) ), 6, 0 ) }
    oXbpColumn:create( , , , , aPP )
    ::oBrw:addColumn( oXbpColumn )
 
