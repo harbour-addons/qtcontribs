@@ -1,10 +1,10 @@
-         /*
+/*
  * $Id$
  */
 
 /*
  * Harbour Project source code:
- * Source file for the Xbp*Classes
+ * Source file for the HBIDE/DBU
  *
  * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
@@ -241,7 +241,7 @@ METHOD HbpDBU:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    IF ! ::lRegistered
       ::lRegistered := .T.
-      QResource():registerResource_1( hbqtres_xbp() )
+      QResource():registerResource_1( hbqtres_dbu() )
    ENDIF
 
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
@@ -543,7 +543,7 @@ METHOD HbpDBU:addPanelsMenu( cPanel )
    LOCAL qAct
 IF HB_ISOBJECT( ::qPanelsMenu )
    qAct := ::qPanelsMenu:addAction( cPanel )
-   qAct:setIcon( QIcon( xbp_image( "panel_7" ) ) )
+   qAct:setIcon( QIcon( dbu_Image( "panel_7" ) ) )
    qAct:connect( "triggered(bool)", {|| ::setPanel( cPanel ) } )
    aadd( ::aPanelsAct, qAct )
 ENDIF
@@ -780,7 +780,7 @@ METHOD HbpDBU:showTablesTree()
    LOCAL oUI, qTree, qParent, oPanel, qItm, aBrowser, q, aFld, qFont, nMax, nSz, oBrw
    LOCAL a_:={}
 
-   oUI := hbqtui_xbpTables( ::oCurPanel:qWidget )
+   oUI := hbqtui_Tables( ::oCurPanel:qWidget )
 
    qFont := QFont( "Courier New", 8 )
    qTree := oUI:treeTables
@@ -912,7 +912,7 @@ METHOD HbpDBU:buildUiStruct()
    LOCAL oTbl, n, qItm
    LOCAL hdr_:= { { "", 50 }, { "Field Name",200 }, { "Type", 100 }, { "Len", 50 }, { "Dec", 70 } }
 
-   ::qStruct := hbqtui_xbpDbStruct( ::oWidget )
+   ::qStruct := hbqtui_DbStruct( ::oWidget )
 
    ::qStruct:setWindowFlags( Qt_Dialog )
    ::qStruct:setMaximumHeight( ::qStruct:height() )
@@ -1021,17 +1021,17 @@ METHOD HbpDBU:buildToolbar()
    qTBar:addItem( ::sp0 )
    ::buildRddsCombo()
    ::buildConxnCombo()
-   qTBar:addItem( { "Open"     , "Open a Table"       , QIcon( xbp_image( "open3"     ) ), {|| ::execEvent( __buttonOpen_clicked__     ) }, .F. } )
+   qTBar:addItem( { "Open"     , "Open a Table"       , QIcon( dbu_Image( "open3"     ) ), {|| ::execEvent( __buttonOpen_clicked__     ) }, .F. } )
    qTBar:addItem( ::sp1 )
-   qTBar:addItem( { "Toggle"   , "Show/Hide Form View", QIcon( xbp_image( "form"      ) ), {|| ::execEvent( __buttonShowForm_clicked__ ) }, .T. } )
+   qTBar:addItem( { "Toggle"   , "Show/Hide Form View", QIcon( dbu_Image( "form"      ) ), {|| ::execEvent( __buttonShowForm_clicked__ ) }, .T. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "Structure", "Table Structure"    , QIcon( xbp_image( "dbstruct"  ) ), {|| ::execEvent( __buttonDbStruct_clicked__ ) }, .F. } )
+   qTBar:addItem( { "Structure", "Table Structure"    , QIcon( dbu_Image( "dbstruct"  ) ), {|| ::execEvent( __buttonDbStruct_clicked__ ) }, .F. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
    ::buildIndexButton()
-   qTBar:addItem( { "Search"   , "Search in Table"    , QIcon( xbp_image( "find"      ) ), {|| ::execEvent( __buttonFind_clicked__     ) }, .F. } )
-   qTBar:addItem( { "Goto"     , "Goto Record"        , QIcon( xbp_image( "gotoline3" ) ), {|| ::execEvent( __buttonGoto_clicked__     ) }, .F. } )
+   qTBar:addItem( { "Search"   , "Search in Table"    , QIcon( dbu_Image( "find"      ) ), {|| ::execEvent( __buttonFind_clicked__     ) }, .F. } )
+   qTBar:addItem( { "Goto"     , "Goto Record"        , QIcon( dbu_Image( "gotoline3" ) ), {|| ::execEvent( __buttonGoto_clicked__     ) }, .F. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "Close"    , "Close Current Table", QIcon( xbp_image( "dc_delete" ) ), {|| ::execEvent( __buttonClose_clicked__    ) }, .F. } )
+   qTBar:addItem( { "Close"    , "Close Current Table", QIcon( dbu_Image( "dc_delete" ) ), {|| ::execEvent( __buttonClose_clicked__    ) }, .F. } )
    qTBar:addItem( ::sp2 )
    ::buildTablesButton()
 
@@ -1051,31 +1051,31 @@ METHOD HbpDBU:buildLeftToolbar()
 
    ::qToolbarL := qTBar
 
-   qTBar:addItem( { "view_tabbed"      , "Toggle Tabbed View"      , QIcon( xbp_image( "view_tabbed"       ) ), {|| ::execEvent( __buttonViewTabbed_clicked__      ) }, .f. } )
+   qTBar:addItem( { "view_tabbed"      , "Toggle Tabbed View"      , QIcon( dbu_Image( "view_tabbed"       ) ), {|| ::execEvent( __buttonViewTabbed_clicked__      ) }, .f. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "view_organized"   , "View as Arranged"        , QIcon( xbp_image( "view_organized"    ) ), {|| ::execEvent( __buttonViewOrganized_clicked__   ) }, .f. } )
-   qTBar:addItem( { "save3"            , "Save Layout"             , QIcon( xbp_image( "save3"             ) ), {|| ::execEvent( __buttonSaveLayout_clicked__      ) }, .f. } )
+   qTBar:addItem( { "view_organized"   , "View as Arranged"        , QIcon( dbu_Image( "view_organized"    ) ), {|| ::execEvent( __buttonViewOrganized_clicked__   ) }, .f. } )
+   qTBar:addItem( { "save3"            , "Save Layout"             , QIcon( dbu_Image( "save3"             ) ), {|| ::execEvent( __buttonSaveLayout_clicked__      ) }, .f. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "view_cascaded"    , "View as Cascaded"        , QIcon( xbp_image( "view_cascaded"     ) ), {|| ::execEvent( __buttonViewCascaded_clicked__    ) }, .f. } )
-   qTBar:addItem( { "view_tiled"       , "View as Tiled"           , QIcon( xbp_image( "view_tiled"        ) ), {|| ::execEvent( __buttonViewTiled_clicked__       ) }, .f. } )
-   qTBar:addItem( { "fullscreen"       , "View Maximized"          , QIcon( xbp_image( "fullscreen"        ) ), {|| ::execEvent( __buttonViewMaximized_clicked__   ) }, .f. } )
-   qTBar:addItem( { "view_vertstacked" , "View Vertically Tiled"   , QIcon( xbp_image( "view_vertstacked"  ) ), {|| ::execEvent( __buttonViewStackedVert_clicked__ ) }, .f. } )
-   qTBar:addItem( { "view_horzstacked" , "View Horizontally Tiled" , QIcon( xbp_image( "view_horzstacked"  ) ), {|| ::execEvent( __buttonViewStackedHorz_clicked__ ) }, .f. } )
-   qTBar:addItem( { "view_zoomin"      , "View Zoom In"            , QIcon( xbp_image( "view_zoomin"       ) ), {|| ::execEvent( __buttonViewZoomedIn_clicked__    ) }, .f. } )
-   qTBar:addItem( { "view_zoomout"     , "View Zoom Out"           , QIcon( xbp_image( "view_zoomout"      ) ), {|| ::execEvent( __buttonViewZoomedOut_clicked__   ) }, .f. } )
+   qTBar:addItem( { "view_cascaded"    , "View as Cascaded"        , QIcon( dbu_Image( "view_cascaded"     ) ), {|| ::execEvent( __buttonViewCascaded_clicked__    ) }, .f. } )
+   qTBar:addItem( { "view_tiled"       , "View as Tiled"           , QIcon( dbu_Image( "view_tiled"        ) ), {|| ::execEvent( __buttonViewTiled_clicked__       ) }, .f. } )
+   qTBar:addItem( { "fullscreen"       , "View Maximized"          , QIcon( dbu_Image( "fullscreen"        ) ), {|| ::execEvent( __buttonViewMaximized_clicked__   ) }, .f. } )
+   qTBar:addItem( { "view_vertstacked" , "View Vertically Tiled"   , QIcon( dbu_Image( "view_vertstacked"  ) ), {|| ::execEvent( __buttonViewStackedVert_clicked__ ) }, .f. } )
+   qTBar:addItem( { "view_horzstacked" , "View Horizontally Tiled" , QIcon( dbu_Image( "view_horzstacked"  ) ), {|| ::execEvent( __buttonViewStackedHorz_clicked__ ) }, .f. } )
+   qTBar:addItem( { "view_zoomin"      , "View Zoom In"            , QIcon( dbu_Image( "view_zoomin"       ) ), {|| ::execEvent( __buttonViewZoomedIn_clicked__    ) }, .f. } )
+   qTBar:addItem( { "view_zoomout"     , "View Zoom Out"           , QIcon( dbu_Image( "view_zoomout"      ) ), {|| ::execEvent( __buttonViewZoomedOut_clicked__   ) }, .f. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "database_add"     , "Append Record"           , QIcon( xbp_image( "database_add"      ) ), {|| ::execEvent( __buttonAppendRecord_clicked__    ) }, .f. } )
-   qTBar:addItem( { "database_remove"  , "Delete Record"           , QIcon( xbp_image( "database_remove"   ) ), {|| ::execEvent( __buttonDelRecord_clicked__       ) }, .f. } )
-   qTBar:addItem( { "database_lock"    , "Lock/Unlock Record"      , QIcon( xbp_image( "database_lock"     ) ), {|| ::execEvent( __buttonLockRecord_clicked__      ) }, .f. } )
+   qTBar:addItem( { "database_add"     , "Append Record"           , QIcon( dbu_Image( "database_add"      ) ), {|| ::execEvent( __buttonAppendRecord_clicked__    ) }, .f. } )
+   qTBar:addItem( { "database_remove"  , "Delete Record"           , QIcon( dbu_Image( "database_remove"   ) ), {|| ::execEvent( __buttonDelRecord_clicked__       ) }, .f. } )
+   qTBar:addItem( { "database_lock"    , "Lock/Unlock Record"      , QIcon( dbu_Image( "database_lock"     ) ), {|| ::execEvent( __buttonLockRecord_clicked__      ) }, .f. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "database_up"      , "Goto Top"                , QIcon( xbp_image( "database_up"       ) ), {|| ::execEvent( __buttonGoTop_clicked__           ) }, .f. } )
-   qTBar:addItem( { "database_down"    , "Goto Bottom"             , QIcon( xbp_image( "database_down"     ) ), {|| ::execEvent( __buttonGoBottom_clicked__        ) }, .f. } )
-   qTBar:addItem( { "database_previous", "Scroll to First Column"  , QIcon( xbp_image( "database_previous" ) ), {|| ::execEvent( __buttonScrollToFirst_clicked__   ) }, .f. } )
-   qTBar:addItem( { "database_next"    , "Scroll to Last Column"   , QIcon( xbp_image( "database_next"     ) ), {|| ::execEvent( __buttonScrollToLast_clicked__    ) }, .f. } )
+   qTBar:addItem( { "database_up"      , "Goto Top"                , QIcon( dbu_Image( "database_up"       ) ), {|| ::execEvent( __buttonGoTop_clicked__           ) }, .f. } )
+   qTBar:addItem( { "database_down"    , "Goto Bottom"             , QIcon( dbu_Image( "database_down"     ) ), {|| ::execEvent( __buttonGoBottom_clicked__        ) }, .f. } )
+   qTBar:addItem( { "database_previous", "Scroll to First Column"  , QIcon( dbu_Image( "database_previous" ) ), {|| ::execEvent( __buttonScrollToFirst_clicked__   ) }, .f. } )
+   qTBar:addItem( { "database_next"    , "Scroll to Last Column"   , QIcon( dbu_Image( "database_next"     ) ), {|| ::execEvent( __buttonScrollToLast_clicked__    ) }, .f. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "database_search"  , "Search in Table"         , QIcon( xbp_image( "database_search"   ) ), {|| ::execEvent( __buttonSearchInTable_clicked__   ) }, .f. } )
+   qTBar:addItem( { "database_search"  , "Search in Table"         , QIcon( dbu_Image( "database_search"   ) ), {|| ::execEvent( __buttonSearchInTable_clicked__   ) }, .f. } )
    qTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   qTBar:addItem( { "database_process" , "Zap Table"               , QIcon( xbp_image( "database_process"  ) ), {|| ::execEvent( __buttonZaptable_clicked__        ) }, .f. } )
+   qTBar:addItem( { "database_process" , "Zap Table"               , QIcon( dbu_Image( "database_process"  ) ), {|| ::execEvent( __buttonZaptable_clicked__        ) }, .f. } )
 
    RETURN NIL
 
@@ -1087,7 +1087,7 @@ METHOD HbpDBU:buildPanelsButton()
 
    ::qPanelsButton := QToolButton()
    ::qPanelsButton:setTooltip( "HbpDBU Panels" )
-   ::qPanelsButton:setIcon( QIcon( xbp_image( "panel_8" ) ) )
+   ::qPanelsButton:setIcon( QIcon( dbu_Image( "panel_8" ) ) )
    ::qPanelsButton:setPopupMode( QToolButton_MenuButtonPopup )
    ::qPanelsButton:setMenu( ::qPanelsMenu )
 
@@ -1135,7 +1135,7 @@ METHOD HbpDBU:buildTablesButton()
 
    ::qTablesButton := QToolButton()
    ::qTablesButton:setTooltip( "Tables" )
-   ::qTablesButton:setIcon( QIcon( xbp_image( "table" ) ) )
+   ::qTablesButton:setIcon( QIcon( dbu_Image( "table" ) ) )
    ::qTablesButton:setPopupMode( QToolButton_MenuButtonPopup )
    ::qTablesButton:setMenu( ::qTablesMenu )
 
@@ -1153,7 +1153,7 @@ METHOD HbpDBU:buildIndexButton()
 
    ::qIndexButton := QToolButton()
    ::qIndexButton:setTooltip( "Indexes" )
-   ::qIndexButton:setIcon( QIcon( xbp_image( "sort" ) ) )
+   ::qIndexButton:setIcon( QIcon( dbu_Image( "sort" ) ) )
    ::qIndexButton:setPopupMode( QToolButton_MenuButtonPopup )
    ::qIndexButton:setMenu( ::qIndexMenu )
 
@@ -1916,7 +1916,7 @@ METHOD HbpBrowse:buildMdiWindow()
 
    ::qMdi:setWindowTitle( ::cTable )
    ::qMdi:setObjectName( hb_ntos( nID ) )
-   ::qMdi:setWindowIcon( QIcon( xbp_image( "dbf_p" + hb_ntos( ::nID ) ) ) )
+   ::qMdi:setWindowIcon( QIcon( dbu_Image( "dbf_p" + hb_ntos( ::nID ) ) ) )
 
    IF ! empty( ::aInfo[ TBL_GEOMETRY ] )
       qRect := hb_aTokens( ::aInfo[ TBL_GEOMETRY ], " " )
@@ -2823,7 +2823,7 @@ STATIC FUNCTION hbide_fetchADate( qParent, cTitle, cPrompt, dDefault )
    DEFAULT cTitle  TO "A Date Value"
    DEFAULT cPrompt TO "What"
 
-   oUI := hbqtui_xbpFetchDate( qParent )
+   oUI := hbqtui_FetchDate( qParent )
 
    oUI:setWindowTitle( cTitle )
    oUI:labelPrompt:setText( cPrompt )
@@ -2896,3 +2896,8 @@ STATIC FUNCTION hbide_fldType2Desc( cType )
 
 /*----------------------------------------------------------------------*/
 
+FUNCTION dbu_Image( cName )
+
+   RETURN ":/dbu/resources" + "/" + cName + ".png"
+
+/*----------------------------------------------------------------------*/
