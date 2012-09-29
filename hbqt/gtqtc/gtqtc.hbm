@@ -1,0 +1,15 @@
+#
+# $Id: gtqtc.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-i.
+
+-stop{hbdyn}
+
+../qtcore/hbqtcore.hbc
+
+-hbx=
+
+gtqtc.cpp
+
+gtqtc.h

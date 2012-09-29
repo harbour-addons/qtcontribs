@@ -1,0 +1,22 @@
+#
+# $Id: filelist.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-pflag=-qtver=0x040500
+-pflag=-qtmodule=qtdeclarative
+-pflag=-qthdocdir=../doc/
+
+QDeclarativeComponent.qth
+QDeclarativeContext.qth
+QDeclarativeEngine.qth
+QDeclarativeError.qth
+QDeclarativeExpression.qth
+QDeclarativeImageProvider.qth
+QDeclarativeItem.qth
+QDeclarativeListReference.qth
+QDeclarativeParserStatus.qth
+QDeclarativeProperty.qth
+QDeclarativePropertyMap.qth
+QDeclarativePropertyValueSource.qth
+QDeclarativeScriptString.qth
+QDeclarativeView.qth

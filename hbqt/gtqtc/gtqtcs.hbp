@@ -1,0 +1,7 @@
+#
+# $Id: gtqtcs.hbp 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+../hbqt_commons.hbm
+
+gtqtc.hbm

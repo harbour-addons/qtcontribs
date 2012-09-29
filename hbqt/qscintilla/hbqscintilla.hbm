@@ -1,0 +1,17 @@
+#
+# $Id: hbqscintilla.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqscintilla.hbx
+
+hbqt_init.cpp
+
+hbqt_hbqsciscintilla.cpp
+hbqt_hbqsciscintilla.h
+
+../qtcore/hbqtcore.hbc
+../qtgui/hbqtgui.hbc

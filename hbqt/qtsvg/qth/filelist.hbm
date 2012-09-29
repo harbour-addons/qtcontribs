@@ -1,0 +1,12 @@
+#
+# $Id: filelist.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-pflag=-qtver=0x040500
+-pflag=-qtmodule=qtsvg
+-pflag=-qthdocdir=../doc/
+
+QGraphicsSvgItem.qth
+QSvgGenerator.qth
+QSvgRenderer.qth
+QSvgWidget.qth

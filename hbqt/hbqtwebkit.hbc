@@ -1,0 +1,10 @@
+#
+# $Id: hbqtwebkit.hbc 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+# ---------------------------------------------------------------
+# Copyright 2010 Viktor Szakats (harbour syenar.net)
+# See COPYING for licensing terms.
+# ---------------------------------------------------------------
+
+libs=qtwebkit/hbqtwebkit.hbc

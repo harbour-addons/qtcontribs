@@ -1,0 +1,26 @@
+#
+# $Id: hbqtcore.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtcore.hbx
+
+hbqt_init.cpp
+hbqt_pointer.cpp
+hbqt_version.cpp
+
+hbqt_hbqevents.cpp
+hbqt_hbqslots.cpp
+hbqt_hbqstring.cpp
+
+hbqt_bind.cpp
+hbqt_destroyer.cpp
+
+hbqt_misc.prg
+
+hbqt_hbqevents.h
+hbqt_destroyer.h
+

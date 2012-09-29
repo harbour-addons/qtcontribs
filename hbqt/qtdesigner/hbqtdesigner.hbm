@@ -1,0 +1,16 @@
+#
+# $Id: hbqtdesigner.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-stop{symbian}
+
+-i.
+
+qth/filelist.hbm
+
+hbqtdesigner.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc
+../qtgui/hbqtgui.hbc

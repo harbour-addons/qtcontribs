@@ -1,0 +1,9 @@
+#
+# $Id: xbpaddons.hbc 18118 2012-09-22 01:13:56Z vouchcac $
+#
+
+incpaths=.
+
+libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
+
+libs=hbxbp.hbc

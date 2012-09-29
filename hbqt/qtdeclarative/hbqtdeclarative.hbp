@@ -1,0 +1,12 @@
+#
+# $Id: hbqtdeclarative.hbp 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+../hbqt_common.hbm
+
+hbqtdeclarative.hbm
+
+-instfile=inc:hbqtdeclarative.ch
+-instfile=inc:hbqtdeclarative.hbx
+
+hbqtdeclaratives.hbp

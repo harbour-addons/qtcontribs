@@ -1,0 +1,9 @@
+#
+# $Id: hbxbp.hbc 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+incpaths=.
+
+libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
+
+libs=hbqt.hbc

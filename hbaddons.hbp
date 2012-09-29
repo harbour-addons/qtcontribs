@@ -1,0 +1,10 @@
+#
+# $Id: hbaddons.hbp 5 2012-09-29 19:58:36Z bedipritpal $
+#
+
+hbqt/qtcore/hbqtcore.hbp
+hbqt/qtgui/hbqtgui.hbp
+hbqt/qtnetwork/hbqtnetwork.hbp
+hbqt/gtqtc/gtqtc.hbp
+hbxbp/hbxbp.hbp
+hbide/hbide.hbp

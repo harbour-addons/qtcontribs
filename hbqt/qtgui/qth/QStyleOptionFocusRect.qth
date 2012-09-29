@@ -1,0 +1,51 @@
+/*
+ * $Id: QStyleOptionFocusRect.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = no
+Inherit     = QStyleOption
+Type        = Core
+New         = 
+</CLASS>
+
+<CODE>
+#include <QtGui/QStyleOptionFocusRect>
+
+
+/*
+ * QStyleOptionFocusRect ()
+ * QStyleOptionFocusRect ( const QStyleOptionFocusRect & other )
+ */
+HB_FUNC( QT_QSTYLEOPTIONFOCUSRECT )
+{
+   __HB_RETPTRGC__( new QStyleOptionFocusRect() );
+}
+</CODE>
+
+<ENUMS>
+enum StyleOptionType { Type }
+enum StyleOptionVersion { Version }
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+QColor backgroundColor
+</VARIABLES>

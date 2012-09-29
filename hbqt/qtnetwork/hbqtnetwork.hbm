@@ -1,0 +1,13 @@
+#
+# $Id: hbqtnetwork.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtnetwork.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc

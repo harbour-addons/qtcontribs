@@ -1,0 +1,53 @@
+/*
+ * $Id: QTableWidgetSelectionRange.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = no
+Inherit     = 
+Type        = Core
+New         =
+Destructor  = 
+</CLASS>
+
+<CODE>
+#include <QtGui/QTableWidgetSelectionRange>
+
+
+/* QTableWidgetSelectionRange ()
+ * QTableWidgetSelectionRange ( int top, int left, int bottom, int right )
+ * QTableWidgetSelectionRange ( const QTableWidgetSelectionRange & other )
+ * ~QTableWidgetSelectionRange ()
+ */
+HB_FUNC( QT_QTABLEWIDGETSELECTIONRANGE )
+{
+   __HB_RETPTRGC__( new QTableWidgetSelectionRange() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int bottomRow () const
+int columnCount () const
+int leftColumn () const
+int rightColumn () const
+int rowCount () const
+int topRow () const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

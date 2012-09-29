@@ -1,0 +1,22 @@
+#
+# $Id: xbpaddons.hbp 18122 2012-09-22 09:54:07Z vouchcac $
+#
+
+-hblib
+-inc
+
+-o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
+
+-w3 -es2
+
+hbxbp.hbc
+
+dbu.prg
+reports.prg
+misc.prg
+
+xbp.qrc
+
+dbstruct.ui
+fetchdate.ui
+tables.ui

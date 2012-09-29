@@ -1,0 +1,63 @@
+/*
+ * $Id: QSessionManager.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QObject
+Type        = Core
+New         =
+Destructor  = no
+Constructor = no
+</CLASS>
+
+<CODE>
+#include <QtGui/QSessionManager>
+
+
+/*
+ * QSessionManager ()
+ */
+HB_FUNC( QT_QSESSIONMANAGER )
+{
+   // __HB_RETPTRGC__( new QSessionManager() );
+}
+</CODE>
+
+<ENUMS>
+enum RestartHint { RestartIfRunning, RestartAnyway, RestartImmediately, RestartNever }
+</ENUMS>
+
+<PROTOS>
+bool allowsErrorInteraction ()
+bool allowsInteraction ()
+void cancel ()
+QStringList discardCommand () const
+bool isPhase2 () const
+void release ()
+void requestPhase2 ()
+QStringList restartCommand () const
+RestartHint restartHint () const
+QString sessionId () const
+QString sessionKey () const
+void setDiscardCommand ( const QStringList & list )
+void setManagerProperty ( const QString & name, const QStringList & value )
+void setManagerProperty ( const QString & name, const QString & value )
+void setRestartCommand ( const QStringList & command )
+void setRestartHint ( RestartHint hint )
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

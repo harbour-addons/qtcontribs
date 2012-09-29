@@ -1,0 +1,19 @@
+#
+# $Id: hbqt_commons.hbm 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+# ---------------------------------------------------------------
+# Copyright 2010 Viktor Szakats (harbour syenar.net)
+# See COPYING for licensing terms.
+# ---------------------------------------------------------------
+
+# Common settings for all hbqt subcomponents (static mode)
+
+hbqt_common.hbm
+
+-hbx=
+
+-cflag=-DQT_NODLL
+
+# moved to the end to make --hbinfo=nested' return complete information
+-stop{!HB_QT_BUILD_STATIC|!allwin}

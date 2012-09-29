@@ -1,0 +1,20 @@
+#
+# $Id: activex.hbp 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+-3rd=hbide_version=1.0
+-3rd=hbide_title=ActiveX
+-3rd=hbide_output=activex
+
+-inc
+-w3
+-es2
+
+hbqt.hbc
+gtwvg.hbc
+
+activex.prg
+
+activex.ui
+
+ 

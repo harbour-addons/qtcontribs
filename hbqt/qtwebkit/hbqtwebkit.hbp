@@ -1,0 +1,12 @@
+#
+# $Id: hbqtwebkit.hbp 4 2012-09-29 19:42:37Z bedipritpal $
+#
+
+../hbqt_common.hbm
+
+hbqtwebkit.hbm
+
+-instfile=inc:hbqtwebkit.ch
+-instfile=inc:hbqtwebkit.hbx
+
+hbqtwebkits.hbp

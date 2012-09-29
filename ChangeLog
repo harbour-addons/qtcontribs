@@ -1,0 +1,40 @@
+/*
+ * $Id: ChangeLog 5 2012-09-29 19:58:36Z bedipritpal $
+ */
+
+/* Read doc/howtosvn.txt and use this format for entry headers:
+   YYYY-MM-DD HH:MM UTC[-|+]hhmm Your Full Name (your_email address)
+   2010-12-31 13:59 UTC+0100 Foo Bar (foo.bar foobar.org)
+
+   This work is licensed under the Creative Commons Attribution-ShareAlike
+   License. To view a copy of this license, visit
+   http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to
+   Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305,
+   USA.  A summary of the license and the full legal text is included
+   in file: COPYING.  If you wish to distribute some or all of this work
+   under different terms, please contact respective author(s).
+   The license applies to all entries newer than 2009-04-28.
+*/
+
+2012-09-29 12:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmaol.com)
+  * ChangeLog
+  * hbaddons.hbp
+    + Added: missing SVN properties markers.
+
+2012-09-29 12:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmaol.com)
+  + SVN Properties.
+
+2012-09-29 19:30 UTC+0100 Maurizio la Cecilia (m.lacecilia at gmail.com)
+  + hbaddons.hbp
+    + added .hbp for to make it easy to build in a shot with hbmk2
+  * hbide/hbide.hbp
+  * hbide/xbpaddons/xbpaddons.hbp
+  * hbnetioqt/hbnetioq.hbp
+  * hbqt/hbqt_common.hbm
+  * hbxbp/hbxbp.hbp
+    * changed the path to output the built libs/exes
+  * hbide/xbpaddons/dbu.prg
+    * correct the references of renamed ui files in Harbour rev. 18121
+
+2012-09-29 17:30 UTC+0100 Maurizio la Cecilia (m.lacecilia at gmail.com)
+  + Initial Commit.
