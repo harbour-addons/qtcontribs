@@ -16,12 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2012-09-29 12:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmaol.com)
+2012-09-29 15:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + Initial commit in decided repo after all commits below in a temp repo 
+    to make the code compilable and workable.
+
+2012-09-29 12:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * ChangeLog
   * hbaddons.hbp
     + Added: missing SVN properties markers.
 
-2012-09-29 12:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmaol.com)
+2012-09-29 12:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + SVN Properties.
 
 2012-09-29 19:30 UTC+0100 Maurizio la Cecilia (m.lacecilia at gmail.com)
