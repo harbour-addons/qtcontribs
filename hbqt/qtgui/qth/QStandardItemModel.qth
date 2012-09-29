@@ -1,5 +1,5 @@
 /*
- * $Id: QStandardItemModel.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: QStandardItemModel.qth 17759 2012-07-02 09:34:50Z vouchcac $
  */
 
 /*
@@ -53,7 +53,7 @@ HB_FUNC( QT_QSTANDARDITEMMODEL )
 <PROTOS>
 void appendColumn ( const QList<QStandardItem *> & items )                    [*X=1*]
 void appendRow ( const QList<QStandardItem *> & items )                       [*X=1*]
-void appendRow ( QStandardItem * item )                                       [*X=1*]
+void appendRow ( QStandardItem * item )                                       [*D=1*]
 void clear ()
 QList<QStandardItem *> findItems ( const QString & text, Qt::MatchFlags flags = Qt::MatchExactly, int column = 0 ) const
 QStandardItem * horizontalHeaderItem ( int column ) const
@@ -68,14 +68,14 @@ QStandardItem * item ( int row, int column = 0 ) const
 QStandardItem * itemFromIndex ( const QModelIndex & index ) const
 // const QStandardItem * itemPrototype () const
 void setColumnCount ( int columns )
-void setHorizontalHeaderItem ( int column, QStandardItem * item )             [*X=2*]
+void setHorizontalHeaderItem ( int column, QStandardItem * item )             [*D=2*]
 void setHorizontalHeaderLabels ( const QStringList & labels )                 
-void setItem ( int row, int column, QStandardItem * item )                    [*X=3*]
-void setItem ( int row, QStandardItem * item )                                [*X=2*]
-void setItemPrototype ( const QStandardItem * item )                          [*X=1*]
+void setItem ( int row, int column, QStandardItem * item )                    [*D=3*]
+void setItem ( int row, QStandardItem * item )                                [*D=2*]
+void setItemPrototype ( const QStandardItem * item )                          [*D=1*]
 void setRowCount ( int rows )
 void setSortRole ( int role )
-void setVerticalHeaderItem ( int row, QStandardItem * item )                  [*X=2*]
+void setVerticalHeaderItem ( int row, QStandardItem * item )                  [*D=2*]
 void setVerticalHeaderLabels ( const QStringList & labels )   
 int sortRole () const
 QList<QStandardItem *> takeColumn ( int column )                              [*A=1*]

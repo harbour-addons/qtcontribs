@@ -1,5 +1,5 @@
 /*
- * $Id: QLayout.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: QLayout.qth 17759 2012-07-02 09:34:50Z vouchcac $
  */
 
 /*
@@ -37,7 +37,7 @@ enum SizeConstraint { SetDefaultConstraint, SetFixedSize, SetMinimumSize, SetMax
 
 <PROTOS>
 bool activate ()
-virtual void addItem ( QLayoutItem * item )     [*X=1*]
+virtual void addItem ( QLayoutItem * item )     [*D=1*]
 void addWidget ( QWidget * w )                  [*X=1*]
 QRect contentsRect () const
 virtual int count () const = 0

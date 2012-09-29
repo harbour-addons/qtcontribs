@@ -1,5 +1,5 @@
 /*
- * $Id: QBoxLayout.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: QBoxLayout.qth 17759 2012-07-02 09:34:50Z vouchcac $
  */
 
 /*
@@ -47,14 +47,14 @@ enum Direction { LeftToRight, RightToLeft, TopToBottom, BottomToTop }
 
 <PROTOS>
 void addLayout ( QLayout * layout, int stretch = 0 )   [*X=1*]
-void addSpacerItem ( QSpacerItem * spacerItem )        [*X=1*]
+void addSpacerItem ( QSpacerItem * spacerItem )        [*D=1*]
 void addSpacing ( int size )
 void addStretch ( int stretch = 0 )
 void addStrut ( int size )
 void addWidget ( QWidget * widget, int stretch = 0, Qt::Alignment alignment = 0 )    [*X=1*]
 Direction direction () const
 void insertLayout ( int index, QLayout * layout, int stretch = 0 )
-void insertSpacerItem ( int index, QSpacerItem * spacerItem )
+void insertSpacerItem ( int index, QSpacerItem * spacerItem )                        [*D=2*]
 void insertSpacing ( int index, int size )
 void insertStretch ( int index, int stretch = 0 )
 void insertWidget ( int index, QWidget * widget, int stretch = 0, Qt::Alignment alignment = 0 )

@@ -1,5 +1,5 @@
 /*
- * $Id: QGridLayout.qth 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: QGridLayout.qth 17759 2012-07-02 09:34:50Z vouchcac $
  */
 
 /*
@@ -39,7 +39,7 @@ HB_FUNC( QT_QGRIDLAYOUT )
 </CODE>
 
 <PROTOS>
-void addItem ( QLayoutItem * item, int row, int column, int rowSpan = 1, int columnSpan = 1, Qt::Alignment alignment = 0 )   [*X=1*]
+void addItem ( QLayoutItem * item, int row, int column, int rowSpan = 1, int columnSpan = 1, Qt::Alignment alignment = 0 )   [*D=1*]
 void addLayout ( QLayout * layout, int row, int column, Qt::Alignment alignment = 0 )   [*X=1*]
 void addLayout ( QLayout * layout, int row, int column, int rowSpan, int columnSpan, Qt::Alignment alignment = 0 )   [*X=1*]
 void addWidget ( QWidget * widget, int row, int column, Qt::Alignment alignment = 0 )   [*X=1*]

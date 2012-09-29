@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-09-29 16:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/qth/QBoxLayout.qth
+  * hbqt/qtgui/qth/QGridLayout.qth
+  * hbqt/qtgui/qth/QLayout.qth
+  * hbqt/qtgui/qth/QStandardItemModel.qth
+    ! Fixed: the GPF og HbIDE on EXIT on MSVC and *nix systems discovered 
+       by Przemek. On MSVC it is fixed, and nixes, I hope should have been 
+       fixed too. Can someone confirm ?
+
 2012-09-29 16:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbaddons.hbp
     + Added: all Qt based libraries, but kept commented. Please uncomment one 
