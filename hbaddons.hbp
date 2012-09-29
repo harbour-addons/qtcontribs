@@ -2,9 +2,32 @@
 # $Id: hbaddons.hbp 5 2012-09-29 19:58:36Z bedipritpal $
 #
 
+#    Qt Modules
+#
 hbqt/qtcore/hbqtcore.hbp
 hbqt/qtgui/hbqtgui.hbp
 hbqt/qtnetwork/hbqtnetwork.hbp
+
+#    Uncomment whatever lib you require
+#
+# hbqt/qtdesigner/hbqtdesigner.hbp
+# hbqt/qtdeclarative/hbqtdeclarative.hbp
+# hbqt/qtmultimedia/hbqtmultimedia.hbp
+# hbqt/qtopengl/hbqtopengl.hbp
+# hbqt/qtscript/hbqtscript.hbp
+# hbqt/qtsql/hbqtsql.hbp
+# hbqt/qtsvg/hbqtsvg.hbp
+# hbqt/qtxml/hbqtxml.hbp
+
+#    Qt based GT
+#
 hbqt/gtqtc/gtqtc.hbp
+
+#    Qt based Xbase++ compliant Class Framework
+#
 hbxbp/hbxbp.hbp
+
+#    Qt based Harbour IDE
+#
 hbide/hbide.hbp
+

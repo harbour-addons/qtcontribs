@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-09-29 16:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbaddons.hbp
+    + Added: all Qt based libraries, but kept commented. Please uncomment one 
+       required by you.
+
 2012-09-29 15:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + Initial commit in decided repo after all commits below in a temp repo 
     to make the code compilable and workable.
