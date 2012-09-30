@@ -1,5 +1,5 @@
 /*
- * $Id: hbqt_bind.cpp 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: hbqt_bind.cpp 17787 2012-07-09 06:03:42Z vouchcac $
  */
 
 /*
@@ -416,9 +416,9 @@ static void hbqt_bindDestroyChildren( void * hbObject, bool fDeleteSelf )
                   }
                }
             }
-            else if( fDeleteSelf )
+            if( fDeleteSelf )
             {
-               hbqt_bindDestroyQtObject( ( void * ) qObject, qObject );
+               hbqt_bindDestroyQtObjectA( ( void * ) qObject, qObject );
             }
          }
       }
