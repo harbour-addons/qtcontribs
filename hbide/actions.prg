@@ -1,5 +1,5 @@
    /*
- * $Id: actions.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: actions.prg 18122 2012-09-22 09:54:07Z vouchcac $
  */
 
 /*
@@ -91,6 +91,7 @@ CLASS IdeActions INHERIT IdeObject
 
    DATA   qWidget
    DATA   hActions                                INIT { => }
+   DATA   hButtons                                INIT { => }
    DATA   oActToolsBtn
 
    DATA   qMainToolbar
@@ -101,6 +102,12 @@ CLASS IdeActions INHERIT IdeObject
    DATA   qMdiToolbar
    DATA   qMdiToolbarL
    DATA   qSelToolbar
+   DATA   qContextWidget
+
+   DATA   nToolBtnHeight                          INIT 16
+   DATA   nToolBtnWidth                           INIT 16
+   DATA   aToolButtons                            INIT {}
+   DATA   oToolsLayout                            INIT {}
 
    METHOD new( oIde )
    METHOD create( oIde )
@@ -108,6 +115,7 @@ CLASS IdeActions INHERIT IdeObject
 
    METHOD getAction( cKey )
    METHOD buildActions()
+   METHOD buildDockActions()
    METHOD loadActions()
 
    METHOD buildMainMenu()
@@ -121,6 +129,12 @@ CLASS IdeActions INHERIT IdeObject
    METHOD buildMdiToolbar()
    METHOD buildMdiToolbarLeft()
    METHOD buildToolbarSelectedText()
+   METHOD buildContextToolWidget()
+   METHOD showContextWidget( oEdit, lHide )
+   METHOD loadContextButtons()
+   METHOD buildToolsLayout( aBtns )
+   METHOD buildToolButton( cName, cDesc, cImage, bAction, lCheckable, lDraggable )
+   METHOD manageToolBox()
 
    ENDCLASS
 
@@ -130,7 +144,7 @@ METHOD IdeActions:new( oIde )
 
    hb_hCaseMatch( ::hActions, .f. )
    ::oIde := oIde
-   ::qWidget := QWidget()
+   //::qWidget := QWidget()
 
    RETURN Self
 
@@ -166,20 +180,66 @@ METHOD IdeActions:getAction( cKey )
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeActions:buildDockActions()
+   LOCAL qAct, a_, aBtns := {}
+
+   aadd( aBtns, { "DockProjects"   , ::oDockPT             , "projtree"      } )
+   aadd( aBtns, { "DockEdits"      , ::oDockED             , "editstree"     } )
+   aadd( aBtns, { "DockSkeletons"  , ::oSkltnsTreeDock     , "projtree"      } )
+   aadd( aBtns, { "DockIdeHelp"    , ::oHelpDock           , "help"          } )
+   aadd( aBtns, { "DockHbHelp"     , ::oDocViewDock        , "harbourhelp"   } )
+   aadd( aBtns, { "DockDocWriter"  , ::oDocWriteDock       , "docwriter"     } )
+   aadd( aBtns, { "DockFuncList"   , ::oFuncDock           , "dc_function"   } )
+   aadd( aBtns, { "DockProjFuncs"  , ::oFunctionsDock      , "ffn"           } )
+   aadd( aBtns, { "DockProjProps"  , ::oPropertiesDock     , "properties"    } )
+   aadd( aBtns, { "DockEnvConfig"  , ::oEnvironDock        , "envconfig"     } )
+   aadd( aBtns, { "DockCodeSkltns" , ::oSkeltnDock         , "codeskeletons" } )
+   aadd( aBtns, { "DockThemes"     , ::oThemesDock         , "syntaxhiliter" } )
+   aadd( aBtns, { "DockFindInFiles", ::oFindDock           , "search"        } )
+   aadd( aBtns, { "DockThumbNails" , ::oSourceThumbnailDock, "thumbnail"     } )
+   aadd( aBtns, { "DockCuiEditor"  , ::oCuiEdDock          , "cuied"         } )
+   aadd( aBtns, { "DockUISource"   , ::oUiSrcDock          , "fileprg"       } )
+   aadd( aBtns, { "DockBuildLog"   , ::oDockB2             , "builderror"    } )
+
+   FOR EACH a_ IN aBtns
+      qAct := a_[ 2 ]:oWidget:toggleViewAction()
+      qAct:setIcon( QIcon( hbide_image( a_[ 3 ] ) ) )
+      ::qTBarDocks:addAction( a_[ 1 ], qAct )
+      ::hActions[ a_[ 1 ] ] := qAct
+   NEXT
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeActions:buildActions()
-   LOCAL qAction, aAct, a_
+   LOCAL aAct, a_, qAction //, qBtn
 
    aAct := ::loadActions()
 
    FOR EACH a_ IN aAct
       IF !( hb_hHasKey( ::hActions, a_[ ACT_NAME ] ) )
-
-         qAction := QAction( ::qWidget )
+      #if 0
+         qBtn := QToolButton( ::oDlg:oWidget )
+         qBtn:setText( strtran( a_[ ACT_TEXT ], "~", "&" ) )
+         qBtn:setCheckable( iif( empty( a_[ ACT_CHECKABLE ] ), .F., upper( a_[ ACT_CHECKABLE ] ) == "YES" ) )
+         IF !empty( a_[ ACT_IMAGE ] )
+            qBtn:setIcon( QIcon( hbide_image( a_[ ACT_IMAGE ] ) ) )
+         ENDIF
+         ::hButtons[ a_[ ACT_NAME ] ] := qBtn
+         qAction := QWidgetAction( ::qWidget )
+         qAction:setDefaultWidget( qBtn )
+         ::hActions[ a_[ ACT_NAME ] ] := qAction
+     #else
+         qAction := QAction( ::oDlg:oWidget )
          qAction:setCheckable( iif( empty( a_[ ACT_CHECKABLE ] ), .F., upper( a_[ ACT_CHECKABLE ] ) == "YES" ) )
          qAction:setText( strtran( a_[ ACT_TEXT ], "~", "&" ) )
          IF !empty( a_[ ACT_IMAGE ] )
             qAction:setIcon( QIcon( hbide_image( a_[ ACT_IMAGE ] ) ) )
          ENDIF
+         qAction:setTooltip( strtran( a_[ ACT_TEXT ], "~", "" ) )
+         ::hActions[ a_[ ACT_NAME ] ] := qAction
+      #endif
 
          #if 0
          IF !empty( a_[ ACT_SHORTCUT ] )
@@ -190,10 +250,6 @@ METHOD IdeActions:buildActions()
             qAction:setShortcut( QKeySequence( k ) )
          ENDIF
          #endif
-         qAction:setTooltip( strtran( a_[ ACT_TEXT ], "~", "" ) )
-
-         ::hActions[ a_[ ACT_NAME ] ] := qAction
-
       ENDIF
    NEXT
 
@@ -297,7 +353,7 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "ProjAddSource"        , "Add Source to Project"        , "projectadd"     , ""     , "No", "Yes" } )
    aadd( aAct, { "ProjRemSource"        , "Remove Source"                , "projectdel"     , ""     , "No", "Yes" } )
    aadd( aAct, { "ProjMainModule"       , "Select Main Module"           , "setmain"        , ""     , "No", "Yes" } )
-   aadd( aAct, { "SelectProject"        , "Select Current Project"       , ""               , ""     , "No", "Yes" } )
+   aadd( aAct, { "SelectProject"        , "Select Current Project"       , "selectproject"  , ""     , "No", "Yes" } )
    aadd( aAct, { "CloseProject"         , "Close Current Project"        , "projectdel"     , ""     , "No", "Yes" } )
    aadd( aAct, { "Build"                , "Build Project"                , "build"          , "^F9"  , "No", "Yes" } )
    aadd( aAct, { "BuildLaunch"          , "Build and Launch Project"     , "buildlaunch"    , "F9"   , "No", "Yes" } )
@@ -360,7 +416,9 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "SplitV"              , "Split Vertically"              , "split_v"        , ""     , "No", "Yes" } )
    aadd( aAct, { "Dictionary"          , "Create .tag Dictionary"        , "dictionary"     , ""     , "No", "Yes" } )
    aadd( aAct, { "ConfigToolbars"      , "Configure Toolbars"            , "configtoolbars" , ""     , "No", "Yes" } )
+   aadd( aAct, { "Toolbars"            , "Toolbars"                      , "toolbars"       , ""     , "No", "Yes" } )
    //
+   aadd( aAct, { "IdePARTS"            , "IdePARTS"                      , "ideparts"       , ""     , "No", "Yes" } )
    aadd( aAct, { "DBU"                 , "IdeDBU"                        , "browser"        , ""     , "No", "Yes" } )
    aadd( aAct, { "EDITOR"              , "IdeEDITOR"                     , "editor"         , ""     , "No", "Yes" } )
    aadd( aAct, { "REPORTS"             , "IdeREPORTS"                    , "designer"       , ""     , "No", "Yes" } )
@@ -524,35 +582,35 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu:addItem( { ::qAnimateAction, {|| oIde:execAction( "Animate" ) } }         )
 
    hbide_menuAddSep( oSubMenu )
-
-   oSubMenu2 := XbpMenu():new( oSubMenu, , .t. ):create()
-   oSubMenu:addItem( { oSubMenu2, "IdePARTS" } )
-
+   //
+   oSubMenu2 := XbpMenu():new( oSubMenu, , .t. )
+   oSubMenu2:oWidget := oSubMenu:addMenu( QIcon( hbide_image( "ideparts" ) ), "IdePARTS" )
+   //
    oSubMenu2:addItem( { ::getAction( "EDITOR"  ), {|| ::oIde:execAction( "EDITOR"  ) } } )
    oSubMenu2:addItem( { ::getAction( "DBU"     ), {|| ::oIde:execAction( "DBU"     ) } } )
    oSubMenu2:addItem( { ::getAction( "REPORTS" ), {|| ::oIde:execAction( "REPORTS" ) } } )
 
    hbide_menuAddSep( oSubMenu )
-
-   oSubMenu2 := XbpMenu():new( oSubMenu, , .t. ):create()
-   oSubMenu:addItem( { oSubMenu2, "Toolbars" } )
-
-   oSubMenu2:oWidget:addAction( ::oIde:oMainToolbar:oWidget:toggleViewAction()         )
-   oSubMenu2:oWidget:addAction( ::qFilesToolbar:toggleViewAction()                     )
-   oSubMenu2:oWidget:addAction( ::qPartsToolbar:toggleViewAction()                     )
-   oSubMenu2:oWidget:addAction( ::qProjectToolbar:toggleViewAction()                   )
-   oSubMenu2:oWidget:addAction( ::qTBarDocks:toggleViewAction()                        )
+   //
+   oSubMenu2 := XbpMenu():new( oSubMenu, , .t. )
+   oSubMenu2:oWidget := oSubMenu:addMenu( QIcon( hbide_image( "toolbars" ) ), "Toolbars" )
+   //
+   oSubMenu2:oWidget:addAction( ::oIde:oMainToolbar:oWidget:toggleViewAction()    )
+   oSubMenu2:oWidget:addAction( ::qFilesToolbar:toggleViewAction()                )
+   oSubMenu2:oWidget:addAction( ::qPartsToolbar:toggleViewAction()                )
+   oSubMenu2:oWidget:addAction( ::qProjectToolbar:toggleViewAction()              )
+   oSubMenu2:oWidget:addAction( ::qTBarDocks:toggleViewAction()                   )
    hbide_menuAddSep( oSubMenu2 )
-   oSubMenu2:oWidget:addAction( ::qMdiToolbarL:oWidget:toggleViewAction()              )
-   oSubMenu2:oWidget:addAction( ::qMdiToolbar:oWidget:toggleViewAction()               )
+   oSubMenu2:oWidget:addAction( ::qMdiToolbarL:oWidget:toggleViewAction()         )
+   oSubMenu2:oWidget:addAction( ::qMdiToolbar:oWidget:toggleViewAction()          )
    hbide_menuAddSep( oSubMenu2 )
-   oSubMenu2:addItem( { ::getAction( "ConfigToolbars" ), {|| NIL } }                   )
+   oSubMenu2:addItem( { ::getAction( "ConfigToolbars" ), {|| NIL } }              )
 
    hbide_menuAddSep( oSubMenu )
-
-   oSubMenu2 := XbpMenu():new( oSubMenu, , .t. ):create()
-   oSubMenu:addItem( { oSubMenu2, "Docking Widgets" } )
-
+   //
+   oSubMenu2 := XbpMenu():new( oSubMenu, , .t. )
+   oSubMenu2:oWidget := oSubMenu:addMenu( QIcon( hbide_image( "dockingwidgets" ) ), "Docking Widgets" )
+   //
    oSubMenu2:oWidget:addAction( ::oDockPT:oWidget:toggleViewAction()              )
    oSubMenu2:oWidget:addAction( ::oDockED:oWidget:toggleViewAction()              )
    oSubMenu2:oWidget:addAction( ::oSkltnsTreeDock:oWidget:toggleViewAction()      )
@@ -570,14 +628,15 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu2:oWidget:addAction( ::oSourceThumbnailDock:oWidget:toggleViewAction() )
    oSubMenu2:oWidget:addAction( ::oCuiEdDock:toggleViewAction()                   )
    oSubMenu2:oWidget:addAction( ::oIde:oUISrcDock:toggleViewAction()              )
-
+   //
    hbide_menuAddSep( oSubMenu2 )
+   //
    oSubMenu2:oWidget:addAction( ::oDockB2:oWidget:toggleViewAction()              )
  * oSubMenu:oWidget:addAction( ::oDockB1:oWidget:toggleViewAction()               )
  * oSubMenu:oWidget:addAction( ::oDockB:oWidget:toggleViewAction()                )
 
-    hbide_menuAddSep( oSubMenu )
-
+   hbide_menuAddSep( oSubMenu )
+   //
    ::oIde:qStatusBarAction := QAction( oSubMenu:oWidget )
    ::qStatusBarAction:setText( "Statusbar" )
    ::qStatusBarAction:setCheckable( .t. )
@@ -985,6 +1044,7 @@ METHOD IdeActions:buildToolBars()
    ::oTM:buildUserToolbars()
 
    ::buildToolbarSelectedText()
+   ::buildContextToolWidget()
 
    RETURN Self
 
@@ -1032,11 +1092,11 @@ METHOD IdeActions:buildToolbarFiles()
    ::qFilesToolbar:setWindowTitle( "Ide Files" )
    ::qFilesToolbar:setToolButtonStyle( Qt_ToolButtonIconOnly )
 
-   ::qFilesToolbar:addAction( "IdeNew" , ::getAction( "TB_New"   ), {|| ::oIde:execAction( "new"   ) } )
-   ::qFilesToolbar:addAction( "IdeOpen", ::getAction( "TB_Open"  ), {|| ::oIde:execAction( "Open"  ) } )
-   ::qFilesToolbar:addAction( "IdeOpen", ::getAction( "TB_Save"  ), {|| ::oIde:execAction( "Save"  ) } )
-   ::qFilesToolbar:addAction( "IdeOpen", ::getAction( "TB_Close" ), {|| ::oIde:execAction( "Close" ) } )
-   ::qFilesToolbar:addAction( "IdeOpen", ::getAction( "TB_Print" ), {|| ::oIde:execAction( "Print" ) } )
+   ::qFilesToolbar:addAction( "IdeNew"  , ::getAction( "TB_New"   ), {|| ::oIde:execAction( "new"   ) } )
+   ::qFilesToolbar:addAction( "IdeOpen" , ::getAction( "TB_Open"  ), {|| ::oIde:execAction( "Open"  ) } )
+   ::qFilesToolbar:addAction( "IdeSave" , ::getAction( "TB_Save"  ), {|| ::oIde:execAction( "Save"  ) } )
+   ::qFilesToolbar:addAction( "IdeClose", ::getAction( "TB_Close" ), {|| ::oIde:execAction( "Close" ) } )
+   ::qFilesToolbar:addAction( "IdePrint", ::getAction( "TB_Print" ), {|| ::oIde:execAction( "Print" ) } )
 
    ::oDlg:oWidget:addToolBar( Qt_TopToolBarArea, ::qFilesToolbar:oWidget )
 
@@ -1058,9 +1118,9 @@ METHOD IdeActions:buildToolbarParts()
    ::qPartsToolbar:setWindowTitle( "Ide Parts" )
    ::qPartsToolbar:setToolButtonStyle( Qt_ToolButtonIconOnly )
 
-   ::qPartsToolbar:addAction( "IdeEDITOR" , ::getAction( "EDITOR" ), {|| ::oIde:execAction( "EDITOR"  ) } )
-   ::qPartsToolbar:addAction( "IdeDBU"    , ::getAction( "DBU"    ), {|| ::oIde:execAction( "DBU"     ) } )
-   ::qPartsToolbar:addAction( "IdeREPORTS", ::getAction( "REPORTS"), {|| ::oIde:execAction( "REPORTS" ) } )
+   ::qPartsToolbar:addAction( "IdeEDITOR" , ::getAction( "EDITOR"  ), {|| ::oIde:execAction( "EDITOR"  ) } )
+   ::qPartsToolbar:addAction( "IdeDBU"    , ::getAction( "DBU"     ), {|| ::oIde:execAction( "DBU"     ) } )
+   ::qPartsToolbar:addAction( "IdeREPORTS", ::getAction( "REPORTS" ), {|| ::oIde:execAction( "REPORTS" ) } )
 
    ::oDlg:oWidget:addToolBar( Qt_TopToolBarArea, ::qPartsToolbar:oWidget )
 
@@ -1101,50 +1161,45 @@ METHOD IdeActions:buildToolbarProject()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolBarDocks()
-   LOCAL a_, qAct
-   LOCAL aBtns := {}
-
-   /* Right-hand docks toolbar */
-
-   aadd( aBtns, { ::oDockPT             , "projtree"      } )
-   aadd( aBtns, { ::oDockED             , "editstree"     } )
-   aadd( aBtns, { ::oSkltnsTreeDock     , "projtree"      } )
-   aadd( aBtns, {} )
-   aadd( aBtns, { ::oHelpDock           , "help"          } )
-   aadd( aBtns, { ::oDocViewDock        , "harbourhelp"   } )
-   aadd( aBtns, { ::oDocWriteDock       , "docwriter"     } )
-   aadd( aBtns, { ::oFuncDock           , "dc_function"   } )
-   aadd( aBtns, { ::oFunctionsDock      , "ffn"           } )
-   aadd( aBtns, { ::oPropertiesDock     , "properties"    } )
-   aadd( aBtns, { ::oEnvironDock        , "envconfig"     } )
-   aadd( aBtns, { ::oSkeltnDock         , "codeskeletons" } )
-   aadd( aBtns, { ::oThemesDock         , "syntaxhiliter" } )
-   aadd( aBtns, { ::oFindDock           , "search"        } )
-   aadd( aBtns, { ::oSourceThumbnailDock, "thumbnail"     } )
-   aadd( aBtns, { ::oCuiEdDock          , "cuied"         } )
-   aadd( aBtns, { ::oUiSrcDock          , "fileprg"       } )
-   aadd( aBtns, {} )
-   aadd( aBtns, { ::oDockB2             , "builderror"    } )
+   LOCAL cAction, aBtns := {}
 
    ::qTBarDocks := HBQToolBar():new( "ToolBar_Docks" )
 
    ::qTBarDocks:cName := "ToolBar_Docks"
    ::qTBarDocks:allowedAreas := Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea
    ::qTBarDocks:size := QSize( 12,12 )
-
    ::qTBarDocks:create()
-
    ::qTBarDocks:setStyleSheet( GetStyleSheet( "QToolBarLR5", ::nAnimantionMode ) )
    ::qTBarDocks:setWindowTitle( "Dockable Widgets" )
    ::qTBarDocks:setToolButtonStyle( Qt_ToolButtonIconOnly )
 
-   FOR EACH a_ IN aBtns
-      IF empty( a_ )
+   ::buildDockActions()
+
+   aadd( aBtns, "DockProjects"    )
+   aadd( aBtns, "DockEdits"       )
+   aadd( aBtns, "DockSkeletons"   )
+   aadd( aBtns, ""                )
+   aadd( aBtns, "DockIdeHelp"     )
+   aadd( aBtns, "DockHbHelp"      )
+   aadd( aBtns, "DockDocWriter"   )
+   aadd( aBtns, "DockFuncList"    )
+   aadd( aBtns, "DockProjFuncs"   )
+   aadd( aBtns, "DockProjProps"   )
+   aadd( aBtns, "DockEnvConfig"   )
+   aadd( aBtns, "DockCodeSkltns"  )
+   aadd( aBtns, "DockThemes"      )
+   aadd( aBtns, "DockFindInFiles" )
+   aadd( aBtns, "DockThumbNails"  )
+   aadd( aBtns, "DockCuiEditor"   )
+   aadd( aBtns, "DockUISource"    )
+   aadd( aBtns, ""                )
+   aadd( aBtns, "DockBuildLog"    )
+
+   FOR EACH cAction IN aBtns
+      IF empty( cAction )
          ::qTBarDocks:addSeparator()
       ELSE
-         qAct := a_[ 1 ]:oWidget:toggleViewAction()
-         qAct:setIcon( QIcon( hbide_image( a_[ 2 ] ) ) )
-         ::qTBarDocks:addAction( a_[ 2 ], qAct )
+         ::qTBarDocks:addAction( cAction, ::getAction( cAction ) )
       ENDIF
    NEXT
 
@@ -1299,4 +1354,210 @@ METHOD IdeActions:buildToolbarSelectedText()
    RETURN Self
 
 /*----------------------------------------------------------------------*/
+//
+/*----------------------------------------------------------------------*/
 
+METHOD IdeActions:buildToolsLayout( aBtns )
+   LOCAL oBtn, nRow, nCol
+
+   nRow := 0; nCol := 0
+   FOR EACH oBtn IN aBtns
+      ::oToolsLayout:addWidget( oBtn, nRow, nCol, 1, 1 )
+      nCol++
+      IF nCol == ::oINI:nToolWindowColumns
+         nCol := 0
+         nRow++
+      ENDIF
+   NEXT
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeActions:buildToolButton( cName, cDesc, cImage, bAction, lCheckable, lDraggable )
+   LOCAL oBtn := QToolButton()
+
+   HB_SYMBOL_UNUSED( lDraggable )
+
+   oBtn:setMaximumWidth( ::nToolBtnWidth )
+   oBtn:setMaximumHeight( ::nToolBtnHeight )
+   oBtn:setFocusPolicy( Qt_NoFocus )
+   oBtn:setAutoRaise( .T. )
+
+   IF HB_ISOBJECT( cDesc )
+      oBtn:setObjectName( cName )
+      oBtn:setText( cDesc:text() )
+      oBtn:setTooltip( cDesc:toolTip() )
+      oBtn:setIcon( cDesc:icon() )
+      oBtn:setCheckable( cDesc:isCheckable() )
+      IF HB_ISBLOCK( cImage )
+         oBtn:connect( "clicked()", cImage )
+      ENDIF
+   ELSE
+      oBtn:setObjectName( cName )
+      oBtn:setText( cName )
+      oBtn:setTooltip( cDesc )
+      oBtn:setIcon( QIcon( cImage ) )
+      IF HB_ISLOGICAL( lCheckable ) .AND. lCheckable
+         oBtn:setCheckable( .T. )
+      ENDIF
+      IF HB_ISBLOCK( bAction )
+         oBtn:connect( "clicked()", bAction )
+      ENDIF
+   ENDIF
+
+   AAdd( ::aToolButtons, oBtn )
+
+   RETURN oBtn
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeActions:showContextWidget( oEdit, lHide )
+   LOCAL qRect, qPos
+
+   DEFAULT lHide TO .F.
+
+   IF lHide
+      ::qContextWidget:hide()
+      RETURN NIL
+   ENDIF
+   IF ::qContextWidget:isVisible()
+      ::qContextWidget:hide()
+      RETURN NIL
+   ENDIF
+
+   qRect := oEdit:qEdit:cursorRect()
+   qPos := QPoint( qRect:x() + qRect:width(), qRect:y() + qRect:height() + 10 )
+
+   ::qContextWidget:move( oEdit:qEdit:mapToGlobal( qPos ) )
+   ::qContextWidget:show()
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeActions:buildContextToolWidget()
+   LOCAL aBtns
+   LOCAL nM := 0
+
+   ::oToolsLayout := QGridLayout()
+   ::oToolsLayout:setContentsMargins( nM, nM, nM, nM )
+   ::oToolsLayout:setHorizontalSpacing( nM )
+   ::oToolsLayout:setVerticalSpacing( nM )
+
+   ::qContextWidget := QWidget( ::oDlg:oWidget )
+   ::qContextWidget:hide()
+   ::qContextWidget:setWindowTitle( "Actions" )
+   ::qContextWidget:setLayout( ::oToolsLayout )
+   ::qContextWidget:setWindowFlags( Qt_Tool )
+   ::qContextWidget:setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
+   ::qContextWidget:setFocusPolicy( Qt_NoFocus )
+   ::qContextWidget:connect( QEvent_Move, {|| ::oIDE:manageFocusInEditor() } )
+
+   aBtns := {}
+   AEval( ::loadContextButtons(), {|e_| AAdd( aBtns, ::buildToolButton( e_[ 1 ], e_[ 2 ], e_[ 3 ], e_[ 4 ], e_[ 5 ] ) ) } )
+
+   ::buildToolsLayout( aBtns )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeActions:loadContextButtons()
+   LOCAL aBtns := {}
+
+   AAdd( aBtns, { "ManageTools"    , "Manage this Toolbox"        , hbide_image( "panel_8"          ), {|| ::manageToolBox()                               }, .f. } )
+   AAdd( aBtns, { "Undo"           , "Undo"                       , hbide_image( "undo"             ), {|| ::oEM:undo()                                    }, .f. } )
+   AAdd( aBtns, { "Redo"           , "Redo"                       , hbide_image( "redo"             ), {|| ::oEM:redo()                                    }, .f. } )
+   AAdd( aBtns, { "Cut"            , "Cut"                        , hbide_image( "cut"              ), {|| ::oEM:cut()                                     }, .f. } )
+   AAdd( aBtns, { "Copy"           , "Copy"                       , hbide_image( "copy"             ), {|| ::oEM:copy()                                    }, .f. } )
+   AAdd( aBtns, { "Paste"          , "Paste"                      , hbide_image( "paste"            ), {|| ::oEM:paste()                                   }, .f. } )
+   AAdd( aBtns, { "SelectAll"      , "Select all"                 , hbide_image( "selectall"        ), {|| ::oEM:selectAll()                               }, .f. } )
+   AAdd( aBtns, { "SelectionMode"  , "Selection Mode"             , hbide_image( "stream"           ), {|| ::getAction( "SelectionMode" ):trigger()        }, .T. } )
+   AAdd( aBtns, { "Find"           , "Find / Replace"             , hbide_image( "find"             ), {|| ::oEM:find()                                    }, .f. } )
+   AAdd( aBtns, { "BookMark"       , "Toggle Mark"                , hbide_image( "bookmark"         ), {|| ::oEM:setMark()                                 }, .f. } )
+   AAdd( aBtns, { "GotoLine"       , "Goto Line"                  , hbide_image( "gotoline3"        ), {|| ::oEM:goTo()                                    }, .f. } )
+   AAdd( aBtns, { "Reload"         , "Reload Source"              , hbide_image( "view_refresh"     ), {|| ::oEM:reload()                                  }, .f. } )
+   AAdd( aBtns, { "MoveUp"         , "Move Current Line Up"       , hbide_image( "movelineup"       ), {|| ::oEM:moveLine( -1 )                            }, .f. } )
+   AAdd( aBtns, { "MoveDn"         , "Move Current Line Down"     , hbide_image( "movelinedown"     ), {|| ::oEM:moveLine(  1 )                            }, .f. } )
+   AAdd( aBtns, { "DelLine"        , "Delete Current Line"        , hbide_image( "deleteline"       ), {|| ::oEM:deleteLine()                              }, .f. } )
+   AAdd( aBtns, { "Duplicate"      , "Duplicate Current Line"     , hbide_image( "duplicateline"    ), {|| ::oEM:duplicateLine()                           }, .f. } )
+   AAdd( aBtns, { "ToUpper"        , "To Upper"                   , hbide_image( "toupper"          ), {|| ::oEM:convertSelection( "ToUpper" )             }, .f. } )
+   AAdd( aBtns, { "ToLower"        , "To Lower"                   , hbide_image( "tolower"          ), {|| ::oEM:convertSelection( "ToLower" )             }, .f. } )
+   AAdd( aBtns, { "InvertCase"     , "Invert Case"                , hbide_image( "invertcase"       ), {|| ::oEM:convertSelection( "Invert"  )             }, .f. } )
+   AAdd( aBtns, { "BlockCmnt"      , "Block Comment"              , hbide_image( "blockcomment"     ), {|| ::oEM:blockComment()                            }, .f. } )
+   AAdd( aBtns, { "StreamCmnt"     , "Stream Comment"             , hbide_image( "streamcomment"    ), {|| ::oEM:streamComment()                           }, .f. } )
+   AAdd( aBtns, { "IndentR"        , "Indent Right"               , hbide_image( "blockindentr"     ), {|| ::oEM:indent(  1 )                              }, .f. } )
+   AAdd( aBtns, { "IndentL"        , "Indent Left"                , hbide_image( "blockindentl"     ), {|| ::oEM:indent( -1 )                              }, .f. } )
+   AAdd( aBtns, { "Sgl2Dbl"        , "Single to Double Quotes"    , hbide_image( "sgl2dblquote"     ), {|| ::oEM:convertDQuotes()                          }, .f. } )
+   AAdd( aBtns, { "Dbl2Sgl"        , "Double to Single Quotes"    , hbide_image( "dbl2sglquote"     ), {|| ::oEM:convertQuotes()                           }, .f. } )
+   AAdd( aBtns, { "Stringify"      , "Stringify Selection"        , hbide_image( "stringify"        ), {|| ::oEM:stringify()                               }, .f. } )
+   AAdd( aBtns, { "AlignAt"        , "Align At..."                , hbide_image( "align_at"         ), {|| ::oEM:alignAt()                                 }, .f. } )
+
+   AAdd( aBtns, { "ToggleLineNos"  , "Toggle Line Numbers"        , hbide_image( "togglelinenumber" ), {|| ::oEM:toggleLineNumbers()                       }, .f. } )
+   AAdd( aBtns, { "ToggleHorzRuler", "Toggle Horizontal Ruler"    , hbide_image( "horzruler"        ), {|| ::oEM:toggleHorzRuler()                         }, .f. } )
+   AAdd( aBtns, { "ToggleCurLine"  , "Toggle Current Line Hilight", hbide_image( "curlinehilight"   ), {|| ::oEM:toggleCurrentLineHighlightMode()          }, .f. } )
+   AAdd( aBtns, { "ToggleCodeComp" , "Toggle Code Completion"     , hbide_image( "help1"            ), {|| ::oEM:toggleCodeCompetion()                     }, .f. } )
+   AAdd( aBtns, { "ToggleCompTips" , "Toggle Completion Tips"     , hbide_image( "infotips"         ), {|| ::oEM:toggleCompetionTips()                     }, .f. } )
+   AAdd( aBtns, { "ZoomIn"         , "Zoom In"                    , hbide_image( "zoomin3"          ), {|| ::oEM:zoom( +1 )                                }, .f. } )
+   AAdd( aBtns, { "ZoomOut"        , "Zoom Out"                   , hbide_image( "zoomout3"         ), {|| ::oEM:zoom( -1 )                                }, .f. } )
+
+   AAdd( aBtns, { "FindPrevious"   , "Find Previous"              , hbide_image( "go-prev"          ), {|| ::oEM:findEx( , QTextDocument_FindBackward, 0 ) }, .f. } )
+   AAdd( aBtns, { "FindNext"       , "Find Next"                  , hbide_image( "go-next"          ), {|| ::oEM:findEx( , 0, 0 )                          }, .f. } )
+   AAdd( aBtns, { "FindFirst"      , "Find First"                 , hbide_image( "go-first"         ), {|| ::oEM:findEx( , 0, 1 )                          }, .f. } )
+   AAdd( aBtns, { "FindLast"       , "Find Last"                  , hbide_image( "go-last"          ), {|| ::oEM:findEx( , QTextDocument_FindBackward, 2 ) }, .f. } )
+   AAdd( aBtns, { "HighLightAll"   , "Highliht All Occurances"    , hbide_image( "hilight-all"      ), {|| ::oEM:highlightAll()                            }, .f. } )
+
+   AAdd( aBtns, { "IdeNew"         , "New source"                 , hbide_image( "new"              ), {|| ::oIde:execAction( "new"   )                    }, .f. } )
+   AAdd( aBtns, { "IdeOpen"        , "Open source"                , hbide_image( "open3"            ), {|| ::oIde:execAction( "Open"  )                    }, .f. } )
+   AAdd( aBtns, { "IdeSave"        , "Save current source"        , hbide_image( "save3"            ), {|| ::oIde:execAction( "Save"  )                    }, .f. } )
+   AAdd( aBtns, { "IdeClose"       , "Close current source"       , hbide_image( "close3"           ), {|| ::oIde:execAction( "Save"  )                    }, .f. } )
+   AAdd( aBtns, { "IdePrint"       , "Print current source"       , hbide_image( "print"            ), {|| ::oIde:execAction( "Print" )                    }, .f. } )
+
+   AAdd( aBtns, { "ApplyTheme"     , "Apply a Syntax Color Theme" , hbide_image( "syntaxhiliter"    ), {|| ::oEM:applyTheme()                              }, .f. } )
+   AAdd( aBtns, { "GotoFunc"       , "Goto Function under Cursor" , hbide_image( "dc_function"      ), {|| ::oEM:gotoFunction()                            }, .f. } )
+
+   AAdd( aBtns, { "RunAsScript"    , "Run as a Script"            , hbide_image( "runscript"        ), {|| ::oIde:execAction( "RunAsScript"   )            }, .f. } )
+   AAdd( aBtns, { "Compile"        , "Compile Source"             , hbide_image( "compile"          ), {|| ::oIde:execAction( "Compile"       )            }, .f. } )
+   AAdd( aBtns, { "Compile"        , "Compile Source"             , hbide_image( "compile"          ), {|| ::oIde:execAction( "Compile"       )            }, .f. } )
+   AAdd( aBtns, { "CompilePPO"     , "Compile to PPO"             , hbide_image( "ppo"              ), {|| ::oIde:execAction( "CompilePPO"    )            }, .f. } )
+   AAdd( aBtns, { "BuildSource"    , "Build Source"               , hbide_image( "buildsource"      ), {|| ::oIde:execAction( "BuildSource"   )            }, .f. } )
+   AAdd( aBtns, { "Build"          , "Build Project"              , hbide_image( "build"            ), {|| ::oIde:execAction( "Build"         )            }, .f. } )
+   AAdd( aBtns, { "BuildLaunch"    , "Build & Launch Project"     , hbide_image( "buildlaunch"      ), {|| ::oIde:execAction( "BuildLaunch"   )            }, .f. } )
+   AAdd( aBtns, { "Rebuild"        , "Re Build Project"           , hbide_image( "rebuild"          ), {|| ::oIde:execAction( "Rebuild"       )            }, .f. } )
+   AAdd( aBtns, { "RebuildLaunch"  , "Re Build & Launch Project"  , hbide_image( "rebuildlaunch"    ), {|| ::oIde:execAction( "RebuildLaunch" )            }, .f. } )
+
+
+   AAdd( aBtns, { "DockProjects"   , "Projects Tree"              , hbide_image( "projtree"         ), {|| ::getAction( "DockProjects"    ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockEdits"      , "Edits Tree"                 , hbide_image( "editstree"        ), {|| ::getAction( "DockEdits"       ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockSkeletons"  , "Skeletons Tree"             , hbide_image( "projtree"         ), {|| ::getAction( "DockSkeletons"   ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockIdeHelp"    , "Ide Help"                   , hbide_image( "help"             ), {|| ::getAction( "DockIdeHelp"     ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockHbHelp"     , "Harbour Help"               , hbide_image( "harbourhelp"      ), {|| ::getAction( "DockHbHelp"      ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockDocWriter"  , "Documentation Writer"       , hbide_image( "docwriter"        ), {|| ::getAction( "DockDocWriter"   ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockFuncList"   , "Functions List"             , hbide_image( "dc_function"      ), {|| ::getAction( "DockFuncList"    ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockProjFuncs"  , "Projects Functions"         , hbide_image( "ffn"              ), {|| ::getAction( "DockProjFuncs"   ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockProjProps"  , "Project Properties"         , hbide_image( "properties"       ), {|| ::getAction( "DockProjProps"   ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockEnvConfig"  , "Envirinment Configurations" , hbide_image( "envconfig"        ), {|| ::getAction( "DockEnvConfig"   ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockCodeSkltns" , "Code Skeletons"             , hbide_image( "codeskeletons"    ), {|| ::getAction( "DockCodeSkltns"  ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockThemes"     , "Source Syntax Color Themes" , hbide_image( "syntaxhiliter"    ), {|| ::getAction( "DockThemes"      ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockFindInFiles", "Find in Files"              , hbide_image( "search"           ), {|| ::getAction( "DockFindInFiles" ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockThumbNails" , "Source Thumbnail"           , hbide_image( "thumbnail"        ), {|| ::getAction( "DockThumbNails"  ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockCuiEditor"  , "CUI Editor"                 , hbide_image( "cuied"            ), {|| ::getAction( "DockCuiEditor"   ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockUISource"   , "UI Source Editor"           , hbide_image( "fileprg"          ), {|| ::getAction( "DockUISource"    ):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockBuildLog"   , "Build Logs"                 , hbide_image( "builderror"       ), {|| ::getAction( "DockBuildLog"    ):trigger()      }, .F. } )
+
+   AAdd( aBtns, { "HideDocks"      , "Hide all docking widgets"   , hbide_image( "hideshow"         ), {|| ::oIde:execAction( "Hide" )                     }, .F. } )
+   AAdd( aBtns, { "Home"           , "Show Home Info"             , hbide_image( "home3"            ), {|| ::oIde:execAction( "Home" )                     }, .F. } )
+   AAdd( aBtns, { "Exit"           , "Exit HbIDE"                 , hbide_image( "exit3"            ), {|| ::oIde:execAction( "Exit" )                     }, .F. } )
+
+   RETURN aBtns
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeActions:manageToolBox()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+    

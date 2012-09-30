@@ -1,5 +1,5 @@
                                  /*
- * $Id: projectwizard.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: projectwizard.prg 18065 2012-09-04 20:09:56Z vszakats $
  */
 
 /*
@@ -105,6 +105,9 @@
 
 #define UI_LOAD_NORMAL                            0
 #define UI_LOAD_DEFAULTS                          1
+
+#define SPCFILL( s )                              ( s )  // StrTran( s, " ", "^" )
+#define SPCPULL( s )                              ( s )  // StrTran( s, "^", " " )
 
 /*----------------------------------------------------------------------*/
 
@@ -228,9 +231,9 @@ METHOD IdeProjectWizard:show()
 
       ::oUI:treeProps:setContextMenuPolicy( Qt_CustomContextMenu )
       ::oUI:treeProps:setDragEnabled( .t. )
-      ::oUI:treeProps:setDropIndicatorShown( .t. )
       ::oUI:treeProps:setAcceptDrops( .t. )
       ::oUI:treeProps:setDragDropMode( QAbstractItemView_InternalMove )
+      ::oUI:treeProps:setDropIndicatorShown( .t. )
       ::oUI:treeProps:setRootIsDecorated( .F. ) /* Important to present as a list */
       ::oUI:treeProps:header():resizeSection( 0, 237 )
       ::oUI:treeProps:connect( "itemCollapsed(QTreeWidgetItem*)"        , {|p   | ::execEvent( __treeProps_itemCollapsed__       , p     ) } )
@@ -250,6 +253,7 @@ METHOD IdeProjectWizard:show()
       aadd( ::aItmProps, { NIL, "hbmk2 Command-Line Params"     , QBrush( QColor( 184, 184, 184 ) ),  oBrush, NIL, NIL, "background-color: rgb(184,184,184);" } )
       aadd( ::aItmProps, { NIL, "Batch File Commands"           , QBrush( QColor( 192, 192, 192 ) ),  oBrush, NIL, NIL, "background-color: rgb(192,192,192);" } )
       aadd( ::aItmProps, { NIL, "Actions after Successful Build", QBrush( QColor( 200, 200, 200 ) ),  oBrush, NIL, NIL, "background-color: rgb(200,200,200);" } )
+      aadd( ::aItmProps, { NIL, "Hbp - Project Files"           , QBrush( QColor( 208, 208, 208 ) ),  oBrush, NIL, NIL, "background-color: rgb(208,208,208);" } )
 
 
       ::oUI:treeSrc:setContextMenuPolicy( Qt_CustomContextMenu )
@@ -697,7 +701,7 @@ METHOD IdeProjectWizard:loadSourcesSections()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:loadDefaults()
-   LOCAL cProjPath, cPath, cName, cExt, lTmpltExists := .f.
+   LOCAL cProjPath, cPath, cName, cExt, lExists
 
    cProjPath := ::oUI:editProjPath:text()
    IF empty( cProjPath )
@@ -708,23 +712,19 @@ METHOD IdeProjectWizard:loadDefaults()
 
       hb_fNameSplit( cProjPath, @cPath, @cName, @cExt )
       IF ! ( lower( cExt ) == ".hbp" )
-         MsgBox( "Wrong type of project name !" )
-         RETURN .f.
-      ENDIF
-
-      IF hb_fileExists( cPath + cName + ".tpl" )
-         lTmpltExists := .t.
-      ELSEIF hb_fileExists( cProjPath )
-         MsgBox( "Project file already exists, cannot reload in wizard!" )
+         MsgBox( "Wrong type of project name!" )
          RETURN .f.
       ENDIF
       ::cProjPath := cPath
 
-      IF lTmpltExists
-         ::oProject:load( cPath + cName + ".tpl" )
+      lExists := hb_fileExists( cProjPath )
+
+      IF lExists
+         MsgBox( "Project already exists, loading..." )
+         ::oProject:load( cPath + cName + ".hbp" )
          ::oProject:loadUI( Self, UI_LOAD_NORMAL )
       ELSE
-         ::oUI:editProjPath:setText( cProjPath )
+         ::oUI:editProjPath:setText( cPath + cName + ".hbp" )
          ::oUI:editProjName:setText( upper( substr( cName, 1, 1 ) ) + lower( substr( cName, 2 ) ) )
          ::oUI:editOutName:setText( cName )
       ENDIF
@@ -741,7 +741,7 @@ METHOD IdeProjectWizard:saveProject()
 
    ::oProject:saveUI( Self )
    hb_fNameSplit( ::oUI:editProjPath:text(), @cPath, @cFile, @cExt )
-   ::oProject:save( cPath + cFile + ".tpl" )
+   ::oProject:save( cPath + cFile + ".hbp" )
 
    RETURN Self
 
@@ -753,7 +753,6 @@ CREATE CLASS IdeExProject
 
    DATA   cTmplt                                  INIT ""
 
-   DATA   cPathTmplt
    DATA   cPathHbp
 
    DATA   cProjPath
@@ -821,6 +820,7 @@ CREATE CLASS IdeExProject
    DATA   aPrpHbmk2
    DATA   aPrpBatch
    DATA   aPrpAActions
+   DATA   aHbp
    DATA   aSrcPrgs
    DATA   aSrcCs
    DATA   aSrcCpps
@@ -829,12 +829,12 @@ CREATE CLASS IdeExProject
    DATA   aSrcUIs
    DATA   aSrcOthers
 
-   METHOD new( cPathTmplt )
-   METHOD create( cPathTmplt )
+   METHOD new( cPathHbp )
+   METHOD create( cPathHbp )
    METHOD defaults()
-   METHOD setTmpltPath( cPathTmplt )              INLINE ::cPathTmplt := cPathTmplt
-   METHOD load( cPathTmplt )
-   METHOD save( cPathTmplt )
+   METHOD setTmpltPath( cPathHbp )              INLINE ::cPathHbp := cPathHbp
+   METHOD load( cPathHbp )
+   METHOD save( cPathHbp )
    METHOD loadUI( oWizard, nMode )
    METHOD saveUI( oWizard )
    METHOD retrieveProps( oWizard )
@@ -847,26 +847,27 @@ CREATE CLASS IdeExProject
    METHOD sectionToArray( cBuffer, cSection )
    METHOD getKeyValuePair( cStr )
    METHOD retrieveSection( cBuffer, cSection, aPost )
+   METHOD convert( cBuffer )
 
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeExProject:new( cPathTmplt )
+METHOD IdeExProject:new( cPathHbp )
 
-   hb_default( cPathTmplt, ::cPathTmplt )
+   hb_default( cPathHbp, ::cPathHbp )
 
-   ::cPathTmplt := cPathTmplt
+   ::cPathHbp := cPathHbp
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeExProject:create( cPathTmplt )
+METHOD IdeExProject:create( cPathHbp )
 
-   hb_default( cPathTmplt, ::cPathTmplt )
+   hb_default( cPathHbp, ::cPathHbp )
 
-   ::cPathTmplt := cPathTmplt
+   ::cPathHbp := cPathHbp
 
    ::defaults()
 
@@ -894,30 +895,30 @@ METHOD IdeExProject:defaults()
    ::lOther                := .F.
    ::lA                    := .F.
    ::lB                    := .F.
-   ::lES                   := .T.
+   ::lES                   := .F.
    ::lG                    := .F.
    ::lJ                    := .F.
    ::lL                    := .F.
-   ::lM                    := .T.
-   ::lN                    := .T.
+   ::lM                    := .F.
+   ::lN                    := .F.
    ::lV                    := .F.
    ::lW                    := .F.
    ::lZ                    := .F.
    ::lQ                    := .F.
    ::lBuild                := .F.
    ::lCredits              := .F.
-   ::cES                   := "0"
+   ::cES                   := ""
    ::cG                    := ""
    ::cM                    := ""
    ::cW                    := ""
    ::cQ                    := ""
-   ::lInc                  := .T.
+   ::lInc                  := .F.
    ::lGui                  := .F.
    ::lMt                   := .F.
    ::lShared               := .F.
    ::lFullStatic           := .F.
    ::lTrace                := .F.
-   ::lInfo                 := .T.
+   ::lInfo                 := .F.
    ::cGT                   := ""
    ::lGtGui                := .F.
    ::lGtWin                := .F.
@@ -941,6 +942,7 @@ METHOD IdeExProject:defaults()
    ::aPrpHbmk2             := {}
    ::aPrpBatch             := {}
    ::aPrpAActions          := {}
+   ::aHbp                  := {}
    ::aSrcPrgs              := {}
    ::aSrcCs                := {}
    ::aSrcCpps              := {}
@@ -1110,6 +1112,7 @@ METHOD IdeExProject:retrieveProps( oWizard )
             CASE "hbmk2 Command-Line Params"      ; AAdd( ::aPrpHbmk2     , cText ) ; EXIT
             CASE "Batch File Commands"            ; AAdd( ::aPrpBatch     , cText ) ; EXIT
             CASE "Actions after Successful Build" ; AAdd( ::aPrpAActions  , cText ) ; EXIT
+            CASE "Hbp - Project Files"            ; AAdd( ::aHbp          , cText ) ; EXIT
             ENDSWITCH
          NEXT
       ENDIF
@@ -1170,6 +1173,7 @@ METHOD IdeExProject:loadProps( oWizard )
          CASE "hbmk2 Command-Line Params"      ; aValues := ::aPrpHbmk2     ; EXIT
          CASE "Batch File Commands"            ; aValues := ::aPrpBatch     ; EXIT
          CASE "Actions after Successful Build" ; aValues := ::aPrpAActions  ; EXIT
+         CASE "Hbp - Project Files"            ; aValues := ::aHbp          ; EXIT
          ENDSWITCH
          IF ! empty( aValues )
             FOR EACH cValue IN aValues
@@ -1229,20 +1233,31 @@ METHOD IdeExProject:loadExtras( oWizard )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:addSection( aTxt, cSection, aValues )
-   LOCAL s
+   LOCAL s, a_:={}
 
-   AAdd( aTxt, "" )
-   AAdd( aTxt, "      <" + cSection + ">" )
    FOR EACH s IN aValues
-      AAdd( aTxt, "         " + s )
+      IF "=" $ s
+         IF ! empty( substr( s, at( "=", s ) + 1 ) )
+            aadd( a_, s )
+         ENDIF
+      ELSEIF ! empty( s )
+         aadd( a_, s )
+      ENDIF
    NEXT
-   AAdd( aTxt, "      </" + cSection + ">" )
+
+   IF ! empty( a_ )
+      AAdd( aTxt, SPCFILL( "# HbIDE       <" + cSection + ">" ) )
+      FOR EACH s IN a_
+         AAdd( aTxt, SPCFILL( "# HbIDE          " + s ) )
+      NEXT
+      AAdd( aTxt, SPCFILL( "# HbIDE       </" + cSection + ">" ) )
+   ENDIF
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeExProject:save( cPathTmplt )
+METHOD IdeExProject:save( cPathHbp )
    LOCAL cTxt, aGen :={}, aTxt := {}
 
    AAdd( aGen, "cProjPath        = " + ::cProjPath         )
@@ -1254,55 +1269,59 @@ METHOD IdeExProject:save( cPathTmplt )
    AAdd( aGen, "cLaunchExe       = " + ::cLaunchExe        )
    AAdd( aGen, "cLaunchParams    = " + ::cLaunchParams     )
    AAdd( aGen, "cStayIn          = " + ::cStayIn           )
-   AAdd( aGen, "lXhb             = " + iif( ::lXhb     , "YES", "NO" ) )
-   AAdd( aGen, "lXbase           = " + iif( ::lXbase   , "YES", "NO" ) )
-   AAdd( aGen, "lHbQt            = " + iif( ::lHbQt    , "YES", "NO" ) )
-   AAdd( aGen, "lXbp             = " + iif( ::lXbp     , "YES", "NO" ) )
-   AAdd( aGen, "lFwh             = " + iif( ::lFwh     , "YES", "NO" ) )
-   AAdd( aGen, "lHmg             = " + iif( ::lHmg     , "YES", "NO" ) )
-   AAdd( aGen, "lOther           = " + iif( ::lOther   , "YES", "NO" ) )
-   AAdd( aGen, "lA               = " + iif( ::lA       , "YES", "NO" ) )
-   AAdd( aGen, "lB               = " + iif( ::lB       , "YES", "NO" ) )
-   AAdd( aGen, "lES              = " + iif( ::lES      , "YES", "NO" ) )
-   AAdd( aGen, "lG               = " + iif( ::lG       , "YES", "NO" ) )
-   AAdd( aGen, "lJ               = " + iif( ::lJ       , "YES", "NO" ) )
-   AAdd( aGen, "lL               = " + iif( ::lL       , "YES", "NO" ) )
-   AAdd( aGen, "lM               = " + iif( ::lM       , "YES", "NO" ) )
-   AAdd( aGen, "lN               = " + iif( ::lN       , "YES", "NO" ) )
-   AAdd( aGen, "lV               = " + iif( ::lV       , "YES", "NO" ) )
-   AAdd( aGen, "lW               = " + iif( ::lW       , "YES", "NO" ) )
-   AAdd( aGen, "lZ               = " + iif( ::lZ       , "YES", "NO" ) )
-   AAdd( aGen, "lQ               = " + iif( ::lQ       , "YES", "NO" ) )
-   AAdd( aGen, "lBuild           = " + iif( ::lBuild   , "YES", "NO" ) )
-   AAdd( aGen, "lCredits         = " + iif( ::lCredits , "YES", "NO" ) )
+   AAdd( aGen, "lXhb             = " + iif( ::lXhb     , "YES", "" ) )
+   AAdd( aGen, "lXbase           = " + iif( ::lXbase   , "YES", "" ) )
+   AAdd( aGen, "lHbQt            = " + iif( ::lHbQt    , "YES", "" ) )
+   AAdd( aGen, "lXbp             = " + iif( ::lXbp     , "YES", "" ) )
+   AAdd( aGen, "lFwh             = " + iif( ::lFwh     , "YES", "" ) )
+   AAdd( aGen, "lHmg             = " + iif( ::lHmg     , "YES", "" ) )
+   AAdd( aGen, "lOther           = " + iif( ::lOther   , "YES", "" ) )
+   AAdd( aGen, "lA               = " + iif( ::lA       , "YES", "" ) )
+   AAdd( aGen, "lB               = " + iif( ::lB       , "YES", "" ) )
+   AAdd( aGen, "lES              = " + iif( ::lES      , "YES", "" ) )
+   AAdd( aGen, "lG               = " + iif( ::lG       , "YES", "" ) )
+   AAdd( aGen, "lJ               = " + iif( ::lJ       , "YES", "" ) )
+   AAdd( aGen, "lL               = " + iif( ::lL       , "YES", "" ) )
+   AAdd( aGen, "lM               = " + iif( ::lM       , "YES", "" ) )
+   AAdd( aGen, "lN               = " + iif( ::lN       , "YES", "" ) )
+   AAdd( aGen, "lV               = " + iif( ::lV       , "YES", "" ) )
+   AAdd( aGen, "lW               = " + iif( ::lW       , "YES", "" ) )
+   AAdd( aGen, "lZ               = " + iif( ::lZ       , "YES", "" ) )
+   AAdd( aGen, "lQ               = " + iif( ::lQ       , "YES", "" ) )
+   AAdd( aGen, "lBuild           = " + iif( ::lBuild   , "YES", "" ) )
+   AAdd( aGen, "lCredits         = " + iif( ::lCredits , "YES", "" ) )
    AAdd( aGen, "cES              = " + ::cES  )
    AAdd( aGen, "cG               = " + ::cG   )
    AAdd( aGen, "cM               = " + ::cM   )
    AAdd( aGen, "cW               = " + ::cW   )
    AAdd( aGen, "cQ               = " + ::cQ   )
-   AAdd( aGen, "lInc             = " + iif( ::lInc        , "YES", "NO" ) )
-   AAdd( aGen, "lGui             = " + iif( ::lGui        , "YES", "NO" ) )
-   AAdd( aGen, "lMt              = " + iif( ::lMt         , "YES", "NO" ) )
-   AAdd( aGen, "lShared          = " + iif( ::lShared     , "YES", "NO" ) )
-   AAdd( aGen, "lFullStatic      = " + iif( ::lFullStatic , "YES", "NO" ) )
-   AAdd( aGen, "lTrace           = " + iif( ::lTrace      , "YES", "NO" ) )
-   AAdd( aGen, "lInfo            = " + iif( ::lInfo       , "YES", "NO" ) )
+   AAdd( aGen, "lInc             = " + iif( ::lInc        , "YES", "" ) )
+   AAdd( aGen, "lGui             = " + iif( ::lGui        , "YES", "" ) )
+   AAdd( aGen, "lMt              = " + iif( ::lMt         , "YES", "" ) )
+   AAdd( aGen, "lShared          = " + iif( ::lShared     , "YES", "" ) )
+   AAdd( aGen, "lFullStatic      = " + iif( ::lFullStatic , "YES", "" ) )
+   AAdd( aGen, "lTrace           = " + iif( ::lTrace      , "YES", "" ) )
+   AAdd( aGen, "lInfo            = " + iif( ::lInfo       , "YES", "" ) )
    AAdd( aGen, "cGT              = " + ::cGT  )
-   AAdd( aGen, "lGtGui           = " + iif( ::lGtGui      , "YES", "NO" ) )
-   AAdd( aGen, "lGtWin           = " + iif( ::lGtWin      , "YES", "NO" ) )
-   AAdd( aGen, "lGtWvt           = " + iif( ::lGtWvt      , "YES", "NO" ) )
-   AAdd( aGen, "lGtWvg           = " + iif( ::lGtWvg      , "YES", "NO" ) )
-   AAdd( aGen, "lGtXwc           = " + iif( ::lGtXwc      , "YES", "NO" ) )
-   AAdd( aGen, "lGtCgi           = " + iif( ::lGtCgi      , "YES", "NO" ) )
-   AAdd( aGen, "lGtTrm           = " + iif( ::lGtTrm      , "YES", "NO" ) )
-   AAdd( aGen, "lGtStd           = " + iif( ::lGtStd      , "YES", "NO" ) )
-   AAdd( aGen, "lGtSln           = " + iif( ::lGtSln      , "YES", "NO" ) )
-   AAdd( aGen, "lGtPca           = " + iif( ::lGtPca      , "YES", "NO" ) )
-   AAdd( aGen, "lGtOs2           = " + iif( ::lGtOs2      , "YES", "NO" ) )
-   AAdd( aGen, "lGtCrs           = " + iif( ::lGtCrs      , "YES", "NO" ) )
+   AAdd( aGen, "lGtGui           = " + iif( ::lGtGui      , "YES", "" ) )
+   AAdd( aGen, "lGtWin           = " + iif( ::lGtWin      , "YES", "" ) )
+   AAdd( aGen, "lGtWvt           = " + iif( ::lGtWvt      , "YES", "" ) )
+   AAdd( aGen, "lGtWvg           = " + iif( ::lGtWvg      , "YES", "" ) )
+   AAdd( aGen, "lGtXwc           = " + iif( ::lGtXwc      , "YES", "" ) )
+   AAdd( aGen, "lGtCgi           = " + iif( ::lGtCgi      , "YES", "" ) )
+   AAdd( aGen, "lGtTrm           = " + iif( ::lGtTrm      , "YES", "" ) )
+   AAdd( aGen, "lGtStd           = " + iif( ::lGtStd      , "YES", "" ) )
+   AAdd( aGen, "lGtSln           = " + iif( ::lGtSln      , "YES", "" ) )
+   AAdd( aGen, "lGtPca           = " + iif( ::lGtPca      , "YES", "" ) )
+   AAdd( aGen, "lGtOs2           = " + iif( ::lGtOs2      , "YES", "" ) )
+   AAdd( aGen, "lGtCrs           = " + iif( ::lGtCrs      , "YES", "" ) )
 
-   AAdd( aTxt, "<HbIDE Project Template>" )
-   AAdd( aTxt, "   <Version:1.0>" )
+   AAdd( aTxt, ( "# " ) )
+   AAdd( aTxt, ( "# $Id: " ) )
+   AAdd( aTxt, ( "# " ) )
+   AAdd( aTxt, ( " " ) )
+   AAdd( aTxt, SPCFILL( "# HbIDE <Project>" ) )
+   AAdd( aTxt, SPCFILL( "# HbIDE    <Version:2.0>" ) )
    //
    ::addSection( aTxt, "GENERAL"            , aGen            )
    ::addSection( aTxt, "EXTRAS"             , ::aExtras       )
@@ -1315,6 +1334,7 @@ METHOD IdeExProject:save( cPathTmplt )
    ::addSection( aTxt, "HBMK2CMDLINEPARAMS" , ::aPrpHbmk2     )
    ::addSection( aTxt, "BATCHCOMMANDS"      , ::aPrpBatch     )
    ::addSection( aTxt, "ACTIONSAFTERBUILD"  , ::aPrpAActions  )
+   ::addSection( aTxt, "SUBPROJECTS"        , ::aHbp          )
    ::addSection( aTxt, "SOURCESPRG"         , ::aSrcPrgs      )
    ::addSection( aTxt, "SOURCESC"           , ::aSrcCs        )
    ::addSection( aTxt, "SOURCESCPP"         , ::aSrcCpps      )
@@ -1323,14 +1343,16 @@ METHOD IdeExProject:save( cPathTmplt )
    ::addSection( aTxt, "SOURCESUI"          , ::aSrcUIs       )
    ::addSection( aTxt, "SOURCESOTHER"       , ::aSrcOthers    )
    //
+   AAdd( aTxt, SPCFILL( "# HbIDE    </Version:2.0>" ) )
+   AAdd( aTxt, SPCFILL( "# HbIDE </Project>" ) )
+
+   // hbp consumable stuff
    AAdd( aTxt, "" )
-   AAdd( aTxt, "   </Version:1.0>" )
-   AAdd( aTxt, "</HbIDE Project Template>" )
 
    cTxt := ""
    aeval( aTxt, {|e| cTxt += e + hb_eol() } )
 
-   RETURN hb_memowrit( cPathTmplt, cTxt )
+   RETURN hb_memowrit( cPathHbp, cTxt )
 
 /*----------------------------------------------------------------------*/
 
@@ -1357,6 +1379,7 @@ METHOD IdeExProject:sectionToArray( cBuffer, cSection )
 METHOD IdeExProject:getKeyValuePair( cStr )
    LOCAL n
 
+   cStr := SPCPULL( cStr )
    IF ( n := at( "=", cStr ) ) > 0
       RETURN { alltrim( substr( cStr, 1, n - 1 ) ), alltrim( substr( cStr, n + 1 ) ) }
    ENDIF
@@ -1369,20 +1392,26 @@ METHOD IdeExProject:retrieveSection( cBuffer, cSection, aPost )
    LOCAL s
 
    FOR EACH s IN ::sectiontoArray( cBuffer, cSection )
-      AAdd( aPost, alltrim( s ) )
+      IF left( s, 8 ) == "# HbIDE "
+         AAdd( aPost, alltrim( strtran( SPCPULL( s ), "# HbIDE " ) ) )
+      ENDIF
    NEXT
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeExProject:load( cPathTmplt )
-   LOCAL cBuffer := hb_memoRead( cPathTmplt )
-   LOCAL cValid := "<HbIDE Project Template>"
-   LOCAL s, a_
+METHOD IdeExProject:load( cPathHbp )
+   LOCAL cBuffer := hb_memoRead( cPathHbp )
+   LOCAL cValid := "# HbIDE <Project>"
+   LOCAL s, a_, lConvert := .f.
 
-   IF ! ( left( cBuffer,  len( cValid ) ) == cValid )
-      RETURN Self
+   IF ! ( cValid $ cBuffer )
+      IF ! hbide_getYesNo( "This is not a HbIDE constructed project file, should convert ?" )
+         RETURN Self
+      ELSE
+         lConvert := .t.
+      ENDIF
    ENDIF
 
    IF !( hb_eol() == Chr( 10 ) )
@@ -1391,11 +1420,14 @@ METHOD IdeExProject:load( cPathTmplt )
    IF !( hb_eol() == Chr( 13 ) + Chr( 10 ) )
       cBuffer := StrTran( cBuffer, Chr( 13 ) + Chr( 10 ), Chr( 10 ) )
    ENDIF
+   IF lConvert
+      cBuffer := ::convert( cBuffer )
+   ENDIF
 
    ::defaults()  /* Clear variables */
 
-   FOR EACH s IN ::sectiontoArray( cBuffer, "GENERAL" )
-      IF ! empty( a_:= ::getKeyValuePair( s ) )
+   FOR EACH s IN ::sectionToArray( cBuffer, "GENERAL" )
+      IF left( s, 8 ) == "# HbIDE " .AND. ! empty( a_:= ::getKeyValuePair( strtran( s, "# HbIDE " ) ) )
          SWITCH a_[ 1 ]
          CASE "cProjPath"        ; ::cProjPath     := a_[ 2 ]          ; EXIT
          CASE "cProjName"        ; ::cProjName     := a_[ 2 ]          ; EXIT
@@ -1466,6 +1498,7 @@ METHOD IdeExProject:load( cPathTmplt )
    ::retrieveSection( cBuffer, "HBMK2CMDLINEPARAMS" , ::aPrpHbmk2     )
    ::retrieveSection( cBuffer, "BATCHCOMMANDS"      , ::aPrpBatch     )
    ::retrieveSection( cBuffer, "ACTIONSAFTERBUILD"  , ::aPrpAActions  )
+   ::retrieveSection( cBuffer, "SUBPROJECTS"        , ::ahbp          )
    ::retrieveSection( cBuffer, "SOURCESPRG"         , ::aSrcPrgs      )
    ::retrieveSection( cBuffer, "SOURCESC"           , ::aSrcCs        )
    ::retrieveSection( cBuffer, "SOURCESCPP"         , ::aSrcCpps      )
@@ -1475,5 +1508,41 @@ METHOD IdeExProject:load( cPathTmplt )
    ::retrieveSection( cBuffer, "SOURCESOTHER"       , ::aSrcOthers    )
 
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeExProject:convert( cBuffer )
+   LOCAL cBuf := ""
+
+   HB_SYMBOL_UNUSED( cBuffer )
+
+#if 0
+   "hbide_version="
+   "hbide_type="
+   "hbide_title="
+   "hbide_workingfolder="
+   "hbide_destinationfolder="
+   "hbide_output="
+   "hbide_launchparams="
+   "hbide_launchprogram="
+   "hbide_backupfolder="
+   "hbide_xhb="
+   "hbide_xpp="
+   "hbide_clp="
+
+   "cProjPath"        ; ::cProjPath
+   "cProjName"        ; ::cProjName
+   "cProjType"        ; ::cProjType
+   "cOutName"         ; ::cOutName
+   "cOutPath"         ; ::cOutPath
+   "cWorkPath"        ; ::cWorkPath
+   "cLaunchExe"       ; ::cLaunchExe
+   "cLaunchParams"    ; ::cLaunchParams
+   "cStayIn"          ; ::cStayIn
+   "lXhb"             ; ::lXhb
+   "lXbase"           ; ::lXbase
+#endif
+
+   RETURN cBuf
 
 /*----------------------------------------------------------------------*/

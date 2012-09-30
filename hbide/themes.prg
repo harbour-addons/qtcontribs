@@ -1,5 +1,5 @@
 /*
- * $Id: themes.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: themes.prg 18031 2012-08-27 20:00:45Z druzus $
  */
 
 /*
@@ -499,10 +499,10 @@ METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
       qEdit:hbSetSelectionColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
 
       qEdit:hbSetHighLighter( qHiliter )
-   ENDIF
 
-   IF lSetEditor
-      qHiliter:hbSetEditor( qEdit )
+      IF lSetEditor
+         qHiliter:hbSetEditor( qEdit )
+      ENDIF
    ENDIF
 
    RETURN qHiliter

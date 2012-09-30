@@ -1,5 +1,5 @@
-                     /*
- * $Id: edit.prg 4 2012-09-29 19:42:37Z bedipritpal $
+                        /*
+ * $Id: edit.prg 18061 2012-09-04 05:13:27Z vouchcac $
  */
 
 /*
@@ -257,6 +257,8 @@ CLASS IdeEdit INHERIT IdeObject
    METHOD unmatchPair()
    METHOD alignAt( cAt )
    METHOD stringify()
+   METHOD execContextMenu( p )
+   METHOD execToolsBox( p )
 
    ENDCLASS
 
@@ -413,7 +415,7 @@ METHOD IdeEdit:connectEditSignals()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeEdit:execEvent( nMode, p, p1 )
-   LOCAL qAct, n, qCursor, cAct, lOtherEdit
+   LOCAL qCursor, lOtherEdit
 
    HB_SYMBOL_UNUSED( p1 )
 
@@ -468,6 +470,44 @@ METHOD IdeEdit:execEvent( nMode, p, p1 )
       EXIT
 
    CASE __customContextMenuRequested__
+      ::execContextMenu( p )
+      EXIT
+
+   #if 0
+   CASE __textChanged__
+      ::oEditor:setTabImage( ::qEdit )
+      EXIT
+   CASE __modificationChanged__
+      ::oEditor:setTabImage( ::qEdit )
+      EXIT
+   CASE __redoAvailable__
+      EXIT
+   CASE __undoAvailable__
+      EXIT
+   CASE __updateRequest__
+      EXIT
+   #endif
+   ENDSWITCH
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+/* DEFAULT Ctrl+M */
+METHOD IdeEdit:execToolsBox( p )
+   IF Empty( p )
+      RETURN ::oAC:showContextWidget( Self )
+   ENDIF 
+   RETURN Self 
+   
+/*----------------------------------------------------------------------*/
+   
+METHOD IdeEdit:execContextMenu( p )
+   LOCAL n, cAct, qPos, qAct, qCursor //qRect
+
+   IF .T.
+      qCursor := ::qEdit:textCursor()
+      qPos := p
+
       ::oEM:aActions[ 17, 2 ]:setEnabled( !empty( qCursor:selectedText() ) )
 
       n := ascan( ::oEditor:aEdits, {|o| o == Self } )
@@ -475,7 +515,7 @@ METHOD IdeEdit:execEvent( nMode, p, p1 )
       ::oEM:aActions[ 18, 2 ]:setEnabled( Len( ::oEditor:aEdits ) == 0 .OR. ::oEditor:nSplOrient == -1 .OR. ::oEditor:nSplOrient == 1 )
       ::oEM:aActions[ 19, 2 ]:setEnabled( Len( ::oEditor:aEdits ) == 0 .OR. ::oEditor:nSplOrient == -1 .OR. ::oEditor:nSplOrient == 2 )
       ::oEM:aActions[ 21, 2 ]:setEnabled( n > 0 )
-      IF empty( qAct := ::oEM:qContextMenu:exec( ::qEdit:mapToGlobal( p ) ) )
+      IF empty( qAct := ::oEM:qContextMenu:exec( ::qEdit:mapToGlobal( qPos ) ) )
          RETURN Self
       ENDIF
       cAct := strtran( qAct:text(), "&", "" )
@@ -535,23 +575,7 @@ METHOD IdeEdit:execEvent( nMode, p, p1 )
          ::oEditor:vssExecute( "Checkout" )
          EXIT
       ENDSWITCH
-      EXIT
-
-   #if 0
-   CASE __textChanged__
-      ::oEditor:setTabImage( ::qEdit )
-      EXIT
-   CASE __modificationChanged__
-      ::oEditor:setTabImage( ::qEdit )
-      EXIT
-   CASE __redoAvailable__
-      EXIT
-   CASE __undoAvailable__
-      EXIT
-   CASE __updateRequest__
-      EXIT
-   #endif
-   ENDSWITCH
+   ENDIF
 
    RETURN NIL
 
@@ -1796,6 +1820,9 @@ METHOD IdeEdit:findEx( cText, nFlags, nStart )
    LOCAL qCursor, lFound, nPos
 
    DEFAULT cText  TO ::getSelectedText()
+   IF Empty( cText )
+      RETURN Self
+   ENDIF
    DEFAULT nFlags TO 0
    DEFAULT nStart TO 0
 
@@ -2039,6 +2066,10 @@ METHOD IdeEdit:highlightAll( cText )
       RETURN Self
    ENDIF
 
+   DEFAULT cText TO ::getSelectedText()
+   IF Empty( cText )
+      RETURN Self
+   ENDIF
    ::isHighLighted := .t.
 
    qDoc := ::oEditor:qDocument

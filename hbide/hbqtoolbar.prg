@@ -1,5 +1,5 @@
 /*
- * $Id: hbqtoolbar.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: hbqtoolbar.prg 18107 2012-09-20 00:52:27Z vouchcac $
  */
 
 /*
@@ -276,15 +276,30 @@ METHOD HbqToolbar:addSeparator()
 /*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:addAction( cName, qAction, bBlock )
+   LOCAL qAct
 
    DEFAULT cName TO hbide_getNextIdAsString( "IdeToolButtonAction" )
 
-   ::oWidget:addAction( qAction )
+   IF __objGetClsName( qAction ) == "QACTION"
+      ::oWidget:addAction( qAction )
 
-   ::hItems[ cName ] := cName
-   ::hActions[ cName ] := qAction
-   IF HB_ISBLOCK( bBlock )
-      qAction:connect( "triggered()", bBlock )
+      ::hItems[ cName ] := cName
+      ::hActions[ cName ] := qAction
+      IF HB_ISBLOCK( bBlock )
+         qAction:connect( "triggered()", bBlock )
+      ENDIF
+
+   ELSEIF __objGetClsName( qAction ) == "QTOOLBUTTON"
+      qAct := QWidgetAction( ::oWidget )
+      qAct:setDefaultWidget( qAction )
+      ::oWidget:addAction( qAct )
+
+      ::hItems[ cName ] := qAction
+      ::hActions[ cName ] := qAct
+      IF HB_ISBLOCK( bBlock )
+         qAct:connect( "triggered()", bBlock )
+      ENDIF
+
    ENDIF
 
    RETURN NIL

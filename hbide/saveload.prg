@@ -1,5 +1,5 @@
 /*
- * $Id: saveload.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: saveload.prg 18075 2012-09-10 16:26:11Z vouchcac $
  */
 
 /*
@@ -297,6 +297,7 @@ CLASS IdeINI INHERIT IdeObject
 
    DATA   lTabRemoveExt                           INIT .F.
    DATA   lTabAddClose                            INIT .F.
+   DATA   nToolWindowColumns                      INIT 17
 
    METHOD new( oIde )
    METHOD create( oIde )
@@ -566,6 +567,7 @@ METHOD IdeINI:save( cHbideIni )
    AAdd( txt_, "SelToolbar"                + "=" +   iif( ::lSelToolbar            , "YES", "NO" )      )
    AAdd( txt_, "TabRemoveExt"              + "=" +   iif( ::lTabRemoveExt          , "YES", "NO" )      )
    AAdd( txt_, "TabAddClose"               + "=" +   iif( ::lTabAddClose           , "YES", "NO" )      )
+   aadd( txt_, "ToolWindowColumns"         + "=" +   hb_ntos( ::nToolWindowColumns )                    )
 
    aadd( txt_, "" )
    aadd( txt_, "[PROJECTS]" )
@@ -932,6 +934,7 @@ METHOD IdeINI:load( cHbideIni )
                      CASE "SelToolbar"                  ; ::lSelToolbar                       := !( cVal == "NO" ) ; EXIT
                      CASE "TabRemoveExt"                ; ::lTabRemoveExt                     := !( cVal == "NO" ) ; EXIT
                      CASE "TabAddClose"                 ; ::lTabAddClose                      := !( cVal == "NO" ) ; EXIT
+                     CASE "ToolWindowColumns"           ; ::nToolWindowColumns                := val( cVal ); EXIT
 
                      ENDSWITCH
                   ENDIF
@@ -1220,7 +1223,7 @@ FUNCTION hbide_saveHarbourProtos( oIde, aProto )
    HB_SYMBOL_UNUSED( oIde )
 
    aadd( txt_, "/*"                                                                            )
-   aadd( txt_, " * $Id: saveload.prg 4 2012-09-29 19:42:37Z bedipritpal $"                 )
+   aadd( txt_, " * $Id: saveload.prg 18075 2012-09-10 16:26:11Z vouchcac $"                 )
    aadd( txt_, " */"                                                                           )
    aadd( txt_, ""                                                                              )
    aadd( txt_, "/* -------------------------------------------------------------------- */"    )

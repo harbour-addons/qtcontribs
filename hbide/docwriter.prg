@@ -1,5 +1,5 @@
 /*
- * $Id: docwriter.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: docwriter.prg 17899 2012-07-23 15:42:26Z vszakats $
  */
 
 /*
@@ -264,7 +264,7 @@ METHOD IdeDocWriter:installSignals()
    ::oUI:buttonClear          :connect( "clicked()"    , {| | ::execEvent( buttonClear_clicked           ) } )
    ::oUI:buttonSaveInFunc     :connect( "clicked()"    , {| | ::execEvent( buttonSaveInFunc_clicked      ) } )
    ::oUI:buttonSave           :connect( "clicked()"    , {| | ::execEvent( buttonSave_clicked            ) } )
-   ::oUI:buttonLoadFromCurFunc:connect( "clicked()"    , {|| ::execEvent( buttonLoadFromCurFunc_clicked  ) } )
+   ::oUI:buttonLoadFromCurFunc:connect( "clicked()"    , {| | ::execEvent( buttonLoadFromCurFunc_clicked  ) } )
 
    RETURN Self
 
@@ -706,9 +706,9 @@ METHOD IdeDocWriter:buildDocument()
    IF !empty( s := ::oUI:editReturns:text() )
       hEntry[ "RETURNS"      ] := s
    ENDIF
-   hEntry[ "DESCRIPTION"  ] := ::oUI:plainDesc:toPlainText()
-   hEntry[ "EXAMPLES"     ] := ::oUI:plainExamples:toPlainText()
-   hEntry[ "TESTS"        ] := ::oUI:plainTests:toPlainText()
+   hEntry[ "DESCRIPTION"  ] := ::oUI:plainDesc     : toPlainText()
+   hEntry[ "EXAMPLES"     ] := ::oUI:plainExamples : toPlainText()
+   hEntry[ "TESTS"        ] := ::oUI:plainTests    : toPlainText()
    IF !empty( s := ::oUI:editStatus:text() )
       hEntry[ "STATUS"       ] := s
    ENDIF

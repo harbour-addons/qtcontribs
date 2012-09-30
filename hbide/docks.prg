@@ -1,5 +1,5 @@
 /*
- * $Id: docks.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: docks.prg 18122 2012-09-22 09:54:07Z vouchcac $
  */
 
 /*
@@ -359,12 +359,12 @@ METHOD IdeDocks:getEditorPanelsInfo()
 
 METHOD IdeDocks:buildDialog()
    LOCAL s, aSize, a_, x_, lNew := .f.
-
+#if 0
    ::oIde:oDlg     := XbpDialog():new()
    ::oDlg:icon     := hbide_image( "hbide" )
    ::oDlg:title    := "Harbour IDE"
    ::oDlg:create( , , , , , .f. )
-
+#endif
    ::oDlg:oWidget:setStyleSheet( GetStyleSheet( "QMainWindow", ::nAnimantionMode ) )
 
    ::oDlg:close := {|| hbide_setClose( hbide_getYesNo( "HbIDE is about to be closed!", "Are you sure?" ) ), ;
@@ -1118,7 +1118,7 @@ METHOD IdeDocks:buildStackedWidget()
 METHOD IdeDocks:buildViewWidget( cView )
    LOCAL oFrame, qTBtnClose, qDrop, qMdi, n
 
-   qMdi := QMdiSubWindow()
+   qMdi := QMdiSubWindow( ::oDlg:oWidget )
    qMdi:setWindowTitle( cView )
    qMdi:setObjectName( cView )
    qMdi:setWindowIcon( QIcon( ::getPanelIcon( cView ) ) )

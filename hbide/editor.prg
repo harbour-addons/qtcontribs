@@ -1,5 +1,5 @@
 /*
- * $Id: editor.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: editor.prg 18061 2012-09-04 05:13:27Z vouchcac $
  */
 
 /*
@@ -130,6 +130,8 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD copy()
    METHOD paste()
    METHOD selectAll()
+   METHOD findEx( cText, nFlags, nStart )
+   METHOD highlightAll( cText )
    METHOD switchToReadOnly()
    METHOD convertSelection( cKey )
    METHOD insertText( cKey )
@@ -197,6 +199,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD getProto( cWord )
    METHOD alignAt()
    METHOD stringify()
+   METHOD applyTheme( cTheme )
 
    ENDCLASS
 
@@ -264,7 +267,7 @@ METHOD IdeEditsManager:create( oIde )
    aadd( ::aActions, { "TB_Compile"   , ::qContextMenu:addAction( ::oAC:getAction( "TB_Compile"    ) ) } )
    aadd( ::aActions, { "TB_CompilePPO", ::qContextMenu:addAction( ::oAC:getAction( "TB_CompilePPO" ) ) } )
    aadd( ::aActions, { ""             , ::qContextMenu:addSeparator() } )
-   aadd( ::aActions, { "Apply Theme"  , ::qContextMenu:addAction( QIcon( hbide_image( "syntaxhiliter" ) ), "Apply Theme"                      ) } )
+   aadd( ::aActions, { "Apply Theme"  , ::qContextMenu:addAction( QIcon( hbide_image( "syntaxhiliter" ) ), "Apply Theme" ) } )
    aadd( ::aActions, { "Save as Skltn", ::qContextMenu:addAction( "Save as Skeleton..."              ) } )
    ::qContextSub := ::qContextMenu:addMenu( QIcon( hbide_image( "split" ) ), "Split" )
    //
@@ -732,6 +735,24 @@ METHOD IdeEditsManager:selectAll()
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeEditsManager:findEx( cText, nFlags, nStart )
+   LOCAL oEdit
+   IF !empty( oEdit := ::getEditObjectCurrent() )
+      oEdit:findEx( cText, nFlags, nStart )
+   ENDIF
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:highlightAll( cText )
+   LOCAL oEdit
+   IF !empty( oEdit := ::getEditObjectCurrent() )
+      oEdit:highlightAll( cText )
+   ENDIF
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeEditsManager:toggleSelectionMode()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
@@ -907,6 +928,15 @@ METHOD IdeEditsManager:stringify()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:stringify()
+   ENDIF
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:applyTheme( cTheme )
+   LOCAL oEditor
+   IF !empty( oEditor := ::getEditorCurrent() )
+      oEditor:applyTheme( cTheme )
    ENDIF
    RETURN Self
 

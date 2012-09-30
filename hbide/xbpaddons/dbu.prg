@@ -780,7 +780,7 @@ METHOD HbpDBU:showTablesTree()
    LOCAL oUI, qTree, qParent, oPanel, qItm, aBrowser, q, aFld, qFont, nMax, nSz, oBrw
    LOCAL a_:={}
 
-   oUI := hbqtui_tables( ::oCurPanel:qWidget )
+   oUI := hbqtui_Tables( ::oCurPanel:qWidget )
 
    qFont := QFont( "Courier New", 8 )
    qTree := oUI:treeTables
@@ -912,7 +912,7 @@ METHOD HbpDBU:buildUiStruct()
    LOCAL oTbl, n, qItm
    LOCAL hdr_:= { { "", 50 }, { "Field Name",200 }, { "Type", 100 }, { "Len", 50 }, { "Dec", 70 } }
 
-   ::qStruct := hbqtui_dbStruct( ::oWidget )
+   ::qStruct := hbqtui_DbStruct( ::oWidget )
 
    ::qStruct:setWindowFlags( Qt_Dialog )
    ::qStruct:setMaximumHeight( ::qStruct:height() )
@@ -1795,7 +1795,7 @@ METHOD HbpBrowse:buildBrowser()
    oWnd := XbpWindow():new()
    oWnd:oWidget := QWidget()
 
-   qLayout := QHBoxLayout()
+   qLayout := QHBoxLayout( oWnd:oWidget )
    oWnd:oWidget:setLayout( qLayout )
    qLayout:setContentsMargins( 0,0,0,0 )
    qLayout:setSpacing( 2 )
@@ -1906,7 +1906,7 @@ METHOD HbpBrowse:buildMdiWindow()
 
    ::nID := ++nID
 
-   ::qMdi := QMdiSubWindow()
+   ::qMdi := QMdiSubWindow( ::oWnd:oWidget )
    //
    ::qMdi:setWidget( ::oWnd:oWidget )
    ::oPanel:qWidget:addSubWindow( ::qMdi )
@@ -2823,7 +2823,7 @@ STATIC FUNCTION hbide_fetchADate( qParent, cTitle, cPrompt, dDefault )
    DEFAULT cTitle  TO "A Date Value"
    DEFAULT cPrompt TO "What"
 
-   oUI := hbqtui_fetchDate( qParent )
+   oUI := hbqtui_FetchDate( qParent )
 
    oUI:setWindowTitle( cTitle )
    oUI:labelPrompt:setText( cPrompt )

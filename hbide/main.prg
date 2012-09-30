@@ -1,5 +1,5 @@
 /*
- * $Id: main.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: main.prg 18125 2012-09-22 16:01:02Z vouchcac $
  */
 
 /*
@@ -81,7 +81,7 @@
 
 #if defined( __PLATFORM__WINDOWS ) .OR. ;
     defined( __PLATFORM__LINUX )
-   #include "rddads.hbx"
+//   #include "rddads.hbx"
 #endif
 
 /* Link all Harbour Functions : needed to run external scripts */
@@ -98,7 +98,7 @@
 REQUEST DBFCDX
 REQUEST DBFNTX
 REQUEST DBFNSX
-REQUEST ADS
+//REQUEST ADS
 
 /*----------------------------------------------------------------------*/
 
@@ -123,7 +123,7 @@ FUNCTION Main( ... )
       hRDDADS := hb_libLoad( tmp )
       IF ! Empty( hRDDADS )
          hbide_setAdsAvailable( .t. )
-         hb_rddadsRegister()
+//         hb_rddadsRegister()
       ENDIF
    ENDIF
 
@@ -428,104 +428,6 @@ METHOD HbIde:destroy()
       xTmp[ 2 ] := NIL
    NEXT
 
-   ::oFont                    := NIL
-   ::oTH                      := NIL
-
-   ::aMeta                    := NIL
-   ::mp1                      := NIL
-   ::mp2                      := NIL
-   ::oXbp                     := NIL
-   ::nEvent                   := NIL
-   ::aTabs                    := NIL
-   ::aViews                   := NIL
-   ::aMdies                   := NIL
-   ::aProjData                := NIL
-   ::aPrpObjs                 := NIL
-   ::aEditorPath              := NIL
-   ::aSrcOnCmdLine            := NIL
-   ::aHbpOnCmdLine            := NIL
-   ::oTabParent               := NIL
-   ::oFrame                   := NIL
-   ::aTags                    := NIL
-   ::aText                    := NIL
-   ::aSkltns                  := NIL
-   ::aSources                 := NIL
-   ::aFuncList                := NIL
-   ::aLines                   := NIL
-   ::aComments                := NIL
-   ::aProjects                := NIL
-   ::aUserDict                := NIL
-   ::aMarkTBtns               := NIL
-   //
-   ::oStackedWidget           := NIL
-   ::oStackedWidgetMisc       := NIL
-   ::oFont                    := NIL
-   ::oProjTree                := NIL
-   ::oEditTree                := NIL
-   ::oFuncList                := NIL
-   ::oOutputResult            := NIL
-   ::oCompileResult           := NIL
-   ::oLinkResult              := NIL
-   ::oNewDlg                  := NIL
-   ::oPBFind                  := NIL
-   ::oPBRepl                  := NIL
-   ::oPBClose                 := NIL
-   ::oFind                    := NIL
-   ::oRepl                    := NIL
-   ::oCurProjItem             := NIL
-   ::oCurProject              := NIL
-   ::oProjRoot                := NIL
-   ::oExes                    := NIL
-   ::oLibs                    := NIL
-   ::oDlls                    := NIL
-   ::oProps                   := NIL
-   ::oGeneral                 := NIL
-   ::oSearchReplace           := NIL
-   ::oMainToolbar             := NIL
-   ::oDockR                   := NIL
-   ::oDockB                   := NIL
-   ::oDockB1                  := NIL
-   ::oDockB2                  := NIL
-   ::oDockPT                  := NIL
-   ::oDockED                  := NIL
-   ::oThemesDock              := NIL
-   ::oPropertiesDock          := NIL
-   ::oEnvironDock             := NIL
-   ::oFuncDock                := NIL
-   ::oDocViewDock             := NIL
-   ::oDocWriteDock            := NIL
-   ::oFunctionsDock           := NIL
-   ::oSkltnsTreeDock          := NIL
-   ::oHelpDock                := NIL
-   ::oSkeltnDock              := NIL
-   ::oFindDock                := NIL
-   ::oSourceThumbnailDock     := NIL
-   ::oQScintillaDock          := NIL
-   ::oUpDn                    := NIL
-   ::oReportsManagerDock      := NIL
-   ::oFormatDock              := NIL
-   ::lClosing                 := NIL
-   ::lStatusBarVisible        := NIL
-   ::nModeUI                  := NIL
-   ::oSys                     := NIL
-   ::oSysMenu                 := NIL
-
-   ::qLayout                  := NIL
-   ::qTabWidget               := NIL
-   ::qLayoutFrame             := NIL
-   ::qViewsCombo              := NIL
-   ::qFindDlg                 := NIL
-   ::qFontWrkProject          := NIL
-   ::qBrushWrkProject         := NIL
-   ::qProcess                 := NIL
-   ::qHelpBrw                 := NIL
-   ::qTBarLines               := NIL
-   ::qTBarPanels              := NIL
-   ::qTBarDocks               := NIL
-   ::qAnimateAction           := NIL
-   ::qStatusBarAction         := NIL
-   ::qCompModel               := NIL
-   ::qProtoList               := NIL
 
    HB_TRACE( HB_TR_DEBUG, "                                                      " )
    HB_TRACE( HB_TR_DEBUG, "After     ::oIde:destroy()", memory( 1001 )             )
@@ -547,6 +449,11 @@ METHOD HbIde:new( aParams )
 METHOD HbIde:create( aParams )
    LOCAL qPixmap, qSplash, cView
    LOCAL mp1, mp2, oXbp, nEvent
+
+   ::oDlg     := XbpDialog():new()
+   ::oDlg:icon     := hbide_image( "hbide" )
+   ::oDlg:title    := "Harbour IDE"
+   ::oDlg:create( , , , , , .F. )
 
    qPixmap := QPixmap( ":/resources" + hb_ps() + "hbidesplash.png" )
    qSplash := QSplashScreen()

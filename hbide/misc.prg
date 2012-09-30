@@ -1,5 +1,5 @@
 /*
- * $Id: misc.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: misc.prg 18119 2012-09-22 01:53:39Z vouchcac $
  */
 
 /*
@@ -476,7 +476,7 @@ FUNCTION hbide_arrayToMemoEx( a_ )
 
    aeval( a_, {|e| s += e + hb_eol() } )
 
-   s := substr( s, 1, Len( s ) - 2 )
+   s := substr( s, 1, Len( s ) - Len( hb_eol() ) )
 
    RETURN s
 

@@ -1,5 +1,5 @@
 /*
- * $Id: shortcuts.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: shortcuts.prg 17899 2012-07-23 15:42:26Z vszakats $
  */
 
 /*
@@ -231,6 +231,7 @@ CLASS IdeShortcuts INHERIT IdeObject
 
    METHOD toNextFunction()
    METHOD toPrevFunction()
+   METHOD execToolsBox()
 
    ENDCLASS
 
@@ -1095,6 +1096,9 @@ METHOD IdeShortcuts:clearSelection()
 METHOD IdeShortcuts:findAgain()
    RETURN ::oEdit:findEx()
 /*----------------------------------------------------------------------*/
+METHOD IdeShortcuts:execToolsBox()
+   RETURN ::oEdit:execToolsBox()
+/*----------------------------------------------------------------------*/
 //                              Navigation
 /*----------------------------------------------------------------------*/
 METHOD IdeShortcuts:home()
@@ -1270,6 +1274,9 @@ METHOD IdeShortcuts:loadMethods()
    aadd( ::aMethods, { 'help( cTopic )', ;
                        'help( "" )', ;
                        'Invokes "Help" docking widget in the right docking area. <cTopic> is not active yet.'  } )
+   aadd( ::aMethods, { 'execToolsBox()', ;
+                       'execToolsBox()', ;
+                       'Invokes context menu as if you would have right-clicked.'  } )
    aadd( ::aMethods, { 'exit( lWarn )', ;
                        'exit( .f. )', ;
                        'Exits hbIDE. If <lWarn == TRUE> then confirmation is requested through a popup dialog. All sources are saved if in modified state after confirmation to do so.'  } )
@@ -1583,6 +1590,7 @@ METHOD IdeShortcuts:loadDftSCuts()
       aadd( b_, { "Help"            , "F1"     , "NO", "NO" , "NO" , "", '::help( "" )'          , "help"            , "", "" } )
       aadd( b_, { "Exit"            , "W"      , "NO", "YES", "YES", "", '::exit( .f. )'         , "exit"            , "", "" } )
 
+      aadd( b_, { "Context Menu"    , "M"      , "NO", "YES", "NO" , "", '::execToolsBox()'      , "menu"            , "", "" } )
       aadd( b_, { "Cut"             , "X"      , "NO", "YES", "NO" , "", '::cut()'               , "cut"             , "", "" } )
       aadd( b_, { "Copy"            , "C"      , "NO", "YES", "NO" , "", '::copy()'              , "copy"            , "", "" } )
       aadd( b_, { "Paste"           , "V"      , "NO", "YES", "NO" , "", '::paste()'             , "paste"           , "", "" } )

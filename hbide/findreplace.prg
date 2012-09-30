@@ -1,5 +1,5 @@
 /*
- * $Id: findreplace.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: findreplace.prg 17933 2012-07-26 17:16:23Z vouchcac $
  */
 
 /*
@@ -265,7 +265,7 @@ METHOD IdeSearchReplace:create( oIde )
 
    ::oIde := oIde
 
-   ::oUI := hbide_getUI( "searchreplace" )
+   ::oUI := hbide_getUI( "searchreplace", ::oDlg:oWidget )
 
    ::oUI:setFocusPolicy( Qt_StrongFocus )
 

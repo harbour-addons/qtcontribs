@@ -258,6 +258,10 @@
     <file>resources/launch_r.png</file>
     <file>resources/editor.png</file>
     <file>resources/configtoolbars.png</file>
+    <file>resources/toolbars.png</file>
+    <file>resources/ideparts.png</file>
+    <file>resources/dockingwidgets.png</file>
+    <file>resources/selectproject.png</file>
     <file>resources/view_cascaded.png</file>
     <file>resources/view_organized.png</file>
     <file>resources/view_tabbed.png</file>
@@ -267,6 +271,7 @@
     <file>resources/view_zoomin.png</file>
     <file>resources/view_zoomout.png</file>
     <file>resources/view_refresh.png</file>
+    <file>resources/menu.png</file>
     <file>docs/faq.htm</file>
   </qresource>
 </RCC>

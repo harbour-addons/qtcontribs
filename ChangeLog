@@ -16,6 +16,50 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-09-29 21:58 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide.qrc
+  * hbide/resources/designer.png
+  + hbide/resources/dockingwidgets.png
+  + hbide/resources/ideparts.png
+  + hbide/resources/menu.png
+  + hbide/resources/selectproject.png
+  + hbide/resources/toolbars.png
+    + Added: new images to enrich menu options.
+
+  * hbide/xbpaddons/dbu.prg
+  * hbide/xbpaddons/reports.prg
+    ! Minor.
+
+  * hbide/actions.prg
+  * hbide/console.prg
+  * hbide/docks.prg
+  * hbide/docwriter.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/findreplace.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/parts.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+  * hbide/themes.prg
+  * hbide/uisrcmanager.prg
+    % Optimizations.
+    + Implemented: concept of manageable tool-box containing almost 
+       entire set of actions spread across menus and toolbars. This 
+       tiny toolbox can be called with Ctrl+M and appears right near 
+       the editing cursor position. The interface to manage this toolbox
+       is underway, which beside other things, will facilitate to 
+       configure it visually as to which icons, at what position:row-col,
+       should appear. The goal is to allow users to hide all toolbars from 
+       applications window and call this toolbox whenever there is a need.
+       A work-in-progress. But the toolbox is functional with Ctrl+M.
+
+  * hbide/projectwizard.prg
+  * hbide/projmanager.prg
+    + Advanced: "New Project Wizard".
+
 2012-09-29 19:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/docviewgenerator.ui
     % Refined: the working of slider of tree and view widgets, reported 

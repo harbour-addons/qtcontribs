@@ -374,7 +374,7 @@ METHOD HbpReports:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
 METHOD HbpReports:buildDesignReport()
 
-   ::qLayoutD := QHBoxLayout()
+   ::qLayoutD := QHBoxLayout( ::qWidget3 )
    ::qLayoutD:setContentsMargins( 0,0,0,0 )
    ::qLayoutD:setSpacing( 1 )
    ::qWidget3:setLayout( ::qLayoutD )

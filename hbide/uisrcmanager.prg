@@ -1,5 +1,5 @@
 /*
- * $Id: uisrcmanager.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: uisrcmanager.prg 18052 2012-09-01 09:27:05Z vouchcac $
  */
 
 /*
@@ -224,7 +224,7 @@ METHOD IdeUISrcManager:show()
    qDock:connect( QEvent_DragEnter, {|p| ::execEvent( __dockUIScr_dragEnterEvent__, p ) } )
    qDock:connect( QEvent_Drop     , {|p| ::execEvent( __dockUISrc_dropEvent__     , p ) } )
 
-   ::qWidget := QWidget()
+   ::qWidget := QWidget( qDock )
 
    qDock:setWidget( ::qWidget )
 
@@ -965,7 +965,7 @@ METHOD IdeUISrcManager:buildClassSkeleton( cCls, cUiName )
    LOCAL cClsC := cCls + ":"
 
    aadd( aSrc, '/*' )
-   aadd( aSrc, ' * $Id: uisrcmanager.prg 4 2012-09-29 19:42:37Z bedipritpal $' )
+   aadd( aSrc, ' * $Id: uisrcmanager.prg 18052 2012-09-01 09:27:05Z vouchcac $' )
    aadd( aSrc, ' */' )
    aadd( aSrc, '' )
    aadd( aSrc, '/*' )

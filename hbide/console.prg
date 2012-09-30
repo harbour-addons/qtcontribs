@@ -1,5 +1,5 @@
 /*
- * $Id: console.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: console.prg 18042 2012-08-29 21:20:30Z vouchcac $
  */
 
 /*
@@ -214,7 +214,6 @@ CLASS IdeConsole INHERIT IdeObject
 METHOD IdeConsole:new( oIde )
 
    DEFAULT oIde    TO ::oIde
-
    ::oIde    := oIde
 
    RETURN Self
@@ -224,7 +223,6 @@ METHOD IdeConsole:new( oIde )
 METHOD IdeConsole:create( oIde )
 
    DEFAULT oIde TO ::oIde
-
    ::oIde := oIde
 
    RETURN self

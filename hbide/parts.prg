@@ -1,5 +1,5 @@
 /*
- * $Id: parts.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: parts.prg 18122 2012-09-22 09:54:07Z vouchcac $
  */
 
 /*
@@ -177,6 +177,9 @@ METHOD IdeParts:buildParts()
 
 METHOD IdeParts:execStackIndexChanged( nIndex )
 
+   IF ::lQuitting
+      RETURN NIL
+   ENDIF
    IF ! Empty( ::oSettings )
       ::oDlg:oWidget:restoreState( ::oSettings )
    ENDIF

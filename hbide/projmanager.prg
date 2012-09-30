@@ -1,5 +1,5 @@
 /*
- * $Id: projmanager.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: projmanager.prg 17899 2012-07-23 15:42:26Z vszakats $
  */
 
 /*
@@ -949,8 +949,8 @@ METHOD IdeProjManager:synchronizeAlienProject( cProjFileName )
 
 METHOD IdeProjManager:sortSources( cMode )
    LOCAL a_, cTyp, s, d_, n
-   LOCAL aSrc := { ".prg", ".ch", ".c", ".cpp", ".h", ".obj", ".o", ".lib", ".a", ".rc", ".res" }
-   LOCAL aTxt := { {}    , {}   , {}  , {}    , {}  , {}    , {}  , {}    , {}  , {}   , {}     }
+   LOCAL aSrc := { ".prg", ".ch", ".c", ".cpp", ".h", ".obj", ".o", ".lib", ".a", ".rc", ".res", ".ui", ".qrc" }
+   LOCAL aTxt := { {}    , {}   , {}  , {}    , {}  , {}    , {}  , {}    , {}  , {}   , {}    , {}   , {}     }
    LOCAL aRst := {}
 
    a_:= hbide_memoToArray( ::oUI:editSources:toPlainText() )
