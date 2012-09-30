@@ -1,5 +1,5 @@
 /*
- * $Id: menubar.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: menubar.prg 17898 2012-07-23 15:32:39Z vszakats $
  */
 
 /*
@@ -313,7 +313,7 @@ METHOD xbpMenuBar:placeItem( xCaption, bAction, nStyle, nAttrb, nMode, nPos )
 
       aItem := { QMF_STRING, nMenuItemID, xCaption, bAction, oAction }
 
-   CASE cType == "O" .AND. __ObjGetClsName( xCaption ) == "QACTION"
+   CASE cType == "O" .AND. __ObjGetClsName( xCaption ) $ "QACTION,QWIDGETACTION"
 
       oAction := xCaption
 

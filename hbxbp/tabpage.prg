@@ -1,5 +1,5 @@
 /*
- * $Id: tabpage.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: tabpage.prg 17898 2012-07-23 15:32:39Z vszakats $
  */
 
 /*
@@ -134,7 +134,7 @@ METHOD XbpTabPage:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    oPar := ::oParent:oTabWidget
 
-   ::oWidget := QWidget()
+   ::oWidget := QWidget( oPar:oWidget )
    ::oWidget:setContextMenuPolicy( Qt_CustomContextMenu )
    ::oWidget:setObjectName( hbxbp_getNextID( "XBaseTabPage" ) )
    ::oWidget:setFocusPolicy( Qt_NoFocus )

@@ -1,5 +1,5 @@
 /*
- * $Id: dialog.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: dialog.prg 18107 2012-09-20 00:52:27Z vouchcac $
  */
 
 /*
@@ -165,9 +165,9 @@ METHOD XbpDialog:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    IF !empty( ::qtObject )
       ::drawingArea:qtObject := ::oWidget:centralWidget()
-      ::drawingArea:create()
+      ::drawingArea:create( Self )
    ELSE
-      ::drawingArea:create()
+      ::drawingArea:create( Self )
       ::oWidget:setCentralWidget( ::drawingArea:oWidget )
    ENDIF
 
@@ -464,7 +464,7 @@ METHOD XbpDrawingArea:create( oParent, oOwner, aPos, aSize, aPresParams, lVisibl
    IF ! empty( ::qtObject )
       ::oWidget := ::qtObject
    ELSE
-      ::oWidget := QMdiArea()
+      ::oWidget := QMdiArea( ::oParent:oWidget )
       ::oWidget:setBackground( QApplication():palette():button() )
    ENDIF
 

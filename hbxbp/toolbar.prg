@@ -1,5 +1,5 @@
 /*
- * $Id: toolbar.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: toolbar.prg 18122 2012-09-22 09:54:07Z vouchcac $
  */
 
 /*
@@ -241,7 +241,8 @@ METHOD XbpToolbar:sendToolbarMessage()
 
 METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nStyle, xKey )
    LOCAL oBtn, oButton
-   LOCAL isAction     := HB_ISOBJECT( cCaption ) .AND. __ObjGetClsName( cCaption ) == "QACTION"
+   LOCAL isAction     := HB_ISOBJECT( cCaption ) .AND. __ObjGetClsName( cCaption ) $ "QACTION,QWIDGETACTION"
+   LOCAL isToolButtonB:= HB_ISOBJECT( cCaption ) .AND. __ObjGetClsName( cCaption ) == "QTOOLBUTTON"
    LOCAL isToolButton := HB_ISARRAY( cCaption )
    LOCAL isObject     := HB_ISOBJECT( cCaption )
 
@@ -275,6 +276,10 @@ METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nS
    ELSE
       IF isAction
          oBtn:oAction := cCaption
+
+      ELSEIF isToolButtonB
+         oBtn:oAction := QWidgetAction( ::oWidget )
+         oBtn:oAction:setDefaultWidget( cCaption )
 
       ELSEIF isToolButton
          oButton := QToolButton()
