@@ -100,7 +100,7 @@ const QSqlDriver * driver () const{
    QSqlQuery * p = ( QSqlQuery * ) hbqt_par_ptr( 0 );
    if( p )
    {
-      hbqt_create_objectGC( hbqt_gcAllocate_QSqlDriver( ( void* ) p->driver(), true ), "hb_QSqlDriver" );
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void* ) p->driver(), "HB_QSQLDRIVER", NULL, HBQT_BIT_NONE ) );
    }
 }
 bool exec ( const QString & query )
@@ -129,7 +129,7 @@ const QSqlResult * result () const{
    QSqlQuery * p = ( QSqlQuery * ) hbqt_par_ptr( 0 );
    if( p )
    {
-      hbqt_create_objectGC( hbqt_gcAllocate_QSqlResult( ( void* ) p->result(), true ), "hb_QSqlResult" );
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void* ) p->result(), "HB_QSQLRESULT", NULL, HBQT_BIT_NONE ) );
    }
 }
 bool seek ( int index, bool relative = false )
