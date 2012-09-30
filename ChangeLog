@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-09-29 19:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/docviewgenerator.ui
+    % Refined: the working of slider of tree and view widgets, reported 
+      on users-list. The tree pane area was unable to be expanded on 
+      the right and hence functions list contents were not visible 
+      properly.
+
 2012-09-29 19:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/hbqt_bind.cpp
     % Optimization leading to proper object destruction on Qt level,

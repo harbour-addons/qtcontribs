@@ -162,10 +162,22 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <widget class="QTabWidget" name="tabWidgetContents">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="maximumSize">
        <size>
-        <width>185</width>
+        <width>2000</width>
         <height>16777215</height>
+       </size>
+      </property>
+      <property name="baseSize">
+       <size>
+        <width>185</width>
+        <height>0</height>
        </size>
       </property>
       <property name="currentIndex">
@@ -181,6 +193,9 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QTreeWidget" name="treeDoc">
+          <property name="indentation">
+           <number>10</number>
+          </property>
           <column>
            <property name="text">
             <string notr="true">1</string>
@@ -221,6 +236,12 @@
       </widget>
      </widget>
      <widget class="QTabWidget" name="tabWidgetElements">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="currentIndex">
        <number>0</number>
       </property>
@@ -411,8 +432,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>414</width>
-             <height>665</height>
+             <width>319</width>
+             <height>654</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">
