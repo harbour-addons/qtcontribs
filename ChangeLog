@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-01 17:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbaddons.hbp
+  * qtcontribs.hbp
+    % Renamed: hbaddons => qtcontribs as per discussion with Viktor.
+       We all supported his viewpoint.
+
 2012-09-30 09:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtsql/qth/QSqlQuery.qth
     ! Fixed: error where build was failing, a regression.
