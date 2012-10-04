@@ -1,5 +1,5 @@
 /*
- * $Id: ChangeLog 5 2012-09-29 19:58:36Z bedipritpal $
+ * $Id$
  */
 
 /* Read doc/howtosvn.txt and use this format for entry headers:
@@ -15,6 +15,10 @@
    under different terms, please contact respective author(s).
    The license applies to all entries newer than 2009-04-28.
 */
+
+2012-10-04 00:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * ChangeLog
+    + Added: SVN properties.
 
 2012-10-04 00:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbide/managetoolbox.ui
