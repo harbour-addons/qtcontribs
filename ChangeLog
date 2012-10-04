@@ -16,6 +16,25 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-04 00:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbide/managetoolbox.ui
+    + Work-in-progress.
+
+  + hbide/hbide_v.ch
+    + Added: header created with hbmk2 -vcshead= option to change HbIDE
+       revision number displayed on the title bar and about dialog.
+
+  * hbide/main.prg
+  * hbide/misc.prg
+    % Changed: revision no on titlebar and about dialog.
+    
+  + hbqt/qtdesigner/hbqtdesigner.ch
+  + hbqt/qtnetwork/hbqtnetwork.ch
+    + Added: dummy headers to be uniform with all libs.
+
+  * qtcontribs.hbp
+    + Added: qtwebkit library and commented out.
+
 2012-10-01 17:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbaddons.hbp
   * qtcontribs.hbp

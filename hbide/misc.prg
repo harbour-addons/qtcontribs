@@ -72,6 +72,8 @@
 
 #include "hbide.ch"
 
+#include "hbide_v.ch"
+
 STATIC aRegList
 
 /*----------------------------------------------------------------------*/
@@ -982,13 +984,13 @@ FUNCTION hbide_help( nOption )
 
    SWITCH nOption
    CASE 1
-      tit_ := 'About hbIde'
+      tit_ := 'About HbIDE'
       AAdd( txt_, "<b>Harbour IDE ( HbIDE )</b>" )
       AAdd( txt_, "Developed by" )
       AAdd( txt_, "Pritpal Bedi ( bedipritpal@hotmail.com )" )
       AAdd( txt_, "" )
       AAdd( txt_, "built with:" )
-      AAdd( txt_, HB_VERSION() )
+      AAdd( txt_, "QtContribs " + Upper( _HBMK_VCS_TYPE_  ) + " r " + _HBMK_VCS_ID_ )
       AAdd( txt_, HB_COMPILER() )
       AAdd( txt_, "Qt " + QT_VERSION_STR() )
       AAdd( txt_, "" )
@@ -1003,7 +1005,11 @@ FUNCTION hbide_help( nOption )
       AAdd( txt_, "" )
       AAdd( txt_, "Please visit the home page:" )
       AAdd( txt_, "<a href='http://groups.google.com/group/harbour-devel/'>http://groups.google.com/group/harbour-devel/</a>" )
-      EXIT
+      AAdd( txt_, "" )
+      AAdd( txt_, "<b>QtContribs Developers/Users Mailing List</b>" )
+      AAdd( txt_, "" )
+      AAdd( txt_, "<a href='http://groups.google.com/group/qtcontribs/'>http://groups.google.com/group/qtcontribs/</a>" )
+      EXIT 
 
    CASE 3
       tit_ := 'Mailing List'

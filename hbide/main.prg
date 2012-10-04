@@ -79,6 +79,8 @@
 #include "hbclass.ch"
 #include "hbver.ch"
 
+#include "hbide_v.ch"
+
 #if defined( __PLATFORM__WINDOWS ) .OR. ;
     defined( __PLATFORM__LINUX )
 //   #include "rddads.hbx"
@@ -1619,7 +1621,8 @@ METHOD HbIde:updateProjectMenu()
  * 02/01/2010 - 16:30:06 - vailtom
  */
 METHOD HbIde:updateTitleBar()
-   LOCAL cTitle := "Harbour IDE (r" + hb_ntos( hb_version( HB_VERSION_REVISION ) ) + ")"
+// LOCAL cTitle := "Harbour IDE (r" + hb_ntos( hb_version( HB_VERSION_REVISION ) ) + ")"
+   LOCAL cTitle := "Harbour IDE (r" + _HBMK_VCS_ID_ + ")"
    LOCAL oEdit
 
    IF Empty( ::oDlg )

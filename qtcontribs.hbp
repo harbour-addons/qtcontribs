@@ -10,6 +10,7 @@ hbqt/qtnetwork/hbqtnetwork.hbp
 
 #    Uncomment whatever lib you require
 #
+# hbqt/qtwebkit/hbqtwebkit.hbp
 # hbqt/qtdesigner/hbqtdesigner.hbp
 # hbqt/qtdeclarative/hbqtdeclarative.hbp
 # hbqt/qtmultimedia/hbqtmultimedia.hbp
