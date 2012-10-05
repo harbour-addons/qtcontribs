@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-05 14:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  - hbide/hbide_v.ch
+    - Deleted: header to fetch SVN revision no. 
+
+  * hbide/hbide.hbp
+    + Added: -vcshead=hbide_v.ch
+       This generates the hbide_v.ch at build time and is included in 
+       main.prg and misc.prg.
+    ; TODO: one common function to pull this info than at two places.
+
 2012-10-05 12:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * Version change: always to last than current one. How to do ???
