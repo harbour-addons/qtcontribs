@@ -16,6 +16,170 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-04 17:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/hbqt_bind.cpp
+    + Added: hbqt_bindAddConnected(), hbqt_bindDelConnected() functions.
+
+  * hbqt/qtcore/hbqt_misc.prg
+    + Added: class HbQtConnecteds().
+
+    IMPLEMENTED: the objects having any signal connected to remain alive 
+                 irrespective of the Harbour variable scope. Uptil now 
+                 a :connect() to be functional, the variable holding the 
+                 object had to remain in scope till the life of that 
+                 connect's life-span. Now it is not needed. Below is 
+                 the example ( hbqt/tests/qtrevamp.prg : snippet ):
+
+                 STATIC FUNCTION BuildMenuBar( oWnd )
+                    LOCAL oMenu1, oMenuBar
+                 
+                    STATIC oItemIns, oItemMod       /*****  STATICS ******/
+                 
+                    oMenuBar := QMenuBar( oWnd )
+                 
+                    oMenu1 := QMenu( oMenuBar )
+                    //
+                    oMenu1:setTitle( "&Options" )
+                 
+                    IF empty( oItemIns )
+                       oItemIns := QAction( oWnd )
+                       oItemIns:setText( "&MessageBox()" )
+                       oItemIns:connect( "triggered()", {|| DlgMBox( "Yes" ) } )
+                    ENDIF
+                 
+                    IF empty( oItemMod )
+                       oItemMod := QAction( oWnd )
+                       oItemMod:setText( "&ContextMenu()" )
+                       oItemMod:connect( "triggered()", {|| ContextMenu( oWnd ) } )
+                    ENDIF
+                 
+                    oMenu1:addAction( oItemIns )
+                    oMenu1:addAction( oItemMod )
+                 
+                    oMenuBar:addMenu( oMenu1 )
+                 
+                    oWnd:setMenuBar( oMenuBar )
+                 
+                    RETURN NIL
+    
+
+               =>
+
+
+                 STATIC FUNCTION BuildMenuBar( oWnd )
+                    LOCAL oMenu1, oMenuBar
+                 
+                    LOCAL oItemIns, oItemMod         /***** LOCALS *****/
+                 
+                    oMenuBar := QMenuBar( oWnd )
+                 
+                    oMenu1 := QMenu( oMenuBar )
+                    //
+                    oMenu1:setTitle( "&Options" )
+                 
+                    IF empty( oItemIns )
+                       oItemIns := QAction( oWnd )
+                       oItemIns:setText( "&MessageBox()" )
+                       oItemIns:connect( "triggered()", {|| DlgMBox( "Yes" ) } )
+                    ENDIF
+                 
+                    IF empty( oItemMod )
+                       oItemMod := QAction( oWnd )
+                       oItemMod:setText( "&ContextMenu()" )
+                       oItemMod:connect( "triggered()", {|| ContextMenu( oWnd ) } )
+                    ENDIF
+                 
+                    oMenu1:addAction( oItemIns )
+                    oMenu1:addAction( oItemMod )
+                 
+                    oMenuBar:addMenu( oMenu1 )
+                 
+                    oWnd:setMenuBar( oMenuBar )
+                 
+                    RETURN NIL
+
+
+
+   ; WARNING:    The code using WITH OBJECT (xhb) implementation must declare a 
+                 seperate variable for each object. For example:
+
+
+                 FUNCTION ShowForm()
+                    LOCAL oQtWin, oQtCent, oQtBtn
+                    
+                    WITH OBJECT oQtWin := QMainWindow()
+                       :setObjectName( "MainWin" )
+                       :resize( 600, 600 )
+                       :setWindowTitle( "Testing" )
+                 
+                       WITH OBJECT oQtCent := QWidget( hb_QWith() )
+                          :setObjectName( "centralWidget" )
+                 
+                          WITH OBJECT oQtBtn := QPushButton( hb_QWith() )
+                             :setObjectName( "btn1" )
+                             :resize( 100, 25 )
+                             :move( 10, 10 )
+                             :setText( "Premi qui" )
+                             :connect( "clicked()", { || Qclicked() } )
+                          END WITH
+                 
+                          WITH OBJECT oQtBtn := QPushButton( hb_QWith() )
+                             :setObjectName( "btn2" )
+                             :resize( 100, 25 )
+                             :move( 10, 50 )
+                             :setText( "Premi li" )
+                             :connect( "clicked()", { || Qclicked1() } )
+                          END WITH
+                 
+                       END WITH
+                 
+                       :setCentralWidget( oQtCent )
+                    END WITH
+                 
+                    oQtWin:Show()
+                 
+                    RETURN oQtWin
+
+
+               =>   
+
+
+                 FUNCTION ShowForm()
+                    LOCAL oQtWin, oQtCent, oQtBtn, oQtBtn_1
+                    
+                    WITH OBJECT oQtWin := QMainWindow()
+                       :setObjectName( "MainWin" )
+                       :resize( 600, 600 )
+                       :setWindowTitle( "Testing" )
+                 
+                       WITH OBJECT oQtCent := QWidget( hb_QWith() )
+                          :setObjectName( "centralWidget" )
+                 
+                          WITH OBJECT oQtBtn := QPushButton( hb_QWith() ) 
+                             :setObjectName( "btn1" )
+                             :resize( 100, 25 )
+                             :move( 10, 10 )
+                             :setText( "Premi qui" )
+                             :connect( "clicked()", { || Qclicked() } )
+                          END WITH
+                 
+                          WITH OBJECT oQtBtn_1 := QPushButton( hb_QWith() )
+                             :setObjectName( "btn2" )
+                             :resize( 100, 25 )
+                             :move( 10, 50 )
+                             :setText( "Premi li" )
+                             :connect( "clicked()", { || Qclicked1() } )
+                          END WITH
+                 
+                       END WITH
+                 
+                       :setCentralWidget( oQtCent )
+                    END WITH
+                 
+                    oQtWin:Show()
+                 
+                    RETURN oQtWin
+
 2012-10-04 00:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * ChangeLog
     + Added: SVN properties.

@@ -230,4 +230,26 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
    RETURN .F.
 
 /*----------------------------------------------------------------------*/
+//
+/*----------------------------------------------------------------------*/
+
+CLASS HbQtConnecteds
+
+   VAR    __ConnectedObjects
+
+   METHOD init()
+
+   ENDCLASS
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtConnecteds:init()
+
+   IF Empty( ::__ConnectedObjects )
+      ::__ConnectedObjects := {}
+   ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
 
