@@ -13,8 +13,6 @@
 
 -icon={allwin}hbide.ico
 
--vcshead=hbide_v.ch
-
 #-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/libgcc_s_dw2-1.dll
 #-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/mingwm10.dll
 #-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/QtCore4.dll

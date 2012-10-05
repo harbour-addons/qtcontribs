@@ -2,6 +2,9 @@
 # $Id: hbaddons.hbp 5 2012-09-29 19:58:36Z bedipritpal $
 #
 
+#    Generate SVN Revision Info
+-vcshead=hbide/hbide_v.ch
+
 #    Qt Modules
 #
 hbqt/qtcore/hbqtcore.hbp

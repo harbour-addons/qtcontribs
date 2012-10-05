@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-05 16:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide.hbp
+    - Deleted: -vcshead=hbide_v.ch
+
+  * qtcontribs.hbp
+    + Added: -vcshead=hbide/hbide_v.ch
+
 2012-10-05 14:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   - hbide/hbide_v.ch
     - Deleted: header to fetch SVN revision no. 
