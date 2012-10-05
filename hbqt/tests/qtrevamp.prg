@@ -1,5 +1,5 @@
 /*
- * $Id: qtrevamp.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id: qtrevamp.prg 17648 2012-06-14 09:11:33Z vouchcac $
  */
 
 
@@ -9,10 +9,9 @@
 // Because :connect needs that Harbour object must
 // always be accessible.
 //
-STATIC oItemIns, oItemMod
 
 FUNCTION Main()
-   LOCAL oWnd
+   LOCAL oWnd, qApp
 
    hbqt_errorsys()
 
@@ -24,13 +23,15 @@ FUNCTION Main()
 
    oWnd:show()
 
-   QApplication():exec()
+   qApp := QApplication()
+   qApp:exec()
 
    RETURN NIL
 
 
 STATIC FUNCTION BuildMenuBar( oWnd )
    LOCAL oMenu1, oMenuBar
+   LOCAL oItemIns, oItemMod
 
    oMenuBar := QMenuBar( oWnd )
 
@@ -43,13 +44,13 @@ STATIC FUNCTION BuildMenuBar( oWnd )
    oMenu1:setTitle( "&Options" )
 
    IF empty( oItemIns )
-      oItemIns := QAction( oMenu1 )
+      oItemIns := QAction( oWnd )
       oItemIns:setText( "&MessageBox()" )
       oItemIns:connect( "triggered()", {|| DlgMBox( "Yes" ) } )
    ENDIF
 
    IF empty( oItemMod )
-      oItemMod := QAction( oMenu1 )
+      oItemMod := QAction( oWnd )
       oItemMod:setText( "&ContextMenu()" )
       oItemMod:connect( "triggered()", {|| ContextMenu( oWnd ) } )
    ENDIF

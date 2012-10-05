@@ -292,6 +292,10 @@ static void hbqt_bindThreadRelease( void * cargo )
    delete pBindThreadData->pDestroyer;
    delete pBindThreadData->pReceiverSlots;
    delete pBindThreadData->pReceiverEvents;
+   if( pBindThreadData->pConnecteds )
+   {
+      hb_itemRelease( pBindThreadData->pConnecteds );
+   }
 
    HB_TRACE( HB_TR_DEBUG, ( "          " ) );
    HB_TRACE( HB_TR_DEBUG, ( "...hbqt_bindThreadRelease( %i )...ENDS", iThreadId ) );
