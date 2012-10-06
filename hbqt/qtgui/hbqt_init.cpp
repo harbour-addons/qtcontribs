@@ -822,9 +822,8 @@ static void hbqt_lib_init( void * cargo )
 
    hbqt_registerCallbacks();
 
-   QTextCodec * codec = QTextCodec::codecForName( "UTF8" );
-   QTextCodec::setCodecForTr( codec );
-   QTextCodec::setCodecForCStrings( codec );
+   QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
+   QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 }
 
 static void hbqt_lib_exit( void * cargo )

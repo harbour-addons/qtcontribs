@@ -102,12 +102,16 @@ REQUEST DBFNTX
 REQUEST DBFNSX
 //REQUEST ADS
 
+REQUEST  HB_CODEPAGE_UTF8EX
+
 /*----------------------------------------------------------------------*/
 
 FUNCTION Main( ... )
    LOCAL oTmp
 
    LOCAL hRDDADS, tmp
+
+   hb_cdpSelect( "UTF8EX" )
 
    #ifdef HB_IDE_DISTRO
       LOCAL cBse := hb_dirBase() + ".."
@@ -526,7 +530,7 @@ METHOD HbIde:create( aParams )
    hbide_loadSkltns( Self )
 
    /* Set Codec at the Begining - no interface display */
-   hb_cdpSelect( ::cWrkCodec )
+   //hb_cdpSelect( ::cWrkCodec )
 
    /* Parts Manager */
    ::oParts := IdeParts():new( Self ):create()
@@ -1656,7 +1660,7 @@ METHOD HbIde:setCodec( cCodec )
 
    ::oDK:setStatusText( SB_PNL_CODEC, hb_cdpUniID( ::cWrkCodec ) )
 
-   hb_cdpSelect( ::cWrkCodec )
+   //hb_cdpSelect( ::cWrkCodec )
 
    RETURN Self
 
