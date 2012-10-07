@@ -16,6 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-07 15:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/hbmk2_qt.hb
+    % Changed: the version guard agaisnt which a class is compiled.
+       Earlier every class was guarded against v4.5.
+       Now class is guarded against minimum of v4.5 or defined for 
+       a class in .qth in CLASS section. 
+         <CLASS> 
+         ...
+         Version = 0x040n00 
+         </CLASS>
+ 
+       This empowers HbQt engine to add any class comes with new version 
+       of Qt.
+
 2012-10-07 12:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtopengl/qth/QGLFramebufferObjectFormat.qth
     % Versionized: mipmap() and setMipmap() methods under [*V=0x040800*]

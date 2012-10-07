@@ -1554,6 +1554,12 @@ METHOD HbQtSource:build()
 
    /* Pull .cpp copyright text */
    aLine := hbqtgen_BuildCopyrightText()
+   IF ::cQtVer > "0x040500"
+      AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer                                    )
+   ELSE
+      AAdd( aLine, "#if QT_VERSION >= 0x040500"                                       )
+   ENDIF
+   AAdd( aLine, ""                                                                 )
 
    /* Place ENUM definitions into the source */
    IF ! Empty( ::enums_ )
@@ -3176,8 +3182,6 @@ STATIC FUNCTION hbqtgen_BuildCopyrightText()
    AAdd( txt_, '#include "hbstack.h"'                                             )
    AAdd( txt_, '#include "hbdefs.h"'                                              )
    AAdd( txt_, '#include "hbapicls.h"'                                            )
-   AAdd( txt_, ""                                                                 )
-   AAdd( txt_, "#if QT_VERSION >= 0x040500"                                       )
    AAdd( txt_, ""                                                                 )
 
    RETURN txt_
