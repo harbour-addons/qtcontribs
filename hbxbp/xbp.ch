@@ -497,13 +497,13 @@
 
 #define XBPMB_OK                                  0
 #define XBPMB_OKCANCEL                            1
-#define XBPMB_RETRYCANCEL                         5
-#define XBPMB_ABORTRETRYIGNORE                    2
+#define XBPMB_RETRYCANCEL                         2
+#define XBPMB_ABORTRETRYIGNORE                    3
 #define XBPMB_YESNO                               4
-#define XBPMB_YESNOCANCEL                         3
-#define XBPMB_CANCEL                              0
-#define XBPMB_ENTER                               0
-#define XBPMB_ENTERCANCEL                         1
+#define XBPMB_YESNOCANCEL                         5
+#define XBPMB_CANCEL                              6
+#define XBPMB_ENTER                               7
+#define XBPMB_ENTERCANCEL                         8
 #define XBPMB_HELP                                16384
 
 // Defines for the style
@@ -513,9 +513,9 @@
 #define XBPMB_INFORMATION                         64
 #define XBPMB_CRITICAL                            16
 
-#define XBPMB_APPMODAL                            (0 + 65536)
-#define XBPMB_SYSMODAL                            (4096 + 65536)
-#define XBPMB_MOVEABLE                            65536
+#define XBPMB_APPMODAL                            0
+#define XBPMB_SYSMODAL                            4096
+#define XBPMB_MOVEABLE                            16384
 
 // Defbutton
 #define XBPMB_DEFBUTTON1                          0

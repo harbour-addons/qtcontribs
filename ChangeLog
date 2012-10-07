@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-07 16:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbxbp/xbp.ch
+    ! Fixed: some wrong constants.
+       Thanks Przemek for introducing duplicate case constants compile 
+       time check which could detect these type of error, something 
+       rare to debug otherwise.
+
 2012-10-07 15:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/hbmk2_qt.hb
     % Changed: the version guard agaisnt which a class is compiled.
