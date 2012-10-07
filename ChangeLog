@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-07 12:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtopengl/qth/QGLFramebufferObjectFormat.qth
+    % Versionized: mipmap() and setMipmap() methods under [*V=0x040800*]
+
 2012-10-06 02:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * qtcontribs.hbp
     + Added: SVN properties.

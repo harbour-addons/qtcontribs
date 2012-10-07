@@ -15,7 +15,7 @@
 
 Inherit     =
 QObject     = no
-Version     = 0x40600
+Version     = 0x040600
 
 </CLASS>
 
@@ -48,11 +48,11 @@ HB_FUNC( QT_QGLFRAMEBUFFEROBJECTFORMAT )
 <PROTOS>
 QGLFramebufferObject::Attachment attachment () const
 GLenum internalTextureFormat () const
-bool mipmap () const
+bool mipmap () const                                                  [*V=0x040800*]
 int samples () const
 void setAttachment ( QGLFramebufferObject::Attachment attachment )
 void setInternalTextureFormat ( GLenum internalTextureFormat )
-void setMipmap ( bool enabled )
+void setMipmap ( bool enabled )                                       [*V=0x040800*]
 void setSamples ( int samples )
 void setTextureTarget ( GLenum target )
 GLenum textureTarget () const
