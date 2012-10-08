@@ -535,7 +535,7 @@ FUNCTION hbxbp_appEventToQKeyEvent( key )
       RETURN Qt_Key_Backtab
    CASE xbeK_CTRL_TAB
       RETURN Qt_Key_Tab
-   CASE xbeK_BS
+   
    CASE xbeK_SH_BS
    CASE xbeK_ALT_BS
    CASE xbeK_CTRL_BS
@@ -730,13 +730,13 @@ FUNCTION hbxbp_appEventToQKeyEvent( key )
    CASE xbeK_CTRL_G
       RETURN Qt_Key_G
    CASE xbeK_ALT_H
-   CASE xbeK_CTRL_H
+//   CASE xbeK_CTRL_H
       RETURN Qt_Key_H
    CASE xbeK_ALT_I
-   CASE xbeK_CTRL_I
+//   CASE xbeK_CTRL_I
       RETURN Qt_Key_I
    CASE xbeK_ALT_J
-   CASE xbeK_CTRL_J
+//   CASE xbeK_CTRL_J
       RETURN Qt_Key_J
    CASE xbeK_ALT_K
    CASE xbeK_CTRL_K
@@ -1041,7 +1041,7 @@ FUNCTION hbxbp_appEventModifier( key )
    CASE xbeK_CTRL_G
    CASE xbeK_CTRL_H
    CASE xbeK_CTRL_I
-   CASE xbeK_CTRL_J
+//   CASE xbeK_CTRL_J
    CASE xbeK_CTRL_K
    CASE xbeK_CTRL_L
    CASE xbeK_CTRL_M
