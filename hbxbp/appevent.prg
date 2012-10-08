@@ -745,7 +745,7 @@ FUNCTION hbxbp_appEventToQKeyEvent( key )
    CASE xbeK_CTRL_L
       RETURN Qt_Key_L
    CASE xbeK_ALT_M
-   CASE xbeK_CTRL_M
+//   CASE xbeK_CTRL_M
       RETURN Qt_Key_M
    CASE xbeK_ALT_N
    CASE xbeK_CTRL_N
