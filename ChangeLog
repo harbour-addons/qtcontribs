@@ -16,6 +16,18 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-08 14:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbide/hbide_v.ch
+    + Readded: the header containing latest revision number.
+       This is done because otherwise HbIDE cannot be built by a 
+       user who has not properly set QtContribs build environment,
+       which, along other things, require subversion client installed
+       on his machine. Mostly it will never be required for average user 
+       but just in case...
+
+       NOTE: this will always publish one revision less than the current 
+             in HbIDE title-bar.
+
 2012-10-08 12:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/edit.prg
   + hbide/qtcore.txt
