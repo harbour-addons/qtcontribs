@@ -902,7 +902,6 @@ METHOD HbIde:execAction( cKey )
    CASE "ToLower"
    CASE "Invert"
    CASE "MatchPairs"
-   CASE "Tools"
    CASE "InsertSeparator"
    CASE "InsertDateTime"
    CASE "InsertRandomName"

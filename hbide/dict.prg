@@ -406,7 +406,6 @@ METHOD IdeDictionary:checkStateChanged( oUI, p, p1 )
    CASE __checkDictToIni_stateChanged__      ; ::lToIni    := lChecked ; EXIT
    CASE __checkDictToTxt_stateChanged__      ; ::lToTxt    := lChecked ; EXIT
    CASE __checkDictToHbp_stateChanged__      ; ::lToHbp    := lChecked ; EXIT
-   CASE __checkDictActive_stateChanged__     ; ::lActive   := lChecked ; EXIT
    CASE __checkDictCaseSens_stateChanged__   ; ::lCaseSens := lChecked ; EXIT
    CASE __checkDictBold_stateChanged__       ; ::lBold     := lChecked ; EXIT
    CASE __checkDictItalic_stateChanged__     ; ::lItalic   := lChecked ; EXIT

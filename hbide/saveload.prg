@@ -1526,7 +1526,6 @@ METHOD IdeSetup:connectSlots()
    ::oUI:checkDictToIni      :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictToIni_stateChanged__    , i             ) } )
    ::oUI:checkDictToTxt      :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictToTxt_stateChanged__    , i             ) } )
    ::oUI:checkDictToHbp      :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictToHbp_stateChanged__    , i             ) } )
-   ::oUI:checkDictActive     :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictActive_stateChanged__   , i             ) } )
    ::oUI:checkDictCaseSens   :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictCaseSens_stateChanged__ , i             ) } )
    ::oUI:checkDictBold       :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictBold_stateChanged__     , i             ) } )
    ::oUI:checkDictItalic     :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictItalic_stateChanged__   , i             ) } )
@@ -2246,7 +2245,6 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
    CASE __checkDictToIni_stateChanged__
    CASE __checkDictToTxt_stateChanged__
    CASE __checkDictToHbp_stateChanged__
-   CASE __checkDictActive_stateChanged__
    CASE __checkDictCaseSens_stateChanged__
    CASE __checkDictBold_stateChanged__
    CASE __checkDictItalic_stateChanged__
