@@ -496,11 +496,11 @@ METHOD IdeEdit:execEvent( nMode, p, p1 )
 METHOD IdeEdit:execToolsBox( p )
    IF Empty( p )
       RETURN ::oAC:showContextWidget( Self )
-   ENDIF 
-   RETURN Self 
-   
+   ENDIF
+   RETURN Self
+
 /*----------------------------------------------------------------------*/
-   
+
 METHOD IdeEdit:execContextMenu( p )
    LOCAL n, cAct, qPos, qAct, qCursor //qRect
 
@@ -3683,12 +3683,12 @@ FUNCTION hbide_getHarbourHbx()
    #pragma __binarystreaminclude "harbour.hbx" | RETURN %s
 
 FUNCTION hbide_getQtGuiFilelist()
-   #pragma __binarystreaminclude "../hbqt/qtgui/qth/filelist.hbm" | RETURN %s
+   #pragma __binarystreaminclude "qtgui.txt" | RETURN %s
 
 FUNCTION hbide_getQtCoreFilelist()
-   #pragma __binarystreaminclude "../hbqt/qtcore/qth/filelist.hbm" | RETURN %s
+   #pragma __binarystreaminclude "qtcore.txt" | RETURN %s
 
 FUNCTION hbide_getQtNetworkFilelist()
-   #pragma __binarystreaminclude "../hbqt/qtnetwork/qth/filelist.hbm" | RETURN %s
+   #pragma __binarystreaminclude "qtnetwork.txt" | RETURN %s
 
 /*----------------------------------------------------------------------*/

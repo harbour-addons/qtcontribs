@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-08 12:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/edit.prg
+  + hbide/qtcore.txt
+  + hbide/qtgui.txt
+  + hbide/qtnetwork.txt
+    + Added: not-on-qt-sources dependent functions list of HbQt modules.
+       Has been a constant source of building HbIDE on folders which 
+       are not in synch with HbQt folder locations. 
+
 2012-10-08 07:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/dict.prg
   * hbide/main.prg
