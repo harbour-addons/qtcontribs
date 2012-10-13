@@ -1790,13 +1790,13 @@ METHOD HbpBrowse:create( oManager, oPanel, aInfo )
 /*----------------------------------------------------------------------*/
 
 METHOD HbpBrowse:buildBrowser()
-   LOCAL qLayout, oWnd, oXbpBrowse
+   LOCAL qLayout, oXbpBrowse
 
-   oWnd := XbpWindow():new()
-   oWnd:oWidget := QWidget()
+   ::oWnd := XbpWindow():new()
+   ::oWnd:oWidget := QWidget()
 
-   qLayout := QHBoxLayout( oWnd:oWidget )
-   oWnd:oWidget:setLayout( qLayout )
+   qLayout := QHBoxLayout( ::oWnd:oWidget )
+   ::oWnd:oWidget:setLayout( qLayout )
    qLayout:setContentsMargins( 0,0,0,0 )
    qLayout:setSpacing( 2 )
 
@@ -1806,7 +1806,7 @@ METHOD HbpBrowse:buildBrowser()
    qLayout:addWidget( ::qSplitter )
 
    /* Browse View */
-   oXbpBrowse := XbpBrowse():new():create( oWnd, , { 0,0 }, oWnd:currentSize() )
+   oXbpBrowse := XbpBrowse():new():create( ::oWnd, , { 0,0 }, ::oWnd:currentSize() )
    oXbpBrowse:setFontCompoundName( "10.Courier" )
 
    ::qSplitter:addWidget( oXbpBrowse:oWidget )
@@ -1847,7 +1847,6 @@ METHOD HbpBrowse:buildBrowser()
    ::qSplitter:addWidget( ::qScrollArea )
 
    ::qLayout := qLayout
-   ::oWnd    := oWnd
    ::oBrw    := oXbpBrowse
 
    RETURN Self
@@ -1906,7 +1905,7 @@ METHOD HbpBrowse:buildMdiWindow()
 
    ::nID := ++nID
 
-   ::qMdi := QMdiSubWindow( ::oWnd:oWidget )
+   ::qMdi := QMdiSubWindow()
    //
    ::qMdi:setWidget( ::oWnd:oWidget )
    ::oPanel:qWidget:addSubWindow( ::qMdi )
