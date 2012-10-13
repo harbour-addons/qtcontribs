@@ -440,15 +440,20 @@ FUNCTION hbxbp_ConvertAFactFromXBP( cMode, xValue )
       ENDSWITCH
       EXIT
 
+   CASE "ALIGNMENT_H"
+      SWITCH xValue
+      CASE XBPALIGN_LEFT   ; RETURN Qt_AlignLeft
+      CASE XBPALIGN_RIGHT  ; RETURN Qt_AlignRight
+      CASE XBPALIGN_HCENTER; RETURN Qt_AlignHCenter
+      ENDSWITCH
+      EXIT
+
    CASE "ALIGNMENT"
-      DO CASE
-      CASE xValue == XBPALIGN_TOP    ; RETURN Qt_AlignTop
-      CASE xValue == XBPALIGN_BOTTOM ; RETURN Qt_AlignBottom
-      CASE xValue == XBPALIGN_LEFT   ; RETURN Qt_AlignLeft
-      CASE xValue == XBPALIGN_RIGHT  ; RETURN Qt_AlignRight
-      CASE xValue == XBPALIGN_VCENTER; RETURN Qt_AlignVCenter
-      CASE xValue == XBPALIGN_HCENTER; RETURN Qt_AlignHCenter
-      ENDCASE
+      SWITCH xValue
+      CASE XBPALIGN_TOP    ; RETURN Qt_AlignTop
+      CASE XBPALIGN_BOTTOM ; RETURN Qt_AlignBottom
+      CASE XBPALIGN_VCENTER; RETURN Qt_AlignVCenter
+      ENDSWITCH
       EXIT
 
    CASE "BRWNAVIGATE"

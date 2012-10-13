@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-13 13:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbxbp/browse.prg
+  * hbxbp/generic.prg
+    ! Fixed: Same value XBP constants clubbed in one SWITCH statement.
+
 2012-10-13 09:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * Reflects: r30 - the one last.
