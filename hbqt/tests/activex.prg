@@ -1,5 +1,5 @@
 /*
- * $Id: activex.prg 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id$
  */
 
 /*             W A R N I N G : Windows Only Code

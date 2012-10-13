@@ -1,5 +1,5 @@
                                  /*
- * $Id: projectwizard.prg 18065 2012-09-04 20:09:56Z vszakats $
+ * $Id$
  */
 
 /*

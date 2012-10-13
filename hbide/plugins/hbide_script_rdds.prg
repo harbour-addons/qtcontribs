@@ -1,5 +1,5 @@
 /*
- * $Id: hbide_script_rdds.prg 15651 2010-10-20 05:37:07Z druzus $
+ * $Id$
  */
 
 /*

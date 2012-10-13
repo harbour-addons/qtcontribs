@@ -1,5 +1,5 @@
 /*
- * $Id: qtrevamp.prg 17648 2012-06-14 09:11:33Z vouchcac $
+ * $Id$
  */
 
 

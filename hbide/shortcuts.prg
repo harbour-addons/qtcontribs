@@ -1,5 +1,5 @@
 /*
- * $Id: shortcuts.prg 17899 2012-07-23 15:42:26Z vszakats $
+ * $Id$
  */
 
 /*

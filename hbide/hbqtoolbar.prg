@@ -1,5 +1,5 @@
 /*
- * $Id: hbqtoolbar.prg 18107 2012-09-20 00:52:27Z vouchcac $
+ * $Id$
  */
 
 /*

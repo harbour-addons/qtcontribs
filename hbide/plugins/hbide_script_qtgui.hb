@@ -1,5 +1,5 @@
 /*
- * $Id: hbide_script_qtgui.hb 17462 2012-05-08 15:51:55Z vszakats $
+ * $Id$
  */
 
 /*

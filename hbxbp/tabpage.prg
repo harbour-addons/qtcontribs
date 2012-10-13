@@ -1,5 +1,5 @@
 /*
- * $Id: tabpage.prg 17898 2012-07-23 15:32:39Z vszakats $
+ * $Id$
  */
 
 /*

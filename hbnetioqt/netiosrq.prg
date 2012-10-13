@@ -1,5 +1,5 @@
 /*
- * $Id: netiosrq.prg 17531 2012-06-04 09:30:51Z vszakats $
+ * $Id$
  */
 
 /*

@@ -1,5 +1,5 @@
 /*
- * $Id: saveload.prg 18075 2012-09-10 16:26:11Z vouchcac $
+ * $Id$
  */
 
 /*
@@ -1223,7 +1223,7 @@ FUNCTION hbide_saveHarbourProtos( oIde, aProto )
    HB_SYMBOL_UNUSED( oIde )
 
    aadd( txt_, "/*"                                                                            )
-   aadd( txt_, " * $Id: saveload.prg 18075 2012-09-10 16:26:11Z vouchcac $"                 )
+   aadd( txt_, " * $Id$"                 )
    aadd( txt_, " */"                                                                           )
    aadd( txt_, ""                                                                              )
    aadd( txt_, "/* -------------------------------------------------------------------- */"    )

@@ -1,5 +1,5 @@
 /*
- * $Id: hbqt_bind.cpp 17787 2012-07-09 06:03:42Z vouchcac $
+ * $Id$
  */
 
 /*

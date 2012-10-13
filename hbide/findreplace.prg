@@ -1,5 +1,5 @@
 /*
- * $Id: findreplace.prg 17933 2012-07-26 17:16:23Z vouchcac $
+ * $Id$
  */
 
 /*

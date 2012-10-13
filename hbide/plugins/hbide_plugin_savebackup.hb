@@ -1,5 +1,5 @@
 /*
- * $Id: hbide_plugin_savebackup.hb 17462 2012-05-08 15:51:55Z vszakats $
+ * $Id$
  */
 
 /*

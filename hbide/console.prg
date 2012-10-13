@@ -1,5 +1,5 @@
 /*
- * $Id: console.prg 18042 2012-08-29 21:20:30Z vouchcac $
+ * $Id$
  */
 
 /*

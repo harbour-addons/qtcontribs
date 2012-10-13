@@ -1,5 +1,5 @@
 /*
- * $Id: toolbar.prg 18122 2012-09-22 09:54:07Z vouchcac $
+ * $Id$
  */
 
 /*
