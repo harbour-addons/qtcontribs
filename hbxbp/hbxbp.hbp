@@ -56,3 +56,13 @@ toolbar.prg
 treeview.prg
 window.prg
 
+#  Harbour Parts - NameSpace Hbp*
+dbu.prg
+reports.prg
+misc.prg
+
+xbp.qrc
+
+hbpdbstruct.ui
+hbpfetchdate.ui
+hbptables.ui

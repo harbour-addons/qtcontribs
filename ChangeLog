@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-13 09:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  - hbide/xbpaddons
+    - Moved: to hbxbp where these belongs.
+  * hbide/hbide.hbp
+    - Removed: entries specific to xbpaddons lib.
+  * hbide/hbide_v.ch
+    * Auto generated.
+  * hbide/projmanager.prg
+    * Minor.
+    
+  + hbxbp/resources
+    + All *.png resources.
+  + hbxbp/dbu.prg
+  + hbxbp/hbpdbstruct.ui
+  + hbxbp/hbpfetchdate.ui
+  + hbxbp/hbptables.ui
+  + hbxbp/misc.prg
+  + hbxbp/reports.prg
+  + hbxbp/xbp.qrc
+  
+  * hbxbp/hbxbp.hbp
+    + Added: moved files from hbide/xbpaddons.
+
 2012-10-08 14:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbide/hbide_v.ch
     + Readded: the header containing latest revision number.

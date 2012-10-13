@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -1683,10 +1683,7 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*
- * Launch selected project.
- * 03/01/2010 - 09:24:50
- */
+
 METHOD IdeProjManager:launchProject( cProject, cExe )
    LOCAL cTargetFN, cTmp, oProject, cPath
    LOCAL qProcess, qStr
@@ -1723,7 +1720,7 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
    ELSEIF empty( oProject ) .OR. oProject:type == "Executable"
       cTmp := "Launching application [ " + cTargetFN + " ]"
 
-      if .t.
+      IF .t.
          qProcess := QProcess()
 
          qStr := QStringList()
@@ -1741,10 +1738,10 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
          qProcess:waitForStarted( 3000 )
          qProcess := NIL
 
-      else
+      ELSE
          hb_processRun( cTargetFN, , , , .t. )
 
-      endif
+      ENDIF
    ELSE
       cTmp := "Launching application [ " + cTargetFN + " ] ( not applicable )."
 
