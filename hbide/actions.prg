@@ -1093,7 +1093,7 @@ METHOD IdeActions:buildToolbarFiles()
    ::qFilesToolbar:setWindowTitle( "Ide Files" )
    ::qFilesToolbar:setToolButtonStyle( Qt_ToolButtonIconOnly )
 
-   ::qFilesToolbar:addAction( "IdeNew"  , ::getAction( "TB_New"   ), {|| ::oIde:execAction( "new"   ) } )
+   ::qFilesToolbar:addAction( "IdeNew"  , ::getAction( "TB_New"   ), {|| ::oIde:execAction( "New"   ) } )
    ::qFilesToolbar:addAction( "IdeOpen" , ::getAction( "TB_Open"  ), {|| ::oIde:execAction( "Open"  ) } )
    ::qFilesToolbar:addAction( "IdeSave" , ::getAction( "TB_Save"  ), {|| ::oIde:execAction( "Save"  ) } )
    ::qFilesToolbar:addAction( "IdeClose", ::getAction( "TB_Close" ), {|| ::oIde:execAction( "Close" ) } )

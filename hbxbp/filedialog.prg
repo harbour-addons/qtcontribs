@@ -284,7 +284,7 @@ METHOD XbpFileDialog:open( cDefaultFile, lCenter, lAllowMultiple, lCreateNewFile
 /*----------------------------------------------------------------------*/
 
 METHOD XbpFileDialog:saveAs( cDefaultFile, lFileList, lCenter )
-   LOCAL nResult, i, oList, qFocus, xRes
+   LOCAL i, oList, qFocus, xRes
 
    DEFAULT lFileList TO .T.
 
@@ -325,15 +325,12 @@ METHOD XbpFileDialog:saveAs( cDefaultFile, lFileList, lCenter )
    ENDIF
 
    qFocus := QApplication():focusWidget()
-   ::connect()
-   nResult := ::oWidget:exec()
-   ::disconnect()
+
+   xRes := ::oWidget:getSaveFileName( ::oParent:oWidget, ::title, cDefaultFile )
 
    IF hb_isObject( qFocus )
       qFocus:setFocus( 0 )
    ENDIF
-
-   xRes := iif( nResult == QDialog_Accepted, ::extractFileNames(), NIL )
 
    // Just TO destroy it AND release memory
    ::oWidget:setParent( QWidget() )

@@ -227,7 +227,7 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
       nIndex  := ::qTabWidget:indexOf( oEdit:oTab:oWidget )
       cSource := oEdit:sourceFile
 
-      IF cSource == "default.prg"  .or. ! hb_fileExists( oEdit:sourceFile )
+      IF cSource == "default.prg"
          lAs := .t.
       ENDIF
 
@@ -483,7 +483,7 @@ METHOD IdeSourcesManager:openSource()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:selectSource( cMode, cFile, cTitle, cDftPath )
-   LOCAL oDlg, cPath, aFltr := {}
+   LOCAL oDlg, aFltr := {}
 
    DEFAULT cDftPath TO ::cLastFileOpenPath
 
@@ -524,17 +524,8 @@ METHOD IdeSourcesManager:selectSource( cMode, cFile, cTitle, cDftPath )
       oDlg:title       := iif( !HB_ISSTRING( cTitle ), "Save as...", cTitle )
       oDlg:center      := .t.
       oDlg:defExtension:= 'prg'
-
-      IF HB_ISSTRING( cFile ) .AND. !Empty( cFile )
-         IF Right( cFile, 1 ) $ '/\'
-            cPath := cFile
-         ELSE
-            hb_fNameSplit( cFile, @cPath )
-         Endif
-      Endif
-
       oDlg:fileFilters := aFltr
-      cFile := oDlg:saveAs( cPath )
+      cFile := oDlg:saveAs( cFile )
 
    ELSE
       oDlg:title       := "Save this Database"
