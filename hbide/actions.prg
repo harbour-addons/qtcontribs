@@ -362,6 +362,7 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "Compile"              , "Compile Current Source"       , "compile"        , ""     , "No", "Yes" } )
    aadd( aAct, { "CompilePPO"           , "Compile Current Source to PPO", "ppo"            , ""     , "No", "Yes" } )
    aadd( aAct, { "LaunchProject"        , "Launch Project"               , "launch_r"       , "^F10" , "No", "Yes" } )
+   aadd( aAct, { "LaunchProjectByTitle" , "Launch Project"               , "launch_r"       , ""     , "No", "Yes" } )
    aadd( aAct, { "ConfigureTools"       , "Configure Tools...*"          , ""               , ""     , "No", "Yes" } )
    aadd( aAct, { "CuiEditor"            , "CUI Screen Edirot"            , "cuied"          , ""     , "No", "Yes" } )
    aadd( aAct, { "UISrcManager"         , "UI Source Manager"            , "fileprg"        , ""     , "No", "Yes" } )
@@ -1560,4 +1561,3 @@ METHOD IdeActions:manageToolBox()
 
 /*----------------------------------------------------------------------*/
 
-    
