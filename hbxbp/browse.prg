@@ -272,6 +272,8 @@ EXPORTED:
    METHOD forceStable()                                     // performs a full stabilization
    METHOD invalidate()                                      // forces entire redraw during next stabilization
 
+   METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward
+   METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left
    METHOD up()                                              // moves the cursor up one row
    METHOD down()                                            // moves the cursor down one row
    METHOD pageUp()                                          // repositions the data source upward
@@ -565,13 +567,13 @@ METHOD XbpBrowse:connect()
    ::oVScrollBar      : connect( "actionTriggered(int)"              , {|i      | ::execSlot( __ev_vertscroll_via_user__      , i    ) } )
    ::oVScrollBar      : connect( "sliderReleased()"                  , {|i      | ::execSlot( __ev_vertscroll_sliderreleased__, i    ) } )
 
-   ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__, i         ) } )
+   ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
 
    ::oWidget          : connect( QEvent_Resize                       , {|       | ::execSlot( __ev_frame_resized__                   ) } )
 
    ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1   | ::execSlot( __editor_closeEditor__, p, p1          ) } )
-   ::qDelegate        : connect( "commitData(QWidget*)"             , {|p      | ::execSlot( __editor_commitData__ , p              ) } )
+   ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::execSlot( __editor_commitData__           , p    ) } )
 
    RETURN Self
 
@@ -865,7 +867,7 @@ METHOD XbpBrowse:execSlot( nEvent, p1, p2, p3 )
       EXIT
    CASE __ev_keypress__
       SetAppEvent( xbeP_Keyboard, hbxbp_QKeyEventToAppEvent( p1 ), NIL, Self )
-      EXIT
+      RETURN .T.   /* Stop Propegation to parent */
    CASE __ev_contextMenuRequested__
       oPoint := ::oTableView:mapToGlobal( QPoint( p1 ) )
       ::hbContextMenu( { oPoint:x(), oPoint:y() } )
@@ -933,7 +935,8 @@ METHOD XbpBrowse:execSlot( nEvent, p1, p2, p3 )
       EXIT
    CASE __ev_frame_resized__
       ::manageFrameResized()
-      EXIT
+      RETURN .T.
+
    ENDSWITCH
 
    RETURN Self
@@ -963,7 +966,8 @@ METHOD XbpBrowse:manageFrameResized()
    ::forceStable()
    ::setCurrentIndex( nRowPos > ::rowCount() )
    IF nOff > 0
-      SetAppEvent( xbeBRW_Navigate, XBPBRW_Navigate_Skip, nOff, Self )
+      /* I think we can honor this STEP directly instead of populating the event queue */
+      ::skipRows( nOff )
    ENDIF
 
    RETURN Self
@@ -1084,7 +1088,7 @@ METHOD XbpBrowse:manageMousePress( oMouseEvent )
 /*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
-   LOCAL i, lNavgt := .t.
+   LOCAL lNavgt := .t.
 
    DO CASE
    CASE nEvent == xbeP_Keyboard
@@ -1173,15 +1177,7 @@ METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
       CASE mp1 == XBPBRW_Navigate_GoBottom
          ::goBottom()
       CASE mp1 == XBPBRW_Navigate_Skip
-         IF mp2 < 0
-            FOR i := 1 TO abs( mp2 )
-               ::up()
-            NEXT
-         ELSEIF mp2 > 0
-            FOR i := 1 TO mp2
-               ::down()
-            NEXT
-         ENDIF
+         ::skipRows( mp2 )
       CASE mp1 == XBPBRW_Navigate_NextCol
          ::right()
       CASE mp1 == XBPBRW_Navigate_PrevCol
@@ -1193,16 +1189,7 @@ METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
       CASE mp1 == XBPBRW_Navigate_GoPos
          //
       CASE mp1 == XBPBRW_Navigate_SkipCols
-         IF mp2 < 0
-            FOR i := 1 TO abs( mp2 )
-               ::left()
-            NEXT
-         ELSEIF mp2 > 0
-            FOR i := 1 TO mp2
-               ::right()
-            NEXT
-         ENDIF
-
+         ::skipCols( mp2 )
       CASE mp1 == XBPBRW_Navigate_GotoItem
          //
       CASE mp1 == XBPBRW_Navigate_GotoRecord
@@ -1217,6 +1204,40 @@ METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
    ENDCASE
 
    RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD XbpBrowse:skipCols( nCols )
+   LOCAL i
+
+   IF nCols < 0
+      FOR i := 1 TO abs( nCols )
+         ::left()
+      NEXT
+   ELSEIF nCols > 0
+      FOR i := 1 TO nCols
+         ::right()
+      NEXT
+   ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD XbpBrowse:skipRows( nRows )
+   LOCAL i
+
+   IF nRows < 0
+      FOR i := 1 TO abs( nRows )
+         ::up()
+      NEXT
+   ELSEIF nRows > 0
+      FOR i := 1 TO nRows
+         ::down()
+      NEXT
+   ENDIF
+
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
 

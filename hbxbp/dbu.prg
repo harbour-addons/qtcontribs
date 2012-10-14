@@ -816,11 +816,11 @@ METHOD HbpDBU:showTablesTree()
      NEXT
       qParent:setExpanded( .t. )
    NEXT
-//   ::oIde:setPosAndSizeByIniEx( oUI:oWidget, ::oINI:cTablesDialogGeometry )
+
    oUI:buttonOk:connect( "clicked()", {|| oUI:done( 1 ) } )
    oUI:exec()
    oUI:buttonOk:disconnect( "clicked()" )
-//   ::oIde:oINI:cTablesDialogGeometry := hbide_posAndSize( oUI:oWidget )
+
    oUI:destroy()
 
    RETURN Self
@@ -836,7 +836,6 @@ METHOD HbpDBU:showStruct()
    IF ! ::lStructOpen
       ::lStructOpen := .t.
       ::populateUiStruct()
-//      ::oIde:setPosAndSizeByIniEx( ::qStruct:oWidget, ::oINI:cDbStructDialogGeometry )
       ::qStruct:show()
    ENDIF
 
@@ -1999,7 +1998,7 @@ METHOD HbpBrowse:execEvent( nEvent, p, p1 )
       EXIT
    CASE __mdiSubWindow_buttonXclicked__
       ::oPanel:destroyBrw( Self )
-      EXIT
+      RETURN .T.
 #if 0
    CASE __browser_ScrollToColumn__
    CASE __mdiSubWindow_aboutToActivate__
@@ -2111,7 +2110,6 @@ METHOD HbpBrowse:dispInfo()
                              "  " + hb_ntos( ::recNo() ) + "/" + hb_ntos( ::lastRec() ) + " ]  " + ;
                              ::cTableOnly
 #else
-      //cTitle := HBQString( hb_ntos( ::recNo() ) )
       cTitle := hb_ntos( ::recNo() )
 #endif
 
