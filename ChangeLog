@@ -16,6 +16,57 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-24 15:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    * Usual: last commit info.
+
+  + hbide/requests.ch
+    + Added: header to REQUEST all codepages Harbour supports.
+       Just in case...
+
+  * hbide/actions.prg
+  * hbide/docks.prg
+  * hbide/editor.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/saveload.prg
+  * hbide/sources.prg
+    + Added: <Main Menu><Encoding> option.
+       It displays the codepages in this notation: 
+         Harbour Codepage Name : Unique Codepage ID => "RU866 : cp866"
+
+    + Implemented: per source Harbour supported codepage.
+       Now you can write sources supporting different code pages for 
+       strings inside source text. Each edit instance can have its own 
+       codepage which can be selected from <Encoding> main-menu option.
+       HbIDE remembers codepage associated with a source. When selecting 
+       a codepage from <Encoding> option, you will be prompted to set 
+       it as "default". The <Default> codepage will be applied to any 
+       new source brought to HbIDE for editing. 
+
+    ; IMPORTANT : Please read
+       1. Setup this current commit or release.
+       2. DO NOT execute HbIDE.
+       3. Open hbide.ini you are supplying to execute HbIDE.
+       4. Change: CurrentCodec=_HarbourCodePageName_ => 
+                  CurrentCodec=EN
+       5. Execute HbIDE.
+       6. Notice the statusbar of HbIDE where codepage entry should be 
+            visible as "Enc: EN | EN".
+       7. First part denotes codepage of this source, second part 
+            default codepage.
+       8. If you need to change the codepage of a source, make sure that 
+            it has not been modified before the change, initiate change 
+            from <Encoding> option, close HbIDE, do not save the source 
+            when prompted, run HbIDE again. This action can be taken for 
+            multiple source instances. Just REMEMBER that you have not 
+            to save the source after changing the codepage.
+
+    ; THANKS : Special thanks to Grzegorz and Maurizio for helping me 
+               understand what is happening under the hood.
+
+      Please make extensive tests. Regression is possible.
+ 
 2012-10-24 14:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + Applied patch by Francesco Perillo (as explained below), thank you.
 

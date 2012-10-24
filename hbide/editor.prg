@@ -109,7 +109,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD removeSourceInTree( cSourceFile )
    METHOD addSourceInTree( cSourceFile, cView )
    METHOD execEvent( nEvent, p )
-   METHOD buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks )
+   METHOD buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    METHOD getTabBySource( cSource )
    METHOD getTabCurrent()
    METHOD getDocumentCurrent()
@@ -200,6 +200,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD alignAt()
    METHOD stringify()
    METHOD applyTheme( cTheme )
+   METHOD setEncoding( cCodec )
 
    ENDCLASS
 
@@ -315,7 +316,7 @@ METHOD IdeEditsManager:setStyleSheet( nMode )
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:updateFieldsList( cAlias )
    LOCAL aFlds
@@ -476,9 +477,9 @@ METHOD IdeEditsManager:execEvent( nEvent, p )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks )
+METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
 
-   IdeEditor():new():create( ::oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks )
+   IdeEditor():new():create( ::oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
 
    RETURN Self
 
@@ -625,6 +626,17 @@ METHOD IdeEditsManager:reLoad( cSource )
             oEdit:qEdit:setPlainText( hb_memoread( hbide_pathToOSPath( cSource ) ) )
          ENDIF
       ENDIF
+   ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:setEncoding( cCodec )
+   LOCAL oEdit
+
+   IF ! empty( oEdit := ::getEditorCurrent() )
+      oEdit:setEncoding( cCodec )
    ENDIF
 
    RETURN Self
@@ -1310,6 +1322,8 @@ CLASS IdeEditor INHERIT IdeObject
    DATA   cType                                   INIT   ""
    DATA   cTheme                                  INIT   ""
    DATA   cView
+   DATA   aBookMarks                              INIT   {}
+   DATA   cCodePage
    DATA   qDocument
    DATA   qDocLayout
    DATA   qHiliter
@@ -1356,8 +1370,8 @@ CLASS IdeEditor INHERIT IdeObject
 
    DATA   lIsPRG                                  INIT .t.
 
-   METHOD new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView )
-   METHOD create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks )
+   METHOD new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+   METHOD create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    METHOD split( nOrient, oEditP )
    METHOD relay( oEdit )
    METHOD destroy()
@@ -1377,12 +1391,13 @@ CLASS IdeEditor INHERIT IdeObject
    METHOD reload()
    METHOD vssExecute( cAction )
    METHOD updateComponents()
+   METHOD setEncoding( cCodec )
 
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView )
+METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
 
    DEFAULT oIde        TO ::oIde
    DEFAULT cSourceFile TO ::sourceFile
@@ -1391,6 +1406,8 @@ METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView )
    DEFAULT nVPos       TO ::nVPos
    DEFAULT cTheme      TO ::cTheme
    DEFAULT cView       TO ::cView
+   DEFAULT aBookMarks  TO ::aBookMarks
+   DEFAULT cCodePage   TO ::cCodePage
 
    ::oIde       := oIde
    ::sourceFile := cSourceFile
@@ -1406,7 +1423,7 @@ METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks )
+METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    LOCAL cFileTemp, nAttr
 
    DEFAULT oIde        TO ::oIde
@@ -1416,7 +1433,8 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    DEFAULT nVPos       TO ::nVPos
    DEFAULT cTheme      TO ::cTheme
    DEFAULT cView       TO ::cView
-   DEFAULT aBookMarks  TO {}
+   DEFAULT aBookMarks  TO ::aBookMarks
+   DEFAULT cCodePage   TO ::cCodePage
 
    ::oIde           := oIde
    ::SourceFile     := hbide_pathNormalized( cSourceFile, .F. )
@@ -1425,6 +1443,10 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    ::nVPos          := nVPos
    ::cTheme         := cTheme
    ::cView          := cView
+   ::aBookMarks     := aBookMarks
+   ::cCodePage      := cCodePage
+
+   ::cCodePage := iif( Empty( ::cCodePage ), ::cWrkCodec, ::cCodePage )
 
    DEFAULT ::cView TO iif( ::cWrkView == "Stats", "Main", ::cWrkView )
    ::oDK:setView( ::cView )
@@ -1458,7 +1480,7 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    ::oTab:oWidget:setLayout( ::qLayout )
 
    ::oEdit   := IdeEdit():new( ::oIde, Self, 0 )
-   ::oEdit:aBookMarks := aBookMarks
+   ::oEdit:aBookMarks := ::aBookMarks
    ::oEdit:create()
    ::qEdit   := ::oEdit:qEdit
    ::qCqEdit := ::oEdit:qEdit
@@ -1652,37 +1674,39 @@ METHOD IdeEditor:prepareBufferToLoad( cBuffer )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:vssExecute( cAction )
-   LOCAL cPath, cFile, cExt, cCmd, cC, oProcess, cBatch, cOutput := ""
-   LOCAL aCmd := {}
+METHOD IdeEditor:setEncoding( cCodec )
+   LOCAL cBuffer
+   LOCAL nPos, qCursor, nHPos, nVPos
 
-   IF ! empty( ::oINI:cVSSExe ) .AND. ! empty( ::oINI:cVSSDatabase )
-      hb_fNameSplit( ::sourceFile, @cPath, @cFile, @cExt )
-
-      aadd( aCmd, "SET ssdir=" + hbide_pathToOSPath( ::oINI:cVSSDatabase ) )
-      aadd( aCmd, "SET Force_dir=YES" )
-      IF cAction == "Checkin"
-         aadd( aCmd, "call " + '"' + ::oINI:cVSSExe + '/ss.exe' + '" ' + cAction + " " + cFile + cExt + " -ChbIDE" )
-      ELSEIF cAction == "Checkout"
-         aadd( aCmd, "call " + '"' + ::oINI:cVSSExe + '/ss.exe' + '" ' + cAction + " " + cFile + cExt + " -C-" )
-      ELSE
-         aadd( aCmd, "call " + '"' + ::oINI:cVSSExe + '/ss.exe' + '" ' + cAction + " " + cFile + cExt )
-      ENDIF
-
-      cBatch := hbide_getShellCommandsTempFile( aCmd )
-
-      cCmd   := hbide_getShellCommand()
-      cC     := iif( hbide_getOS() == "nix", "", "/C " )
-
-      oProcess := HbpProcess():new()
-      //
-      oProcess:output      := {|cOut| cOutput += cOut }
-      oProcess:finished    := {|| iif( !empty( cOutput ), ::reload(), NIL ), MsgBox( cOutput ) }
-      oProcess:workingPath := hbide_pathToOSPath( cPath )
-
-      oProcess:addArg( cC + cBatch )
-      oProcess:start( cCmd )
+   IF ::qEdit:isReadOnly()
+      RETURN Self
    ENDIF
+   IF ::cCodePage == cCodec
+      ::oIde:setCodePage( ::cCodePage )
+      RETURN Self
+   ENDIF
+
+   cBuffer := ::qEdit:toPlainText()   /* Will ALWAYS IN UTF8 */
+
+   qCursor := ::qEdit:textCursor()
+   nPos    := qCursor:position()
+   nHPos   := ::qEdit:horizontalScrollBar():value()
+   nVPos   := ::qEdit:verticalScrollBar():value()
+
+   ::qEdit:clear()
+
+   ::cCodePage := cCodec
+   ::oIde:setCodePage( ::cCodePage )
+
+   ::qEdit:setPlainText( cBuffer )
+   ::qDocument:setModified( .T. )
+
+   ::oDK:setStatusText( SB_PNL_CODEC, ::cCodePage + " | " + ::cWrkCodec )
+
+   qCursor:setPosition( nPos )
+   ::qEdit:setTextCursor( qCursor )
+   ::qEdit:horizontalScrollBar():setValue( nHPos )
+   ::qEdit:verticalScrollBar():setValue( nVPos )
 
    RETURN Self
 
@@ -1695,7 +1719,6 @@ METHOD IdeEditor:reload()
    nPos    := qCursor:position()
    nHPos   := ::qEdit:horizontalScrollBar():value()
    nVPos   := ::qEdit:verticalScrollBar():value()
-
 
    IF hb_fGetAttr( ::sourceFile, @nAttr )
       ::lReadOnly := hb_bitAnd( nAttr, FC_READONLY ) == FC_READONLY
@@ -1722,6 +1745,8 @@ METHOD IdeEditor:setDocumentProperties()
    qCursor := ::qEdit:textCursor()
 
    IF !( ::lLoaded )       /* First Time */
+      ::oIde:setCodePage( ::cCodePage )
+
       ::qEdit:setPlainText( ::prepareBufferToLoad( hb_memoread( ::sourceFile ) ) )
 
       IF !( ::cType == "U" )
@@ -1819,6 +1844,8 @@ METHOD IdeEditor:updateComponents()
    qCoEdit:dispStatusInfo()
    ::oUpDn:show()
    ::oDK:showSelectedTextToolbar()
+   ::oIde:setCodePage( ::cCodePage )
+   ::oDK:setStatusText( SB_PNL_CODEC, ::cCodePage + " | " + ::cWrkCodec )
    ::changeThumbnail()
 
    RETURN Self
@@ -1924,6 +1951,42 @@ METHOD IdeEditor:applyTheme( cTheme )
          ::qHiliter := ::oTH:SetSyntaxHilighting( ::qEdit, @::cTheme )
       ENDIF
    ENDIF
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditor:vssExecute( cAction )
+   LOCAL cPath, cFile, cExt, cCmd, cC, oProcess, cBatch, cOutput := ""
+   LOCAL aCmd := {}
+
+   IF ! empty( ::oINI:cVSSExe ) .AND. ! empty( ::oINI:cVSSDatabase )
+      hb_fNameSplit( ::sourceFile, @cPath, @cFile, @cExt )
+
+      aadd( aCmd, "SET ssdir=" + hbide_pathToOSPath( ::oINI:cVSSDatabase ) )
+      aadd( aCmd, "SET Force_dir=YES" )
+      IF cAction == "Checkin"
+         aadd( aCmd, "call " + '"' + ::oINI:cVSSExe + '/ss.exe' + '" ' + cAction + " " + cFile + cExt + " -ChbIDE" )
+      ELSEIF cAction == "Checkout"
+         aadd( aCmd, "call " + '"' + ::oINI:cVSSExe + '/ss.exe' + '" ' + cAction + " " + cFile + cExt + " -C-" )
+      ELSE
+         aadd( aCmd, "call " + '"' + ::oINI:cVSSExe + '/ss.exe' + '" ' + cAction + " " + cFile + cExt )
+      ENDIF
+
+      cBatch := hbide_getShellCommandsTempFile( aCmd )
+
+      cCmd   := hbide_getShellCommand()
+      cC     := iif( hbide_getOS() == "nix", "", "/C " )
+
+      oProcess := HbpProcess():new()
+      //
+      oProcess:output      := {|cOut| cOutput += cOut }
+      oProcess:finished    := {|| iif( !empty( cOutput ), ::reload(), NIL ), MsgBox( cOutput ) }
+      oProcess:workingPath := hbide_pathToOSPath( cPath )
+
+      oProcess:addArg( cC + cBatch )
+      oProcess:start( cCmd )
+   ENDIF
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/

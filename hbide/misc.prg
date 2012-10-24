@@ -1009,7 +1009,7 @@ FUNCTION hbide_help( nOption )
       AAdd( txt_, "<b>QtContribs Developers/Users Mailing List</b>" )
       AAdd( txt_, "" )
       AAdd( txt_, "<a href='http://groups.google.com/group/qtcontribs/'>http://groups.google.com/group/qtcontribs/</a>" )
-      EXIT 
+      EXIT
 
    CASE 3
       tit_ := 'Mailing List'
@@ -1783,7 +1783,7 @@ FUNCTION hbide_parseSourceComponents( cCompositeSource )
    LOCAL a_
 
    a_:= hb_atokens( cCompositeSource, "," )
-   asize( a_, 7 )
+   asize( a_, 8 )
    DEFAULT a_[ 1 ] TO ""
    DEFAULT a_[ 2 ] TO ""
    DEFAULT a_[ 3 ] TO ""
@@ -1791,6 +1791,7 @@ FUNCTION hbide_parseSourceComponents( cCompositeSource )
    DEFAULT a_[ 5 ] TO ""
    DEFAULT a_[ 6 ] TO "Main"
    DEFAULT a_[ 7 ] TO ""
+   DEFAULT a_[ 8 ] TO ""
 
    //
    a_[ 1 ] := alltrim( a_[ 1 ] )
@@ -1800,6 +1801,7 @@ FUNCTION hbide_parseSourceComponents( cCompositeSource )
    a_[ 5 ] := alltrim( a_[ 5 ] )
    a_[ 6 ] := alltrim( a_[ 6 ] )
    a_[ 7 ] := hbide_string2nArray( a_[ 7 ] )
+   a_[ 8 ] := alltrim( a_[ 8 ] )
 
    RETURN a_
 

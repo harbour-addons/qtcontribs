@@ -154,6 +154,9 @@ METHOD IdeActions:create( oIde )
 
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
+
+   ::qWidget := QWidget()
+
    ::buildActions()
 
    RETURN Self
@@ -231,7 +234,7 @@ METHOD IdeActions:buildActions()
          qAction:setDefaultWidget( qBtn )
          ::hActions[ a_[ ACT_NAME ] ] := qAction
      #else
-         qAction := QAction( ::oDlg:oWidget )
+         qAction := QAction( ::qWidget )
          qAction:setCheckable( iif( empty( a_[ ACT_CHECKABLE ] ), .F., upper( a_[ ACT_CHECKABLE ] ) == "YES" ) )
          qAction:setText( strtran( a_[ ACT_TEXT ], "~", "&" ) )
          IF !empty( a_[ ACT_IMAGE ] )
@@ -698,10 +701,6 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu:addItem( { ::getAction( "TB_Tools"            ), {|| oIde:execAction( "Tools"              ) } } )
    hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "ChangeLog"           ), {|| oIde:execAction( "ChangeLog"          ) } } )
-   hbide_menuAddSep( oSubMenu )
-   oSubMenu2 := hbide_buildCDPMenu( oIde, oSubMenu ) //hbide_buildCodecMenu( oIde, oSubMenu )
-//   oSubMenu2:title := "~CodePage"
-   oSubMenu:addItem( { oSubMenu2, _T( "~CodePage" ) } )
 
    /*----------------------------------------------------------------------------*/
    /*                                   Help                                     */
@@ -716,6 +715,15 @@ METHOD IdeActions:buildMainMenu()
    hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "HarbourUsersList"    ), {|| hbide_help( 3 ) } } )
    oSubMenu:addItem( { ::getAction( "HarbourDevList"      ), {|| hbide_help( 2 ) } } )
+
+   /*----------------------------------------------------------------------------*/
+   /*                                   Encoding                                 */
+   /*----------------------------------------------------------------------------*/
+   oSubMenu := XbpMenu():new( oMenuBar, , .t. ):create()
+   oSubMenu:title := "~Encoding"
+   oMenuBar:addItem( { oSubMenu, NIL } )
+
+   hbide_buildCDPMenu( oIde, oSubMenu )
 
    RETURN Self
 
@@ -804,9 +812,7 @@ FUNCTION hbide_mnuAddFileToMRU( oIde, cFileName, cType )
    RETURN nil
 
 /*----------------------------------------------------------------------*/
-/*
- * 02/01/2010 - 22:44:19
- */
+
 #define QMF_POPUP  1
 
 STATIC FUNCTION hbide_mnuUpdateMRUpopup( oIde, cType )
@@ -870,10 +876,7 @@ STATIC FUNCTION hbide_mnuUpdateMRUpopup( oIde, cType )
    RETURN nil
 
 /*----------------------------------------------------------------------*/
-/*
- * Find a menu item with same caption as passed on argument.
- * 03/01/2010 - 13:12:42
- */
+
 FUNCTION hbide_mnuFindItem( oIde, cCaption )
    LOCAL oMenuBar, oItem, n, c
 
@@ -902,16 +905,14 @@ FUNCTION hbide_mnuFindItem( oIde, cCaption )
 
 #include "hbextcdp.ch"
 
-STATIC FUNCTION hbide_buildCDPMenu( oIde, oMenu )
-   LOCAL oSubMenu, cdp
-
-   oSubMenu := XbpMenu():new( oMenu, , .t. ):create()
+STATIC FUNCTION hbide_buildCDPMenu( oIde, oSubMenu )
+   LOCAL cdp
 
    FOR EACH cdp IN get_list_of_real_codepages()
-      oSubMenu:addItem( { hb_cdpUniID( cdp ), get_cdp_block( oIde, hb_cdpUniID( cdp ) ) } )
+      oSubMenu:addItem( {  cdp + " : " + hb_cdpUniID( cdp ), get_cdp_block( oIde,  cdp  ) } )
    NEXT
 
-   RETURN oSubMenu
+   RETURN NIL
 
 STATIC FUNCTION get_cdp_block( oIde, cCodePage )
    RETURN {|| oIde:setCodec( cCodePage ) }
@@ -924,7 +925,7 @@ STATIC FUNCTION get_list_of_real_codepages()
    IF empty( s_uni )
       s_uni := { => }
       FOR EACH cdp IN hb_cdpList()
-         s_uni[ hb_cdpUniID( cdp ) ] := cdp
+         s_uni[ cdp ] := cdp
       NEXT
    ENDIF
 
@@ -934,7 +935,7 @@ FUNCTION hbide_getCDPforID( cCodec )
    LOCAL cdp
 
    FOR EACH cdp IN hb_cdpList()
-      IF hb_cdpUniID( cdp ) == cCodec
+      IF cdp == cCodec
          RETURN cdp
       ENDIF
    NEXT
@@ -942,7 +943,6 @@ FUNCTION hbide_getCDPforID( cCodec )
    RETURN cCodec
 
 /*----------------------------------------------------------------------*/
-
 /*
 STATIC FUNCTION hbide_buildCodecMenu( oIde, oMenu )
    LOCAL oSubMenu, oSub1
@@ -1030,7 +1030,6 @@ STATIC FUNCTION hbide_buildCodecMenu( oIde, oMenu )
 
    RETURN oSubMenu
 */
-
 /*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolBars()

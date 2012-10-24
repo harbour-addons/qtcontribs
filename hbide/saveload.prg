@@ -609,7 +609,8 @@ METHOD IdeINI:save( cHbideIni )
                            hb_ntos( oEdit:nVPos ) +  ","  + ;
                            oEdit:cTheme           +  ","  + ;
                            oEdit:cView            +  ","  + ;
-                           hbide_nArray2string( oEdit:oEdit:aBookMarks ) +  ","  )
+                           hbide_nArray2string( oEdit:oEdit:aBookMarks ) +  "," + ;
+                           oEdit:cCodePage )
             ENDIF
          ENDIF
       NEXT
@@ -1091,7 +1092,8 @@ FUNCTION hbide_getEditInfoAsString( oEdit )
                           hb_ntos( qVScr:value()      ) +  ","  + ;
                           oEdit:cTheme                  +  ","  + ;
                           oEdit:cView                   +  ","  + ;
-                          cBMarks                       +  ","
+                          cBMarks                       +  ","  + ;
+                          oEdit:cCodePage               +  ","
 
 /*----------------------------------------------------------------------*/
 

@@ -69,6 +69,7 @@
 /*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
+#include "requests.ch"
 #include "common.ch"
 #include "xbp.ch"
 #include "appevent.ch"
@@ -101,8 +102,6 @@ REQUEST DBFCDX
 REQUEST DBFNTX
 REQUEST DBFNSX
 //REQUEST ADS
-
-REQUEST  HB_CODEPAGE_UTF8EX
 
 /*----------------------------------------------------------------------*/
 
@@ -296,7 +295,7 @@ CLASS HbIde
    DATA   cWrkFolderLast                          INIT   ""
    DATA   cWrkProject                             INIT   ""
    DATA   cWrkTheme                               INIT   ""
-   DATA   cWrkCodec                               INIT   "EN"
+   DATA   cWrkCodec                               INIT   "UTF8EX"
    DATA   cWrkPathMk2                             INIT   hb_getenv( "HBIDE_DIR_HBMK2" )
    DATA   cWrkPathEnv                             INIT   hb_DirBase()
    DATA   cWrkEnvironment                         INIT   ""
@@ -365,7 +364,7 @@ CLASS HbIde
    METHOD createTags()
    METHOD updateProjectMenu()
    METHOD updateTitleBar()
-   METHOD setCodec( cCodec )
+   METHOD setCodec( cCodec, lMenuOption )
 
    METHOD execAction( cKey )
    METHOD execProjectAction( cKey )
@@ -377,68 +376,13 @@ CLASS HbIde
 
    METHOD parseParams()
    METHOD showCodeFregment( oXbp )
+   METHOD setCodePage( cCodePage )
 
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbIde:destroy()
-   LOCAL xTmp
-
-   /* Very important - destroy resources */
-   HB_TRACE( HB_TR_DEBUG, "------------------------------------------------------" )
-   HB_TRACE( HB_TR_DEBUG, "Before    ::oIde:destroy()", memory( 1001 )             )
-   HB_TRACE( HB_TR_DEBUG, "                                                      " )
-
-   ::oSBar := NIL
-   ::oMenu := NIL
-   ::oTBar := NIL
-
-   ::oSetup:destroy()
-   ::oUpdn:destroy()
-   ::oHL:destroy()
-   ::oHM:destroy()
-   ::oSK:destroy()
-
-   ::oFR:destroy()
-   ::oFF:destroy()
-   ::oSearchReplace:destroy()
-
-   ::oFN:destroy()
-   ::oTM:destroy()
-
-   ::oSC:destroy()
-   ::oDW:destroy()
-   ::oEV:destroy()
-   ::oTH:destroy()
-   ::oPM:destroy()
-   ::oRM:destroy()
-
-   ::oBM:destroy()
-   ::oSM:destroy()
-   ::oEM:destroy()
-
-   ::oAC:destroy()
-   ::oDK:destroy()
-   ::oDA := NIL
-   ::oDlg:destroy()
-
-   ::oINI:destroy()
-   ::oFmt:destroy()
-
-   FOR EACH xTmp IN ::aUserDict
-      xTmp:destroy()
-   NEXT
-   FOR EACH xTmp IN ::aSkltns
-      xTmp[ 1 ] := NIL
-      xTmp[ 2 ] := NIL
-   NEXT
-
-
-   HB_TRACE( HB_TR_DEBUG, "                                                      " )
-   HB_TRACE( HB_TR_DEBUG, "After     ::oIde:destroy()", memory( 1001 )             )
-   HB_TRACE( HB_TR_DEBUG, "======================================================" )
-
    RETURN self
 
 /*----------------------------------------------------------------------*/
@@ -455,11 +399,6 @@ METHOD HbIde:new( aParams )
 METHOD HbIde:create( aParams )
    LOCAL qPixmap, qSplash, cView
    LOCAL mp1, mp2, oXbp, nEvent
-
-   ::oDlg     := XbpDialog():new()
-   ::oDlg:icon     := hbide_image( "hbide" )
-   ::oDlg:title    := "Harbour IDE"
-   ::oDlg:create( , , , , , .F. )
 
    qPixmap := QPixmap( ":/resources" + hb_ps() + "hbidesplash.png" )
    qSplash := QSplashScreen()
@@ -528,9 +467,6 @@ METHOD HbIde:create( aParams )
 
    /* Load Code Skeletons */
    hbide_loadSkltns( Self )
-
-   /* Set Codec at the Begining - no interface display */
-   //hb_cdpSelect( ::cWrkCodec )
 
    /* Parts Manager */
    ::oParts := IdeParts():new( Self ):create()
@@ -612,7 +548,7 @@ METHOD HbIde:create( aParams )
    ::oPM:setCurrentProject( ::cWrkProject, .f. )
 
    /* Again to be displayed in Statusbar */
-   ::setCodec( ::cWrkCodec )
+   ::setCodec( ::cWrkCodec, .F. )
    ::oDK:setStatusText( SB_PNL_THEME, ::cWrkTheme )
 
    /* Display cWrkEnvironment in StatusBar */
@@ -697,34 +633,35 @@ METHOD HbIde:create( aParams )
 
    DO WHILE .t.
       nEvent := AppEvent( @mp1, @mp2, @oXbp )
-
-      IF nEvent == xbeP_Quit
-         ::lQuitting := .t.
-         ::oINI:save()
-         EXIT
-      ENDIF
-
-      IF nEvent == xbeP_Close .AND. oXbp == ::oDlg
-         IF hbide_setClose()
+      IF nEvent != 0
+         IF nEvent == xbeP_Quit
             ::lQuitting := .t.
             ::oINI:save()
-            ::oSM:closeAllSources( .f. /* can not cancel */ )
             EXIT
          ENDIF
 
-      ELSEIF nEvent == xbeP_Keyboard
-         DO CASE
-
-         CASE mp1 == xbeK_INS
-            IF !empty( ::qCurEdit )
-               ::qCurEdit:setOverwriteMode( !::qCurEdit:overwriteMode() )
-               ::oCurEditor:dispEditInfo( ::qCurEdit )
+         IF nEvent == xbeP_Close .AND. oXbp == ::oDlg
+            IF hbide_setClose()
+               ::lQuitting := .t.
+               ::oINI:save()
+               ::oSM:closeAllSources( .f. /* can not cancel */ )
+               EXIT
             ENDIF
 
-         ENDCASE
-      ENDIF
+         ELSEIF nEvent == xbeP_Keyboard
+            SWITCH mp1
 
-      oXbp:handleEvent( nEvent, mp1, mp2 )
+            CASE xbeK_INS
+               IF !empty( ::qCurEdit )
+                  ::qCurEdit:setOverwriteMode( !::qCurEdit:overwriteMode() )
+                  ::oCurEditor:dispEditInfo( ::qCurEdit )
+               ENDIF
+
+            ENDSWITCH
+         ENDIF
+
+         oXbp:handleEvent( nEvent, mp1, mp2 )
+      ENDIF
    ENDDO
 
    hbide_setExitCuiEd( .t. )
@@ -1072,7 +1009,7 @@ METHOD HbIde:execEditorAction( cKey )
 METHOD HbIde:execSourceAction( cKey )
    SWITCH cKey
    CASE "New"
-      ::oSM:editSource( '' )
+      ::oSM:editSource( "" )
       EXIT
    CASE "Open"
       ::oSM:openSource()
@@ -1651,15 +1588,26 @@ METHOD HbIde:updateTitleBar()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbIde:setCodec( cCodec )
+METHOD HbIde:setCodePage( cCodePage )
 
-   DEFAULT cCodec TO ::cWrkCodec
+   hb_cdpSelect( cCodePage )
 
-   ::cWrkCodec := hbide_getCDPforID( cCodec )
+   RETURN Self
 
-   ::oDK:setStatusText( SB_PNL_CODEC, hb_cdpUniID( ::cWrkCodec ) )
+/*----------------------------------------------------------------------*/
 
-   //hb_cdpSelect( ::cWrkCodec )
+METHOD HbIde:setCodec( cCodec, lMenuOption )
+
+   DEFAULT cCodec      TO ::cWrkCodec
+   DEFAULT lMenuOption TO .T.
+
+   IF lMenuOption
+      IF hbide_getYesNo( "Want to make this codepage the default ?", "", cCodec, ::oDlg:oWidget )
+         ::cWrkCodec := cCodec // hbide_getCDPforID( cCodec )
+      ENDIF
+   ENDIF
+
+   ::oEM:setEncoding( cCodec )
 
    RETURN Self
 

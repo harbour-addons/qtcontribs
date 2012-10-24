@@ -359,12 +359,12 @@ METHOD IdeDocks:getEditorPanelsInfo()
 
 METHOD IdeDocks:buildDialog()
    LOCAL s, aSize, a_, x_, lNew := .f.
-#if 0
+
    ::oIde:oDlg     := XbpDialog():new()
    ::oDlg:icon     := hbide_image( "hbide" )
    ::oDlg:title    := "Harbour IDE"
    ::oDlg:create( , , , , , .f. )
-#endif
+
    ::oDlg:oWidget:setStyleSheet( GetStyleSheet( "QMainWindow", ::nAnimantionMode ) )
 
    ::oDlg:close := {|| hbide_setClose( hbide_getYesNo( "HbIDE is about to be closed!", "Are you sure?" ) ), ;
