@@ -5,7 +5,8 @@
 -hblib
 -inc
 
--o../../lib/${hb_plat}/${hb_comp}/${hb_name}
+$hb_pkg_install.hbm
+-olib/${hb_plat}/${hb_comp}/${hb_name}
 
 -w3 -es2
 

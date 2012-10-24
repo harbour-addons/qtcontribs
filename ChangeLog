@@ -16,6 +16,45 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-24 14:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + Applied patch by Francesco Perillo (as explained below), thank you.
+
+  * qtcontribs.hbp 
+    ! all not-essential Qt modules are remmed by default. 
+      You need to remove the remark if you want them to be compiled. 
+      Too much problems reported for aborted builds. In the future we may 
+      add checks and skip modules missing include files, for the moment it 
+      will be programmers responsability to un-rem them
+    + added -hbcontainer so that the error line about nm is not shown
+
+  * hbide/hbide.hbp
+    ! added instpath to current harbour BIN path. This means that hbide 
+      will be copied in the same directory where harbour executable is ! 
+      This will work both for simple "make" and for "make install"
+    ! modified output dir that is anyway replaced by instpath directive
+
+  * hbxbp/hbxbp.hbp
+    + added $hb_pkg_install.hbm
+    ! changed path for lib creation
+
+  * hbxbp/hbxbp.hbc
+    + added libpaths directive. This adds a new lib directory so the linker 
+      can find the files created in the path set in hbxbp.hbp file
+
+  * hbqt/hbqt_common.hbm
+    ! changed lib target directory
+    + copied $hb_pkg_install.hbm content and modified to fit hbQt build method. 
+      the standard hbm file uses lib name to create a subdir where to store its 
+      files during install. This is ok for simple libraries like hbxbp, 
+      where only one lib is created, while it is a problem for hbQT where several 
+      libraries are created... otherwise we would get addons/hbqtcore addons/hbqtgui. 
+      no way....  So the changes was just to set hbqt as target directory, 
+      all the rest unmodified...
+
+  * hbqt/hbqt.hbc
+    + added libpaths directive. This adds a new lib directory so the linker 
+      can find the files created in the path set in hbqt_common.hbm file
+
 2012-10-14 13:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * Usual: last commit info.

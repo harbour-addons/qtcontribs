@@ -2,6 +2,8 @@
 # $Id$
 #
 
+-hbcontainer
+
 #    Generate SVN Revision Info
 #
 -vcshead=hbide/hbide_v.ch
@@ -12,17 +14,17 @@ hbqt/qtcore/hbqtcore.hbp
 hbqt/qtgui/hbqtgui.hbp
 hbqt/qtnetwork/hbqtnetwork.hbp
 
-#    Comment-out whatever lib not required
+#   Un-comment whatever lib is required
 #
-hbqt/qtwebkit/hbqtwebkit.hbp
-hbqt/qtdesigner/hbqtdesigner.hbp
-hbqt/qtdeclarative/hbqtdeclarative.hbp
-hbqt/qtmultimedia/hbqtmultimedia.hbp
-hbqt/qtopengl/hbqtopengl.hbp
-hbqt/qtscript/hbqtscript.hbp
-hbqt/qtsql/hbqtsql.hbp
-hbqt/qtsvg/hbqtsvg.hbp
-hbqt/qtxml/hbqtxml.hbp
+#hbqt/qtwebkit/hbqtwebkit.hbp
+#hbqt/qtdesigner/hbqtdesigner.hbp
+#hbqt/qtdeclarative/hbqtdeclarative.hbp
+#hbqt/qtmultimedia/hbqtmultimedia.hbp
+#hbqt/qtopengl/hbqtopengl.hbp
+#hbqt/qtscript/hbqtscript.hbp
+#hbqt/qtsql/hbqtsql.hbp
+#hbqt/qtsvg/hbqtsvg.hbp
+#hbqt/qtxml/hbqtxml.hbp
 
 #    Qt based GT
 #

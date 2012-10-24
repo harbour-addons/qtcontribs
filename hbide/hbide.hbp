@@ -7,7 +7,9 @@
 -3rd=hbide_output=hbide
 
 -inc
--o../../bin/${hb_plat}/${hb_comp}/${hb_name}
+
+-obin/${hb_plat}/${hb_comp}/${hb_name}
+-instpath=${HB_BIN}/
 
 -w3 -es2
 
@@ -100,3 +102,5 @@ settings.qrc
 # Always build in shared mode for these platforms because the
 # tool is included in std distro and we want to minimize its size.
 {_HB_BUILD_&(!(HB_BUILD_DYN='no')&(win|wce|os2))}-shared
+
+$hb_pkg_install.hbm

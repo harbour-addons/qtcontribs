@@ -14,3 +14,5 @@ libs=hbqtnetwork.hbc
 #  libs=hbqtwebkit.hbc
 # libs=hbqtsql.hbc
 libs=gtqtc.hbc
+
+libpaths=lib/${hb_plat}/${hb_comp}/
