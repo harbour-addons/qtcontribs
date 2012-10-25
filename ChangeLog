@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-10-25 14:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/cls_dbstruct.prg
+  * hbqt/tests/dbstruct.prg
+    % Changed: class name symbolizing the .ui manipulation in HbIDE interface
+       from ui_* to uie_*. This was documented in ChangeLog but I forget 
+       to update the demo project files.
+
 2012-10-24 16:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * Usual: last commit info.

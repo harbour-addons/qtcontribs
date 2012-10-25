@@ -15,7 +15,7 @@
 
 /*----------------------------------------------------------------------*/
 
-CLASS ui_dbstruct
+CLASS uie_dbstruct
 
    DATA   oParent
 
@@ -39,7 +39,7 @@ PROTECTED:
 
 /*----------------------------------------------------------------------*/
 
-METHOD ui_dbstruct:new( oParent )
+METHOD uie_dbstruct:new( oParent )
 
    hb_default( @oParent, ::oParent )
    ::oParent := oParent
@@ -48,7 +48,7 @@ METHOD ui_dbstruct:new( oParent )
 
 /*----------------------------------------------------------------------*/
 
-METHOD ui_dbstruct:create( oParent )
+METHOD uie_dbstruct:create( oParent )
 
    hb_default( @oParent, ::oParent )
    ::oParent := oParent
@@ -61,7 +61,7 @@ METHOD ui_dbstruct:create( oParent )
 
 /*----------------------------------------------------------------------*/
 
-METHOD ui_dbstruct:destroy()
+METHOD uie_dbstruct:destroy()
 
    IF HB_ISOBJECT( ::oUI )
       ::disconnects()
@@ -72,7 +72,7 @@ METHOD ui_dbstruct:destroy()
 
 /*----------------------------------------------------------------------*/
 
-METHOD ui_dbstruct:__OnError( ... )
+METHOD uie_dbstruct:__OnError( ... )
    LOCAL cMsg := __GetMessage()
    LOCAL oError
 
@@ -106,7 +106,7 @@ METHOD ui_dbstruct:__OnError( ... )
 
 /*----------------------------------------------------------------------*/
 
-METHOD ui_dbstruct:connects()
+METHOD uie_dbstruct:connects()
 
    /* <CONNECTS> . Do not edit lines in this section! */
    ::oUI:qObj[ "buttonAdd" ]:connect( "clicked()", {|...| ::buttonAdd_Activated( ... ) } )
@@ -116,7 +116,7 @@ METHOD ui_dbstruct:connects()
 
 /*----------------------------------------------------------------------*/
 
-METHOD ui_dbstruct:disconnects()
+METHOD uie_dbstruct:disconnects()
 
    /* <DISCONNECTS> . Do not edit lines in this section! */
    /* </DISCONNECTS> */
@@ -125,7 +125,7 @@ METHOD ui_dbstruct:disconnects()
 
 /*----------------------------------------------------------------------*/
 /* <EVENTSMETHODAREA> . Do not edit code in this section! */
-METHOD ui_dbstruct:buttonAdd_Activated( ... )
+METHOD uie_dbstruct:buttonAdd_Activated( ... )
    Local oMsg
 
    oMsg := QMessageBox()
@@ -136,3 +136,4 @@ METHOD ui_dbstruct:buttonAdd_Activated( ... )
 
 /* </EVENTSMETHODAREA> */
 /*----------------------------------------------------------------------*/
+

@@ -16,15 +16,14 @@
 
 FUNCTION main()
    LOCAL oStruct
-   
-   oStruct := ui_dbstruct():new()
+
+   oStruct := uie_dbstruct():new()
    oStruct:create()
    oStruct:show()
-   
+
    QApplication():exec()
-   
+
    RETURN NIL
-   
+
 /*----------------------------------------------------------------------*/
-   
-   
+
