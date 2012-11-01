@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+
+2012-11-01 09:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+  * hbide/saveload.prg
+    ! Fixed: RTE reported by Maurizio. 
+    ; NOTE: this functionality has been discontinued.
+
 2012-10-25 14:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/cls_dbstruct.prg
   * hbqt/tests/dbstruct.prg

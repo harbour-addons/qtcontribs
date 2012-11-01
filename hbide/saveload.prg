@@ -2217,7 +2217,7 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
       EXIT
    CASE __comboTBSize_currentIndexChanged__
       ::oINI:cToolbarSize := ::oUI:comboTBSize:currentText()
-      ::oDK:setToolbarSize( val( ::oINI:cToolbarSize ) )
+      // ::oDK:setToolbarSize( val( ::oINI:cToolbarSize ) )  /* Functionality Discontinued */
       EXIT
 
    /* Dictionaries */
