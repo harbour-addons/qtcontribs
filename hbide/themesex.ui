@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Editing Themes Manager</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,1">
    <property name="spacing">
     <number>2</number>
@@ -256,7 +259,7 @@
   <customwidget>
    <class>HBQPlainTextEdit</class>
    <extends>QPlainTextEdit</extends>
-   <header>hbqt_hbqplaintextedit.h</header>
+   <header>hbqplaintextedit.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <property name="documentMode">
    <bool>true</bool>
   </property>
@@ -32,7 +35,7 @@
      <x>0</x>
      <y>0</y>
      <width>851</width>
-     <height>19</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

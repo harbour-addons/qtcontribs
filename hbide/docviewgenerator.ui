@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -432,8 +435,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>319</width>
-             <height>654</height>
+             <width>1424</width>
+             <height>797</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_4">

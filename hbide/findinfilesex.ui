@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Find in Files</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,1">
    <property name="spacing">
     <number>2</number>

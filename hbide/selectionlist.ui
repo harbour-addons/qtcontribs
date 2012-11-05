@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Select an Option</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="3">
     <widget class="QListView" name="listOptions">

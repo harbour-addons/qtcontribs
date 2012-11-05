@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Environment</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
@@ -775,7 +778,7 @@
   <widget class="QPushButton" name="pushButton_4">
    <property name="geometry">
     <rect>
-     <x>380</x>
+     <x>372</x>
      <y>456</y>
      <width>75</width>
      <height>24</height>

@@ -25,6 +25,9 @@
   <property name="windowTitle">
    <string>New Project Wizard</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <widget class="QStackedWidget" name="stackedWidget">
    <property name="geometry">
     <rect>
@@ -1290,7 +1293,11 @@
       </property>
       <property name="font">
        <font>
-        <family>Courier New</family>
+        <family>Arial</family>
+        <pointsize>8</pointsize>
+        <weight>50</weight>
+        <italic>false</italic>
+        <bold>false</bold>
        </font>
       </property>
       <property name="whatsThis">

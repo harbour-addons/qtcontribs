@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Select a Project...</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <widget class="QComboBox" name="cbProjects">
    <property name="geometry">
     <rect>

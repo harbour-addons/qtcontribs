@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Editor</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0" colspan="8">
     <widget class="QPlainTextEdit" name="plainText"/>

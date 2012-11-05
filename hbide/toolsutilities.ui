@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Tools &amp; Utilities</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <widget class="QLabel" name="labelCmdLine">
    <property name="geometry">
     <rect>

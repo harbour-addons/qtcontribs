@@ -16,6 +16,40 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-05 13:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/changelog.ui
+  * hbide/docviewgenerator.ui
+  * hbide/docwriter.ui
+  * hbide/editor.ui
+  * hbide/environ.ui
+  * hbide/environments.ui
+  * hbide/fetchdate.ui
+  * hbide/finddialog.ui
+  * hbide/findinfiles.ui
+  * hbide/findinfilesex.ui
+  * hbide/findsource.ui
+  * hbide/format.ui
+  * hbide/funclist.ui
+  * hbide/mainwindow.ui
+  * hbide/managetoolbox.ui
+  * hbide/panels.ui
+  * hbide/projectpropertiesex.ui
+  * hbide/projectwizard.ui
+  * hbide/searchreplace.ui
+  * hbide/searchreplacepanel.ui
+  * hbide/selectionlist.ui
+  * hbide/selectproject.ui
+  * hbide/setup.ui
+  * hbide/shortcuts.ui
+  * hbide/skeletons.ui
+  * hbide/themes.ui
+  * hbide/themesex.ui
+  * hbide/toolsutilities.ui
+  * hbide/updown.ui
+  * hbide/updown_v.ui
+    + Wrapped: with style sheet having font 8pt Arial.
+       This solves the font issue with various dialogs on different OSes.
+
 2012-11-04 21:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Revision Bumped.

@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>430</width>
+    <width>447</width>
     <height>385</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>HBIDE - Source Syntax Highlighting</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
