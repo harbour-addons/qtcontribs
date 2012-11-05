@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Setup</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">font: 8pt &quot;Arial&quot;;</string>
+  </property>
   <widget class="QTreeWidget" name="treeWidget">
    <property name="geometry">
     <rect>
@@ -44,7 +47,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="pageGeneral">
     <widget class="QGroupBox" name="groupBox">

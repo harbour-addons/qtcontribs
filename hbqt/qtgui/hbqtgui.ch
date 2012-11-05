@@ -181,6 +181,17 @@
 #define QEvent_UngrabMouse                        187      // Item loses mouse grab (QGraphicsItem only).
 #define QEvent_GrabKeyboard                       188      // Item gains keyboard grab (QGraphicsItem only).
 #define QEvent_UngrabKeyboard                     189      // Item loses keyboard grab (QGraphicsItem only).
+// Qt 4.6 Onwards : Trying to figure out how can be implemented in HbQt.
+#define QEvent_StateMachineSignal                 192      // A signal delivered to a state machine (QStateMachine::SignalEvent).
+#define QEvent_StateMachineWrapped                193      // The event is a wrapper for, i.e., contains, another event (QStateMachine::WrappedEvent).
+#define QEvent_TouchBegin                         194      // Beginning of a sequence of touch-screen and/or track-pad events (QTouchEvent)
+#define QEvent_TouchUpdate                        195      // Touch-screen event (QTouchEvent)
+#define QEvent_TouchEnd                           196      // End of touch-event sequence (QTouchEvent)
+#define QEvent_Gesture                            198      // A gesture was triggered (QGestureEvent)
+#define QEvent_RequestSoftwareInputPanel          199      // A widget wants to open a software input panel (SIP).
+#define QEvent_CloseSoftwareInputPanel            200      // A widget wants to close the software input panel (SIP).
+#define QEvent_GestureOverride                    202      // A gesture override was triggered (QGestureEvent)
+#define QEvent_WinIdChange                        203      // The window system identifer for this native widget has changed
 
 #define QPalette_WindowText                       0        // A general foreground color.
 #define QPalette_Foreground                       0        // This value is obsolete. Use WindowText instead.

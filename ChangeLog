@@ -16,7 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-04 21:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Revision Bumped.
 
+  * hbide/setup.ui
+    + Added: stylesheet with "font: 8pt Arial".
+       Experimental: hopefully it will resolve distorted dialog issue on *nixes.
+
+  * hbqt/hbmk2_qt.hb
+    ! Fixed to parse :setStyleSheet() call properly.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: yet not usable constants to honor QGesture and QTouchEvent(s).
+ 
 2012-11-01 09:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
   * hbide/saveload.prg

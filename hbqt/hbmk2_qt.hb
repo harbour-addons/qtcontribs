@@ -797,7 +797,11 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
       ELSEIF "setStyleSheet(" $ cCmd
          hbqtui_stripFront( @cCmd, "(" )
          hbqtui_stripRear( @cCmd, ")" )
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  setStyleSheet( " + HBQTUI_STRIP_SQ( cCmd ) + " )" )
+         cCmd := StrTran( HBQTUI_STRIP_SQ( cCmd ), "\" )
+         hbqtui_stripFront( @cCmd, '"' )
+         hbqtui_stripRear( @cCmd, '"' )
+         cCmd := "'" + cCmd + "'"
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  setStyleSheet( " + cCmd + " )" )
 
       ELSEIF "setText(" $ cCmd
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
