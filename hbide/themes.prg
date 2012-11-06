@@ -489,14 +489,17 @@ METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
    ::setQuotesRule( qHiliter, cTheme )
 
    IF __ObjGetClsName( qEdit ) == "HBQPLAINTEXTEDIT"
-      aAttr := ::getThemeAttribute( "CurrentLineBackground", cTheme )
-      qEdit:hbSetCurrentLineColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      IF !empty( aAttr := ::getThemeAttribute( "CurrentLineBackground", cTheme ) )
+         qEdit:hbSetCurrentLineColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      ENDIF
 
-      aAttr := ::getThemeAttribute( "LineNumbersBkColor", cTheme )
-      qEdit:hbSetLineAreaBkColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      IF !empty( aAttr := ::getThemeAttribute( "LineNumbersBkColor", cTheme ) )
+         qEdit:hbSetLineAreaBkColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      ENDIF
 
-      aAttr := ::getThemeAttribute( "SelectionBackground", cTheme )
-      qEdit:hbSetSelectionColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      IF !empty( aAttr := ::getThemeAttribute( "SelectionBackground", cTheme ) )
+         qEdit:hbSetSelectionColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      ENDIF
 
       qEdit:hbSetHighLighter( qHiliter )
 
@@ -539,7 +542,9 @@ METHOD IdeThemes:mergeUserDictionaries( qHiliter, cTheme )
          IF ! empty( oDict:aTxtRGB )
             qFormat:setForeground( QBrush( QColor( oDict:aTxtRGB[ 1 ], oDict:aTxtRGB[ 2 ], oDict:aTxtRGB[ 3 ] ) ) )
          ELSE
-            qFormat:setForeground( QBrush( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) ) )
+            IF ! Empty( aAttr )
+               qFormat:setForeground( QBrush( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) ) )
+            ENDIF
          ENDIF
          IF ! empty( oDict:aBgRGB )
             qFormat:setBackground( QBrush( QColor( oDict:aBgRGB[ 1 ], oDict:aBgRGB[ 2 ], oDict:aBgRGB[ 3 ] ) ) )
@@ -650,8 +655,9 @@ METHOD IdeThemes:setAttributes()
 METHOD IdeThemes:updateLineNumbersBkColor()
    LOCAL aAttr
 
-   aAttr := ::getThemeAttribute( "LineNumbersBkColor", ::aThemes[ ::nCurTheme, 1 ] )
-   ::oEdit:setLineNumbersBkColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] )
+   IF ! Empty( aAttr := ::getThemeAttribute( "LineNumbersBkColor", ::aThemes[ ::nCurTheme, 1 ] ) )
+      ::oEdit:setLineNumbersBkColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] )
+   ENDIF
    ::setAttributes()
    ::oEdit:refresh()
 
@@ -662,8 +668,9 @@ METHOD IdeThemes:updateLineNumbersBkColor()
 METHOD IdeThemes:updateCurrentLineColor()
    LOCAL aAttr
 
-   aAttr := ::getThemeAttribute( "CurrentLineBackground", ::aThemes[ ::nCurTheme, 1 ] )
-   ::oEdit:setCurrentLineColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] )
+   IF ! Empty( aAttr := ::getThemeAttribute( "CurrentLineBackground", ::aThemes[ ::nCurTheme, 1 ] ) )
+      ::oEdit:setCurrentLineColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] )
+   ENDIF
    ::setAttributes()
    ::oEdit:refresh()
 
