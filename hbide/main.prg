@@ -571,10 +571,6 @@ METHOD HbIde:create( aParams )
    /* Request Main Window to Appear on the Screen */
    ::oHM:refresh()
 
-   ::oDK:animateComponents( val( ::oINI:cIdeAnimated ) )
-
-   // ::oSetup:setSystemStyle( ::oINI:cIdeTheme )  /* This causes 2.5 seconds delay */
-
    ::oDK:setViewInitials()
 
    /* Refresh Stylesheet for all components at once */

@@ -809,6 +809,11 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
       ELSEIF "setWhatsThis(" $ cCmd
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
 
+      ELSEIF "setShortcut(" $ cCmd
+         cCmd := hbqtui_pullTranslate( cCmd )
+         cCmd := "setShortcut(QKeySequence(" + SubStr( cCmd, 13, Len( cCmd ) - 12 ) + ")"
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + cCmd )
+
       ELSEIF "header()->" $ cCmd
          /* TODO: how to handle : __qtreeviewitem->header()->setVisible( .F. ) */
       ELSEIF cCmd == "pPtr"

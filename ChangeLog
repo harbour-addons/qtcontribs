@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-08 15:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    + As Ususal.
+
+  * hbide/main.prg
+    - Removed: one double call to animate elements.
+       It should reduce load time considerably on some OS's.
+
+  * hbqt/hbmk2_qt.hb
+    + Implemented: :setShortcut() property assignment via Qt Creator.
+
 2012-11-06 14:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
   * hbide/themes.prg
