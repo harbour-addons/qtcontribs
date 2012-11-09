@@ -263,6 +263,7 @@ QTimeEdit.qth
 QToolBar.qth
 QToolBox.qth
 QToolButton.qth
+QToolTip.qth
 QTransform.qth
 QTreeView.qth
 QTreeWidget.qth
@@ -277,4 +278,4 @@ QWindowsStyle.qth
 QWindowStateChangeEvent.qth
 QWizard.qth
 QWizardPage.qth
-QToolTip.qth
+
