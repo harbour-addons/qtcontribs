@@ -16,6 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-09 12:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbqt/qtmultimedia/hbqtmultimedia.hbx
+  * hbqt/qtnetwork/hbqtnetwork.hbx
+  * hbqt/qtopengl/hbqtopengl.hbx
+  * hbqt/qtscript/hbqtscript.hbx
+  * hbqt/qtsql/hbqtsql.hbx
+  * hbqt/qtsvg/hbqtsvg.hbx
+  * hbqt/qtwebkit/hbqtwebkit.hbx
+  * hbqt/qtxml/hbqtxml.hbx
+    ! Converted: classnames from upper to camel case. [ Finished ].
+
 2012-11-09 10:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * As Ususal.
