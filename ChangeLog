@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-10 10:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbqt/qtcore/hbqtcore.ch
+    + Added: QLocate_* constants representing languages.
+
 2012-11-09 12:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.
