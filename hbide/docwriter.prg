@@ -113,7 +113,7 @@
 
 FUNCTION hbide_getSVNHeader()
 
-   RETURN "/* " + hb_eol() + " * $Id$" + hb_eol() + " */" + hb_eol() + hb_eol()
+   RETURN "/* " + hb_eol() + " * $Id: " + "$" + hb_eol() + " */" + hb_eol() + hb_eol()
 
 /*----------------------------------------------------------------------*/
 
@@ -154,8 +154,6 @@ CLASS IdeDocWriter INHERIT IdeObject
    DATA   qHiliter
    DATA   qHiliter1
 
-   DATA   hDoc
-   DATA   hFile
    DATA   oEdit
    DATA   cFuncPtoto                              INIT ""
    DATA   nFuncLine                               INIT 0
@@ -671,9 +669,7 @@ METHOD IdeDocWriter:saveInFunction()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:loadFromDocFile( cFile )
-   LOCAL oFunc, hDoc, hFile, cName, aFunc := {}
-
-   HB_SYMBOL_UNUSED( cFile )
+   LOCAL oFunc, hFile, hDoc, cName, cBuffer, aFunc := {}
 
    IF Empty( cFile ) .OR. ! hb_FileExists( cFile )
       cFile := hbide_fetchAFile( ::oDlg, "Select a document(.txt) file", , hbide_SetWrkFolderLast() )
@@ -683,14 +679,15 @@ METHOD IdeDocWriter:loadFromDocFile( cFile )
    ENDIF
    hbide_SetWrkFolderLast( cFile )
 
-   hFile := __hbdoc_FromSource( hb_MemoRead( cFile ) )
+   cBuffer := hb_MemoRead( cFile )
+   hFile := __hbdoc_FromSource( cBuffer )
+
    FOR EACH hDoc IN hFile
       IF "NAME" $ hDoc
          AAdd( aFunc, hDoc[ "NAME" ] )
-      ELSEIF "FUNCNAME" $ hDoc
-         AAdd( aFunc, hDoc[ "FUNCNAME" ] )
       ENDIF
    NEXT
+
    IF ! Empty( aFunc )
       IF Len( aFunc ) == 1
          cName := aFunc[ 1 ]
@@ -700,76 +697,68 @@ METHOD IdeDocWriter:loadFromDocFile( cFile )
 
       FOR EACH hDoc IN hFile
          IF "NAME" $ hDoc .AND. cName == hDoc[ "NAME" ]
-            ::hDoc := hDoc
-            oFunc := hbide_getFuncObjectFromHash( hDoc )
-            EXIT
-         ELSEIF "FUNCNAME" $ hDoc .AND. cName == hDoc[ "FUNCNAME" ]
-            ::hDoc := hDoc
             oFunc := hbide_getFuncObjectFromHash( hDoc )
             EXIT
          ENDIF
       NEXT
    ENDIF
-   ::hFile := hFile
 
    IF ! Empty( oFunc )
       ::fillFormByObject( oFunc )
-      ::dispTitle( cFile )
    ELSE
       ::fillForm()
    ENDIF
 
    ::cSourceFile := cFile
+   ::dispTitle( cFile )
+
    RETURN NIL
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:saveInDocFile()
-   LOCAL cFile, cBuffer, cTxt, hDoc
+   LOCAL cFile, cBuffer, hNewDoc, hDoc, cName, hFile, cFiltered
    LOCAL n       := ::oUI:comboTemplate:currentIndex()
    LOCAL cPrefix := iif( n == 0, "fun_", iif( n == 1, "proc_", "class_" ) )
-   LOCAL cName   := lower( ::oUI:editName:text() )
-   LOCAL lSvnId, aBgnEnd
-   LOCAL lFromFile := .F.
+   LOCAL lFound := .F.
 
-   cName := strtran( cName, "(", "" )
-   cName := strtran( cName, ")", "" )
+   cName := lower( Trim( ::oUI:editName:text() ) )
+   hNewDoc := ::buildDocument( .F. )
 
    IF Empty( ::cSourceFile ) .OR. Lower( hb_fNameExt( ::cSourceFile ) ) != ".txt"
-      cFile := cPrefix + alltrim( cName ) + ".txt"
+      cFile := cPrefix + alltrim( strtran( strtran( cName, "(" ), ")" ) ) + ".txt"
       cFile := hbide_saveAFile( ::oDlg, "Provide filename to save documentation", ;
                                     { { "Harbour Documentation File", "*.txt" } }, cFile, "txt" )
-      cTxt    := ::buildDocument( .T. )
    ELSE
       cFile := ::cSourceFile
-      lFromFile := .T.
-      cTxt := ::buildDocument( .F. )
    ENDIF
-   IF ! Empty( cFile )
-      IF lFromFile .AND. ! Empty( ::hFile ) .AND. ! Empty( ::hDoc )
-         FOR EACH hDoc IN ::hFile
-            IF hDoc == ::hDoc
-               hDoc := cTxt
-               EXIT
-            ENDIF
-         NEXT
-         hb_memowrit( cFile, hbide_getSVNHeader() + __hbdoc_ToSource( ::hFile ) )
-      ELSE
-         cBuffer := hb_memoread( cFile )
-         lSvnId  := "$Id:" $ cBuffer
-         cBuffer := iif( lSvnId, cBuffer, hbide_getSVNHeader() + cBuffer )
 
-         // Look for if the function is already contained
-         IF ! Empty( aBgnEnd := hbide_pullFuncOffset( cBuffer, cName ) )
-            cBuffer := SubStr( cBuffer, 1, aBgnEnd[ 1 ] ) + cTxt + SubStr( cBuffer, aBgnEnd[ 2 ] )
-         ELSE
-            cBuffer += hb_eol() + cTxt
+   IF ! Empty( cFile )
+      cFile := hbide_pathToOsPath( cFile )
+
+      cBuffer := hb_MemoRead( cFile )
+      hFile := __hbdoc_FromSource( cBuffer )
+      cFiltered := hbide_stripTrailingBlanks( __hbdoc_FilterOut( cBuffer ) )
+      FOR EACH hDoc IN hFile
+         IF "NAME" $ hDoc .AND. cName == Lower( hDoc[ "NAME" ] )
+            lFound := .T.
+            hDoc := hNewDoc
+            EXIT
          ENDIF
-         hb_memowrit( cFile, cBuffer )
+      NEXT
+
+      IF ! lFound
+         AAdd( hFile, hNewDoc )
       ENDIF
+
+      IF Empty( cFiltered )
+         cFiltered := hbide_getSVNHeader()
+      ENDIF
+      hb_memowrit( cFile, cFiltered + hb_eol() + __hbdoc_ToSource( hFile ) )
+
       ::cSourceFile := cFile
-      MsgBox( cFile + " has been saved !", "Save File Alert" )
       ::dispTitle( cFile )
+      MsgBox( cFile + " has been saved !", "Save File Alert" )
    ENDIF
 
    RETURN Self
@@ -783,7 +772,7 @@ METHOD IdeDocWriter:buildDocument( lText )
 
    hb_HKeepOrder( hEntry, .T. )
 
-   hEntry[ "TEMPLATE"     ] := iif( nIndex == 2, "Class", iif( nIndex == 1, "Procedure", "Function" ) )
+   hEntry[ "TEMPLATE" ] := iif( nIndex == 2, "Class", iif( nIndex == 1, "Procedure", "Function" ) )
    IF !empty( s := ::oUI:editName:text() )
       hEntry[ "NAME"         ] := s
    ENDIF
@@ -802,13 +791,21 @@ METHOD IdeDocWriter:buildDocument( lText )
    IF !empty( s := ::oUI:editSyntax:text() )
       hEntry[ "SYNTAX"       ] := s
    ENDIF
-   hEntry[ "ARGUMENTS"    ] := hbide_stripTrailingBlanks( ::oUI:plainArgs:toPlainText() )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainArgs     : toPlainText() ) )
+      hEntry[ "ARGUMENTS"    ] := s
+   ENDIF
    IF !empty( s := ::oUI:editReturns:text() )
       hEntry[ "RETURNS"      ] := s
    ENDIF
-   hEntry[ "DESCRIPTION"  ] := hbide_stripTrailingBlanks( ::oUI:plainDesc     : toPlainText() )
-   hEntry[ "EXAMPLES"     ] := hbide_stripTrailingBlanks( ::oUI:plainExamples : toPlainText() )
-   hEntry[ "TESTS"        ] := hbide_stripTrailingBlanks( ::oUI:plainTests    : toPlainText() )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainDesc     : toPlainText() ) )
+      hEntry[ "DESCRIPTION"  ] := s
+   ENDIF
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainExamples : toPlainText() ) )
+      hEntry[ "EXAMPLES"     ] := s
+   ENDIF
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainTests    : toPlainText() ) )
+      hEntry[ "TESTS"        ] := s
+   ENDIF
    IF !empty( s := ::oUI:editStatus:text() )
       hEntry[ "STATUS"       ] := s
    ENDIF
@@ -826,32 +823,6 @@ METHOD IdeDocWriter:buildDocument( lText )
    ENDIF
 
    RETURN iif( lText, hbide_stripPreceedingBlanks( hbide_stripTrailingBlanks( __hbdoc_ToSource( { hEntry } ) ) ), hEntry )
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION hbide_pullFuncOffset( cBuffer, cName )
-   LOCAL aBgnEnd, n, n1, nN, nO
-   LOCAL cLBuffer := Lower( cBuffer )
-
-   n := 0
-   DO WHILE .T.
-      IF ( n := hb_At( "$doc$", cLBuffer, n + 1 ) ) > 0
-         IF ( n1 := hb_At( "$end$", cLBuffer, n ) ) > 0
-            IF ( nN := hb_At( "$name$", cLBuffer, n ) ) > 0
-               IF ( nO := hb_At( "$oneliner$", cLBuffer, nN ) ) > 0
-                  IF hb_At( Lower( cName ), cLBuffer, nO, n1 ) > 0
-                     aBgnEnd := { hb_RAt( "/*", cLBuffer, 0, n ) - 1, hb_At( "*/", cLBuffer, n1 ) + 2 }
-                     EXIT
-                  ENDIF
-               ENDIF
-            ENDIF
-         ENDIF
-      ELSE
-         EXIT
-      ENDIF
-   ENDDO
-
-   RETURN aBgnEnd
 
 /*----------------------------------------------------------------------*/
 

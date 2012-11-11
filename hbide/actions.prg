@@ -806,9 +806,8 @@ FUNCTION hbide_mnuAddFileToMRU( oIde, cFileName, cType )
       aSize( a_, 25 )
    ENDIF
 
-   IF nPos == 0
-      hbide_mnuUpdateMRUpopup( oIde, cType )
-   ENDIF
+   hbide_mnuUpdateMRUpopup( oIde, cType ) /* Seems TO fix long standing bug : thanks Grzegorz */
+
    RETURN nil
 
 /*----------------------------------------------------------------------*/
