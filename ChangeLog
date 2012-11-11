@@ -16,6 +16,52 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-10 23:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbide/docwriter.prg
+  * hbide/harbourhelp.prg
+  * hbide/misc.prg
+    + Implemented: HbIDE Documentation Writer updated to load/save 
+       documentation from disk files with .txt extention. This will 
+       facilitate the visual way to update Harbour documentation per
+       Nanforum standards, which at present, is employed in Harbour 
+       all-over.
+
+    ; WORKING:
+      Editing Existing Documentation:
+
+        1. Click on "Load from .txt file" toolbar icon.
+        2. If .txt contains many functions then a list will be presented 
+             to select one.
+        3. Make the necessary changes.
+        4. Click on "Save written/updated documenttaion" toolbar icon.
+        5. A confirmation message will be displayed if it is saved successfully.
+       
+      Creating New Documentation:
+
+        1. Click on "Clear Foem" toolbar icon. Necessary only if you worked 
+             on some other function previously.
+        2. Fill in the fields.
+        3. Click on "Save written/updated documenttaion" toolbar icon.
+        4. FileSave dialog will be presented to obtain folder where to save.
+             FileName will be auto-constructed from type and function name.
+             You can keep it as is or change per your liking.
+        5. A confirmation message will be displayed if it is saved successfully.
+      
+      Both ways SVN Id header will be placed on top of the documentation file.
+
+    ; WHAT WE CAN LOOSE IF EXISTING DOCUMENTATION IS EDITED:  
+        
+        1. Copyright notices posted on top of the file.
+        2. $COMPLIANCE$ is converted to $PLATFORMS$ and is only oneliner.
+        3. If $COMPLIANCE$ and $PLATFORMS$ both are present then only 
+             $COMPLIANCE$ is retained.
+        4. Leading "*" will not be present
+        5. may be more but I have observed above differences 
+             while experimenting with harbour/doc/en/*.txt files.
+
 2012-11-10 10:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.

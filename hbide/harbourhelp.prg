@@ -905,7 +905,7 @@ METHOD IdeHarbourHelp:populateIndex()
 METHOD IdeHarbourHelp:pullDefinitions( acBuffer )
 
    IF HB_ISARRAY( acBuffer )
-      RETURN doc2functions( __hbdoc_fromSource( hbide_arrayTOmemo( acBuffer ) ) )
+      RETURN doc2functions( __hbdoc_fromSource( hbide_arrayToMemo( acBuffer ) ) )
    ELSE
       IF hb_fileExists( acBuffer )
          RETURN doc2functions( __hbdoc_fromSource( memoread( acBuffer ) ) )
@@ -928,80 +928,12 @@ METHOD IdeHarbourHelp:pullDefinitionsHBD( cFileHBD )
 
 /*----------------------------------------------------------------------*/
 
-#define __S2A( c )  hb_aTokens( strtran( c, chr( 13 ) ), chr( 10 ) )
-
 STATIC FUNCTION doc2functions( hFile )
-   LOCAL oFunc, hDoc
+   LOCAL hDoc
    LOCAL aFn := {}
 
    FOR EACH hDoc IN hFile
-      oFunc := IdeDocFunction():new()
-
-      IF "TEMPLATE" $ hDoc
-         oFunc:cTemplate := hDoc[ "TEMPLATE" ]
-      ENDIF
-      IF "FUNCNAME" $ hDoc
-         oFunc:cName := hDoc[ "FUNCNAME" ]
-      ENDIF
-      IF "NAME" $ hDoc
-         oFunc:cName := hDoc[ "NAME" ]
-      ENDIF
-      IF "CATEGORY" $ hDoc
-         oFunc:cCategory := hDoc[ "CATEGORY" ]
-      ENDIF
-      IF "SUBCATEGORY" $ hDoc
-         oFunc:cSubCategory := hDoc[ "SUBCATEGORY" ]
-      ENDIF
-      IF "ONELINER" $ hDoc
-         oFunc:cOneLiner := hDoc[ "ONELINER" ]
-      ENDIF
-      IF "SYNTAX" $ hDoc
-         oFunc:aSyntax := __S2A( hDoc[ "SYNTAX" ] )
-      ENDIF
-      IF "ARGUMENTS" $ hDoc
-         oFunc:aArguments := __S2A( hDoc[ "ARGUMENTS" ] )
-      ENDIF
-      IF "RETURNS" $ hDoc
-         oFunc:aReturns := __S2A( hDoc[ "RETURNS" ] )
-      ENDIF
-      IF "DESCRIPTION" $ hDoc
-         oFunc:aDescription := __S2A( hDoc[ "DESCRIPTION" ] )
-      ENDIF
-      IF "EXAMPLES" $ hDoc
-         oFunc:aExamples := __S2A( hDoc[ "EXAMPLES" ] )
-      ENDIF
-      IF "TESTS" $ hDoc
-         oFunc:aTests := __S2A( hDoc[ "TESTS" ] )
-      ENDIF
-      IF "FILES" $ hDoc
-         oFunc:aFiles := __S2A( hDoc[ "FILES" ] )
-      ENDIF
-      IF "STATUS" $ hDoc
-         oFunc:cStatus := hDoc[ "STATUS" ]
-      ENDIF
-      IF "PLATFORMS" $ hDoc
-         oFunc:cPlatForms := hDoc[ "PLATFORMS" ]
-      ENDIF
-      IF "COMPLIANCE" $ hDoc
-         oFunc:cPlatForms := hDoc[ "COMPLIANCE" ]
-      ENDIF
-      IF "SEEALSO" $ hDoc
-         oFunc:cSeeAlso := hDoc[ "SEEALSO" ]
-      ENDIF
-      IF "VERSION" $ hDoc
-         oFunc:cVersion := hDoc[ "VERSION" ]
-      ENDIF
-      IF "INHERITS" $ hDoc
-         oFunc:cInherits := hDoc[ "INHERITS" ]
-      ENDIF
-      IF "METHODS" $ hDoc
-         oFunc:aMethods := __S2A( hDoc[ "METHODS" ] )
-      ENDIF
-      IF "EXTERNALLINK" $ hDoc
-         oFunc:cExternalLink := hDoc[ "EXTERNALLINK" ]
-      ENDIF
-
-      aadd( aFn, oFunc )
+      aadd( aFn, hbide_getFuncObjectFromHash( hDoc ) )
    NEXT
 
    RETURN aFn

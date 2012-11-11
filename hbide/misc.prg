@@ -487,31 +487,6 @@ FUNCTION hbide_arrayToMemoEx( a_ )
 FUNCTION hbide_arrayToMemoEx2( a_ )
    RETURN hbide_arrayToMemoEx( a_ )
 
-   #if 0
-   LOCAL s := "", k
-   LOCAL lNewPara := .t.
-
-   FOR EACH k IN a_
-      IF empty( k )
-         s += hb_eol() + hb_eol()
-         lNewPara := .t.
-      ELSE
-         s += iif( lNewPara, "", " " ) + k
-         lNewPara := .f.
-      ENDIF
-   NEXT
-
-   DO WHILE .t.
-      IF right( s, 2 ) == hb_eol()
-         s := substr( s, 1, Len( s ) - 2 )
-      ELSE
-         EXIT
-      ENDIF
-   ENDDO
-
-   RETURN s
-   #endif
-
 /*----------------------------------------------------------------------*/
 
 FUNCTION hbide_convertHtmlDelimiters( s )
@@ -2057,4 +2032,130 @@ FUNCTION hbide_identifierImage( cIdentifier )
    RETURN hbide_image( cImage )
 
 /*----------------------------------------------------------------------*/
+
+#define __S2A( c )  hb_aTokens( strtran( c, chr( 13 ) ), chr( 10 ) )
+
+FUNCTION hbide_getFuncObjectFromHash( hDoc )
+   LOCAL oFunc
+
+   oFunc := IdeDocFunction():new()
+
+   IF "TEMPLATE" $ hDoc
+      oFunc:cTemplate := hDoc[ "TEMPLATE" ]
+   ENDIF
+   IF "FUNCNAME" $ hDoc
+      oFunc:cName := hDoc[ "FUNCNAME" ]
+   ENDIF
+   IF "NAME" $ hDoc
+      oFunc:cName := hDoc[ "NAME" ]
+   ENDIF
+   IF "CATEGORY" $ hDoc
+      oFunc:cCategory := hDoc[ "CATEGORY" ]
+   ENDIF
+   IF "SUBCATEGORY" $ hDoc
+      oFunc:cSubCategory := hDoc[ "SUBCATEGORY" ]
+   ENDIF
+   IF "ONELINER" $ hDoc
+      oFunc:cOneLiner := hDoc[ "ONELINER" ]
+   ENDIF
+   IF "SYNTAX" $ hDoc
+      oFunc:aSyntax := __S2A( hDoc[ "SYNTAX" ] )
+   ENDIF
+   IF "ARGUMENTS" $ hDoc
+      oFunc:aArguments := __S2A( hDoc[ "ARGUMENTS" ] )
+   ENDIF
+   IF "RETURNS" $ hDoc
+      oFunc:aReturns := __S2A( hDoc[ "RETURNS" ] )
+   ENDIF
+   IF "DESCRIPTION" $ hDoc
+      oFunc:aDescription := __S2A( hDoc[ "DESCRIPTION" ] )
+   ENDIF
+   IF "EXAMPLES" $ hDoc
+      oFunc:aExamples := __S2A( hDoc[ "EXAMPLES" ] )
+   ENDIF
+   IF "TESTS" $ hDoc
+      oFunc:aTests := __S2A( hDoc[ "TESTS" ] )
+   ENDIF
+   IF "FILES" $ hDoc
+      oFunc:aFiles := __S2A( hDoc[ "FILES" ] )
+   ENDIF
+   IF "STATUS" $ hDoc
+      oFunc:cStatus := hDoc[ "STATUS" ]
+   ENDIF
+   IF "PLATFORMS" $ hDoc
+      oFunc:cPlatForms := hDoc[ "PLATFORMS" ]
+   ENDIF
+   IF "COMPLIANCE" $ hDoc
+      oFunc:cPlatForms := hDoc[ "COMPLIANCE" ]
+   ENDIF
+   IF "SEEALSO" $ hDoc
+      oFunc:cSeeAlso := hDoc[ "SEEALSO" ]
+   ENDIF
+   IF "VERSION" $ hDoc
+      oFunc:cVersion := hDoc[ "VERSION" ]
+   ENDIF
+   IF "INHERITS" $ hDoc
+      oFunc:cInherits := hDoc[ "INHERITS" ]
+   ENDIF
+   IF "METHODS" $ hDoc
+      oFunc:aMethods := __S2A( hDoc[ "METHODS" ] )
+   ENDIF
+   IF "EXTERNALLINK" $ hDoc
+      oFunc:cExternalLink := hDoc[ "EXTERNALLINK" ]
+   ENDIF
+
+   RETURN oFunc
+
+/*----------------------------------------------------------------------*/
+
+FUNCTION hbide_fetchASelection( aList )
+   LOCAL oSL, oStrList, oStrModel, nDone, cChoice
+
+   oSL := hbide_getUI( "selectionlist", hbide_setIde():oDlg:oWidget )
+
+   oSL:setWindowTitle( "Select an Item" )
+
+   oSL:listOptions :connect( "doubleClicked(QModelIndex)", {|p| selectionProc( 1, p, @cChoice, aList, oSL ) } )
+   oSL:buttonOk    :connect( "clicked()"                 , {|p| selectionProc( 2, p, @cChoice, aList, oSL ) } )
+   oSL:buttonCancel:connect( "clicked()"                 , {|p| selectionProc( 3, p ) } )
+
+   oStrList := QStringList()
+   FOR EACH cChoice IN aList
+      oStrList:append( cChoice )
+   NEXT
+   oStrModel := QStringListModel()
+   oStrModel:setStringList( oStrList )
+
+   oSL:listOptions:setModel( oStrModel )
+
+   nDone := oSL:exec()
+
+   oSL:setParent( QWidget() )
+
+   RETURN iif( nDone == 1, cChoice, "" )
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION selectionProc( nMode, p, cChoice, aList, oSL )
+   LOCAL qModalIndex
+
+   DO CASE
+   CASE nMode == 1
+      cChoice := aList[ p:row() + 1 ]
+      oSL:done( 1 )
+
+   CASE nMode == 2
+      qModalIndex := oSL:listOptions:currentIndex()
+      cChoice := aList[ qModalIndex:row() + 1 ]
+      oSL:done( 1 )
+
+   CASE nMode == 3
+      oSL:done( 0 )
+
+   ENDCASE
+
+   RETURN Nil
+
+/*----------------------------------------------------------------------*/
+
 
