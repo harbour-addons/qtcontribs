@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-11 14:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbide/docwriter.prg
+    ! Minor fix to prev commit.
+
 2012-11-11 11:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.

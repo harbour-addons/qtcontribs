@@ -391,8 +391,6 @@ METHOD IdeDocWriter:clear()
    ::nFuncLine   := 0
    ::nTagsIndex  := 0
    ::cSourceFile := ""
-   ::hDoc        := NIL
-   ::hFile       := NIL
 
    ::fillForm()
    ::dispTitle()
