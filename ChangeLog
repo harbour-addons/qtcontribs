@@ -16,6 +16,22 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-12 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbide/main.prg
+    + Opened: left-hand side "Projects Tree" docking widget if HbIDE is 
+       started with "HBP" mode as - hbide.exe myproject.hbp
+
+  * hbxbp/dbu.prg
+    + Added: "Natural Order" prompt in deop-down list of "Indexes" in HbpDBU.
+        Requested by Massimo.
+
+  * hbxbp/hbxbp.hbp
+    ! Fixed: to transfer binaries in Harbour's lib folder.
+        This had given me a lot of hedaches, thanks GVS for the hint.
+
 2012-11-11 14:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.

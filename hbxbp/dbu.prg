@@ -1636,7 +1636,7 @@ CLASS HbpBrowse
    METHOD getIndexInfo()
    METHOD setIndex( cIndex )
    METHOD setOrder( nOrder )
-   ACCESS numIndexes()                            INLINE Len( ::aIndex )
+   ACCESS numIndexes()                            INLINE iif( Len( ::aIndex ) == 0, 0,  Len( ::aIndex ) - 1 )
 
    METHOD dispInfo()
    METHOD search( cSearch, lSoft, lLast, nMode )
@@ -2566,7 +2566,7 @@ METHOD HbpBrowse:lastRec()
 METHOD HbpBrowse:setIndex( cIndex )
    LOCAL n
 
-   IF ( n := ascan( ::aIndex, cIndex ) ) > 0
+   IF ( n := ascan( ::aIndex, cIndex ) ) >= 0
       ( ::cAlias )->( DbSetOrder( n ) )
       ::oBrw:refreshAll()
       ::oBrw:forceStable()
@@ -2584,12 +2584,13 @@ METHOD HbpBrowse:getIndexInfo()
 
    IF ::nType == BRW_TYPE_DBF
       FOR i := 1 to 50
-         IF ( cKey := ( ::cAlias )->( IndexKey( i ) ) ) == ''
+         IF ( cKey := ( ::cAlias )->( IndexKey( i ) ) ) == ""
             EXIT
          ENDIF
-         aadd( a_, ( ::cAlias )->( OrdName( i ) ) + ' : ' + cKey )
+         aadd( a_, ( ::cAlias )->( OrdName( i ) ) + " : " + cKey )
       NEXT
    ENDIF
+   AAdd( a_, "Natural Order" )
 
    ::aIndex := a_
 

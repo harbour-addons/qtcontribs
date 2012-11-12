@@ -593,6 +593,7 @@ METHOD HbIde:create( aParams )
       ::oDK:setView( "Main" )
    ELSEIF ::nRunMode == HBIDE_RUN_MODE_HBP
       ::oDockED:hide()
+      ::oDockPT:show()
       ::oDK:setView( "Main" )
    ELSE
       ::oDK:setView( "Main" )
