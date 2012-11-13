@@ -108,6 +108,11 @@ DYNAMIC hb_QFontMetricsF
 DYNAMIC hb_QFormLayout
 DYNAMIC hb_QFrame
 DYNAMIC hb_QGradient
+DYNAMIC hb_QGraphicsBlurEffect
+DYNAMIC hb_QGraphicsColorizeEffect
+DYNAMIC hb_QGraphicsDropShadowEffect
+DYNAMIC hb_QGraphicsOpacityEffect
+DYNAMIC hb_QGraphicsEffect
 DYNAMIC hb_QGraphicsEllipseItem
 DYNAMIC hb_QGraphicsGridLayout
 DYNAMIC hb_QGraphicsItem
@@ -371,6 +376,11 @@ DYNAMIC QFontMetricsF
 DYNAMIC QFormLayout
 DYNAMIC QFrame
 DYNAMIC QGradient
+DYNAMIC QGraphicsBlurEffect
+DYNAMIC QGraphicsColorizeEffect
+DYNAMIC QGraphicsDropShadowEffect
+DYNAMIC QGraphicsOpacityEffect
+DYNAMIC QGraphicsEffect
 DYNAMIC QGraphicsEllipseItem
 DYNAMIC QGraphicsGridLayout
 DYNAMIC QGraphicsItem

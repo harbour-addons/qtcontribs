@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-12 18:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqtgui.hbx
+    + Added: new classes introduced today.
+
 2012-11-12 18:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/hbqt_init.cpp
   * hbqt/qtgui/hbqt_init.cpp
