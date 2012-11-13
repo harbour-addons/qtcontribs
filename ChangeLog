@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-12 18:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/hbqt_init.cpp
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added: more signals with qreal,QBrush,QPointF,BlurHints;
+        needed for new added classes as per below.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QGraphicsEffect_* + relevant constants.
+
+  * hbqt/qtgui/qth/filelist.hbm
+  + hbqt/qtgui/qth/QGraphicsBlurEffect.qth
+  + hbqt/qtgui/qth/QGraphicsColorizeEffect.qth
+  + hbqt/qtgui/qth/QGraphicsDropShadowEffect.qth
+  + hbqt/qtgui/qth/QGraphicsEffect.qth
+  + hbqt/qtgui/qth/QGraphicsOpacityEffect.qth
+    + Added: Qt 4.6 introduced classes.
+
+  * hbqt/qtgui/qth/QWidget.qth
+    + Added: Qt 4.6 introduced method :setGraphicsEffect() exploiting 
+        above classes.
+
+  ; TODO: example code to be a part of hbqt/tests.
+
 2012-11-12 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.

@@ -86,6 +86,7 @@ extern void hbqt_del_QTime( void * pObj, int iFlags );
 extern void hbqt_del_QSize( void * pObj, int iFlags );
 extern void hbqt_del_QSizeF( void * pObj, int iFlags );
 extern void hbqt_del_QPoint( void * pObj, int iFlags );
+extern void hbqt_del_QPointF( void * pObj, int iFlags );
 extern void hbqt_del_QRect( void * pObj, int iFlags );
 extern void hbqt_del_QRectF( void * pObj, int iFlags );
 extern void hbqt_del_QUrl( void * pObj, int iFlags );
@@ -167,6 +168,25 @@ static void hbqt_SlotsExecDouble( PHB_ITEM * codeBlock, void ** arguments, QStri
    hb_vmPush( codeBlock );
    hb_vmPushDouble( *reinterpret_cast< double( * ) >( arguments[ 1 ] ), 4 );
    hb_vmSend( 1 );
+}
+
+static void hbqt_SlotsExecQReal( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   hb_vmPushEvalSym();
+   hb_vmPush( codeBlock );
+   hb_vmPushDouble( *reinterpret_cast< qreal( * ) >( arguments[ 1 ] ), 10 );
+   hb_vmSend( 1 );
+}
+
+static void hbqt_SlotsExecQRealQReal( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   hb_vmPushEvalSym();
+   hb_vmPush( codeBlock );
+   hb_vmPushDouble( *reinterpret_cast< qreal( * ) >( arguments[ 1 ] ), 10 );
+   hb_vmPushDouble( *reinterpret_cast< qreal( * ) >( arguments[ 2 ] ), 10 );
+   hb_vmSend( 2 );
 }
 
 static void hbqt_SlotsExecInt( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
@@ -273,6 +293,20 @@ static void hbqt_SlotsExecQPoint( PHB_ITEM * codeBlock, void ** arguments, QStri
 {
    Q_UNUSED( pList );
    PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QPoint( ( *reinterpret_cast< QPoint( * ) >( arguments[ 1 ] ) ) ), "HB_QPOINT", hbqt_del_QPoint, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQPointF( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QPointF( ( *reinterpret_cast< QPointF( * ) >( arguments[ 1 ] ) ) ), "HB_QPOINTF", hbqt_del_QPointF, HBQT_BIT_OWNER );
    if( p0 )
    {
       hb_vmPushEvalSym();
@@ -459,6 +493,8 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "int$int$int$int"         , hbqt_SlotsExecIntIntIntInt     );
    hbqt_slots_register_callback( "bool"                    , hbqt_SlotsExecBool             );
    hbqt_slots_register_callback( "double"                  , hbqt_SlotsExecDouble           );
+   hbqt_slots_register_callback( "qreal"                   , hbqt_SlotsExecQReal            );
+   hbqt_slots_register_callback( "qreal$qreal"             , hbqt_SlotsExecQRealQReal       );
    hbqt_slots_register_callback( "pointer"                 , hbqt_SlotsExecPointer          );
    hbqt_slots_register_callback( "pointer$pointer"         , hbqt_SlotsExecPointerPointer   );
    hbqt_slots_register_callback( "pointer$int"             , hbqt_SlotsExecPointerInt       );
@@ -469,6 +505,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QModelIndexList"         , hbqt_SlotsExecModelIndexList   );
    hbqt_slots_register_callback( "QModelIndex$QModelIndex" , hbqt_SlotsExecModelModel       );
    hbqt_slots_register_callback( "QPoint"                  , hbqt_SlotsExecQPoint           );
+   hbqt_slots_register_callback( "QPointF"                 , hbqt_SlotsExecQPointF          );
    hbqt_slots_register_callback( "QRect$int"               , hbqt_SlotsExecQRectInt         );
    hbqt_slots_register_callback( "QRect"                   , hbqt_SlotsExecQRect            );
    hbqt_slots_register_callback( "QRectF"                  , hbqt_SlotsExecQRectF           );

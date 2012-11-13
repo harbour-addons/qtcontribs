@@ -1,0 +1,61 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x040600
+Constructor = no
+Owner       = no
+</CLASS>
+
+<CODE>
+#include <QtGui/QGraphicsEffect>
+
+
+/*
+ * QGraphicsEffect ( QObject * parent = 0 )
+ * virtual ~QGraphicsEffect ()
+ */
+HB_FUNC( QT_QGRAPHICSEFFECT )
+{
+
+}
+</CODE>
+
+<ENUMS>
+enum ChangeFlag { SourceAttached, SourceDetached, SourceBoundingRectChanged, SourceInvalidated }
+flags ChangeFlags
+enum PixmapPadMode { NoPad, PadToTransparentBorder, PadToEffectiveBoundingRect }
+</ENUMS>
+
+<PROTOS>
+QRectF boundingRect () const
+virtual QRectF boundingRectFor ( const QRectF & rect ) const
+bool isEnabled () const
+</PROTOS>
+
+<SLOTS>
+void setEnabled ( bool enable )
+void update ()
+</SLOTS>
+
+<SIGNALS>
+void enabledChanged ( bool enabled )
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

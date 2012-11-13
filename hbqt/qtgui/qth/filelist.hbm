@@ -78,6 +78,11 @@ QFontMetricsF.qth
 QFormLayout.qth
 QFrame.qth
 QGradient.qth
+QGraphicsBlurEffect.qth
+QGraphicsColorizeEffect.qth
+QGraphicsDropShadowEffect.qth
+QGraphicsOpacityEffect.qth
+QGraphicsEffect.qth
 QGraphicsEllipseItem.qth
 QGraphicsGridLayout.qth
 QGraphicsItem.qth

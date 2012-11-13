@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QGraphicsEffect
+Type        =
+New         =
+Version     = 0x040600
+Owner       = no
+</CLASS>
+
+<CODE>
+#include <QtGui/QGraphicsBlurEffect>
+
+
+/*
+ * QGraphicsBlurEffect ( QObject * parent = 0 )
+ * ~QGraphicsBlurEffect ()
+ */
+HB_FUNC( QT_QGRAPHICSBLUREFFECT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QGraphicsBlurEffect( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGraphicsBlurEffect() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum BlurHint { PerformanceHint, QualityHint, AnimationHint }
+flags BlurHints
+</ENUMS>
+
+<PROTOS>
+BlurHints blurHints () const
+qreal blurRadius () const
+virtual QRectF boundingRectFor ( const QRectF & rect ) const
+</PROTOS>
+
+<SLOTS>
+void setBlurHints ( BlurHints hints )
+void setBlurRadius ( qreal blurRadius )
+</SLOTS>
+
+<SIGNALS>
+void blurHintsChanged ( BlurHints hints )
+void blurRadiusChanged ( qreal radius )
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

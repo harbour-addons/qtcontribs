@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QGraphicsEffect
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtGui/QGraphicsOpacityEffect>
+
+
+/*
+ * QGraphicsOpacityEffect ( QObject * parent = 0 )
+ * ~QGraphicsOpacityEffect ()
+ */
+HB_FUNC( QT_QGRAPHICSOPACITYEFFECT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QGraphicsOpacityEffect( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGraphicsOpacityEffect() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal opacity () const
+QBrush opacityMask () const
+</PROTOS>
+
+<SLOTS>
+void setOpacity ( qreal opacity )
+void setOpacityMask ( const QBrush & mask )
+</SLOTS>
+
+<SIGNALS>
+void opacityChanged ( qreal opacity )
+void opacityMaskChanged ( const QBrush & mask )
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

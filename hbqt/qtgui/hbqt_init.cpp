@@ -72,6 +72,7 @@
 #include <QtGui/QTextBlock>
 #include <QtGui/QSessionManager>
 #include <QtGui/QColor>
+#include <QtGui/QBrush>
 #include <QtGui/QAbstractButton>
 #include <QtGui/QAction>
 #include <QtGui/QMdiSubWindow>
@@ -91,6 +92,7 @@ HB_EXTERN_BEGIN
 
 extern void hbqt_del_QObject( void * pObj, int iFlags );
 extern void hbqt_del_QColor( void * pObj, int iFlags );
+extern void hbqt_del_QBrush( void * pObj, int iFlags );
 extern void hbqt_del_QItemSelection( void * pObj, int iFlags );
 extern void hbqt_del_QTextCharFormat( void * pObj, int iFlags );
 extern void hbqt_del_QFont( void * pObj, int iFlags );
@@ -144,6 +146,20 @@ static void hbqt_SlotsExecQColor( PHB_ITEM * codeBlock, void ** arguments, QStri
 {
    Q_UNUSED( pList );
    PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QColor( ( *reinterpret_cast< QColor( * ) >( arguments[ 1 ] ) ) ), "HB_QCOLOR", hbqt_del_QColor, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQBrush( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QBrush( ( *reinterpret_cast< QBrush( * ) >( arguments[ 1 ] ) ) ), "HB_QBRUSH", hbqt_del_QBrush, HBQT_BIT_OWNER );
    if( p0 )
    {
       hb_vmPushEvalSym();
@@ -541,6 +557,14 @@ static void hbqt_SlotsExecQRectInt( PHB_ITEM * codeBlock, void ** arguments, QSt
    }
 }
 
+static void hbqt_SlotsExecBlurHints( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   hb_vmPushEvalSym();
+   hb_vmPush( codeBlock );
+   hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 1 ] ) );
+   hb_vmSend( 1 );
+}
 
 HB_FUNC_EXTERN( HB_QABSTRACTBUTTON );
 HB_FUNC_EXTERN( HB_QACTION );
@@ -628,6 +652,7 @@ void _hbqtgui_force_link_for_event( void )
 static void hbqt_registerCallbacks( void )
 {
    hbqt_slots_register_callback( "QColor"                                    , hbqt_SlotsExecQColor                           );
+   hbqt_slots_register_callback( "QBrush"                                    , hbqt_SlotsExecQBrush                           );
    hbqt_slots_register_callback( "QFont"                                     , hbqt_SlotsExecQFont                            );
    hbqt_slots_register_callback( "QItemSelection$QItemSelection"             , hbqt_SlotsExecItemSelItemSel                   );
    hbqt_slots_register_callback( "QTextBlock"                                , hbqt_SlotsExecQTextBlock                       );
@@ -650,6 +675,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QListWidgetItem*"                          , hbqt_SlotsExecQListWidgetItem                  );
    hbqt_slots_register_callback( "QWidget*"                                  , hbqt_SlotsExecQWidget                          );
    hbqt_slots_register_callback( "QRect$int"                                 , hbqt_SlotsExecQRectInt                         );
+   hbqt_slots_register_callback( "BlurHints"                                 , hbqt_SlotsExecBlurHints                        );
 
    hbqt_events_register_createobj( QEvent::MouseButtonPress                  , "hb_QMouseEvent"                    );
    hbqt_events_register_createobj( QEvent::MouseButtonRelease                , "hb_QMouseEvent"                    );

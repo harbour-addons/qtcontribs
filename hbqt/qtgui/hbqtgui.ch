@@ -2455,6 +2455,46 @@
 #define QDir_IgnoreCase                                      0x10    // Sort case-insensitively.
 #define QDir_LocaleAware                                     0x40    // Sort items appropriately using the current locale settings.
 
+// QWidget::grabGesture( QGesture::Type, QGesture::Flags )
+#define Qt_DontStartGestureOnChildren                        0x01    // By default gestures can start on the widget or over any of its children. Use this flag to disable this and allow a gesture to start on the widget only.
+#define Qt_ReceivePartialGestures                            0x02    // Allows any ignored gesture events to be propagated to parent widgets which have specified this hint. By default only gestures that are in the Qt_GestureStarted state are propagated and the widget always gets the full gesture sequence starting with a gesture in the Qt_GestureStarted state and ending with a gesture in the Qt_GestureFinished or Qt_GestureCanceled states.
+#define Qt_IgnoredGesturesPropagateToParent                  0x04    // Since Qt 4.7, this flag allows you to fine-tune gesture event propagation. By setting the flag when grabbing a gesture all ignored partial gestures will propagate to their parent items.
+
+// enum Qt_GestureState : describes the state of a gesture.
+#define Qt_GestureStarted                                    1       // A continuous gesture has started.
+#define Qt_GestureUpdated                                    2       // A gesture continues.
+#define Qt_GestureFinished                                   3       // A gesture has finished.
+#define Qt_GestureCanceled                                   4       // A gesture was canceled.enum Qt_GestureType
+
+// This enum type describes the standard gestures.
+#define Qt_TapGesture                                        1       // A Tap gesture.
+#define Qt_TapAndHoldGesture                                 2       // A Tap-And-Hold (Long-Tap) gesture.
+#define Qt_PanGesture                                        3       // A Pan gesture.
+#define Qt_PinchGesture                                      4       // A Pinch gesture.
+#define Qt_SwipeGesture                                      5       // A Swipe gesture.
+#define Qt_CustomGesture                                     0x0100  // A flag that can be used to test if the gesture is a user-defined gesture ID.
+
+// enum QGraphicsEffect::ChangeFlag
+// flags QGraphicsEffect::ChangeFlags
+// This enum describes what has changed in QGraphicsEffectSource.
+#define QGraphicsEffect_SourceAttached                       0x1     // The effect is installed on a source.
+#define QGraphicsEffect_SourceDetached                       0x2     // The effect is uninstalled on a source.
+#define QGraphicsEffect_SourceBoundingRectChanged            0x4     // The bounding rect of the source has changed.
+#define QGraphicsEffect_SourceInvalidated                    0x8     // The visual appearance of the source has changed.
+
+// enum QGraphicsEffect::PixmapPadMode
+// This enum describes how the pixmap returned from sourcePixmap should be padded.
+#define QGraphicsEffect_NoPad                                0       // The pixmap should not receive any additional padding.
+#define QGraphicsEffect_PadToTransparentBorder               1       // The pixmap should be padded to ensure it has a completely transparent border.
+#define QGraphicsEffect_PadToEffectiveBoundingRect           2       // The pixmap should be padded to match the effective bounding rectangle of the effect.
+
+// enum QGraphicsBlurEffect::BlurHint
+// flags QGraphicsBlurEffect::BlurHints
+// This enum describes the possible hints that can be used to control how blur effects are applied. The hints might not have an effect in all the paint engines.
+#define QGraphicsBlurEffect_PerformanceHint                  0x00    // Indicates that rendering performance is the most important factor, at the potential cost of lower quality.
+#define QGraphicsBlurEffect_QualityHint                      0x01    // Indicates that rendering quality is the most important factor, at the potential cost of lower performance.
+#define QGraphicsBlurEffect_AnimationHint                    0x02    // Indicates that the blur radius is going to be animated, hinting that the implementation can keep a cache of blurred verisons of the source. Do not use this hint if the source is going to be dynamically changing.
+
 /*----------------------------------------------------------------------*/
 //                        HBQT Defined Constants
 /*----------------------------------------------------------------------*/

@@ -200,6 +200,7 @@ void setForegroundRole ( QPalette::ColorRole role )
 void setGeometry ( const QRect & )
 void setGeometry ( int x, int y, int w, int h )
 
+void setGraphicsEffect ( QGraphicsEffect * effect )              [*V=0x040600;D=1*]
 void setInputMethodHints ( Qt::InputMethodHints hints )          [*V=0x040600*]
 
 // void setInputContext ( QInputContext * context )
