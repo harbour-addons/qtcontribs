@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-12 19:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/main.prg
+  * hbide/misc.prg
+    + Demonstrated the use of QGraphicsEffect() when X button is pressed.
+
 2012-11-12 18:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqtgui.hbx
     + Added: new classes introduced today.
@@ -42,6 +47,7 @@
         above classes.
 
   ; TODO: example code to be a part of hbqt/tests.
+  ; DONE: implemented in HbIDE when X button is clicked to close.
 
 2012-11-12 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch

@@ -257,7 +257,10 @@ FUNCTION hbide_getYesNo( cMsg, cInfo, cTitle, qParent )
    oMB:setWindowFlags( Qt_Dialog )
    oMB:setStandardButtons( QMessageBox_Yes + QMessageBox_No )
 
+   hbide_setIde():oColorizeEffect:setEnabled( .T. )
+   hbide_setIde():oDlg:oWidget:setGraphicsEffect( hbide_setIde():oColorizeEffect )
    nRet := oMB:exec()
+   hbide_setIde():oColorizeEffect:setEnabled( .F. )
 
    oMB:setParent( QWidget() )
 

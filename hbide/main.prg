@@ -186,6 +186,7 @@ CLASS HbIde
    DATA   nAnimantionMode                         INIT   HBIDE_ANIMATION_NONE
 
    DATA   oUI
+   DATA   oColorizeEffect
 
    DATA   aMeta                                   INIT   {}  /* Holds current definition only  */
 
@@ -399,6 +400,8 @@ METHOD HbIde:new( aParams )
 METHOD HbIde:create( aParams )
    LOCAL qPixmap, qSplash, cView
    LOCAL mp1, mp2, oXbp, nEvent
+
+   ::oColorizeEffect := QGraphicsColorizeEffect()
 
    qPixmap := QPixmap( ":/resources" + hb_ps() + "hbidesplash.png" )
    qSplash := QSplashScreen()
