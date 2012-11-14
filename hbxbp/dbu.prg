@@ -364,7 +364,7 @@ METHOD HbpDBU:background( oBrush )
    IF HB_ISOBJECT( oBrush )
       ::sl_brush := oBrush
       FOR EACH oPanel IN ::aPanels
-         oPanel:setBackground( ::sl_brush )
+         oPanel:qWidget:setBackground( ::sl_brush )
       NEXT
    ENDIF
 
@@ -379,7 +379,7 @@ METHOD HbpDBU:getPanelNames()
       aAttr := {}
 
       aadd( aAttr, oPanel:cPanel )
-      aadd( aAttr, hb_ntos( oPanel:viewMode() ) )
+      aadd( aAttr, hb_ntos( oPanel:qWidget:viewMode() ) )
       aadd( aAttr, hb_ntos( oPanel:nViewStyle ) )
 
       aadd( aNames,  hbide_array2String( aAttr, "," ) )
@@ -1249,8 +1249,6 @@ CLASS HbpBrowsePanel
    METHOD tileHorizontally()
    METHOD tilesZoom( nMode )
 
-   ERROR HANDLER OnError( ... )
-
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
@@ -1297,18 +1295,6 @@ METHOD HbpBrowsePanel:destroy()
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-
-METHOD HbpBrowsePanel:onError( ... )
-   LOCAL cMsg
-
-   cMsg := __GetMessage()
-   IF SubStr( cMsg, 1, 1 ) == "_"
-      cMsg := SubStr( cMsg, 2 )
-   ENDIF
-
-   RETURN ::qWidget:&cMsg( ... )
-
-/*------------------------------------------------------------------------*/
 
 METHOD HbpBrowsePanel:setViewStyle( nStyle )
    LOCAL qObj, a_
@@ -1676,8 +1662,7 @@ METHOD HbpBrowse:destroy()
       ::qTimer:disconnect( "timeout()" )
    ENDIF
 
-   ::QTimer := NIL
-
+   ::qTimer := NIL
    RETURN Self
 
 /*----------------------------------------------------------------------*/
