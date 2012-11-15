@@ -1,0 +1,71 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QEvent
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtGui/QGestureEvent>
+
+
+/*
+ * QGestureEvent ( const QList<QGesture *> & gestures )
+ * ~QGestureEvent ()
+ */
+HB_FUNC( QT_QGESTUREEVENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGESTUREEVENT" ) )
+   {
+      __HB_RETPTRGC__( new QGestureEvent( *hbqt_par_QGestureEvent( 1 ) ) );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void accept ()
+void accept ( QGesture * gesture )
+void accept ( Qt::GestureType gestureType )
+QList<QGesture *> activeGestures () const
+QList<QGesture *> canceledGestures () const
+QGesture * gesture ( Qt::GestureType type ) const
+QList<QGesture *> gestures () const
+void ignore ()
+void ignore ( QGesture * gesture )
+void ignore ( Qt::GestureType gestureType )
+bool isAccepted () const
+bool isAccepted ( QGesture * gesture ) const
+bool isAccepted ( Qt::GestureType gestureType ) const
+QPointF mapToGraphicsScene ( const QPointF & gesturePoint ) const
+void setAccepted ( bool accepted )
+void setAccepted ( QGesture * gesture, bool value )
+void setAccepted ( Qt::GestureType gestureType, bool value )
+QWidget * widget () const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -77,6 +77,13 @@ QFontMetrics.qth
 QFontMetricsF.qth
 QFormLayout.qth
 QFrame.qth
+QGesture.qth
+QGestureEvent.qth
+QPanGesture.qth
+QPinchGesture.qth
+QSwipeGesture.qth
+QTapAndHoldGesture.qth
+QTapGesture.qth
 QGradient.qth
 QGraphicsBlurEffect.qth
 QGraphicsColorizeEffect.qth

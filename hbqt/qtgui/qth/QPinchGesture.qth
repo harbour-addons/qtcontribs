@@ -1,0 +1,81 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QGesture
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtGui/QPinchGesture>
+
+
+/*
+ * QPinchGesture ( QObject * parent = 0 )
+ * ~QPinchGesture ()
+ */
+HB_FUNC( QT_QPINCHGESTURE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QPinchGesture( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPinchGesture() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum ChangeFlag { ScaleFactorChanged, RotationAngleChanged, CenterPointChanged }
+flags ChangeFlags
+</ENUMS>
+
+<PROTOS>
+QPointF centerPoint () const
+ChangeFlags changeFlags () const
+QPointF lastCenterPoint () const
+qreal lastRotationAngle () const
+qreal lastScaleFactor () const
+qreal rotationAngle () const
+qreal scaleFactor () const
+void setCenterPoint ( const QPointF & value )
+void setChangeFlags ( ChangeFlags value )
+void setLastCenterPoint ( const QPointF & value )
+void setLastRotationAngle ( qreal value )
+void setLastScaleFactor ( qreal value )
+void setRotationAngle ( qreal value )
+void setScaleFactor ( qreal value )
+void setStartCenterPoint ( const QPointF & value )
+void setTotalChangeFlags ( ChangeFlags value )
+void setTotalRotationAngle ( qreal value )
+void setTotalScaleFactor ( qreal value )
+QPointF startCenterPoint () const
+ChangeFlags totalChangeFlags () const
+qreal totalRotationAngle () const
+qreal totalScaleFactor () const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

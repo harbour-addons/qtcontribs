@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-14 18:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added: QGestureEvent handelling.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: constants for QGesture_++.
+
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added: classes as per below.
+
+  + hbqt/qtgui/qth/QGesture.qth
+  + hbqt/qtgui/qth/QGestureEvent.qth
+  + hbqt/qtgui/qth/QPanGesture.qth
+  + hbqt/qtgui/qth/QPinchGesture.qth
+  + hbqt/qtgui/qth/QSwipeGesture.qth
+  + hbqt/qtgui/qth/QTapAndHoldGesture.qth
+  + hbqt/qtgui/qth/QTapGesture.qth
+    + Implemented: QGesture() API.
+
+  * hbqt/qtgui/qth/QWidget.qth
+    + Added: method :grabGesture().
+
+  ; NOT TESTED. I do not have any touch-screen environments.
+      Please do so if someone has and send the findings on the list.
+
 2012-11-14 08:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.

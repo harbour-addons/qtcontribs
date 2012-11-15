@@ -1,0 +1,66 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtGui/QGesture>
+
+
+/*
+ * QGesture ( QObject * parent = 0 )
+ * ~QGesture ()
+ */
+HB_FUNC( QT_QGESTURE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QGesture( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGesture() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum GestureCancelPolicy { CancelNone, CancelAllInContext }
+</ENUMS>
+
+<PROTOS>
+GestureCancelPolicy gestureCancelPolicy () const
+Qt::GestureType gestureType () const
+bool hasHotSpot () const
+QPointF hotSpot () const
+void setGestureCancelPolicy ( GestureCancelPolicy policy )
+void setHotSpot ( const QPointF & value )
+Qt::GestureState state () const
+void unsetHotSpot ()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -585,7 +585,9 @@ HB_FUNC_EXTERN( HB_QDRAGMOVEEVENT );
 HB_FUNC_EXTERN( HB_QDROPEVENT );
 HB_FUNC_EXTERN( HB_QEVENT );
 HB_FUNC_EXTERN( HB_QFOCUSEVENT );
-HB_FUNC_EXTERN( HB_QFOCUSEVENT );
+#if QT_VERSION >= 0x040600
+HB_FUNC_EXTERN( HB_QGESTUREEVENT );
+#endif
 HB_FUNC_EXTERN( HB_QGRAPHICSSCENECONTEXTMENUEVENT );
 HB_FUNC_EXTERN( HB_QGRAPHICSSCENEDRAGDROPEVENT );
 HB_FUNC_EXTERN( HB_QGRAPHICSSCENEHOVEREVENT );
@@ -617,7 +619,9 @@ void _hbqtgui_force_link_for_event( void )
    HB_FUNC_EXEC( HB_QDROPEVENT );
    HB_FUNC_EXEC( HB_QEVENT );
    HB_FUNC_EXEC( HB_QFOCUSEVENT );
-   HB_FUNC_EXEC( HB_QFOCUSEVENT );
+#if QT_VERSION >= 0x040600
+   HB_FUNC_EXEC( HB_QGESTUREEVENT );
+#endif
    HB_FUNC_EXEC( HB_QGRAPHICSSCENECONTEXTMENUEVENT );
    HB_FUNC_EXEC( HB_QGRAPHICSSCENEDRAGDROPEVENT );
    HB_FUNC_EXEC( HB_QGRAPHICSSCENEHOVEREVENT );
@@ -805,6 +809,9 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::UngrabMouse                       , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::GrabKeyboard                      , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::UngrabKeyboard                    , "hb_QEvent"                         );
+#if QT_VERSION >= 0x040600
+   hbqt_events_register_createobj( QEvent::Gesture                           , "hb_QGestureEvent"                  );
+#endif
 }
 
 /*----------------------------------------------------------------------*/

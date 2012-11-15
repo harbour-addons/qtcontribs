@@ -86,6 +86,7 @@ const QRect & geometry () const
 void getContentsMargins ( int * left, int * top, int * right, int * bottom ) const
 # non-portable
 // virtual HDC getDC () const
+void grabGesture ( Qt::GestureType gesture, Qt::GestureFlags flags = Qt::GestureFlags() )   [*V=0x040600*]
 void grabKeyboard ()
 
 void grabMouse ()

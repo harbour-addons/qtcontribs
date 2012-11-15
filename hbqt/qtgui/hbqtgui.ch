@@ -2495,6 +2495,26 @@
 #define QGraphicsBlurEffect_QualityHint                      0x01    // Indicates that rendering quality is the most important factor, at the potential cost of lower performance.
 #define QGraphicsBlurEffect_AnimationHint                    0x02    // Indicates that the blur radius is going to be animated, hinting that the implementation can keep a cache of blurred verisons of the source. Do not use this hint if the source is going to be dynamically changing.
 
+// enum QGesture::GestureCancelPolicy
+// This enum describes how accepting a gesture can cancel other gestures automatically.
+#define QGesture_CancelNone                                  0       // On accepting this gesture no other gestures will be affected.
+#define QGesture_CancelAllInContext                          1       // On accepting this gesture all gestures that are active in the context (respecting the Qt::GestureFlag that were specified when subscribed to the gesture) will be cancelled.
+
+// enum QPinchGesture::ChangeFlag
+// flags QPinchGesture::ChangeFlags
+// This enum describes the changes that can occur to the properties of the gesture object.
+#define QPinchGesture_ScaleFactorChanged                     0x1     // The scale factor held by scaleFactor changed.
+#define QPinchGesture_RotationAngleChanged                   0x2     // The rotation angle held by rotationAngle changed.
+#define QPinchGesture_CenterPointChanged                     0x4     // The center point held by centerPoint changed.
+
+// enum QSwipeGesture::SwipeDirection
+// This enum describes the possible directions for the gesture's motion along the horizontal and vertical axes.
+#define QSwipeGesture_NoDirection                            0       // The gesture had no motion associated with it on a particular axis.
+#define QSwipeGesture_Left                                   1       // The gesture involved a horizontal motion to the left.
+#define QSwipeGesture_Right                                  2       // The gesture involved a horizontal motion to the right.
+#define QSwipeGesture_Up                                     3       // The gesture involved an upward vertical motion.
+#define QSwipeGesture_Down                                   4       // The gesture involved a downward vertical motion.
+
 /*----------------------------------------------------------------------*/
 //                        HBQT Defined Constants
 /*----------------------------------------------------------------------*/
