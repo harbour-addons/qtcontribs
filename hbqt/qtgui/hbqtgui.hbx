@@ -107,6 +107,13 @@ DYNAMIC hb_QFontMetrics
 DYNAMIC hb_QFontMetricsF
 DYNAMIC hb_QFormLayout
 DYNAMIC hb_QFrame
+DYNAMIC hb_QGesture
+DYNAMIC hb_QGestureEvent
+DYNAMIC hb_QPanGesture
+DYNAMIC hb_QPinchGesture
+DYNAMIC hb_QSwipeGesture
+DYNAMIC hb_QTapAndHoldGesture
+DYNAMIC hb_QTapGesture
 DYNAMIC hb_QGradient
 DYNAMIC hb_QGraphicsBlurEffect
 DYNAMIC hb_QGraphicsColorizeEffect
@@ -375,6 +382,13 @@ DYNAMIC QFontMetrics
 DYNAMIC QFontMetricsF
 DYNAMIC QFormLayout
 DYNAMIC QFrame
+DYNAMIC QGesture
+DYNAMIC QGestureEvent
+DYNAMIC QPanGesture
+DYNAMIC QPinchGesture
+DYNAMIC QSwipeGesture
+DYNAMIC QTapAndHoldGesture
+DYNAMIC QTapGesture
 DYNAMIC QGradient
 DYNAMIC QGraphicsBlurEffect
 DYNAMIC QGraphicsColorizeEffect
