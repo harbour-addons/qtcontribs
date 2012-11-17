@@ -183,6 +183,7 @@ CLASS IdeDocWriter INHERIT IdeObject
    METHOD loadFromDocFile( cFile )
    METHOD dispTitle( cTitle )
    METHOD loadAFunction( cName )
+   METHOD getTemplateIndex( cTemplate )
 
    ENDCLASS
 
@@ -306,6 +307,7 @@ METHOD IdeDocWriter:setParameters()
    ::oUI:comboTemplate:addItem( "Class"     )
    ::oUI:comboTemplate:addItem( "Document"  )
    ::oUI:comboTemplate:addItem( "Command"   )
+   ::oUI:comboTemplate:addItem( "Run time error" )
 
    ::qHiliter  := ::oTH:SetSyntaxHilighting( ::oUI:plainExamples, "Pritpal's Favourite" )
    ::qHiliter1 := ::oTH:SetSyntaxHilighting( ::oUI:plainTests   , "Evening Glamour"     )
@@ -408,6 +410,14 @@ METHOD IdeDocWriter:clear()
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeDocWriter:getTemplateIndex( cTemplate )
+   LOCAL aTmplt := { "Function", "Procedure", "Class", "Document", "Command", "Run time error" }
+   LOCAL nIndex := AScan( aTmplt, cTemplate )
+
+   RETURN iif( nIndex == 0, 0, nIndex - 1 )
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeDocWriter:fillForm( aFacts )
 
    hb_default( @aFacts,  afill( array( qqNumVrbls ), "" ) )
@@ -430,10 +440,8 @@ METHOD IdeDocWriter:fillForm( aFacts )
    ::oUI:plainExamples   :setPlainText( aFacts[ qqExamples    ] )
    ::oUI:plainTests      :setPlainText( aFacts[ qqTests       ] )
 
-   ::oUI:comboTemplate:setCurrentIndex( iif( aFacts[ qqVersion ] == "Command", 4, ;
-                                        iif( aFacts[ qqVersion ] == "Document", 3, ;
-                                        iif( aFacts[ qqVersion ] == "Procedure", 1, ;
-                                        iif( aFacts[ qqVersion ] == "Class", 2, 0 ) ) ) ) )
+   ::oUI:comboTemplate:setCurrentIndex( ::getTemplateIndex( aFacts[ qqVersion ] ) )
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -458,22 +466,19 @@ METHOD IdeDocWriter:fillFormByObject( oFunc )
    ::oUI:plainExamples   :setPlainText( hbide_arrayTOmemo( oFunc:aExamples    ) )
    ::oUI:plainTests      :setPlainText( hbide_arrayTOmemo( oFunc:aTests       ) )
 
-   ::oUI:comboTemplate:setCurrentIndex( iif( oFunc:cTemplate == "Command", 4, ;
-                                        iif( oFunc:cTemplate == "Document", 3, ;
-                                        iif( oFunc:cTemplate == "Procedure", 1, ;
-                                        iif( oFunc:cTemplate == "Class", 2, 0 ) ) ) ) )
+   ::oUI:comboTemplate:setCurrentIndex( ::getTemplateIndex( oFunc:cTemplate ) )
 
    IF ::oUI:buttonExamples:isDown()
       ::oUI:buttonExamples:click()
    ENDIF
-   IF ! Empty( oFunc:aExamples )
+   IF AScan( oFunc:aExamples, {|e| ! Empty( e ) } ) > 0
       ::oUI:buttonExamples:click()
    ENDIF
 
    IF ::oUI:buttonTests:isDown()
       ::oUI:buttonTests:click()
    ENDIF
-   IF ! Empty( oFunc:aTests )
+   IF AScan( oFunc:aTests, {|e| ! Empty( e ) } ) > 0
       ::oUI:buttonTests:click()
    ENDIF
 
@@ -755,9 +760,9 @@ METHOD IdeDocWriter:loadAFunction( cName )
 
 METHOD IdeDocWriter:saveInDocFile()
    LOCAL cFile, cBuffer, hNewDoc, hDoc, cName, hFile, cFiltered, hD
-   LOCAL n       := ::oUI:comboTemplate:currentIndex()
-   LOCAL cPrefix := iif( n == 4, "comm_", iif( n == 3, "doc_", iif( n == 0, "fun_", iif( n == 1, "proc_", "class_" ) ) ) )
-   LOCAL lFound := .F.
+   LOCAL cTmplt  := ::oUI:comboTemplate:currentText()
+   LOCAL cPrefix := Lower( AllTrim( Left( cTmplt, 3 ) ) )
+   LOCAL lFound  := .F.
 
    cName   := lower( Trim( ::oUI:editName:text() ) )
    cFile   := ::cSourceFile
@@ -807,12 +812,12 @@ METHOD IdeDocWriter:saveInDocFile()
 
 METHOD IdeDocWriter:buildDocument( lText, hDoc )
    LOCAL s
-   LOCAL nIndex := ::oUI:comboTemplate:currentIndex()
+   LOCAL cTemplate := ::oUI:comboTemplate:currentText()
    LOCAL hEntry := { => }
 
    hb_HKeepOrder( hEntry, .T. )
 
-   hEntry[ "TEMPLATE" ] := iif( nIndex == 4, "Command", iif( nIndex == 3, "Document", iif( nIndex == 2, "Class", iif( nIndex == 1, "Procedure", "Function" ) ) ) )
+   hEntry[ "TEMPLATE" ] := iif( Empty( cTemplate ), "Function", cTemplate )
    IF !empty( s := ::oUI:editName:text() ) .OR. "NAME" $ hDoc
       hEntry[ "NAME"         ] := s
    ENDIF

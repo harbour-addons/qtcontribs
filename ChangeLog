@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-16 22:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbide/docwriter.prg
+    + Added: "Run time error" $TEMPLATE$ used in doc/en/subcodes.txt.
+
+  ; Now all documentation files in doc/en/*.txt are loaded and saved 
+    without any difference, except for where COMPLIANCE PLATFORMS FILES 
+    order is changed. Content remain the same only order chages.
+
 2012-11-16 19:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.
@@ -46,7 +57,7 @@
        in any of the files. All are functions only.
        These need to be addressed all at once.
 
-  ; TODO: Add "Run time error" template entry.
+  ; DONE: Add "Run time error" template entry.
 
 2012-11-16 07:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
