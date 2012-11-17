@@ -71,43 +71,45 @@
 
 /*----------------------------------------------------------------------*/
 
-#define __buttonArgs_clicked__                        101
-#define __buttonDesc_clicked__                        102
-#define __buttonExample_clicked__                     103
-#define __buttonTests_clicked__                       104
+#define __buttonArgs_clicked__                    101
+#define __buttonDesc_clicked__                    102
+#define __buttonExample_clicked__                 103
+#define __buttonTests_clicked__                   104
 
-#define __buttonCloseArgs_clicked__                   111
-#define __buttonCloseDesc_clicked__                   112
-#define __buttonCloseExample_clicked__                113
-#define __buttonCloseTests_clicked__                  114
+#define __buttonCloseArgs_clicked__               111
+#define __buttonCloseDesc_clicked__               112
+#define __buttonCloseExample_clicked__            113
+#define __buttonCloseTests_clicked__              114
 
-#define __buttonLoadFromCurFunc_clicked__             115
+#define __buttonLoadFromCurFunc_clicked__         115
 
-#define __buttonClear_clicked__                       116
-#define __buttonSaveInFunc_clicked__                  117
-#define __buttonSave_clicked__                        118
-#define __buttonLoadFromDocFile_clicked__             119
+#define __buttonClear_clicked__                   116
+#define __buttonSaveInFunc_clicked__              117
+#define __buttonSave_clicked__                    118
+#define __buttonLoadFromDocFile_clicked__         119
+#define __comboFunctions_currentIndexChanged__    120
 
 
 #define qqTemplate                                1
 #define qqVersion                                 2
 #define qqStatus                                  3
 #define qqCompliance                              4
-#define qqCategory                                5
-#define qqSubCategory                             6
-#define qqName                                    7
-#define qqExtLink                                 8
-#define qqOneLiner                                9
-#define qqSyntax                                  10
-#define qqReturns                                 11
-#define qqSeeAlso                                 12
-#define qqFiles                                   13
-#define qqArgs                                    14
-#define qqDesc                                    15
-#define qqExamples                                16
-#define qqTests                                   17
+#define qqPlatforms                               5
+#define qqCategory                                6
+#define qqSubCategory                             7
+#define qqName                                    8
+#define qqExtLink                                 9
+#define qqOneLiner                                10
+#define qqSyntax                                  11
+#define qqReturns                                 12
+#define qqSeeAlso                                 13
+#define qqFiles                                   14
+#define qqArgs                                    15
+#define qqDesc                                    16
+#define qqExamples                                17
+#define qqTests                                   18
 
-#define qqNumVrbls                                17
+#define qqNumVrbls                                18
 
 /*----------------------------------------------------------------------*/
 
@@ -173,13 +175,14 @@ CLASS IdeDocWriter INHERIT IdeObject
    METHOD clear()
    METHOD fillForm( aFacts )
    METHOD fillFormByObject( oFunc )
-   METHOD buildDocument( lText )
+   METHOD buildDocument( lText, hDoc )
    METHOD saveInFunction()
    METHOD saveInDocFile()
    METHOD pullDocFromSource( nLineFrom, oEdit )
    METHOD removeDocHelp( nLineFrom, oEdit )
    METHOD loadFromDocFile( cFile )
    METHOD dispTitle( cTitle )
+   METHOD loadAFunction( cName )
 
    ENDCLASS
 
@@ -277,6 +280,7 @@ METHOD IdeDocWriter:installSignals()
    ::oUI:buttonSave           :connect( "clicked()"    , {| | ::execEvent( __buttonSave_clicked__            ) } )
    ::oUI:buttonLoadFromCurFunc:connect( "clicked()"    , {| | ::execEvent( __buttonLoadFromCurFunc_clicked__ ) } )
    ::oUI:buttonLoadFromDocFile:connect( "clicked()"    , {| | ::execEvent( __buttonLoadFromDocFile_clicked__ ) } )
+   ::oUI:comboFunctions       :connect( "currentIndexChanged(QString)", {|p| ::execEvent( __comboFunctions_currentIndexChanged__, p ) } )
 
    RETURN Self
 
@@ -300,6 +304,8 @@ METHOD IdeDocWriter:setParameters()
    ::oUI:comboTemplate:addItem( "Function"  )
    ::oUI:comboTemplate:addItem( "Procedure" )
    ::oUI:comboTemplate:addItem( "Class"     )
+   ::oUI:comboTemplate:addItem( "Document"  )
+   ::oUI:comboTemplate:addItem( "Command"   )
 
    ::qHiliter  := ::oTH:SetSyntaxHilighting( ::oUI:plainExamples, "Pritpal's Favourite" )
    ::qHiliter1 := ::oTH:SetSyntaxHilighting( ::oUI:plainTests   , "Evening Glamour"     )
@@ -362,6 +368,9 @@ METHOD IdeDocWriter:execEvent( nMode, p )
       ::oUI:buttonTests:setChecked( .f. )
       EXIT
 
+   CASE __comboFunctions_currentIndexChanged__
+      ::loadAFunction( p )
+      EXIT
    CASE __buttonLoadFromDocFile_clicked__
       ::loadFromDocFile()
       EXIT
@@ -403,50 +412,71 @@ METHOD IdeDocWriter:fillForm( aFacts )
 
    hb_default( @aFacts,  afill( array( qqNumVrbls ), "" ) )
 
-   ::oUI:editVersion     :setText      ( aFacts[ qqVersion     ] )
-   ::oUI:editStatus      :setText      ( aFacts[ qqStatus      ] )
-   ::oUI:editCompliance  :setText      ( aFacts[ qqCompliance  ] )
-   ::oUI:editCategory    :setText      ( aFacts[ qqCategory    ] )
-   ::oUI:editSubCategory :setText      ( aFacts[ qqSubCategory ] )
-   ::oUI:editName        :setText      ( aFacts[ qqName        ] )
-   ::oUI:editExtLink     :setText      ( aFacts[ qqExtLink     ] )
-   ::oUI:editOneLiner    :setText      ( aFacts[ qqOneLiner    ] )
-   ::oUI:editSyntax      :setText      ( aFacts[ qqSyntax      ] )
-   ::oUI:editReturns     :setText      ( aFacts[ qqReturns     ] )
-   ::oUI:editSeeAlso     :setText      ( aFacts[ qqSeeAlso     ] )
-   ::oUI:editFiles       :setText      ( aFacts[ qqFiles       ] )
-   ::oUI:plainArgs       :setPlainText ( aFacts[ qqArgs        ] )
-   ::oUI:plainDesc       :setPlainText ( aFacts[ qqDesc        ] )
-   ::oUI:plainExamples   :setPlainText ( aFacts[ qqExamples    ] )
-   ::oUI:plainTests      :setPlainText ( aFacts[ qqTests       ] )
+   ::oUI:editVersion     :setText     ( aFacts[ qqVersion     ] )
+   ::oUI:editStatus      :setText     ( aFacts[ qqStatus      ] )
+   ::oUI:editCompliance  :setText     ( aFacts[ qqCompliance  ] )
+   ::oUI:editPlatforms   :setText     ( aFacts[ qqPlatforms   ] )
+   ::oUI:editCategory    :setText     ( aFacts[ qqCategory    ] )
+   ::oUI:editSubCategory :setText     ( aFacts[ qqSubCategory ] )
+   ::oUI:editName        :setText     ( aFacts[ qqName        ] )
+   ::oUI:editExtLink     :setText     ( aFacts[ qqExtLink     ] )
+   ::oUI:editOneLiner    :setText     ( aFacts[ qqOneLiner    ] )
+   ::oUI:editSyntax      :setPlainText( aFacts[ qqSyntax      ] )
+   ::oUI:editReturns     :setPlainText( aFacts[ qqReturns     ] )
+   ::oUI:editSeeAlso     :setText     ( aFacts[ qqSeeAlso     ] )
+   ::oUI:editFiles       :setPlainText( aFacts[ qqFiles       ] )
+   ::oUI:plainArgs       :setPlainText( aFacts[ qqArgs        ] )
+   ::oUI:plainDesc       :setPlainText( aFacts[ qqDesc        ] )
+   ::oUI:plainExamples   :setPlainText( aFacts[ qqExamples    ] )
+   ::oUI:plainTests      :setPlainText( aFacts[ qqTests       ] )
 
-   ::oUI:comboTemplate:setCurrentIndex( iif( aFacts[ qqVersion ] == "Procedure", 1, ;
-                                          iif( aFacts[ qqVersion ] == "Class", 2, 0 ) ) )
+   ::oUI:comboTemplate:setCurrentIndex( iif( aFacts[ qqVersion ] == "Command", 4, ;
+                                        iif( aFacts[ qqVersion ] == "Document", 3, ;
+                                        iif( aFacts[ qqVersion ] == "Procedure", 1, ;
+                                        iif( aFacts[ qqVersion ] == "Class", 2, 0 ) ) ) ) )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:fillFormByObject( oFunc )
 
-   ::oUI:editVersion     :setText      ( oFunc:cVersion      )
-   ::oUI:editStatus      :setText      ( oFunc:cStatus       )
-   ::oUI:editCompliance  :setText      ( oFunc:cPlatForms    )
-   ::oUI:editCategory    :setText      ( oFunc:cCategory     )
-   ::oUI:editSubCategory :setText      ( oFunc:cSubCategory  )
-   ::oUI:editName        :setText      ( oFunc:cName         )
-   ::oUI:editExtLink     :setText      ( oFunc:cExternalLink )
-   ::oUI:editOneLiner    :setText      ( oFunc:cOneLiner     )
-   ::oUI:editSyntax      :setText      ( hbide_ar2delString( oFunc:aSyntax , "; " ) )
-   ::oUI:editReturns     :setText      ( hbide_ar2delString( oFunc:aReturns, "; " ) )
-   ::oUI:editSeeAlso     :setText      ( oFunc:cSeeAlso      )
-   ::oUI:editFiles       :setText      ( hbide_ar2delString( oFunc:aFiles  , "; " ) )
-   ::oUI:plainArgs       :setPlainText ( hbide_arrayTOmemo( oFunc:aArguments    ) )
-   ::oUI:plainDesc       :setPlainText ( hbide_arrayTOmemo( oFunc:aDescription  ) )
-   ::oUI:plainExamples   :setPlainText ( hbide_arrayTOmemo( oFunc:aExamples     ) )
-   ::oUI:plainTests      :setPlainText ( hbide_arrayTOmemo( oFunc:aTests        ) )
+   ::oUI:editVersion     :setText(      oFunc:cVersion      )
+   ::oUI:editStatus      :setText(      oFunc:cStatus       )
+   ::oUI:editCompliance  :setText(      oFunc:cCompliance   )
+   ::oUI:editPlatforms   :setText(      oFunc:cPlatForms    )
+   ::oUI:editCategory    :setText(      oFunc:cCategory     )
+   ::oUI:editSubCategory :setText(      oFunc:cSubCategory  )
+   ::oUI:editName        :setText(      oFunc:cName         )
+   ::oUI:editExtLink     :setText(      oFunc:cExternalLink )
+   ::oUI:editOneLiner    :setText(      oFunc:cOneLiner     )
+   ::oUI:editSyntax      :setPlainText( hbide_arrayTOmemo( oFunc:aSyntax      ) )
+   ::oUI:editReturns     :setPlainText( hbide_arrayTOmemo( oFunc:aReturns     ) )
+   ::oUI:editSeeAlso     :setText(      oFunc:cSeeAlso      )
+   ::oUI:editFiles       :setPlainText( hbide_arrayTOmemo( oFunc:aFiles       ) )
+   ::oUI:plainArgs       :setPlainText( hbide_arrayTOmemo( oFunc:aArguments   ) )
+   ::oUI:plainDesc       :setPlainText( hbide_arrayTOmemo( oFunc:aDescription ) )
+   ::oUI:plainExamples   :setPlainText( hbide_arrayTOmemo( oFunc:aExamples    ) )
+   ::oUI:plainTests      :setPlainText( hbide_arrayTOmemo( oFunc:aTests       ) )
 
-   ::oUI:comboTemplate:setCurrentIndex( iif( oFunc:cTemplate == "Procedure", 1, ;
-                                          iif( oFunc:cTemplate == "Class", 2, 0 ) ) )
+   ::oUI:comboTemplate:setCurrentIndex( iif( oFunc:cTemplate == "Command", 4, ;
+                                        iif( oFunc:cTemplate == "Document", 3, ;
+                                        iif( oFunc:cTemplate == "Procedure", 1, ;
+                                        iif( oFunc:cTemplate == "Class", 2, 0 ) ) ) ) )
+
+   IF ::oUI:buttonExamples:isDown()
+      ::oUI:buttonExamples:click()
+   ENDIF
+   IF ! Empty( oFunc:aExamples )
+      ::oUI:buttonExamples:click()
+   ENDIF
+
+   IF ::oUI:buttonTests:isDown()
+      ::oUI:buttonTests:click()
+   ENDIF
+   IF ! Empty( oFunc:aTests )
+      ::oUI:buttonTests:click()
+   ENDIF
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -596,13 +626,16 @@ METHOD IdeDocWriter:parsePrototype( cProto )
 
          aFacts := afill( array( qqNumVrbls ), "" )
          cTpl   := lower( cTpl )
-         aFacts[ qqTemplate    ] := iif( "func"  $ cTpl, "Function" , ;
-                                    iif( "proc"  $ cTpl, "Procedure", ;
-                                    iif( "class" $ cTpl, "Class"    , "Function" ) ) )
+         aFacts[ qqTemplate    ] := iif( "comm"   $ cTpl, "Command"  , ;
+                                    iif( "doc"    $ cTpl, "Document" , ;
+                                    iif( "func"   $ cTpl, "Function" , ;
+                                    iif( "proc"   $ cTpl, "Procedure", ;
+                                    iif( "class"  $ cTpl, "Class"    , "Function" ) ) ) ) )
 
          aFacts[ qqVersion     ] := ""
          aFacts[ qqStatus      ] := ""
          aFacts[ qqCompliance  ] := ""
+         aFacts[ qqPlatforms   ] := ""
          aFacts[ qqCategory    ] := ""
          aFacts[ qqSubCategory ] := ""
          aFacts[ qqName        ] := upper( cFun ) + "()"
@@ -667,7 +700,7 @@ METHOD IdeDocWriter:saveInFunction()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:loadFromDocFile( cFile )
-   LOCAL oFunc, hFile, hDoc, cName, cBuffer, aFunc := {}
+   LOCAL hFile, hDoc, cBuffer
 
    IF Empty( cFile ) .OR. ! hb_FileExists( cFile )
       cFile := hbide_fetchAFile( ::oDlg, "Select a document(.txt) file", , hbide_SetWrkFolderLast() )
@@ -677,21 +710,30 @@ METHOD IdeDocWriter:loadFromDocFile( cFile )
    ENDIF
    hbide_SetWrkFolderLast( cFile )
 
+   ::cSourceFile := cFile
+   ::dispTitle( cFile )
+
    cBuffer := hb_MemoRead( cFile )
    hFile := __hbdoc_FromSource( cBuffer )
 
+   ::oUI:comboFunctions:clear()
    FOR EACH hDoc IN hFile
       IF "NAME" $ hDoc
-         AAdd( aFunc, hDoc[ "NAME" ] )
+         ::oUI:comboFunctions:addItem( hDoc[ "NAME" ] )
       ENDIF
    NEXT
+   ::oUI:comboFunctions:setCurrentIndex( 0 )
 
-   IF ! Empty( aFunc )
-      IF Len( aFunc ) == 1
-         cName := aFunc[ 1 ]
-      ELSE
-         cName := hbide_fetchASelection( aFunc )
-      ENDIF
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeDocWriter:loadAFunction( cName )
+   LOCAL cBuffer, hFile, oFunc, hDoc
+
+   IF ! Empty( cName )
+      cBuffer := hb_MemoRead( ::cSourceFile )
+      hFile := __hbdoc_FromSource( cBuffer )
 
       FOR EACH hDoc IN hFile
          IF "NAME" $ hDoc .AND. cName == hDoc[ "NAME" ]
@@ -707,29 +749,23 @@ METHOD IdeDocWriter:loadFromDocFile( cFile )
       ::fillForm()
    ENDIF
 
-   ::cSourceFile := cFile
-   ::dispTitle( cFile )
-
    RETURN NIL
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:saveInDocFile()
-   LOCAL cFile, cBuffer, hNewDoc, hDoc, cName, hFile, cFiltered
+   LOCAL cFile, cBuffer, hNewDoc, hDoc, cName, hFile, cFiltered, hD
    LOCAL n       := ::oUI:comboTemplate:currentIndex()
-   LOCAL cPrefix := iif( n == 0, "fun_", iif( n == 1, "proc_", "class_" ) )
+   LOCAL cPrefix := iif( n == 4, "comm_", iif( n == 3, "doc_", iif( n == 0, "fun_", iif( n == 1, "proc_", "class_" ) ) ) )
    LOCAL lFound := .F.
 
-   cName := lower( Trim( ::oUI:editName:text() ) )
-   hNewDoc := ::buildDocument( .F. )
-
-   IF Empty( ::cSourceFile ) .OR. Lower( hb_fNameExt( ::cSourceFile ) ) != ".txt"
+   cName   := lower( Trim( ::oUI:editName:text() ) )
+   cFile   := ::cSourceFile
+   IF Empty( cFile ) .OR. Lower( hb_fNameExt( cFile ) ) != ".txt"
       cFile := cPrefix + alltrim( strtran( strtran( cName, "(" ), ")" ) ) + ".txt"
-      cFile := hbide_saveAFile( ::oDlg, "Provide filename to save documentation", ;
-                                    { { "Harbour Documentation File", "*.txt" } }, cFile, "txt" )
-   ELSE
-      cFile := ::cSourceFile
    ENDIF
+   cFile := hbide_saveAFile( ::oDlg, "Provide filename to save documentation", ;
+                                    { { "Harbour Documentation File", "*.txt" } }, cFile, "txt" )
 
    IF ! Empty( cFile )
       cFile := hbide_pathToOsPath( cFile )
@@ -739,14 +775,21 @@ METHOD IdeDocWriter:saveInDocFile()
       cFiltered := hbide_stripTrailingBlanks( __hbdoc_FilterOut( cBuffer ) )
       FOR EACH hDoc IN hFile
          IF "NAME" $ hDoc .AND. cName == Lower( hDoc[ "NAME" ] )
+            hD := hDoc
             lFound := .T.
-            hDoc := hNewDoc
             EXIT
          ENDIF
       NEXT
-
+      hNewDoc := ::buildDocument( .F., iif( lFound, hD, {=>} ) )
       IF ! lFound
          AAdd( hFile, hNewDoc )
+      ELSE
+         FOR EACH hDoc IN hFile
+            IF "NAME" $ hDoc .AND. cName == Lower( hDoc[ "NAME" ] )
+               hDoc := hNewDoc
+               EXIT
+            ENDIF
+         NEXT
       ENDIF
 
       IF Empty( cFiltered )
@@ -756,67 +799,69 @@ METHOD IdeDocWriter:saveInDocFile()
 
       ::cSourceFile := cFile
       ::dispTitle( cFile )
-      MsgBox( cFile + " has been saved !", "Save File Alert" )
    ENDIF
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeDocWriter:buildDocument( lText )
+METHOD IdeDocWriter:buildDocument( lText, hDoc )
    LOCAL s
    LOCAL nIndex := ::oUI:comboTemplate:currentIndex()
    LOCAL hEntry := { => }
 
    hb_HKeepOrder( hEntry, .T. )
 
-   hEntry[ "TEMPLATE" ] := iif( nIndex == 2, "Class", iif( nIndex == 1, "Procedure", "Function" ) )
-   IF !empty( s := ::oUI:editName:text() )
+   hEntry[ "TEMPLATE" ] := iif( nIndex == 4, "Command", iif( nIndex == 3, "Document", iif( nIndex == 2, "Class", iif( nIndex == 1, "Procedure", "Function" ) ) ) )
+   IF !empty( s := ::oUI:editName:text() ) .OR. "NAME" $ hDoc
       hEntry[ "NAME"         ] := s
    ENDIF
-   IF !empty( s := ::oUI:editCategory:text() )
+   IF !empty( s := ::oUI:editCategory:text() ) .OR. "CATEGORY" $ hDoc
       hEntry[ "CATEGORY"     ] := s
    ENDIF
-   IF !empty( s := ::oUI:editSubCategory:text() )
+   IF !empty( s := ::oUI:editSubCategory:text() ) .OR. "SUBCATEGORY" $ hDoc
       hEntry[ "SUBCATEGORY"  ] := s
    ENDIF
-   IF !empty( s := ::oUI:editExtLink:text() )
+   IF !empty( s := ::oUI:editExtLink:text() ) .OR. "EXTERNALLINK" $ hDoc
       hEntry[ "EXTERNALLINK" ] := s
    ENDIF
-   IF !empty( s := ::oUI:editOneLiner:text() )
+   IF !empty( s := ::oUI:editOneLiner:text() ) .OR. "ONELINER" $ hDoc
       hEntry[ "ONELINER"     ] := s
    ENDIF
-   IF !empty( s := ::oUI:editSyntax:text() )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:editSyntax    : toPlainText() ) ) .OR. "SYNTAX" $ hDoc
       hEntry[ "SYNTAX"       ] := s
    ENDIF
-   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainArgs     : toPlainText() ) )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainArgs     : toPlainText() ) ) .OR. "ARGUMENTS" $ hDoc
       hEntry[ "ARGUMENTS"    ] := s
    ENDIF
-   IF !empty( s := ::oUI:editReturns:text() )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:editReturns   : toPlainText() ) ) .OR. "RETURNS" $ hDoc
       hEntry[ "RETURNS"      ] := s
    ENDIF
-   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainDesc     : toPlainText() ) )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainDesc     : toPlainText() ) ) .OR. "DESCRIPTION" $ hDoc
       hEntry[ "DESCRIPTION"  ] := s
    ENDIF
-   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainExamples : toPlainText() ) )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainExamples : toPlainText() ) ) .OR. "EXAMPLES" $ hDoc
       hEntry[ "EXAMPLES"     ] := s
    ENDIF
-   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainTests    : toPlainText() ) )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainTests    : toPlainText() ) ) .OR. "TESTS" $ hDoc
       hEntry[ "TESTS"        ] := s
    ENDIF
-   IF !empty( s := ::oUI:editStatus:text() )
+   IF !empty( s := ::oUI:editStatus:text() ) .OR. "STATUS" $ hDoc
       hEntry[ "STATUS"       ] := s
    ENDIF
-   IF !empty( s := ::oUI:editCompliance:text() )
+   IF !empty( s := ::oUI:editCompliance:text() ) .OR. "COMPLIANCE" $ hDoc
+      hEntry[ "COMPLIANCE"   ] := s
+   ENDIF
+   IF !empty( s := ::oUI:editPlatforms:text() ) .OR. "PLATFORMS" $ hDoc
       hEntry[ "PLATFORMS"    ] := s
    ENDIF
-   IF !empty( s := ::oUI:editVersion:text() )
+   IF !empty( s := ::oUI:editVersion:text() ) .OR. "VERSION" $ hDoc
       hEntry[ "VERSION"      ] := s
    ENDIF
-   IF !empty( s := ::oUI:editFiles:text() )
+   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:editFiles    : toPlainText() ) ) .OR. "FILES" $ hDoc
       hEntry[ "FILES"        ] := s
    ENDIF
-   IF !empty( s := ::oUI:editSeeAlso:text() )
+   IF !empty( s := ::oUI:editSeeAlso:text() ) .OR. "SEEALSO" $ hDoc
       hEntry[ "SEEALSO"      ] := s
    ENDIF
 

@@ -124,6 +124,7 @@ CLASS IdeDocFunction
    DATA   cSubCategory                            INIT ""
    DATA   cOneliner                               INIT ""
    DATA   cStatus                                 INIT ""
+   DATA   cCompliance                             INIT ""
    DATA   cPlatforms                              INIT ""
    DATA   cSeeAlso                                INIT ""
    DATA   cVersion                                INIT ""
@@ -159,6 +160,7 @@ METHOD IdeDocFunction:destroy()
    ::cSubCategory      := NIL
    ::cOneliner         := NIL
    ::cStatus           := NIL
+   ::cCompliance       := NIL
    ::cPlatforms        := NIL
    ::cSeeAlso          := NIL
    ::cVersion          := NIL
@@ -1315,8 +1317,13 @@ METHOD IdeHarbourHelp:buildView( oFunc )
       ENDIF
    ENDIF
 
+   IF !empty( oFunc:cCompliance )
+      aadd( aHtm, x + "Compliance" + y )
+      aadd( aHtm, v + oFunc:cCompliance + w )
+      aadd( aHtm, z )
+   ENDIF
    IF !empty( oFunc:cPlatforms )
-      aadd( aHtm, x + "Compliance | Platforms" + y )
+      aadd( aHtm, x + "Platforms" + y )
       aadd( aHtm, v + oFunc:cPlatforms + w )
       aadd( aHtm, z )
    ENDIF

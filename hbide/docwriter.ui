@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>445</width>
-    <height>584</height>
+    <width>524</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -51,8 +51,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>422</width>
-        <height>701</height>
+        <width>501</width>
+        <height>791</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -83,13 +83,13 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>300</height>
+            <height>390</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>300</height>
+            <height>390</height>
            </size>
           </property>
           <property name="frameShape">
@@ -111,177 +111,233 @@
            <property name="verticalSpacing">
             <number>2</number>
            </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="labelTemplate">
-             <property name="text">
-              <string>Template:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="labelVersion">
-             <property name="text">
-              <string>Version:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="labelStatus">
-             <property name="text">
-              <string>Status:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="label_5">
-             <property name="text">
-              <string>Compliance:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QComboBox" name="comboTemplate"/>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="editVersion">
-             <property name="toolTip">
-              <string>Version of this document contents</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="2">
-            <widget class="QLineEdit" name="editStatus">
-             <property name="toolTip">
-              <string>Status should usually be described as one character</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QLineEdit" name="editCompliance">
-             <property name="toolTip">
-              <string>Describe comatibility with other language</string>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0" colspan="2">
+           <item row="4" column="0" colspan="2">
             <widget class="QLabel" name="labelCategory">
              <property name="text">
               <string>Category:</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="2" colspan="2">
+           <item row="4" column="2" colspan="2">
             <widget class="QLabel" name="labelSubCategory">
              <property name="text">
               <string>Sub-category:</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="0" colspan="2">
+           <item row="5" column="0" colspan="2">
             <widget class="QLineEdit" name="editCategory">
              <property name="toolTip">
               <string>Category should describe main area this function belongs to</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="2" colspan="2">
+           <item row="5" column="2" colspan="2">
             <widget class="QLineEdit" name="editSubCategory"/>
            </item>
-           <item row="4" column="0" colspan="2">
+           <item row="6" column="0" colspan="2">
             <widget class="QLabel" name="labelName">
              <property name="text">
               <string>Name:</string>
              </property>
             </widget>
            </item>
-           <item row="4" column="2" colspan="2">
+           <item row="6" column="2" colspan="2">
             <widget class="QLabel" name="labelExtLink">
              <property name="text">
               <string>External Link:</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="0" colspan="2">
+           <item row="7" column="0" colspan="2">
             <widget class="QLineEdit" name="editName">
              <property name="toolTip">
               <string>Name of the function, and if appropriate, with open/close parenthis.</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="2" colspan="2">
+           <item row="7" column="2" colspan="2">
             <widget class="QLineEdit" name="editExtLink">
              <property name="toolTip">
               <string>External link, i.e., http://www.trolltech.com/</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0" colspan="4">
+           <item row="8" column="0" colspan="4">
             <widget class="QLabel" name="labelOneLiner">
              <property name="text">
               <string>One Liner:</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="0" colspan="4">
+           <item row="9" column="0" colspan="4">
             <widget class="QLineEdit" name="editOneLiner">
              <property name="toolTip">
               <string>A brief description this function accomlishes</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="0" colspan="4">
+           <item row="10" column="0" colspan="4">
             <widget class="QLabel" name="labelSyntax">
              <property name="text">
               <string>Syntax:</string>
              </property>
             </widget>
            </item>
-           <item row="9" column="0" colspan="4">
-            <widget class="QLineEdit" name="editSyntax">
-             <property name="toolTip">
-              <string>Syntax, or prototype as to how this function will be called</string>
-             </property>
-            </widget>
-           </item>
-           <item row="10" column="0" colspan="4">
+           <item row="12" column="0" colspan="4">
             <widget class="QLabel" name="labelReturns">
              <property name="text">
               <string>Returns:</string>
              </property>
             </widget>
            </item>
-           <item row="11" column="0" colspan="4">
-            <widget class="QLineEdit" name="editReturns">
-             <property name="toolTip">
-              <string>Variable name with hungarian notation with brief description as what this function returns</string>
-             </property>
-            </widget>
-           </item>
-           <item row="12" column="0" colspan="4">
+           <item row="14" column="0" colspan="4">
             <widget class="QLabel" name="labelSeeAlso">
              <property name="text">
               <string>See Also:</string>
              </property>
             </widget>
            </item>
-           <item row="13" column="0" colspan="4">
+           <item row="15" column="0" colspan="4">
             <widget class="QLineEdit" name="editSeeAlso">
              <property name="toolTip">
               <string>A comma separated list of related functions/keywords </string>
              </property>
             </widget>
            </item>
-           <item row="14" column="0" colspan="4">
+           <item row="16" column="0" colspan="4">
             <widget class="QLabel" name="labelFiles">
              <property name="text">
               <string>Files:</string>
              </property>
             </widget>
            </item>
-           <item row="15" column="0" colspan="4">
-            <widget class="QLineEdit" name="editFiles">
-             <property name="toolTip">
-              <string>A comma separated list of relevant files, i.e., hbrtl.lib, hbqt.lib.</string>
+           <item row="1" column="0" colspan="4">
+            <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="sizeConstraint">
+              <enum>QLayout::SetDefaultConstraint</enum>
+             </property>
+             <property name="margin">
+              <number>0</number>
+             </property>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="labelTemplate">
+                 <property name="text">
+                  <string>Template</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="labelVersion">
+                 <property name="text">
+                  <string>Version</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="labelStatus">
+                 <property name="text">
+                  <string>Status</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Compliance</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Platforms</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_3">
+               <item>
+                <widget class="QComboBox" name="comboTemplate">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="editVersion">
+                 <property name="toolTip">
+                  <string>Version of this document contents</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="editStatus">
+                 <property name="toolTip">
+                  <string>Status should usually be described as one character</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="editCompliance">
+                 <property name="toolTip">
+                  <string>Describe comatibility with other language</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="editPlatforms"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item row="11" column="0" colspan="4">
+            <widget class="QPlainTextEdit" name="editSyntax">
+             <property name="lineWrapMode">
+              <enum>QPlainTextEdit::NoWrap</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="13" column="0" colspan="4">
+            <widget class="QPlainTextEdit" name="editReturns">
+             <property name="lineWrapMode">
+              <enum>QPlainTextEdit::NoWrap</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="17" column="0" colspan="4">
+            <widget class="QPlainTextEdit" name="editFiles">
+             <property name="lineWrapMode">
+              <enum>QPlainTextEdit::NoWrap</enum>
              </property>
             </widget>
            </item>
@@ -618,6 +674,32 @@
       </item>
       <item>
        <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboFunctions">
+        <property name="minimumSize">
+         <size>
+          <width>150</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Click on a function contained in this file.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

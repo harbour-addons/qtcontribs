@@ -2085,11 +2085,11 @@ FUNCTION hbide_getFuncObjectFromHash( hDoc )
    IF "STATUS" $ hDoc
       oFunc:cStatus := hDoc[ "STATUS" ]
    ENDIF
+   IF "COMPLIANCE" $ hDoc
+      oFunc:cCompliance := hDoc[ "COMPLIANCE" ]
+   ENDIF
    IF "PLATFORMS" $ hDoc
       oFunc:cPlatForms := hDoc[ "PLATFORMS" ]
-   ENDIF
-   IF "COMPLIANCE" $ hDoc
-      oFunc:cPlatForms := hDoc[ "COMPLIANCE" ]
    ENDIF
    IF "SEEALSO" $ hDoc
       oFunc:cSeeAlso := hDoc[ "SEEALSO" ]
@@ -2120,7 +2120,7 @@ FUNCTION hbide_fetchASelection( aList )
 
    oSL:listOptions :connect( "doubleClicked(QModelIndex)", {|p| selectionProc( 1, p, @cChoice, aList, oSL ) } )
    oSL:buttonOk    :connect( "clicked()"                 , {|p| selectionProc( 2, p, @cChoice, aList, oSL ) } )
-   oSL:buttonCancel:connect( "clicked()"                 , {|p| selectionProc( 3, p ) } )
+   oSL:buttonCancel:connect( "clicked()"                 , {|p| selectionProc( 3, p, @cChoice, aList, oSL ) } )
 
    oStrList := QStringList()
    FOR EACH cChoice IN aList

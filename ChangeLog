@@ -16,6 +16,38 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-16 19:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbide/docwriter.ui
+    % Changed: Various QLineEdit()s with QPLainTextEdit()s to accomodate 
+        multi-line help sections.
+
+  * hbide/docwriter.prg
+  * hbide/harbourhelp.prg
+  * hbide/misc.prg
+    ! Changed: to accomodate multi-line entries.
+    + Added: comboBox on Documentation Writer's toolbar containing all the 
+        function names within opened file. This facilitates to switch to 
+        any function from within single load. Note that each function, 
+        if modified, has to be saved before loading another.
+    + Implemented: logic to retain the blank sections also if present 
+        in the function body. This facilitates to have exact same content,
+        except for the modified one, in the saved file.
+
+  ; TOBE VERIFIED: 
+    1. some harbour/doc/en/.txt files have different order 
+       of 2 keywords as:  COMPLIANCE FILES PLATFORMS whereas majority of 
+       documents have COMPLIANCE PLATFORMS FILES. 
+       should these be fixed all together or when some is modified ?
+
+    2. contrib/hbct/doc/en/*.txt do not contain TEMPLATE section 
+       in any of the files. All are functions only.
+       These need to be addressed all at once.
+
+  ; TODO: Add "Run time error" template entry.
+
 2012-11-16 07:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.
