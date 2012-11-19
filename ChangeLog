@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-19 12:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbide/saveload.prg
+    ! Fixed: a nstry regression where QFontDialog() constructed with
+        a parent was always returning parents font, no matter what 
+        method you adopted. 
+
 2012-11-16 22:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.
