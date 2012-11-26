@@ -2076,9 +2076,6 @@ FUNCTION hbide_getFuncObjectFromHash( hDoc )
    IF "EXAMPLES" $ hDoc
       oFunc:aExamples := __S2A( hDoc[ "EXAMPLES" ] )
    ENDIF
-   IF "TESTS" $ hDoc
-      oFunc:aTests := __S2A( hDoc[ "TESTS" ] )
-   ENDIF
    IF "FILES" $ hDoc
       oFunc:aFiles := __S2A( hDoc[ "FILES" ] )
    ENDIF

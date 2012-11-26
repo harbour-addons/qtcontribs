@@ -50,9 +50,9 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>0</y>
+        <y>-122</y>
         <width>501</width>
-        <height>791</height>
+        <height>751</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -490,61 +490,6 @@
            </item>
           </layout>
          </widget>
-         <widget class="QFrame" name="frameTests">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <property name="topMargin">
-            <number>2</number>
-           </property>
-           <property name="rightMargin">
-            <number>4</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <property name="verticalSpacing">
-            <number>2</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="labelTests">
-             <property name="text">
-              <string>Tests:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QToolButton" name="buttonCloseTests">
-             <property name="text">
-              <string>...</string>
-             </property>
-             <property name="autoRaise">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QPlainTextEdit" name="plainTests">
-             <property name="toolTip">
-              <string>Compilable code out of the box which could be used to test this function</string>
-             </property>
-             <property name="lineWrapMode">
-              <enum>QPlainTextEdit::NoWrap</enum>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
         </widget>
        </item>
       </layout>
@@ -650,19 +595,6 @@
        <widget class="QToolButton" name="buttonExamples">
         <property name="toolTip">
          <string>Toggle Examples Section</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="autoRaise">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="buttonTests">
-        <property name="toolTip">
-         <string>Toggle Tests Section</string>
         </property>
         <property name="text">
          <string>...</string>

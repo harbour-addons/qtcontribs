@@ -135,7 +135,6 @@ CLASS IdeDocFunction
    DATA   aReturns                                INIT {}
    DATA   aDescription                            INIT {}
    DATA   aExamples                               INIT {}
-   DATA   aTests                                  INIT {}
    DATA   aFiles                                  INIT {}
    DATA   aMethods                                INIT {}
    DATA   aSource                                 INIT {}
@@ -171,7 +170,6 @@ METHOD IdeDocFunction:destroy()
    ::aReturns          := NIL
    ::aDescription      := NIL
    ::aExamples         := NIL
-   ::aTests            := NIL
    ::aFiles            := NIL
    ::aMethods          := NIL
    ::aSource           := NIL

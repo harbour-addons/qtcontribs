@@ -74,12 +74,10 @@
 #define __buttonArgs_clicked__                    101
 #define __buttonDesc_clicked__                    102
 #define __buttonExample_clicked__                 103
-#define __buttonTests_clicked__                   104
 
 #define __buttonCloseArgs_clicked__               111
 #define __buttonCloseDesc_clicked__               112
 #define __buttonCloseExample_clicked__            113
-#define __buttonCloseTests_clicked__              114
 
 #define __buttonLoadFromCurFunc_clicked__         115
 
@@ -251,7 +249,6 @@ METHOD IdeDocWriter:setImages()
    ::oUI:buttonArgs            :setIcon( QIcon( hbide_image( "arguments"   ) ) )
    ::oUI:buttonDesc            :setIcon( QIcon( hbide_image( "description" ) ) )
    ::oUI:buttonExamples        :setIcon( QIcon( hbide_image( "example"     ) ) )
-   ::oUI:buttonTests           :setIcon( QIcon( hbide_image( "tests"       ) ) )
 
    ::oUI:buttonClear           :setIcon( QIcon( hbide_image( "clean"       ) ) )
    ::oUI:buttonSaveInFunc      :setIcon( QIcon( hbide_image( "unload_1"    ) ) )
@@ -260,7 +257,6 @@ METHOD IdeDocWriter:setImages()
    ::oUI:buttonCloseArgs       :setIcon( QIcon( hbide_image( "closetab"    ) ) )
    ::oUI:buttonCloseDesc       :setIcon( QIcon( hbide_image( "closetab"    ) ) )
    ::oUI:buttonCloseExamples   :setIcon( QIcon( hbide_image( "closetab"    ) ) )
-   ::oUI:buttonCloseTests      :setIcon( QIcon( hbide_image( "closetab"    ) ) )
 
    RETURN Self
 
@@ -271,11 +267,9 @@ METHOD IdeDocWriter:installSignals()
    ::oUI:buttonArgs           :connect( "toggled(bool)", {|p| ::execEvent( __buttonArgs_clicked__        , p ) } )
    ::oUI:buttonDesc           :connect( "toggled(bool)", {|p| ::execEvent( __buttonDesc_clicked__        , p ) } )
    ::oUI:buttonExamples       :connect( "toggled(bool)", {|p| ::execEvent( __buttonExample_clicked__     , p ) } )
-   ::oUI:buttonTests          :connect( "toggled(bool)", {|p| ::execEvent( __buttonTests_clicked__       , p ) } )
    ::oUI:buttonCloseArgs      :connect( "clicked()"    , {| | ::execEvent( __buttonCloseArgs_clicked__       ) } )
    ::oUI:buttonCloseDesc      :connect( "clicked()"    , {| | ::execEvent( __buttonCloseDesc_clicked__       ) } )
    ::oUI:buttonCloseExamples  :connect( "clicked()"    , {| | ::execEvent( __buttonCloseExample_clicked__    ) } )
-   ::oUI:buttonCloseTests     :connect( "clicked()"    , {| | ::execEvent( __buttonCloseTests_clicked__      ) } )
    ::oUI:buttonClear          :connect( "clicked()"    , {| | ::execEvent( __buttonClear_clicked__           ) } )
    ::oUI:buttonSaveInFunc     :connect( "clicked()"    , {| | ::execEvent( __buttonSaveInFunc_clicked__      ) } )
    ::oUI:buttonSave           :connect( "clicked()"    , {| | ::execEvent( __buttonSave_clicked__            ) } )
@@ -292,15 +286,12 @@ METHOD IdeDocWriter:setParameters()
    ::oUI:buttonArgs    :setCheckable( .t. )
    ::oUI:buttonDesc    :setCheckable( .t. )
    ::oUI:buttonExamples:setCheckable( .t. )
-   ::oUI:buttonTests   :setCheckable( .t. )
 
    ::oUI:buttonArgs    :setChecked( .t. )
    ::oUI:buttonDesc    :setChecked( .t. )
-   ::oUI:buttonExamples:setChecked( .f. )
-   ::oUI:buttonTests   :setChecked( .f. )
+   ::oUI:buttonExamples:setChecked( .t. )
 
-   ::oUI:frameTests:hide()
-   ::oUI:frameExamples:hide()
+   //::oUI:frameExamples:hide()
 
    ::oUI:comboTemplate:addItem( "Function"  )
    ::oUI:comboTemplate:addItem( "Procedure" )
@@ -310,10 +301,8 @@ METHOD IdeDocWriter:setParameters()
    ::oUI:comboTemplate:addItem( "Run time error" )
 
    ::qHiliter  := ::oTH:SetSyntaxHilighting( ::oUI:plainExamples, "Pritpal's Favourite" )
-   ::qHiliter1 := ::oTH:SetSyntaxHilighting( ::oUI:plainTests   , "Evening Glamour"     )
 
    ::oUI:plainExamples:setFont( ::oFont:oWidget )
-   ::oUI:plainTests:setFont( ::oFont:oWidget )
 
    ::oUI:frameGeneral:setSizePolicy( QSizePolicy_Preferred, QSizePolicy_Fixed )
 
@@ -349,13 +338,6 @@ METHOD IdeDocWriter:execEvent( nMode, p )
          ::oUI:frameExamples:hide()
       ENDIF
       EXIT
-   CASE __buttonTests_clicked__
-      IF p
-         ::oUI:frameTests:show()
-      ELSE
-         ::oUI:frameTests:hide()
-      ENDIF
-      EXIT
 
    CASE __buttonCloseArgs_clicked__
       ::oUI:buttonArgs:setChecked( .f. )
@@ -365,9 +347,6 @@ METHOD IdeDocWriter:execEvent( nMode, p )
       EXIT
    CASE __buttonCloseExample_clicked__
       ::oUI:buttonExamples:setChecked( .f. )
-      EXIT
-   CASE __buttonCloseTests_clicked__
-      ::oUI:buttonTests:setChecked( .f. )
       EXIT
 
    CASE __comboFunctions_currentIndexChanged__
@@ -438,7 +417,6 @@ METHOD IdeDocWriter:fillForm( aFacts )
    ::oUI:plainArgs       :setPlainText( aFacts[ qqArgs        ] )
    ::oUI:plainDesc       :setPlainText( aFacts[ qqDesc        ] )
    ::oUI:plainExamples   :setPlainText( aFacts[ qqExamples    ] )
-   ::oUI:plainTests      :setPlainText( aFacts[ qqTests       ] )
 
    ::oUI:comboTemplate:setCurrentIndex( ::getTemplateIndex( aFacts[ qqVersion ] ) )
 
@@ -464,7 +442,6 @@ METHOD IdeDocWriter:fillFormByObject( oFunc )
    ::oUI:plainArgs       :setPlainText( hbide_arrayTOmemo( oFunc:aArguments   ) )
    ::oUI:plainDesc       :setPlainText( hbide_arrayTOmemo( oFunc:aDescription ) )
    ::oUI:plainExamples   :setPlainText( hbide_arrayTOmemo( oFunc:aExamples    ) )
-   ::oUI:plainTests      :setPlainText( hbide_arrayTOmemo( oFunc:aTests       ) )
 
    ::oUI:comboTemplate:setCurrentIndex( ::getTemplateIndex( oFunc:cTemplate ) )
 
@@ -473,13 +450,6 @@ METHOD IdeDocWriter:fillFormByObject( oFunc )
    ENDIF
    IF AScan( oFunc:aExamples, {|e| ! Empty( e ) } ) > 0
       ::oUI:buttonExamples:click()
-   ENDIF
-
-   IF ::oUI:buttonTests:isDown()
-      ::oUI:buttonTests:click()
-   ENDIF
-   IF AScan( oFunc:aTests, {|e| ! Empty( e ) } ) > 0
-      ::oUI:buttonTests:click()
    ENDIF
 
    RETURN Self
@@ -847,9 +817,6 @@ METHOD IdeDocWriter:buildDocument( lText, hDoc )
    ENDIF
    IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainExamples : toPlainText() ) ) .OR. "EXAMPLES" $ hDoc
       hEntry[ "EXAMPLES"     ] := s
-   ENDIF
-   IF !empty( s := hbide_stripTrailingBlanks( ::oUI:plainTests    : toPlainText() ) ) .OR. "TESTS" $ hDoc
-      hEntry[ "TESTS"        ] := s
    ENDIF
    IF !empty( s := ::oUI:editStatus:text() ) .OR. "STATUS" $ hDoc
       hEntry[ "STATUS"       ] := s
