@@ -13,6 +13,7 @@ HBQPlainTextEdit.qth
 HBQSyntaxHighlighter.qth
 HBQTableView.qth
 HBQTextBlockUserData.qth
+HBQValidator.qth
 
 QAbstractButton.qth
 QAbstractGraphicsShapeItem.qth

@@ -16,6 +16,49 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-28 23:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbqt/qtgui/qth/QLineEdit.qth
+    % Marked [*D=1*] for :setValidator().
+
+  + hbqt/qtgui/qth/HBQValidator.qth
+  * hbqt/qtgui/qth/filelist.hbm
+
+  + hbqt/qtgui/hbqt_hbqvalidator.cpp
+  + hbqt/qtgui/hbqt_hbqvalidator.h
+  * hbqt/qtgui/hbqtgui.hbm
+  * hbqt/qtgui/hbqtgui.hbx
+    + Added: HBQValidator() sub-class inheriting QValidator().
+       This facilitates to simulate Harbour Get System's input behavior, 
+       primarily in relation to picture clause at the minimum. But it 
+       is much more then that. A clever use can put you under total 
+       control what exactly you want the user to input.
+
+       SYNTAX:  oEdit := QLineEdit( oWnd )
+                oEdit:setValidator( HBQValidator( {|cText, nPos| DoValidation( cText, nPos ) } ) ) 
+
+       RETURN VALUE OF VALIDATION BLOCK:
+                It is important to understand the rationale of return 
+                value of code-block supplied as only parameter to 
+                HBQValidator which controls the behavior of validation.
+                This can be one of the following:
+
+                1. NIL     : will be treated as input is valid.
+                2. .T.     : will be treated as input is valid.
+                3. .F.     : will not allow the current character.
+                4. String  : will replace the input string with returned string.
+                5. Numeric : will relocate the editing cursor to this position.
+                6. Array   : { cModifiedText|NIL, nCursorPos|NIL, lValid|NIL }
+                             the elements corresponds to above #4, #5, #1;2;3
+
+  + hbqt/tests/validator.prg
+    + Added: a demonstration appln consuming HBQValidator() with 
+       3 different constraints with many sub-variants which clearly 
+       shows the power of this class. You can experiment further and 
+       can add interesting combinations in this demo.
+
 2012-11-26 11:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/docwriter.ui
   * hbide/docwriter.prg

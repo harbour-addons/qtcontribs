@@ -1,0 +1,93 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QValidator
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtGui/QValidator>
+#include "hbqt_hbqvalidator.h"
+
+
+/*
+ * HBQValidator( PHB_ITEM pBlock );
+ * ~HBQValidator()
+ */
+HB_FUNC( QT_HBQVALIDATOR )
+{
+   if( hb_pcount() == 1 && HB_ISBLOCK( 1 ) )
+   {
+      __HB_RETPTRGC__( new HBQValidator( ( PHB_ITEM ) hb_param( 1, HB_IT_BLOCK ) ) );
+   }
+   else
+   {
+      // Raise Error
+   }
+}
+</CODE>
+
+<ENUMS>
+enum State { Invalid, Intermediate, Acceptable }
+</ENUMS>
+
+<PROTOS>
+virtual void fixup ( QString & input ) const{
+   HBQValidator * p = ( HBQValidator * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      if( HB_ISCHAR( 1 ) )
+      {
+         void * pText01 = NULL;
+         QString str = hb_parstr_utf8( 1, &pText01, NULL );
+         hb_strfree( pText01 );
+         p->fixup( str );
+         return;
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+
+virtual State validate ( QString & input, int & pos ) const = 0{
+   HBQValidator * p = ( HBQValidator * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      if( HB_ISCHAR( 1 ) && HB_ISNUM( 2 ) )
+      {
+         void * pText01 = NULL;
+         int in = hb_parni( 2 );
+         QString str = hb_parstr_utf8( 1, &pText01, NULL );
+         hb_strfree( pText01 );
+
+         hb_retni( ( HBQValidator::State ) p->validate( str, in ) );
+         return;
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

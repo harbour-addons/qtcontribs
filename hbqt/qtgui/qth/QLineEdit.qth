@@ -99,7 +99,7 @@ void setModified ( bool )
 void setReadOnly ( bool )
 void setSelection ( int start, int length )
 void setTextMargins ( int left, int top, int right, int bottom )
-void setValidator ( const QValidator * v )
+void setValidator ( const QValidator * v )                         [*D=1*]
 virtual QSize sizeHint () const
 QString text () const
 virtual const QValidator * validator () const
