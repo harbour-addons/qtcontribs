@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-30 13:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+    + Implemented: QValidator::Intermediate return value.
+       HOW: If the validating function return NIL as sole return-value 
+              OR
+            NIL as third element of returned array;
+            QValidator::Intermediate is returned back to QValidator::validate().
+
 2012-11-29 12:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqvalidator.cpp
     % Small fix to pass validation text to PRG callback as per STR API protocol.

@@ -121,6 +121,10 @@ QValidator::State HBQValidator::validate( QString & input, int & pos ) const
          {
             state = ( QValidator::State ) ( hb_itemGetL( pState ) ? QValidator::Acceptable : QValidator::Invalid );
          }
+         else
+         {
+            state = QValidator::Intermediate;
+         }
       }
       else if( hb_itemType( ret ) & HB_IT_STRING )
       {
@@ -131,6 +135,10 @@ QValidator::State HBQValidator::validate( QString & input, int & pos ) const
       else if( hb_itemType( ret ) & HB_IT_LOGICAL )
       {
          state = ( QValidator::State ) ( hb_itemGetL( ret ) ? QValidator::Acceptable : QValidator::Invalid );
+      }
+      else
+      {
+         state = QValidator::Intermediate;
       }
 
       hb_itemRelease( ret );
