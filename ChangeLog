@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-11-30 14:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+    % HBQValidator block returning QValidator:Intermediate if the supplied 
+       text is empty. This is always the case when edit object is 
+       presented for input the first time. Also it relieves the programmer
+       to implement it on every GET manually.
+
 2012-11-30 13:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqvalidator.cpp
     + Implemented: QValidator::Intermediate return value.
