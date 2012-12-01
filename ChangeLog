@@ -16,6 +16,22 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-01 02:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Updated: to confirm to Clipper Get System with WHEN and VALIDS.
+       The code hosts a small class inherited from QLineEdit which 
+       controls the edit behavior of gets both per navigation and 
+       input standards. ENTER and UP/DOWN arrows also behave 
+       per Clipper standards. The implementation completely by-pass 
+       mouse input, i.e., no edit is selectable with mouse click.
+       This was required to implement WHEN and VALID.
+
+       The class is still a work in progress. As I am feeling tired 
+       and also it is almost morning, I need to sleep. In the meantime
+       examine the code and post your views/opinions/suggestions/whatever.
+       Also keep in mind to suggest where such classes, which simulate,
+       Clipper behavior, should be hosted.
+
 2012-11-30 14:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqvalidator.cpp
     % HBQValidator block returning QValidator:Intermediate if the supplied 
