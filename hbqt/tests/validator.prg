@@ -237,6 +237,8 @@ METHOD HbQtGet:create()
    ::connect( QEvent_FocusIn   , {|oFocusEvent| ::checkWhen( oFocusEvent ) } )
    ::connect( QEvent_KeyPress  , {|oKeyEvent  | ::checkValid( oKeyEvent ) } )
 
+   ::setFont( QFont( "Courier New", 10 ) )
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/

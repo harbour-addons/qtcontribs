@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-01 21:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Applied: "Courier New" size 10 font on HbQtGet() objects.
+       It offers better input experience much like Clipper.
+
+  * hbxbp/browse.prg
+    ! Fixed: long-standing bug in IdeDBU where CTRL+PgUp/Dn were 
+       nor refreshing the contents of rows.
+
 2012-12-01 19:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     + Implemented: @ <nX>, <nY> QGET <v> PICTURE <pic> COLOR <color> ;

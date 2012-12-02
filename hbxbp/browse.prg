@@ -2524,8 +2524,11 @@ METHOD XbpBrowse:pageDown()
 METHOD XbpBrowse:goTop()
 
    ::setUnstable()
-
    Eval( ::bGoTopBlock )
+   ::forceStable()
+   ::pageUp()
+   ::setUnstable()
+
    ::lRefresh    := .T.
    ::nRowPos     := 1
    ::nBufferPos  := 1
@@ -2534,6 +2537,7 @@ METHOD XbpBrowse:goTop()
 
    ::forceStable()
    ::setCurrentIndex( .t. )
+
    ::updateVertScrollBar()
 
    RETURN Self
@@ -2544,8 +2548,11 @@ METHOD XbpBrowse:goBottom()
    LOCAL nMoved
 
    ::setUnstable()
-
    Eval( ::bGoBottomBlock )
+   ::forceStable()
+
+   ::setUnstable()
+
    nMoved := _SKIP_RESULT( Eval( ::bSkipBlock, -( ::rowCount - 1 ) ) )
    ::lRefresh    := .T.
    ::nRowPos     := 1
