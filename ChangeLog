@@ -16,6 +16,31 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-01 19:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Implemented: @ <nX>, <nY> QGET <v> PICTURE <pic> COLOR <color> ;
+                     WHEN <when> VALID <valid> VALIDATOR <validator>;
+                     CAPTION <cap>
+
+                   QREAD
+
+       This implementation demonstrates how Clipper code can be 
+       re-used in GUI environment. The implementation demonstrate 
+       both, OOP and COMMAND syntax usages. Execute validator.exe 
+       with "p" as parameter to invoke COMMAND code.
+
+       Presently suppoted PICTURE strings are "@!" for character 
+       and "Y" for logicals. Others will come up next.
+
+       COLOR clause supports Cliiper's standard 16 colors. It can be 
+       passed as "W+/B",   "B",    "W+/BG*", i.e., foreground/background
+       pair. Only one color will be applied to text color.
+
+       Data binding is implemented via :dataLink( bBlock ) method.
+
+       For COMMAND syntax, to fetch set/get block, Harbour's 
+       GET system is used. Hope it can be exploited further.
+
 2012-12-01 02:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     + Updated: to confirm to Clipper Get System with WHEN and VALIDS.
