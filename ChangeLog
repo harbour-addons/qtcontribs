@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-03 09:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Logical: always remains selected, so edit does not need backspace.
+    + Numeric: right aligned if picture function does not contain "B".
+    + ESC: form is closed if ESCAPE is pressed.
+    + :inputValidator is called after respecting picture clause.
+    ! Picture function "K" is the default behavior except is LOgicals. 
+       And this is the preferred way in GUI.
+
 2012-12-01 21:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     + Applied: "Courier New" size 10 font on HbQtGet() objects.

@@ -12,6 +12,7 @@
 #include "hbqtgui.ch"
 #include "hbtrace.ch"
 #include "hbclass.ch"
+#include "set.ch"
 
 /*----------------------------------------------------------------------*/
 
@@ -33,13 +34,15 @@ FUNCTION Main( cMode )
    LOCAL oWnd, oVLayout, oHLayout, oFLayout, oBtnOK, oBtnCancel
    LOCAL oEdit1, oEdit2, oEdit3, oEdit4, oEdit5
 
-   LOCAL cText := "DEF"
+   LOCAL cText := "ABC"
    LOCAL dDate := CToD( "04/06/1956" )
    LOCAL nNumb := 6030.130000
    LOCAL lMrd  := .T.
    LOCAL cJust := Space( 20 )
 
    LOCAL aQGetList := {}
+
+   Set( _SET_DATEFORMAT, "dd/mm/yyyy" )
 
    hb_default( @cMode, "O" )
 
@@ -71,56 +74,56 @@ FUNCTION Main( cMode )
       oEdit1:picture        := "@!"
       oEdit1:dataLink       := {|x| iif( x == NIL, cText, cText := x ) }
       oEdit1:create()
-      oFLayout:addRow( "Upper Cased Alphabets:", oEdit1 )
+      oFLayout:addRow( "Alpha - Upper Cased Alphabets:", oEdit1 )
 
       oEdit2 := HbQtGet():new( oWnd )
       oEdit2:dataLink       := {|x| iif( x == NIL, dDate, dDate := x ) }
       oEdit2:when           := {|| cText == "ABC" }
-      oEdit2:inputValidator := {|cText,nPos| DateBritish( cText, nPos ) }
       oEdit2:color          := "B/GR*"
       oEdit2:create()
-      oFLayout:addRow( "British Date:", oEdit2 )
+      oFLayout:addRow( "Date - Birthday:", oEdit2 )
 
       oEdit3 := HbQtGet():new( oWnd )
       oEdit3:dataLink       := {|x| iif( x == NIL, nNumb, nNumb := x ) }
       oEdit3:valid          := {|| oBtnOK:setEnabled( .T. ) }
       oEdit3:inputValidator := {|cText,nPos| Upto6DecimalsOnly( cText, nPos ) }
       oEdit3:create()
-      oFLayout:addRow( "Maximum 6 Decimals:", oEdit3 )
+      oFLayout:addRow( "Numeric - Max 6 Decimals:", oEdit3 )
 
       oEdit4 := HbQtGet():new( oWnd )
       oEdit4:setMousable( .T. )
-      oEdit4:picture        := "Y"
+      oEdit4:picture        := "@Y"
       oEdit4:dataLink       := {|x| iif( x == NIL, lMrd, lMrd := x ) }
       oEdit4:create()
-      oFLayout:addRow( "Married ?", oEdit4 )
+      oFLayout:addRow( "Logical - Married:", oEdit4 )
 
       oEdit5 := HbQtGet():new( oWnd )
       oEdit5:dataLink       := {|x| iif( x == NIL, cJust, cJust := x ) }
       oEdit5:inputValidator := {|cText,nPos| UpperLowerUpper( cText, nPos ) }
       oEdit5:color          := "W+/B*"
       oEdit5:create()
-      oFLayout:addRow( "Upper Lower Upper:", oEdit5 )
+      oFLayout:addRow( "Alpha - Upper Lower Upper:", oEdit5 )
 
-      oEdit1:setFocus()
+      oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
       oWnd:show()
+      QApplication():sendEvent( oWnd, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
       QApplication():exec()
 
    ELSE
       @ 10, 10 QGET cText VALID {|cValue| cValue == "ABC" .OR. cValue == "DEF" } PICTURE "@!" ;
-             CAPTION "Upper Cased Alphabets:"
+             CAPTION "Alpha - Upper Cased Alphabets:"
 
-      @ 10, 40 QGET dDate WHEN {|| cText == "ABC" } VALIDATOR {|cText,nPos| DateBritish( cText, nPos ) } ;
-             CAPTION "British Date:" COLOR "B/GR*"
+      @ 10, 40 QGET dDate WHEN {|| cText == "ABC" } ;
+             CAPTION "Date - Birthday:" COLOR "B/GR*"
 
       @ 10, 70 QGET nNumb VALIDATOR {|cText,nPos| Upto6DecimalsOnly( cText, nPos ) } ;
-             CAPTION "Maximum 6 Decimals:"
+             CAPTION "Numeric - Max 6 Decimals:"
 
       @ 10,100 QGET lMrd  PICTURE "Y" ;
-             CAPTION "Married ?"
+             CAPTION "Logical - Married:"
 
       @ 10,130 QGET cJust COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( cText, nPos ) } ;
-             CAPTION "Upper Lower Upper:"
+             CAPTION "Alpha - Upper Lower Upper:"
 
       QREAD
 
@@ -211,6 +214,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_whenblock
    VAR    sl_validBlock
    VAR    sl_picture                              INIT ""
+   VAR    sl_mask                                 INIT ""
    VAR    sl_color
    VAR    sl_inputValidator
    VAR    sl_dataLink
@@ -219,11 +223,15 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_orgValue
    VAR    sl_width                                INIT 0
    VAR    sl_dec                                  INIT 0
+   VAR    sl_dFormat                              INIT Set( _SET_DATEFORMAT )
 
    METHOD checkWhen( oFocusEvent )
    METHOD checkValid( oKeyEvent )
-   METHOD acceptOnlyUppers( cText )
-   METHOD setInputValidator()
+   METHOD setParams()
+   METHOD getNumber( cText, nPos )
+   METHOD getDate( cText, nPos )
+   METHOD getLogical( cText, nPos )
+   METHOD getCharacter( cText, nPos )
 
    ENDCLASS
 
@@ -269,46 +277,151 @@ METHOD HbQtGet:setMousable( lEnable )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:setInputValidator()
+METHOD HbQtGet:setParams()
    LOCAL cTmp, n
-
-   IF ! Empty( ::sl_inputValidator )
-      RETURN Self
-   ENDIF
 
    SWITCH ::sl_type
    CASE "C"
       ::sl_width       := Len( ::sl_orgValue )
+      ::setMaxLength( ::sl_width )
+      ::setValidator( HBQValidator( {|cText,nPos| ::GetCharacter( cText, nPos ) } ) )
       EXIT
    CASE "N"
       cTmp             := Str( ::sl_orgValue )
       ::sl_width       := Len( cTmp )
       n                := At( ".", cTmp )
       ::sl_dec         := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
-      ::inputValidator := {|cText,nPos,v| v := SubStr( cText, nPos, 1 ), iif( nPos == 1, v $ "+-.1234567890", v $ ".1234567890" ) }
+      ::setValidator( HBQValidator( {|cText,nPos| ::GetNumber( cText, nPos ) } ) )
+      IF ! ( "B" $ ::sl_picture )
+         ::setAlignment( Qt_AlignRight )
+      ENDIF
       EXIT
    CASE "D"
       ::sl_width       := Len( DToC( ::sl_orgValue ) )
-      ::inputValidator := {|cText,nPos| DateBritish( cText, nPos ) }
+      ::setValidator( HBQValidator( {|cText,nPos| ::GetDate( cText, nPos ) } ) )
       EXIT
    CASE "L"
       ::sl_width       := 1
-      ::inputValidator := {|cText,nPos| GetLogical( cText, nPos, ::sl_picture ) }
+      ::setValidator( HBQValidator( {|cText,nPos| ::GetLogical( cText, nPos ) } ) )
       EXIT
    ENDSWITCH
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
+#if 0
+ A     C     Allow only alpha characters
+ B     N     Display numbers left-justified
+ C     N     Display CR after positive numbers
+ D     D,N   Display dates in SET DATE format
+ E     D,N   Display dates with day and month inverted
+             independent of the current DATE SETting,
+             numerics with comma and period reverse
+ K     All   Delete default text if first key is not a cursor key
+ R     C     Insert non-template characters in the display but do not
+             save in the Get variable
+ S<n>  C     Allows horizontal scrolling within a Get.  <n> is an integer
+             that specifies the width of the region
+ X     N     Display DB after negative numbers
+ Z     N     Display zero as blanks
+ (     N     Display negative numbers in parentheses with leading spaces
+ )     N     Display negative numbers in parentheses without leading spaces
+ !     C     Convert alphabetic character to upper case
+#endif
 
-METHOD HbQtGet:inputValidator( bBlock )
+METHOD HbQtGet:getCharacter( cText, nPos )
 
-   IF HB_ISBLOCK( bBlock )
-      ::sl_inputValidator := bBlock
-      ::setValidator( HBQValidator( ::sl_inputValidator ) )
+   IF "!" $ ::sl_picture
+      cText := Upper( cText )
+   ENDIF
+   IF "A" $ ::sl_picture .AND. ! IsAlpha( SubStr( cText, nPos, 1 ) )
+      RETURN .F.
    ENDIF
 
-   RETURN ::sl_inputValidator
+   IF HB_ISBLOCK( ::sl_inputValidator )
+      RETURN Eval( ::sl_inputValidator, cText, nPos )
+   ENDIF
+
+   RETURN cText
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:getNumber( cText, nPos )
+   LOCAL v
+
+   v := SubStr( cText, nPos, 1 )
+   IF nPos == 1
+      RETURN v $ "+-.1234567890"
+   ELSE
+      RETURN v $ ".1234567890"
+   ENDIF
+
+   IF HB_ISBLOCK( ::sl_inputValidator )
+      RETURN Eval( ::sl_inputValidator, cText, nPos )
+   ENDIF
+
+   RETURN .T.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:getDate( cText, nPos )
+   LOCAL s, cChr, n, n1
+
+   IF ! IsDigit( SubStr( cText, nPos, 1 ) ) .OR. Len( cText ) > 10
+      RETURN .F.
+   ENDIF
+
+   n := At( "/", ::sl_dFormat )
+   n1 := hb_RAt( "/", ::sl_dFormat )
+
+   cText := StrTran( cText, "/" )
+   s := ""
+   FOR EACH cChr IN cText
+      s += cChr
+      IF cChr:__enumIndex() == n-1 .OR. cChr:__enumIndex() == n1-2
+         s += "/"
+      ENDIF
+   NEXT
+   cText := s
+   nPos := Len( s )
+
+   IF HB_ISBLOCK( ::sl_inputValidator )
+      RETURN Eval( ::sl_inputValidator, cText, nPos )
+   ENDIF
+
+   RETURN { cText, nPos, .T. }
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:getLogical( cText, nPos )
+
+   IF nPos > 1
+      RETURN .F.
+   ENDIF
+   IF ! cText $ "NnYyTtFf"
+      RETURN .F.
+   ENDIF
+   IF "Y" $ ::sl_picture
+      IF cText $ "Tt"
+         RETURN "Y"
+      ELSEIF cText $ "Ff"
+         RETURN "N"
+      ENDIF
+   ELSE
+      IF cText $ "Yy"
+         RETURN "T"
+      ELSEIF cText $ "Nn"
+         RETURN "F"
+      ENDIF
+   ENDIF
+   cText := Upper( cText )
+   ::selectAll()
+
+   IF HB_ISBLOCK( ::sl_inputValidator )
+      RETURN Eval( ::sl_inputValidator, cText, nPos )
+   ENDIF
+
+   RETURN cText
 
 /*----------------------------------------------------------------------*/
 
@@ -358,7 +471,7 @@ METHOD HbQtGet:dataLink( bBlock )
       ::sl_type     := ValType( ::sl_orgValue )
       ::sl_dataLink := bBlock
       ::setData( ::sl_orgValue )
-      ::setInputValidator()
+      ::setParams()
    ENDIF
 
    RETURN ::sl_dataLink
@@ -385,17 +498,34 @@ METHOD HbQtGet:valid( bBlock )
 
 /*----------------------------------------------------------------------*/
 
+METHOD HbQtGet:inputValidator( bBlock )
+
+   IF HB_ISBLOCK( bBlock )
+      ::sl_inputValidator := bBlock
+   ENDIF
+
+   RETURN ::sl_inputValidator
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtGet:picture( cPicture )
+   LOCAL n
 
-   hb_default( @cPicture, " " )
-   ::sl_picture := cPicture
+   hb_default( @cPicture, "" )
+   ::sl_picture := Upper( AllTrim( cPicture ) )
 
+   IF Left( ::sl_picture, 1 ) == "@"
+      IF ( n := At( " " , ::sl_picture ) ) > 0
+         ::sl_picture := AllTrim( SubStr( ::sl_picture, 1, n-1 ) )
+         ::sl_mask := AllTrim( SubStr( ::sl_picture, n+1 ) )
+      ENDIF
+   ELSE
+      ::sl_mask := ::sl_picture
+      ::sl_picture := ""
+      RETURN ""     /* Mask will be implemented later */
+   ENDIF
+   ::sl_picture := StrTran( StrTran( ::sl_picture, " " ), "@" )
    SWITCH ::sl_picture
-   CASE "@!"
-      ::inputValidator := {|cText| ::acceptOnlyUppers( cText ) }
-      EXIT
-   CASE ""
-      EXIT
    CASE " "
       EXIT
    ENDSWITCH
@@ -481,6 +611,14 @@ METHOD HbQtGet:checkValid( oKeyEvent )
       EXIT
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
+      IF ::sl_type == "D"    /* Must be a valid date if not empty */
+         IF ! Empty( ::text() )
+            IF Empty( ::getData() )
+               oKeyEvent:accept()
+               RETURN .T.
+            ENDIF
+         ENDIF
+      ENDIF
       IF HB_ISBLOCK( ::sl_validBlock )
          IF ! Eval( ::sl_validBlock, ::text() )
             oKeyEvent:accept()
@@ -494,12 +632,6 @@ METHOD HbQtGet:checkValid( oKeyEvent )
    ENDSWITCH
 
    RETURN .F.
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:acceptOnlyUppers( cText )
-
-   RETURN Upper( cText )
 
 /*----------------------------------------------------------------------*/
 //                        Utility Functions
@@ -538,49 +670,6 @@ STATIC FUNCTION Upto6DecimalsOnly( cText, nPos )
    ENDIF
 
    RETURN .T.
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION DateBritish( cText, nPos )
-
-   IF ! IsDigit( SubStr( cText, nPos, 1 ) ) .OR. Len( cText ) > 10
-      RETURN .F.
-   ENDIF
-
-   SWITCH nPos
-   CASE 2
-      RETURN { cText + "/", ++nPos }
-   CASE 5
-      RETURN { cText + "/", ++nPos }
-   ENDSWITCH
-
-   RETURN .T.
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION GetLogical( cText, nPos, cPicture )
-
-   IF nPos > 1
-      RETURN .F.
-   ENDIF
-   IF ! cText $ "NnYyTtFf"
-      RETURN .F.
-   ENDIF
-   IF "Y" $ cPicture
-      IF cText $ "Tt"
-         RETURN "Y"
-      ELSEIF cText $ "Ff"
-         RETURN "N"
-      ENDIF
-   ELSE
-      IF cText $ "Yy"
-         RETURN "T"
-      ELSEIF cText $ "Nn"
-         RETURN "F"
-      ENDIF
-   ENDIF
-
-   RETURN Upper( cText )
 
 /*----------------------------------------------------------------------*/
 
