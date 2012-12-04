@@ -118,7 +118,7 @@ FUNCTION Main( cMode )
 
       oEdit7                := HbQtGet():new( oWnd )
       oEdit7:dataLink       := {|x| iif( x == NIL, cCata, cCata := x ) }
-      oEdit7:picture        := "@! !!!-!!!-!!!!!!!!!!!!"
+      oEdit7:picture        := "!!!-!!!-!!!!!!!!!!!!"
       oEdit7:create()
       oFLayout:addRow( "Catalog Item:", oEdit7 )
 
@@ -286,6 +286,8 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_dFormat                              INIT Set( _SET_DATEFORMAT )
    VAR    sl_cssColor                             INIT ""
    VAR    sl_cssNotValid                          INIT ""
+   VAR    sl_decSep                               INIT "."
+   VAR    sl_commaSep                             INIT ","
 
    METHOD checkWhen( oFocusEvent )
    METHOD checkValid( oKeyEvent )
@@ -295,6 +297,10 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    METHOD getDate( cText, nPos )
    METHOD getLogical( cText, nPos )
    METHOD getCharacter( cText, nPos )
+   METHOD getRgbStringFromClipperColor( cToken, lExt )
+   METHOD transformThis( xData, cMask )
+   METHOD unTransformThis( cData )
+   METHOD timesOccurs( cToken, cText )
 
    ENDCLASS
 
@@ -360,11 +366,23 @@ METHOD HbQtGet:setParams()
       ::setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) } ) )
       EXIT
    CASE "N"
-      cTmp       := Str( ::sl_orgValue )
-      ::sl_width := Len( cTmp )
-      n          := At( ".", cTmp )
-      ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
-      ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
+      IF "E" $ ::sl_picture
+         ::sl_decSep := ","
+         ::sl_commaSep := "."
+      ENDIF
+      IF ! Empty( ::sl_mask )
+         cTmp       := ::sl_mask
+         n          := At( ::sl_decSep, cTmp )
+         ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
+         ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
+         ::sl_prime := ::sl_width - ::sl_dec
+      ELSE
+         cTmp       := Str( ::sl_orgValue )
+         ::sl_width := Len( cTmp )
+         n          := At( ::sl_decSep, cTmp )
+         ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
+         ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
+      ENDIF
       ::setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) } ) )
       IF ! ( "B" $ ::sl_picture )
          ::setAlignment( Qt_AlignRight )
@@ -385,10 +403,12 @@ METHOD HbQtGet:setParams()
          ENDIF
          ::setInputMask( ::sl_qMask )
       NEXT
-      //::setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, @nPos ) } ) )
+      ::setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, @nPos ) } ) )
       EXIT
    CASE "L"
       ::sl_width       := 1
+      ::sl_qMask       := "x"
+      ::setInputMask( ::sl_qMask )
       ::setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) } ) )
       EXIT
    ENDSWITCH
@@ -452,6 +472,7 @@ METHOD HbQtGet:getCharacter( cText, nPos )
    LOCAL cChr, lRet
 
    cChr := SubStr( cText, nPos, 1 )
+HB_TRACE( HB_TR_ALWAYS, ::sl_qMask, ::sl_mask, nPos, cChr )
    IF "A" $ ::sl_picture .AND. ! IsAlpha( cChr )
       RETURN .F.
    ENDIF
@@ -497,11 +518,11 @@ METHOD HbQtGet:getCharacter( cText, nPos )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:getNumber( cText, nPos )
-   LOCAL cChr, lRet, nDecAt, lInDec
+   LOCAL cChr, lRet, nDecAt, lInDec, nTmp
 
    cChr := SubStr( cText, nPos, 1 )
 
-   IF ! ( cChr $ "+-.1234567890" )
+   IF ! ( cChr $ ::sl_decSep + "+-1234567890" )
       RETURN .F.
    ENDIF
    IF cChr $ "+-" .AND. nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
@@ -510,37 +531,44 @@ METHOD HbQtGet:getNumber( cText, nPos )
    IF cChr $ "+-" .AND. nPos > 1
       RETURN .F.
    ENDIF
-   IF cChr $ "+-" .AND. TimesOccurs( cChr, cText ) > 1
+   IF cChr $ "+-" .AND. ::timesOccurs( cChr, cText ) > 1
       RETURN .F.
    ENDIF
-   IF cChr == "." .AND. ::sl_dec == 0
+   IF cChr == ::sl_decSep .AND. ::sl_dec == 0
       RETURN .F.
    ENDIF
-   IF cChr == "." .AND. TimesOccurs( cChr, cText ) > 1
+   IF cChr == ::sl_decSep .AND. ::timesOccurs( cChr, cText ) > 1
       cText  := SubStr( cText, 1, nPos - 1 ) + SubStr( cText, nPos + 1 )
-      nPos   := At( ".", cText )
-      nDecAt := At( ".", cText )
+      nPos   := At( ::sl_decSep, cText )
+      nDecAt := At( ::sl_decSep, cText )
       cText  := SubStr( cText, 1, nDecAt ) + Left( SubStr( cText, nDecAt + 1 ), ::sl_dec )
       RETURN { cText, nPos, .T. }
-   ELSEIF cChr == "."
-      cText := TransformThis( UnTransformThis( cText ), ::sl_pic )
+   ELSEIF cChr == ::sl_decSep
+      cText := ::transformThis( ::unTransformThis( cText ), ::sl_pic )
       RETURN { cText, nPos, .T. }
-   ELSEIF Len( cText ) == 1 /* when selectall is active and a key is pressed */
-      cText := TransformThis( UnTransformThis( cText ), ::sl_pic )
+   ELSEIF Len( cText ) == 1              /* when selectall is active and a key is pressed */
+      cText := ::transformThis( ::unTransformThis( cText ), ::sl_pic )
       RETURN { cText, nPos, .T. }
    ENDIF
 
-   nDecAt := At( ".", cText )
+   nDecAt := At( ::sl_decSep, cText )
    lInDec := iif( nDecAt == 0, .F., nPos >= nDecAt )
    IF lInDec
       cText := SubStr( cText, 1, nPos - 1 ) + cChr + SubStr( cText, nPos + 2, Len( cText ) - 1 )
-      cText := TransformThis( UnTransformThis( cText ), ::sl_pic )
+      cText := ::transformThis( ::unTransformThis( cText ), ::sl_pic )
       RETURN { cText, nPos, .T. }
    ENDIF
 
-   cText := TransformThis( UnTransformThis( cText ), ::sl_pic )
-   IF At( ".", cText ) > nDecAt
+   cText := ::unTransformThis( cText )
+   nTmp := At( ::sl_decSep, cText )
+   IF iif( nTmp > 0, nTmp - 1, Len( cText ) ) >= ::sl_prime
+      RETURN .F.
+   ENDIF
+   cText := ::transformThis( cText, ::sl_pic )
+   IF At( ::sl_decSep, cText ) > nDecAt
       nPos++
+   ELSEIF At( ::sl_decSep, cText ) < nDecAt
+      nPos--
    ENDIF
 
    lRet := .T.
@@ -558,25 +586,7 @@ METHOD HbQtGet:getNumber( cText, nPos )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:getDate( cText, nPos )
-   LOCAL cChr, lRet, s, n, n1
-
-   IF ! IsDigit( SubStr( cText, nPos, 1 ) ) .OR. Len( cText ) > 10
-      RETURN .F.
-   ENDIF
-
-   n := At( "/", ::sl_dFormat )
-   n1 := hb_RAt( "/", ::sl_dFormat )
-
-   cText := StrTran( cText, "/" )
-   s := ""
-   FOR EACH cChr IN cText
-      s += cChr
-      IF cChr:__enumIndex() == n-1 .OR. cChr:__enumIndex() == n1-2
-         s += "/"
-      ENDIF
-   NEXT
-   cText := s
-   nPos  := Len( s )
+   LOCAL lRet
 
    lRet  := .T.
    IF HB_ISBLOCK( ::sl_inputValidator )
@@ -589,33 +599,30 @@ METHOD HbQtGet:getDate( cText, nPos )
 
 METHOD HbQtGet:getLogical( cText, nPos )
 
-   IF nPos > 1
-      RETURN .F.
-   ENDIF
+   cText := Upper( SubStr( cText, nPos, 1 ) )
+
    IF ! cText $ "NnYyTtFf"
       RETURN .F.
    ENDIF
    IF "Y" $ ::sl_picture
       IF cText $ "Tt"
-         RETURN "Y"
+         cText :=  "Y"
       ELSEIF cText $ "Ff"
-         RETURN "N"
+         cText :=  "N"
       ENDIF
    ELSE
       IF cText $ "Yy"
-         RETURN "T"
+         cText := "T"
       ELSEIF cText $ "Nn"
-         RETURN "F"
+         cText := "F"
       ENDIF
    ENDIF
-   cText := Upper( cText )
-   ::selectAll()
 
    IF HB_ISBLOCK( ::sl_inputValidator )
-      RETURN Eval( ::sl_inputValidator, cText, nPos )
+      RETURN Eval( ::sl_inputValidator, @cText, @nPos )
    ENDIF
 
-   RETURN cText
+   RETURN { cText, 0, .T. }
 
 /*----------------------------------------------------------------------*/
 
@@ -626,7 +633,7 @@ METHOD HbQtGet:getData()
    CASE "C"
       RETURN Pad( cData, ::sl_width )
    CASE "N"
-      RETURN Val( UnTransformThis( cData ) )
+      RETURN Val( ::unTransformThis( cData ) )
    CASE "D"
       RETURN CToD( cData )
    CASE "L"
@@ -644,7 +651,7 @@ METHOD HbQtGet:setData( xData )
       ::setText( RTrim( xData ) )
       EXIT
    CASE "N"
-      ::setText( TransformThis( xData, ::sl_pic ) )
+      ::setText( ::transformThis( xData, ::sl_pic ) )
       EXIT
    CASE "D"
       ::setText( DToC( xData ) )
@@ -764,12 +771,12 @@ METHOD HbQtGet:color( cnaColor )
       IF ! Empty( xFore )
          lExt := At( "+", xFore ) > 0
          xFore := StrTran( StrTran( xFore, "+" ), "*" )
-         cCSSF := GetRgbStringFromClipperColor( xFore, lExt )
+         cCSSF := ::getRgbStringFromClipperColor( xFore, lExt )
       ENDIF
       IF ! Empty( xBack )
          lExt := "+" $ xBack .OR. "*" $ xBack
          xBack := StrTran( StrTran( xBack, "+" ), "*" )
-         cCSSB := GetRgbStringFromClipperColor( xBack, lExt )
+         cCSSB := ::getRgbStringFromClipperColor( xBack, lExt )
       ENDIF
       IF ! Empty( cCSSF )
          cCSS := "color: " + cCSSF
@@ -862,10 +869,8 @@ METHOD HbQtGet:checkValid( oKeyEvent )
    RETURN .F.
 
 /*----------------------------------------------------------------------*/
-//                        Utility Functions
-/*----------------------------------------------------------------------*/
 
-STATIC FUNCTION GetRgbStringFromClipperColor( cToken, lExt )
+METHOD HbQtGet:getRgbStringFromClipperColor( cToken, lExt )
 
    SWITCH Upper( cToken )
    CASE "N"
@@ -889,7 +894,7 @@ STATIC FUNCTION GetRgbStringFromClipperColor( cToken, lExt )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION TimesOccurs( cToken, cText )
+METHOD HbQtGet:timesOccurs( cToken, cText )
    LOCAL cChr, n
 
    n := 0
@@ -903,7 +908,7 @@ STATIC FUNCTION TimesOccurs( cToken, cText )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION TransformThis( xData, cMask )
+METHOD HbQtGet:transformThis( xData, cMask )
 
    IF ValType( xData ) == "C"
       xData := Val( AllTrim( xData ) )
@@ -913,11 +918,11 @@ STATIC FUNCTION TransformThis( xData, cMask )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION UnTransformThis( cData )
+METHOD HbQtGet:unTransformThis( cData )
    LOCAL cChr, cText := ""
 
    FOR EACH cChr IN cData
-      IF cChr $ ".+-0123456789"
+      IF cChr $ ::sl_decSep + "+-0123456789"
          cText += cChr
       ENDIF
    NEXT

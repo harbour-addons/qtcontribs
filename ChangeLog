@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-04 09:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    ! More complete picture clause in numeric GETs.
+    % Rearrangement of code for better usage.
+
 2012-12-04 01:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     + Implemented: Templates for Numeric GETs, please test.
