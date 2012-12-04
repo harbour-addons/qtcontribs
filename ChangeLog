@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-03 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Implemented: GET Picture Templates in addition to Picture Functions.
+    + Implemented: Numeric GET "+-." positioning, confirmation to pre
+       and post decimal width. Currently based on variables original value.
+       ;
+       TODO: implementation of Picture Teplates.
+    + Completed: Date GET implementation. Now it supports Set( _SET_DATEFORMAT ).
+    + Implemented: mouse support as default. To switch off the mouse interaction
+       call oEdit:mousable := .F. .
+    + Implemented: changed background color to somewhat red of any GET if 
+       if focus is taken away from it by mouse action and the value 
+       contained in the edit buffer could not been validated with VALID 
+       clause. This is a visual only part and actual VALID is performed
+       only by keyboard navigation.
+    + Added one more field "Telephone Number:" which facilitates the 
+       verification of template part of picture.
+
+    ; Please test extensively and report back if you see any issues with 
+       GET picture with/without template part.
+
 2012-12-03 09:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     + Logical: always remains selected, so edit does not need backspace.

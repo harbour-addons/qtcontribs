@@ -25,19 +25,22 @@
                            [WHEN <when>  ] ;
                            [CAPTION <cap>] ;
                            [COLOR <color>] ;
-                           [VALIDATOR <validator>] => ;
-         AAdd( aQGetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ), <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}> } )
+                           [VALIDATOR <validator>] ;
+                           [<noMouse: NOMOUSABLE> ]=> ;
+         AAdd( aQGetList, { _GET_( <v>, <"v"> ), <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.> } )
+         //AAdd( aQGetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ), <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.> } )
 
 /*----------------------------------------------------------------------*/
 
 FUNCTION Main( cMode )
    LOCAL oWnd, oVLayout, oHLayout, oFLayout, oBtnOK, oBtnCancel
-   LOCAL oEdit1, oEdit2, oEdit3, oEdit4, oEdit5
+   LOCAL oEdit1, oEdit2, oEdit3, oEdit4, oEdit5, oEdit6
 
    LOCAL cText := "ABC"
    LOCAL dDate := CToD( "04/06/1956" )
-   LOCAL nNumb := 6030.130000
+   LOCAL nNumb := 6030.130001
    LOCAL lMrd  := .T.
+   LOCAL cTele := "(999)684-7318"
    LOCAL cJust := Space( 20 )
 
    LOCAL aQGetList := {}
@@ -48,7 +51,7 @@ FUNCTION Main( cMode )
 
    IF cMode == "O"
       oWnd    := QWidget()
-      oWnd:resize( 400, 200 )
+      oWnd:resize( 400, 250 )
       oWnd:setWindowTitle( "Clipper Compliant Get System - Without Mouse" )
 
       oVLayout := QVBoxLayout( oWnd )
@@ -67,11 +70,13 @@ FUNCTION Main( cMode )
       oHLayout:addWidget( oBtnOK )
       oHLayout:addWidget( oBtnCancel )
 
+      oFLayout:setLabelAlignment( Qt_AlignRight )
+
       oBtnOK:setEnabled( .F. )
 
       oEdit1 := HbQtGet():new( oWnd )
       oEdit1:valid          := {|cValue| cValue == "ABC" .OR. cValue == "DEF" }
-      oEdit1:picture        := "@!"
+      oEdit1:picture        := "@!A"
       oEdit1:dataLink       := {|x| iif( x == NIL, cText, cText := x ) }
       oEdit1:create()
       oFLayout:addRow( "Alpha - Upper Cased Alphabets:", oEdit1 )
@@ -86,23 +91,27 @@ FUNCTION Main( cMode )
       oEdit3 := HbQtGet():new( oWnd )
       oEdit3:dataLink       := {|x| iif( x == NIL, nNumb, nNumb := x ) }
       oEdit3:valid          := {|| oBtnOK:setEnabled( .T. ) }
-      oEdit3:inputValidator := {|cText,nPos| Upto6DecimalsOnly( cText, nPos ) }
       oEdit3:create()
       oFLayout:addRow( "Numeric - Max 6 Decimals:", oEdit3 )
 
       oEdit4 := HbQtGet():new( oWnd )
-      oEdit4:setMousable( .T. )
       oEdit4:picture        := "@Y"
       oEdit4:dataLink       := {|x| iif( x == NIL, lMrd, lMrd := x ) }
       oEdit4:create()
       oFLayout:addRow( "Logical - Married:", oEdit4 )
 
-      oEdit5 := HbQtGet():new( oWnd )
-      oEdit5:dataLink       := {|x| iif( x == NIL, cJust, cJust := x ) }
-      oEdit5:inputValidator := {|cText,nPos| UpperLowerUpper( cText, nPos ) }
-      oEdit5:color          := "W+/B*"
+      oEdit5                := HbQtGet():new( oWnd )
+      oEdit5:dataLink       := {|x| iif( x == NIL, cTele, cTele := x ) }
+      oEdit5:picture        := "(999)999-9999"
       oEdit5:create()
-      oFLayout:addRow( "Alpha - Upper Lower Upper:", oEdit5 )
+      oFLayout:addRow( "Telephone Number:", oEdit5 )
+
+      oEdit6                := HbQtGet():new( oWnd )
+      oEdit6:dataLink       := {|x| iif( x == NIL, cJust, cJust := x ) }
+      oEdit6:inputValidator := {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
+      oEdit6:color          := "W+/B*"
+      oEdit6:create()
+      oFLayout:addRow( "Alpha - Upper Lower Upper:", oEdit6 )
 
       oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
       oWnd:show()
@@ -110,19 +119,22 @@ FUNCTION Main( cMode )
       QApplication():exec()
 
    ELSE
-      @ 10, 10 QGET cText VALID {|cValue| cValue == "ABC" .OR. cValue == "DEF" } PICTURE "@!" ;
+      @ 10, 10 QGET cText VALID {|cValue| cValue == "ABC" .OR. cValue == "DEF" } PICTURE "@!A" ;
              CAPTION "Alpha - Upper Cased Alphabets:"
 
       @ 10, 40 QGET dDate WHEN {|| cText == "ABC" } ;
              CAPTION "Date - Birthday:" COLOR "B/GR*"
 
-      @ 10, 70 QGET nNumb VALIDATOR {|cText,nPos| Upto6DecimalsOnly( cText, nPos ) } ;
+      @ 10, 70 QGET nNumb ;
              CAPTION "Numeric - Max 6 Decimals:"
 
       @ 10,100 QGET lMrd  PICTURE "Y" ;
              CAPTION "Logical - Married:"
 
-      @ 10,130 QGET cJust COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( cText, nPos ) } ;
+      @ 10,130 QGET cTele PICTURE "@! (999)999-9999" ;
+             CAPTION "Telephone Number:"
+
+      @ 10,160 QGET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) } ;
              CAPTION "Alpha - Upper Lower Upper:"
 
       QREAD
@@ -141,7 +153,7 @@ STATIC FUNCTION HbQtReadGets( aGetList, lModal, oParent )
 
    IF Len( aGetList ) >= 1
       oWnd    := QWidget()
-      oWnd:resize( 400, 200 )
+      oWnd:resize( 400, 250 )
       oWnd:setWindowTitle( "Clipper Compliant Get System - Without Mouse" )
 
       oVLayout := QVBoxLayout( oWnd )
@@ -179,16 +191,38 @@ STATIC FUNCTION HbQtReadGets( aGetList, lModal, oParent )
          IF HB_ISBLOCK( aEdit[ 8 ] )
             oEdit:inputValidator := aEdit[ 8 ]
          ENDIF
+         oEdit:mousable := ! aEdit[ 9 ]
+
          oEdit:create()
          oFLayout:addRow( iif( Empty( aEdit[ 6 ] ), aEdit[ 2 ], aEdit[ 6 ] ), oEdit )
       NEXT
 
+      oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
       oWnd:show()
       QApplication():sendEvent( oWnd, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
       QApplication():exec()
    ENDIF
 
    RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION UpperLowerUpper( cText, nPos )
+   LOCAL cChr, s
+
+   HB_SYMBOL_UNUSED( nPos )
+
+   s := ""
+   FOR EACH cChr IN cText
+      IF cChr:__enumIndex() % 2 == 0
+         s += Lower( cChr )
+      ELSE
+         s += Upper( cChr )
+      ENDIF
+   NEXT
+   cText := s
+
+   RETURN .T.
 
 /*----------------------------------------------------------------------*/
 //                            CLASS HbQtEdit
@@ -204,7 +238,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    METHOD color( cnaColor )                       SETGET
    METHOD inputValidator( bBlock )                SETGET
    METHOD dataLink( bBlock )                      SETGET
-   METHOD setMousable( lEnable )                  SETGET
+   METHOD mousable( lEnable )                     SETGET
    METHOD setData( xData )
    METHOD getData()
 
@@ -215,18 +249,23 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_validBlock
    VAR    sl_picture                              INIT ""
    VAR    sl_mask                                 INIT ""
+   VAR    sl_qMask                                INIT ""
    VAR    sl_color
    VAR    sl_inputValidator
    VAR    sl_dataLink
-   VAR    sl_mousable                             INIT .F.
+   VAR    sl_mousable                             INIT .T.
    VAR    sl_type                                 INIT "C"
    VAR    sl_orgValue
    VAR    sl_width                                INIT 0
    VAR    sl_dec                                  INIT 0
+   VAR    sl_prime                                INIT 0
    VAR    sl_dFormat                              INIT Set( _SET_DATEFORMAT )
+   VAR    sl_cssColor                             INIT ""
+   VAR    sl_cssNotValid                          INIT ""
 
    METHOD checkWhen( oFocusEvent )
    METHOD checkValid( oKeyEvent )
+   METHOD testValid()
    METHOD setParams()
    METHOD getNumber( cText, nPos )
    METHOD getDate( cText, nPos )
@@ -243,9 +282,15 @@ METHOD HbQtGet:create()
 
    ::connect( "returnPressed()", {|| QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) ) } )
    ::connect( QEvent_FocusIn   , {|oFocusEvent| ::checkWhen( oFocusEvent ) } )
-   ::connect( QEvent_KeyPress  , {|oKeyEvent  | ::checkValid( oKeyEvent ) } )
+   ::connect( QEvent_FocusOut  , {|| ::testValid() } )
+   ::connect( QEvent_KeyPress  , {|oKeyEvent| ::checkValid( oKeyEvent ) } )
 
    ::setFont( QFont( "Courier New", 10 ) )
+
+   ::sl_cssNotValid := "color: rgb(0,0,0); background-color: rgb(255,128,128);"
+
+   ::setParams()
+   ::setData( ::sl_orgValue )
 
    RETURN Self
 
@@ -261,7 +306,7 @@ METHOD HbQtGet:name( cName )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:setMousable( lEnable )
+METHOD HbQtGet:mousable( lEnable )
 
    IF HB_ISLOGICAL( lEnable )
       ::sl_mousable := lEnable
@@ -278,31 +323,49 @@ METHOD HbQtGet:setMousable( lEnable )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:setParams()
-   LOCAL cTmp, n
+   LOCAL cTmp, cChr, n
 
    SWITCH ::sl_type
    CASE "C"
       ::sl_width       := Len( ::sl_orgValue )
+      IF ! Empty( ::sl_mask )
+         ::sl_width := Len( ::sl_mask )
+         ::setInputMask( ::sl_qMask )
+      ENDIF
       ::setMaxLength( ::sl_width )
-      ::setValidator( HBQValidator( {|cText,nPos| ::GetCharacter( cText, nPos ) } ) )
+      ::setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) } ) )
       EXIT
    CASE "N"
       cTmp             := Str( ::sl_orgValue )
       ::sl_width       := Len( cTmp )
       n                := At( ".", cTmp )
       ::sl_dec         := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
-      ::setValidator( HBQValidator( {|cText,nPos| ::GetNumber( cText, nPos ) } ) )
+      ::sl_prime       := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
+      ::setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) } ) )
       IF ! ( "B" $ ::sl_picture )
          ::setAlignment( Qt_AlignRight )
       ENDIF
       EXIT
    CASE "D"
       ::sl_width       := Len( DToC( ::sl_orgValue ) )
-      ::setValidator( HBQValidator( {|cText,nPos| ::GetDate( cText, nPos ) } ) )
+      cTmp := Set( _SET_DATEFORMAT )
+      ::sl_mask := ""
+      ::sl_qMask := ""
+      FOR EACH cChr IN cTmp
+         IF cChr == "/"
+            ::sl_mask += "/"
+            ::sl_qMask += "/"
+         ELSE
+            ::sl_mask += "9"
+            ::sl_qMask += "9"
+         ENDIF
+         ::setInputMask( ::sl_qMask )
+      NEXT
+      //::setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, @nPos ) } ) )
       EXIT
    CASE "L"
       ::sl_width       := 1
-      ::setValidator( HBQValidator( {|cText,nPos| ::GetLogical( cText, nPos ) } ) )
+      ::setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) } ) )
       EXIT
    ENDSWITCH
 
@@ -310,6 +373,8 @@ METHOD HbQtGet:setParams()
 
 /*----------------------------------------------------------------------*/
 #if 0
+ Get Picture Functions
+--------------------------------------------------------------------------------
  A     C     Allow only alpha characters
  B     N     Display numbers left-justified
  C     N     Display CR after positive numbers
@@ -327,45 +392,131 @@ METHOD HbQtGet:setParams()
  (     N     Display negative numbers in parentheses with leading spaces
  )     N     Display negative numbers in parentheses without leading spaces
  !     C     Convert alphabetic character to upper case
+
+
+ Get Picture Template Symbols
+--------------------------------------------------------------------------------
+ A    Allow only alphabetic characters
+ N    Allow only alphabetic and numeric characters
+ X    Allow any character
+ 9    Allow digits for any data type including sign for numerics
+ #    Allow digits, signs and spaces for any data type
+ L    Allow only T, F, Y or N
+ Y    Allow only Y or N
+ !    Convert alphabetic character to upper case
+ $    Display a dollar sign in place of a leading space in a numeric
+ *    Display an asterisk in place of a leading space in a numeric
+ .    Display a decimal point
+ ,    Display a comma
+
+
+   Some examples
+--------------------------------------------------------------------------------
+ "@!"     ->     all the alpha chars are uppercased
+ "@! ANX9"  -> as above, but the first char must be alpha, the second alpha or numeric, the third any char, the fourth a digit
+ "@E 999,999.99" -> comma is point (and viceversa) as for european numeric notation, two decimal are allowed
+ "@Z 9999999" -> no thousand separator, max 7 digits, if get value is 0 the edit buffer contains only spaces
+ "999.99" -> no thousand separator, max 3 integer (included the eventual sign) and 2 decimals, the decimal separator is point
+ "@S20" -> if the get buffer is more than 20 char long, editing after the 20th char causes the scrolling in place to manage the rest of the string
+ "Y" -> the get accept only one char corresponding to Y or N
+ "L" -> as above, but also T or F are accepted (true or false, obviously)
+
 #endif
 
 METHOD HbQtGet:getCharacter( cText, nPos )
+   LOCAL cChr, lRet
 
+   cChr := SubStr( cText, nPos, 1 )
+
+   IF "A" $ ::sl_picture .AND. ! IsAlpha( cChr )
+      RETURN .F.
+   ENDIF
    IF "!" $ ::sl_picture
       cText := Upper( cText )
    ENDIF
-   IF "A" $ ::sl_picture .AND. ! IsAlpha( SubStr( cText, nPos, 1 ) )
-      RETURN .F.
+   IF ! Empty( ::sl_mask )
+      SWITCH SubStr( ::sl_mask, nPos, 1 )
+      CASE "A"
+         IF ! IsAlpha( cChr )
+            RETURN .F.
+         ENDIF
+         EXIT
+      CASE "N"
+         IF ! IsAlpha( cChr ) .OR. ! IsDigit( cChr )
+            RETURN .F.
+         ENDIF
+         EXIT
+      CASE "9"
+         IF ! cChr $ "+-0123456789"
+            RETURN .F.
+         ENDIF
+         EXIT
+      CASE "#"
+         IF ! cChr $ " +-0123456789"
+            RETURN .F.
+         ENDIF
+         EXIT
+      CASE "!"
+         cText := SubStr( cText, 1, nPos - 1 ) + Upper( cChr ) + SubStr( cText, nPos + 1 )
+         EXIT
+      CASE "X"
+         EXIT
+      ENDSWITCH
    ENDIF
-
+   lRet := .T.
    IF HB_ISBLOCK( ::sl_inputValidator )
-      RETURN Eval( ::sl_inputValidator, cText, nPos )
+      lRet := Eval( ::sl_inputValidator, @cText, @nPos )
    ENDIF
 
-   RETURN cText
+   RETURN { cText, nPos, lRet }
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:getNumber( cText, nPos )
-   LOCAL v
+   LOCAL cChr, lRet, nDecAt
 
-   v := SubStr( cText, nPos, 1 )
-   IF nPos == 1
-      RETURN v $ "+-.1234567890"
-   ELSE
-      RETURN v $ ".1234567890"
+   cChr := SubStr( cText, nPos, 1 )
+
+   IF ! ( cChr $ "+-.1234567890" )
+      RETURN .F.
+   ENDIF
+   IF cChr $ "+-" .AND. nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
+      cText := cChr + SubStr( cText, 3 )
+   ENDIF
+   IF cChr $ "+-" .AND. nPos > 1
+      RETURN .F.
+   ENDIF
+   IF cChr $ "+-." .AND. TimesOccurs( cChr, cText ) > 1
+      RETURN .F.
+   ENDIF
+   IF cChr == "." .AND. ::sl_dec == 0
+      RETURN .F.
+   ENDIF
+   nDecAt := At( ".", cText )
+   IF nDecAt > 0 .AND. nPos > nDecAt .AND. Len( SubStr( cText, nDecAt + 1 ) ) > ::sl_dec
+      RETURN .F.
+   ENDIF
+   IF nDecAt
+   ENDIF
+   IF cChr != "." .AND. Len( iif( nDecAt > 0, SubStr( cText, 1, nDecAt - 1 ), cText ) ) > iif( ::sl_dec > 0, ::sl_prime, ::sl_width )
+      RETURN .F.
    ENDIF
 
+   lRet := .T.
    IF HB_ISBLOCK( ::sl_inputValidator )
-      RETURN Eval( ::sl_inputValidator, cText, nPos )
+      lRet := Eval( ::sl_inputValidator, @cText, @nPos )
+   ENDIF
+   IF Left( cText, 1 ) == "+"
+      cText := SubStr( cText, 2 )
+      nPos--
    ENDIF
 
-   RETURN .T.
+   RETURN { cText, nPos, lRet }
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:getDate( cText, nPos )
-   LOCAL s, cChr, n, n1
+   LOCAL cChr, lRet, s, n, n1
 
    IF ! IsDigit( SubStr( cText, nPos, 1 ) ) .OR. Len( cText ) > 10
       RETURN .F.
@@ -383,13 +534,14 @@ METHOD HbQtGet:getDate( cText, nPos )
       ENDIF
    NEXT
    cText := s
-   nPos := Len( s )
+   nPos  := Len( s )
 
+   lRet  := .T.
    IF HB_ISBLOCK( ::sl_inputValidator )
-      RETURN Eval( ::sl_inputValidator, cText, nPos )
+      lRet := Eval( ::sl_inputValidator, @cText, @nPos )
    ENDIF
 
-   RETURN { cText, nPos, .T. }
+   RETURN { cText, nPos, lRet }
 
 /*----------------------------------------------------------------------*/
 
@@ -470,8 +622,6 @@ METHOD HbQtGet:dataLink( bBlock )
       ::sl_orgValue := Eval( bBlock )
       ::sl_type     := ValType( ::sl_orgValue )
       ::sl_dataLink := bBlock
-      ::setData( ::sl_orgValue )
-      ::setParams()
    ENDIF
 
    RETURN ::sl_dataLink
@@ -509,26 +659,42 @@ METHOD HbQtGet:inputValidator( bBlock )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:picture( cPicture )
-   LOCAL n
+   LOCAL n, cChr, qMask
 
    hb_default( @cPicture, "" )
-   ::sl_picture := Upper( AllTrim( cPicture ) )
-
-   IF Left( ::sl_picture, 1 ) == "@"
-      IF ( n := At( " " , ::sl_picture ) ) > 0
-         ::sl_picture := AllTrim( SubStr( ::sl_picture, 1, n-1 ) )
-         ::sl_mask := AllTrim( SubStr( ::sl_picture, n+1 ) )
-      ENDIF
+   cPicture := Upper( AllTrim( cPicture ) )
+   IF ( n := At( " " , cPicture ) ) > 0
+      ::sl_mask := AllTrim( SubStr( cPicture, n+1 ) )
+      ::sl_picture := AllTrim( SubStr( cPicture, 1, n-1 ) )
    ELSE
+      ::sl_picture := cPicture
+   ENDIF
+
+   IF ! ( "@" $ ::sl_picture )
       ::sl_mask := ::sl_picture
       ::sl_picture := ""
-      RETURN ""     /* Mask will be implemented later */
+   ENDIF
+   IF ::sl_mask == "Y"
+      ::sl_picture := "Y"
+      ::sl_mask := ""
+   ENDIF
+   IF ::sl_mask == "L"
+      ::sl_picture := ""
+      ::sl_mask := ""
    ENDIF
    ::sl_picture := StrTran( StrTran( ::sl_picture, " " ), "@" )
-   SWITCH ::sl_picture
-   CASE " "
-      EXIT
-   ENDSWITCH
+
+   IF ! Empty( ::sl_mask )
+      qMask := ""
+      FOR EACH cChr IN ::sl_mask
+         IF cChr $ "ALX9#!"
+            qMask += "x"
+         ELSE
+            qMask += cChr
+         ENDIF
+      NEXT
+      ::sl_qMask := qMask
+   ENDIF
 
    RETURN ::sl_picture
 
@@ -570,6 +736,7 @@ METHOD HbQtGet:color( cnaColor )
       ENDIF
       IF ! Empty( cCSS )
          cCSS += ";"
+         ::sl_cssColor := cCSS
          ::setStyleSheet( cCSS )
       ELSE
          ::setStyleSheet( "" )
@@ -594,6 +761,24 @@ METHOD HbQtGet:checkWhen( oFocusEvent )
          QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, iif( oFocusEvent:reason() == Qt_TabFocusReason, Qt_Key_Tab, Qt_Key_Backtab ), Qt_NoModifier ) )
          RETURN .T.
       ENDIF
+   ENDIF
+
+   RETURN .F.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:testValid()
+   LOCAL lValid := .T.
+
+   IF HB_ISBLOCK( ::sl_validBlock )
+      lValid := Eval( ::sl_validBlock, ::getData() )
+   ENDIF
+   IF ! lValid
+      ::setStyleSheet( "" )
+      ::setStyleSheet( ::sl_cssNotValid )
+   ELSE
+      ::setStyleSheet( "" )
+      ::setStyleSheet( ::sl_cssColor )
    ENDIF
 
    RETURN .F.
@@ -637,42 +822,6 @@ METHOD HbQtGet:checkValid( oKeyEvent )
 //                        Utility Functions
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION UpperLowerUpper( cText, nPos )
-   LOCAL cChr, s
-
-   IF ! IsAlpha( SubStr( cText, nPos, 1 ) )
-      RETURN .F.
-   ENDIF
-   s := ""
-   FOR EACH cChr IN cText
-      IF cChr:__enumIndex() % 2 == 0
-         s += Lower( cChr )
-      ELSE
-         s += Upper( cChr )
-      ENDIF
-   NEXT
-
-   RETURN s
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION Upto6DecimalsOnly( cText, nPos )
-   LOCAL n, cChr := SubStr( cText, nPos, 1 )
-
-   IF cChr == "."
-      // Ok, check also required FOR doubling
-   ELSEIF ! IsDigit( cChr )
-      RETURN .F.
-   ENDIF
-
-   IF ! cChr == "." .AND. ( n := At( ".", cText ) ) > 0 .AND. Len( SubStr( cText, n + 1 ) ) > 6
-      RETURN .F.
-   ENDIF
-
-   RETURN .T.
-
-/*----------------------------------------------------------------------*/
-
 STATIC FUNCTION GetRgbStringFromClipperColor( cToken, lExt )
 
    SWITCH Upper( cToken )
@@ -694,6 +843,20 @@ STATIC FUNCTION GetRgbStringFromClipperColor( cToken, lExt )
       RETURN iif( lExt, "rgb( 255,255,255 )", "rgb( 96,96,96 )"   )
    ENDSWITCH
    RETURN ""
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION TimesOccurs( cToken, cText )
+   LOCAL cChr, n
+
+   n := 0
+   FOR EACH cChr IN cText
+      IF cChr == cToken
+         n++
+      ENDIF
+   NEXT
+
+   RETURN n
 
 /*----------------------------------------------------------------------*/
 
