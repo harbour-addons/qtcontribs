@@ -73,6 +73,8 @@ FUNCTION Main( cMode )
       oHLayout:addWidget( oBtnCancel )
 
       oFLayout:setLabelAlignment( Qt_AlignRight )
+      oFLayout:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
+      oFLayout:setFormAlignment( Qt_AlignHCenter )
 
       oBtnOK:setEnabled( .F. )
 
@@ -93,7 +95,7 @@ FUNCTION Main( cMode )
       oEdit3 := HbQtGet():new( oWnd )
       oEdit3:dataLink       := {|x| iif( x == NIL, nNumb, nNumb := x ) }
       oEdit3:valid          := {|| oBtnOK:setEnabled( .T. ), nNumb > 600 .AND. nNumb < 6000000 }
-      oEdit3:picture        := "@Z 9,999,999.999999"
+      oEdit3:picture        := "9,999,999.999999"
       oEdit3:create()
       oFLayout:addRow( "Numeric - Max 6 Decimals:", oEdit3 )
 
@@ -273,6 +275,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_pic                                  INIT ""
    VAR    sl_picture                              INIT ""
    VAR    sl_mask                                 INIT ""
+   VAR    sl_maskChrs                             INIT ""
    VAR    sl_qMask                                INIT ""
    VAR    sl_color
    VAR    sl_inputValidator
@@ -288,6 +291,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_cssNotValid                          INIT ""
    VAR    sl_decSep                               INIT "."
    VAR    sl_commaSep                             INIT ","
+   VAR    sl_fixupCalled                          INIT .F.
 
    METHOD checkWhen( oFocusEvent )
    METHOD checkValid( oKeyEvent )
@@ -301,16 +305,19 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    METHOD transformThis( xData, cMask )
    METHOD unTransformThis( cData )
    METHOD timesOccurs( cToken, cText )
+   METHOD fixup( cText )
+   METHOD returnPressed()
 
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:create()
+   LOCAL oFontM, nWidth, oRect
 
    ::setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
 
-   ::connect( "returnPressed()", {|| QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) ) } )
+   ::connect( "returnPressed()", {|| ::returnPressed() } )
    ::connect( QEvent_FocusIn   , {|oFocusEvent| ::checkWhen( oFocusEvent ) } )
    ::connect( QEvent_FocusOut  , {|| ::testValid() } )
    ::connect( QEvent_KeyPress  , {|oKeyEvent| ::checkValid( oKeyEvent ) } )
@@ -322,6 +329,12 @@ METHOD HbQtGet:create()
    ::setParams()
    ::setData( ::sl_orgValue )
 
+   oFontM := QFontMetrics( ::font() )
+   nWidth := oFontM:averageCharWidth() * ::sl_width + 12
+   oRect := ::geometry()
+   //HB_TRACE( HB_TR_ALWAYS, oRect:width(), oRect:height(), nWidth )
+   oRect:setWidth( nWidth )
+   ::setGeometry( oRect )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -352,68 +365,32 @@ METHOD HbQtGet:mousable( lEnable )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:setParams()
-   LOCAL cTmp, cChr, n
+METHOD HbQtGet:returnPressed()
 
-   SWITCH ::sl_type
-   CASE "C"
-      ::sl_width       := Len( ::sl_orgValue )
-      IF ! Empty( ::sl_mask )
-         ::sl_width := Len( ::sl_mask )
-         ::setInputMask( ::sl_qMask )
-      ENDIF
-      ::setMaxLength( ::sl_width )
-      ::setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) } ) )
-      EXIT
-   CASE "N"
-      IF "E" $ ::sl_picture
-         ::sl_decSep := ","
-         ::sl_commaSep := "."
-      ENDIF
-      IF ! Empty( ::sl_mask )
-         cTmp       := ::sl_mask
-         n          := At( ::sl_decSep, cTmp )
-         ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
-         ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
-         ::sl_prime := ::sl_width - ::sl_dec
-      ELSE
-         cTmp       := Str( ::sl_orgValue )
-         ::sl_width := Len( cTmp )
-         n          := At( ::sl_decSep, cTmp )
-         ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
-         ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
-      ENDIF
-      ::setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) } ) )
-      IF ! ( "B" $ ::sl_picture )
-         ::setAlignment( Qt_AlignRight )
-      ENDIF
-      EXIT
-   CASE "D"
-      ::sl_width := Len( DToC( ::sl_orgValue ) )
-      cTmp       := Set( _SET_DATEFORMAT )
-      ::sl_mask  := ""
-      ::sl_qMask := ""
-      FOR EACH cChr IN cTmp
-         IF cChr $ "mdy"
-            ::sl_mask  += "9"
-            ::sl_qMask += "9"
-         ELSE
-            ::sl_mask  += cChr
-            ::sl_qMask += cChr
-         ENDIF
-         ::setInputMask( ::sl_qMask )
-      NEXT
-      ::setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, @nPos ) } ) )
-      EXIT
-   CASE "L"
-      ::sl_width       := 1
-      ::sl_qMask       := "x"
-      ::setInputMask( ::sl_qMask )
-      ::setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) } ) )
-      EXIT
-   ENDSWITCH
+   //HB_TRACE( HB_TR_ALWAYS, "returnPressed" )
 
-   RETURN Self
+   QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+
+   RETURN .T.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:fixup( cText )
+
+   //HB_TRACE( HB_TR_ALWAYS, cText )
+
+   ::sl_fixupCalled := .T.
+
+   IF Len( cText ) == 0
+      SWITCH ::sl_type
+      CASE "C"   ; RETURN " "
+      CASE "N"   ; RETURN "0"
+      CASE "D"   ; RETURN CToD( "" )
+      CASE "L"   ; RETURN "F"
+      ENDSWITCH
+   ENDIF
+
+   RETURN NIL
 
 /*----------------------------------------------------------------------*/
 #if 0
@@ -469,10 +446,17 @@ METHOD HbQtGet:setParams()
 #endif
 
 METHOD HbQtGet:getCharacter( cText, nPos )
-   LOCAL cChr, lRet
+   LOCAL cChr, lRet, cMask, nP
+
+   //HB_TRACE( HB_TR_ALWAYS, cText, nPos )
+
+   IF ::sl_fixupCalled
+      ::sl_fixupCalled := .F.
+      RETURN .T.
+   ENDIF
 
    cChr := SubStr( cText, nPos, 1 )
-HB_TRACE( HB_TR_ALWAYS, ::sl_qMask, ::sl_mask, nPos, cChr )
+
    IF "A" $ ::sl_picture .AND. ! IsAlpha( cChr )
       RETURN .F.
    ENDIF
@@ -480,7 +464,16 @@ HB_TRACE( HB_TR_ALWAYS, ::sl_qMask, ::sl_mask, nPos, cChr )
       cText := Upper( cText )
    ENDIF
    IF ! Empty( ::sl_mask )
-      SWITCH SubStr( ::sl_mask, nPos, 1 )
+      IF cChr $ ::sl_maskChrs
+         nP := nPos - 1
+         cMask := SubStr( ::sl_mask, nP-1, 1 )
+         cChr := SubStr( cText, nP, 1 )
+      ELSE
+         nP := nPos
+         cMask := SubStr( ::sl_mask, nP, 1 )
+      ENDIF
+
+      SWITCH cMask
       CASE "A"
          IF ! IsAlpha( cChr )
             RETURN .F.
@@ -502,7 +495,7 @@ HB_TRACE( HB_TR_ALWAYS, ::sl_qMask, ::sl_mask, nPos, cChr )
          ENDIF
          EXIT
       CASE "!"
-         cText := SubStr( cText, 1, nPos - 1 ) + Upper( cChr ) + SubStr( cText, nPos + 1 )
+         cText := SubStr( cText, 1, nP - 1 ) + Upper( cChr ) + SubStr( cText, nP + 1 )
          EXIT
       CASE "X"
          EXIT
@@ -519,6 +512,13 @@ HB_TRACE( HB_TR_ALWAYS, ::sl_qMask, ::sl_mask, nPos, cChr )
 
 METHOD HbQtGet:getNumber( cText, nPos )
    LOCAL cChr, lRet, nDecAt, lInDec, nTmp
+
+   //HB_TRACE( HB_TR_ALWAYS, cText, nPos )
+
+   IF ::sl_fixupCalled
+      ::sl_fixupCalled := .F.
+      RETURN .T.
+   ENDIF
 
    cChr := SubStr( cText, nPos, 1 )
 
@@ -546,7 +546,7 @@ METHOD HbQtGet:getNumber( cText, nPos )
    ELSEIF cChr == ::sl_decSep
       cText := ::transformThis( ::unTransformThis( cText ), ::sl_pic )
       RETURN { cText, nPos, .T. }
-   ELSEIF Len( cText ) == 1              /* when selectall is active and a key is pressed */
+   ELSEIF Len( cText ) <= 1              /* when selectall is active and a key is pressed */
       cText := ::transformThis( ::unTransformThis( cText ), ::sl_pic )
       RETURN { cText, nPos, .T. }
    ENDIF
@@ -588,6 +588,13 @@ METHOD HbQtGet:getNumber( cText, nPos )
 METHOD HbQtGet:getDate( cText, nPos )
    LOCAL lRet
 
+   //HB_TRACE( HB_TR_ALWAYS, cText, nPos )
+
+   IF ::sl_fixupCalled
+      ::sl_fixupCalled := .F.
+      RETURN .T.
+   ENDIF
+
    lRet  := .T.
    IF HB_ISBLOCK( ::sl_inputValidator )
       lRet := Eval( ::sl_inputValidator, @cText, @nPos )
@@ -598,6 +605,11 @@ METHOD HbQtGet:getDate( cText, nPos )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:getLogical( cText, nPos )
+
+   IF ::sl_fixupCalled
+      ::sl_fixupCalled := .F.
+      RETURN .T.
+   ENDIF
 
    cText := Upper( SubStr( cText, nPos, 1 ) )
 
@@ -623,6 +635,71 @@ METHOD HbQtGet:getLogical( cText, nPos )
    ENDIF
 
    RETURN { cText, 0, .T. }
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:setParams()
+   LOCAL cTmp, cChr, n
+
+   SWITCH ::sl_type
+   CASE "C"
+      ::sl_width := Len( ::sl_orgValue )
+      IF ! Empty( ::sl_mask )
+         ::sl_width := Len( ::sl_mask )
+         ::setInputMask( ::sl_qMask )
+      ENDIF
+      ::setMaxLength( ::sl_width )
+      ::setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+      EXIT
+   CASE "N"
+      IF "E" $ ::sl_picture
+         ::sl_decSep := ","
+         ::sl_commaSep := "."
+      ENDIF
+      IF ! Empty( ::sl_mask )
+         cTmp       := ::sl_mask
+         n          := At( ::sl_decSep, cTmp )
+         ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
+         ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
+         ::sl_prime := ::sl_width - ::sl_dec
+      ELSE
+         cTmp       := Str( ::sl_orgValue )
+         ::sl_width := Len( cTmp )
+         n          := At( ::sl_decSep, cTmp )
+         ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
+         ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
+      ENDIF
+      ::setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+      IF ! ( "B" $ ::sl_picture )
+         ::setAlignment( Qt_AlignRight )
+      ENDIF
+      EXIT
+   CASE "D"
+      ::sl_width := Len( DToC( ::sl_orgValue ) )
+      cTmp       := Set( _SET_DATEFORMAT )
+      ::sl_mask  := ""
+      ::sl_qMask := ""
+      FOR EACH cChr IN cTmp
+         IF cChr $ "mdy"
+            ::sl_mask  += "9"
+            ::sl_qMask += "9"
+         ELSE
+            ::sl_mask  += cChr
+            ::sl_qMask += cChr
+         ENDIF
+         ::setInputMask( ::sl_qMask )
+      NEXT
+      ::setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+      EXIT
+   CASE "L"
+      ::sl_width       := 1
+      ::sl_qMask       := "x"
+      ::setInputMask( ::sl_qMask )
+      ::setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+      EXIT
+   ENDSWITCH
+
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
 
@@ -741,6 +818,7 @@ METHOD HbQtGet:picture( cPicture )
             qMask += "x"
          ELSE
             qMask += cChr
+            ::sl_maskChrs += cChr
          ENDIF
       NEXT
       ::sl_qMask := qMask

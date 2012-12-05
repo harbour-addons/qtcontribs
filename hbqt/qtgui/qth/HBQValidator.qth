@@ -30,9 +30,9 @@ Version     =
  */
 HB_FUNC( QT_HBQVALIDATOR )
 {
-   if( hb_pcount() == 1 && HB_ISBLOCK( 1 ) )
+   if( hb_pcount() >= 1 && HB_ISBLOCK( 1 ) )
    {
-      __HB_RETPTRGC__( new HBQValidator( ( PHB_ITEM ) hb_param( 1, HB_IT_BLOCK ) ) );
+      __HB_RETPTRGC__( new HBQValidator( ( PHB_ITEM ) hb_param( 1, HB_IT_BLOCK ), ( PHB_ITEM ) hb_param( 2, HB_IT_BLOCK ) ) );
    }
    else
    {

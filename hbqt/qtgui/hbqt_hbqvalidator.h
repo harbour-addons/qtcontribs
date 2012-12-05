@@ -63,10 +63,11 @@ class HBQValidator : public QValidator
    Q_OBJECT
 
 public:
-   HBQValidator( PHB_ITEM pBlock );
+   HBQValidator( PHB_ITEM pBlock, PHB_ITEM pFixupBlock );
    virtual ~HBQValidator( void );
 
    PHB_ITEM block;
+   PHB_ITEM fixupBlock;
 
    void fixup( QString & input ) const;
    QValidator::State validate( QString & input, int & pos ) const;

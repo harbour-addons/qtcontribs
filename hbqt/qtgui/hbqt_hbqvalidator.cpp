@@ -61,7 +61,7 @@
 #include "hbqt_hbqvalidator.h"
 
 
-HBQValidator::HBQValidator( PHB_ITEM pBlock ) : QValidator()
+HBQValidator::HBQValidator( PHB_ITEM pBlock, PHB_ITEM pFixupBlock ) : QValidator()
 {
    if( pBlock )
    {
@@ -70,6 +70,15 @@ HBQValidator::HBQValidator( PHB_ITEM pBlock ) : QValidator()
    else
    {
       block = NULL;
+   }
+
+   if( fixupBlock )
+   {
+      fixupBlock = hb_itemNew( pFixupBlock );
+   }
+   else
+   {
+      fixupBlock = NULL;
    }
 }
 
@@ -80,12 +89,32 @@ HBQValidator::~HBQValidator( void )
       hb_itemRelease( block );
       block = NULL;
    }
+
+   if( fixupBlock )
+   {
+      hb_itemRelease( fixupBlock );
+      fixupBlock = NULL;
+   }
 }
 
 void HBQValidator::fixup( QString & input ) const
 {
-   // TODO
-   Q_UNUSED( input );
+   if( fixupBlock && hb_vmRequestReenter() )
+   {
+      PHB_ITEM p0 = hb_itemPutStrUTF8( NULL, input.toAscii().data() );
+      PHB_ITEM ret = hb_itemNew( hb_vmEvalBlockV( fixupBlock, 1, p0 ) );
+      hb_itemRelease( p0 );
+
+      hb_vmRequestRestore();
+
+      if( hb_itemType( ret ) & HB_IT_STRING )
+      {
+         void * pText = NULL;
+         input = hb_itemGetStrUTF8( ret, &pText, NULL );
+         hb_strfree( pText );
+      }
+      hb_itemRelease( ret );
+   }
 }
 
 QValidator::State HBQValidator::validate( QString & input, int & pos ) const
