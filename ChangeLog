@@ -17,6 +17,11 @@
 */
 
 2012-12-05 08:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    % Many improvements. Thanks Maurizio for helping.
+       Still some visual artifacts need be covered in numeric GETs.
+   
+2012-12-05 08:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqvalidator.cpp
   * hbqt/qtgui/hbqt_hbqvalidator.h
   * hbqt/qtgui/qth/HBQValidator.qth

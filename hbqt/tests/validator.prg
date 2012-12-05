@@ -28,7 +28,6 @@
                            [VALIDATOR <validator>] ;
                            [<noMouse: NOMOUSABLE> ]=> ;
          AAdd( aQGetList, { _GET_( <v>, <"v"> ), <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.> } )
-         //AAdd( aQGetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ), <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.> } )
 
 /*----------------------------------------------------------------------*/
 
@@ -144,7 +143,7 @@ FUNCTION Main( cMode )
       @ 2, 10 QGET dDate WHEN {|| cText == "ABC" } ;
              CAPTION "Date - Birthday:" COLOR "B/GR*"
 
-      @ 3, 10 QGET nNumb PICTURE "@Z 9,999,999.999999" VALID {|| oBtnOK:setEnabled( .T. ), nNumb >= 600 .AND. nNumb <= 6000000 };
+      @ 3, 10 QGET nNumb PICTURE "@Z 9,999,999.999999" VALID {|| oBtnOK:setEnabled( .T. ), nNumb > 600 .AND. nNumb < 6000000 };
              CAPTION "Numeric - Max 6 Decimals:"
 
       @ 4, 10 QGET lMrd  PICTURE "Y" ;
@@ -266,9 +265,11 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    METHOD mousable( lEnable )                     SETGET
    METHOD setData( xData )
    METHOD getData()
+   METHOD setGetObject( oGet )                    SETGET
 
    PROTECTED:
 
+   VAR    sl_oGet
    VAR    sl_name                                 INIT ""
    VAR    sl_whenblock
    VAR    sl_validBlock
@@ -307,6 +308,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    METHOD timesOccurs( cToken, cText )
    METHOD fixup( cText )
    METHOD returnPressed()
+   METHOD isBufferValid()
 
    ENDCLASS
 
@@ -336,6 +338,16 @@ METHOD HbQtGet:create()
    oRect:setWidth( nWidth )
    ::setGeometry( oRect )
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:setGetObject( oGet )
+
+   IF HB_ISOBJECT( oGet )
+      ::sl_oGet := oGet
+   ENDIF
+
+   RETURN ::sl_oGet
 
 /*----------------------------------------------------------------------*/
 
@@ -895,18 +907,36 @@ METHOD HbQtGet:checkWhen( oFocusEvent )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:testValid()
+METHOD HbQtGet:isBufferValid()
+   LOCAL xValInVar
    LOCAL lValid := .T.
 
    IF HB_ISBLOCK( ::sl_validBlock )
+      /* Fetch Clipper Variable Value */
+      xValInVar := Eval( ::sl_dataLink )
+      /* Set Clipper Variable Value with Value in Buffer */
+      Eval( ::sl_dataLink, ::getData() )
+      /* Validate */
       lValid := Eval( ::sl_validBlock, ::getData() )
+      /* Set Clipper Variable back to Original Value */
+      Eval( ::sl_dataLink, xValInVar )
    ENDIF
+
+   RETURN lValid
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:testValid()
+   LOCAL lValid := ::isBufferValid()
+
    IF ! lValid
       ::setStyleSheet( "" )
       ::setStyleSheet( ::sl_cssNotValid )
+      ::repaint()
    ELSE
       ::setStyleSheet( "" )
       ::setStyleSheet( ::sl_cssColor )
+      ::repaint()
    ENDIF
 
    RETURN .F.
@@ -924,22 +954,20 @@ METHOD HbQtGet:checkValid( oKeyEvent )
       EXIT
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
-      IF ::sl_type == "D"    /* Must be a valid date if not empty */
-         IF ! Empty( ::text() )
-            IF Empty( ::getData() )
-               oKeyEvent:accept()
-               RETURN .T.
-            ENDIF
-         ENDIF
-      ENDIF
+      /* Update Clipper Variable - no matter what - Clipper behavior */
+      Eval( ::sl_dataLink, ::getData() )
       IF HB_ISBLOCK( ::sl_validBlock )
-         IF ! Eval( ::sl_validBlock, ::text() )
+         IF ! Eval( ::sl_validBlock, ::getData() )
+            ::setStyleSheet( "" )
+            ::setStyleSheet( ::sl_cssNotValid )
             oKeyEvent:accept()
+            ::repaint()
             RETURN .T.
+         ELSE
+            ::setStyleSheet( "" )
+            ::setStyleSheet( ::sl_cssColor )
+            ::repaint()
          ENDIF
-      ENDIF
-      IF HB_ISBLOCK( ::sl_dataLink )
-         Eval( ::sl_dataLink, ::getData() )
       ENDIF
       EXIT
    ENDSWITCH
