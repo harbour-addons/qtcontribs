@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-06 08:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    % Organized the code to honor deep level of Clipper GET System
+       taking use of Get and HbGetlist Classes effectively.
+    + Implemented: GET is never exited even with mouse if it could 
+       not been validated. [ TODO: should be switchable on user request ].
+
 2012-12-05 18:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     + Implemented: real-time validation indication in the form of 

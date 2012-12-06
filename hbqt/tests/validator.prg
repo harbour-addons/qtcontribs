@@ -11,13 +11,15 @@
 
 #include "hbqtgui.ch"
 #include "hbtrace.ch"
-#include "hbclass.ch"
 #include "set.ch"
 
 /*----------------------------------------------------------------------*/
+//                   Part of separate - clip2hbqt.ch
+/*----------------------------------------------------------------------*/
+// #include "clip2hbqt.ch"
 
-   #command QREAD => HbQtReadGets( aQGetList, .T. )
-   #command QREAD PARENT <oParent> => HbQtReadGets( aQGetList, .F., <oParent> )
+   #command QREAD => HbQtReadGets( GetList, .T. )
+   #command QREAD PARENT <oParent> => HbQtReadGets( GetList, .F., <oParent> )
 
    #command @ <row>, <col> QGET <v> ;
                            [PICTURE <pic>] ;
@@ -27,8 +29,11 @@
                            [COLOR <color>] ;
                            [VALIDATOR <validator>] ;
                            [<noMouse: NOMOUSABLE> ]=> ;
-         AAdd( aQGetList, { _GET_( <v>, <"v"> ), <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.> } )
+         AAdd( GetList, _QGET_( _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
+                                <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col> ) )
 
+/*----------------------------------------------------------------------*/
+//                         Application Code
 /*----------------------------------------------------------------------*/
 
 FUNCTION Main( cMode )
@@ -44,7 +49,7 @@ FUNCTION Main( cMode )
    LOCAL cCata := "IT3-BEL-903533AST63Z"
    LOCAL nSlry := 12000
 
-   LOCAL aQGetList := {}
+   LOCAL GetList := {}
 
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
 
@@ -150,7 +155,7 @@ FUNCTION Main( cMode )
       @ 5, 10 QGET cTele PICTURE "@! (999)999-9999" ;
              CAPTION "Telephone Number:"
 
-      @ 6, 10 QGET cJust PICTURE "@A" COLOR "W+/B*"     VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) } ;
+      @ 6, 10 QGET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) } ;
              CAPTION "Alpha - Upper Lower Upper:"
 
       @ 7, 10 QGET cCata PICTURE "!!!-!!!-!!!!!!!!!!!!" ;
@@ -167,8 +172,57 @@ FUNCTION Main( cMode )
 
 /*----------------------------------------------------------------------*/
 
+STATIC FUNCTION UpperLowerUpper( cText, nPos )
+   LOCAL cChr, s
+
+   HB_SYMBOL_UNUSED( nPos )
+
+   s := ""
+   FOR EACH cChr IN cText
+      IF cChr:__enumIndex() % 2 == 0
+         s += Lower( cChr )
+      ELSE
+         s += Upper( cChr )
+      ENDIF
+   NEXT
+   cText := s
+
+   RETURN .T.
+
+/*----------------------------------------------------------------------*/
+//                     Subject to Separate Library
+/*----------------------------------------------------------------------*/
+
+#include "hbclass.ch"
+
+#define _QGET_GET                                 1
+#define _QGET_NAME                                2
+#define _QGET_PICTURE                             3
+#define _QGET_VALID                               4
+#define _QGET_WHEN                                5
+#define _QGET_CAPTION                             6
+#define _QGET_COLOR                               7
+#define _QGET_VALIDATOR                           8
+#define _QGET_NOMOUSE                             9
+#define _QGET_ROW                                10
+#define _QGET_COL                                11
+
+/*----------------------------------------------------------------------*/
+
+FUNCTION _QGET_( ... )
+   LOCAL aParam := hb_aParams()
+
+   aParam[ _QGET_GET ]:row := aParam[ _QGET_ROW ]
+   aParam[ _QGET_GET ]:col := aParam[ _QGET_COL ]
+
+   aParam[ _QGET_GET ]:cargo := aParam
+
+   RETURN aParam[ _QGET_GET ]
+
+/*----------------------------------------------------------------------*/
+
 STATIC FUNCTION HbQtReadGets( aGetList, lModal, oParent )
-   LOCAL oWnd, oVLayout, oFLayout, oHLayout, oBtnOK, oBtnCancel, oEdit, aEdit
+   LOCAL oWnd, oVLayout, oFLayout, oHLayout, oBtnOK, oBtnCancel, oEdit, aEdit, oGet
 
    HB_SYMBOL_UNUSED( lModal )
    HB_SYMBOL_UNUSED( oParent )
@@ -194,29 +248,33 @@ STATIC FUNCTION HbQtReadGets( aGetList, lModal, oParent )
       oHLayout:addWidget( oBtnOK )
       oHLayout:addWidget( oBtnCancel )
 
-      FOR EACH aEdit IN aGetList
+      FOR EACH oGet IN aGetList
+         aEdit := oGet:cargo
+
          oEdit := HbQtGet():new()
-         oEdit:dataLink := aEdit[ 1 ]:block()
-         oEdit:name := aEdit[ 2 ]
-         IF ! Empty( aEdit[ 3 ] )
-            oEdit:picture := aEdit[ 3 ]
+
+         oEdit:dataLink := oGet:block()
+
+         oEdit:name := aEdit[ _QGET_NAME ]
+         IF ! Empty( aEdit[ _QGET_PICTURE ] )
+            oEdit:picture := aEdit[ _QGET_PICTURE ]
          ENDIF
-         IF ! Empty( aEdit[ 4 ] )
-            oEdit:valid := aEdit[ 4 ]
+         IF ! Empty( aEdit[ _QGET_VALID ] )
+            oEdit:valid := aEdit[ _QGET_VALID ]
          ENDIF
-         IF ! Empty( aEdit[ 5 ] )
-            oEdit:when := aEdit[ 5 ]
+         IF ! Empty( aEdit[ _QGET_WHEN ] )
+            oEdit:when := aEdit[ _QGET_WHEN ]
          ENDIF
-         IF ! Empty( aEdit[ 7 ] )
-            oEdit:color := aEdit[ 7 ]
+         IF ! Empty( aEdit[ _QGET_COLOR ] )
+            oEdit:color := aEdit[ _QGET_COLOR ]
          ENDIF
-         IF HB_ISBLOCK( aEdit[ 8 ] )
-            oEdit:inputValidator := aEdit[ 8 ]
+         IF HB_ISBLOCK( aEdit[ _QGET_VALIDATOR ] )
+            oEdit:inputValidator := aEdit[ _QGET_VALIDATOR ]
          ENDIF
-         oEdit:mousable := ! aEdit[ 9 ]
+         oEdit:mousable := ! aEdit[ _QGET_NOMOUSE ]
 
          oEdit:create()
-         oFLayout:addRow( iif( Empty( aEdit[ 6 ] ), aEdit[ 2 ], aEdit[ 6 ] ), oEdit )
+         oFLayout:addRow( iif( Empty( aEdit[ _QGET_CAPTION ] ), aEdit[ _QGET_NAME ], aEdit[ _QGET_CAPTION ] ), oEdit )
       NEXT
 
       oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
@@ -226,25 +284,6 @@ STATIC FUNCTION HbQtReadGets( aGetList, lModal, oParent )
    ENDIF
 
    RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION UpperLowerUpper( cText, nPos )
-   LOCAL cChr, s
-
-   HB_SYMBOL_UNUSED( nPos )
-
-   s := ""
-   FOR EACH cChr IN cText
-      IF cChr:__enumIndex() % 2 == 0
-         s += Lower( cChr )
-      ELSE
-         s += Upper( cChr )
-      ENDIF
-   NEXT
-   cText := s
-
-   RETURN .T.
 
 /*----------------------------------------------------------------------*/
 //                            CLASS HbQtEdit
@@ -292,6 +331,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_commaSep                             INIT ","
    VAR    sl_fixupCalled                          INIT .F.
 
+   METHOD handleFocusOut( oFocusEvent )
    METHOD checkWhen( oFocusEvent )
    METHOD checkValid( oKeyEvent )
    METHOD testValid()
@@ -319,7 +359,8 @@ METHOD HbQtGet:create()
 
    ::connect( "textEdited(QString)" , {|| ::testValid() } )
    ::connect( "textChanged(QString)", {|| ::testValid() } )
-   ::connect( QEvent_FocusOut       , {|| ::testValid() } )
+
+   ::connect( QEvent_FocusOut       , {|oFocusEvent| ::handleFocusOut( oFocusEvent ) } )
 
    ::connect( "returnPressed()"     , {|| ::returnPressed(), .F. } )
 
@@ -911,6 +952,20 @@ METHOD HbQtGet:color( cnaColor )
    ENDSWITCH
 
    RETURN ::sl_color
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:handleFocusOut( oFocusEvent )
+   LOCAL lValid := ::isBufferValid()
+
+   IF lValid
+      RETURN .F.
+   ENDIF
+
+   oFocusEvent:ignore()
+   Self:setFocus()
+
+   RETURN .T.
 
 /*----------------------------------------------------------------------*/
 
