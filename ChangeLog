@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-05 18:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Implemented: real-time validation indication in the form of 
+       change in background-color of edit instance. The Clipper variable 
+       is only updated if RETURN or TAB is pressed, just like Clipper.
+    + Matured: numeric GET entry protocol. In some ways it is better 
+       than Clipper's. PICTURE clause is completely supported.
+
+    ; NOTE: with this basic implementation of Harbour GET System is 
+            complete. Please test with your in-production code, if possible.
+            If you find differences, please report. Also it will be 
+            helpful if you supply some complex PICTURE clauses used 
+            in your applications to be added to this demo code.
+
+    ; OPINION: seems this class can be entirely ported to C++ as HBQGet.
+               Should it remain as PRG class or be shifted to C++ ?
+
+    ; NEXT: class/code to generate a data-aware form encapsulating
+            @ <nRow>,<nCol> SAY <exp,...> GET <exp,...>.
+
 2012-12-05 08:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     % Many improvements. Thanks Maurizio for helping.

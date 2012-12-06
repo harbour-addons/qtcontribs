@@ -75,8 +75,6 @@ FUNCTION Main( cMode )
       oFLayout:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
       oFLayout:setFormAlignment( Qt_AlignHCenter )
 
-      oBtnOK:setEnabled( .F. )
-
       oEdit1 := HbQtGet():new( oWnd )
       oEdit1:valid          := {|cValue| cValue == "ABC" .OR. cValue == "DEF" }
       oEdit1:picture        := "@!A"
@@ -93,7 +91,7 @@ FUNCTION Main( cMode )
 
       oEdit3 := HbQtGet():new( oWnd )
       oEdit3:dataLink       := {|x| iif( x == NIL, nNumb, nNumb := x ) }
-      oEdit3:valid          := {|| oBtnOK:setEnabled( .T. ), nNumb > 600 .AND. nNumb < 6000000 }
+      oEdit3:valid          := {|| nNumb > 600 .AND. nNumb < 6000000 }
       oEdit3:picture        := "9,999,999.999999"
       oEdit3:create()
       oFLayout:addRow( "Numeric - Max 6 Decimals:", oEdit3 )
@@ -137,13 +135,13 @@ FUNCTION Main( cMode )
       QApplication():exec()
 
    ELSE
-      @ 1, 10 QGET cText VALID {|cValue| cValue == "ABC" .OR. cValue == "DEF" } PICTURE "@!A" ;
+      @ 1, 10 QGET cText VALID {|| cText == "ABC" .OR. cText == "DEF" } PICTURE "@!A" ;
              CAPTION "Alpha - Upper Cased Alphabets:"
 
       @ 2, 10 QGET dDate WHEN {|| cText == "ABC" } ;
              CAPTION "Date - Birthday:" COLOR "B/GR*"
 
-      @ 3, 10 QGET nNumb PICTURE "@Z 9,999,999.999999" VALID {|| oBtnOK:setEnabled( .T. ), nNumb > 600 .AND. nNumb < 6000000 };
+      @ 3, 10 QGET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000;
              CAPTION "Numeric - Max 6 Decimals:"
 
       @ 4, 10 QGET lMrd  PICTURE "Y" ;
@@ -152,10 +150,10 @@ FUNCTION Main( cMode )
       @ 5, 10 QGET cTele PICTURE "@! (999)999-9999" ;
              CAPTION "Telephone Number:"
 
-      @ 6, 10 QGET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) } ;
+      @ 6, 10 QGET cJust PICTURE "@A" COLOR "W+/B*"     VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) } ;
              CAPTION "Alpha - Upper Lower Upper:"
 
-      @ 7, 10 QGET cCata PICTURE "@! !!!-!!!-!!!!!!!!!!!!" ;
+      @ 7, 10 QGET cCata PICTURE "!!!-!!!-!!!!!!!!!!!!" ;
              CAPTION "Catalog Item:"
 
       @ 3, 10 QGET nSlry PICTURE "@Z 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 };
@@ -319,10 +317,14 @@ METHOD HbQtGet:create()
 
    ::setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
 
-   ::connect( "returnPressed()", {|| ::returnPressed() } )
-   ::connect( QEvent_FocusIn   , {|oFocusEvent| ::checkWhen( oFocusEvent ) } )
-   ::connect( QEvent_FocusOut  , {|| ::testValid() } )
-   ::connect( QEvent_KeyPress  , {|oKeyEvent| ::checkValid( oKeyEvent ) } )
+   ::connect( "textEdited(QString)" , {|| ::testValid() } )
+   ::connect( "textChanged(QString)", {|| ::testValid() } )
+   ::connect( QEvent_FocusOut       , {|| ::testValid() } )
+
+   ::connect( "returnPressed()"     , {|| ::returnPressed(), .F. } )
+
+   ::connect( QEvent_FocusIn        , {|oFocusEvent| ::checkWhen( oFocusEvent ) } )
+   ::connect( QEvent_KeyPress       , {|oKeyEvent| ::checkValid( oKeyEvent ) } )
 
    ::setFont( QFont( "Courier New", 10 ) )
 
@@ -523,33 +525,33 @@ METHOD HbQtGet:getCharacter( cText, nPos )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:getNumber( cText, nPos )
-   LOCAL cChr, lRet, nDecAt, lInDec, nTmp
-
-   //HB_TRACE( HB_TR_ALWAYS, cText, nPos )
+   LOCAL cChr, lRet, nDecAt, lInDec, nTmp, cImage
 
    IF ::sl_fixupCalled
       ::sl_fixupCalled := .F.
       RETURN .T.
    ENDIF
+   cImage := cText
 
    cChr := SubStr( cText, nPos, 1 )
 
-   IF ! ( cChr $ ::sl_decSep + "+-1234567890" )
-      RETURN .F.
+   IF cChr == "-" .AND. Len( cText ) == 1
+      RETURN .T.
    ENDIF
-   IF cChr $ "+-" .AND. nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
-      cText := cChr + SubStr( cText, 3 )
+   IF ! ( cChr $ ::sl_decSep + "+-1234567890" )   /* It must be a number character */
+      cText := ::transformThis( ::unTransformThis( cText ), ::sl_pic )
+      RETURN { cText, nPos, .T. }
    ENDIF
    IF cChr $ "+-" .AND. nPos > 1
       RETURN .F.
    ENDIF
-   IF cChr $ "+-" .AND. ::timesOccurs( cChr, cText ) > 1
+   IF cChr $ "+-" .AND. nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
       RETURN .F.
    ENDIF
-   IF cChr == ::sl_decSep .AND. ::sl_dec == 0
+   IF cChr == ::sl_decSep .AND. ::sl_dec == 0  /* Variable does not hold decimal places */
       RETURN .F.
    ENDIF
-   IF cChr == ::sl_decSep .AND. ::timesOccurs( cChr, cText ) > 1
+   IF cChr == ::sl_decSep .AND. ::timesOccurs( cChr, cText ) > 1 /* Jump to decimal if present */
       cText  := SubStr( cText, 1, nPos - 1 ) + SubStr( cText, nPos + 1 )
       nPos   := At( ::sl_decSep, cText )
       nDecAt := At( ::sl_decSep, cText )
@@ -573,14 +575,16 @@ METHOD HbQtGet:getNumber( cText, nPos )
 
    cText := ::unTransformThis( cText )
    nTmp := At( ::sl_decSep, cText )
-   IF iif( nTmp > 0, nTmp - 1, Len( cText ) ) >= ::sl_prime
+   IF iif( nTmp > 0, nTmp - 1, Len( cText ) ) > ::sl_prime
       RETURN .F.
    ENDIF
    cText := ::transformThis( cText, ::sl_pic )
-   IF At( ::sl_decSep, cText ) > nDecAt
-      nPos++
-   ELSEIF At( ::sl_decSep, cText ) < nDecAt
-      nPos--
+   IF nDecAt > 0
+      IF At( ::sl_decSep, cText ) > nDecAt
+         nPos++
+      ELSEIF At( ::sl_decSep, cText ) < nDecAt
+         nPos--
+      ENDIF
    ENDIF
 
    lRet := .T.
@@ -591,6 +595,25 @@ METHOD HbQtGet:getNumber( cText, nPos )
    IF Left( cText, 1 ) == "+"
       cText := SubStr( cText, 2 )
       nPos--
+   ENDIF
+
+   IF cChr $ "+-" .AND. Len( cText ) == 0
+      RETURN { "-", 1, .T. }
+   ENDIF
+
+   IF Len( cImage ) < Len( cText )  /* Some formatting character is inserted */
+      nTmp := 0
+      FOR EACH cChr IN cImage
+         IF SubStr( cText, cChr:__enumIndex(), 1 ) != cChr
+            EXIT
+         ENDIF
+         nTmp++
+      NEXT
+      IF nTmp < nPos .AND. nPos == Len( cText ) - 1
+         nPos++
+      ENDIF
+   ELSEIF Len( cImage ) > Len( cText )
+      // Some formatting character is deleted
    ENDIF
 
    RETURN { cText, nPos, lRet }
@@ -673,7 +696,7 @@ METHOD HbQtGet:setParams()
          n          := At( ::sl_decSep, cTmp )
          ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
          ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
-         ::sl_prime := ::sl_width - ::sl_dec
+         ::sl_prime := ::sl_width - iif( ::sl_dec > 0, ::sl_dec + 1, 0 )
       ELSE
          cTmp       := Str( ::sl_orgValue )
          ::sl_width := Len( cTmp )
@@ -705,8 +728,6 @@ METHOD HbQtGet:setParams()
       EXIT
    CASE "L"
       ::sl_width       := 1
-      ::sl_qMask       := "x"
-      ::setInputMask( ::sl_qMask )
       ::setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
       EXIT
    ENDSWITCH
@@ -908,16 +929,17 @@ METHOD HbQtGet:checkWhen( oFocusEvent )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:isBufferValid()
-   LOCAL xValInVar
+   LOCAL xValInVar, xValInBuffer
    LOCAL lValid := .T.
 
    IF HB_ISBLOCK( ::sl_validBlock )
       /* Fetch Clipper Variable Value */
-      xValInVar := Eval( ::sl_dataLink )
+      xValInVar    := Eval( ::sl_dataLink )
+      xValInBuffer := ::getData()
       /* Set Clipper Variable Value with Value in Buffer */
-      Eval( ::sl_dataLink, ::getData() )
-      /* Validate */
-      lValid := Eval( ::sl_validBlock, ::getData() )
+      Eval( ::sl_dataLink, xValInBuffer )
+      /* Validate passing value in buffer, in case OOP gets are constructed */
+      lValid := Eval( ::sl_validBlock, xValInBuffer )
       /* Set Clipper Variable back to Original Value */
       Eval( ::sl_dataLink, xValInVar )
    ENDIF
@@ -946,6 +968,10 @@ METHOD HbQtGet:testValid()
 METHOD HbQtGet:checkValid( oKeyEvent )
 
    SWITCH oKeyEvent:key()
+   CASE Qt_Key_Escape
+      Eval( ::sl_dataLink, ::sl_orgValue )
+      ::setData( ::sl_orgValue )
+      EXIT
    CASE Qt_Key_Up
       QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
       EXIT
@@ -955,9 +981,10 @@ METHOD HbQtGet:checkValid( oKeyEvent )
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
       /* Update Clipper Variable - no matter what - Clipper behavior */
-      Eval( ::sl_dataLink, ::getData() )
+      ::sl_orgValue := ::getData()
+      Eval( ::sl_dataLink, ::sl_orgValue )
       IF HB_ISBLOCK( ::sl_validBlock )
-         IF ! Eval( ::sl_validBlock, ::getData() )
+         IF ! Eval( ::sl_validBlock, ::sl_orgValue )
             ::setStyleSheet( "" )
             ::setStyleSheet( ::sl_cssNotValid )
             oKeyEvent:accept()
