@@ -35,14 +35,25 @@
          AAdd( GetList, _QGET_( _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
                                 <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col> ) )
 
+   #command @ <row>, <col> QSAY <exp> [PICTURE <sayPic>] QGET <v> ;
+                           [PICTURE <pic>] ;
+                           [VALID <valid>] ;
+                           [WHEN <when>  ] ;
+                           [CAPTION <cap>] ;
+                           [COLOR <color>] ;
+                           [VALIDATOR <validator>] ;
+                           [<noMouse: NOMOUSABLE> ]=> ;
+         AAdd( GetList, _QGET_( _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
+                                <"v">, <pic>, <{valid}>, <{when}>, <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col> ) )
+
 /*----------------------------------------------------------------------*/
 //                         Application Code
 /*----------------------------------------------------------------------*/
 
 FUNCTION Main( cMode )
-   LOCAL oWnd, oFLayout
+   LOCAL oWnd, oFLayout, oFrame
    LOCAL oEdit1, oEdit2, oEdit3, oEdit4, oEdit5, oEdit6, oEdit7, oEdit8
-   LOCAL nPdL := 24, nColGet := 27
+   LOCAL nPdL := 22, nColGet := 25
 
    LOCAL cText := "ABC"
    LOCAL dDate := 0d19560604
@@ -51,7 +62,7 @@ FUNCTION Main( cMode )
    LOCAL cTele := "(999)684-7318"
    LOCAL cJust := Space( 20 )
    LOCAL cCata := "IT3-BEL-903533AST63Z"
-   LOCAL nSlry := 12000
+   LOCAL nSlry := 12 //000
 
    LOCAL GetList := {}
    LOCAL PictureList := {}
@@ -60,9 +71,14 @@ FUNCTION Main( cMode )
 
    hb_default( @cMode, "O" )
 
-   oWnd := BuildDialog()
-
    IF cMode == "O"
+      oWnd := QScrollArea()
+      oWnd:setWindowTitle( "Clipper Get System - Scrollable Widget" )
+      oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
+
+      oFrame := QFrame( oWnd )
+      oWnd:setWidget( oFrame )
+
       @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL )
       @ 1, nColGet QGET cText VALID {|| cText == "ABC" .OR. cText == "DEF" } PICTURE "@!A"
 
@@ -85,12 +101,19 @@ FUNCTION Main( cMode )
       @ 7, nColGet QGET cCata PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
 
       @ 7, 52 QSAY "Salary:"
-      @ 7, 60 QGET nSlry PICTURE "@Z 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+      @ 7, 60 QGET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
       //QREAD PARENT oWnd
-      QREAD PARENT oWnd FONT QFont( "Courier new", 12 )
+      QREAD PARENT oFrame FONT QFont( "Courier new", 12 )
+      //QREAD PARENT oFrame
 
+      oWnd:resize( oFrame:width()  + 2 + ( oWnd:frameGeometry():width() - oWnd:geometry():width() ), ;
+                   oFrame:height() + 2 + ( oWnd:frameGeometry():height() - oWnd:geometry():height() ))
    ELSE
+      oWnd := QWidget()
+      oWnd:setWindowTitle( "Clipper Get System - Layout" )
+      oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
+
       oFLayout := QFormLayout( oWnd )
       oFLayout:setLabelAlignment( Qt_AlignRight )
       oFLayout:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
@@ -159,18 +182,6 @@ FUNCTION Main( cMode )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION buildDialog()
-   LOCAL oWnd
-
-   oWnd := QWidget()
-   oWnd:setWindowTitle( "Clipper Compliant Get System - Without Mouse" )
-   oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
-
-   RETURN oWnd
-
-/*----------------------------------------------------------------------*/
-
-
 STATIC FUNCTION UpperLowerUpper( cText, nPos )
    LOCAL cChr, s
 
@@ -225,6 +236,8 @@ STATIC FUNCTION HbQtReadGets( aGetList, aPicList, oWnd, oFont )
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
    LOCAL nLineSpacing := 6, nEditPadding := 4
    LOCAL aoEdits := {}
+   LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0
+   LOCAL nX, nY, nW, nH
 
    IF Empty( oFont )
       oFont := QFont( QFont( "Courier New", 10 ) )
@@ -235,8 +248,8 @@ STATIC FUNCTION HbQtReadGets( aGetList, aPicList, oWnd, oFont )
       oFLayout := oWnd
    ELSE
       oFLayout := oWnd:layout()
-      IF Empty( oFLayout )
-         //
+      IF ! Empty( oFLayout )
+         oWnd:removeLayout( oFLayout )
       ENDIF
    ENDIF
    lFLayout := ! Empty( oFLayout )
@@ -259,8 +272,16 @@ STATIC FUNCTION HbQtReadGets( aGetList, aPicList, oWnd, oFont )
          oLabel:setFont( oFont )
          oLabel:setAlignment( Qt_AlignLeft + Qt_AlignVCenter )
          // No colors please
-         oLabel:move( ( aPic[ 2 ] * nAvgWid ) + nLineSpacing, aPic[ 1 ] * nLHeight )
-         oLabel:resize( nLineSpacing + ( Len( cText ) * nAvgWid ), nObjHeight + nEditPadding )
+         nX := ( aPic[ 2 ] * nAvgWid ) + nLineSpacing
+         nY := aPic[ 1 ] * nLHeight
+         nW := nLineSpacing + ( Len( cText ) * nAvgWid )
+         nH := nObjHeight + nEditPadding
+         nMinX := Min( nMinX, nX )
+         nMaxX := Max( nMaxX, nX + nW )
+         nMinY := Min( nMinY, nY )
+         nMaxY := Max( nMaxY, nY + nH )
+         oLabel:move( nX, nY )
+         oLabel:resize( nW, nH )
       NEXT
    ENDIF
 
@@ -297,8 +318,16 @@ STATIC FUNCTION HbQtReadGets( aGetList, aPicList, oWnd, oFont )
          IF lFLayout
             oFLayout:addRow( iif( Empty( aEdit[ _QGET_CAPTION ] ), aEdit[ _QGET_NAME ], aEdit[ _QGET_CAPTION ] ), oEdit )
          ELSE
-            oEdit:move( ( oGet:col * nAvgWid ) + nLineSpacing, oGet:row * nLHeight )
-            oEdit:resize( nLineSpacing + ( oEdit:getDispWidth() * nAvgWid ), nObjHeight + nEditPadding )
+            nX := ( oGet:col * nAvgWid ) + nLineSpacing
+            nY := oGet:row * nLHeight
+            nW := nLineSpacing + ( oEdit:getDispWidth() * nAvgWid )
+            nH := nObjHeight + nEditPadding
+            nMinX := Min( nMinX, nX )
+            nMaxX := Max( nMaxX, nX + nW )
+            nMinY := Min( nMinY, nY )
+            nMaxY := Max( nMaxY, nY + nH )
+            oEdit:move( nX, nY )
+            oEdit:resize( nW, nH )
          ENDIF
 
          AAdd( aoEdits, oEdit )
@@ -306,6 +335,9 @@ STATIC FUNCTION HbQtReadGets( aGetList, aPicList, oWnd, oFont )
 
       aoEdits[ 1 ]:setFocus()
       aoEdits[ 1 ]:selectAll()
+
+      oWnd:setFocusPolicy( Qt_NoFocus )
+      oWnd:resize( nMaxX + nMinX, nMaxY + nMinY )  /* Fit TO the contents maintaining margins */
    ENDIF
 
    RETURN NIL
@@ -338,7 +370,7 @@ CLASS HbQtGet INHERIT HB_QLineEdit
    VAR    sl_whenblock
    VAR    sl_validBlock
    VAR    sl_pic                                  INIT ""
-   VAR    sl_picture                              INIT ""
+   VAR    sl_func                                 INIT ""
    VAR    sl_mask                                 INIT ""
    VAR    sl_maskChrs                             INIT ""
    VAR    sl_qMask                                INIT ""
@@ -457,8 +489,6 @@ METHOD HbQtGet:mousable( lEnable )
 
 METHOD HbQtGet:returnPressed()
 
-   //HB_TRACE( HB_TR_ALWAYS, "returnPressed" )
-
    QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
 
    RETURN .T.
@@ -466,8 +496,6 @@ METHOD HbQtGet:returnPressed()
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:fixup( cText )
-
-   //HB_TRACE( HB_TR_ALWAYS, cText )
 
    ::sl_fixupCalled := .T.
 
@@ -547,10 +575,10 @@ METHOD HbQtGet:getCharacter( cText, nPos )
 
    cChr := SubStr( cText, nPos, 1 )
 
-   IF "A" $ ::sl_picture .AND. ! IsAlpha( cChr )
+   IF "A" $ ::sl_func .AND. ! IsAlpha( cChr )
       RETURN .F.
    ENDIF
-   IF "!" $ ::sl_picture
+   IF "!" $ ::sl_func
       cText := Upper( cText )
    ENDIF
    IF ! Empty( ::sl_mask )
@@ -727,7 +755,7 @@ METHOD HbQtGet:getLogical( cText, nPos )
    IF ! cText $ "NnYyTtFf"
       RETURN .F.
    ENDIF
-   IF "Y" $ ::sl_picture
+   IF "Y" $ ::sl_func
       IF cText $ "Tt"
          cText :=  "Y"
       ELSEIF cText $ "Ff"
@@ -760,55 +788,39 @@ METHOD HbQtGet:setParams()
          ::setInputMask( ::sl_qMask )
       ENDIF
       ::sl_dispWidth := Len( Transform( ::sl_orgValue, ::sl_pic ) )
-#if 1
-      IF "S" $ ::sl_picture /* tipped FOR scrolling */
-         cTmp := ""
-         FOR EACH cChr IN ::sl_picture
-            IF IsDigit( cChr )
-               cTmp += cChr
-            ENDIF
-         NEXT
-         IF Val( cTmp ) > 0
-            ::sl_dispWidth := Val( cTmp )
-         ENDIF
-      ENDIF
-#endif
       ::setMaxLength( ::sl_width )
       ::setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
       EXIT
    CASE "N"
-      IF "E" $ ::sl_picture
-         ::sl_decSep := ","
-         ::sl_commaSep := "."
-      ENDIF
       IF ! Empty( ::sl_mask )
          cTmp       := ::sl_mask
          n          := At( ::sl_decSep, cTmp )
          ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
          ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
          ::sl_prime := ::sl_width - iif( ::sl_dec > 0, ::sl_dec + 1, 0 )
-         //::sl_dispWidth := Len( ::sl_mask )
       ELSE
          cTmp       := Str( ::sl_orgValue )
          ::sl_width := Len( cTmp )
          n          := At( ::sl_decSep, cTmp )
          ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
          ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
-         //::sl_dispWidth := ::sl_width
       ENDIF
       ::sl_dispWidth := Len( Transform( ::sl_orgValue, ::sl_pic ) )
       ::setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
-      IF ! ( "B" $ ::sl_picture )
+      IF ! ( "B" $ ::sl_func )
          ::setAlignment( Qt_AlignRight )
+      ENDIF
+      IF "E" $ ::sl_func
+         ::sl_decSep := ","
+         ::sl_commaSep := "."
       ENDIF
       EXIT
    CASE "D"
-      ::sl_width := Len( DToC( ::sl_orgValue ) )
-      cTmp       := Set( _SET_DATEFORMAT )
-      //::sl_dispWidth := Len( cTmp )
+      ::sl_width     := Len( DToC( ::sl_orgValue ) )
+      cTmp           := Set( _SET_DATEFORMAT )
       ::sl_dispWidth := Len( Transform( ::sl_orgValue, ::sl_pic ) )
-      ::sl_mask  := ""
-      ::sl_qMask := ""
+      ::sl_mask      := ""
+      ::sl_qMask     := ""
       FOR EACH cChr IN cTmp
          IF cChr $ "mdy"
             ::sl_mask  += "9"
@@ -863,7 +875,7 @@ METHOD HbQtGet:setData( xData )
       ::setText( DToC( xData ) )
       EXIT
    CASE "L"
-      ::setText( iif( xData, iif( ::sl_picture $ "Y", "Y", "T" ), iif( ::sl_picture $ "Y", "N", "F" ) ) )
+      ::setText( iif( xData, iif( ::sl_func $ "Y", "Y", "T" ), iif( ::sl_func $ "Y", "N", "F" ) ) )
       EXIT
    ENDSWITCH
 
@@ -921,24 +933,24 @@ METHOD HbQtGet:picture( cPicture )
    cPicture := Upper( AllTrim( cPicture ) )
    IF ( n := At( " " , cPicture ) ) > 0
       ::sl_mask := AllTrim( SubStr( cPicture, n+1 ) )
-      ::sl_picture := AllTrim( SubStr( cPicture, 1, n-1 ) )
+      ::sl_func := AllTrim( SubStr( cPicture, 1, n-1 ) )
    ELSE
-      ::sl_picture := cPicture
+      ::sl_func := cPicture
    ENDIF
 
-   IF ! ( "@" $ ::sl_picture )
-      ::sl_mask := ::sl_picture
-      ::sl_picture := ""
+   IF ! ( "@" $ ::sl_func )
+      ::sl_mask := ::sl_func
+      ::sl_func := ""
    ENDIF
    IF ::sl_mask == "Y"
-      ::sl_picture := "Y"
+      ::sl_func := "Y"
       ::sl_mask := ""
    ENDIF
    IF ::sl_mask == "L"
-      ::sl_picture := ""
+      ::sl_func := ""
       ::sl_mask := ""
    ENDIF
-   ::sl_picture := StrTran( StrTran( ::sl_picture, " " ), "@" )
+   ::sl_func := StrTran( StrTran( ::sl_func, " " ), "@" )
 
    IF ! Empty( ::sl_mask )
       qMask := ""
@@ -953,7 +965,7 @@ METHOD HbQtGet:picture( cPicture )
       ::sl_qMask := qMask
    ENDIF
 
-   RETURN ::sl_picture
+   RETURN ::sl_func
 
 /*----------------------------------------------------------------------*/
 
@@ -1084,10 +1096,10 @@ METHOD HbQtGet:checkValid( oKeyEvent )
       EXIT
    CASE Qt_Key_Up
       QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
-      EXIT
+      RETURN .T.
    CASE Qt_Key_Down
       QApplication():sendEvent( Self, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-      EXIT
+      RETURN .T.
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
       /* Update Clipper Variable - no matter what - Clipper behavior */
@@ -1095,14 +1107,9 @@ METHOD HbQtGet:checkValid( oKeyEvent )
       Eval( ::sl_dataLink, ::sl_orgValue )
       IF HB_ISBLOCK( ::sl_validBlock )
          IF ! Eval( ::sl_validBlock, ::sl_orgValue )
-            ::setStyleSheet( "" )
-            ::setStyleSheet( ::sl_cssNotValid )
             oKeyEvent:accept()
-            ::repaint()
             RETURN .T.
          ELSE
-            ::setStyleSheet( "" )
-            ::setStyleSheet( ::sl_cssColor )
             ::repaint()
          ENDIF
       ENDIF
@@ -1165,8 +1172,10 @@ METHOD HbQtGet:unTransformThis( cData )
    LOCAL cChr, cText := ""
 
    FOR EACH cChr IN cData
-      IF cChr $ ::sl_decSep + "+-0123456789"
+      IF cChr $ "+-0123456789"
          cText += cChr
+      ELSEIF cChr == ::sl_decSep
+         cText += "."
       ENDIF
    NEXT
 
