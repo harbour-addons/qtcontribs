@@ -16,6 +16,30 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-06 18:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/tests/validator.prg
+    + Implemented: ROW/COL properties of GETs.
+
+    + Implemented: @ <nRow>, <nCol> QSAY <exp> PICTURE <pic> COLOR <clr>.
+       COLOR is not yet implemented, needs discussion.
+
+    + Implemented: Clipper like form creation with @ SAY, @ GET commands
+       given a parent window without any layout. 
+
+    + Implemented: support of QFont to be applied to SAYs and GETS.
+       This automatically sets the size and 
+
+    ! Made: Clipper like form the startup display mode. Send "P" as 
+       parameter to invoke OOP code screen.
+
+    ; NOTE: we are almost near to design a GUI screen with Clipper code.
+            QFont supplied to the form is not set on parent window. It is 
+            applied only to SAYs and GETs. The rows are calculated on the 
+            basis of QFont:height() and each row is separated by 6 pixels.
+
+    ;       This seems, the whole protocol can be enhanced to a greater 
+            horizon with a possibility to have multiple forms in one window.
+
 2012-12-06 09:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump.
