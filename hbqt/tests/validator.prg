@@ -95,7 +95,7 @@ FUNCTION Main( cMode )
       @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText VALID {|| cText == "ABC" .OR. cText == "DEF" } PICTURE "@!A"
 
       @ 2, 02 QSAY PadL( "Birthday:", nPdL )
-      @ 2, nColGet QGET dDate WHEN {|| HB_TRACE( HB_TR_ALWAYS, GetActive():varGet() ), cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
+      @ 2, nColGet QGET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
 
       @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )
       @ 3, nColGet QGET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
@@ -142,13 +142,13 @@ FUNCTION Main( cMode )
       oEdit1:parent         := oWnd
       oEdit1:postBlock      := {|cValue| cValue == "ABC" .OR. cValue == "DEF" }
       oEdit1:picture        := "@!A"
-      oEdit1:block       := {|x| iif( x == NIL, cText, cText := x ) }
+      oEdit1:block          := {|x| iif( x == NIL, cText, cText := x ) }
       oEdit1:create()
       oFLayout:addRow( "Alpha - Upper Cased Alphabets:", oEdit1 )
 
       oEdit2 := HbQtGet():new( oWnd )
       oEdit2:parent         := oWnd
-      oEdit2:block       := {|x| iif( x == NIL, dDate, dDate := x ) }
+      oEdit2:block          := {|x| iif( x == NIL, dDate, dDate := x ) }
       oEdit2:preBlock       := {|| cText == "ABC" }
       oEdit2:postBlock      := {|| dDate >= 0d19560604 }
       oEdit2:color          := "B/GR*"
@@ -157,7 +157,7 @@ FUNCTION Main( cMode )
 
       oEdit3 := HbQtGet():new( oWnd )
       oEdit3:parent         := oWnd
-      oEdit3:block       := {|x| iif( x == NIL, nNumb, nNumb := x ) }
+      oEdit3:block          := {|x| iif( x == NIL, nNumb, nNumb := x ) }
       oEdit3:postBlock      := {|| nNumb > 600 .AND. nNumb < 6000000 }
       oEdit3:picture        := "9,999,999.999999"
       oEdit3:create()
@@ -166,20 +166,20 @@ FUNCTION Main( cMode )
       oEdit4 := HbQtGet():new( oWnd )
       oEdit4:parent         := oWnd
       oEdit4:picture        := "@Y"
-      oEdit4:block       := {|x| iif( x == NIL, lMrd, lMrd := x ) }
+      oEdit4:block          := {|x| iif( x == NIL, lMrd, lMrd := x ) }
       oEdit4:create()
       oFLayout:addRow( "Logical - Married:", oEdit4 )
 
       oEdit5                := HbQtGet():new( oWnd )
       oEdit5:parent         := oWnd
-      oEdit5:block       := {|x| iif( x == NIL, cTele, cTele := x ) }
+      oEdit5:block          := {|x| iif( x == NIL, cTele, cTele := x ) }
       oEdit5:picture        := "(999)999-9999"
       oEdit5:create()
       oFLayout:addRow( "Telephone Number:", oEdit5 )
 
       oEdit6                := HbQtGet():new( oWnd )
       oEdit6:parent         := oWnd
-      oEdit6:block       := {|x| iif( x == NIL, cJust, cJust := x ) }
+      oEdit6:block          := {|x| iif( x == NIL, cJust, cJust := x ) }
       oEdit6:inputValidator := {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
       oEdit6:color          := "W+/B*"
       oEdit6:create()
@@ -187,14 +187,14 @@ FUNCTION Main( cMode )
 
       oEdit7                := HbQtGet():new( oWnd )
       oEdit7:parent         := oWnd
-      oEdit7:block       := {|x| iif( x == NIL, cCata, cCata := x ) }
+      oEdit7:block          := {|x| iif( x == NIL, cCata, cCata := x ) }
       oEdit7:picture        := "!!!-!!!-!!!!!!!!!!!!"
       oEdit7:create()
       oFLayout:addRow( "Catalog Item:", oEdit7 )
 
       oEdit8 := HbQtGet():new( oWnd )
       oEdit8:parent         := oWnd
-      oEdit8:block       := {|x| iif( x == NIL, nSlry, nSlry := x ) }
+      oEdit8:block          := {|x| iif( x == NIL, nSlry, nSlry := x ) }
       oEdit8:postBlock      := {|| nSlry > 600 .AND. nSlry < 17000 }
       oEdit8:picture        := "@Z 99,999"
       oEdit8:create()
@@ -369,15 +369,14 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
 
    IF Len( GetList ) >= 1
       FOR EACH oGet IN GetList
-         aEdit      := oGet:cargo
+         aEdit        := oGet:cargo
+         oGet:cargo   := NIL
 
          oEdit        := HbQtGet():new( oWnd )
          oEdit:parent := oWnd
          oEdit:font   := oFont
 
          oEdit:get    := oGet   /* This is important - all variables will be initialized here instead of in :new() */
-
-         oEdit:get:cargo := NIL
 
          IF ! Empty( aEdit[ _QGET_COLOR ] )
             oEdit:color := aEdit[ _QGET_COLOR ]
@@ -447,96 +446,11 @@ CLASS HbQtGet INHERIT HB_QLineEdit, Get
    METHOD getData()
    METHOD getDispWidth()                          INLINE ::sl_dispWidth
 
-   /* ::oGet operation methods overloaded from GET : begins */
-   PROTECTED:
-
-   /* === Start of CA-Cl*pper compatible TGet instance area === */
-   VAR    bBlock                                          /* 01. */
-   VAR    xSubScript                                      /* 02. */
-   VAR    cPicture                                        /* 03. */
-   VAR    bPostBlock                                      /* 04. */
-   VAR    bPreBlock                                       /* 05. */
-   VAR    xCargo                                          /* 06. */
-   VAR    cName                                           /* 07. */
-   VAR    cInternal1                              HIDDEN  /* 08. U2Bin( ::nRow ) + U2Bin( ::nCol ) + trash. Not implemented in Harbour. */
-   VAR    xExitState                                      /* 09. */
-   VAR    bReader                                         /* 10. */
-   VAR    cType                                           /* +1. Only accessible in CA-Cl*pper when ::hasFocus == .T. In CA-Cl*pper the field may contain random chars after the first one, which is the type. */
-   VAR    cBuffer                                         /* +2. Only accessible in CA-Cl*pper when ::hasFocus == .T. */
-   VAR    xVarGet                                         /* +3. Only accessible in CA-Cl*pper when ::hasFocus == .T. */
-   /* === End of CA-Cl*pper compatible TGet instance area === */
-
-   EXPORTED:
-
-   VAR    decPos                                  INIT 0   READONLY /* ; CA-Cl*pper NG says that it contains NIL, but in fact it contains zero. [vszakats] */
-   VAR    hasFocus                                INIT .F. READONLY
-   VAR    original                                         READONLY
-   VAR    rejected                                INIT .F. READONLY
-   VAR    typeOut                                 INIT .F. READONLY
-
-   METHOD assign()
-   METHOD block( bBlock )                         SETGET
-   ACCESS buffer                                  METHOD getBuffer()
-   ASSIGN buffer                                  METHOD setBuffer( cBuffer )
-   ACCESS changed                                 METHOD getChanged()
-   ASSIGN changed                                 METHOD setChanged( lChanged )
-   ACCESS clear                                   METHOD getClear()
-   ASSIGN clear                                   METHOD setClear( lClear )
-   ACCESS col                                     METHOD getCol()
-   ASSIGN col                                     METHOD setCol( nCol )
-   METHOD killFocus()
-   METHOD name( cName )                           SETGET
-   ACCESS pos                                     METHOD getPos()
-   ASSIGN pos                                     METHOD setPos( nPos )
-   METHOD reset()
-   ACCESS row                                     METHOD getRow()
-   ASSIGN row                                     METHOD setRow( nRow )
-   METHOD type()
-   METHOD updateBuffer()
-   METHOD varGet()
-   METHOD varPut( xValue )
-
-   METHOD subScript( xValue )                     SETGET
-   METHOD postBlock( xValue )                     SETGET
-   METHOD preBlock( xValue )                      SETGET
-   METHOD cargo( xValue )                         SETGET
-
-   PROTECTED:
-
-   VAR    nDispLen                /* NOTE: This one is placed inside the instance area for CA-Cl*pper 5.3 [vszakats] */
-   VAR    nPos                                    INIT 0
-   VAR    lChanged                                INIT .F.
-   VAR    lClear                                  INIT .F.
-   VAR    nRow
-   VAR    nCol
-   VAR    lRejected                               INIT .F.
-   VAR    lHideInput                              INIT .F.
-   VAR    cStyle                                  INIT "*" /* NOTE: First char is to be used as mask character when :hideInput is .T. [vszakats] */
-   VAR    nMaxLen
-   VAR    lEdit                                   INIT .F.
-   VAR    nDispPos                                INIT 1
-   VAR    nOldPos                                 INIT 0
-   VAR    nMaxEdit
-   VAR    lMinus                                  INIT .F.
-   VAR    lMinus2                                 INIT .F.
-   VAR    lMinusPrinted                           INIT .F.
-   VAR    lSuppDisplay                            INIT .F.
-
-   VAR    nPicLen
-   VAR    cPicMask                                INIT ""
-   VAR    cPicFunc                                INIT ""
-   VAR    lPicComplex                             INIT .F.
-   VAR    lPicBlankZero                           INIT .F.
-   VAR    lValidWhen                              INIT .T.
-
-   METHOD putMask( xValue, lEdit )
-   /* ::oGet operation methods overloaded from GET : ends */
-
-
    PROTECTED:
    VAR    oGet
    VAR    oParent
 
+   VAR    lValidWhen                              INIT .T.
    VAR    sl_maskChrs                             INIT ""
    VAR    sl_qMask                                INIT ""
 
@@ -575,6 +489,17 @@ CLASS HbQtGet INHERIT HB_QLineEdit, Get
    METHOD returnPressed()
    METHOD isBufferValid()
    METHOD isDateBad()
+
+   EXPORTED:
+   /* ::oGet operation methods overloaded from GET : begins */
+   METHOD assign()
+   METHOD block( bBlock )                         SETGET
+   ACCESS pos                                     METHOD getPos()
+   ASSIGN pos                                     METHOD setPos( nPos )
+   METHOD updateBuffer()
+   METHOD putMask( xValue, lEdit )
+   METHOD reset()
+   /* ::oGet operation methods overloaded from GET : ends */
 
    ENDCLASS
 
@@ -618,9 +543,9 @@ METHOD HbQtGet:get( oGet )
       ::postBlock := ::oGet:postBlock()
       ::picture   := ::oGet:picture()
       ::name      := ::oGet:name()
-      ::block     := ::oGet:block()
       ::row       := ::oGet:row()
       ::col       := ::oGet:col()
+      ::block     := ::oGet:block()
    ENDIF
 
    RETURN ::oGet
@@ -1417,119 +1342,6 @@ METHOD HbQtGet:assign()
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-#if 0
-METHOD HbQtGet:g_setFocus()
-
-   LOCAL xVarGet
-
-   IF ! ::hasFocus
-      xVarGet := ::xVarGet := ::varGet()
-
-      ::hasFocus := .T.
-      ::rejected := .F.
-
-      ::original := xVarGet
-      ::cBuffer  := ::text()
-
-      ::lChanged := .F.
-      ::lClear   := ( "K" $ ::cPicFunc .OR. ::cType == "N" )
-      ::lEdit    := .F.
-      ::pos      := 1
-
-      ::QLineEdit:setFocus()
-   ENDIF
-
-   RETURN Self
-#endif
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:killFocus()
-
-   LOCAL lHadFocus := ::hasFocus
-
-   ::hasFocus := .F.
-   ::nPos     := 0
-   ::lClear   := .F.
-   ::lMinus   := .F.
-   ::lChanged := .F.
-   ::decPos   := 0 /* ; CA-Cl*pper NG says that it contains NIL, but in fact it contains zero. [vszakats] */
-   ::typeOut  := .F.
-
-   IF lHadFocus
-      ::display()
-   ENDIF
-
-   ::xVarGet  := NIL
-   ::original := NIL
-   ::cBuffer  := NIL
-
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:varPut( xValue )
-
-   LOCAL aSubs
-   LOCAL nLen
-   LOCAL i
-   LOCAL aValue
-
-   IF HB_ISBLOCK( ::bBlock ) .AND. ValType( xValue ) $ "CNDTLU"
-      aSubs := ::xSubScript
-      IF HB_ISARRAY( aSubs ) .AND. ! Empty( aSubs )
-         nLen := Len( aSubs )
-         aValue := Eval( ::bBlock )
-         FOR i := 1 TO nLen - 1
-            IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ;
-               ( HB_ISHASH( aValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
-               aValue := aValue[ aSubs[ i ] ]
-            ELSE
-               EXIT
-            ENDIF
-         NEXT
-         IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ( HB_ISHASH( aValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
-            aValue[ aSubs[ i ] ] := xValue
-         ENDIF
-      ELSE
-         Eval( ::bBlock, xValue )
-      ENDIF
-   ELSE
-      xValue := NIL
-   ENDIF
-
-   RETURN xValue
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:varGet()
-
-   LOCAL aSubs
-   LOCAL nLen
-   LOCAL i
-   LOCAL xValue
-
-   IF HB_ISBLOCK( ::bBlock )
-      aSubs := ::xSubScript
-      IF HB_ISARRAY( aSubs ) .AND. ! Empty( aSubs )
-         nLen := Len( aSubs )
-         xValue := Eval( ::bBlock )
-         FOR i := 1 TO nLen
-            IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ( HB_ISHASH( xValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
-               xValue := xValue[ aSubs[ i ] ]
-            ELSE
-               EXIT
-            ENDIF
-         NEXT
-      ELSE
-         xValue := Eval( ::bBlock )
-      ENDIF
-   ELSE
-      xValue := ::xVarGet
-   ENDIF
-
-   RETURN xValue
-
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:putMask( xValue, lEdit )
 
@@ -1582,24 +1394,16 @@ METHOD HbQtGet:getPos()
 METHOD HbQtGet:setPos( nPos )
 
    IF HB_ISNUMERIC( nPos )
-
       nPos := Int( nPos )
 
       IF ::hasFocus
          ::setCursorPosition( nPos )
       ENDIF
 
-      RETURN nPos
-
+      RETURN ::cursorPosition()
    ENDIF
 
    RETURN 0
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:type()
-
-   RETURN ::cType := ValType( iif( ::hasFocus, ::xVarGet, ::varGet() ) )
 
 /*----------------------------------------------------------------------*/
 
@@ -1614,116 +1418,6 @@ METHOD HbQtGet:block( bBlock )
    ::cType    := ValType( ::xVarGet )
 
    RETURN ::bBlock
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:getBuffer()
-   RETURN ::cBuffer
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:setBuffer( cBuffer )
-   RETURN iif( ::hasFocus, ::cBuffer := cBuffer, cBuffer )
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:getChanged()
-   RETURN ::lChanged
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:setChanged( lChanged )
-
-   IF HB_ISLOGICAL( lChanged )
-      RETURN iif( ::hasFocus, ::lChanged := lChanged, lChanged )
-   ENDIF
-
-   RETURN .F.
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:getClear()
-   RETURN ::lClear
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:setClear( lClear )
-
-   IF HB_ISLOGICAL( lClear )
-      RETURN iif( ::hasFocus, ::lClear := lClear, lClear )
-   ENDIF
-
-   RETURN .F.
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:getRow()
-   RETURN ::nRow
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:setRow( nRow )
-   RETURN ::nRow := iif( HB_ISNUMERIC( nRow ), Int( nRow ), 0 )
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:getCol()
-   RETURN ::nCol
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:setCol( nCol )
-   RETURN ::nCol := iif( HB_ISNUMERIC( nCol ), Int( nCol ), 0 )
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:name( cName )
-
-   IF PCount() > 0 .AND. cName != NIL
-      ::cName := cName
-   ENDIF
-
-   RETURN ::cName
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:subScript( xValue )
-
-   IF xValue != NIL
-      ::xSubScript := xValue
-   ENDIF
-
-   RETURN ::xSubScript
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:postBlock( xValue )
-
-   IF xValue != NIL
-      ::bPostBlock := xValue
-   ENDIF
-
-   RETURN ::bPostBlock
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:preBlock( xValue )
-
-   IF xValue != NIL
-      ::bPreBlock := xValue
-   ENDIF
-
-   RETURN ::bPreBlock
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:cargo( xValue )
-
-   IF xValue != NIL
-      ::xCargo := xValue
-   ENDIF
-
-   RETURN ::xCargo
 
 /*----------------------------------------------------------------------*/
 //                           CLASS HbQtGetList
@@ -1799,5 +1493,3 @@ METHOD HbQtGetList:goBottom( oGet )
    RETURN oGet
 
 /*----------------------------------------------------------------------*/
-
-
