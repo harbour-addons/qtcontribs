@@ -119,11 +119,12 @@ void HBQValidator::fixup( QString & input ) const
 
 QValidator::State HBQValidator::validate( QString & input, int & pos ) const
 {
+#if 0
    if( input.isEmpty() )
    {
       return QValidator::Intermediate;
    }
-
+#endif
    QValidator::State state = QValidator::Acceptable;
 
    if( block && hb_vmRequestReenter() )
@@ -180,7 +181,7 @@ QValidator::State HBQValidator::validate( QString & input, int & pos ) const
       hb_itemRelease( ret );
    }
 
-   return state; //QValidator::validate( input, pos );
+   return state;
 }
 
 #endif
