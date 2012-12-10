@@ -1,0 +1,20 @@
+#
+# $Id$
+#
+
+-hblib
+-inc
+
+$hb_pkg_install.hbm
+-o../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
+-workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_targetname}
+
+-w3 -es2
+
+hbqt.hbc
+
+-instfile=inc:hbqtstd.ch
+-instfile=inc:hbqtwidgets.hbx
+
+hbqtgetsys.prg
+

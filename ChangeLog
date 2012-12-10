@@ -16,6 +16,40 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-10 14:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets
+  + hbqtwidgets/hbqtgetsys.prg
+  + hbqtwidgets/hbqtstd.ch
+  + hbqtwidgets/hbqtwidgets.hbc
+  + hbqtwidgets/hbqtwidgets.hbp
+  + hbqtwidgets/hbqtwidgets.hbx
+    + Added: hbqtwidgets library which will host the components based on 
+       pure HbQt. This, the first, components is Harbour's GET sub-system 
+       usable in HbQt with pure GUI widgets. HbQt GET System almost 
+       simulates the Harbour GETs with <SAY>, <VALID>, <WHEN>, 
+       <PICTURE>, <COLOR> clauses at the minimum required to port 
+       console mode Clipper code to GUI. In addition provides the 
+       extended VALIDation protocol. 
+
+       In the coming days, Harbour's powerful GET system is scheduled 
+       to be integrated with Qt Designer designed widgets. A working 
+       prototype is in place but needs a bit more work to be committed.
+
+  * qtcontribs.hbp
+    + Added: hbqtwidget library.
+
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+    * Cleanup.
+
+  * hbqt/tests/hbmk.hbm
+    + Added: hbqtwidgets.hbc
+
+  * hbqt/tests/validator.prg
+    - Removed: code specific to hbqtwidgets library.
+
+  ; To use HbQt GET System you will need to link hbqtwidgets library 
+      with your project. Add a line to your.hbp : hbqtwidgets.hbc.
+
 2012-12-09 12:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/tests/validator.prg
     ! mainly code clean-up, removed redundancy.

@@ -30,6 +30,9 @@ hbqt/qtnetwork/hbqtnetwork.hbp
 #
 hbqt/gtqtc/gtqtc.hbp
 
+#    Qt Based Widgets
+hbqtwidgets/hbqtwidgets.hbp
+
 #    Qt based Xbase++ compliant Class Framework
 #
 hbxbp/hbxbp.hbp
