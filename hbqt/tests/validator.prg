@@ -13,6 +13,7 @@
 #include "set.ch"
 
 #include "hbqtstd.ch"
+#include "hbtrace.ch"
 
 
 FUNCTION Main( cMode )
@@ -98,67 +99,67 @@ FUNCTION Main( cMode )
       oFLayout:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
       oFLayout:setFormAlignment( Qt_AlignHCenter )
 
-      oEdit1 := HbQtGet():new( oWnd )
+      oEdit1                := HbQtGet():new()
       oEdit1:parent         := oWnd
       oEdit1:postBlock      := {|cValue| cValue == "ABC" .OR. cValue == "DEF" }
       oEdit1:picture        := "@!A"
       oEdit1:block          := {|x| iif( x == NIL, cText, cText := x ) }
       oEdit1:create()
-      oFLayout:addRow( "Alpha - Upper Cased Alphabets:", oEdit1 )
+      oFLayout:addRow( "Alpha - Upper Cased Alphabets:", oEdit1:edit() )
 
-      oEdit2 := HbQtGet():new( oWnd )
+      oEdit2                := HbQtGet():new()
       oEdit2:parent         := oWnd
       oEdit2:block          := {|x| iif( x == NIL, dDate, dDate := x ) }
       oEdit2:preBlock       := {|| cText == "ABC" }
       oEdit2:postBlock      := {|| dDate >= 0d19560604 }
       oEdit2:color          := "B/GR*"
       oEdit2:create()
-      oFLayout:addRow( "Date - Birthday:", oEdit2 )
+      oFLayout:addRow( "Date - Birthday:", oEdit2:edit() )
 
-      oEdit3 := HbQtGet():new( oWnd )
+      oEdit3                := HbQtGet():new()
       oEdit3:parent         := oWnd
       oEdit3:block          := {|x| iif( x == NIL, nNumb, nNumb := x ) }
       oEdit3:postBlock      := {|| nNumb > 600 .AND. nNumb < 6000000 }
       oEdit3:picture        := "9,999,999.999999"
       oEdit3:create()
-      oFLayout:addRow( "Numeric - Max 6 Decimals:", oEdit3 )
+      oFLayout:addRow( "Numeric - Max 6 Decimals:", oEdit3:edit() )
 
-      oEdit4 := HbQtGet():new( oWnd )
+      oEdit4                := HbQtGet():new()
       oEdit4:parent         := oWnd
       oEdit4:picture        := "@Y"
       oEdit4:block          := {|x| iif( x == NIL, lMrd, lMrd := x ) }
       oEdit4:create()
-      oFLayout:addRow( "Logical - Married:", oEdit4 )
+      oFLayout:addRow( "Logical - Married:", oEdit4:edit() )
 
-      oEdit5                := HbQtGet():new( oWnd )
+      oEdit5                := HbQtGet():new()
       oEdit5:parent         := oWnd
       oEdit5:block          := {|x| iif( x == NIL, cTele, cTele := x ) }
       oEdit5:picture        := "(999)999-9999"
       oEdit5:create()
-      oFLayout:addRow( "Telephone Number:", oEdit5 )
+      oFLayout:addRow( "Telephone Number:", oEdit5:edit() )
 
-      oEdit6                := HbQtGet():new( oWnd )
+      oEdit6                := HbQtGet():new()
       oEdit6:parent         := oWnd
       oEdit6:block          := {|x| iif( x == NIL, cJust, cJust := x ) }
       oEdit6:inputValidator := {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
       oEdit6:color          := "W+/B*"
       oEdit6:create()
-      oFLayout:addRow( "Alpha - Upper Lower Upper:", oEdit6 )
+      oFLayout:addRow( "Alpha - Upper Lower Upper:", oEdit6:edit() )
 
-      oEdit7                := HbQtGet():new( oWnd )
+      oEdit7                := HbQtGet():new()
       oEdit7:parent         := oWnd
       oEdit7:block          := {|x| iif( x == NIL, cCata, cCata := x ) }
       oEdit7:picture        := "!!!-!!!-!!!!!!!!!!!!"
       oEdit7:create()
-      oFLayout:addRow( "Catalog Item:", oEdit7 )
+      oFLayout:addRow( "Catalog Item:", oEdit7:edit() )
 
-      oEdit8 := HbQtGet():new( oWnd )
+      oEdit8                := HbQtGet():new()
       oEdit8:parent         := oWnd
       oEdit8:block          := {|x| iif( x == NIL, nSlry, nSlry := x ) }
       oEdit8:postBlock      := {|| nSlry > 600 .AND. nSlry < 17000 }
       oEdit8:picture        := "@Z 99,999"
       oEdit8:create()
-      oFLayout:addRow( "Salary:", oEdit8 )
+      oFLayout:addRow( "Salary:", oEdit8:edit() )
 
    ENDIF
 

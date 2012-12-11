@@ -16,6 +16,18 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-10 19:11 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetsys.prg
+  * hbqtwidgets/hbqtstd.ch
+    + Prepared: to be embedded with Qt Designer created .ui widgets.
+       Hopefully by tomorrow a basic implementation will be in place.
+       Many ideas and protocols are evolving. Idea is to have this 
+       integrated with Harbour GET System isolated or/and with .ui
+       widgets.
+
+  * hbqt/tests/validator.prg
+    % Adjusted to take effect sub-system changes.
+
 2012-12-10 14:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets
   + hbqtwidgets/hbqtgetsys.prg
