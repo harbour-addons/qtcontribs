@@ -67,6 +67,8 @@
 
 #include "hbqtgui.ch"
 
+#include "hbtrace.ch"
+
 #define GET_CLR_UNSELECTED                        0
 #define GET_CLR_ENHANCED                          1
 #define GET_CLR_CAPTION                           2
@@ -688,6 +690,7 @@ METHOD HbQtGet:getNumber( cText, nPos )
    ENDIF
 
    nDecAt := At( ::sl_decProxy, cText )
+
    lInDec := iif( nDecAt == 0, .F., nPos >= nDecAt )
    IF lInDec
       cText := SubStr( cText, 1, nPos - 1 ) + cChr + SubStr( cText, nPos + 2, Len( cText ) - 1 )
@@ -701,6 +704,7 @@ METHOD HbQtGet:getNumber( cText, nPos )
       RETURN .F.
    ENDIF
    cText := ::transformThis( cText, ::cPicture )
+
    IF nDecAt > 0
       IF At( ::sl_decProxy, cText ) > nDecAt
          nPos++
@@ -1242,7 +1246,7 @@ METHOD HbQtGet:unTransformThis( cData )
    FOR EACH cChr IN cData
       IF cChr $ "+-0123456789"
          cText += cChr
-      ELSEIF cChr == ::sl_decSep
+      ELSEIF cChr == ::sl_decProxy
          cText += "."
       ENDIF
    NEXT
