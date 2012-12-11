@@ -297,7 +297,9 @@ CLASS HbQtGet INHERIT GET
    VAR    sl_cssColor                             INIT ""
    VAR    sl_cssNotValid                          INIT "color: rgb(0,0,0); background-color: rgb(255,128,128);"
    VAR    sl_decSep                               INIT "."
+   VAR    sl_decProxy                             INIT "."
    VAR    sl_commaSep                             INIT ","
+   VAR    sl_commaProxy                           INIT ","
    VAR    sl_fixupCalled                          INIT .F.
    VAR    sl_font
    VAR    lUserControl                            INIT .F.
@@ -653,7 +655,7 @@ METHOD HbQtGet:getNumber( cText, nPos )
    IF cChr == "-" .AND. Len( cText ) == 1
       RETURN .T.
    ENDIF
-   IF ! ( cChr $ ::sl_decSep + "+-1234567890" )   /* It must be a number character */
+   IF ! ( cChr $ ",.+-1234567890" )   /* It must be a number character */
       cText := ::transformThis( ::unTransformThis( cText ), ::cPicture )
       RETURN { cText, nPos, .T. }
    ENDIF
@@ -663,16 +665,21 @@ METHOD HbQtGet:getNumber( cText, nPos )
    IF cChr $ "+-" .AND. nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
       RETURN .F.
    ENDIF
-   IF cChr == ::sl_decSep .AND. ::sl_dec == 0  /* Variable does not hold decimal places */
+   IF cChr $ ",." .AND. ::sl_dec == 0  /* Variable does not hold decimal places */
       RETURN .F.
    ENDIF
-   IF cChr == ::sl_decSep .AND. ::timesOccurs( cChr, cText ) > 1 /* Jump to decimal if present */
+
+   IF cChr $ ",."
+      cText := SubStr( cText, 1, nPos - 1 ) + ::sl_decProxy + SubStr( cText, nPos + 1 )
+   ENDIF
+
+   IF cChr $ ",." .AND. ::timesOccurs( ::sl_decProxy, cText ) > 1 /* Jump to decimal if present */
       cText  := SubStr( cText, 1, nPos - 1 ) + SubStr( cText, nPos + 1 )
-      nPos   := At( ::sl_decSep, cText )
-      nDecAt := At( ::sl_decSep, cText )
+      nDecAt := At( ::sl_decProxy, cText )
+      nPos   := nDecAt
       cText  := SubStr( cText, 1, nDecAt ) + Left( SubStr( cText, nDecAt + 1 ), ::sl_dec )
       RETURN { cText, nPos, .T. }
-   ELSEIF cChr == ::sl_decSep
+   ELSEIF cChr $ ",."
       cText := ::transformThis( ::unTransformThis( cText ), ::cPicture )
       RETURN { cText, nPos, .T. }
    ELSEIF Len( cText ) <= 1              /* when selectall is active and a key is pressed */
@@ -680,7 +687,7 @@ METHOD HbQtGet:getNumber( cText, nPos )
       RETURN { cText, nPos, .T. }
    ENDIF
 
-   nDecAt := At( ::sl_decSep, cText )
+   nDecAt := At( ::sl_decProxy, cText )
    lInDec := iif( nDecAt == 0, .F., nPos >= nDecAt )
    IF lInDec
       cText := SubStr( cText, 1, nPos - 1 ) + cChr + SubStr( cText, nPos + 2, Len( cText ) - 1 )
@@ -689,15 +696,15 @@ METHOD HbQtGet:getNumber( cText, nPos )
    ENDIF
 
    cText := ::unTransformThis( cText )
-   nTmp := At( ::sl_decSep, cText )
+   nTmp := At( ::sl_decProxy, cText )
    IF iif( nTmp > 0, nTmp - 1, Len( cText ) ) > ::sl_prime
       RETURN .F.
    ENDIF
    cText := ::transformThis( cText, ::cPicture )
    IF nDecAt > 0
-      IF At( ::sl_decSep, cText ) > nDecAt
+      IF At( ::sl_decProxy, cText ) > nDecAt
          nPos++
-      ELSEIF At( ::sl_decSep, cText ) < nDecAt
+      ELSEIF At( ::sl_decProxy, cText ) < nDecAt
          nPos--
       ENDIF
    ENDIF
@@ -822,8 +829,8 @@ METHOD HbQtGet:setParams()
          ::oEdit:setAlignment( Qt_AlignRight )
       ENDIF
       IF "E" $ ::cPicFunc
-         ::sl_decSep := ","
-         ::sl_commaSep := "."
+         ::sl_decProxy := ","
+         ::sl_commaProxy := "."
       ENDIF
       EXIT
    CASE "D"
