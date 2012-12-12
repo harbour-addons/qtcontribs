@@ -1,4 +1,4 @@
-/*
+            /*
  * $Id$
  */
 
@@ -132,6 +132,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
    LOCAL nX, nY, nW, nH
    LOCAL aGetList := {}
    LOCAL oGetList
+   LOCAL lFit := .T.
 
    IF Empty( oFont )
       oFont := QFont( QFont( "Courier New", 10 ) )
@@ -161,9 +162,13 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
    IF Len( GetList ) >= 1
       FOR EACH oGet IN GetList
          aEdit      := oGet:cargo
-         IF ! Empty( aEdit[ _QGET_SAY ] )
-            AAdd( SayList, { oGet:row, oGet:col, aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ] } )
-            oGet:col += Len( Transform( aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ] ) ) + 1
+         IF Empty( aEdit[ _QGET_CONTROL ] )
+            IF ! Empty( aEdit[ _QGET_SAY ] )
+               AAdd( SayList, { oGet:row, oGet:col, aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ] } )
+               oGet:col += Len( Transform( aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ] ) ) + 1
+            ENDIF
+         ELSE
+            lFit := .F.
          ENDIF
       NEXT
    ENDIF
@@ -197,7 +202,11 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
          aEdit         := oGet:cargo
          oGet:cargo    := NIL
 
-         oEdit         := HbQtGet():new()
+         IF Empty( aEdit[ _QGET_CONTROL ] )
+            oEdit      := HbQtGet():new()
+         ELSE
+            oEdit      := HbQtGet():new( aEdit[ _QGET_CONTROL ] )
+         ENDIF
          oEdit:parent  := oWnd
          oEdit:font    := oFont
          oEdit:getList := oGetList
@@ -218,16 +227,18 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
          IF lFLayout
             oFLayout:addRow( iif( Empty( aEdit[ _QGET_CAPTION ] ), oGet:name(), aEdit[ _QGET_CAPTION ] ), oEdit )
          ELSE
-            nX    := ( oGet:col * nAvgWid ) + nLineSpacing
-            nY    := oGet:row * nLHeight
-            nW    := nLineSpacing + ( oEdit:getDispWidth() * nAvgWid )
-            nH    := nObjHeight
-            nMinX := Min( nMinX, nX )
-            nMaxX := Max( nMaxX, nX + nW )
-            nMinY := Min( nMinY, nY )
-            nMaxY := Max( nMaxY, nY + nH )
-            //
-            oEdit:setPosAndSize( { nX, nY }, { nW, nH } )
+            IF Empty( aEdit[ _QGET_CONTROL ] )
+               nX    := ( oGet:col * nAvgWid ) + nLineSpacing
+               nY    := oGet:row * nLHeight
+               nW    := nLineSpacing + ( oEdit:getDispWidth() * nAvgWid )
+               nH    := nObjHeight
+               nMinX := Min( nMinX, nX )
+               nMaxX := Max( nMaxX, nX + nW )
+               nMinY := Min( nMinY, nY )
+               nMaxY := Max( nMaxY, nY + nH )
+               //
+               oEdit:setPosAndSize( { nX, nY }, { nW, nH } )
+            ENDIF
          ENDIF
 
          AAdd( aGetList, oEdit )
@@ -236,8 +247,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
       aGetList[ 1 ]:edit:setFocus()
       aGetList[ 1 ]:edit:selectAll()
 
-      oWnd:setFocusPolicy( Qt_NoFocus )
-      oWnd:resize( nMaxX + nMinX, nMaxY + nMinY )  /* Fit to the contents maintaining margins */
+      IF lFit
+         oWnd:resize( nMaxX + nMinX, nMaxY + nMinY )  /* Fit to the contents maintaining margins */
+      ENDIF
 
    ENDIF
 
@@ -254,7 +266,6 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
 //                            CLASS HbQtEdit
 /*----------------------------------------------------------------------*/
 
-//CLASS HbQtGet INHERIT HB_QLineEdit, Get
 CLASS HbQtGet INHERIT GET
 
    METHOD new( oControl )
@@ -273,6 +284,7 @@ CLASS HbQtGet INHERIT GET
    METHOD getData()
    METHOD getDispWidth()                          INLINE ::sl_dispWidth
    METHOD setPosAndSize( aPos, aSize )
+   METHOD setFocus( nFocusReason )
 
    PROTECTED:
    VAR    oEdit
@@ -326,6 +338,8 @@ CLASS HbQtGet INHERIT GET
    METHOD returnPressed()
    METHOD isBufferValid()
    METHOD isDateBad()
+   METHOD postValidate()
+   METHOD preValidate()
 
    EXPORTED:
    /* ::oGet operation methods overloaded from GET : begins */
@@ -371,7 +385,7 @@ METHOD HbQtGet:create( oControl )
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)" , {|| ::testValid() } )
+      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T., ::testValid() } )
       ::oEdit:connect( "textChanged(QString)", {|| ::testValid() } )
 
       ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
@@ -460,6 +474,20 @@ METHOD HbQtGet:getList( oGetList )
 
 /*----------------------------------------------------------------------*/
 
+METHOD HbQtGet:setFocus( nFocusReason )
+
+   IF HB_ISOBJECT( ::oEdit )
+      IF ! Empty( nFocusReason )
+         ::oEdit:setFocus( nFocusReason )
+      ELSE
+         ::oEdit:setFocus()
+      ENDIF
+   ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtGet:font( oFont )
 
    IF HB_ISOBJECT( oFont )
@@ -496,14 +524,6 @@ METHOD HbQtGet:mousable( lEnable )
    ENDIF
 
    RETURN ::sl_mousable
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:returnPressed()
-
-   QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-
-   RETURN .T.
 
 /*----------------------------------------------------------------------*/
 
@@ -1031,6 +1051,20 @@ METHOD HbQtGet:color( cnaColor )
 //                            QEvent_FocusOut
 /*----------------------------------------------------------------------*/
 
+METHOD HbQtGet:returnPressed()
+
+   IF ::preValidate()
+      IF ! Empty( ::oGetList )
+         ::oGetList:goNext( Self )
+      ELSE
+         QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+      ENDIF
+   ENDIF
+
+   RETURN .T.
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtGet:execFocusOut( oFocusEvent )
 
    LOCAL lValid := ::isBufferValid()
@@ -1050,6 +1084,40 @@ METHOD HbQtGet:execFocusOut( oFocusEvent )
 //                             QEvent_FocusIn
 /*----------------------------------------------------------------------*/
 
+METHOD HbQtGet:preValidate()
+
+   LOCAL lWhen := .T.
+
+   IF HB_ISBLOCK( ::preBlock )
+      lWhen := Eval( ::preBlock, Self )
+      __GetListLast( ::oGetList )
+   ENDIF
+
+   RETURN lWhen
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:postValidate()
+
+   LOCAL lValid := .T.
+
+   IF ::isDateBad()
+      RETURN .F.
+   ENDIF
+
+   IF ::changed
+      ::assign()
+   ENDIF
+
+   IF HB_ISBLOCK( ::postBlock )
+      lValid := Eval( ::postBlock, Self )
+      __GetListLast( ::oGetList )
+   ENDIF
+
+   RETURN lValid
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtGet:execFocusIn( oFocusEvent )
 
    IF ! Empty( ::oGetList )
@@ -1060,12 +1128,18 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
 
    ::hasFocus := .T.
 
-   IF HB_ISBLOCK( ::bPreBlock )
-      IF ! ( ::lValidWhen := Eval( ::bPreBlock, ::getData() ) )
-         oFocusEvent:accept()
+   IF ! ::preValidate()
+      oFocusEvent:accept()
+      IF ! Empty( ::oGetList )
+         IF oFocusEvent:reason() == Qt_TabFocusReason
+            ::oGetList:goNext( Self )
+         ELSE
+            ::oGetList:goPrevious( Self )
+         ENDIF
+      ELSE
          QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, iif( oFocusEvent:reason() == Qt_TabFocusReason, Qt_Key_Tab, Qt_Key_Backtab ), Qt_NoModifier ) )
-         RETURN .T.
       ENDIF
+      RETURN .T.
    ENDIF
 
    RETURN .F.
@@ -1077,11 +1151,10 @@ METHOD HbQtGet:isBufferValid()
    LOCAL xValInVar, xValInBuffer
    LOCAL lValid := .T.
 
-   IF ::cType == "D"
-      IF ::isDateBad()
-         RETURN ! lValid
-      ENDIF
+   IF ::isDateBad()
+      RETURN ! lValid
    ENDIF
+
    IF HB_ISBLOCK( ::bPostBlock )
       /* Fetch Clipper Variable Value */
       xValInVar    := ::varGet()
@@ -1089,9 +1162,8 @@ METHOD HbQtGet:isBufferValid()
       /* Set Clipper Variable Value with Value in Buffer */
       ::varPut( xValInBuffer )
       /* Validate passing value in buffer, in case OOP gets are constructed */
-      lValid := Eval( ::bPostBlock, xValInBuffer )
+      lValid := Eval( ::bPostBlock, Self )
       /* Set Clipper Variable back to Original Value */
-      //Eval( ::sl_dataLink, xValInVar )
       ::varPut( xValInVar )
    ENDIF
 
@@ -1120,13 +1192,15 @@ METHOD HbQtGet:testValid()
 METHOD HbQtGet:isDateBad()
    LOCAL cChr
 
-   FOR EACH cChr IN ::oEdit:text()
-      IF IsDigit( cChr )
-         IF Empty( ::getData() )
-            RETURN .T.
+   IF ::cType == "D"
+      FOR EACH cChr IN ::oEdit:text()
+         IF IsDigit( cChr )
+            IF Empty( ::getData() )
+               RETURN .T.
+            ENDIF
          ENDIF
-      ENDIF
-   NEXT
+      NEXT
+   ENDIF
 
    RETURN .F.
 
@@ -1142,24 +1216,42 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       EXIT
 
    CASE Qt_Key_PageUp
-      IF ! Empty( ::oGetList )
-         ::oGetList:goTop( Self )
+      IF ::postValidate()
+         IF ! Empty( ::oGetList )
+            ::oGetList:goTop( Self )
+         ENDIF
       ENDIF
       EXIT
 
    CASE Qt_Key_PageDown
-      IF ! Empty( ::oGetList )
-         ::oGetList:goBottom( Self )
+      IF ::postValidate()
+         IF ! Empty( ::oGetList )
+            ::oGetList:goBottom( Self )
+         ENDIF
       ENDIF
       EXIT
 
    CASE Qt_Key_Up
-      QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
-      RETURN .T.
+      IF ::postValidate()
+         IF ! Empty( ::oGetList )
+            ::oGetList:goPrevious( Self )
+         ELSE
+            QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
+            RETURN .T.
+         ENDIF
+      ENDIF
+      EXIT
 
    CASE Qt_Key_Down
-      QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-      RETURN .T.
+      IF ::postValidate()
+         IF ! Empty( ::oGetList )
+            ::oGetList:goNext( Self )
+         ELSE
+            QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+            RETURN .T.
+         ENDIF
+      ENDIF
+      EXIT
 
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
@@ -1167,21 +1259,9 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          ::lValidWhen := .T.
          EXIT
       ENDIF
-
-      IF ::cType == "D" .AND. ::isDateBad()
+      IF ! ::postValidate()
          oKeyEvent:accept()
          RETURN .T.
-      ENDIF
-
-      ::original := ::getData()
-      ::varPut( ::original )
-      IF HB_ISBLOCK( ::bPostBlock )
-         IF ! Eval( ::bPostBlock, ::original )
-            oKeyEvent:accept()
-            RETURN .T.
-         ELSE
-            ::oEdit:repaint()
-         ENDIF
       ENDIF
       EXIT
 
@@ -1261,6 +1341,7 @@ METHOD HbQtGet:assign()
 
    IF ::hasFocus
       ::varPut( ::getData() )
+      ::lChanged := .F.
    ENDIF
 
    RETURN Self
@@ -1344,129 +1425,3 @@ METHOD HbQtGet:block( bBlock )
    RETURN ::bBlock
 
 /*----------------------------------------------------------------------*/
-//                           CLASS HbQtGetList
-/*----------------------------------------------------------------------*/
-
-CLASS HbQtGetList INHERIT HbGetList
-
-   METHOD goNext( oGet )
-   METHOD goPrevious( oGet )
-   METHOD goTop( oGet )
-   METHOD goBottom( oGet )
-   METHOD isFirstGet( oGet )
-   METHOD isLastGet( oGet )
-   METHOD nextGet( oGet )
-   METHOD previousGet( oGet )
-   METHOD getIndex( oGet )
-
-   ENDCLASS
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:getIndex( oGet )
-   RETURN AScan( ::aGetList, {|o| o == oGet } )
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:goNext( oGet )
-
-   LOCAL n := ::getIndex( oGet )
-
-   IF n > 0
-      IF n < Len( ::aGetList )
-         ::aGetList[ n + 1 ]:setFocus()
-         RETURN ::aGetList[ n + 1 ]
-      ENDIF
-   ENDIF
-
-   RETURN oGet
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:goPrevious( oGet )
-
-   LOCAL n := ::getIndex( oGet )
-
-   IF n > 0
-      IF n > 1
-         ::aGetList[ n - 1 ]:setFocus()
-         RETURN ::aGetList[ n - 1 ]
-      ENDIF
-   ENDIF
-
-   RETURN oGet
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:goTop( oGet )
-
-   LOCAL n := ::getIndex( oGet )
-
-   IF n > 0
-      IF n > 1
-         ::aGetList[ 1 ]:setFocus()
-         RETURN ::aGetList[ 1 ]
-      ENDIF
-   ENDIF
-
-   RETURN oGet
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:goBottom( oGet )
-
-   LOCAL n := ::getIndex( oGet )
-
-   IF n > 0
-      IF n < Len( ::aGetList )
-         ::aGetList[ Len( ::aGetList ) ]:setFocus()
-         RETURN ::aGetList[ Len( ::aGetList ) ]
-      ENDIF
-   ENDIF
-
-   RETURN oGet
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:isFirstGet( oGet )
-   RETURN ::getIndex( oGet ) == 1
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:isLastGet( oGet )
-   RETURN ::getIndex( oGet ) == Len( ::aGetList )
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:nextGet( oGet )
-
-   LOCAL n := ::getIndex( oGet )
-
-   IF n > 0
-      IF n == Len( ::aGetList )
-         RETURN ::aGetList[ 1 ]
-      ELSE
-         RETURN ::aGetList[ n + 1 ]
-      ENDIF
-   ENDIF
-
-   RETURN oGet
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGetList:previousGet( oGet )
-
-   LOCAL n := ::getIndex( oGet )
-
-   IF n > 0
-      IF n == 1
-         RETURN ATail( ::aGetList[ 1 ] )
-      ELSE
-         RETURN ::aGetList[ n - 1 ]
-      ENDIF
-   ENDIF
-
-   RETURN oGet
-
-/*----------------------------------------------------------------------*/
-

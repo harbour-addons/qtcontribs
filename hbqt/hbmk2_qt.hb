@@ -804,7 +804,7 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  setStyleSheet( " + cCmd + " )" )
 
       ELSEIF "setText(" $ cCmd
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + StrTran( hbqtui_pullTranslate( cCmd ), '\n""', "\n " ) )
 
       ELSEIF "setWhatsThis(" $ cCmd
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )

@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-11 18:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/hbmk2_qt.hb
+    ! A fix for :setText() when multiline text is initiated via Qt Designer.
+
+  + hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Separated: HbQtGetList() class in its own source.
+
+  + hbqt/tests/validator.hbp
+  + hbqt/tests/validatormain.ui
+  + hbqt/tests/validatorgets.ui
+  * hbqt/tests/validator.prg
+    + Added: main window and window displaying GETs consumed by GET
+       subsytem.
+
+  ; All is self explanatory. Few tweaks are remaining, tomorrow.
+     Guys, be ready to enter a vast world of GUI with time-tested 
+     GET system.
+
 2012-12-11 12:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetsys.prg
     ! One more small fix in decimal handelling.
