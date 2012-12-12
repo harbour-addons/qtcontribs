@@ -211,11 +211,21 @@ METHOD IdeEnvironments:prepareBatch( cEnvName )
          ENDIF
       NEXT
    ELSE
-      IF ! empty( cPath := ::oINI:getHarbourPath() )
-         aadd( aCmd, "SET PATH=" + cPath + "bin" + ";%PATH%" )
-      ELSE
-         aadd( aCmd, "SET PATH=%PATH%" )
-      ENDIF
+      cPath := ::oINI:getHarbourPath()
+
+      #if   defined( __PLATFORM__UNIX )
+         IF ! empty( cPath )
+            aadd( aCmd, "export PATH=" + cPath + "bin" + ";$PATH" )
+         ELSE
+            aadd( aCmd, "export PATH=$PATH" )
+         ENDIF
+      #else
+         IF ! empty( cPath )
+            aadd( aCmd, "SET PATH=" + cPath + "bin" + ";%PATH%" )
+         ELSE
+            aadd( aCmd, "SET PATH=%PATH%" )
+         ENDIF
+      #endif
    ENDIF
 
    RETURN hbide_getShellCommandsTempFile( aCmd )
