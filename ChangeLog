@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-13 13:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+  * hbqt/qtgui/hbqt_hbqvalidator.h
+  * hbqt/qtgui/qth/HBQValidator.qth
+    ! Fixed: syntactical issue where :fixup block was wrongly interpreted 
+       and assigned. Thanks to Luigi Ferraris for spotting the issue.
+
 2012-12-12 18:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetsys.prg
     Many synchronizational changes.

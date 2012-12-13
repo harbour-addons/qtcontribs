@@ -63,7 +63,7 @@ class HBQValidator : public QValidator
    Q_OBJECT
 
 public:
-   HBQValidator( PHB_ITEM pBlock, PHB_ITEM pFixupBlock );
+   HBQValidator( PHB_ITEM pBlock, PHB_ITEM pFixupBlock = NULL );
    virtual ~HBQValidator( void );
 
    PHB_ITEM block;

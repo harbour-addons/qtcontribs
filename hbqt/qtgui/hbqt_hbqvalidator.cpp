@@ -72,7 +72,7 @@ HBQValidator::HBQValidator( PHB_ITEM pBlock, PHB_ITEM pFixupBlock ) : QValidator
       block = NULL;
    }
 
-   if( fixupBlock )
+   if( pFixupBlock )
    {
       fixupBlock = hb_itemNew( pFixupBlock );
    }
