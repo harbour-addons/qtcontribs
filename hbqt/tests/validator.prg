@@ -69,7 +69,7 @@ STATIC FUNCTION Clipper( oMain )
    GetParent := QFrame( oWnd )
    oWnd:setWidget( GetParent )
 
-   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText VALID {|| cText == "ABC" .OR. cText == "DEF" } PICTURE "@!A"
+   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
 
    @ 2, 02 QSAY PadL( "Birthday:", nPdL )
    @ 2, nColGet QGET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
@@ -98,12 +98,7 @@ STATIC FUNCTION Clipper( oMain )
    @ 7, 52 QSAY "Salary:"
    @ 7, 60 QGET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
-
    QREAD
-
-   oWnd:resize( GetParent:width()  + 2 + ( oWnd:frameGeometry():width()  - oWnd:geometry():width()  ),;
-                GetParent:height() + 2 + ( oWnd:frameGeometry():height() - oWnd:geometry():height() ) )
-
 
    oWnd:show()
 
@@ -242,25 +237,25 @@ STATIC FUNCTION UiGets( oMain )
 
    GetParent := oWnd:oWidget
 
-   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText CONTROL oWnd:editUpper PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
+   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText  CONTROL oWnd:editUpper PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
 
-   @ 2, 02 QSAY PadL( "Birthday:", nPdL )              QGET dDate CONTROL oWnd:editBDay  COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
+   @ 2, 02 QSAY PadL( "Birthday:", nPdL )              QGET dDate  CONTROL oWnd:editBDay  COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
 
-   @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )        QGET nNumb CONTROL oWnd:edit6dec  PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
+   @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )        QGET nNumb  CONTROL oWnd:edit6dec  PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
 
-   @ 4, 02 QSAY PadL( "Logical - Married:", nPdL )     QGET lMrd  CONTROL oWnd:editMrd   PICTURE "Y"
+   @ 4, 02 QSAY PadL( "Logical - Married:", nPdL )     QGET lMrd   CONTROL oWnd:editMrd   PICTURE "Y"
 
-   @ 5, 02 QSAY PadL( "Telephone Number:", nPdL )      QGET cTele CONTROL oWnd:editTele  PICTURE "@! (999)999-9999"
+   @ 5, 02 QSAY PadL( "Telephone Number:", nPdL )      QGET cTele  CONTROL oWnd:editTele  PICTURE "@! (999)999-9999"
 
-   @ 6, 02 QSAY PadL( "Upper Lower Upper:", nPdL )     QGET cJust CONTROL oWnd:editULU   PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
+   @ 6, 02 QSAY PadL( "Upper Lower Upper:", nPdL )     QGET cJust  CONTROL oWnd:editULU   PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
 
-   @ 7, 02 QSAY PadL( "Scrolling Catalog:", nPdL )     QGET cCata CONTROL oWnd:editCata  PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
+   @ 7, 02 QSAY PadL( "Scrolling Catalog:", nPdL )     QGET cCata  CONTROL oWnd:editCata  PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
 
-   @ 1, 52 QSAY "Val[1]" QGET val[1] CONTROL oWnd:editVal1 PICTURE "@!"
-   @ 2, 52 QSAY "Val[2]" QGET val[2] CONTROL oWnd:editVal2 PICTURE "99"
-   @ 3, 52 QSAY "Val[3]" QGET val[3] CONTROL oWnd:editVal3
+   @ 1, 52 QSAY "Val[1]"                               QGET val[1] CONTROL oWnd:editVal1 PICTURE "@!"
+   @ 2, 52 QSAY "Val[2]"                               QGET val[2] CONTROL oWnd:editVal2 PICTURE "99"
+   @ 3, 52 QSAY "Val[3]"                               QGET val[3] CONTROL oWnd:editVal3
 
-   @ 7, 52 QSAY "Salary:" QGET nSlry CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+   @ 7, 52 QSAY "Salary:"                              QGET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
    QREAD
 
@@ -269,7 +264,6 @@ STATIC FUNCTION UiGets( oMain )
    RETURN NIL
 
 /*----------------------------------------------------------------------*/
-
 
 STATIC FUNCTION UpperLowerUpper( cText, nPos )
    LOCAL cChr, s
@@ -289,3 +283,16 @@ STATIC FUNCTION UpperLowerUpper( cText, nPos )
    RETURN .T.  /* Must always return TRUE/FALSE */
 
 /*----------------------------------------------------------------------*/
+
+STATIC FUNCTION Udf1( oGet )
+
+   IF "TST" $ oGet:buffer
+      oGet:buffer := "DEF"
+      oGet:varPut( "DEF" )
+      RETURN .T.
+   ENDIF
+
+   RETURN .F.
+
+/*----------------------------------------------------------------------*/
+

@@ -281,7 +281,7 @@ CLASS HbQtGet INHERIT GET
    METHOD inputValidator( bBlock )                SETGET
    METHOD mousable( lEnable )                     SETGET
    METHOD setData( xData )
-   METHOD getData()
+   METHOD getData( cBuffer )
    METHOD getDispWidth()                          INLINE ::sl_dispWidth
    METHOD setPosAndSize( aPos, aSize )
    METHOD setFocus( nFocusReason )
@@ -320,6 +320,7 @@ CLASS HbQtGet INHERIT GET
    VAR    aPos                                    INIT {}
    VAR    aSize                                   INIT {}
    VAR    cClassName                              INIT ""
+   VAR    oApp
 
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
@@ -352,11 +353,39 @@ CLASS HbQtGet INHERIT GET
    METHOD reset()
    /* ::oGet operation methods overloaded from GET : ends */
 
+   METHOD end()                                   INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_End      , Qt_NoModifier      ) )
+   METHOD home()                                  INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Home     , Qt_NoModifier      ) )
+   METHOD left()                                  INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Left     , Qt_NoModifier      ) )
+   METHOD right()                                 INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Right    , Qt_NoModifier      ) )
+   METHOD toDecPos()                              INLINE iif( ::sl_dec == 0, NIL, ::oEdit:setCursorPosition( At( ::sl_decProxy, ::text() ) ) )
+   METHOD wordLeft()                              INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Left     , Qt_ControlModifier ) )
+   METHOD wordRight()                             INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Right    , Qt_ControlModifier ) )
+
+   METHOD backSpace()                             INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_NoModifier      ) )
+   METHOD delete()                                INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_NoModifier      ) )
+   METHOD delEnd()                                INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_K        , Qt_ControlModifier ) )
+   METHOD delLeft()                               INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_NoModifier      ) )
+   METHOD delRight()                              INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_NoModifier      ) )
+   METHOD delWordLeft()                           INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_ControlModifier ) )
+   METHOD delWordRight()                          INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_ControlModifier ) )
+
+   METHOD insert( cChar )                         VIRTUAL
+   METHOD overStrike( cChar )                     VIRTUAL
+
+   ACCESS buffer                                  METHOD getBuffer()
+   ASSIGN buffer                                  METHOD setBuffer( cBuffer )
+
+   METHOD varGet()
+   METHOD varPut( xValue )
+   METHOD display()
+
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:new( oControl )
+
+   ::oApp := QApplication()
 
    IF HB_ISOBJECT( oControl )
       ::oControl := oControl
@@ -380,6 +409,7 @@ METHOD HbQtGet:create( oControl )
    ELSE
       ::oEdit := QLineEdit( ::oParent )
    ENDIF
+   ::oEdit:setObjectName( ::name() )
 
    ::cClassName := __objGetClsName( ::oEdit )
 
@@ -858,9 +888,9 @@ METHOD HbQtGet:setParams()
       ENDIF
       EXIT
    CASE "D"
-      ::sl_width     := Len( DToC( ::original ) )
+      ::sl_width     := Len( DToC( ::varGet() ) )
       cTmp           := Set( _SET_DATEFORMAT )
-      ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
+      ::sl_dispWidth := Len( Transform( ::varGet(), ::cPicture ) )
       ::cPicMask      := ""
       ::sl_qMask     := ""
       FOR EACH cChr IN cTmp
@@ -886,20 +916,20 @@ METHOD HbQtGet:setParams()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:getData()
+METHOD HbQtGet:getData( cBuffer )
 
-   LOCAL cData := ::oEdit:text()
+   hb_default( @cBuffer, ::oEdit:text() )
 
    SWITCH ::cType
 
    CASE "C"
-      RETURN Pad( cData, ::sl_width )
+      RETURN Pad( cBuffer, ::sl_width )
    CASE "N"
-      RETURN Val( ::unTransformThis( cData ) )
+      RETURN Val( ::unTransformThis( cBuffer ) )
    CASE "D"
-      RETURN CToD( cData )
+      RETURN CToD( cBuffer )
    CASE "L"
-      RETURN Left( cData, 1 ) $ "YyTt"
+      RETURN Left( cBuffer, 1 ) $ "YyTt"
 
    ENDSWITCH
 
@@ -1081,8 +1111,6 @@ METHOD HbQtGet:execFocusOut( oFocusEvent )
    RETURN .T.
 
 /*----------------------------------------------------------------------*/
-//                             QEvent_FocusIn
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:preValidate()
 
@@ -1091,6 +1119,7 @@ METHOD HbQtGet:preValidate()
    IF HB_ISBLOCK( ::preBlock )
       lWhen := Eval( ::preBlock, Self )
       __GetListLast( ::oGetList )
+//HB_TRACE( HB_TR_ALWAYS, ::getData, lWhen )
    ENDIF
 
    RETURN lWhen
@@ -1323,13 +1352,22 @@ METHOD HbQtGet:transformThis( xData, cMask )
 METHOD HbQtGet:unTransformThis( cData )
    LOCAL cChr, cText := ""
 
-   FOR EACH cChr IN cData
-      IF cChr $ "+-0123456789"
-         cText += cChr
-      ELSEIF cChr == ::sl_decProxy
-         cText += "."
-      ENDIF
-   NEXT
+   SWITCH ::cType
+   CASE "C"
+      RETURN cData
+   CASE "N"
+      FOR EACH cChr IN cData
+         IF cChr $ "+-0123456789"
+            cText += cChr
+         ELSEIF cChr == ::sl_decProxy
+            cText += "."
+         ENDIF
+      NEXT
+      EXIT
+   CASE "L"
+   CASE "D"
+      RETURN cData
+   ENDSWITCH
 
    RETURN cText
 
@@ -1420,8 +1458,99 @@ METHOD HbQtGet:block( bBlock )
 
    ::bBlock   := bBlock
    ::xVarGet  := ::original := ::varGet()
-   ::cType    := ValType( ::xVarGet )
+   ::cType    := ValType( ::original )
 
    RETURN ::bBlock
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:getBuffer()
+
+   ::cBuffer := ::oEdit:text()
+
+   RETURN ::cBuffer
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:setBuffer( cBuffer )
+
+   ::cBuffer := cBuffer
+   ::oEdit:setText( ::unTransformThis( ::cBuffer ) )
+   ::lChanged := .T.
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:varPut( xValue )
+
+   LOCAL aSubs
+   LOCAL nLen
+   LOCAL i
+   LOCAL aValue
+
+   IF HB_ISBLOCK( ::bBlock ) .AND. ValType( xValue ) $ "CNDTLU"
+      aSubs := ::xSubScript
+      IF HB_ISARRAY( aSubs ) .AND. ! Empty( aSubs )
+         nLen := Len( aSubs )
+         aValue := Eval( ::bBlock )
+         FOR i := 1 TO nLen - 1
+            IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ;
+               ( HB_ISHASH( aValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
+               aValue := aValue[ aSubs[ i ] ]
+            ELSE
+               EXIT
+            ENDIF
+         NEXT
+         IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ;
+            ( HB_ISHASH( aValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
+            aValue[ aSubs[ i ] ] := xValue
+         ENDIF
+      ELSE
+         Eval( ::bBlock, xValue )
+      ENDIF
+   ELSE
+      xValue := NIL
+   ENDIF
+
+   RETURN xValue
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:varGet()
+
+   LOCAL aSubs
+   LOCAL nLen
+   LOCAL i
+   LOCAL xValue
+
+   IF HB_ISBLOCK( ::bBlock )
+      aSubs := ::xSubScript
+      IF HB_ISARRAY( aSubs ) .AND. ! Empty( aSubs )
+         nLen := Len( aSubs )
+         xValue := Eval( ::bBlock )
+         FOR i := 1 TO nLen
+            IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ;
+               ( HB_ISHASH( xValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
+               xValue := xValue[ aSubs[ i ] ]
+            ELSE
+               EXIT
+            ENDIF
+         NEXT
+      ELSE
+         xValue := Eval( ::bBlock )
+      ENDIF
+   ELSE
+      xValue := ::xVarGet
+   ENDIF
+
+   RETURN xValue
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:display()
+   // What we should DO ??
+
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
