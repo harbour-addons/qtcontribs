@@ -870,6 +870,26 @@ HB_FUNC( HBQT_ISACTIVEAPPLICATION )
    hb_retl( ! fIsQuitting );
 }
 
+/* hbqt_findChild( oParent, cObjectName, cWidget ) */
+/* hbqt_findChild( oMainWindow, "myToolbar", "QToolbar" ) */
+HB_FUNC( HBQT_FINDCHILD )
+{
+   if( hb_pcount() == 3 && hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) )
+   {
+      QObject * p = ( QObject * ) hbqt_get_ptr( hb_param( 1, HB_IT_OBJECT ) );
+      if( p )
+      {
+         QObject * child = p->findChild<QObject *>( ( QString ) hb_parc( 2 ) );
+         if( child )
+         {
+            QString widget = hb_parc( 3 );
+            widget = "HB_" + widget.toUpper();
+            hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, child, widget.toAscii().data(), NULL, 1 ) );
+         }
+      }
+   }
+}
+
 HB_CALL_ON_STARTUP_BEGIN( _hbqtgui_init_ )
    hb_vmAtInit( hbqt_lib_init, NULL );
    hb_vmAtExit( hbqt_lib_exit, NULL );
