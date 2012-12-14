@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-14 08:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtstd.ch
+    % Refined some commands.
+
+  * hbqtwidgets/hbqtgetsys.prg
+    + Prepared to honor different type of objects than QLineEdit alone.
+       A work-in-progress.
+
+  * hbqt/tests/validator.prg
+    ! Fixed to release the memory when windows are closed.
+
 2012-12-13 15:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/qth/QFormLayout.qth
     + Uncommented some left-out methods in :addRow().

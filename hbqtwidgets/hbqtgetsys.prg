@@ -85,18 +85,7 @@
 #define _QGET_SAYPICTURE                          9
 #define _QGET_SAYCOLOR                           10
 #define _QGET_CONTROL                            11
-
-/*----------------------------------------------------------------------*/
-
-FUNCTION _QGET_( ... )
-   LOCAL aParam := hb_aParams()
-
-   aParam[ _QGET_GET ]:row := aParam[ _QGET_ROW ]
-   aParam[ _QGET_GET ]:col := aParam[ _QGET_COL ]
-
-   aParam[ _QGET_GET ]:cargo := aParam
-
-   RETURN aParam[ _QGET_GET ]
+#define _QGET_TYPE                               12
 
 /*----------------------------------------------------------------------*/
 
@@ -124,16 +113,17 @@ FUNCTION __hbQtBindGetList( oWnd, GetList )
 
 /*----------------------------------------------------------------------*/
 
-FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
+FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont, nLineSpacing )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
-   LOCAL nLineSpacing := 6, nEditPadding := 4
+   LOCAL nEditPadding := 4
    LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0
    LOCAL nX, nY, nW, nH
    LOCAL aGetList := {}
    LOCAL oGetList
    LOCAL lFit := .T.
 
+   hb_default( @nLineSpacing, 6 )
    IF Empty( oFont )
       oFont := QFont( QFont( "Courier New", 10 ) )
    ENDIF
@@ -160,11 +150,13 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
    ENDIF
 
    IF Len( GetList ) >= 1
-      FOR EACH oGet IN GetList
-         aEdit      := oGet:cargo
+      FOR EACH aEdit IN GetList
+         oGet     := aEdit[ _QGET_GET ]
+         oGet:row := aEdit[ _QGET_ROW ]
+         oGet:col := aEdit[ _QGET_COL ]
          IF Empty( aEdit[ _QGET_CONTROL ] )
             IF ! Empty( aEdit[ _QGET_SAY ] )
-               AAdd( SayList, { oGet:row, oGet:col, aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ] } )
+               AAdd( SayList, { aEdit[ _QGET_ROW ], aEdit[ _QGET_COL ], aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ] } )
                oGet:col += Len( Transform( aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ] ) ) + 1
             ENDIF
          ELSE
@@ -182,9 +174,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
          oLabel:setFont( oFont )
          oLabel:setAlignment( Qt_AlignLeft + Qt_AlignVCenter )
 
-         nX    := ( aPic[ 2 ] * nAvgWid ) + nLineSpacing
+         nX    := ( aPic[ 2 ] * nAvgWid ) + 6
          nY    := aPic[ 1 ] * nLHeight
-         nW    := nLineSpacing + ( Len( cText ) * nAvgWid )
+         nW    := 6 + ( Len( cText ) * nAvgWid )
          nH    := nObjHeight
          nMinX := Min( nMinX, nX )
          nMaxX := Max( nMaxX, nX + nW )
@@ -198,15 +190,15 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
    oGetList := HbQtGetList():New( aGetList )
 
    IF Len( GetList ) >= 1
-      FOR EACH oGet IN GetList
-         aEdit         := oGet:cargo
-         oGet:cargo    := NIL
+      FOR EACH aEdit IN GetList
+         oGet := aEdit[ _QGET_GET ]
 
          IF Empty( aEdit[ _QGET_CONTROL ] )
             oEdit      := HbQtGet():new()
          ELSE
             oEdit      := HbQtGet():new( aEdit[ _QGET_CONTROL ] )
          ENDIF
+         oEdit:widget  := aEdit[ _QGET_TYPE ]
          oEdit:parent  := oWnd
          oEdit:font    := oFont
          oEdit:getList := oGetList
@@ -228,9 +220,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
             oFLayout:addRow( iif( Empty( aEdit[ _QGET_CAPTION ] ), oGet:name(), aEdit[ _QGET_CAPTION ] ), oEdit )
          ELSE
             IF Empty( aEdit[ _QGET_CONTROL ] )
-               nX    := ( oGet:col * nAvgWid ) + nLineSpacing
+               nX    := ( oGet:col * nAvgWid ) + 6
                nY    := oGet:row * nLHeight
-               nW    := nLineSpacing + ( oEdit:getDispWidth() * nAvgWid )
+               nW    := 6 + ( oEdit:getDispWidth() * nAvgWid )
                nH    := nObjHeight
                nMinX := Min( nMinX, nX )
                nMaxX := Max( nMaxX, nX + nW )
@@ -253,12 +245,13 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont )
 
    ENDIF
 
+   GetList := aGetList  /* TO match Clipper behavior */
    __hbQtBindGetList( oWnd, oGetList )
    __GetListSetActive( oGetList )
    __GetListLast( oGetList )
 
    /* Probably will be fired only when oWnd is a top level window - needs to be investigated further */
-   oWnd:connect( QEvent_Close, {|| __hbQtBindGetList( oWnd, NIL ), .F. } )
+   oWnd:connect( QEvent_Close, {|| __hbQtBindGetList( oWnd, NIL ), oWnd:setParent( QWidget() ), .F. } )
 
    RETURN NIL
 
@@ -285,8 +278,11 @@ CLASS HbQtGet INHERIT GET
    METHOD getDispWidth()                          INLINE ::sl_dispWidth
    METHOD setPosAndSize( aPos, aSize )
    METHOD setFocus( nFocusReason )
+   METHOD widget( cWidget )                       SETGET
+
 
    PROTECTED:
+
    VAR    oEdit
    VAR    oGet
    VAR    oParent
@@ -321,6 +317,7 @@ CLASS HbQtGet INHERIT GET
    VAR    aSize                                   INIT {}
    VAR    cClassName                              INIT ""
    VAR    oApp
+   VAR    cWidget                                 INIT "QLineEdit"
 
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
@@ -407,9 +404,21 @@ METHOD HbQtGet:create( oControl )
       ::lUserControl := .T.
       ::oEdit := ::oControl
    ELSE
-      ::oEdit := QLineEdit( ::oParent )
+      SWITCH ::widget
+      CASE "QLineEdit"
+         ::oEdit := QLineEdit( ::oParent )
+         EXIT
+      CASE "QPlainTextEdit"
+         EXIT
+      CASE "QCheckBox"
+         EXIT
+      CASE "QPushButton"
+         EXIT
+      ENDSWITCH
    ENDIF
-   ::oEdit:setObjectName( ::name() )
+   IF ! Empty( ::name )
+      ::oEdit:setObjectName( ::name() )
+   ENDIF
 
    ::cClassName := __objGetClsName( ::oEdit )
 
@@ -436,12 +445,10 @@ METHOD HbQtGet:create( oControl )
       ::sl_font := QFont( "Courier New", 10 )
    ENDIF
 
-   IF ! ::lUserControl
-      ::oEdit:setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
-      IF ::cClassName == "QLINEEDIT"
-         ::oEdit:setStyleSheet( ::sl_cssColor )
-         ::oEdit:setFont( ::sl_font )
-      ENDIF
+   ::oEdit:setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
+   IF ::cClassName == "QLINEEDIT"
+      ::oEdit:setStyleSheet( ::sl_cssColor )
+      ::oEdit:setFont( ::sl_font )
    ENDIF
 
    ::setParams()
@@ -452,6 +459,16 @@ METHOD HbQtGet:create( oControl )
    ENDIF
 
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:widget( cWidget )
+
+   IF HB_ISCHAR( cWidget )
+      ::cWidget := cWidget
+   ENDIF
+
+   RETURN ::cWidget
 
 /*----------------------------------------------------------------------*/
 

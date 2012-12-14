@@ -67,8 +67,8 @@
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl> ] ;
                        => ;
-         AAdd( GetList, _QGET_( _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
-                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, <oControl> ) )
+         AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
+                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, <oControl>, "QLineEdit" } )
 
    #command @ <row>, <col> QSAY <sayExp> ;
                               [PICTURE <sayPic>] ;
@@ -83,11 +83,11 @@
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl> ] ;
                         => ;
-         AAdd( GetList, _QGET_( _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
+         AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
                                 <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, ;
-                                <sayExp>, <sayPic>, <sayColor>, <oControl> ) )
+                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit" } )
 
-   #command QREAD [ PARENT <GetParent> ] [ FONT <oFont> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont> )
-   #command QREAD => HbQtReadGets( GetList, SayList, GetParent, NIL )
+   #command QREAD [ PARENT <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont>, <nSpc> )
+   #command QREAD => HbQtReadGets( GetList, SayList, GetParent, NIL, 6 )
 
 #endif

@@ -65,6 +65,7 @@ STATIC FUNCTION Clipper( oMain )
    oWnd:setWindowFlags( Qt_Sheet )
    oWnd:setWindowTitle( "Clipper Get System - Scrollable Widget" )
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) } )
+   oWnd:connect( QEvent_Close, {|| oWnd:setParent( QWidget() ) } )
 
    GetParent := QFrame( oWnd )
    oWnd:setWidget( GetParent )
@@ -98,7 +99,7 @@ STATIC FUNCTION Clipper( oMain )
    @ 7, 52 QSAY "Salary:"
    @ 7, 60 QGET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
-   QREAD
+   QREAD PARENT GetParent LINESPACING 2
 
    oWnd:show()
 
@@ -131,6 +132,7 @@ STATIC FUNCTION OOPLayout( oMain )
    oWnd:setWindowFlags( Qt_Sheet )
    oWnd:setWindowTitle( "Clipper Get System - Layout" )
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) } )
+   oWnd:connect( QEvent_Close, {|| oWnd:setParent( QWidget() ) } )
 
    oFLayout := QFormLayout( oWnd )
    oFLayout:setLabelAlignment( Qt_AlignRight )
@@ -234,25 +236,26 @@ STATIC FUNCTION UiGets( oMain )
    oWnd:setWindowFlags( Qt_Sheet )
    oWnd:setWindowTitle( "Qt Designer Integrated GETs" )
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd:oWidget, QCloseEvent() ), NIL ) } )
+   oWnd:oWidget:connect( QEvent_Close, {|| oWnd:oWidget:setParent( QWidget() ) } )
 
    GetParent := oWnd:oWidget
 
-   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText  CONTROL oWnd:editUpper PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
+   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText  CONTROL oWnd:editUpper  PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
 
-   @ 2, 02 QSAY PadL( "Birthday:", nPdL )              QGET dDate  CONTROL oWnd:editBDay  COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
+   @ 2, 02 QSAY PadL( "Birthday:", nPdL )              QGET dDate  CONTROL oWnd:editBDay   COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
 
-   @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )        QGET nNumb  CONTROL oWnd:edit6dec  PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
+   @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )        QGET nNumb  CONTROL oWnd:edit6dec   PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
 
-   @ 4, 02 QSAY PadL( "Logical - Married:", nPdL )     QGET lMrd   CONTROL oWnd:editMrd   PICTURE "Y"
+   @ 4, 02 QSAY PadL( "Logical - Married:", nPdL )     QGET lMrd   CONTROL oWnd:editMrd    PICTURE "Y"
 
-   @ 5, 02 QSAY PadL( "Telephone Number:", nPdL )      QGET cTele  CONTROL oWnd:editTele  PICTURE "@! (999)999-9999"
+   @ 5, 02 QSAY PadL( "Telephone Number:", nPdL )      QGET cTele  CONTROL oWnd:editTele   PICTURE "@! (999)999-9999"
 
-   @ 6, 02 QSAY PadL( "Upper Lower Upper:", nPdL )     QGET cJust  CONTROL oWnd:editULU   PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
+   @ 6, 02 QSAY PadL( "Upper Lower Upper:", nPdL )     QGET cJust  CONTROL oWnd:editULU    PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
 
-   @ 7, 02 QSAY PadL( "Scrolling Catalog:", nPdL )     QGET cCata  CONTROL oWnd:editCata  PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
+   @ 7, 02 QSAY PadL( "Scrolling Catalog:", nPdL )     QGET cCata  CONTROL oWnd:editCata   PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
 
-   @ 1, 52 QSAY "Val[1]"                               QGET val[1] CONTROL oWnd:editVal1 PICTURE "@!"
-   @ 2, 52 QSAY "Val[2]"                               QGET val[2] CONTROL oWnd:editVal2 PICTURE "99"
+   @ 1, 52 QSAY "Val[1]"                               QGET val[1] CONTROL oWnd:editVal1   PICTURE "@!"
+   @ 2, 52 QSAY "Val[2]"                               QGET val[2] CONTROL oWnd:editVal2   PICTURE "99"
    @ 3, 52 QSAY "Val[3]"                               QGET val[3] CONTROL oWnd:editVal3
 
    @ 7, 52 QSAY "Salary:"                              QGET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
