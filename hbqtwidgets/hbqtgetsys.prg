@@ -1583,29 +1583,3 @@ METHOD HbQtGet:toCol( nCol )
    RETURN ::nToCol
 
 /*----------------------------------------------------------------------*/
-
-  - hbqt/tests/validator.hbp
-  - hbqt/tests/validator.prg
-  - hbqt/tests/validatorgets.ui
-  - hbqt/tests/validatormain.ui
-  * hbqt/tests/hbmk.hbm
-    - Transferred: validator.hbp++ to hbqtwidgets/tests
-
-  + hbqtwidgets/tests
-  + hbqtwidgets/tests/hbmk.hbm
-  + hbqtwidgets/tests/validator.hbp
-  + hbqtwidgets/tests/validator.prg
-  + hbqtwidgets/tests/validatorgets.ui
-  + hbqtwidgets/tests/validatormain.ui
-    + Transferred: from hbqt/tests.
-
-  * hbqtwidgets/hbqtgetlist.prg
-  * hbqtwidgets/hbqtgetsys.prg
-  * hbqtwidgets/hbqtstd.ch
-    + Implemented: @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ...
-                   @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ...
-
-                   #command QSET GETSFONT [TO] <oFont>      => HbQtSet( _QSET_GETSFONT   , <oFont>   )
-                   #command QSET LINESPACING [TO] <nPixels> => HbQtSet( _QSET_LINESPACING, <nPixels> )
-                   #command QSET NOMOUSABLE [TO] <lMouse>   => HbQtSet( _QSET_NOMOUSABLE , <lMouse>  )
-
