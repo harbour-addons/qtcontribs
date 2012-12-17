@@ -1,4 +1,4 @@
-            /*
+/*
  * $Id$
  */
 
@@ -66,198 +66,10 @@
 #include "button.ch"
 
 #include "hbqtgui.ch"
+#include "hbqtstd.ch"
 
 #include "hbtrace.ch"
 
-#define GET_CLR_UNSELECTED                        0
-#define GET_CLR_ENHANCED                          1
-#define GET_CLR_CAPTION                           2
-#define GET_CLR_ACCEL                             3
-
-#define _QGET_GET                                 1
-#define _QGET_CAPTION                             2
-#define _QGET_COLOR                               3
-#define _QGET_VALIDATOR                           4
-#define _QGET_NOMOUSE                             5
-#define _QGET_ROW                                 6
-#define _QGET_COL                                 7
-#define _QGET_SAY                                 8
-#define _QGET_SAYPICTURE                          9
-#define _QGET_SAYCOLOR                           10
-#define _QGET_CONTROL                            11
-#define _QGET_TYPE                               12
-
-/*----------------------------------------------------------------------*/
-
-FUNCTION __hbQtBindGetList( oWnd, GetList )
-   LOCAL n, oGetList
-
-   THREAD STATIC t_GetList := {}
-
-   IF HB_ISOBJECT( oWnd )
-      IF ( n := AScan( t_GetList, {|e_| e_[ 1 ] == oWnd } ) ) > 0
-         oGetList := t_GetList[ n, 2 ]
-      ENDIF
-      IF HB_ISOBJECT( GetList )
-         IF n > 0
-            t_GetList[ n, 2 ] := GetList
-         ELSE
-            AAdd( t_GetList, { oWnd, GetList } )
-         ENDIF
-      ELSEIF PCount() >= 2 .AND. n > 0
-         hb_ADel( t_GetList, n, .T. )
-      ENDIF
-   ENDIF
-
-   RETURN oGetList
-
-/*----------------------------------------------------------------------*/
-
-FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont, nLineSpacing )
-   LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout
-   LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
-   LOCAL nEditPadding := 4
-   LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0
-   LOCAL nX, nY, nW, nH
-   LOCAL aGetList := {}
-   LOCAL oGetList
-   LOCAL lFit := .T.
-
-   hb_default( @nLineSpacing, 6 )
-   IF Empty( oFont )
-      oFont := QFont( QFont( "Courier New", 10 ) )
-   ENDIF
-
-   cClsName := __objGetClsName( oWnd )
-   IF cClsName == "QFORMLAYOUT"
-      oFLayout := oWnd
-   ELSE
-      oFLayout := oWnd:layout()
-      IF ! Empty( oFLayout )
-         oWnd:removeLayout( oFLayout )
-      ENDIF
-   ENDIF
-   lFLayout := ! Empty( oFLayout )
-
-   IF ! lFLayout                              /* Compute row height and formulae to have text width */
-      oEdit := QLineEdit( oWnd )
-      oEdit:setFont( oFont )
-      oFontM     := QFontMetrics( oEdit:font() )
-      nObjHeight := oFontM:height() + nEditPadding
-      nAvgWid    := oFontM:averageCharWidth()
-      nLHeight   := nObjHeight + nLineSpacing
-      oEdit:setParent( QWidget() )
-   ENDIF
-
-   IF Len( GetList ) >= 1
-      FOR EACH aEdit IN GetList
-         oGet     := aEdit[ _QGET_GET ]
-         oGet:row := aEdit[ _QGET_ROW ]
-         oGet:col := aEdit[ _QGET_COL ]
-         IF Empty( aEdit[ _QGET_CONTROL ] )
-            IF ! Empty( aEdit[ _QGET_SAY ] )
-               AAdd( SayList, { aEdit[ _QGET_ROW ], aEdit[ _QGET_COL ], aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ] } )
-               oGet:col += Len( Transform( aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ] ) ) + 1
-            ENDIF
-         ELSE
-            lFit := .F.
-         ENDIF
-      NEXT
-   ENDIF
-
-   /* This is independent of @ ... SAY ... GET combined */
-   IF Len( SayList ) >= 1
-      FOR EACH aPic IN SayList
-         oLabel := QLabel( oWnd )
-         cText  := Transform( aPic[ 3 ], aPic[ 4 ] )
-         oLabel:setText( cText )
-         oLabel:setFont( oFont )
-         oLabel:setAlignment( Qt_AlignLeft + Qt_AlignVCenter )
-
-         nX    := ( aPic[ 2 ] * nAvgWid ) + 6
-         nY    := aPic[ 1 ] * nLHeight
-         nW    := 6 + ( Len( cText ) * nAvgWid )
-         nH    := nObjHeight
-         nMinX := Min( nMinX, nX )
-         nMaxX := Max( nMaxX, nX + nW )
-         nMinY := Min( nMinY, nY )
-         nMaxY := Max( nMaxY, nY + nH )
-         oLabel:move( nX, nY )
-         oLabel:resize( nW, nH )
-      NEXT
-   ENDIF
-
-   oGetList := HbQtGetList():New( aGetList )
-
-   IF Len( GetList ) >= 1
-      FOR EACH aEdit IN GetList
-         oGet := aEdit[ _QGET_GET ]
-
-         IF Empty( aEdit[ _QGET_CONTROL ] )
-            oEdit      := HbQtGet():new()
-         ELSE
-            oEdit      := HbQtGet():new( aEdit[ _QGET_CONTROL ] )
-         ENDIF
-         oEdit:widget  := aEdit[ _QGET_TYPE ]
-         oEdit:parent  := oWnd
-         oEdit:font    := oFont
-         oEdit:getList := oGetList
-         oEdit:get     := oGet   /* This is important - all variables will be initialized here instead of in :new() */
-
-         IF ! Empty( aEdit[ _QGET_COLOR ] )
-            oEdit:color := aEdit[ _QGET_COLOR ]
-         ENDIF
-
-         IF HB_ISBLOCK( aEdit[ _QGET_VALIDATOR ] )
-            oEdit:inputValidator := aEdit[ _QGET_VALIDATOR ]
-         ENDIF
-
-         oEdit:mousable := ! aEdit[ _QGET_NOMOUSE ]
-
-         oEdit:create()
-
-         IF lFLayout
-            oFLayout:addRow( iif( Empty( aEdit[ _QGET_CAPTION ] ), oGet:name(), aEdit[ _QGET_CAPTION ] ), oEdit )
-         ELSE
-            IF Empty( aEdit[ _QGET_CONTROL ] )
-               nX    := ( oGet:col * nAvgWid ) + 6
-               nY    := oGet:row * nLHeight
-               nW    := 6 + ( oEdit:getDispWidth() * nAvgWid )
-               nH    := nObjHeight
-               nMinX := Min( nMinX, nX )
-               nMaxX := Max( nMaxX, nX + nW )
-               nMinY := Min( nMinY, nY )
-               nMaxY := Max( nMaxY, nY + nH )
-               //
-               oEdit:setPosAndSize( { nX, nY }, { nW, nH } )
-            ENDIF
-         ENDIF
-
-         AAdd( aGetList, oEdit )
-      NEXT
-
-      aGetList[ 1 ]:edit:setFocus()
-      aGetList[ 1 ]:edit:selectAll()
-
-      IF lFit
-         oWnd:resize( nMaxX + nMinX, nMaxY + nMinY )  /* Fit to the contents maintaining margins */
-      ENDIF
-
-   ENDIF
-
-   GetList := aGetList  /* TO match Clipper behavior */
-   __hbQtBindGetList( oWnd, oGetList )
-   __GetListSetActive( oGetList )
-   __GetListLast( oGetList )
-
-   /* Probably will be fired only when oWnd is a top level window - needs to be investigated further */
-   oWnd:connect( QEvent_Close, {|| __hbQtBindGetList( oWnd, NIL ), oWnd:setParent( QWidget() ), .F. } )
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-//                            CLASS HbQtEdit
-/*----------------------------------------------------------------------*/
 
 CLASS HbQtGet INHERIT GET
 
@@ -276,9 +88,13 @@ CLASS HbQtGet INHERIT GET
    METHOD setData( xData )
    METHOD getData( cBuffer )
    METHOD getDispWidth()                          INLINE ::sl_dispWidth
+   METHOD getDispHeight()                         INLINE ::sl_dispHeight
    METHOD setPosAndSize( aPos, aSize )
    METHOD setFocus( nFocusReason )
    METHOD widget( cWidget )                       SETGET
+   METHOD toRow( nRow )                           SETGET
+   METHOD toCol( nCol )                           SETGET
+   METHOD data( xData )                           SETGET
 
 
    PROTECTED:
@@ -298,6 +114,7 @@ CLASS HbQtGet INHERIT GET
    VAR    sl_mousable                             INIT .T.
 
    VAR    sl_dispWidth                            INIT 0
+   VAR    sl_dispHeight                           INIT 1
    VAR    sl_width                                INIT 0
    VAR    sl_dec                                  INIT 0
    VAR    sl_prime                                INIT 0
@@ -318,6 +135,9 @@ CLASS HbQtGet INHERIT GET
    VAR    cClassName                              INIT ""
    VAR    oApp
    VAR    cWidget                                 INIT "QLineEdit"
+   VAR    nToRow                                  INIT NIL
+   VAR    nToCol                                  INIT NIL
+   VAR    sl_data                                 INIT NIL
 
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
@@ -338,6 +158,9 @@ CLASS HbQtGet INHERIT GET
    METHOD isDateBad()
    METHOD postValidate()
    METHOD preValidate()
+   METHOD setColor( cMode )
+   METHOD connect()
+   METHOD isQLineEdit()                           INLINE ::cClassName == "QLINEEDIT"
 
    EXPORTED:
    /* ::oGet operation methods overloaded from GET : begins */
@@ -409,6 +232,11 @@ METHOD HbQtGet:create( oControl )
          ::oEdit := QLineEdit( ::oParent )
          EXIT
       CASE "QPlainTextEdit"
+         ::oEdit := QPlainTextEdit( ::oParent )
+         ::oEdit:setTabChangesFocus( .T. )
+         EXIT
+      CASE "QListWidget"
+         ::oEdit := QListWidget( ::oParent )
          EXIT
       CASE "QCheckBox"
          EXIT
@@ -422,23 +250,7 @@ METHOD HbQtGet:create( oControl )
 
    ::cClassName := __objGetClsName( ::oEdit )
 
-   SWITCH ::cClassName
-   CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T., ::testValid() } )
-      ::oEdit:connect( "textChanged(QString)", {|| ::testValid() } )
-
-      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
-
-      ::oEdit:connect( "returnPressed()"     , {|| ::returnPressed(), .F. } )
-
-      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::execKeyPress( oKeyEvent ) } )
-      EXIT
-   CASE "QCHECKBOX"
-      EXIT
-   CASE "QPUSHBUTTON"
-      EXIT
-   ENDSWITCH
+   ::connect()
 
    /* Still TO be determined IF font should be of fixed pitch IF it is a user supplied control */
    IF ! HB_ISOBJECT( ::sl_font )
@@ -446,7 +258,7 @@ METHOD HbQtGet:create( oControl )
    ENDIF
 
    ::oEdit:setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
-   IF ::cClassName == "QLINEEDIT"
+   IF ::cClassName $ "QLINEEDIT,QPLAINTEXTEDIT,QLISTWIDGET"
       ::oEdit:setStyleSheet( ::sl_cssColor )
       ::oEdit:setFont( ::sl_font )
    ENDIF
@@ -457,6 +269,37 @@ METHOD HbQtGet:create( oControl )
    IF ::cClassName == "QLINEEDIT"
       ::oEdit:setCursorPosition( 0 )
    ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:connect()
+
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T., ::testValid() } )
+      ::oEdit:connect( "textChanged(QString)", {|| ::testValid() } )
+      ::oEdit:connect( "returnPressed()"     , {|| ::returnPressed(), .F. } )
+
+      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent  | ::execKeyPress( oKeyEvent ) } )
+      EXIT
+   CASE "QPLAINTEXTEDIT"
+      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      EXIT
+   CASE "QLISTWIDGET"
+      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      EXIT
+   CASE "QCHECKBOX"
+   CASE "QPUSHBUTTON"
+      EXIT
+   ENDSWITCH
 
    RETURN Self
 
@@ -508,6 +351,16 @@ METHOD HbQtGet:parent( oParent )
    ENDIF
 
    RETURN ::oParent
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:data( xData )
+
+   IF PCount() == 1 .AND. ! Empty( xData )
+      ::sl_data := xData
+   ENDIF
+
+   RETURN ::sl_data
 
 /*----------------------------------------------------------------------*/
 
@@ -869,65 +722,77 @@ METHOD HbQtGet:setParams()
 
    LOCAL cTmp, cChr, n
 
-   SWITCH ::cType
-   CASE "C"
-      ::sl_width := Len( ::original )
-      IF ! Empty( ::cPicMask )
-         ::sl_width := Len( ::cPicMask )
-         ::oEdit:setInputMask( ::sl_qMask )
-      ENDIF
-      ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
-      ::oEdit:setMaxLength( ::sl_width )
-      ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
-      EXIT
-   CASE "N"
-      IF ! Empty( ::cPicMask )
-         cTmp       := ::cPicMask
-         n          := At( ::sl_decSep, cTmp )
-         ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
-         ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
-         ::sl_prime := ::sl_width - iif( ::sl_dec > 0, ::sl_dec + 1, 0 )
-      ELSE
-         cTmp       := Str( ::original )
-         ::sl_width := Len( cTmp )
-         n          := At( ::sl_decSep, cTmp )
-         ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
-         ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
-      ENDIF
-      ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
-      ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
-      IF ! ( "B" $ ::cPicFunc )
-         ::oEdit:setAlignment( Qt_AlignRight )
-      ENDIF
-      IF "E" $ ::cPicFunc
-         ::sl_decProxy := ","
-         ::sl_commaProxy := "."
-      ENDIF
-      EXIT
-   CASE "D"
-      ::sl_width     := Len( DToC( ::varGet() ) )
-      cTmp           := Set( _SET_DATEFORMAT )
-      ::sl_dispWidth := Len( Transform( ::varGet(), ::cPicture ) )
-      ::cPicMask      := ""
-      ::sl_qMask     := ""
-      FOR EACH cChr IN cTmp
-         IF cChr $ "mdy"
-            ::cPicMask  += "9"
-            ::sl_qMask += "9"
-         ELSE
-            ::cPicMask  += cChr
-            ::sl_qMask += cChr
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      SWITCH ::cType
+      CASE "C"
+         ::sl_width := Len( ::original )
+         IF ! Empty( ::cPicMask )
+            ::sl_width := Len( ::cPicMask )
+            ::oEdit:setInputMask( ::sl_qMask )
          ENDIF
-         ::oEdit:setInputMask( ::sl_qMask )
-      NEXT
-      ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+         ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
+         ::oEdit:setMaxLength( ::sl_width )
+         ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+         EXIT
+      CASE "N"
+         IF ! Empty( ::cPicMask )
+            cTmp       := ::cPicMask
+            n          := At( ::sl_decSep, cTmp )
+            ::sl_width := ::timesOccurs( "9", cTmp ) + iif( n > 0, 1, 0 )
+            ::sl_dec   := iif( n > 0, ::timesOccurs( "9", SubStr( cTmp, n+1 ) ), 0 )
+            ::sl_prime := ::sl_width - iif( ::sl_dec > 0, ::sl_dec + 1, 0 )
+         ELSE
+            cTmp       := Str( ::original )
+            ::sl_width := Len( cTmp )
+            n          := At( ::sl_decSep, cTmp )
+            ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
+            ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
+         ENDIF
+         ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
+         ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getNumber( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+         IF ! ( "B" $ ::cPicFunc )
+            ::oEdit:setAlignment( Qt_AlignRight )
+         ENDIF
+         IF "E" $ ::cPicFunc
+            ::sl_decProxy := ","
+            ::sl_commaProxy := "."
+         ENDIF
+         EXIT
+      CASE "D"
+         ::sl_width     := Len( DToC( ::varGet() ) )
+         cTmp           := Set( _SET_DATEFORMAT )
+         ::sl_dispWidth := Len( Transform( ::varGet(), ::cPicture ) )
+         ::cPicMask      := ""
+         ::sl_qMask     := ""
+         FOR EACH cChr IN cTmp
+            IF cChr $ "mdy"
+               ::cPicMask  += "9"
+               ::sl_qMask += "9"
+            ELSE
+               ::cPicMask  += cChr
+               ::sl_qMask += cChr
+            ENDIF
+            ::oEdit:setInputMask( ::sl_qMask )
+         NEXT
+         ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+         EXIT
+      CASE "L"
+         ::sl_width     := 1
+         ::sl_dispWidth := 1
+         ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+         EXIT
+      ENDSWITCH
       EXIT
-   CASE "L"
-      ::sl_width     := 1
-      ::sl_dispWidth := 1
-      ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+   CASE "QLISTWIDGET"
+   CASE "QPLAINTEXTEDIT"
+      ::sl_dispWidth  := ::nToCol - ::nCol
+      ::sl_dispHeight := ::nToRow - ::nRow
+      EXIT
+   CASE "QCHECKBOX"
       EXIT
    ENDSWITCH
+
 
    RETURN Self
 
@@ -935,19 +800,29 @@ METHOD HbQtGet:setParams()
 
 METHOD HbQtGet:getData( cBuffer )
 
-   hb_default( @cBuffer, ::oEdit:text() )
-
-   SWITCH ::cType
-
-   CASE "C"
-      RETURN Pad( cBuffer, ::sl_width )
-   CASE "N"
-      RETURN Val( ::unTransformThis( cBuffer ) )
-   CASE "D"
-      RETURN CToD( cBuffer )
-   CASE "L"
-      RETURN Left( cBuffer, 1 ) $ "YyTt"
-
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      hb_default( @cBuffer, ::oEdit:text() )
+      SWITCH ::cType
+      CASE "C"
+         RETURN Pad( cBuffer, ::sl_width )
+      CASE "N"
+         RETURN Val( ::unTransformThis( cBuffer ) )
+      CASE "D"
+         RETURN CToD( cBuffer )
+      CASE "L"
+         RETURN Left( cBuffer, 1 ) $ "YyTt"
+      ENDSWITCH
+      EXIT
+   CASE "QPLAINTEXTEDIT"
+      hb_default( @cBuffer, ::oEdit:toPlainText() )
+      RETURN cBuffer
+   CASE "QLISTWIDGET"
+      RETURN ::oEdit:currentItem():text()
+   CASE "QCHECKBOX"
+   CASE "QPUSHBUTTON"
+   CASE "QCOMBOBOX"
+      EXIT
    ENDSWITCH
 
    RETURN ""
@@ -955,27 +830,40 @@ METHOD HbQtGet:getData( cBuffer )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:setData( xData )
+   LOCAL cTmp
 
-   LOCAL cBuffer := ""
-
-   SWITCH ::cType
-
-   CASE "C"
-      cBuffer := RTrim( xData )
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      SWITCH ::cType
+      CASE "C"
+         RETURN ::oEdit:setText( RTrim( xData ) )
+      CASE "N"
+         RETURN ::oEdit:setText( ::transformThis( xData, ::cPicture ) )
+      CASE "D"
+         RETURN ::oEdit:setText( DToC( xData ) )
+      CASE "L"
+         RETURN ::oEdit:setText( iif( xData, iif( ::cPicFunc $ "Y", "Y", "T" ), iif( ::cPicFunc $ "Y", "N", "F" ) ) )
+      ENDSWITCH
       EXIT
-   CASE "N"
-      cBuffer := ::transformThis( xData, ::cPicture )
+   CASE "QPLAINTEXTEDIT"
+      ::oEdit:setPlainText( Trim( xData ) )
       EXIT
-   CASE "D"
-      cBuffer := DToC( xData )
+   CASE "QLISTWIDGET"
+      ::oEdit:clear()
+      IF HB_ISARRAY( ::data ) .AND. ! Empty( ::sl_data[ _QDATA_LISTBOX_ITEMS ] )
+         FOR EACH cTmp IN ::sl_data[ _QDATA_LISTBOX_ITEMS ]
+            ::oEdit:addItem( cTmp )
+         NEXT
+         IF ! Empty( cTmp := ::varGet() )
+            ::oEdit:setCurrentRow( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e| e == cTmp } ) - 1 )
+         ENDIF
+      ENDIF
       EXIT
-   CASE "L"
-      cBuffer := iif( xData, iif( ::cPicFunc $ "Y", "Y", "T" ), iif( ::cPicFunc $ "Y", "N", "F" ) )
+   CASE "QCHECKBOX"
+   CASE "QPUSHBUTTON"
+   CASE "QCOMBOBOX"
       EXIT
-
    ENDSWITCH
-
-   ::oEdit:setText( cBuffer )
 
    RETURN NIL
 
@@ -1036,6 +924,33 @@ METHOD HbQtGet:picture( cPicture )
 
 /*----------------------------------------------------------------------*/
 
+METHOD HbQtGet:setColor( cMode )
+
+   IF HB_ISOBJECT( ::oEdit )
+      IF cMode == "normal"
+         SWITCH ::cClassName
+         CASE "QLINEEDIT"
+         CASE "QPLAINTEXTEDIT"
+         CASE "QLISTWIDGET"
+            ::oEdit:setStyleSheet( "" )
+            ::oEdit:setStyleSheet( ::sl_cssColor )
+            ::oEdit:repaint()
+            EXIT
+         CASE "QPUSHBUTTON"
+            // ?
+            EXIT
+         ENDSWITCH
+      ELSEIF cMode == "warning"
+         ::oEdit:setStyleSheet( "" )
+         ::oEdit:setStyleSheet( ::sl_cssNotValid )
+         ::oEdit:repaint()
+      ENDIF
+   ENDIF
+
+   RETURN ::sl_cssColor
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtGet:color( cnaColor )
 
    LOCAL n, lExt, xFore, xBack, cCSS := "" , cCSSF, cCSSB
@@ -1088,9 +1003,7 @@ METHOD HbQtGet:color( cnaColor )
 
    ENDSWITCH
 
-   IF HB_ISOBJECT( ::oEdit )
-      ::oEdit:setStyleSheet( ::sl_cssColor )
-   ENDIF
+   ::setColor( "normal" )
 
    RETURN ::sl_color
 
@@ -1100,67 +1013,37 @@ METHOD HbQtGet:color( cnaColor )
 
 METHOD HbQtGet:returnPressed()
 
-   IF ::preValidate()
+   IF ::postValidate()
       IF ! Empty( ::oGetList )
          ::oGetList:goNext( Self )
       ELSE
          QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
       ENDIF
    ENDIF
-
-   RETURN .T.
+   RETURN NIL
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:execFocusOut( oFocusEvent )
+METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving */
 
    LOCAL lValid := ::isBufferValid()
 
+   IF ::cClassName == "QPLAINTEXTEDIT"
+      ::cBuffer := ::oEdit:toPlainText()
+      ::assign()
+   ENDIF
+
    IF lValid
+      ::hasFocus := .F.
       RETURN .F.
    ENDIF
 
-   ::hasFocus := .F.
+   ::hasFocus := .T.
 
    oFocusEvent:ignore()
    ::setFocus()
 
    RETURN .T.
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:preValidate()
-
-   LOCAL lWhen := .T.
-
-   IF HB_ISBLOCK( ::preBlock )
-      lWhen := Eval( ::preBlock, Self )
-      __GetListLast( ::oGetList )
-//HB_TRACE( HB_TR_ALWAYS, ::getData, lWhen )
-   ENDIF
-
-   RETURN lWhen
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:postValidate()
-
-   LOCAL lValid := .T.
-
-   IF ::isDateBad()
-      RETURN .F.
-   ENDIF
-
-   IF ::changed
-      ::assign()
-   ENDIF
-
-   IF HB_ISBLOCK( ::postBlock )
-      lValid := Eval( ::postBlock, Self )
-      __GetListLast( ::oGetList )
-   ENDIF
-
-   RETURN lValid
 
 /*----------------------------------------------------------------------*/
 
@@ -1192,6 +1075,42 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
 
 /*----------------------------------------------------------------------*/
 
+METHOD HbQtGet:preValidate()
+
+   LOCAL lWhen := .T.
+
+   IF HB_ISBLOCK( ::preBlock )
+      lWhen := Eval( ::preBlock, Self )
+      __GetListLast( ::oGetList )
+   ENDIF
+
+   RETURN lWhen
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:postValidate()
+
+   LOCAL lValid := .T.
+
+   IF ::isDateBad()
+      RETURN .F.
+   ENDIF
+
+   IF ::changed
+      ::assign()
+   ENDIF
+
+   IF HB_ISBLOCK( ::postBlock )
+      lValid := Eval( ::postBlock, Self )
+      __GetListLast( ::oGetList )
+   ENDIF
+
+   ::setColor( iif( lValid, "normal", "warning" ) )
+
+   RETURN lValid
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtGet:isBufferValid()
 
    LOCAL xValInVar, xValInBuffer
@@ -1218,27 +1137,28 @@ METHOD HbQtGet:isBufferValid()
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:testValid()
-
+#if 0
    LOCAL lValid := ::isBufferValid()
 
    IF ! lValid
-      ::oEdit:setStyleSheet( "" )
-      ::oEdit:setStyleSheet( ::sl_cssNotValid )
+      ::SetColor( "warning" )
       ::oEdit:repaint()
    ELSE
-      ::oEdit:setStyleSheet( "" )
-      ::oEdit:setStyleSheet( ::sl_cssColor )
+      ::SetColor( "normal" )
       ::oEdit:repaint()
    ENDIF
 
    RETURN .F.
+#else
+   RETURN .T.
+#endif
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:isDateBad()
    LOCAL cChr
 
-   IF ::cType == "D"
+   IF ::cType == "D" .AND. ::isQLineEdit()
       FOR EACH cChr IN ::oEdit:text()
          IF IsDigit( cChr )
             IF Empty( ::getData() )
@@ -1262,52 +1182,90 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       EXIT
 
    CASE Qt_Key_PageUp
-      IF ::postValidate()
-         IF ! Empty( ::oGetList )
-            ::oGetList:goTop( Self )
+      IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
+         IF ::postValidate()
+            IF ! Empty( ::oGetList )
+               ::oGetList:goTop( Self )
+            ENDIF
          ENDIF
       ENDIF
       EXIT
 
    CASE Qt_Key_PageDown
-      IF ::postValidate()
-         IF ! Empty( ::oGetList )
-            ::oGetList:goBottom( Self )
+      IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
+         IF ::postValidate()
+            IF ! Empty( ::oGetList )
+               ::oGetList:goBottom( Self )
+            ENDIF
          ENDIF
       ENDIF
       EXIT
 
    CASE Qt_Key_Up
-      IF ::postValidate()
-         IF ! Empty( ::oGetList )
-            ::oGetList:goPrevious( Self )
-         ELSE
-            QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
-            RETURN .T.
+      IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
+         IF ::postValidate()
+            IF ! Empty( ::oGetList )
+               ::oGetList:goPrevious( Self )
+            ELSE
+               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
+               RETURN .T.
+            ENDIF
          ENDIF
       ENDIF
       EXIT
 
    CASE Qt_Key_Down
-      IF ::postValidate()
-         IF ! Empty( ::oGetList )
-            ::oGetList:goNext( Self )
-         ELSE
-            QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-            RETURN .T.
+      IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
+         IF ::postValidate()
+            IF ! Empty( ::oGetList )
+               ::oGetList:goNext( Self )
+            ELSE
+               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+               RETURN .T.
+            ENDIF
          ENDIF
       ENDIF
       EXIT
 
+   CASE Qt_Key_Return
+      IF ::cClassName == "QLISTWIDGET"
+         IF ! ::postValidate()
+            oKeyEvent:accept()
+            RETURN .T.
+         ELSE
+            IF ! Empty( ::oGetList )
+               ::oGetList:goNext( Self )
+            ELSE
+               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+            ENDIF
+         ENDIF
+      ENDIF
+      EXIT
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
       IF ! ::lValidWhen
          ::lValidWhen := .T.
          EXIT
       ENDIF
-      IF ! ::postValidate()
+      IF ::cClassName == "QPLAINTEXTEDIT"
+         IF ::postValidate()
+            IF ! Empty( ::oGetList )
+               IF oKeyEvent:key() == Qt_Key_Tab
+                  ::oGetList:goNext( Self )
+               ELSE
+                  ::oGetList:goPrevious( Self )
+               ENDIF
+            ELSE
+               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+            ENDIF
+         ENDIF
          oKeyEvent:accept()
          RETURN .T.
+      ELSE
+         IF ! ::postValidate()
+            oKeyEvent:accept()
+            RETURN .T.
+         ENDIF
       ENDIF
       EXIT
 
@@ -1319,7 +1277,14 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
 METHOD HbQtGet:getRgbStringFromClipperColor( cToken, lExt )
 
-   SWITCH Upper( cToken )
+   IF Upper( Left( cToken, 3 ) ) == "RGB"    /* rgb notation : rgb(200,12,201)/rgb(104,56,19) */
+      RETURN cToken
+   ENDIF
+   IF Left( cToken, 1 ) == "#"               /* Hex notation : #fffccc/#da3f78 */
+      RETURN cToken
+   ENDIF
+
+   SWITCH Upper( cToken )                    /* Clipper notation : W+/BG* */
    CASE "N"
       RETURN iif( lExt, "rgb( 198,198,198 )", "rgb( 0 ,0 ,0  )"   )
    CASE "B"
@@ -1483,7 +1448,21 @@ METHOD HbQtGet:block( bBlock )
 
 METHOD HbQtGet:getBuffer()
 
-   ::cBuffer := ::oEdit:text()
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      ::cBuffer := ::oEdit:text()
+      EXIT
+   CASE "QPLAINTEXTEDIT"
+      ::cBuffer := ::oEdit:toPlainText()
+      EXIT
+   CASE "QLISTWIDGET"
+      ::cBuffer := ::oEdit:currentItem():text()
+      EXIT
+   CASE "QCHECKBOX"
+   CASE "QPUSHBUTTON"
+   CASE "QCOMBOBOX"
+      EXIT
+   ENDSWITCH
 
    RETURN ::cBuffer
 
@@ -1492,7 +1471,19 @@ METHOD HbQtGet:getBuffer()
 METHOD HbQtGet:setBuffer( cBuffer )
 
    ::cBuffer := cBuffer
-   ::oEdit:setText( ::unTransformThis( ::cBuffer ) )
+
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      ::oEdit:setText( ::unTransformThis( ::cBuffer ) )
+      EXIT
+   CASE "QPLAINTEXTEDIT"
+      ::oEdit:setPlainText( ::cBuffer )
+      EXIT
+   CASE "QLISTWIDGET"
+      ::oEdit:setCurrentRow( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e|  e == cBuffer } ) - 1 )
+      EXIT
+   ENDSWITCH
+
    ::lChanged := .T.
 
    RETURN NIL
@@ -1566,8 +1557,55 @@ METHOD HbQtGet:varGet()
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:display()
-   // What we should DO ??
+
+   ::setData( ::varGet() )
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:toRow( nRow )
+
+   IF HB_ISNUMERIC( nRow ) .AND. nRow > 0
+      ::nToRow := nRow
+   ENDIF
+
+   RETURN ::nToRow
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:toCol( nCol )
+
+   IF HB_ISNUMERIC( nCol ) .AND. nCol > 0
+      ::nToCol := nCol
+   ENDIF
+
+   RETURN ::nToCol
+
+/*----------------------------------------------------------------------*/
+
+  - hbqt/tests/validator.hbp
+  - hbqt/tests/validator.prg
+  - hbqt/tests/validatorgets.ui
+  - hbqt/tests/validatormain.ui
+  * hbqt/tests/hbmk.hbm
+    - Transferred: validator.hbp++ to hbqtwidgets/tests
+
+  + hbqtwidgets/tests
+  + hbqtwidgets/tests/hbmk.hbm
+  + hbqtwidgets/tests/validator.hbp
+  + hbqtwidgets/tests/validator.prg
+  + hbqtwidgets/tests/validatorgets.ui
+  + hbqtwidgets/tests/validatormain.ui
+    + Transferred: from hbqt/tests.
+
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+  * hbqtwidgets/hbqtstd.ch
+    + Implemented: @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ...
+                   @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ...
+
+                   #command QSET GETSFONT [TO] <oFont>      => HbQtSet( _QSET_GETSFONT   , <oFont>   )
+                   #command QSET LINESPACING [TO] <nPixels> => HbQtSet( _QSET_LINESPACING, <nPixels> )
+                   #command QSET NOMOUSABLE [TO] <lMouse>   => HbQtSet( _QSET_NOMOUSABLE , <lMouse>  )
+

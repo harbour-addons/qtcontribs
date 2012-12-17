@@ -51,24 +51,60 @@
  */
 
 #ifndef HB_QSTD_CH_
-#define HB_QSTD_CH_
+   #define HB_QSTD_CH_
+
+
+   #define _QGET_GET                              1
+   #define _QGET_CAPTION                          2
+   #define _QGET_COLOR                            3
+   #define _QGET_VALIDATOR                        4
+   #define _QGET_NOMOUSE                          5
+   #define _QGET_ROW                              6
+   #define _QGET_COL                              7
+   #define _QGET_TOROW                            8
+   #define _QGET_TOCOL                            9
+   #define _QGET_SAY                              10
+   #define _QGET_SAYPICTURE                       11
+   #define _QGET_SAYCOLOR                         12
+   #define _QGET_CONTROL                          13
+   #define _QGET_TYPE                             14
+   #define _QGET_DATA                             15
+
+
+   /* Constants for _QGET_DATA array elements */
+   #define _QDATA_LISTBOX_ITEMS                   1
+   #define _QDATA_LISTBOX_FOCUSBLOCK              2
+   #define _QDATA_LISTBOX_STATUSBLOCK             3
+   #define _QDATA_LISTBOX_SCROLLBAR               4
+
+
+   #define _QSET_GETSFONT                         1
+   #define _QSET_LINESPACING                      2
+   #define _QSET_NOMOUSABLE                       3
+
+
+   #command QSET GETSFONT [TO] <oFont>            =>   HbQtSet( _QSET_GETSFONT   , <oFont>   )
+   #command QSET LINESPACING [TO] <nPixels>       =>   HbQtSet( _QSET_LINESPACING, <nPixels> )
+   #command QSET NOMOUSABLE [TO] <lMouse>         =>   HbQtSet( _QSET_NOMOUSABLE , <lMouse>  )
 
 
    #command @ <row>, <col> QSAY <exp> [PICTURE <pic>] [COLOR <clr>] => ;
          AAdd( SayList, { <row>, <col>, <exp>, <pic>, <clr> } )
 
+
    #command @ <row>, <col> QGET <v> ;
                               [PICTURE <pic>] ;
                               [VALID <valid>] ;
                               [WHEN <when>  ] ;
-                              [CAPTION <cap>] ;
                               [COLOR <color>] ;
+                              [CAPTION <cap>] ;
                               [VALIDATOR <validator>] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl> ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
-                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, <oControl>, "QLineEdit" } )
+                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL } )
+
 
    #command @ <row>, <col> QSAY <sayExp> ;
                               [PICTURE <sayPic>] ;
@@ -77,15 +113,44 @@
                               [PICTURE <pic>] ;
                               [VALID <valid>] ;
                               [WHEN <when>  ] ;
-                              [CAPTION <cap>] ;
                               [COLOR <color>] ;
+                              [CAPTION <cap>] ;
                               [VALIDATOR <validator>] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl> ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
-                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, ;
-                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit" } )
+                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, ;
+                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL } )
+
+
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ;
+                              [VALID <valid>] ;
+                              [WHEN <when>  ] ;
+                              [COLOR <color>] ;
+                              [CAPTION <cap>] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl> ] ;
+                        => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL } )
+
+
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ;
+                              [VALID <valid>] ;
+                              [WHEN <when>  ] ;
+                              [COLOR <color>] ;
+                              [CAPTION <cap>] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl> ] ;
+                              [FOCUS <fb>] ;
+                              [STATE <sb>] ;
+                              [<sbar:SCROLLBAR>] ;
+                        => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QListWidget", ;
+                                { <items>, <{fb}>, <{sb}>, <.sbar.> } } )
+
 
    #command QREAD [ PARENT <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont>, <nSpc> )
    #command QREAD => HbQtReadGets( GetList, SayList, GetParent, NIL, 6 )

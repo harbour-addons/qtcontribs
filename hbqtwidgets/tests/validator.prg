@@ -7,7 +7,6 @@
  * www - http://harbour-project.org
  */
 
-/*----------------------------------------------------------------------*/
 
 #include "hbqtgui.ch"
 #include "set.ch"
@@ -32,21 +31,23 @@ FUNCTION Main()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Clipper( oMain )
 
    LOCAL oWnd
    LOCAL nPdL := 22, nColGet := 25
 
-   LOCAL cText := "ABC"
-   LOCAL dDate := 0d19560604
-   LOCAL nNumb := 6030.130001
-   LOCAL lMrd  := .T.
-   LOCAL cTele := "(999)684-7318"
-   LOCAL cJust := Space( 20 )
-   LOCAL cCata := "IT3-BEL-903533AST63Z"
-   LOCAL nSlry := 3000
+   LOCAL cText  := "ABC"
+   LOCAL dDate  := 0d19560604
+   LOCAL nNumb  := 6030.130001
+   LOCAL lMrd   := .T.
+   LOCAL cTele  := "(999)684-7318"
+   LOCAL cJust  := Space( 20 )
+   LOCAL cCata  := "IT3-BEL-903533AST63Z"
+   LOCAL nSlry  := 3000
+   LOCAL cNotes := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
+   LOCAL cList  := "Two"
+   LOCAL aList  := { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten" }
 
    LOCAL GetList := {}
    LOCAL SayList := {}
@@ -58,18 +59,32 @@ STATIC FUNCTION Clipper( oMain )
    val[ 2 ] := 0
    val[ 3 ] := ctod( "" )
 
+   /* Harbour Standard Settings */
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
 
+   /* HbQt Widgets Standard Settings */
+   /* Sets the number of pixels FOR spacing between lines; default is 6 */
+   HbQtSet( _QSET_LINESPACING, 2 )
+   /* Set thread wide FONT object used to distribute the space for GETs; default is "Courier New",10 */
+   QSET GETSFONT TO QFont( "Courier New", 12 )
 
+   /* A window to host different GUI elements including a window to host GET objects. This window itself can be the host of GET objects. */
+   /* A typical terminal window per GT can be thought of synonimous to this window if it itself is hosting GET objects */
    oWnd := QScrollArea( oMain )
    oWnd:setWindowFlags( Qt_Sheet )
    oWnd:setWindowTitle( "Clipper Get System - Scrollable Widget" )
+   /* Presseing ESCape will request window to close itself */
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) } )
-   oWnd:connect( QEvent_Close, {|| oWnd:setParent( QWidget() ) } )
 
+   /* A window to host GET objects. This window can be any container type, e.g., QWidget, QDialog, QFrame, QGroupBox */
+   /* A typical terminal window per GT can be thought of synonimous to this window */
    GetParent := QFrame( oWnd )
+
+   /* Set QFrame as the exposed widget TO QScrollArea. This facilitates TO host as many GET objects as application needs without the  */
+   /* constraint of width and height limitations. QScrollArea will expose the scrollbars TO bring desired GETs into viewport */
    oWnd:setWidget( GetParent )
 
+   /* Harbour standards SAYs and GETs */
    @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
 
    @ 2, 02 QSAY PadL( "Birthday:", nPdL )
@@ -99,13 +114,95 @@ STATIC FUNCTION Clipper( oMain )
    @ 7, 52 QSAY "Salary:"
    @ 7, 60 QGET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
-   QREAD PARENT GetParent LINESPACING 2
+   @ 9, 02 QSAY "Notes:"
+   @ 10, 02, 17, 55 QGET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes
 
+   @ 9, 60 QSAY "Select:"
+   @ 10, 60, 17, 70 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
+
+   /* QREAD creates the above GETs. In Clipper GET object is created at the time of @...GET is encountered,
+    * but in HbQt it is not possible because PARENT window is not known until QREAD to bind the GETs
+    */
+   QREAD PARENT GetParent
+
+   /* IMPORTANT: to release memory associated with this window and contained getlist
+    * If oWnd would been the parent of GETs then 2nd param <GetParent> needs not be passed.
+    */
+   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd, GetParent ) } )
+
+   /* Show up the GET screen ready to receive user input */
    oWnd:show()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION UiGets( oMain )
+
+   LOCAL oWnd
+   LOCAL nPdL := 22
+
+   LOCAL cText := "ABC"
+   LOCAL dDate := 0d19560604
+   LOCAL nNumb := 6030.130001
+   LOCAL lMrd  := .T.
+   LOCAL cTele := "(999)684-7318"
+   LOCAL cJust := Space( 20 )
+   LOCAL cCata := "IT3-BEL-903533AST63Z"
+   LOCAL nSlry := 3000
+   LOCAL val   := Array( 3 )
+   LOCAL cNotes := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
+
+   LOCAL GetList := {}
+   LOCAL SayList := {}
+   LOCAL GetParent
+
+   val[ 1 ] := Space( 10 )
+   val[ 2 ] := 0
+   val[ 3 ] := ctod( "" )
+
+   /* Harbour Standard Settings */
+   Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
+
+   oWnd := hbqtui_validatorGets( oMain )
+   oWnd:setWindowFlags( Qt_Sheet )
+   oWnd:setWindowTitle( "Qt Designer Integrated GETs" )
+   oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd:oWidget, QCloseEvent() ), NIL ) } )
+
+   GetParent := oWnd:oWidget
+
+   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText  CONTROL oWnd:editUpper  PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
+
+   @ 2, 02 QSAY PadL( "Birthday:", nPdL )              QGET dDate  CONTROL oWnd:editBDay   COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
+
+   @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )        QGET nNumb  CONTROL oWnd:edit6dec   PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
+
+   @ 4, 02 QSAY PadL( "Logical - Married:", nPdL )     QGET lMrd   CONTROL oWnd:editMrd    PICTURE "Y"
+
+   @ 5, 02 QSAY PadL( "Telephone Number:", nPdL )      QGET cTele  CONTROL oWnd:editTele   PICTURE "@! (999)999-9999"
+
+   @ 6, 02 QSAY PadL( "Upper Lower Upper:", nPdL )     QGET cJust  CONTROL oWnd:editULU    PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
+
+   @ 7, 02 QSAY PadL( "Scrolling Catalog:", nPdL )     QGET cCata  CONTROL oWnd:editCata   PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
+
+   @ 1, 52 QSAY "Val[1]"                               QGET val[1] CONTROL oWnd:editVal1   PICTURE "@!"
+   @ 2, 52 QSAY "Val[2]"                               QGET val[2] CONTROL oWnd:editVal2   PICTURE "99"
+   @ 3, 52 QSAY "Val[3]"                               QGET val[3] CONTROL oWnd:editVal3
+
+   @ 7, 52 QSAY "Salary:"                              QGET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+
+   @ 9, 02, 12, 30                                     QGET cNotes MEMOEDIT CONTROL oWnd:editNotes VALID {|| .T. }
+
+   /* Prepares the widget for user input */
+   QREAD
+
+   /* IMPORTANT: to release memory associated with this window and contained getlist */
+   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd:oWidget ) } )
+
+   /* Show up the GET screen ready to receive user input */
+   oWnd:show()
+
+   RETURN NIL
+
 
 STATIC FUNCTION OOPLayout( oMain )
    LOCAL oWnd, oFLayout
@@ -132,7 +229,6 @@ STATIC FUNCTION OOPLayout( oMain )
    oWnd:setWindowFlags( Qt_Sheet )
    oWnd:setWindowTitle( "Clipper Get System - Layout" )
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) } )
-   oWnd:connect( QEvent_Close, {|| oWnd:setParent( QWidget() ) } )
 
    oFLayout := QFormLayout( oWnd )
    oFLayout:setLabelAlignment( Qt_AlignRight )
@@ -201,72 +297,14 @@ STATIC FUNCTION OOPLayout( oMain )
    oEdit8:create()
    oFLayout:addRow( "Salary:", oEdit8:edit() )
 
+   /* IMPORTANT: to release memory associated with this window and contained getlist */
+   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ) } )
+
+   /* Show up the GET screen ready to receive user input */
    oWnd:show()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION UiGets( oMain )
-
-   LOCAL oWnd
-   LOCAL nPdL := 22
-
-   LOCAL cText := "ABC"
-   LOCAL dDate := 0d19560604
-   LOCAL nNumb := 6030.130001
-   LOCAL lMrd  := .T.
-   LOCAL cTele := "(999)684-7318"
-   LOCAL cJust := Space( 20 )
-   LOCAL cCata := "IT3-BEL-903533AST63Z"
-   LOCAL nSlry := 3000
-   LOCAL val   := Array( 3 )
-
-   LOCAL GetList := {}
-   LOCAL SayList := {}
-   LOCAL GetParent
-
-   val[ 1 ] := Space( 10 )
-   val[ 2 ] := 0
-   val[ 3 ] := ctod( "" )
-
-   Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
-
-   oWnd := hbqtui_validatorGets( oMain )
-   oWnd:setWindowFlags( Qt_Sheet )
-   oWnd:setWindowTitle( "Qt Designer Integrated GETs" )
-   oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd:oWidget, QCloseEvent() ), NIL ) } )
-   oWnd:oWidget:connect( QEvent_Close, {|| oWnd:oWidget:setParent( QWidget() ) } )
-
-   GetParent := oWnd:oWidget
-
-   @ 1, 02 QSAY PadL( "Upper Cased Alphabets:", nPdL ) QGET cText  CONTROL oWnd:editUpper  PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
-
-   @ 2, 02 QSAY PadL( "Birthday:", nPdL )              QGET dDate  CONTROL oWnd:editBDay   COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
-
-   @ 3, 02 QSAY PadL( "Max 6 Decimals:", nPdL )        QGET nNumb  CONTROL oWnd:edit6dec   PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
-
-   @ 4, 02 QSAY PadL( "Logical - Married:", nPdL )     QGET lMrd   CONTROL oWnd:editMrd    PICTURE "Y"
-
-   @ 5, 02 QSAY PadL( "Telephone Number:", nPdL )      QGET cTele  CONTROL oWnd:editTele   PICTURE "@! (999)999-9999"
-
-   @ 6, 02 QSAY PadL( "Upper Lower Upper:", nPdL )     QGET cJust  CONTROL oWnd:editULU    PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
-
-   @ 7, 02 QSAY PadL( "Scrolling Catalog:", nPdL )     QGET cCata  CONTROL oWnd:editCata   PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
-
-   @ 1, 52 QSAY "Val[1]"                               QGET val[1] CONTROL oWnd:editVal1   PICTURE "@!"
-   @ 2, 52 QSAY "Val[2]"                               QGET val[2] CONTROL oWnd:editVal2   PICTURE "99"
-   @ 3, 52 QSAY "Val[3]"                               QGET val[3] CONTROL oWnd:editVal3
-
-   @ 7, 52 QSAY "Salary:"                              QGET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
-
-   QREAD
-
-   oWnd:show()
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION UpperLowerUpper( cText, nPos )
    LOCAL cChr, s
@@ -285,17 +323,14 @@ STATIC FUNCTION UpperLowerUpper( cText, nPos )
 
    RETURN .T.  /* Must always return TRUE/FALSE */
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Udf1( oGet )
 
    IF "TST" $ oGet:buffer
-      oGet:buffer := "DEF"
       oGet:varPut( "DEF" )
+      oGet:display()
       RETURN .T.
    ENDIF
 
    RETURN .F.
-
-/*----------------------------------------------------------------------*/
 

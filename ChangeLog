@@ -16,6 +16,39 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-16 19:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  - hbqt/tests/validator.hbp
+  - hbqt/tests/validator.prg
+  - hbqt/tests/validatorgets.ui
+  - hbqt/tests/validatormain.ui
+  * hbqt/tests/hbmk.hbm
+    - Transferred: validator.hbp++ to hbqtwidgets/tests
+    
+  + hbqtwidgets/tests
+  + hbqtwidgets/tests/hbmk.hbm
+  + hbqtwidgets/tests/validator.hbp
+  + hbqtwidgets/tests/validator.prg
+  + hbqtwidgets/tests/validatorgets.ui
+  + hbqtwidgets/tests/validatormain.ui
+    + Transferred: from hbqt/tests.
+    
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+  * hbqtwidgets/hbqtstd.ch
+    + Implemented: 
+        @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ...
+        @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ...
+                   
+        QSET GETSFONT [TO] <oFont>      => HbQtSet( _QSET_GETSFONT   , <oFont>   )
+        QSET LINESPACING [TO] <nPixels> => HbQtSet( _QSET_LINESPACING, <nPixels> )
+        QSET NOMOUSABLE [TO] <lMouse>   => HbQtSet( _QSET_NOMOUSABLE , <lMouse>  )
+        
+        @ ... QGET ... COLOR <ClipperNotation|HexNotation|RGBNotation> : 
+                             <"N/W*"|"#FF07C5/#CC345B"|"rgb(255,255,210)/rgb(110,100,255)">
+
+    ; Work-in-progress for other controls. Demo is updated to contain 
+      new controls. Please test.
+
 2012-12-14 08:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     ! Version bump to r94.
