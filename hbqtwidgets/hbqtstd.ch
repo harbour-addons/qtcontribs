@@ -152,6 +152,21 @@
                                 { <items>, <{fb}>, <{sb}>, <.sbar.> } } )
 
 
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> ;
+                              [VALID <valid>] ;
+                              [WHEN <when>  ] ;
+                              [COLOR <color>] ;
+                              [CAPTION <cap>] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl> ] ;
+                              [FOCUS <fb>] ;
+                              [STATE <sb>] ;
+                        => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPushButton", ;
+                                { <label>, <{fb}>, <{sb}> } } )
+
+
    #command QREAD [ PARENT <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont>, <nSpc> )
    #command QREAD => HbQtReadGets( GetList, SayList, GetParent, NIL, 6 )
 

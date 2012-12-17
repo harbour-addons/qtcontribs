@@ -121,7 +121,7 @@
    <property name="geometry">
     <rect>
      <x>212</x>
-     <y>200</y>
+     <y>168</y>
      <width>46</width>
      <height>14</height>
     </rect>
@@ -134,7 +134,7 @@
    <property name="geometry">
     <rect>
      <x>360</x>
-     <y>200</y>
+     <y>168</y>
      <width>65</width>
      <height>16</height>
     </rect>
@@ -227,7 +227,7 @@
    <property name="geometry">
     <rect>
      <x>248</x>
-     <y>200</y>
+     <y>168</y>
      <width>53</width>
      <height>20</height>
     </rect>
@@ -237,7 +237,7 @@
    <property name="geometry">
     <rect>
      <x>400</x>
-     <y>196</y>
+     <y>164</y>
      <width>193</width>
      <height>20</height>
     </rect>
@@ -247,7 +247,7 @@
    <property name="geometry">
     <rect>
      <x>360</x>
-     <y>236</y>
+     <y>204</y>
      <width>46</width>
      <height>14</height>
     </rect>
@@ -265,7 +265,7 @@
      <height>49</height>
     </rect>
    </property>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="btnOK">
     <property name="geometry">
      <rect>
       <x>276</x>
@@ -278,7 +278,7 @@
      <string>OK</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="btnCancel">
     <property name="geometry">
      <rect>
       <x>430</x>
@@ -296,7 +296,7 @@
    <property name="geometry">
     <rect>
      <x>400</x>
-     <y>232</y>
+     <y>200</y>
      <width>193</width>
      <height>20</height>
     </rect>
@@ -320,7 +320,30 @@
     <rect>
      <x>24</x>
      <y>268</y>
-     <width>569</width>
+     <width>429</width>
+     <height>117</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_13">
+   <property name="geometry">
+    <rect>
+     <x>472</x>
+     <y>248</y>
+     <width>46</width>
+     <height>13</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select:</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="listSelect">
+   <property name="geometry">
+    <rect>
+     <x>472</x>
+     <y>268</y>
+     <width>121</width>
      <height>117</height>
     </rect>
    </property>

@@ -21,6 +21,7 @@ FUNCTION Main()
    hbqt_errorSys()
 
    oMain := hbqtui_validatormain()
+   oMain:oWidget:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
 
    oMain:btnClipper   : connect( "clicked()", {|| Clipper( oMain:oWidget ) } )
    oMain:btnOOPLayout : connect( "clicked()", {|| OOPLayout( oMain:oWidget ) } )
@@ -48,6 +49,8 @@ STATIC FUNCTION Clipper( oMain )
    LOCAL cNotes := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
    LOCAL cList  := "Two"
    LOCAL aList  := { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten" }
+   LOCAL lOk    := .F.
+   LOCAL lCancel := .F.
 
    LOCAL GetList := {}
    LOCAL SayList := {}
@@ -120,6 +123,9 @@ STATIC FUNCTION Clipper( oMain )
    @ 9, 60 QSAY "Select:"
    @ 10, 60, 17, 70 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
 
+   @ 19, 25, 21, 45 QGET lOk     PUSHBUTTON "OK"
+   @ 19, 50, 21, 70 QGET lCancel PUSHBUTTON "Cancel"
+
    /* QREAD creates the above GETs. In Clipper GET object is created at the time of @...GET is encountered,
     * but in HbQt it is not possible because PARENT window is not known until QREAD to bind the GETs
     */
@@ -151,6 +157,8 @@ STATIC FUNCTION UiGets( oMain )
    LOCAL nSlry := 3000
    LOCAL val   := Array( 3 )
    LOCAL cNotes := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
+   LOCAL cList  := "Two"
+   LOCAL aList  := { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten" }
 
    LOCAL GetList := {}
    LOCAL SayList := {}
@@ -190,7 +198,8 @@ STATIC FUNCTION UiGets( oMain )
 
    @ 7, 52 QSAY "Salary:"                              QGET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
-   @ 9, 02, 12, 30                                     QGET cNotes MEMOEDIT CONTROL oWnd:editNotes VALID {|| .T. }
+   @ 9, 02, 12, 30                                     QGET cNotes MEMOEDIT CONTROL oWnd:editNotes COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes
+   @ 10, 60, 17, 70                                    QGET cList  LISTBOX aList CONTROL oWnd:listSelect WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. } COLOR "N/#CCCCFF"
 
    /* Prepares the widget for user input */
    QREAD

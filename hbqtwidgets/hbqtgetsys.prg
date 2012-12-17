@@ -238,9 +238,12 @@ METHOD HbQtGet:create( oControl )
       CASE "QListWidget"
          ::oEdit := QListWidget( ::oParent )
          EXIT
-      CASE "QCheckBox"
-         EXIT
       CASE "QPushButton"
+         ::oEdit := QPushButton( ::oParent )
+         ::oEdit:setText( ::sl_data[ 1 ] )
+         EXIT
+      CASE "QCheckBox"
+         ::oEdit := QCheckBox( ::oParent )
          EXIT
       ENDSWITCH
    ENDIF
@@ -258,10 +261,20 @@ METHOD HbQtGet:create( oControl )
    ENDIF
 
    ::oEdit:setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
-   IF ::cClassName $ "QLINEEDIT,QPLAINTEXTEDIT,QLISTWIDGET"
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+   CASE "QPLAINTEXTEDIT"
+   CASE "QLISTWIDGET"
       ::oEdit:setStyleSheet( ::sl_cssColor )
       ::oEdit:setFont( ::sl_font )
-   ENDIF
+      EXIT
+   CASE "QPUSHBUTTON"
+      ::oEdit:setStyleSheet( ::sl_cssColor )
+      IF ! ::lUserControl
+         ::oEdit:setFont( ::sl_font )
+      ENDIF
+      EXIT
+   ENDSWITCH
 
    ::setParams()
    ::setData( ::original )
@@ -296,8 +309,12 @@ METHOD HbQtGet:connect()
       ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
       ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       EXIT
-   CASE "QCHECKBOX"
    CASE "QPUSHBUTTON"
+      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
+      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      EXIT
+   CASE "QCHECKBOX"
       EXIT
    ENDSWITCH
 
@@ -784,8 +801,9 @@ METHOD HbQtGet:setParams()
          EXIT
       ENDSWITCH
       EXIT
-   CASE "QLISTWIDGET"
    CASE "QPLAINTEXTEDIT"
+   CASE "QLISTWIDGET"
+   CASE "QPUSHBUTTON"
       ::sl_dispWidth  := ::nToCol - ::nCol
       ::sl_dispHeight := ::nToRow - ::nRow
       EXIT
@@ -819,9 +837,9 @@ METHOD HbQtGet:getData( cBuffer )
       RETURN cBuffer
    CASE "QLISTWIDGET"
       RETURN ::oEdit:currentItem():text()
-   CASE "QCHECKBOX"
    CASE "QPUSHBUTTON"
-   CASE "QCOMBOBOX"
+      RETURN ::oEdit:isDown()
+   CASE "QCHECKBOX"
       EXIT
    ENDSWITCH
 
@@ -859,9 +877,9 @@ METHOD HbQtGet:setData( xData )
          ENDIF
       ENDIF
       EXIT
-   CASE "QCHECKBOX"
    CASE "QPUSHBUTTON"
-   CASE "QCOMBOBOX"
+      EXIT
+   CASE "QCHECKBOX"
       EXIT
    ENDSWITCH
 
@@ -932,12 +950,10 @@ METHOD HbQtGet:setColor( cMode )
          CASE "QLINEEDIT"
          CASE "QPLAINTEXTEDIT"
          CASE "QLISTWIDGET"
+         CASE "QPUSHBUTTON"
             ::oEdit:setStyleSheet( "" )
             ::oEdit:setStyleSheet( ::sl_cssColor )
             ::oEdit:repaint()
-            EXIT
-         CASE "QPUSHBUTTON"
-            // ?
             EXIT
          ENDSWITCH
       ELSEIF cMode == "warning"
@@ -1179,7 +1195,9 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    CASE Qt_Key_Escape
       ::varPut( ::original )
       ::setData( ::original )
-      EXIT
+      oKeyEvent:accept()
+      RETURN .T.
+      //EXIT
 
    CASE Qt_Key_PageUp
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
@@ -1228,7 +1246,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       EXIT
 
    CASE Qt_Key_Return
-      IF ::cClassName == "QLISTWIDGET"
+      IF ::cClassName == "QLISTWIDGET,QPUSHBUTTON"
          IF ! ::postValidate()
             oKeyEvent:accept()
             RETURN .T.
@@ -1265,6 +1283,16 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          IF ! ::postValidate()
             oKeyEvent:accept()
             RETURN .T.
+         ELSE
+            IF ! Empty( ::oGetList )
+               IF oKeyEvent:key() == Qt_Key_Tab
+                  ::oGetList:goNext( Self )
+               ELSE
+                  ::oGetList:goPrevious( Self )
+               ENDIF
+               oKeyEvent:accept()
+               RETURN .T.
+            ENDIF
          ENDIF
       ENDIF
       EXIT
@@ -1458,9 +1486,9 @@ METHOD HbQtGet:getBuffer()
    CASE "QLISTWIDGET"
       ::cBuffer := ::oEdit:currentItem():text()
       EXIT
-   CASE "QCHECKBOX"
    CASE "QPUSHBUTTON"
-   CASE "QCOMBOBOX"
+      ::cBuffer := ::oEdit:isDown()
+   CASE "QCHECKBOX"
       EXIT
    ENDSWITCH
 
@@ -1481,6 +1509,8 @@ METHOD HbQtGet:setBuffer( cBuffer )
       EXIT
    CASE "QLISTWIDGET"
       ::oEdit:setCurrentRow( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e|  e == cBuffer } ) - 1 )
+      EXIT
+   CASE "QPUSHBUTTON"
       EXIT
    ENDSWITCH
 
