@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-17 19:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/hbqtalert.prg
+    + Replacement to alert() - HbQtAlert( cMsg, aButtons ).
+       Still I am not satisfied with color management, suggessions ?
+
+  * hbqtwidgets/hbqtgetsys.prg
+    % Many improvements in navigation.
+      Code normalization.
+
+  * hbqtwidgets/hbqtstd.ch
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Implemented: @ <top>, <left>, <bottom>, <right> QGET <v> ;
+                     PUSHBUTTON <label> [ACTION <act>] [WHEN ...
+
+  * hbqtwidgets/tests/validator.prg
+    + Demo code to utilize @...PUSHBUTTON.
+
 2012-12-17 09:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetsys.prg
   * hbqtwidgets/hbqtstd.ch

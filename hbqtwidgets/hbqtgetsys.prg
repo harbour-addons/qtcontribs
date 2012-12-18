@@ -71,6 +71,12 @@
 #include "hbtrace.ch"
 
 
+#define _QGET_NAV_NEXT                            0
+#define _QGET_NAV_PREVIOUS                        1
+#define _QGET_NAV_BOTTOM                          2
+#define _QGET_NAV_TOP                             3
+
+
 CLASS HbQtGet INHERIT GET
 
    METHOD new( oControl )
@@ -142,6 +148,8 @@ CLASS HbQtGet INHERIT GET
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
    METHOD execKeyPress( oKeyEvent )
+   METHOD execMousePress( oMouseEvent )
+   METHOD execMouseRelease( oMouseEvent )
    METHOD testValid()
    METHOD setParams()
    METHOD getNumber( cText, nPos )
@@ -161,6 +169,7 @@ CLASS HbQtGet INHERIT GET
    METHOD setColor( cMode )
    METHOD connect()
    METHOD isQLineEdit()                           INLINE ::cClassName == "QLINEEDIT"
+   METHOD navigate( nDirection )
 
    EXPORTED:
    /* ::oGet operation methods overloaded from GET : begins */
@@ -240,7 +249,7 @@ METHOD HbQtGet:create( oControl )
          EXIT
       CASE "QPushButton"
          ::oEdit := QPushButton( ::oParent )
-         ::oEdit:setText( ::sl_data[ 1 ] )
+         ::oEdit:setText( ::sl_data[ _QDATA_PUSHBUTTON_TEXT ] )
          EXIT
       CASE "QCheckBox"
          ::oEdit := QCheckBox( ::oParent )
@@ -291,28 +300,30 @@ METHOD HbQtGet:connect()
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T., ::testValid() } )
-      ::oEdit:connect( "textChanged(QString)", {|| ::testValid() } )
-      ::oEdit:connect( "returnPressed()"     , {|| ::returnPressed(), .F. } )
+      ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T., ::testValid()                          } )
+      ::oEdit:connect( "textChanged(QString)"   , {|| ::testValid()                                             } )
+      ::oEdit:connect( "returnPressed()"        , {|| ::returnPressed(), .F.                                    } )
 
-      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent  | ::execKeyPress( oKeyEvent ) } )
+      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
+      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
+      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::execKeyPress( oKeyEvent )                    } )
       EXIT
    CASE "QPLAINTEXTEDIT"
-      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
+      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
+      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       EXIT
    CASE "QLISTWIDGET"
-      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
+      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
+      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       EXIT
    CASE "QPUSHBUTTON"
-      ::oEdit:connect( QEvent_FocusOut       , {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_FocusIn        , {|oFocusEvent| ::execFocusIn( oFocusEvent ) } )
-      ::oEdit:connect( QEvent_KeyPress       , {|oKeyEvent| ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
+      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
+      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )                } )
+      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )              } )
       EXIT
    CASE "QCHECKBOX"
       EXIT
@@ -804,8 +815,8 @@ METHOD HbQtGet:setParams()
    CASE "QPLAINTEXTEDIT"
    CASE "QLISTWIDGET"
    CASE "QPUSHBUTTON"
-      ::sl_dispWidth  := ::nToCol - ::nCol
-      ::sl_dispHeight := ::nToRow - ::nRow
+      ::sl_dispWidth  := ::nToCol - ::nCol + 1
+      ::sl_dispHeight := ::nToRow - ::nRow + 1
       EXIT
    CASE "QCHECKBOX"
       EXIT
@@ -1195,16 +1206,12 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    CASE Qt_Key_Escape
       ::varPut( ::original )
       ::setData( ::original )
-      oKeyEvent:accept()
-      RETURN .T.
-      //EXIT
+      oKeyEvent:accept() ; RETURN .T.
 
    CASE Qt_Key_PageUp
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
          IF ::postValidate()
-            IF ! Empty( ::oGetList )
-               ::oGetList:goTop( Self )
-            ENDIF
+            ::navigate( _QGET_NAV_TOP )
          ENDIF
       ENDIF
       EXIT
@@ -1212,9 +1219,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    CASE Qt_Key_PageDown
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
          IF ::postValidate()
-            IF ! Empty( ::oGetList )
-               ::oGetList:goBottom( Self )
-            ENDIF
+            ::navigate( _QGET_NAV_BOTTOM )
          ENDIF
       ENDIF
       EXIT
@@ -1222,12 +1227,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    CASE Qt_Key_Up
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
          IF ::postValidate()
-            IF ! Empty( ::oGetList )
-               ::oGetList:goPrevious( Self )
-            ELSE
-               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
-               RETURN .T.
-            ENDIF
+            ::navigate( _QGET_NAV_PREVIOUS )
          ENDIF
       ENDIF
       EXIT
@@ -1235,71 +1235,132 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    CASE Qt_Key_Down
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
          IF ::postValidate()
-            IF ! Empty( ::oGetList )
-               ::oGetList:goNext( Self )
-            ELSE
-               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-               RETURN .T.
-            ENDIF
+            ::navigate( _QGET_NAV_NEXT )
          ENDIF
       ENDIF
       EXIT
 
-   CASE Qt_Key_Return
-      IF ::cClassName == "QLISTWIDGET,QPUSHBUTTON"
-         IF ! ::postValidate()
-            oKeyEvent:accept()
-            RETURN .T.
-         ELSE
-            IF ! Empty( ::oGetList )
-               ::oGetList:goNext( Self )
-            ELSE
-               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-            ENDIF
-         ENDIF
-      ENDIF
-      EXIT
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
       IF ! ::lValidWhen
          ::lValidWhen := .T.
          EXIT
-      ENDIF
-      IF ::cClassName == "QPLAINTEXTEDIT"
-         IF ::postValidate()
-            IF ! Empty( ::oGetList )
-               IF oKeyEvent:key() == Qt_Key_Tab
-                  ::oGetList:goNext( Self )
-               ELSE
-                  ::oGetList:goPrevious( Self )
-               ENDIF
-            ELSE
-               QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
-            ENDIF
-         ENDIF
-         oKeyEvent:accept()
-         RETURN .T.
       ELSE
-         IF ! ::postValidate()
-            oKeyEvent:accept()
-            RETURN .T.
-         ELSE
-            IF ! Empty( ::oGetList )
-               IF oKeyEvent:key() == Qt_Key_Tab
-                  ::oGetList:goNext( Self )
-               ELSE
-                  ::oGetList:goPrevious( Self )
-               ENDIF
-               oKeyEvent:accept()
-               RETURN .T.
-            ENDIF
+         IF ::postValidate()
+            ::navigate( iif( oKeyEvent:key() == Qt_Key_Tab, _QGET_NAV_NEXT, _QGET_NAV_PREVIOUS ) )
          ENDIF
+         oKeyEvent:accept() ; RETURN .T.
+      ENDIF
+      EXIT
+
+   CASE Qt_Key_Return
+      IF ::cClassName $ "QLISTWIDGET,QPUSHBUTTON"
+         IF ::postValidate()
+            IF ::cClassName == "QPUSHBUTTON"
+               IF HB_ISBLOCK( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
+                  Eval( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ], Self )
+               ENDIF
+            ENDIF
+            ::navigate( _QGET_NAV_NEXT )
+         ENDIF
+         oKeyEvent:accept() ; RETURN .T.
+      ELSEIF ::cClassName == "QPLAINTEXTEDIT" .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+         IF ::postValidate()
+            ::navigate( _QGET_NAV_NEXT )
+         ENDIF
+         oKeyEvent:accept() ; RETURN .T.
+      ENDIF
+      EXIT
+
+   CASE Qt_Key_W
+      IF ::cClassName == "QPLAINTEXTEDIT" .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+         ::navigate( _QGET_NAV_NEXT )
       ENDIF
       EXIT
 
    ENDSWITCH
 
    RETURN .F.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:execMouseRelease( oMouseEvent )
+
+   SWITCH oMouseEvent:button()
+
+   CASE Qt_LeftButton
+      IF ::cClassName $ "QPUSHBUTTON"
+         IF ::postValidate()
+            IF HB_ISBLOCK( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
+               Eval( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ], Self )
+            ENDIF
+            //::navigate( _QGET_NAV_NEXT )
+         ENDIF
+         oMouseEvent:accept(); RETURN .T.
+      ENDIF
+      EXIT
+
+   CASE Qt_RightButton
+      EXIT
+
+   ENDSWITCH
+
+   RETURN .F.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:execMousePress( oMouseEvent )
+
+   SWITCH oMouseEvent:button()
+
+   CASE Qt_LeftButton   /* Focus-IN will handle */
+      IF ::cClassName $ "PUSHBUTTON"
+         #if 0
+         IF ! ::preValidate()
+            oMouseEvent:accept()
+            RETURN .T.
+         ENDIF
+         #endif
+         IF ! ::postValidate()
+            oMouseEvent:accept()
+            RETURN .T.
+         ENDIF
+         IF HB_ISBLOCK( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
+            Eval( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
+         ENDIF
+      ENDIF
+      EXIT
+
+   CASE Qt_RightButton
+      EXIT
+
+   ENDSWITCH
+
+   RETURN .F.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:navigate( nDirection )
+
+   IF ! Empty( ::oGetList )
+      IF     nDirection == _QGET_NAV_NEXT
+         ::oGetList:goNext( Self )
+      ELSEIF nDirection == _QGET_NAV_PREVIOUS
+         ::oGetList:goPrevious( Self )
+      ELSEIF nDirection == _QGET_NAV_TOP
+         ::oGetList:goTop( Self )
+      ELSEIF nDirection == _QGET_NAV_BOTTOM
+         ::oGetList:goBottom( Self )
+      ENDIF
+   ELSE
+      IF nDirection == _QGET_NAV_NEXT
+         QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
+      ELSEIF nDirection == _QGET_NAV_PREVIOUS
+         QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backtab, Qt_NoModifier ) )
+      ENDIF
+   ENDIF
+
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
 

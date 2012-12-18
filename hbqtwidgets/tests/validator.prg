@@ -121,10 +121,11 @@ STATIC FUNCTION Clipper( oMain )
    @ 10, 02, 17, 55 QGET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes
 
    @ 9, 60 QSAY "Select:"
-   @ 10, 60, 17, 70 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
+   @ 10, 59, 17, 69 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
 
-   @ 19, 25, 21, 45 QGET lOk     PUSHBUTTON "OK"
-   @ 19, 50, 21, 70 QGET lCancel PUSHBUTTON "Cancel"
+   @ 19, 25, 20, 44 QGET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
+   @ 19, 50, 20, 69 QGET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( "Cancel Pressed!;Please allow to terminate the GETs.", { "Ok","Cancel" } ), iif( v == 1, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) }
+
 
    /* QREAD creates the above GETs. In Clipper GET object is created at the time of @...GET is encountered,
     * but in HbQt it is not possible because PARENT window is not known until QREAD to bind the GETs

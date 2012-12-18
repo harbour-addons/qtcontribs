@@ -78,6 +78,10 @@
    #define _QDATA_LISTBOX_SCROLLBAR               4
 
 
+   #define _QDATA_PUSHBUTTON_TEXT                 1
+   #define _QDATA_PUSHBUTTON_ACTION               2
+
+
    #define _QSET_GETSFONT                         1
    #define _QSET_LINESPACING                      2
    #define _QSET_NOMOUSABLE                       3
@@ -152,19 +156,17 @@
                                 { <items>, <{fb}>, <{sb}>, <.sbar.> } } )
 
 
-   #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> ;
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> [ACTION <act>] ;
                               [VALID <valid>] ;
                               [WHEN <when>  ] ;
                               [COLOR <color>] ;
                               [CAPTION <cap>] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl> ] ;
-                              [FOCUS <fb>] ;
-                              [STATE <sb>] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPushButton", ;
-                                { <label>, <{fb}>, <{sb}> } } )
+                                { <label>, <{act}> } } )
 
 
    #command QREAD [ PARENT <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont>, <nSpc> )
