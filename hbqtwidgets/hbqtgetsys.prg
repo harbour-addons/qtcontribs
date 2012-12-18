@@ -150,7 +150,6 @@ CLASS HbQtGet INHERIT GET
    METHOD execKeyPress( oKeyEvent )
    METHOD execMousePress( oMouseEvent )
    METHOD execMouseRelease( oMouseEvent )
-   METHOD testValid()
    METHOD setParams()
    METHOD getNumber( cText, nPos )
    METHOD getDate( cText, nPos )
@@ -300,8 +299,7 @@ METHOD HbQtGet:connect()
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T., ::testValid()                          } )
-      ::oEdit:connect( "textChanged(QString)"   , {|| ::testValid()                                             } )
+      ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T.                                         } )
       ::oEdit:connect( "returnPressed()"        , {|| ::returnPressed(), .F.                                    } )
 
       ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
@@ -1163,25 +1161,6 @@ METHOD HbQtGet:isBufferValid()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:testValid()
-#if 0
-   LOCAL lValid := ::isBufferValid()
-
-   IF ! lValid
-      ::SetColor( "warning" )
-      ::oEdit:repaint()
-   ELSE
-      ::SetColor( "normal" )
-      ::oEdit:repaint()
-   ENDIF
-
-   RETURN .F.
-#else
-   RETURN .T.
-#endif
-
-/*----------------------------------------------------------------------*/
-
 METHOD HbQtGet:isDateBad()
    LOCAL cChr
 
@@ -1213,6 +1192,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          IF ::postValidate()
             ::navigate( _QGET_NAV_TOP )
          ENDIF
+         oKeyEvent:accept() ; RETURN .T.
       ENDIF
       EXIT
 
@@ -1221,6 +1201,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          IF ::postValidate()
             ::navigate( _QGET_NAV_BOTTOM )
          ENDIF
+         oKeyEvent:accept() ; RETURN .T.
       ENDIF
       EXIT
 
@@ -1229,6 +1210,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          IF ::postValidate()
             ::navigate( _QGET_NAV_PREVIOUS )
          ENDIF
+         oKeyEvent:accept() ; RETURN .T.
       ENDIF
       EXIT
 
@@ -1236,18 +1218,6 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET" )
          IF ::postValidate()
             ::navigate( _QGET_NAV_NEXT )
-         ENDIF
-      ENDIF
-      EXIT
-
-   CASE Qt_Key_Tab
-   CASE Qt_Key_Backtab
-      IF ! ::lValidWhen
-         ::lValidWhen := .T.
-         EXIT
-      ELSE
-         IF ::postValidate()
-            ::navigate( iif( oKeyEvent:key() == Qt_Key_Tab, _QGET_NAV_NEXT, _QGET_NAV_PREVIOUS ) )
          ENDIF
          oKeyEvent:accept() ; RETURN .T.
       ENDIF
@@ -1277,6 +1247,21 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          ::navigate( _QGET_NAV_NEXT )
       ENDIF
       EXIT
+
+#if 0                    /* WHY ? Because navigation is already validated in other keys and TAB is posted from there */
+   CASE Qt_Key_Tab
+   CASE Qt_Key_Backtab
+      IF ! ::lValidWhen
+         ::lValidWhen := .T.
+         EXIT
+      ELSE
+         IF ::postValidate()
+            ::navigate( iif( oKeyEvent:key() == Qt_Key_Tab, _QGET_NAV_NEXT, _QGET_NAV_PREVIOUS ) )
+         ENDIF
+         oKeyEvent:accept() ; RETURN .T.
+      ENDIF
+      EXIT
+#endif
 
    ENDSWITCH
 
@@ -1360,7 +1345,7 @@ METHOD HbQtGet:navigate( nDirection )
       ENDIF
    ENDIF
 
-   RETURN Self
+   RETURN .T.
 
 /*----------------------------------------------------------------------*/
 

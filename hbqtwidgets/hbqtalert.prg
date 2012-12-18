@@ -58,12 +58,14 @@
 FUNCTION HbQtAlert( cMsg, aOptions )
    LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn
    LOCAL nResult
+   LOCAL aButtons := {}
 
-   hb_default( @aOptions, { "Ok" } )
+   hb_default( @aOptions, { "OK" } )
 
    oDlg      := QDialog()
    oDlg:setWindowTitle( "Alert!" )
    oDlg:setStyleSheet( "background-color: rgb(255,0,0); color: rgb(255,255,255); font-name: Courier; font-size: 10pt;" )
+   oDlg:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons ) } )
 
    oVBLayout := QVBoxLayout( oDlg )
    oHBLayout := QHBoxLayout()
@@ -80,9 +82,10 @@ FUNCTION HbQtAlert( cMsg, aOptions )
    FOR EACH cBtn IN aOptions
       oBtn := QPushButton( oDlg )
       oBtn:setText( cBtn )
-      oBtn:setStyleSheet( "background-color: rgb(220,0,0); color: rgb(255,255,255);" )
+      oBtn:setStyleSheet( "background-color: rgb(0,0,220); color: rgb(255,255,255);" )
       oBtn:connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
       oHBLayout:addWidget( oBtn )
+      AAdd( aButtons, oBtn )
    NEXT
 
    IF oDlg:exec() == 0
@@ -94,4 +97,15 @@ FUNCTION HbQtAlert( cMsg, aOptions )
 
 STATIC FUNCTION BuildButtonBlock( nResult, nIndex, oDlg )
    RETURN {|| nResult := nIndex, oDlg:done( 1 ) }
+
+
+STATIC FUNCTION Navigate( oKeyEvent, aOptions, aButtons )
+   LOCAL n, cKey
+
+   cKey := Lower( Chr( hbqt_qtEventToHbEvent( oKeyEvent ) ) )
+   IF ( n := AScan( aOptions, {|e|  Lower( Left( e,1 ) ) == cKey } ) ) > 0
+      aButtons[ n ]:click()
+   ENDIF
+
+   RETURN NIL
 

@@ -66,10 +66,10 @@ STATIC FUNCTION Clipper( oMain )
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
 
    /* HbQt Widgets Standard Settings */
-   /* Sets the number of pixels FOR spacing between lines; default is 6 */
+   /* Sets the number of pixels for spacing between lines; default is 6 */
    HbQtSet( _QSET_LINESPACING, 2 )
    /* Set thread wide FONT object used to distribute the space for GETs; default is "Courier New",10 */
-   QSET GETSFONT TO QFont( "Courier New", 12 )
+   QSET GETSFONT TO QFont( "Courier New", 8 )
 
    /* A window to host different GUI elements including a window to host GET objects. This window itself can be the host of GET objects. */
    /* A typical terminal window per GT can be thought of synonimous to this window if it itself is hosting GET objects */
