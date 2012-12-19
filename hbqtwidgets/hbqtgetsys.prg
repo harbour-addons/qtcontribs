@@ -146,6 +146,7 @@ CLASS HbQtGet INHERIT GET
    VAR    nToCol                                  INIT NIL
    VAR    sl_data                                 INIT NIL
    VAR    sl_tooltip                              INIT ""
+   CLASSVAR    oFocusFrame
 
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
@@ -171,7 +172,6 @@ CLASS HbQtGet INHERIT GET
    METHOD connect()
    METHOD isQLineEdit()                           INLINE ::cClassName == "QLINEEDIT"
    METHOD navigate( nDirection )
-   METHOD setCheckBoxStyle( lFocused )
 
    EXPORTED:
    /* ::oGet operation methods overloaded from GET : begins */
@@ -290,7 +290,6 @@ METHOD HbQtGet:create( oControl )
       ENDIF
       EXIT
    CASE "QCHECKBOX"
-      ::setCheckBoxStyle( .F. )
       EXIT
    ENDSWITCH
 
@@ -302,6 +301,12 @@ METHOD HbQtGet:create( oControl )
    ENDIF
 
    ::oEdit:setToolTip( ::tooltip )
+
+   IF Empty( ::oFocusFrame )
+      ::oFocusFrame := QFocusFrame()
+      ::oFocusFrame:setStyleSheet( "border: 1px solid red" )
+      ::oFocusFrame:hide()
+   ENDIF
 
    RETURN Self
 
@@ -1036,21 +1041,6 @@ METHOD HbQtGet:setBuffer( cBuffer )
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:setCheckBoxStyle( lFocused )
-   LOCAL cCSS := ""
-
-   HB_SYMBOL_UNUSED( lFocused )
-   //cCSS += "QCheckBox::indicator { width: " + hb_ntos( ::oEdit:width() ) + "px; height: " + hb_ntos( ::oEdit:height() ) + "px; }"
-
-   cCSS += "QCheckBox::indicator::focus { border: 2px solid red; } "
-
-   ::oEdit:setStyleSheet( "" )
-   ::oEdit:setStyleSheet( cCSS )
-
-   RETURN .T.
-
-/*----------------------------------------------------------------------*/
-
 METHOD HbQtGet:setColor( cMode )
 
    IF HB_ISOBJECT( ::oEdit )
@@ -1152,9 +1142,9 @@ METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving
    IF ::cClassName == "QPLAINTEXTEDIT"
       ::cBuffer := ::oEdit:toPlainText()
       ::assign()
-   ELSEIF ::cClassName == "QCHECKBOX"
-      ::setCheckBoxStyle( .F. )
    ENDIF
+
+   ::oFocusFrame:hide()
 
    IF lValid
       ::hasFocus := .F.
@@ -1178,6 +1168,9 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       ::oGetList:getActive( Self )
    ENDIF
 
+   ::oFocusFrame:setWidget( ::oEdit )
+   ::oFocusFrame:show()
+
    ::hasFocus := .T.
 
    IF ! ::preValidate()
@@ -1187,9 +1180,6 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
 
    ELSEIF ::cClassName == "QCOMBOBOX"
       QApplication():sendEvent( ::oEdit, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
-
-   ELSEIF ::cClassName == "QCHECKBOX"
-      ::setCheckBoxStyle( .T. )
 
    ENDIF
 
@@ -1286,8 +1276,19 @@ METHOD HbQtGet:returnPressed()
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:execKeyPress( oKeyEvent )
+   LOCAL nKey := oKeyEvent:key()
 
-   SWITCH oKeyEvent:key()
+   IF ::cClassName == "QCHECKBOX"
+      IF nKey == Qt_Key_T .OR. nKey == Qt_Key_Y
+         ::oEdit:setChecked( .T. )
+         oKeyEvent:accept() ; RETURN .T.
+      ELSEIF nKey == Qt_Key_F .OR. nKey == Qt_Key_N
+         ::oEdit:setChecked( .F. )
+         oKeyEvent:accept() ; RETURN .T.
+      ENDIF
+   ENDIF
+
+   SWITCH nKey
 
    CASE Qt_Key_Escape
       ::varPut( ::original )
@@ -1710,6 +1711,9 @@ METHOD HbQtGet:tooltip( cTip )
 
    IF HB_ISCHAR( cTip )
       ::sl_tooltip := cTip
+      IF HB_ISOBJECT( ::oEdit )
+         ::oEdit:setToolTip( cTip )
+      ENDIF
    ENDIF
 
    RETURN ::sl_tooltip

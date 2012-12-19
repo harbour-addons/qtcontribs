@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-19 08:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetsys.prg
+    + Implemented: placing a focus rectangle around GET in focus.
+       This eliminates the need of any hack applied to recognize 
+       where the user is at any given point of execution.
+
+    + Implemented: @ ... CHECKBOX now accepts TtFfYyNn keystrokes in      
+       addition to SPACEBAR to toggle the state. TtYy will mark it 
+       and FfNn will uncheck. SPACEBAR toggles the state.
+       This facilitates CLIPPER like behavior and eliminates the need 
+       of using mouse.
+
+    ; With this current phase of GET system compatibility is over.
+       If you have any issues or functionality refinements, please 
+       speak. 
+
+    ; NEXT: TBrowse() implementation.
+
 2012-12-18 22:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
   * hbqtwidgets/hbqtgetsys.prg
