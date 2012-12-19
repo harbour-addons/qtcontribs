@@ -133,7 +133,8 @@ STATIC FUNCTION Clipper( oMain )
    @ 10, 60, 17, 69 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
 
    @ 19, 25, 20, 44 QGET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
-   @ 19, 50, 20, 69 QGET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( "Cancel Pressed!;Please allow to terminate the GETs.", { "Ok","Cancel" } ), iif( v == 1, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) }
+   @ 19, 50, 20, 69 QGET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Please allow to terminate the GETs." }, { "Ok","Cancel" }, , 5, "Really?" ), ;
+                                                                   iif( v == 1, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) }
 
 
    /* QREAD creates the above GETs. In Clipper GET object is created at the time of @...GET is encountered,

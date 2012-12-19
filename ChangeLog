@@ -16,6 +16,35 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-19 15:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtwidgets.hbx
+    * Regenerated.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    + Added: __hbqtRgbStringFromColorString( cToken, lExt ) -> cRgbFuncCall
+    + Added: __hbqtCSSFromColorString( cColor ) -> cColorsCSS 
+
+  * hbqtwidgets/hbqtalert.prg
+    + Extended: HbQtAlert( <xMessage>, [<aOptions>], [<cColorNorm>], [<nDelay>], [<cTitle>] )
+        <xMessage>     == String or Array of message lines.
+
+        [<aOptions>]   == Standard Harbour Argument
+
+        [<cColorNorm>] == Standard Harbour Argument
+
+        [<nDelay>]     == Seconds. Will return the option-in-focus.
+          QUESTION: should it return 0 ?
+
+        [<cTitle>] == Title to be displayed on titlebar, "Alert!" is the default.
+
+    + Implemented: focus rectangle to be positioned on option-in-focus.
+
+  * hbqtwidgets/hbqtgetsys.prg
+    ! Used ned functions and deleted method call.
+
+  * hbqtwidgets/tests/validator.prg
+    + Added arguments to HbQtAlert() call to demonstrate the usage.
+
 2012-12-19 08:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetsys.prg
     + Implemented: placing a focus rectangle around GET in focus.

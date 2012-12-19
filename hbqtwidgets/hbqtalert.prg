@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2013 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -53,19 +53,67 @@
 
 #include "hbqtgui.ch"
 #include "hbqtstd.ch"
+#include "inkey.ch"
+#include "hbtrace.ch"
 
 
-FUNCTION HbQtAlert( cMsg, aOptions )
-   LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn
+FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle )
+   LOCAL cMessage, aOptionsOK, cOption, nEval, cColorHigh
+
+   IF PCount() == 0
+      RETURN NIL
+   ENDIF
+
+   IF HB_ISARRAY( xMessage )
+      cMessage := ""
+      FOR nEval := 1 TO Len( xMessage )
+         cMessage += iif( nEval == 1, "", Chr( 10 ) ) + hb_CStr( xMessage[ nEval ] )
+      NEXT
+   ELSEIF HB_ISSTRING( xMessage )
+      cMessage := StrTran( xMessage, ";", Chr( 10 ) )
+   ELSE
+      cMessage := hb_CStr( xMessage )
+   ENDIF
+
+   hb_default( @aOptions, {} )
+   hb_default( @cTitle, "Alert!" )
+
+   IF ! HB_ISSTRING( cColorNorm ) .OR. Empty( cColorNorm )
+      cColorNorm := "W+/R" // first pair color (Box line and Text)
+      cColorHigh := "W+/B" // second pair color (Options buttons)
+   ELSE
+      cColorHigh := StrTran( StrTran( iif( At( "/", cColorNorm ) == 0, "N", SubStr( cColorNorm, At( "/", cColorNorm ) + 1 ) ) + "/" + ;
+         iif( At( "/", cColorNorm ) == 0, cColorNorm, Left( cColorNorm, At( "/", cColorNorm ) - 1 ) ), "+", "" ), "*", "" )
+   ENDIF
+
+   aOptionsOK := {}
+   FOR EACH cOption IN aOptions
+      IF HB_ISSTRING( cOption ) .AND. ! Empty( cOption )
+         AAdd( aOptionsOK, cOption )
+      ENDIF
+   NEXT
+
+   IF Len( aOptionsOK ) == 0
+      aOptionsOK := { "Ok" }
+   ENDIF
+
+   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle )
+
+
+STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle )
+
+   LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus
    LOCAL nResult
    LOCAL aButtons := {}
 
-   hb_default( @aOptions, { "OK" } )
+   oFocus := QFocusFrame()
+   oFocus:setStyleSheet( "border: 2px solid red;" )
+   oFocus:hide()
 
    oDlg      := QDialog()
-   oDlg:setWindowTitle( "Alert!" )
-   oDlg:setStyleSheet( "background-color: rgb(255,0,0); color: rgb(255,255,255); font-name: Courier; font-size: 10pt;" )
-   oDlg:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons ) } )
+   oDlg:setWindowTitle( cTitle )
+   oDlg:setStyleSheet( __hbqtCSSFromColorString( cColorNorm ) +  " font-name: Courier; font-size: 10pt;" )
+   oDlg:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
 
    oVBLayout := QVBoxLayout( oDlg )
    oHBLayout := QHBoxLayout()
@@ -82,12 +130,24 @@ FUNCTION HbQtAlert( cMsg, aOptions )
    FOR EACH cBtn IN aOptions
       oBtn := QPushButton( oDlg )
       oBtn:setText( cBtn )
-      oBtn:setStyleSheet( "background-color: rgb(0,0,220); color: rgb(255,255,255);" )
+      oBtn:setFocusPolicy( Qt_StrongFocus )
+      oBtn:setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) )
       oBtn:connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
+      oBtn:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
       oHBLayout:addWidget( oBtn )
       AAdd( aButtons, oBtn )
    NEXT
 
+   IF HB_ISNUMERIC( nDelay ) .AND. nDelay > 0
+      oTimer := QTimer( oDlg )
+      oTimer:setInterval( nDelay * 1000 )
+      oTimer:setSingleShot( .T. )
+      oTimer:connect( "timeout()", {||  TerminateAlert( aButtons ) } )
+      oTimer:start()
+   ENDIF
+
+   aButtons[ 1 ]:setFocus()
+   oFocus:setWidget( aButtons[ 1 ] )
    IF oDlg:exec() == 0
       nResult := 0
    ENDIF
@@ -101,13 +161,59 @@ STATIC FUNCTION BuildButtonBlock( nResult, nIndex, oDlg )
    RETURN {|| nResult := nIndex, oDlg:done( 1 ) }
 
 
-STATIC FUNCTION Navigate( oKeyEvent, aOptions, aButtons )
-   LOCAL n, cKey
+STATIC FUNCTION Navigate( oKeyEvent, aOptions, aButtons, oFocus )
+   LOCAL n, cKey, nKey
 
-   cKey := Lower( Chr( hbqt_qtEventToHbEvent( oKeyEvent ) ) )
-   IF ( n := AScan( aOptions, {|e|  Lower( Left( e,1 ) ) == cKey } ) ) > 0
-      aButtons[ n ]:click()
-   ENDIF
+   nKey := hbqt_qtEventToHbEvent( oKeyEvent )
 
-   RETURN NIL
+   SWITCH nKey
+
+   CASE K_LEFT
+      FOR n := 1 TO Len( aButtons )
+         IF aButtons[ n ]:hasFocus()
+            EXIT
+         ENDIF
+      NEXT
+      n := iif( n > 1, n - 1, Len( aButtons ) )
+      aButtons[ n ]:setFocus()
+      oFocus:setWidget( aButtons[ n ] )
+      oKeyEvent:accept()
+      RETURN .T.
+
+   CASE K_RIGHT
+      FOR n := 1 TO Len( aButtons )
+         IF aButtons[ n ]:hasFocus()
+            EXIT
+         ENDIF
+      NEXT
+      n := iif( n == Len( aButtons ), 1, n + 1 )
+      aButtons[ n ]:setFocus()
+      oFocus:setWidget( aButtons[ n ] )
+      oKeyEvent:accept()
+      RETURN .T.
+
+   OTHERWISE
+      cKey := Lower( Chr( nKey ) )
+      IF ( n := AScan( aOptions, {|e|  Lower( Left( e,1 ) ) == cKey } ) ) > 0
+         oFocus:setWidget( aButtons[ n ] )
+         aButtons[ n ]:click()
+      ENDIF
+      EXIT
+
+   ENDSWITCH
+
+   RETURN .F.
+
+
+STATIC FUNCTION TerminateAlert( aButtons )
+   LOCAL oButton
+
+   FOR EACH oButton IN aButtons
+      IF oButton:hasFocus()
+         oButton:click()
+         EXIT
+      ENDIF
+   NEXT
+
+   RETURN .T.
 

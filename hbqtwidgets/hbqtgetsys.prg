@@ -158,7 +158,6 @@ CLASS HbQtGet INHERIT GET
    METHOD getDate( cText, nPos )
    METHOD getLogical( cText, nPos )
    METHOD getCharacter( cText, nPos )
-   METHOD getRgbStringFromClipperColor( cToken, lExt )
    METHOD transformThis( xData, cMask )
    METHOD unTransformThis( cData )
    METHOD timesOccurs( cToken, cText )
@@ -1077,8 +1076,6 @@ METHOD HbQtGet:setColor( cMode )
 
 METHOD HbQtGet:color( cnaColor )
 
-   LOCAL n, lExt, xFore, xBack, cCSS := "" , cCSSF, cCSSB
-
    hb_default( @cnaColor, "" )
    ::sl_color := cnaColor
    IF Empty( ::sl_color )
@@ -1089,40 +1086,7 @@ METHOD HbQtGet:color( cnaColor )
 
    SWITCH ValType( ::sl_color )
    CASE "C"
-      IF ( n := At( "/", ::sl_color ) ) > 0
-         xFore := AllTrim( SubStr( ::sl_color, 1, n-1 ) )
-         xBack := AllTrim( SubStr( ::sl_color, n+1 ) )
-      ELSE
-         xFore := AllTrim( cnaColor )
-         xBack := ""
-      ENDIF
-
-      IF ! Empty( xFore )
-         lExt := At( "+", xFore ) > 0
-         xFore := StrTran( StrTran( xFore, "+" ), "*" )
-         cCSSF := ::getRgbStringFromClipperColor( xFore, lExt )
-      ENDIF
-      IF ! Empty( xBack )
-         lExt := "+" $ xBack .OR. "*" $ xBack
-         xBack := StrTran( StrTran( xBack, "+" ), "*" )
-         cCSSB := ::getRgbStringFromClipperColor( xBack, lExt )
-      ENDIF
-      IF ! Empty( cCSSF )
-         cCSS := "color: " + cCSSF
-      ENDIF
-      IF ! Empty( cCSSB )
-         cCSS += "; background-color: " + cCSSB
-      ENDIF
-
-      IF ! Empty( cCSS )
-         cCSS += ";"
-         ::sl_cssColor := cCSS
-      ENDIF
-
-      EXIT
-   CASE "N"
-      EXIT
-   CASE "A"
+      ::sl_cssColor := __hbqtCSSFromColorString( ::sl_color )
       EXIT
 
    ENDSWITCH
@@ -1459,37 +1423,6 @@ METHOD HbQtGet:navigate( nDirection )
    ENDIF
 
    RETURN .T.
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtGet:getRgbStringFromClipperColor( cToken, lExt )
-
-   IF Upper( Left( cToken, 3 ) ) == "RGB"    /* rgb notation : rgb(200,12,201)/rgb(104,56,19) */
-      RETURN cToken
-   ENDIF
-   IF Left( cToken, 1 ) == "#"               /* Hex notation : #fffccc/#da3f78 */
-      RETURN cToken
-   ENDIF
-
-   SWITCH Upper( cToken )                    /* Clipper notation : W+/BG* */
-   CASE "N"
-      RETURN iif( lExt, "rgb( 198,198,198 )", "rgb( 0 ,0 ,0  )"   )
-   CASE "B"
-      RETURN iif( lExt, "rgb( 0,0,255 )"    , "rgb( 0,0,133 )"    )
-   CASE "G"
-      RETURN iif( lExt, "rgb( 96,255,96 )"  , "rgb( 0 ,133,0  )"  )
-   CASE "BG"
-      RETURN iif( lExt, "rgb( 96,255,255 )" , "rgb( 0 ,133,133 )" )
-   CASE "R"
-      RETURN iif( lExt, "rgb( 248,0,38 )"   , "rgb( 133,0 ,0  )"  )
-   CASE "RB"
-      RETURN iif( lExt, "rgb( 255,96,255 )" , "rgb( 133,0 ,133  " )
-   CASE "GR"
-      RETURN iif( lExt, "rgb( 255,255,0 )"  , "rgb( 133,133,0 )"  )
-   CASE "W"
-      RETURN iif( lExt, "rgb( 255,255,255 )", "rgb( 96,96,96 )"   )
-   ENDSWITCH
-   RETURN ""
 
 /*----------------------------------------------------------------------*/
 
