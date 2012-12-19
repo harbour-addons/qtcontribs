@@ -92,6 +92,8 @@ FUNCTION HbQtAlert( cMsg, aOptions )
       nResult := 0
    ENDIF
 
+   oDlg:setParent( QWidget() )
+
    RETURN nResult
 
 

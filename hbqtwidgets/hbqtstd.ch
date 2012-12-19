@@ -73,9 +73,9 @@
 
    /* Constants for _QGET_DATA array elements */
    #define _QDATA_LISTBOX_ITEMS                   1
-   #define _QDATA_LISTBOX_FOCUSBLOCK              2
-   #define _QDATA_LISTBOX_STATUSBLOCK             3
-   #define _QDATA_LISTBOX_SCROLLBAR               4
+
+
+   #define _QDATA_COMBOBOX_ITEMS                  1
 
 
    #define _QDATA_PUSHBUTTON_TEXT                 1
@@ -128,6 +128,18 @@
                                 <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL } )
 
 
+   #command @ <row>, <col> QGET <v> CHECKBOX  ;
+                              [VALID <valid>] ;
+                              [WHEN <when>  ] ;
+                              [COLOR <color>] ;
+                              [CAPTION <cap>] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl> ] ;
+                       => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL } )
+
+
    #command @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ;
                               [VALID <valid>] ;
                               [WHEN <when>  ] ;
@@ -147,13 +159,23 @@
                               [CAPTION <cap>] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl> ] ;
-                              [FOCUS <fb>] ;
-                              [STATE <sb>] ;
-                              [<sbar:SCROLLBAR>] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QListWidget", ;
-                                { <items>, <{fb}>, <{sb}>, <.sbar.> } } )
+                                { <items> } } )
+
+
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> COMBOBOX <items> ;
+                              [VALID <valid>] ;
+                              [WHEN <when>  ] ;
+                              [COLOR <color>] ;
+                              [CAPTION <cap>] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl> ] ;
+                        => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QComboBox", ;
+                                { <items> } } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> [ACTION <act>] ;

@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-18 17:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtalert.prg
+  * hbqtwidgets/hbqtgetsys.prg
+  * hbqtwidgets/hbqtstd.ch
+  * hbqtwidgets/tests/validator.prg
+    + Implemented: @ <top>, <left>, <bottom>, <right> QGET <v> ;
+                     COMBOBOX <items> [WHEN ...
+
+                 : @ <row>, <col> QGET <v> CHECKBOX [WHEN...
+
+    ; QCheckBox styling needs more investigation. If anyone has 
+       clues please forward.
+
 2012-12-18 09:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/hbqtevent.prg
     + Added: hbqt_qtEventToHbEvent( oKeyEvent )
