@@ -127,7 +127,7 @@ STATIC FUNCTION Clipper( oMain )
    @  9, 54 QGET lDone CHECKBOX
 
    @  9, 02 QSAY "Notes:"
-   @ 10, 02, 17, 55 QGET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes
+   @ 10, 02, 17, 55 QGET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes TOOLTIP "The notes must contain 'Harbour' somewhere"
 
    @  9, 60 QSAY "Select:"
    @ 10, 60, 17, 69 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }

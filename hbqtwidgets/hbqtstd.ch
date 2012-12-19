@@ -69,6 +69,7 @@
    #define _QGET_CONTROL                          13
    #define _QGET_TYPE                             14
    #define _QGET_DATA                             15
+   #define _QGET_TOOLTIP                          16
 
 
    /* Constants for _QGET_DATA array elements */
@@ -97,98 +98,105 @@
 
 
    #command @ <row>, <col> QGET <v> ;
-                              [PICTURE <pic>] ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [PICTURE <pic>        ] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [VALIDATOR <validator>] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
-                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL } )
+                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL, <cTip> } )
 
 
    #command @ <row>, <col> QSAY <sayExp> ;
-                              [PICTURE <sayPic>] ;
-                              [COLOR <sayColor>] ;
+                              [PICTURE <sayPic>     ] ;
+                              [COLOR <sayColor>     ] ;
                            QGET <v> ;
-                              [PICTURE <pic>] ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [PICTURE <pic>        ] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [VALIDATOR <validator>] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
                                 <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, ;
-                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL } )
+                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL, <cTip> } )
 
 
    #command @ <row>, <col> QGET <v> CHECKBOX  ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
-                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL } )
+                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL, <cTip> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
-                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL } )
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL, <cTip> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QListWidget", ;
-                                { <items> } } )
+                                { <items> }, <cTip> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> COMBOBOX <items> ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QComboBox", ;
-                                { <items> } } )
+                                { <items> }, <cTip> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> [ACTION <act>] ;
-                              [VALID <valid>] ;
-                              [WHEN <when>  ] ;
-                              [COLOR <color>] ;
-                              [CAPTION <cap>] ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
-                              [CONTROL <oControl> ] ;
+                              [CONTROL <oControl>   ] ;
+                              [TOOLTIP <cTip>       ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPushButton", ;
-                                { <label>, <{act}> } } )
+                                { <label>, <{act}> }, <cTip> } )
 
 
    #command QREAD [ PARENT <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont>, <nSpc> )

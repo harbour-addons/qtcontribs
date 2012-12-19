@@ -101,6 +101,7 @@ CLASS HbQtGet INHERIT GET
    METHOD toRow( nRow )                           SETGET
    METHOD toCol( nCol )                           SETGET
    METHOD data( xData )                           SETGET
+   METHOD tooltip( cTip )                         SETGET
 
 
    PROTECTED:
@@ -144,6 +145,7 @@ CLASS HbQtGet INHERIT GET
    VAR    nToRow                                  INIT NIL
    VAR    nToCol                                  INIT NIL
    VAR    sl_data                                 INIT NIL
+   VAR    sl_tooltip                              INIT ""
 
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
@@ -298,6 +300,8 @@ METHOD HbQtGet:create( oControl )
    IF ::cClassName == "QLINEEDIT"
       ::oEdit:setCursorPosition( 0 )
    ENDIF
+
+   ::oEdit:setToolTip( ::tooltip )
 
    RETURN Self
 
@@ -1058,7 +1062,7 @@ METHOD HbQtGet:setColor( cMode )
          CASE "QCOMBOBOX"
          CASE "QPUSHBUTTON"
             ::oEdit:setStyleSheet( "" )
-            ::oEdit:setStyleSheet( ::sl_cssColor )
+            ::oEdit:setStyleSheet( "outline: 5px solid #000; " + ::sl_cssColor )
             ::oEdit:repaint()
             EXIT
          ENDSWITCH
@@ -1070,7 +1074,7 @@ METHOD HbQtGet:setColor( cMode )
          CASE "QCOMBOBOX"
          CASE "QPUSHBUTTON"
             ::oEdit:setStyleSheet( "" )
-            ::oEdit:setStyleSheet( ::sl_cssNotValid )
+            ::oEdit:setStyleSheet( "outline: 1px solid #000; " + ::sl_cssNotValid )
             ::oEdit:repaint()
             EXIT
          ENDSWITCH
@@ -1699,6 +1703,16 @@ METHOD HbQtGet:display()
    ::setData( ::varGet() )
 
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:tooltip( cTip )
+
+   IF HB_ISCHAR( cTip )
+      ::sl_tooltip := cTip
+   ENDIF
+
+   RETURN ::sl_tooltip
 
 /*----------------------------------------------------------------------*/
 

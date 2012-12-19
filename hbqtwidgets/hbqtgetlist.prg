@@ -224,9 +224,10 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont, nLineSpacing )
          oEdit:getList := oGetList
          oEdit:get     := oGet   /* This is important - all variables will be initialized here instead of in :new() */
 
-         oEdit:toRow   := aEdit[ _QGET_TOROW ]
-         oEdit:toCol   := aEdit[ _QGET_TOCOL ]
-         oEdit:data    := aEdit[ _QGET_DATA  ]
+         oEdit:toRow   := aEdit[ _QGET_TOROW   ]
+         oEdit:toCol   := aEdit[ _QGET_TOCOL   ]
+         oEdit:data    := aEdit[ _QGET_DATA    ]
+         oEdit:tooltip := aEdit[ _QGET_TOOLTIP ]
 
          IF ! Empty( aEdit[ _QGET_COLOR ] )
             oEdit:color := aEdit[ _QGET_COLOR ]
