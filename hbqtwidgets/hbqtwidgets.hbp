@@ -13,6 +13,7 @@ $hb_pkg_install.hbm
 
 hbqt.hbc
 
+-instfile=inc:hbtoqt.ch
 -instfile=inc:hbqtstd.ch
 -instfile=inc:hbqtwidgets.hbx
 
