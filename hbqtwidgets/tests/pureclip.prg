@@ -88,9 +88,10 @@ FUNCTION Main()
    @  9, 60 QSAY "Select:"
    @ 10, 60, 17, 69 QGET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
 
-   @ 19, 25, 19, 44 QGET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
+   @ 19, 25, 19, 44 QGET lOk     PUSHBUTTON "OK"     ACTION {|| iif( HbQtAlert( "Save Data?", {"Yes","No"} ) == 1, "cText", "cNotes" ) } ;
+                                                        WHEN nSlry > 700 .AND. nSlry < 17000
    @ 19, 50, 19, 69 QGET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
-                                                      iif( v == 1, GetActive():parent():close(), NIL ) }
+                                                        iif( v == 1, GetActive():parent():close(), NIL ) }
    QREAD
 
    QApplication():exec()

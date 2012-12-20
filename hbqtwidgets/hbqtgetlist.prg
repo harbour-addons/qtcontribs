@@ -375,6 +375,7 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    METHOD nextGet( oGet )
    METHOD previousGet( oGet )
    METHOD getIndex( oGet )
+   METHOD setFocus( cGet )
 
    ENDCLASS
 
@@ -478,6 +479,20 @@ METHOD HbQtGetList:previousGet( oGet )
       ELSE
          RETURN ::aGetList[ n - 1 ]
       ENDIF
+   ENDIF
+
+   RETURN oGet
+
+
+METHOD HbQtGetList:setFocus( cGet )
+
+   LOCAL n, oGet
+
+   cGet := Upper( cGet )
+
+   IF ( n := AScan( ::aGetList, {|oGet| Upper( oGet:name() ) == cGet } ) ) > 0
+      oGet := ::aGetList[ n ]
+      oGet:setFocus( Qt_TabFocusReason )
    ENDIF
 
    RETURN oGet

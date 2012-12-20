@@ -171,6 +171,7 @@ CLASS HbQtGet INHERIT GET
    METHOD connect()
    METHOD isQLineEdit()                           INLINE ::cClassName == "QLINEEDIT"
    METHOD navigate( nDirection )
+   METHOD handlePushButton()
 
    EXPORTED:
    /* ::oGet operation methods overloaded from GET : begins */
@@ -1299,11 +1300,10 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       IF ::cClassName $ "QLISTWIDGET,QCOMBOBOX,QPUSHBUTTON"
          IF ::postValidate()
             IF ::cClassName == "QPUSHBUTTON"
-               IF HB_ISBLOCK( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
-                  Eval( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ], Self )
-               ENDIF
+               ::handlePushButton()
+            ELSE
+               ::navigate( _QGET_NAV_NEXT )
             ENDIF
-            ::navigate( _QGET_NAV_NEXT )
          ENDIF
          oKeyEvent:accept() ; RETURN .T.
       ELSEIF ::cClassName == "QPLAINTEXTEDIT" .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
@@ -1353,16 +1353,10 @@ METHOD HbQtGet:execMouseRelease( oMouseEvent )
    CASE Qt_LeftButton
       IF ::cClassName $ "QPUSHBUTTON"
          IF ::postValidate()
-            IF HB_ISBLOCK( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
-               Eval( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ], Self )
-            ENDIF
-            //::navigate( _QGET_NAV_NEXT )
+            ::handlePushButton()
          ENDIF
          oMouseEvent:accept(); RETURN .T.
       ENDIF
-      EXIT
-
-   CASE Qt_RightButton
       EXIT
 
    ENDSWITCH
@@ -1399,6 +1393,22 @@ METHOD HbQtGet:execMousePress( oMouseEvent )
    ENDSWITCH
 
    RETURN .F.
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:handlePushButton()
+   LOCAL cNextGet
+
+   IF HB_ISBLOCK( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ] )
+      cNextGet := Eval( ::sl_data[ _QDATA_PUSHBUTTON_ACTION ], Self )
+      IF ! Empty( cNextGet ) .AND. ! Empty( ::oGetList )
+         ::oGetList:setFocus( cNextGet )
+      ELSE
+         ::navigate( _QGET_NAV_NEXT )
+      ENDIF
+   ENDIF
+
+   RETURN NIL
 
 /*----------------------------------------------------------------------*/
 

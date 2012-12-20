@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-20 01:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    ! Version bump.
+
+  * hbqtwidgets/hbqtwidgets.hbx
+    * Regenerated.
+
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+    + Refined: the behavior of ACTION clasue of PUSHBUTTON.
+       If ACTION returns a name of a GET then it is brought to 
+       focus. If NIL is returned, it takes usual course to next GET.
+       Probably, this solves remaining issues pertaining to 
+       validation per GET or per form.
+
+  * hbqtwidgets/tests/pureclip.prg
+    % Demonstrates the ACTION clause usage.
+
 2012-12-19 23:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/tests/pureclip.prg
     ! Fixed: process termination issue.
