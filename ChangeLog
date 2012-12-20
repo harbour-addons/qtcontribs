@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-19 19:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: HbQtBrowse( nTop, nLeft, nBottom, nRight, oParent, oFont )
+       A class to simulate TBrowse() object in pure GUI [Work-in-progress].
+
+  * hbqtwidgets/hbqtalert.prg
+    + Extended: HbQtAlert( <xMessage>, [<aOptions>], [<cColorNorm>], [<nDelay>], [<cTitle>], [<nInit>], [<oParent>] ) 
+       [<oParent>] == The window you wish to center the alert dialog.
+         By default it will be QApplication():focusWidget().
+
+  + hbqtwidgets/tests/browser.prg
+    + Added: demo application demonstrating HbQtBrowse() functionality.
+       [Work-in-progress]
+
+  * hbqtwidgets/tests/validator.prg
+    % Minor.
+
 2012-12-19 16:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtalert.prg
     + Extended: HbQtAlert( <xMessage>, [<aOptions>], [<cColorNorm>], [<nDelay>], [<cTitle>], [<nInit>] ) 

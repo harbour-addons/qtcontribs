@@ -57,7 +57,7 @@
 #include "hbtrace.ch"
 
 
-FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit )
+FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oParent )
    LOCAL cMessage, aOptionsOK, cOption, nEval, cColorHigh
 
    IF PCount() == 0
@@ -98,10 +98,10 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit )
       aOptionsOK := { "Ok" }
    ENDIF
 
-   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle, nInit )
+   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent )
 
 
-STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit )
+STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent )
 
    LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus
    LOCAL nResult
@@ -111,7 +111,9 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    oFocus:setStyleSheet( "border: 2px solid red;" )
    oFocus:hide()
 
-   oDlg      := QDialog()
+   hb_default( @oParent, QApplication():focusWidget() )
+
+   oDlg := QDialog( oParent )
    oDlg:setWindowTitle( cTitle )
    oDlg:setStyleSheet( __hbqtCSSFromColorString( cColorNorm ) +  " font-name: Courier; font-size: 10pt;" )
    oDlg:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
