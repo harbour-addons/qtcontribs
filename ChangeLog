@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-19 23:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/tests/pureclip.prg
+    ! Fixed: process termination issue.
+       Infact oWidget:close() should be called instead of :sendEvent().
+
 2012-12-19 22:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
   * hbqtwidgets/hbqtstd.ch
