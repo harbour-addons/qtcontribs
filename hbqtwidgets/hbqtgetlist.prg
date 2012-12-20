@@ -488,11 +488,12 @@ METHOD HbQtGetList:setFocus( cGet )
 
    LOCAL n, oGet
 
-   cGet := Upper( cGet )
-
-   IF ( n := AScan( ::aGetList, {|oGet| Upper( oGet:name() ) == cGet } ) ) > 0
-      oGet := ::aGetList[ n ]
-      oGet:setFocus( Qt_TabFocusReason )
+   IF HB_ISCHAR( cGet )
+      cGet := Upper( cGet )
+      IF ( n := AScan( ::aGetList, {|oGet| Upper( oGet:name() ) == cGet } ) ) > 0
+         oGet := ::aGetList[ n ]
+         oGet:setFocus( Qt_TabFocusReason )
+      ENDIF
    ENDIF
 
    RETURN oGet

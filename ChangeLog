@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-20 09:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/tests/validator.prg
+    ! Fixed: oGetList:setFocus( cGet ) was not checking the type of <cGet>.
+
 2012-12-20 02:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtstd.ch
     % GetList sent with @ operator.

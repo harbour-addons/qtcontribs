@@ -299,7 +299,7 @@ STATIC FUNCTION NoParentPureClipper()
 
    @ 19, 25, 19, 44 QGET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
    @ 19, 50, 19, 69 QGET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
-                                                      iif( v == 1, QApplication():sendEvent( GetActive():parent(), QCloseEvent() ), NIL ) }
+                                                      iif( v == 1, GetActive():parent():close(), NIL ) }
 
    QREAD
 
