@@ -199,6 +199,6 @@
                                 { <label>, <{act}> }, <cTip> } )
 
 
-   #command QREAD [ [ PARENT ] <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( GetList, SayList, <GetParent>, <oFont>, <nSpc> )
+   #command QREAD [ [ PARENT ] <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc> )
 
 #endif

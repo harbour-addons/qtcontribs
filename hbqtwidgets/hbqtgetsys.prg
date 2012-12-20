@@ -1242,6 +1242,11 @@ METHOD HbQtGet:returnPressed()
 
 METHOD HbQtGet:execKeyPress( oKeyEvent )
    LOCAL nKey := oKeyEvent:key()
+   LOCAL nHbKey := HbQt_QtEventToHbEvent( oKeyEvent )
+
+   IF HB_ISBLOCK( SetKey( nHbKey ) )
+      Eval( SetKey( nHbKey ) )
+   ENDIF
 
    IF ::cClassName == "QCHECKBOX"
       IF nKey == Qt_Key_T .OR. nKey == Qt_Key_Y
