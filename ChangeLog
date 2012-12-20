@@ -16,6 +16,21 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-19 22:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtstd.ch
+
+  + hbqtwidgets/tests/pureclip.prg
+    + Added: a pure clipper implementation demo.
+       Note: closing the dialog with X button terminates the process properly.
+             But closing via <Cancel> button keeps the process running. Looking...
+
+  * hbqtwidgets/tests/validator.prg
+    + Added: pure clipper implementation as 4th button.
+
+  * hbqtwidgets/tests/validatormain.ui
+    % Minor.
+
 2012-12-19 19:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/hbqtbrowse.prg
   * hbqtwidgets/hbqtwidgets.hbp

@@ -75,6 +75,12 @@ INIT PROCEDURE __initHbQtSets()
    RETURN
 
 
+EXIT PROCEDURE __exitHbQtSets()
+
+   t_sets := NIL
+
+   RETURN
+
 FUNCTION HbQtSet( nSet, xValue )
    LOCAL xOldValue := t_sets[ nSet ]
 
@@ -106,7 +112,7 @@ FUNCTION HbQtClearGets( oWnd, ... )
       oWnd:setParent( QWidget() )
    ENDIF
    FOR EACH oParent IN hb_AParams()
-      __hbqtBindGetList( oParent )
+      __hbqtBindGetList( oParent, NIL )
    NEXT
 
    RETURN NIL
@@ -201,15 +207,22 @@ FUNCTION __hbqtCSSFromColorString( cColor )
    RETURN cCSS
 
 
-FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont, nLineSpacing )
+FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
    LOCAL nEditPadding := 4
    LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0
    LOCAL nX, nY, nW, nH
    LOCAL aGetList := {}
-   LOCAL oGetList
    LOCAL lFit := .T.
+   LOCAL oGetList
+   LOCAL oWnd
+
+   IF HB_ISOBJECT( oParent )
+      oWnd := oParent
+   ELSE
+      oWnd := QDialog()
+   ENDIF
 
    hb_default( @oFont       , HbQtSet( _QSET_GETSFONT    ) )
    hb_default( @nLineSpacing, HbQtSet( _QSET_LINESPACING ) )
@@ -342,11 +355,13 @@ FUNCTION HbQtReadGets( GetList, SayList, oWnd, oFont, nLineSpacing )
    __GetListLast( oGetList )
 
    /* Probably will be fired only when oWnd is a top level window - needs to be investigated further */
-   oWnd:connect( QEvent_Close , {|| __hbQtBindGetList( oWnd, NIL ), oWnd:setParent( QWidget() ), .F. } )
-   /* Incase oWnd is not a top level widget */
-   oWnd:connect( "destroyed()", {|| __hbQtBindGetList( oWnd, NIL ) } )
+   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ), .F. } )
 
-   RETURN NIL
+   IF ! HB_ISOBJECT( oParent )
+      oWnd:show()
+   ENDIF
+
+   RETURN oWnd
 
 
 CREATE CLASS HbQtGetList INHERIT HbGetList
