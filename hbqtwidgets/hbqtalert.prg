@@ -57,7 +57,7 @@
 #include "hbtrace.ch"
 
 
-FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle )
+FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit )
    LOCAL cMessage, aOptionsOK, cOption, nEval, cColorHigh
 
    IF PCount() == 0
@@ -77,6 +77,7 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle )
 
    hb_default( @aOptions, {} )
    hb_default( @cTitle, "Alert!" )
+   hb_default( @nInit, 1 )
 
    IF ! HB_ISSTRING( cColorNorm ) .OR. Empty( cColorNorm )
       cColorNorm := "W+/R" // first pair color (Box line and Text)
@@ -97,10 +98,10 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle )
       aOptionsOK := { "Ok" }
    ENDIF
 
-   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle )
+   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle, nInit )
 
 
-STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle )
+STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit )
 
    LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus
    LOCAL nResult
@@ -146,8 +147,8 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
       oTimer:start()
    ENDIF
 
-   aButtons[ 1 ]:setFocus()
-   oFocus:setWidget( aButtons[ 1 ] )
+   aButtons[ nInit ]:setFocus()
+   oFocus:setWidget( aButtons[ nInit ] )
    IF oDlg:exec() == 0
       nResult := 0
    ENDIF
