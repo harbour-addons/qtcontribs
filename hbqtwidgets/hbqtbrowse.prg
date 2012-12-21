@@ -53,6 +53,7 @@
 
 #include "hbqtgui.ch"
 #include "inkey.ch"
+#include "error.ch"
 #include "hbclass.ch"
 
 #include "hbtrace.ch"
@@ -128,6 +129,8 @@
 #define XBPCOL_TYPE_FILEMINIICON                  6
 #define XBPCOL_TYPE_MULTILINETEXT                 7
 
+#define ISFROZEN( n )                             ( ascan( ::aLeftFrozen, n ) > 0 .OR. ascan( ::aRightFrozen, n ) > 0 )
+
 
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont )
    RETURN HbQtBrowse():new( nTop, nLeft, nBottom, nRight, oParent, oFont )
@@ -146,11 +149,15 @@ CLASS HbQtBrowse INHERIT TBrowse
    DATA   oWidget
 
    METHOD new( nTop, nLeft, nBottom, nRight, oParent, oFont )
+   METHOD doConfigure()
+
    METHOD create()
    METHOD execSlot( nEvent, p1, p2, p3 )
    METHOD supplyInfo( nMode, nCall, nRole, nX, nY )
    METHOD compatColor( nColor )
    METHOD compatIcon( cIcon )
+   METHOD cellValue( nRow, nCol )
+   METHOD cellValueA( nRow, nCol )
 
    DATA   oParent
    DATA   oFont
@@ -254,6 +261,18 @@ CLASS HbQtBrowse INHERIT TBrowse
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
 
+
+   VAR bFirstPosBlock                             INIT {|| NIL }
+   VAR bLastPosBlock                              INIT {|| NIL }
+   VAR bPhyPosBlock                               INIT {|| NIL }
+   VAR bPosBlock                                  INIT {|| NIL }
+   VAR bGoPosBlock                                INIT {|| NIL }
+   VAR bHitBottomBlock                            INIT {|| NIL }
+   VAR bHitTopBlock                               INIT {|| NIL }
+   VAR bStableBlock                               INIT {|| NIL }
+
+   VAR aCellValuesA  AS ARRAY                     INIT {}   // cell values buffers for each record - actual
+
    ENDCLASS
 
 
@@ -270,6 +289,227 @@ METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
    ::oFont   := oFont
 
    ::create()
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:doConfigure()
+
+   LOCAL aCol, aVal, aValA
+   LOCAL nColCount, nRowCount
+   LOCAL nMaxCellH := 0
+   LOCAL nViewH, i, xVal, oFontMetrics, n, nLeftWidth
+   LOCAL nwVal, nwHead
+
+   ::TBrowse:doConfigure()
+
+   IF !( ::lHScroll )
+      ::oHScrollBar:hide()
+   ENDIF
+   IF !( ::lVScroll )
+      ::oVScrollBar:hide()
+   ENDIF
+
+   ::oTableView:setSelectionBehavior( iif( ::cursorMode == 1, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+
+   /* Calculate how many rows fit in the view */
+   IF len( ::columns ) > 0
+      nMaxCellH := 0
+      aeval( ::columns, {|o| nMaxCellH := max( nMaxCellH, o:hHeight ) } )
+      //
+      ::oHeaderView:setMaximumHeight( nMaxCellH )
+      ::oHeaderView:setMinimumHeight( nMaxCellH )
+      //
+      ::oLeftHeaderView:setMaximumHeight( nMaxCellH )
+      ::oLeftHeaderView:setMinimumHeight( nMaxCellH )
+      //
+      ::oRightHeaderView:setMaximumHeight( nMaxCellH )
+      ::oRightHeaderView:setMinimumHeight( nMaxCellH )
+
+      nMaxCellH := 0
+      aeval( ::columns, {|o| nMaxCellH := max( nMaxCellH, o:fHeight ) } )
+      //
+      ::oFooterView:setMaximumHeight( nMaxCellH )
+      //
+      ::oLeftFooterView:setMaximumHeight( nMaxCellH )
+      //
+      ::oRightFooterView:setMaximumHeight( nMaxCellH )
+
+      nMaxCellH := 0
+      aeval( ::columns, {|o| nMaxCellH := max( nMaxCellH, o:dHeight ) } )
+      //
+      nViewH := ::oViewport:height() //- ::oHeaderView:height()
+      ::nRowsInView := Int( nViewH / nMaxCellH )
+      IF ( nViewH % nMaxCellH ) > ( nMaxCellH / 2 )
+         ::nRowsInView++
+      ENDIF
+
+      /* Probably this is the appropriate time to update row heights */
+      ::nCellHeight := nMaxCellH
+      ::setCellHeight( nMaxCellH )
+
+      /* Implement Column Resizing Mode */
+      ::oHeaderView:setResizeMode( iif( ::lSizeCols, QHeaderView_Interactive, QHeaderView_Fixed ) )
+      ::oFooterView:setResizeMode( QHeaderView_Fixed )
+      //
+      ::oLeftHeaderView:setResizeMode( QHeaderView_Fixed )
+      ::oLeftFooterView:setResizeMode( QHeaderView_Fixed )
+      //
+      ::oRightHeaderView:setResizeMode( QHeaderView_Fixed )
+      ::oRightFooterView:setResizeMode( QHeaderView_Fixed )
+
+      /* Set column widths */
+      oFontMetrics := QFontMetrics( ::oTableView:font() )
+      //
+      FOR i := 1 TO len( ::columns )
+         IF ::columns[ i ]:nColWidth != NIL
+            ::oHeaderView:resizeSection( i-1, ::columns[ i ]:nColWidth )
+            ::oFooterView:resizeSection( i-1, ::columns[ i ]:nColWidth )
+         ELSE
+            xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
+
+            nwVal := oFontMetrics:width( xVal, -1 )
+            nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
+
+            ::columns[ i ]:nColWidth := max( nwVal, nwHead ) + 8
+
+            ::oHeaderView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
+            ::oFooterView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
+         *  ::oHeaderView:resizeSection( i-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         *  ::oFooterView:resizeSection( i-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         ENDIF
+      NEXT
+
+      nLeftWidth := 0
+      FOR n := 1 TO ::nLeftFrozen
+         i := ::aLeftFrozen[ n ]
+         IF ::columns[ i ]:nColWidth != NIL
+            ::oLeftHeaderView:resizeSection( n-1, ::columns[ i ]:nColWidth )
+            ::oLeftFooterView:resizeSection( n-1, ::columns[ i ]:nColWidth )
+         ELSE
+            xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
+            nwVal := oFontMetrics:width( xVal, -1 )
+            nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
+            ::oLeftHeaderView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
+            ::oLeftFooterView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
+         *  ::oLeftHeaderView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         *  ::oLeftFooterView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         ENDIF
+         nLeftWidth += ::oLeftHeaderView:sectionSize( n-1 )
+      NEXT
+      ::oLeftView:setFixedWidth( 4 + nLeftWidth )
+      //::oLeftHeaderView:setFixedWidth( nLeftWidth )
+      ::oLeftFooterView:setFixedWidth( 4 + nLeftWidth )
+
+      nLeftWidth := 0
+      FOR n := 1 TO ::nRightFrozen
+         i := ::aRightFrozen[ n ]
+         IF ::columns[ i ]:nColWidth != NIL
+            ::oRightHeaderView:resizeSection( n-1, ::columns[ i ]:nColWidth )
+            ::oRightFooterView:resizeSection( n-1, ::columns[ i ]:nColWidth )
+         ELSE
+            xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
+            nwVal := oFontMetrics:width( xVal, -1 )
+            nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
+            ::oRightHeaderView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
+            ::oRightFooterView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
+         *  ::oRightHeaderView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         *  ::oRightFooterView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         ENDIF
+         nLeftWidth += ::oRightHeaderView:sectionSize( n-1 )
+      NEXT
+      ::oRightView:setFixedWidth( 4 + nLeftWidth )
+      //::oRightHeaderView:setFixedWidth( nLeftWidth )
+      ::oRightFooterView:setFixedWidth( 4 + nLeftWidth )
+
+   ENDIF
+
+   IF ::nLeftFrozen == 0 .AND. HB_ISOBJECT( ::oLeftView )
+      ::oLeftView:hide()
+      ::oLeftFooterView:hide()
+   ELSEIF ::nLeftFrozen > 0 .AND. HB_ISOBJECT( ::oLeftView )
+      ::oLeftView:show()
+      ::oLeftFooterView:show()
+   ENDIF
+   IF ::nRightFrozen == 0 .AND. HB_ISOBJECT( ::oRightView )
+      ::oRightView:hide()
+      ::oRightFooterView:hide()
+   ELSEIF ::nRightFrozen > 0 .AND. HB_ISOBJECT( ::oRightView )
+      ::oRightView:show()
+      ::oRightFooterView:show()
+   ENDIF
+
+   FOR i := 1 TO ::colCount
+      IF ISFROZEN( i )
+         ::oTableView:hideColumn( i - 1 )
+         ::oFooterView:setSectionHidden( i - 1, .t. )
+      ELSE
+         ::oTableView:showColumn( i - 1 )
+         ::oFooterView:setSectionHidden( i - 1, .f. )
+      ENDIF
+   NEXT
+
+
+   nColCount := ::colCount
+   nRowCount := ::rowCount
+   IF nRowCount == 0
+      _GENLIMITRTE()
+   ENDIF
+
+   /* create new record buffer */
+   ASize( ::aCellStatus , nRowCount )
+   ASize( ::aDispStatus , nRowCount )
+   ASize( ::aCellValues , nRowCount )
+   ASize( ::aCellValuesA, nRowCount )
+   ASize( ::aCellColors , nRowCount )
+   AFill( ::aCellStatus , .F. )
+   AFill( ::aDispStatus , .T. )
+   FOR EACH aVal, aValA, aCol IN ::aCellValues, ::aCellValuesA, ::aCellColors
+      IF aVal == NIL
+         aVal := Array( nColCount )
+      ELSE
+         ASize( aVal, nColCount )
+      ENDIF
+      IF aValA == NIL
+         aValA := Array( nColCount )
+      ELSE
+         ASize( aValA, nColCount )
+      ENDIF
+      IF aCol == NIL
+         aCol := Array( nColCount )
+      ELSE
+         ASize( aCol, nColCount )
+      ENDIF
+   NEXT
+
+   ::lStable := .F.
+   ::lFrames := .T.
+   ::nLastRow := nRowCount
+   ::nLastScroll := 0
+   ::nLastPos := 0
+   IF ::nRowPos > nRowCount
+      ::nRowPos := nRowCount
+   ELSEIF ::nRowPos < 1
+      ::nRowPos := 1
+   ENDIF
+
+   ::setHorzScrollBarRange()
+
+   ::setCellHeight( ::nCellHeight )
+
+   /* Inform Qt about number of rows and columns browser implements */
+   //::oDbfModel:hbSetRowColumns( ::rowCount - 1, ::colCount - 1 )
+   /* Tell Qt to Reload Everything */
+   ::oDbfModel:reset()
+   //
+   IF HB_ISOBJECT( ::oLeftDbfModel )
+      //::oLeftDbfModel:hbSetRowColumns( ::rowCount - 1, ::nLeftFrozen - 1 ) // Dangling code
+      ::oLeftDbfModel:reset()
+   ENDIF
+   IF HB_ISOBJECT( ::oRightDbfModel )
+      //::oRightDbfModel:hbSetRowColumns( ::rowCount - 1, ::nRightFrozen - 1 )
+      ::oRightDbfModel:reset()
+   ENDIF
 
    RETURN Self
 
@@ -1125,6 +1365,30 @@ METHOD HbQtBrowse:setCellHeight( nCellHeight )
    RETURN Self
 
 
+METHOD HbQtBrowse:cellValue( nRow, nCol )
+
+   IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
+      nCol >= 1 .AND. nCol <= ::colCount .AND. ;
+      ::aCellStatus[ nRow ]
+
+      RETURN ::aCellValues[ nRow, nCol ]
+   ENDIF
+
+   RETURN NIL
+
+
+METHOD HbQtBrowse:cellValueA( nRow, nCol )
+
+   IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
+      nCol >= 1 .AND. nCol <= ::colCount .AND. ;
+      ::aCellStatus[ nRow ]
+
+      RETURN ::aCellValuesA[ nRow, nCol ]
+   ENDIF
+
+   RETURN NIL
+
+
 METHOD HbQtBrowse:navigate( p1, p2 )
 
    IF HB_ISBLOCK( p1 )
@@ -1152,3 +1416,129 @@ METHOD HbQtBrowse:pan( p1 )
 
    RETURN Self
 
+/*----------------------------------------------------------------------*/
+/*----------------------------------------------------------------------*/
+/*----------------------------------------------------------------------*/
+
+FUNCTION HbQtColumnNew( cHeading, bBlock )
+   RETURN HbQtColumn():new( cHeading, bBlock )
+
+
+CREATE CLASS HbQtColumn INHERIT TBColumn
+
+   METHOD new( cHeading, bBlock )
+   METHOD configure()
+
+   DATA   hAlignment                              INIT      Qt_AlignHCenter + Qt_AlignVCenter
+   DATA   hHeight                                 INIT      16
+   DATA   hFgColor                                INIT      Qt_black
+   DATA   hBgColor                                INIT      Qt_darkGray
+
+   DATA   fAlignment                              INIT      Qt_AlignHCenter + Qt_AlignVCenter
+   DATA   fHeight                                 INIT      16
+   DATA   fFgColor                                INIT      Qt_black
+   DATA   fBgColor                                INIT      Qt_darkGray
+
+   DATA   dAlignment                              INIT      Qt_AlignLeft
+   DATA   dHeight                                 INIT      16
+   DATA   dFgColor                                INIT      Qt_black
+   DATA   dBgColor                                INIT      Qt_white
+   DATA   nColWidth
+
+   DATA   valtype
+   DATA   type                                    INIT      XBPCOL_TYPE_TEXT
+   DATA   blankVariable
+
+   ENDCLASS
+
+
+METHOD HbQtColumn:new( cHeading, bBlock )
+
+   ::TBColumn:new( cHeading, bBlock )
+
+   ::valtype       := valtype( Eval( ::bBlock ) )
+   ::blankVariable := iif( ::valtype == "N", 0, iif( ::valtype == "D", ctod( "" ), iif( ::valtype == "L", .f., "" ) ) )
+
+   ::configure()
+
+   RETURN Self
+
+
+METHOD HbQtColumn:configure()
+#if 0
+   /*  Heading Area */
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_CAPTION } ) ) > 0
+      ::cHeading := ::aPresParams[ n,2 ]
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_FGCLR } ) ) > 0
+      ::hFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_BGCLR } ) ) > 0
+      ::hBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_HEIGHT } ) ) > 0
+      ::hHeight := ::aPresParams[ n,2 ]
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_ALIGNMENT } ) ) > 0
+      ::hAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
+      ::hAlignment += Qt_AlignVCenter
+   ENDIF
+
+   /*  Data Area  */
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_CELLALIGNMENT } ) ) > 0
+      ::dAlignment := ::aPresParams[ n,2 ]
+   ELSE
+      ::dAlignment := iif( ::valtype == "N", Qt_AlignRight, iif( ::valtype $ "DL", Qt_AlignHCenter, Qt_AlignLeft ) )
+      ::dAlignment += Qt_AlignVCenter
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_FGCLR } ) ) > 0
+      ::dFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_BGCLR } ) ) > 0
+      ::dBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_ROWHEIGHT } ) ) > 0
+      ::dHeight := ::aPresParams[ n,2 ]
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_ROWWIDTH } ) ) > 0
+      ::nColWidth := ::aPresParams[ n,2 ]
+   ENDIF
+
+   /*  Footer Area  */
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_CAPTION } ) ) > 0
+      ::cFooting := ::aPresParams[ n,2 ]
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_FGCLR } ) ) > 0
+      ::fFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_BGCLR } ) ) > 0
+      ::fBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_HEIGHT } ) ) > 0
+      ::fHeight := ::aPresParams[ n,2 ]
+   ENDIF
+   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_ALIGNMENT } ) ) > 0
+      ::fAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
+      ::fAlignment += Qt_AlignVCenter
+   ENDIF
+#endif
+   RETURN Self
+
+
+STATIC PROCEDURE _GENLIMITRTE()
+   LOCAL oError := ErrorNew()
+
+   oError:severity    := ES_ERROR
+   oError:genCode     := EG_LIMIT
+   oError:subSystem   := "TBROWSE"
+   oError:subCode     := 0
+   oError:description := hb_LangErrMsg( EG_LIMIT )
+   oError:canRetry    := .F.
+   oError:canDefault  := .F.
+   oError:fileName    := ""
+   oError:osCode      := 0
+
+   Eval( ErrorBlock(), oError )
+   __errInHandler()
+
+   RETURN
