@@ -207,7 +207,7 @@ FUNCTION __hbqtCSSFromColorString( cColor )
    RETURN cCSS
 
 
-FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing )
+FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
    LOCAL nEditPadding := 4
@@ -218,14 +218,22 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing )
    LOCAL oGetList
    LOCAL oWnd
 
+   hb_default( @oFont       , HbQtSet( _QSET_GETSFONT    ) )
+   hb_default( @nLineSpacing, HbQtSet( _QSET_LINESPACING ) )
+   hb_default( @cTitle      , "Please Fill-up Info!" )
+   hb_default( @lNoModal    , .F. )
+
    IF HB_ISOBJECT( oParent )
       oWnd := oParent
    ELSE
       oWnd := QDialog()
+      oWnd:setWindowTitle( cTitle )
+      IF HB_ISOBJECT( xIcon ) .AND. __objGetClsName( xIcon ) == "QICON"
+         oWnd:setWindowIcon( xIcon )
+      ELSEIF HB_ISCHAR( xIcon )
+         oWnd:setWindowIcon( QIcon( xIcon ) )
+      ENDIF
    ENDIF
-
-   hb_default( @oFont       , HbQtSet( _QSET_GETSFONT    ) )
-   hb_default( @nLineSpacing, HbQtSet( _QSET_LINESPACING ) )
 
    cClsName := __objGetClsName( oWnd )
    IF cClsName == "QFORMLAYOUT"
@@ -306,7 +314,6 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing )
          oEdit:toRow   := aEdit[ _QGET_TOROW   ]
          oEdit:toCol   := aEdit[ _QGET_TOCOL   ]
          oEdit:data    := aEdit[ _QGET_DATA    ]
-         oEdit:tooltip := aEdit[ _QGET_TOOLTIP ]
 
          IF ! Empty( aEdit[ _QGET_COLOR ] )
             oEdit:color := aEdit[ _QGET_COLOR ]
@@ -338,6 +345,10 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing )
          ENDIF
 
          AAdd( aGetList, oEdit )
+
+         IF HB_ISBLOCK( aEdit[ _QGET_PROPERTIES ] )
+            Eval( aEdit[ _QGET_PROPERTIES ], oEdit, oEdit:edit() )
+         ENDIF
       NEXT
 
       aGetList[ 1 ]:edit:setFocus()
@@ -357,8 +368,16 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing )
    /* Probably will be fired only when oWnd is a top level window - needs to be investigated further */
    oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ), .F. } )
 
+   IF HB_ISBLOCK( bProperties )
+      Eval( bProperties, oWnd, oGetList )
+   ENDIF
+
    IF ! HB_ISOBJECT( oParent )
-      oWnd:show()
+      IF lNoModal
+         oWnd:show()
+      ELSE
+         oWnd:exec()
+      ENDIF
    ENDIF
 
    RETURN oWnd

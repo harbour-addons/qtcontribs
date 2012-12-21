@@ -16,6 +16,40 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-20 15:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/tests/harbour.png
+    + Harbour Logo.
+
+  * hbqtwidgets/hbqtalert.prg
+    % Minor.
+
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+  * hbqtwidgets/hbqtstd.ch
+    + Extended: QREAD [ [ PARENT ] <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] 
+                      [ TITLE <title> ] [ ICON <icon> ] [<nomodal:NOMODAL>] [ PROPERTIES <prop> ]
+       <title>   string to show up in the title-bar of the parent window.
+       <icon>    string or QIcon to set for parents title-bar.
+       <nomodal> logical to set the GETs window modeless.
+
+       NOTE: all above parameters are applied to the parent if no parent is 
+             supplied with [PARENT] clause. If QREAD is issued with oParent,
+             then it is programmers responsibility to configure as per his/her taste.
+
+       <prop>    code block to set the properties of the parent window.
+                 The block is executed passing two arguments; 
+                   1. oParent
+                   2. oGetList
+                 This facilitates to set any property Qt provides for the GET dialog.
+                 This raises the bar for the programmer but still offering utmost 
+                 simplicity for console programmers.
+
+       NOTE: <prop> code block is called for every type of parent hosting the GETs.
+
+  * hbqtwidgets/tests/pureclip.prg
+  * hbqtwidgets/tests/validator.prg
+    + Demonstrated the usage of above implementation.
+
 2012-12-20 13:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/hbtoqt.ch
     + Commands translating @...QSAY...QGET... => @...SAY...GET...

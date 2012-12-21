@@ -69,7 +69,7 @@
    #define _QGET_CONTROL                          13
    #define _QGET_TYPE                             14
    #define _QGET_DATA                             15
-   #define _QGET_TOOLTIP                          16
+   #define _QGET_PROPERTIES                       16
 
 
    /* Constants for _QGET_DATA array elements */
@@ -106,10 +106,10 @@
                               [VALIDATOR <validator>] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
-                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL, <cTip> } )
+                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL, <{prop}> } )
 
 
    #command @ <row>, <col> QSAY <sayExp> ;
@@ -124,11 +124,11 @@
                               [VALIDATOR <validator>] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
                                 <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, ;
-                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL, <cTip> } )
+                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL, <{prop}> } )
 
 
    #command @ <row>, <col> QGET <v> CHECKBOX  ;
@@ -138,10 +138,10 @@
                               [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
-                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL, <cTip> } )
+                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL, <{prop}> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ;
@@ -151,10 +151,10 @@
                               [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
-                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL, <cTip> } )
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL, <{prop}> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ;
@@ -164,11 +164,11 @@
                               [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QListWidget", ;
-                                { <items> }, <cTip> } )
+                                { <items> }, <{prop}> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> COMBOBOX <items> ;
@@ -178,11 +178,11 @@
                               [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QComboBox", ;
-                                { <items> }, <cTip> } )
+                                { <items> }, <{prop}> } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> [ACTION <act>] ;
@@ -192,13 +192,16 @@
                               [CAPTION <cap>        ] ;
                               [<noMouse: NOMOUSABLE>] ;
                               [CONTROL <oControl>   ] ;
-                              [TOOLTIP <cTip>       ] ;
+                              [PROPERTIES <prop>    ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPushButton", ;
-                                { <label>, <{act}> }, <cTip> } )
+                                { <label>, <{act}> }, <{prop}> } )
 
 
-   #command QREAD [ [ PARENT ] <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] => HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc> )
+   #command QREAD [ [ PARENT ] <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] [ TITLE <title> ] [ ICON <icon> ] [<nomodal:NOMODAL>] [ PROPERTIES <prop> ];
+                        => ;
+         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}> )
+
 
 #endif

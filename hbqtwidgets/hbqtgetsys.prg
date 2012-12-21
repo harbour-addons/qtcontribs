@@ -304,7 +304,7 @@ METHOD HbQtGet:create( oControl )
 
    IF Empty( ::oFocusFrame )
       ::oFocusFrame := QFocusFrame()
-      ::oFocusFrame:setStyleSheet( "border: 1px solid red" )
+      ::oFocusFrame:setStyleSheet( "border: 2px solid red" )
       ::oFocusFrame:hide()
    ENDIF
 

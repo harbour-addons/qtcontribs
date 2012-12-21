@@ -41,6 +41,8 @@ FUNCTION Main()
 
    LOCAL val := Array( 3 )
 
+   hbqt_errorsys()              /* ALWAYS place it as first FUNCTION call; you will know your errors */
+
    val[ 1 ] := Space( 10 )
    val[ 2 ] := 0
    val[ 3 ] := ctod( "" )
@@ -85,7 +87,8 @@ FUNCTION Main()
    @  9, 54 GET lDone CHECKBOX
 
    @  9, 02 SAY "Notes:"
-   @ 10, 02, 17, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes TOOLTIP "The notes must contain 'Harbour' somewhere"
+   @ 10, 02, 17, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes ;
+                                  PROPERTIES {|oGet,oControl| SetControlProp( oGet, oControl, "tooltip", "The notes must contain 'Harbour' somewhere" ) }
 
    @  9, 60 SAY "Select:"
    @ 10, 60, 17, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
@@ -94,7 +97,8 @@ FUNCTION Main()
                                                         WHEN nSlry > 700 .AND. nSlry < 17000
    @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
                                                         iif( v == 1, GetActive():parent():close(), NIL ) }
-   QREAD
+
+   READ PROPERTIES {|oWnd,oGetList| SetFormProperties( oWnd, oGetList ) }
 
    QApplication():exec()
 
@@ -128,4 +132,29 @@ STATIC FUNCTION Udf1( oGet )
    ENDIF
 
    RETURN .F.
+
+
+STATIC FUNCTION SetFormProperties( oWnd, oGetList )
+
+   HB_SYMBOL_UNUSED( oGetList )
+
+   oWnd:setWindowTitle( "Clipper Compatible GET System" )
+   oWnd:setWindowIcon( QIcon( "harbour.png" ) )
+
+   RETURN NIL
+
+
+STATIC FUNCTION SetControlProp( oGet, oControl, cProp, xValue )
+
+   HB_SYMBOL_UNUSED( oGet )
+
+   SWITCH cProp
+   CASE "tooltip"
+      oControl:setToolTip( xValue )
+      EXIT
+   ENDSWITCH
+
+   RETURN NIL
+
+
 

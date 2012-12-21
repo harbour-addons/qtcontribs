@@ -108,7 +108,7 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    LOCAL aButtons := {}
 
    oFocus := QFocusFrame()
-   oFocus:setStyleSheet( "border: 2px solid red;" )
+   oFocus:setStyleSheet( "border: 2px solid red" )
    oFocus:hide()
 
    hb_default( @oParent, QApplication():focusWidget() )
@@ -127,13 +127,14 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    oVBLayout:addLayout( oHBLayout )
 
    oLabel:setAlignment( Qt_AlignHCenter )
-   oLabel:setText( StrTran( cMsg, ";", Chr( 10 ) ) )
+   oLabel:setText( cMsg )
    oLabel:setStyleSheet( "padding: 10px;" )
 
    FOR EACH cBtn IN aOptions
       oBtn := QPushButton( oDlg )
       oBtn:setText( cBtn )
       oBtn:setFocusPolicy( Qt_StrongFocus )
+      oBtn:setStyleSheet( "" )
       oBtn:setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) )
       oBtn:connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
       oBtn:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
@@ -155,7 +156,8 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
       nResult := 0
    ENDIF
 
-   oDlg:setParent( QWidget() )
+   oDlg:setParent( QWidget() )  /* MUST DO - Releases the memory */
+   oFocus:setParent( QWidget() )
 
    RETURN nResult
 
