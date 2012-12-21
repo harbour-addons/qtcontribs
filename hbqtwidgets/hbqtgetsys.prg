@@ -142,8 +142,8 @@ CLASS HbQtGet INHERIT GET
    VAR    cClassName                              INIT ""
    VAR    oApp
    VAR    cWidget                                 INIT "QLineEdit"
-   VAR    nToRow                                  INIT NIL
-   VAR    nToCol                                  INIT NIL
+   VAR    nToRow                                  INIT 0
+   VAR    nToCol                                  INIT 0
    VAR    sl_data                                 INIT NIL
    VAR    sl_tooltip                              INIT ""
    CLASSVAR    oFocusFrame
@@ -825,8 +825,8 @@ METHOD HbQtGet:setParams()
    CASE "QLISTWIDGET"
    CASE "QCOMBOBOX"
    CASE "QPUSHBUTTON"
-      ::sl_dispWidth  := ::nToCol - ::nCol + 1
-      ::sl_dispHeight := ::nToRow - ::nRow + 1
+      ::sl_dispWidth  := ::nToCol - iif( Empty( ::nCol ), 0, ::nCol ) + 1
+      ::sl_dispHeight := ::nToRow - iif( Empty( ::nRow ), 0, ::nRow ) + 1
       EXIT
    CASE "QCHECKBOX"
       ::sl_dispWidth  := 2

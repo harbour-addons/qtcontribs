@@ -309,17 +309,18 @@ STATIC FUNCTION NoParentPureClipper()
 
 
 STATIC FUNCTION OOPLayout( oMain )
-   LOCAL oWnd, oFLayout
-   LOCAL oEdit1, oEdit2, oEdit3, oEdit4, oEdit5, oEdit6, oEdit7, oEdit8
+   LOCAL oWnd, oFLayout, oFLayout1, oHLayout
+   LOCAL oEdit1, oEdit2, oEdit3, oEdit4, oEdit5, oEdit6, oEdit7, oEdit8, oEdit9, oEdit10
 
-   LOCAL cText := "ABC"
-   LOCAL dDate := 0d19560604
-   LOCAL nNumb := 6030.130001
-   LOCAL lMrd  := .T.
-   LOCAL cTele := "(999)684-7318"
-   LOCAL cJust := Space( 20 )
-   LOCAL cCata := "IT3-BEL-903533AST63Z"
-   LOCAL nSlry := 3000
+   LOCAL cText  := "ABC"
+   LOCAL dDate  := 0d19560604
+   LOCAL nNumb  := 6030.130001
+   LOCAL lMrd   := .T.
+   LOCAL cTele  := "(999)684-7318"
+   LOCAL cJust  := Space( 20 )
+   LOCAL cCata  := "IT3-BEL-903533AST63Z"
+   LOCAL nSlry  := 3000
+   LOCAL cNotes := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
 
    LOCAL GetParent := NIL
 
@@ -334,10 +335,20 @@ STATIC FUNCTION OOPLayout( oMain )
    oWnd:setWindowTitle( "Clipper Get System - Layout" )
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) } )
 
-   oFLayout := QFormLayout( oWnd )
+   oHLayout := QHBoxLayout( oWnd )
+
+   oFLayout := QFormLayout()
    oFLayout:setLabelAlignment( Qt_AlignRight )
    oFLayout:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
    oFLayout:setFormAlignment( Qt_AlignHCenter )
+
+   oFLayout1 := QFormLayout()
+   oFLayout1:setLabelAlignment( Qt_AlignRight )
+   oFLayout1:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
+   oFLayout1:setFormAlignment( Qt_AlignHCenter )
+
+   oHlayout:addLayout( oFLayout )
+   oHlayout:addLayout( oFLayout1 )
 
    oEdit1                := HbQtGet():new()
    oEdit1:parent         := oWnd
@@ -400,6 +411,19 @@ STATIC FUNCTION OOPLayout( oMain )
    oEdit8:picture        := "@Z 99,999"
    oEdit8:create()
    oFLayout:addRow( "Salary:", oEdit8:edit() )
+
+   oEdit9                := HbQtGet():new()
+   oEdit9:parent         := oWnd
+   oEdit9:widget         := "QPlainTextEdit"
+   oEdit9:block          := {|x| iif( x == NIL, cNotes, cNotes := x ) }
+   oEdit9:create()
+   oFLayout1:addRow( "Notes:", oEdit9:edit() )
+
+   oEdit10                := HbQtGet():new()
+   oEdit10:parent         := oWnd
+   oEdit10:block          := {|x| iif( x == NIL, val[ 1 ], val[ 1 ] := x ) }
+   oEdit10:create()
+   oFLayout1:addRow( "Val[ 1 ]:", oEdit10:edit() )
 
    /* IMPORTANT: to release memory associated with this window and contained getlist */
    oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ) } )
