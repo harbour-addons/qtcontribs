@@ -16,6 +16,18 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-20 23:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+    ! Fixed: FocusOut was still using a left-over and was causing 
+       validation taking effect on focus out also. 
+    ! Changed: behaviour of ESCape key, it is now passed onto parent 
+       to take default action. Until now ESC was resetting the GET buffer
+       to :original.
+    
+    ; Thanks Nenad for exactly pin-pointing to the above issues with 
+       a suitable concise example.
+
 2012-12-20 19:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtbrowse.prg
   * hbqtwidgets/tests/browser.prg

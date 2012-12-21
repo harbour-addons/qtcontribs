@@ -108,12 +108,12 @@ FUNCTION HbQtSet( nSet, xValue )
 FUNCTION HbQtClearGets( oWnd, ... )
    LOCAL oParent
 
-   IF HB_ISOBJECT( oWnd )
-      oWnd:setParent( QWidget() )
-   ENDIF
    FOR EACH oParent IN hb_AParams()
       __hbqtBindGetList( oParent, NIL )
    NEXT
+   IF HB_ISOBJECT( oWnd )
+      oWnd:setParent( QWidget() )
+   ENDIF
 
    RETURN NIL
 
@@ -133,7 +133,7 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
          ELSE
             AAdd( t_GetList, { oWnd, GetList } )
          ENDIF
-      ELSEIF PCount() >= 2 .AND. n > 0
+      ELSEIF PCount() == 2 .AND. n > 0
          hb_ADel( t_GetList, n, .T. )
       ENDIF
    ENDIF
@@ -376,11 +376,12 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       IF lNoModal
          oWnd:show()
       ELSE
-         oWnd:exec()
+         oWnd:setModal( .T. )
+         oWnd:show()
       ENDIF
    ENDIF
 
-   RETURN oWnd
+   RETURN NIL
 
 
 CREATE CLASS HbQtGetList INHERIT HbGetList

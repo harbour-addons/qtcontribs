@@ -163,7 +163,6 @@ CLASS HbQtGet INHERIT GET
    METHOD timesOccurs( cToken, cText )
    METHOD fixup( cText )
    METHOD returnPressed()
-   METHOD isBufferValid()
    METHOD isDateBad()
    METHOD postValidate()
    METHOD preValidate()
@@ -314,40 +313,26 @@ METHOD HbQtGet:create( oControl )
 
 METHOD HbQtGet:connect()
 
+   ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
+   ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
+   ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+
    SWITCH ::cClassName
    CASE "QLINEEDIT"
       ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T.                                         } )
       ::oEdit:connect( "returnPressed()"        , {|| ::returnPressed(), .F.                                    } )
-      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::execKeyPress( oKeyEvent )                    } )
       EXIT
    CASE "QPLAINTEXTEDIT"
-      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       EXIT
    CASE "QLISTWIDGET"
-      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       EXIT
    CASE "QCOMBOBOX"
-      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       EXIT
    CASE "QPUSHBUTTON"
-      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )                } )
       ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )              } )
       EXIT
    CASE "QCHECKBOX"
-      ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-      ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-      ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
       ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )                } )
       ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )              } )
       EXIT
@@ -1102,7 +1087,7 @@ METHOD HbQtGet:color( cnaColor )
 
 METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving */
 
-   LOCAL lValid := ::isBufferValid()
+   HB_SYMBOL_UNUSED( oFocusEvent )
 
    IF ::cClassName == "QPLAINTEXTEDIT"
       ::cBuffer := ::oEdit:toPlainText()
@@ -1110,18 +1095,9 @@ METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving
    ENDIF
 
    ::oFocusFrame:hide()
+   ::hasFocus := .F.
 
-   IF lValid
-      ::hasFocus := .F.
-      RETURN .F.
-   ENDIF
-
-   ::hasFocus := .T.
-
-   oFocusEvent:ignore()
-   ::setFocus()
-
-   RETURN .T.
+   RETURN .F.
 
 /*----------------------------------------------------------------------*/
 
@@ -1188,31 +1164,6 @@ METHOD HbQtGet:postValidate()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:isBufferValid()
-
-   LOCAL xValInVar, xValInBuffer
-   LOCAL lValid := .T.
-
-   IF ::isDateBad()
-      RETURN ! lValid
-   ENDIF
-
-   IF HB_ISBLOCK( ::bPostBlock )
-      /* Fetch Clipper Variable Value */
-      xValInVar    := ::varGet()
-      xValInBuffer := ::getData()
-      /* Set Clipper Variable Value with Value in Buffer */
-      ::varPut( xValInBuffer )
-      /* Validate passing value in buffer, in case OOP gets are constructed */
-      lValid := Eval( ::bPostBlock, Self )
-      /* Set Clipper Variable back to Original Value */
-      ::varPut( xValInVar )
-   ENDIF
-
-   RETURN lValid
-
-/*----------------------------------------------------------------------*/
-
 METHOD HbQtGet:isDateBad()
    LOCAL cChr
 
@@ -1260,11 +1211,12 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    SWITCH nKey
 
+#if 0
    CASE Qt_Key_Escape
       ::varPut( ::original )
       ::setData( ::original )
       oKeyEvent:accept() ; RETURN .T.
-
+#endif
    CASE Qt_Key_PageUp
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET,QCOMBOBOX" )
          IF ::postValidate()
