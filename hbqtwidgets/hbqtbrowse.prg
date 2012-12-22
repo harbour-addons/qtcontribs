@@ -121,13 +121,13 @@
 #define xbeBRW_Pan                                ( 406 + xbeB_Event )
 #define xbeBRW_ForceStable                        ( 408 + xbeB_Event )
 
-#define XBPCOL_TYPE_ICON                          1
-#define XBPCOL_TYPE_BITMAP                        2
-#define XBPCOL_TYPE_SYSICON                       3
-#define XBPCOL_TYPE_TEXT                          4
-#define XBPCOL_TYPE_FILEICON                      5
-#define XBPCOL_TYPE_FILEMINIICON                  6
-#define XBPCOL_TYPE_MULTILINETEXT                 7
+#define HBQTCOL_TYPE_ICON                         1
+#define HBQTCOL_TYPE_BITMAP                       2
+#define HBQTCOL_TYPE_SYSICON                      3
+#define HBQTCOL_TYPE_TEXT                         4
+#define HBQTCOL_TYPE_FILEICON                     5
+#define HBQTCOL_TYPE_FILEMINIICON                 6
+#define HBQTCOL_TYPE_MULTILINETEXT                7
 
 #define ISFROZEN( n )                             ( ascan( ::aLeftFrozen, n ) > 0 .OR. ascan( ::aRightFrozen, n ) > 0 )
 
@@ -148,16 +148,40 @@ CLASS HbQtBrowse INHERIT TBrowse
 
    DATA   oWidget
 
+   /* Overloaded Methods */
    METHOD new( nTop, nLeft, nBottom, nRight, oParent, oFont )
    METHOD doConfigure()
+   METHOD rowCount()
+   METHOD up()
+   METHOD down()
+   METHOD pageUp()
+   METHOD pageDown()
+   METHOD goTop()
+   METHOD goBottom()
+   METHOD left()
+   METHOD right()
+   METHOD firstCol()
+   METHOD lastCol()
+   METHOD home()
+   METHOD end()
+   METHOD panHome()
+   METHOD panEnd()
+   METHOD panLeft()
+   METHOD panRight()
+   ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
 
+   /* HbQt Methods */
    METHOD create()
    METHOD execSlot( nEvent, p1, p2, p3 )
+   METHOD execEvent( nEvent, oEvent )
    METHOD supplyInfo( nMode, nCall, nRole, nX, nY )
    METHOD compatColor( nColor )
    METHOD compatIcon( cIcon )
    METHOD cellValue( nRow, nCol )
    METHOD cellValueA( nRow, nCol )
+
+   METHOD navigationBlock( bBlock )               SETGET
+   METHOD navigateMe( nKey )
 
    DATA   oParent
    DATA   oFont
@@ -185,6 +209,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD navigate( p1, p2 )                      SETGET
    METHOD pan( p1 )                               SETGET
 
+   DATA   sl_navigate
    DATA   sl_xbeBRW_Navigate
    DATA   sl_xbeBRW_Pan
 
@@ -192,7 +217,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD hScroll                                 SETGET
    DATA   lVScroll                                INIT      .T.
    METHOD vScroll                                 SETGET
-   DATA   nCursorMode                             INIT      1
+   DATA   nCursorMode                             INIT      0
    METHOD cursorMode                              SETGET
 
    DATA   lSizeCols                               INIT      .T.
@@ -262,26 +287,36 @@ CLASS HbQtBrowse INHERIT TBrowse
    DATA   hIcons                                  INIT {=>}
 
 
-   VAR bFirstPosBlock                             INIT {|| NIL }
-   VAR bLastPosBlock                              INIT {|| NIL }
-   VAR bPhyPosBlock                               INIT {|| NIL }
-   VAR bPosBlock                                  INIT {|| NIL }
-   VAR bGoPosBlock                                INIT {|| NIL }
-   VAR bHitBottomBlock                            INIT {|| NIL }
-   VAR bHitTopBlock                               INIT {|| NIL }
-   VAR bStableBlock                               INIT {|| NIL }
-
    VAR aCellValuesA  AS ARRAY                     INIT {}   // cell values buffers for each record - actual
+
+   /* Xbase++ : Mainly Manage Scrollbars : Will be useful for HbQt */
+   METHOD firstPosBlock( bBlock )                 SETGET
+   METHOD lastPosBlock( bBlock )                  SETGET
+   METHOD phyPosBlock( bBlock )                   SETGET
+   METHOD posBlock( bBlock )                      SETGET
+   METHOD goPosBlock( bBlock )                    SETGET
+   METHOD hitBottomBlock( bBlock )                SETGET
+   METHOD hitTopBlock( bBlock )                   SETGET
+   METHOD stableBlock( bBlock )                   SETGET
+
+   VAR bFirstPosBlock                             INIT NIL
+   VAR bLastPosBlock                              INIT NIL
+   VAR bPhyPosBlock                               INIT NIL
+   VAR bPosBlock                                  INIT NIL
+   VAR bGoPosBlock                                INIT NIL
+   VAR bHitBottomBlock                            INIT NIL
+   VAR bHitTopBlock                               INIT NIL
+   VAR bStableBlock                               INIT NIL
+
+   METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
+   METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
 
    ENDCLASS
 
 
 METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
-   HB_SYMBOL_UNUSED( nTop )
-   HB_SYMBOL_UNUSED( nLeft )
-   HB_SYMBOL_UNUSED( nBottom )
-   HB_SYMBOL_UNUSED( nRight )
+   ::TBrowse:new( nTop, nLeft, nBottom, nRight )
 
    hb_default( @oFont, QFont( "Courier new", 10 ) )
 
@@ -293,7 +328,7 @@ METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
    RETURN Self
 
 
-METHOD HbQtBrowse:doConfigure()
+METHOD HbQtBrowse:doConfigure() /* Overloaded */
 
    LOCAL aCol, aVal, aValA
    LOCAL nColCount, nRowCount
@@ -303,10 +338,10 @@ METHOD HbQtBrowse:doConfigure()
 
    ::TBrowse:doConfigure()
 
-   IF !( ::lHScroll )
+   IF ! ::lHScroll
       ::oHScrollBar:hide()
    ENDIF
-   IF !( ::lVScroll )
+   IF ! ::lVScroll
       ::oVScrollBar:hide()
    ENDIF
 
@@ -514,7 +549,310 @@ METHOD HbQtBrowse:doConfigure()
    RETURN Self
 
 
+METHOD HbQtBrowse:rowCount()  /* Overloaded */
+   IF ::nConfigure != 0
+      ::doConfigure()
+   ENDIF
+   RETURN ::nRowsInView
+
+
+/*----------------------------------------------------------------------*/
+/*                         Vertical Navigation                          */
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:up()
+   LOCAL lReset := ::rowPos == 1
+
+   ::TBrowse:up()
+
+   ::forceStable()
+   ::setCurrentIndex( lReset )
+   ::updateVertScrollBar()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:down()
+   LOCAL lReset := ::rowPos >= ::rowCount
+
+   ::TBrowse:down()
+
+   ::forceStable()
+   ::setCurrentIndex( lReset )
+   ::updateVertScrollBar()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:pageUp()
+
+   ::TBrowse:pageUp()
+
+   ::forceStable()
+   ::setCurrentIndex( .T. )
+   ::updateVertScrollBar()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:pageDown()
+
+   ::TBrowse:pageDown()
+
+   ::forceStable()
+   ::setCurrentIndex( .t. )
+   ::updateVertScrollBar()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:goTop()
+
+   ::TBrowse:goTop()
+
+   ::setUnstable()  /* ?? */
+
+   ::forceStable()
+   ::setCurrentIndex( .t. )
+   ::updateVertScrollBar()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:goBottom()
+
+   ::TBrowse:goBottom()
+
+   ::setUnstable()  /* ??? */
+
+   ::forceStable()
+   ::setCurrentIndex( .t. )
+   ::updateVertScrollBar()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+/*                       Horizontal Navigation                          */
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:left()
+   LOCAL n, nCol
+   LOCAL lUpdate := .f.
+
+   nCol := ::colPos
+
+   IF nCol > 1
+      DO WHILE --nCol >= 1
+         IF ! ISFROZEN( nCol )
+            lUpdate := .t.
+            EXIT
+         ENDIF
+      ENDDO
+   ENDIF
+   IF lUpdate
+      ::colPos := nCol
+
+      n  := ::oHeaderView:sectionViewportPosition( ::colPos-1 )
+      IF n < 0
+         ::oHeaderView:setOffset( ::oHeaderView:offSet() + n )
+         ::oFooterView:setOffset( ::oFooterView:offSet() + n )
+         ::setCurrentIndex( .t. )
+      ELSE
+         ::setCurrentIndex( .f. )
+      ENDIF
+
+      ::oHScrollBar:setValue( ::colPos - 1 )
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:right()
+   LOCAL n, n1, n2, nLnWidth, nCol
+   LOCAL lUpdate := .f.
+
+   IF ::colPos < ::colCount
+      nCol := ::colPos
+
+      DO WHILE ++nCol <= ::colCount
+         IF !( ISFROZEN( nCol ) )
+            lUpdate := .t.
+            EXIT
+         ENDIF
+      ENDDO
+
+      IF lUpdate
+         ::colPos := nCol
+
+         n  := ::oHeaderView:sectionViewportPosition( ::colPos - 1 )
+         n1 := ::oHeaderView:sectionSize( ::colPos-1 )
+         n2 := ::oViewport:width()
+         IF n + n1 > n2
+            nLnWidth := ::oTableView:lineWidth()
+            IF n1 > n2
+               ::oHeaderView:setOffset( ::oHeaderView:sectionPosition( ::colPos - 1 ) )
+               ::oFooterView:setOffset( ::oHeaderView:sectionPosition( ::colPos - 1 ) )
+
+            ELSE
+               ::oHeaderView:setOffset( ::oHeaderView:offSet()+(n1-(n2-n)+1) - nLnWidth )
+               ::oFooterView:setOffset( ::oFooterView:offSet()+(n1-(n2-n)+1) - nLnWidth )
+
+            ENDIF
+            ::setCurrentIndex( .t. )
+         ELSE
+            ::setCurrentIndex( .f. )
+         ENDIF
+
+         ::oHScrollBar:setValue( ::colPos - 1 )
+      ENDIF
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:firstCol()
+   LOCAL n, nCol
+   LOCAL lUpdate := .f.
+
+   nCol := 0
+
+   DO WHILE ++nCol <= ::colCount
+      IF !ISFROZEN( nCol )
+         lUpdate := .t.
+         EXIT
+      ENDIF
+   ENDDO
+
+   IF lUpdate
+      ::setUnstable()
+      ::colPos := nCol
+
+      n  := ::oHeaderView:sectionViewportPosition( ::colPos-1 )
+      IF n < 0
+         ::oHeaderView:setOffset( ::oHeaderView:offSet() + n )
+         ::oFooterView:setOffset( ::oFooterView:offSet() + n )
+         ::setCurrentIndex( .t. )
+      ELSE
+         ::setCurrentIndex( .f. )
+      ENDIF
+      ::oHScrollBar:setValue( ::colPos - 1 )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtBrowse:lastCol()
+   LOCAL n, n1, n2, nCol
+   LOCAL lUpdate := .f.
+
+   nCol := ::colCount + 1
+
+   DO WHILE --nCol >= 1
+      IF !ISFROZEN( nCol )
+         lUpdate := .t.
+         EXIT
+      ENDIF
+   ENDDO
+
+   IF lUpdate
+      ::setUnstable()
+      ::colPos := nCol
+
+      n  := ::oHeaderView:sectionViewportPosition( ::colPos-1 )
+      n1 := ::oHeaderView:sectionSize( ::colPos-1 )
+      n2 := ::oViewport:width()
+      IF n + n1 > n2
+         IF n1 > n2
+            ::oHeaderView:setOffset( ::oHeaderView:sectionPosition( ::colPos - 1 ) )
+            ::oFooterView:setOffset( ::oHeaderView:sectionPosition( ::colPos - 1 ) )
+         ELSE
+            ::oHeaderView:setOffset( ::oHeaderView:offSet()+(n1-(n2-n)+1) - ::oTableView:lineWidth() )
+            ::oFooterView:setOffset( ::oFooterView:offSet()+(n1-(n2-n)+1) - ::oTableView:lineWidth() )
+         ENDIF
+         ::setCurrentIndex( .t. )
+      ELSE
+         ::setCurrentIndex( .f. )
+      ENDIF
+      ::oHScrollBar:setValue( ::colPos - 1 )
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:home()
+
+   ::colPos := max( 1, ::oHeaderView:visualIndexAt( 1 ) + 1 )
+   ::setCurrentIndex( .t. )
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:end()
+
+   ::nRightVisible := ::oHeaderView:visualIndexAt( ::oViewport:width()-2 ) + 1
+   IF ::nRightVisible == 0
+      ::nRightVisible := ::colCount
+   ENDIF
+   ::colPos := ::nRightVisible
+   ::setCurrentIndex( .t. )
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:panHome()
+
+   ::oHeaderView:setOffset( 0 )
+   ::oFooterView:setOffset( 0 )
+   ::oDbfModel:reset()
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:panEnd()
+   LOCAL nOffset
+
+   IF ::oHeaderView:sectionSize( ::colCount - 1 ) > ::oViewport:width()
+      nOffSet := ::oHeaderView:sectionPosition( ::colCount - 1 )
+   ELSE
+      nOffSet := ::oHeaderView:sectionPosition( ::colCount - 1 ) + ;
+                 ::oHeaderView:sectionSize( ::colCount - 1 ) - ::oViewport:width()
+   ENDIF
+   ::oHeaderView:setOffset( nOffSet )
+   ::oFooterView:setOffset( nOffSet )
+   ::oDbfModel:reset()
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:panLeft()
+   LOCAL nLeftVisible := ::oHeaderView:visualIndexAt( 1 )+1
+
+   IF nLeftVisible > 1
+      ::oHeaderView:setOffSet( ::oHeaderView:sectionPosition( nLeftVisible - 2 ) )
+      ::oFooterView:setOffSet( ::oFooterView:sectionPosition( nLeftVisible - 2 ) )
+   ENDIF
+   ::oDbfModel:reset()
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:panRight()
+
+   ::TBRowse:panRight()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbQtBrowse:connect()
+
+   ::oTableView       : connect( QEvent_KeyPress                     , {|p      | ::execEvent( __ev_keypress__                , p    ) } )
+   ::oWidget          : connect( QEvent_Resize                       , {|p      | ::execEvent( __ev_frame_resized__           , p    ) } )
+
 
    ::oLeftHeaderView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
    ::oLeftFooterView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
@@ -522,7 +860,6 @@ METHOD HbQtBrowse:connect()
    ::oRightHeaderView : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
    ::oRightFooterView : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
 
-   ::oTableView       : connect( QEvent_KeyPress                     , {|p      | ::execSlot( __ev_keypress__                 , p    ) } )
    ::oTableView       : connect( "customContextMenuRequested(QPoint)", {|p      | ::execSlot( __ev_contextMenuRequested__     , p    ) } )
 
    ::oHScrollBar      : connect( "actionTriggered(int)"              , {|i      | ::execSlot( __ev_horzscroll_slidermoved__   , i    ) } )
@@ -533,8 +870,6 @@ METHOD HbQtBrowse:connect()
 
    ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
-
-   ::oWidget          : connect( QEvent_Resize                       , {|       | ::execSlot( __ev_frame_resized__                   ) } )
 
    ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1   | ::execSlot( __editor_closeEditor__, p, p1          ) } )
    ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::execSlot( __editor_commitData__           , p    ) } )
@@ -736,6 +1071,82 @@ METHOD HbQtBrowse:create()
    RETURN Self
 
 
+METHOD HbQtBrowse:navigateMe( nKey )
+   LOCAL lHandelled := .T.
+
+   SWITCH nKey
+
+   CASE K_DOWN
+      ::Down()      ; EXIT
+   CASE K_UP
+      ::Up()        ; EXIT
+   CASE K_LEFT
+      ::Left()      ; EXIT
+   CASE K_RIGHT
+      ::Right()     ; EXIT
+   CASE K_PGDN
+      ::pageDown()  ; EXIT
+   CASE K_PGUP
+      ::pageUp()    ; EXIT
+   CASE K_CTRL_PGUP
+      ::goTop()     ; EXIT
+   CASE K_CTRL_PGDN
+      ::goBottom()  ; EXIT
+   CASE K_HOME
+      ::home()      ; EXIT
+   CASE K_END
+      ::end()       ; EXIT
+   CASE K_CTRL_LEFT
+      ::panLeft()   ; EXIT
+   CASE K_CTRL_RIGHT
+      ::panRight()  ; EXIT
+   CASE K_CTRL_HOME
+      ::panHome()   ; EXIT
+   CASE K_CTRL_END
+      ::panEnd()    ; EXIT
+   OTHERWISE
+      lHandelled := .F.
+
+   ENDSWITCH
+
+   RETURN lHandelled
+
+
+METHOD HbQtBrowse:execEvent( nEvent, oEvent )
+   LOCAL lHandelled := .F.
+   LOCAL nKey
+
+   SWITCH nEvent
+
+   CASE __ev_keypress__
+      nKey := hbqt_qtEventToHbEvent( oEvent )
+
+      IF HB_ISBLOCK( SetKey( nKey ) )
+         Eval( SetKey( nKey ) )
+         RETURN .F.
+      ENDIF
+
+      IF HB_ISBLOCK( ::sl_navigate )
+         lHandelled := Eval( ::sl_navigate, nKey, NIL, Self )
+         IF ! HB_ISLOGICAL( lHandelled )
+            lHandelled := .F.
+         ENDIF
+      ENDIF
+      IF ! lHandelled
+         ::navigateMe( nKey )
+      ENDIF
+      /* SetAppEvent( xbeP_Keyboard, hbqt_qtEventToHbEvent( p1 ), NIL, Self ) */
+      RETURN .T.   /* Stop Propegation to parent */
+
+   CASE __ev_frame_resized__
+      ::manageFrameResized()
+      RETURN .T.
+
+   ENDSWITCH
+
+   RETURN .F.
+
+
 METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
    LOCAL oPoint
 
@@ -762,9 +1173,6 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
    CASE __ev_horzscroll_via_qt__
       ::manageScrollContents( p1, p2 )
       EXIT
-   CASE __ev_keypress__
-      SetAppEvent( xbeP_Keyboard, hbqt_qtEventToHbEvent( p1 ), NIL, Self )
-      RETURN .T.   /* Stop Propegation to parent */
    CASE __ev_contextMenuRequested__
       oPoint := ::oTableView:mapToGlobal( QPoint( p1 ) )
       ::hbContextMenu( { oPoint:x(), oPoint:y() } )
@@ -830,9 +1238,6 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
    CASE __ev_footersec_resized__
       ::oHeaderView:resizeSection( p1, p3 )
       EXIT
-   CASE __ev_frame_resized__
-      ::manageFrameResized()
-      RETURN .T.
 
    ENDSWITCH
 
@@ -1130,14 +1535,14 @@ METHOD HbQtBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
          RETURN ::oDefaultCellSize
 
       CASE Qt_DecorationRole
-         IF oCol:type == XBPCOL_TYPE_FILEICON
+         IF oCol:type == HBQTCOL_TYPE_FILEICON
             RETURN ::compatIcon( ::cellValue( nRow, nCol ) )
          ELSE
             RETURN NIL
          ENDIF
       CASE Qt_EditRole
       CASE Qt_DisplayRole
-         IF oCol:type == XBPCOL_TYPE_FILEICON
+         IF oCol:type == HBQTCOL_TYPE_FILEICON
             RETURN nil
          ELSE
             RETURN ::cellValue( nRow, nCol )
@@ -1200,15 +1605,17 @@ METHOD HbQtBrowse:compatIcon( cIcon )
 METHOD HbQtBrowse:setVertScrollBarRange( lPageStep )
    LOCAL nMin, nMax
 
-   hb_default( @lPageStep, .F. )
+   IF HB_ISBLOCK( ::bFirstPosBlock ) .AND. HB_ISBLOCK( ::bLastPosBlock )
+      hb_default( @lPageStep, .F. )
 
-   IF HB_ISNUMERIC( nMin := eval( ::bFirstPosBlock  ) ) .and. HB_ISNUMERIC( nMax := eval( ::bLastPosBlock ) )
-      ::oVScrollBar:setMinimum( nMin - 1 )
-      ::oVScrollBar:setMaximum( nMax - 1 )
-      ::oVScrollBar:setSingleStep( 1 )
-      //
-      IF lPageStep
-         ::oVScrollBar:setPageStep( ::rowCount() )
+      IF HB_ISNUMERIC( nMin := eval( ::bFirstPosBlock  ) ) .AND. HB_ISNUMERIC( nMax := eval( ::bLastPosBlock ) )
+         ::oVScrollBar:setMinimum( nMin - 1 )
+         ::oVScrollBar:setMaximum( nMax - 1 )
+         ::oVScrollBar:setSingleStep( 1 )
+         //
+         IF lPageStep
+            ::oVScrollBar:setPageStep( ::rowCount() )
+         ENDIF
       ENDIF
    ENDIF
 
@@ -1241,7 +1648,9 @@ METHOD HbQtBrowse:updatePosition()
 
 METHOD HbQtBrowse:updateVertScrollBar()
 
-   ::oVScrollBar:setValue( eval( ::posBlock ) - 1 )
+   IF HB_ISBLOCK( ::posBlock )
+      ::oVScrollBar:setValue( eval( ::posBlock ) - 1 )
+   ENDIF
 
    RETURN Self
 
@@ -1389,6 +1798,15 @@ METHOD HbQtBrowse:cellValueA( nRow, nCol )
    RETURN NIL
 
 
+METHOD HbQtBrowse:navigationBlock( bBlock )
+
+   IF HB_ISBLOCK( bBlock )
+      ::sl_navigate := bBlock
+   ENDIF
+
+   RETURN ::sl_navigate
+
+
 METHOD HbQtBrowse:navigate( p1, p2 )
 
    IF HB_ISBLOCK( p1 )
@@ -1416,114 +1834,110 @@ METHOD HbQtBrowse:pan( p1 )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
-FUNCTION HbQtColumnNew( cHeading, bBlock )
-   RETURN HbQtColumn():new( cHeading, bBlock )
+METHOD HbQtBrowse:firstPosBlock( bBlock )
+   IF bBlock != NIL
+      ::bFirstPosBlock := __eInstVar53( Self, "FIRSTPOSBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bFirstPosBlock
+
+METHOD HbQtBrowse:lastPosBlock( bBlock )
+   IF bBlock != NIL
+      ::bLastPosBlock := __eInstVar53( Self, "LASTPOSBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bLastPosBlock
+
+METHOD HbQtBrowse:phyPosBlock( bBlock )
+   IF bBlock != NIL
+      ::bPhyPosBlock := __eInstVar53( Self, "PHYPOSBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bPhyPosBlock
+
+METHOD HbQtBrowse:posBlock( bBlock )
+   IF bBlock != NIL
+      ::bPosBlock := __eInstVar53( Self, "POSBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bPosBlock
+
+METHOD HbQtBrowse:goPosBlock( bBlock )
+   IF bBlock != NIL
+      ::bGoPosBlock := __eInstVar53( Self, "GOPOSBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bGoPosBlock
+
+METHOD HbQtBrowse:hitBottomBlock( bBlock )
+   IF bBlock != NIL
+      ::bHitBottomBlock := __eInstVar53( Self, "HITBOTTOMBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bHitBottomBlock
+
+METHOD HbQtBrowse:hitTopBlock( bBlock )
+   IF bBlock != NIL
+      ::bHitTopBlock := __eInstVar53( Self, "HITTOPBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bHitTopBlock
+
+METHOD HbQtBrowse:stableBlock( bBlock )
+   IF bBlock != NIL
+      ::bStableBlock := __eInstVar53( Self, "STABLEBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bStableBlock
 
 
-CREATE CLASS HbQtColumn INHERIT TBColumn
+METHOD HbQtBrowse:skipCols( nCols )
+   LOCAL i
 
-   METHOD new( cHeading, bBlock )
-   METHOD configure()
-
-   DATA   hAlignment                              INIT      Qt_AlignHCenter + Qt_AlignVCenter
-   DATA   hHeight                                 INIT      16
-   DATA   hFgColor                                INIT      Qt_black
-   DATA   hBgColor                                INIT      Qt_darkGray
-
-   DATA   fAlignment                              INIT      Qt_AlignHCenter + Qt_AlignVCenter
-   DATA   fHeight                                 INIT      16
-   DATA   fFgColor                                INIT      Qt_black
-   DATA   fBgColor                                INIT      Qt_darkGray
-
-   DATA   dAlignment                              INIT      Qt_AlignLeft
-   DATA   dHeight                                 INIT      16
-   DATA   dFgColor                                INIT      Qt_black
-   DATA   dBgColor                                INIT      Qt_white
-   DATA   nColWidth
-
-   DATA   valtype
-   DATA   type                                    INIT      XBPCOL_TYPE_TEXT
-   DATA   blankVariable
-
-   ENDCLASS
-
-
-METHOD HbQtColumn:new( cHeading, bBlock )
-
-   ::TBColumn:new( cHeading, bBlock )
-
-   ::valtype       := valtype( Eval( ::bBlock ) )
-   ::blankVariable := iif( ::valtype == "N", 0, iif( ::valtype == "D", ctod( "" ), iif( ::valtype == "L", .f., "" ) ) )
-
-   ::configure()
+   IF nCols < 0
+      FOR i := 1 TO abs( nCols )
+         ::left()
+      NEXT
+   ELSEIF nCols > 0
+      FOR i := 1 TO nCols
+         ::right()
+      NEXT
+   ENDIF
 
    RETURN Self
 
 
-METHOD HbQtColumn:configure()
-#if 0
-   /*  Heading Area */
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_CAPTION } ) ) > 0
-      ::cHeading := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_FGCLR } ) ) > 0
-      ::hFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_BGCLR } ) ) > 0
-      ::hBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_HEIGHT } ) ) > 0
-      ::hHeight := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_ALIGNMENT } ) ) > 0
-      ::hAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
-      ::hAlignment += Qt_AlignVCenter
+METHOD HbQtBrowse:skipRows( nRows )
+   LOCAL i
+
+   IF nRows < 0
+      FOR i := 1 TO abs( nRows )
+         ::up()
+      NEXT
+   ELSEIF nRows > 0
+      FOR i := 1 TO nRows
+         ::down()
+      NEXT
    ENDIF
 
-   /*  Data Area  */
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_CELLALIGNMENT } ) ) > 0
-      ::dAlignment := ::aPresParams[ n,2 ]
-   ELSE
-      ::dAlignment := iif( ::valtype == "N", Qt_AlignRight, iif( ::valtype $ "DL", Qt_AlignHCenter, Qt_AlignLeft ) )
-      ::dAlignment += Qt_AlignVCenter
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_FGCLR } ) ) > 0
-      ::dFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_BGCLR } ) ) > 0
-      ::dBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_ROWHEIGHT } ) ) > 0
-      ::dHeight := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_ROWWIDTH } ) ) > 0
-      ::nColWidth := ::aPresParams[ n,2 ]
-   ENDIF
-
-   /*  Footer Area  */
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_CAPTION } ) ) > 0
-      ::cFooting := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_FGCLR } ) ) > 0
-      ::fFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_BGCLR } ) ) > 0
-      ::fBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_HEIGHT } ) ) > 0
-      ::fHeight := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_ALIGNMENT } ) ) > 0
-      ::fAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
-      ::fAlignment += Qt_AlignVCenter
-   ENDIF
-#endif
    RETURN Self
 
+
+METHOD HbQtBrowse:freeze( nColumns )
+   LOCAL i
+
+   ::TBrowse:freeze( nColumns )
+
+   ::nFrozen := Max( 0, Int( nColumns ) )
+   ::aLeftFrozen := {}
+   IF ! Empty( ::nFrozen )
+      FOR i := 1 TO ::nFrozen
+         AAdd( ::aLeftFrozen, i )
+      NEXT
+   ENDIF
+   ::nLeftFrozen := Len( ::aLeftFrozen )
+   ::setUnstable()
+   ::configure( 128 )
+   ::forceStable()
+
+   RETURN ::nFrozen
+
+/*----------------------------------------------------------------------*/
+//                          Utility Funcions
+/*----------------------------------------------------------------------*/
 
 STATIC PROCEDURE _GENLIMITRTE()
    LOCAL oError := ErrorNew()

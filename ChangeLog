@@ -16,6 +16,28 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-21 18:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetlist.prg
+    % Formatting.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: hbqtcolumn.prg
+
+  + hbqtwidgets/hbqtcolumn.prg
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: basic functionality.
+       Please look at tests/browse.prg and see the only difference:
+        oBrowse:navigationBlock(). It simulates the inkey() loop. 
+
+  * hbqtwidgets/hbtoqt.ch
+    + #xtranslate Alert( => HbQtAlert( 
+
+  * hbqtwidgets/tests/browser.prg
+    + Tuned a little to eliminate inkey() loop.
+       Otherwise it is exactly the same as in harbour/tests/tb1.prg
+
+  ; So, ...
+
 2012-12-21 13:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetsys.prg
     ! Fix [Minor] to honor GETs outside of GET system.

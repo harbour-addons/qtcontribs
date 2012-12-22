@@ -71,5 +71,7 @@
 
    #command READ [<exp,...>] => QREAD [<exp>]
 
+   #xtranslate Alert(   =>  HbQtAlert(
+
 #endif
 
