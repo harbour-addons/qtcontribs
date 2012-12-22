@@ -16,6 +16,40 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-22 14:29 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtcolumn.prg
+  * hbqtwidgets/hbqtgetlist.prg
+    + TBrowse:
+       :verticalScrollbar := TRUE  [ Default: FALSE - Clipper Compatible ]
+          Displays the horizontal scroolbar to navigate the database/array.
+          To use it effectively you need to define following blocks [with example]:
+
+            oBrowse:firstPosBlock       := {| | 1                }
+            oBrowse:lastPosBlock        := {| | LastRec()        }
+            IF indexOrd() == 0
+               oBrowse:posBlock         := {| | RecNo()          }
+               oBrowse:goPosBlock       := {|n| DbGoto( n )      }
+               oBrowse:phyPosBlock      := {| | RecNo()          }
+            ELSE
+               oBrowse:posBlock         := {| | OrdKeyNo()       }
+               oBrowse:goPosBlock       := {|n| OrdKeyGoto( n )  }
+               oBrowse:phyPosBlock      := {| | OrdKeyNo()       }
+            ENDIF
+      
+        :horizontalScrollbar := TRUE [ Default: FALSE - Clipper Compatible ]
+            No property is needed to set for its navigation.
+
+        :cursorMode := HBQTBRW_CURSOR_ROW [Default: HBQTBRW_CURSOR_COLUMN ]
+            This is equivalent to :colorRect.
+
+  + hbqtwidgets/tests/browdb.prg
+    + Added: demo application to applying TBrowse on a table with index.
+             The demo also demonstrate the use of scrollbars and cursor mode.
+
+  ; TODO:  mechanism to provide and execute context menu.
+           What actions should go inside "Context Menu" ?
+
 2012-12-22 11:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtbrowse.prg
   * hbqtwidgets/hbqtcolumn.prg

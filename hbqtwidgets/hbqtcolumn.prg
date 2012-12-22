@@ -110,19 +110,8 @@ METHOD HbQtColumn:new( cHeading, bBlock )
 
 METHOD HbQtColumn:configure()
 
-   //::hAlignment += Qt_AlignVCenter
-
-   /*  Data Area  */
    ::dAlignment := iif( ::valtype == "N", Qt_AlignRight, iif( ::valtype $ "DL", Qt_AlignHCenter, Qt_AlignLeft ) )
    ::dAlignment += Qt_AlignVCenter
-
-   //::dFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-
-   //::dBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-
-   //::fFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   //::fBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   //::fAlignment += Qt_AlignVCenter
 
    RETURN Self
 

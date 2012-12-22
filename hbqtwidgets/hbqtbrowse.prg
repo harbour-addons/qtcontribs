@@ -102,10 +102,6 @@ FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont )
    RETURN HbQtBrowse():new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
 
-STATIC FUNCTION hbxbp_ConvertAFactFromXBP( ... )
-   RETURN NIL
-
-
 CLASS HbQtBrowse INHERIT TBrowse
 
    DATA   oWidget
@@ -170,9 +166,9 @@ CLASS HbQtBrowse INHERIT TBrowse
    DATA   sl_navigate
 
    DATA   lHScroll                                INIT      .F.
-   METHOD hScroll                                 SETGET
+   METHOD horizontalScrollbar                     SETGET
    DATA   lVScroll                                INIT      .F.
-   METHOD vScroll                                 SETGET
+   METHOD verticalScrollbar                       SETGET
    DATA   nCursorMode                             INIT      0
    METHOD cursorMode                              SETGET
 
@@ -303,7 +299,7 @@ METHOD HbQtBrowse:create()
    ::oTableView:setShowGrid( .t. )
    ::oTableView:setGridStyle( ::gridStyle )   /* to be based on column definition */
    ::oTableView:setSelectionMode( QAbstractItemView_SingleSelection )
-   ::oTableView:setSelectionBehavior( iif( ::cursorMode == 1, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+   ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
    ::oTableView:setAlternatingRowColors( .t. )
    ::oTableView:setContextMenuPolicy( Qt_CustomContextMenu )
 
@@ -403,12 +399,16 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    IF ! ::lHScroll
       ::oHScrollBar:hide()
+   ELSE
+      ::oHScrollBar:show()
    ENDIF
    IF ! ::lVScroll
       ::oVScrollBar:hide()
+   ELSE
+      ::oVScrollBar:show()
    ENDIF
 
-   ::oTableView:setSelectionBehavior( iif( ::cursorMode == 1, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+   ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
 
    /* Calculate how many rows fit in the view */
    IF len( ::columns ) > 0
@@ -489,13 +489,12 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
             nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
             ::oLeftHeaderView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
             ::oLeftFooterView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
-         *  ::oLeftHeaderView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
-         *  ::oLeftFooterView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         /* ::oLeftHeaderView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 ) */
+         /* ::oLeftFooterView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 ) */
          ENDIF
          nLeftWidth += ::oLeftHeaderView:sectionSize( n-1 )
       NEXT
       ::oLeftView:setFixedWidth( 4 + nLeftWidth )
-      //::oLeftHeaderView:setFixedWidth( nLeftWidth )
       ::oLeftFooterView:setFixedWidth( 4 + nLeftWidth )
 
       nLeftWidth := 0
@@ -510,15 +509,21 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
             nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
             ::oRightHeaderView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
             ::oRightFooterView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
-         *  ::oRightHeaderView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
-         *  ::oRightFooterView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 )
+         /* ::oRightHeaderView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 ) */
+         /* ::oRightFooterView:resizeSection( n-1, oFontMetrics:width( xVal, -1 ) + 8 ) */
          ENDIF
          nLeftWidth += ::oRightHeaderView:sectionSize( n-1 )
       NEXT
       ::oRightView:setFixedWidth( 4 + nLeftWidth )
-      //::oRightHeaderView:setFixedWidth( nLeftWidth )
       ::oRightFooterView:setFixedWidth( 4 + nLeftWidth )
 
+   ENDIF
+
+   IF HB_ISOBJECT( ::oLeftFooterView )
+      ::oLeftFooterView:hide()
+   ENDIF
+   IF HB_ISOBJECT( ::oRightFooterView )
+      ::oRightFooterView:hide()
    ENDIF
 
    IF ::nLeftFrozen == 0 .AND. HB_ISOBJECT( ::oLeftView )
@@ -526,14 +531,15 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::oLeftFooterView:hide()
    ELSEIF ::nLeftFrozen > 0 .AND. HB_ISOBJECT( ::oLeftView )
       ::oLeftView:show()
-      ::oLeftFooterView:show()
+      //::oLeftFooterView:show()
    ENDIF
+
    IF ::nRightFrozen == 0 .AND. HB_ISOBJECT( ::oRightView )
       ::oRightView:hide()
       ::oRightFooterView:hide()
    ELSEIF ::nRightFrozen > 0 .AND. HB_ISOBJECT( ::oRightView )
       ::oRightView:show()
-      ::oRightFooterView:show()
+      //::oRightFooterView:show()
    ENDIF
 
    FOR i := 1 TO ::colCount
@@ -579,11 +585,11 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ENDIF
    NEXT
 
-   ::lStable := .F.
-   ::lFrames := .T.
-   ::nLastRow := nRowCount
+   ::lStable     := .F.
+   ::lFrames     := .T.
+   ::nLastRow    := nRowCount
    ::nLastScroll := 0
-   ::nLastPos := 0
+   ::nLastPos    := 0
    IF ::nRowPos > nRowCount
       ::nRowPos := nRowCount
    ELSEIF ::nRowPos < 1
@@ -594,17 +600,13 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    ::setCellHeight( ::nCellHeight )
 
-   /* Inform Qt about number of rows and columns browser implements */
-   //::oDbfModel:hbSetRowColumns( ::rowCount - 1, ::colCount - 1 )
    /* Tell Qt to Reload Everything */
    ::oDbfModel:reset()
    //
    IF HB_ISOBJECT( ::oLeftDbfModel )
-      //::oLeftDbfModel:hbSetRowColumns( ::rowCount - 1, ::nLeftFrozen - 1 ) // Dangling code
       ::oLeftDbfModel:reset()
    ENDIF
    IF HB_ISOBJECT( ::oRightDbfModel )
-      //::oRightDbfModel:hbSetRowColumns( ::rowCount - 1, ::nRightFrozen - 1 )
       ::oRightDbfModel:reset()
    ENDIF
 
@@ -652,7 +654,7 @@ METHOD HbQtBrowse:buildLeftFreeze()
    ::oLeftView:setShowGrid( .t. )
    ::oLeftView:setGridStyle( ::gridStyle )   /* to be based on column definition */
    ::oLeftView:setSelectionMode( QAbstractItemView_SingleSelection )
-   ::oLeftView:setSelectionBehavior( iif( ::cursorMode == 1, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+   ::oLeftView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
    ::oLeftView:setFocusPolicy( Qt_NoFocus )
    //
    /*  Veritical Header because of Performance boost */
@@ -699,7 +701,7 @@ METHOD HbQtBrowse:buildRightFreeze()
    ::oRightView:setShowGrid( .t. )
    ::oRightView:setGridStyle( ::gridStyle )   /* to be based on column definition */
    ::oRightView:setSelectionMode( QAbstractItemView_SingleSelection )
-   ::oRightView:setSelectionBehavior( iif( ::cursorMode == 1, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+   ::oRightView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
    //
    /*  Veritical Header because of Performance boost */
    oVHdr := ::oRightView:verticalHeader()
@@ -1265,7 +1267,7 @@ METHOD HbQtBrowse:setCurrentIndex( lReset )
    RETURN Self
 
 
-METHOD HbQtBrowse:hScroll( lYes )
+METHOD HbQtBrowse:horizontalScrollbar( lYes )
 
    IF HB_ISLOGICAL( lYes )
       ::lHScroll := lYes
@@ -1276,7 +1278,7 @@ METHOD HbQtBrowse:hScroll( lYes )
    RETURN ::lHScroll
 
 
-METHOD HbQtBrowse:vScroll( lYes )
+METHOD HbQtBrowse:verticalScrollbar( lYes )
 
    IF HB_ISLOGICAL( lYes )
       ::lVScroll := lYes

@@ -214,7 +214,7 @@ STATIC FUNCTION __rgb( nR, nG, nB )
 FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
 
    LOCAL lExt, cClr, n, xFore, xBack
-HB_TRACE( HB_TR_ALWAYS, cColor )
+
    IF Empty( cColor )
       IF nRole == Qt_BackgroundRole
          RETURN Qt_white
