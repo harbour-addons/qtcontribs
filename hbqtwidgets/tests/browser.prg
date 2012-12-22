@@ -7,12 +7,10 @@
  * www - http://harbour-project.org
  */
 
-#include "hbtoqt.ch"
 
+#include "hbtoqt.ch"
 #include "hbqtgui.ch"
 #include "inkey.ch"
-
-#include "hbtrace.ch"
 
 
 FUNCTION Main()
@@ -33,9 +31,9 @@ FUNCTION Main()
 
    oBrowse := HbQtBrowseNew( 5, 5, 16, 30, oMain, QFont( "Courier New", 10 ) )
    oBrowse:colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
-   oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
-   oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
-   oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )
+   oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )             /* Does nothing, but no ERROR */
+   oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )          /* Does nothing, but no ERROR */
+   oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )          /* Does nothing, but no ERROR */
    oBrowse:GoTopBlock    := {|| n := 1 }
    oBrowse:GoBottomBlock := {|| n := Len( aTest0 ) }
    oBrowse:SkipBlock     := {| nSkip, nPos | nPos := n, ;
@@ -62,7 +60,7 @@ FUNCTION Main()
    oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw )  }
 
    //oBrowse:Freeze := 1 /* Use F6, f7 Keys */
-   hb_DispBox( 4, 4, 17, 31, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
+   hb_DispBox( 4, 4, 17, 31, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )     /* Does nothing, but no ERROR */
 
    oMain:setCentralWidget( oBrowse:oWidget )
    oMain:resize( 360, 300 )
