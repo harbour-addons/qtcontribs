@@ -207,6 +207,81 @@ FUNCTION __hbqtCSSFromColorString( cColor )
    RETURN cCSS
 
 
+STATIC FUNCTION __rgb( nR, nG, nB )
+   RETURN ( 2 ^ 25 + ( nB * 2 ^ 16 ) + ( nG * 2 ^ 8 ) + nR )
+
+
+FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
+
+   LOCAL lExt, cClr, n, xFore, xBack
+HB_TRACE( HB_TR_ALWAYS, cColor )
+   IF Empty( cColor )
+      IF nRole == Qt_BackgroundRole
+         RETURN Qt_white
+      ELSE
+         RETURN Qt_black
+      ENDIF
+   ENDIF
+
+   cColor := Upper( cColor )
+
+   IF ( n := At( "/", cColor ) ) > 0
+      xFore := AllTrim( SubStr( cColor, 1, n-1 ) )
+      xBack := AllTrim( SubStr( cColor, n+1 ) )
+   ELSE
+      xFore := AllTrim( cColor )
+      xBack := ""
+   ENDIF
+
+   IF nRole == Qt_BackgroundRole
+      lExt := "+" $ xBack .OR. "*" $ xBack
+      cClr := StrTran( StrTran( xBack, "+" ), "*" )
+   ELSEIF nRole == Qt_ForegroundRole
+      lExt := "+" $ xFore .OR. "*" $ xFore
+      cClr := StrTran( StrTran( xFore, "+" ), "*" )
+   ENDIF
+
+   SWITCH cClr
+#if 0
+   CASE "N"
+      RETURN iif( lExt, __rgb( 198,198,198 ), __rgb( 0 ,0 ,0  )   )
+   CASE "B"
+      RETURN iif( lExt, __rgb( 0,0,255 )    , __rgb( 0,0,133 )    )
+   CASE "G"
+      RETURN iif( lExt, __rgb( 96,255,96 )  , __rgb( 0 ,133,0  )  )
+   CASE "BG"
+      RETURN iif( lExt, __rgb( 96,255,255 ) , __rgb( 0 ,133,133 ) )
+   CASE "R"
+      RETURN iif( lExt, __rgb( 248,0,38 )   , __rgb( 133,0 ,0  )  )
+   CASE "RB"
+      RETURN iif( lExt, __rgb( 255,96,255 ) , __rgb( 133,0 ,133 ) )
+   CASE "GR"
+      RETURN iif( lExt, __rgb( 255,255,0 )  , __rgb( 133,133,0 )  )
+   CASE "W"
+      RETURN iif( lExt, __rgb( 255,255,255 ), __rgb( 96,96,96 )   )
+#else
+   CASE "N"
+      RETURN iif( lExt, Qt_darkGray, Qt_black       )
+   CASE "B"
+      RETURN iif( lExt, Qt_blue    , Qt_darkBlue    )
+   CASE "G"
+      RETURN iif( lExt, Qt_green   , Qt_darkGreen   )
+   CASE "BG"
+      RETURN iif( lExt, Qt_cyan    , Qt_darkCyan    )
+   CASE "R"
+      RETURN iif( lExt, Qt_red     , Qt_darkRed     )
+   CASE "RB"
+      RETURN iif( lExt, Qt_magenta , Qt_darkMagenta )
+   CASE "GR"
+      RETURN iif( lExt, Qt_yellow  , Qt_darkYellow  )
+   CASE "W"
+      RETURN iif( lExt, Qt_white   , Qt_lightGray   )
+#endif
+   ENDSWITCH
+
+   RETURN 0
+
+
 FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic

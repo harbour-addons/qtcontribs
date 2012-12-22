@@ -31,8 +31,8 @@ FUNCTION Main()
    oMain := QMainWindow()
    oMain:setWindowTitle( "TBrowse Implemented" )
 
-   oBrowse := HbQtBrowseNew( 5, 5, 16, 30, oMain )
-   oBrowse:colorSpec     := "W+/B, N/BG"
+   oBrowse := HbQtBrowseNew( 5, 5, 16, 30, oMain, QFont( "Courier New", 10 ) )
+   oBrowse:colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
    oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )
    oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )
    oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )
@@ -54,19 +54,18 @@ FUNCTION Main()
 
    oBrowse:GetColumn( 3 ):Footing := "Number"
    oBrowse:GetColumn( 3 ):Picture := "999,999.99"
+   oBrowse:GetColumn( 3 ):colorBlock := {|nVal| iif( nVal < 0, {3,2}, iif( nVal > 500, {4,2}, {1,2} ) ) }
    oBrowse:GetColumn( 4 ):Footing := "Dates"
    oBrowse:GetColumn( 5 ):Footing := "Logical"
    // needed since I've changed some columns _after_ I've added them to TBrowse object
    oBrowse:Configure()
    oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw )  }
 
-   //Alert( oBrowse:GetColumn( 1 ):ClassName() )
-
-   oBrowse:Freeze := 1
+   //oBrowse:Freeze := 1 /* Use F6, f7 Keys */
    hb_DispBox( 4, 4, 17, 31, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )
 
    oMain:setCentralWidget( oBrowse:oWidget )
-   oMain:resize( oMain:width() + 1, oMain:height() + 1 )
+   oMain:resize( 360, 300 )
    oMain:show()
 
    QApplication():exec()
@@ -80,34 +79,6 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    HB_SYMBOL_UNUSED( xData )
 
    DO CASE
-   CASE nKey == K_DOWN
-      oBrowse:Down()
-   CASE nKey == K_UP
-      oBrowse:Up()
-   CASE nKey == K_LEFT
-      oBrowse:Left()
-   CASE nKey == K_RIGHT
-      oBrowse:Right()
-   CASE nKey == K_PGDN
-      oBrowse:pageDown()
-   CASE nKey == K_PGUP
-      oBrowse:pageUp()
-   CASE nKey == K_CTRL_PGUP
-      oBrowse:goTop()
-   CASE nKey == K_CTRL_PGDN
-      oBrowse:goBottom()
-   CASE nKey == K_HOME
-      oBrowse:home()
-   CASE nKey == K_END
-      oBrowse:end()
-   CASE nKey == K_CTRL_LEFT
-      oBrowse:panLeft()
-   CASE nKey == K_CTRL_RIGHT
-      oBrowse:panRight()
-   CASE nKey == K_CTRL_HOME
-      oBrowse:panHome()
-   CASE nKey == K_CTRL_END
-      oBrowse:panEnd()
    CASE nKey == K_F6
       oBrowse:freeze++
    CASE nKey == K_F7
@@ -115,7 +86,8 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    CASE nKey == K_F8
       Alert( oBrowse:ClassName() )
    OTHERWISE
-      lHandelled := .F.
+      oBrowse:applyKey( nKey )
+      lHandelled := .T.
    ENDCASE
 
    RETURN lHandelled

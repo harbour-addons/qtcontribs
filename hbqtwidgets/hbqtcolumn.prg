@@ -74,7 +74,7 @@ CREATE CLASS HbQtColumn INHERIT TBColumn
    METHOD configure()
 
    DATA   hAlignment                              INIT      Qt_AlignHCenter + Qt_AlignVCenter
-   DATA   hHeight                                 INIT      16
+   DATA   hHeight                                 INIT      20
    DATA   hFgColor                                INIT      Qt_black
    DATA   hBgColor                                INIT      Qt_darkGray
 
@@ -109,63 +109,21 @@ METHOD HbQtColumn:new( cHeading, bBlock )
 
 
 METHOD HbQtColumn:configure()
-#if 0
-   /*  Heading Area */
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_CAPTION } ) ) > 0
-      ::cHeading := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_FGCLR } ) ) > 0
-      ::hFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_BGCLR } ) ) > 0
-      ::hBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_HEIGHT } ) ) > 0
-      ::hHeight := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_HA_ALIGNMENT } ) ) > 0
-      ::hAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
-      ::hAlignment += Qt_AlignVCenter
-   ENDIF
+
+   //::hAlignment += Qt_AlignVCenter
 
    /*  Data Area  */
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_CELLALIGNMENT } ) ) > 0
-      ::dAlignment := ::aPresParams[ n,2 ]
-   ELSE
-      ::dAlignment := iif( ::valtype == "N", Qt_AlignRight, iif( ::valtype $ "DL", Qt_AlignHCenter, Qt_AlignLeft ) )
-      ::dAlignment += Qt_AlignVCenter
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_FGCLR } ) ) > 0
-      ::dFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_BGCLR } ) ) > 0
-      ::dBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_ROWHEIGHT } ) ) > 0
-      ::dHeight := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_DA_ROWWIDTH } ) ) > 0
-      ::nColWidth := ::aPresParams[ n,2 ]
-   ENDIF
+   ::dAlignment := iif( ::valtype == "N", Qt_AlignRight, iif( ::valtype $ "DL", Qt_AlignHCenter, Qt_AlignLeft ) )
+   ::dAlignment += Qt_AlignVCenter
 
-   /*  Footer Area  */
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_CAPTION } ) ) > 0
-      ::cFooting := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_FGCLR } ) ) > 0
-      ::fFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_BGCLR } ) ) > 0
-      ::fBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_HEIGHT } ) ) > 0
-      ::fHeight := ::aPresParams[ n,2 ]
-   ENDIF
-   IF ( n := ascan( ::aPresParams, {|e_| e_[ 1 ] == XBP_PP_COL_FA_ALIGNMENT } ) ) > 0
-      ::fAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
-      ::fAlignment += Qt_AlignVCenter
-   ENDIF
-#endif
+   //::dFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+
+   //::dBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+
+   //::fFgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   //::fBgColor := hbxbp_ConvertAFactFromXBP( "Color", ::aPresParams[ n,2 ] )
+   //::fAlignment += Qt_AlignVCenter
+
    RETURN Self
 
 

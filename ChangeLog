@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-22 11:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtcolumn.prg
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/tests/browser.prg
+    + Implemented: TBrowse behavior almost at its best.
+       1. freeze,
+       2. ColorSpecs and ColorBlocks.
+       3. Alignment.
+       4. Navigation, with keyboard and mouse.
+       5. Currently, switched off Scrollbars, those require extension to 
+           TBrowse, your opinion ?
+       6. Fonts.
+
+    ; SHOULD WE ADD:
+       1. Support for scrollbars ? Will need :goTopBlock like implementation.
+       2. Right Side Freezing ?
+       3. Extended colors in :colorSpec, like in GETs ?
+       4. ???
+
 2012-12-21 18:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
     % Formatting.
