@@ -101,13 +101,19 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
       oBrowse:freeze--
 
    CASE nKey == K_F8
-      BrwMoveLeft( oBrowse )
+      oBrowse:moveLeft()               /* HbQt Entention */
 
    CASE nKey == K_F9
-      BrwMoveRight( oBrowse )
+      oBrowse:moveRight()              /* HbQt Entention */
+
+   CASE nKey == K_F10
+      oBrowse:moveHome()               /* HbQt Entention */
+
+   CASE nKey == K_F11
+      oBrowse:moveEnd()                /* HbQt Entention */
 
    CASE nKey > 32 .AND. nKey < 127
-      oBrowse:edit()
+      oBrowse:edit()                   /* HbQt Entention */
 
    OTHERWISE
       oBrowse:applyKey( nKey )
@@ -117,30 +123,3 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
 
    RETURN lHandelled
 
-
-STATIC FUNCTION BrwMoveLeft( oBrowse )
-   LOCAL save_col, col_to_move := oBrowse:colPos
-
-   IF col_to_move > 1
-      save_col := oBrowse:getColumn( col_to_move )
-      oBrowse:setColumn( col_to_move, oBrowse:getcolumn( col_to_move - 1 ) )
-      oBrowse:setColumn( col_to_move - 1, save_col )
-      oBrowse:left()
-      oBrowse:refreshAll()
-   ENDIF
-
-   RETURN col_to_move > 1
-
-
-FUNCTION BrwMoveRight( oBrowse )
-   LOCAL save_col, col_to_move := oBrowse:colPos
-
-   IF col_to_move < oBrowse:colCount
-      save_col := oBrowse:getColumn( col_to_move )
-      oBrowse:setColumn( col_to_move, oBrowse:getColumn( col_to_move + 1 ) )
-      oBrowse:setColumn( col_to_move + 1, save_col )
-      oBrowse:right()
-      oBrowse:refreshall()
-   ENDIF
-
-   RETURN col_to_move < oBrowse:colCount

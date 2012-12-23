@@ -126,37 +126,64 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD panEnd()
    METHOD panLeft()
    METHOD panRight()
+
    ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
+
+   /* HbQt Extentions */
+   METHOD navigationBlock( bBlock )               SETGET
+
+   /* Xbase++ */
+   METHOD firstPosBlock( bBlock )                 SETGET
+   METHOD lastPosBlock( bBlock )                  SETGET
+   METHOD phyPosBlock( bBlock )                   SETGET
+   METHOD posBlock( bBlock )                      SETGET
+   METHOD goPosBlock( bBlock )                    SETGET
+   METHOD hitBottomBlock( bBlock )                SETGET
+   METHOD hitTopBlock( bBlock )                   SETGET
+   METHOD stableBlock( bBlock )                   SETGET
+
    ACCESS rFreeze                                 METHOD getRFrozen           // get number of frozen columns
    ASSIGN rFreeze                                 METHOD rFreeze              // set number of columns to freeze at right side
 
-   /* HbQt Methods */
+   METHOD moveLeft()
+   METHOD moveRight()
+   METHOD moveHome()
+   METHOD moveEnd()
+
+   METHOD horizontalScrollbar                     SETGET
+   METHOD verticalScrollbar                       SETGET
+   METHOD cursorMode                              SETGET
+
+   METHOD edit()                                  INLINE ::oTableView:edit( ::getCurrentIndex() )
+
+PROTECTED:
+
+   METHOD cellValue( nRow, nCol )                /* Overloaded */
+
+   /* HbQt Internal Methods */
+   METHOD cellValueA( nRow, nCol )
    METHOD create()
    METHOD execSlot( nEvent, p1, p2, p3 )
    METHOD execEvent( nEvent, oEvent )
    METHOD supplyInfo( nMode, nCall, nRole, nX, nY )
    METHOD compatColor( nColor )
    METHOD compatIcon( cIcon )
-   METHOD cellValue( nRow, nCol )
-   METHOD cellValueA( nRow, nCol )
-
-   METHOD navigationBlock( bBlock )               SETGET
 
    DATA   oParent
    DATA   oFont
 
    DATA   oDbfModel
-   DATA   oModelIndex                             INIT      QModelIndex()
+   DATA   oModelIndex                             INIT   QModelIndex()
    DATA   oVHeaderView
    DATA   oHeaderView
-   DATA   oVScrollBar                             INIT      QScrollBar()
-   DATA   oHScrollBar                             INIT      QScrollBar()
+   DATA   oVScrollBar                             INIT   QScrollBar()
+   DATA   oHScrollBar                             INIT   QScrollBar()
    DATA   oViewport
    DATA   pCurIndex
 
-   DATA   lFirst                                  INIT      .t.
-   DATA   nRowsInView                             INIT      1
+   DATA   lFirst                                  INIT   .t.
+   DATA   nRowsInView                             INIT   1
 
    METHOD connect()
 
@@ -168,20 +195,17 @@ CLASS HbQtBrowse INHERIT TBrowse
 
    DATA   sl_navigate
 
-   DATA   lHScroll                                INIT      .F.
-   METHOD horizontalScrollbar                     SETGET
-   DATA   lVScroll                                INIT      .F.
-   METHOD verticalScrollbar                       SETGET
-   DATA   nCursorMode                             INIT      0
-   METHOD cursorMode                              SETGET
+   DATA   lHScroll                                INIT   .F.
+   DATA   lVScroll                                INIT   .F.
+   DATA   nCursorMode                             INIT   0
 
-   DATA   lSizeCols                               INIT      .T.
+   DATA   lSizeCols                               INIT   .T.
    METHOD sizeCols                                SETGET
 
-   DATA   softTrack                               INIT      .T.
-   DATA   nHorzOffset                             INIT      -1
-   DATA   lReset                                  INIT      .F.
-   DATA   lHorzMove                               INIT      .f.
+   DATA   softTrack                               INIT   .T.
+   DATA   nHorzOffset                             INIT   -1
+   DATA   lReset                                  INIT   .F.
+   DATA   lHorzMove                               INIT   .f.
 
    DATA   oTableView
    DATA   oGridLayout
@@ -223,12 +247,9 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD getCurrentIndex()                       INLINE ::oDbfModel:index( ::rowPos - 1, ::colPos - 1 )
    ACCESS getDbfModel()                           INLINE ::oDbfModel
    METHOD openPersistentEditor()
-
-
    METHOD setFocus()                              INLINE ::oTableView:setFocus()
 
    DATA   qDelegate
-   METHOD edit()                                  INLINE ::oTableView:edit( ::getCurrentIndex() )
 
    METHOD manageFrameResized()
    METHOD manageCommitData( qWidget )
@@ -242,27 +263,15 @@ CLASS HbQtBrowse INHERIT TBrowse
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
 
-
-   VAR aCellValuesA  AS ARRAY                     INIT {}   // cell values buffers for each record - actual
-
-   /* Xbase++ : Mainly Manage Scrollbars : Will be useful for HbQt */
-   METHOD firstPosBlock( bBlock )                 SETGET
-   METHOD lastPosBlock( bBlock )                  SETGET
-   METHOD phyPosBlock( bBlock )                   SETGET
-   METHOD posBlock( bBlock )                      SETGET
-   METHOD goPosBlock( bBlock )                    SETGET
-   METHOD hitBottomBlock( bBlock )                SETGET
-   METHOD hitTopBlock( bBlock )                   SETGET
-   METHOD stableBlock( bBlock )                   SETGET
-
-   VAR bFirstPosBlock                             INIT NIL
-   VAR bLastPosBlock                              INIT NIL
-   VAR bPhyPosBlock                               INIT NIL
-   VAR bPosBlock                                  INIT NIL
-   VAR bGoPosBlock                                INIT NIL
-   VAR bHitBottomBlock                            INIT NIL
-   VAR bHitTopBlock                               INIT NIL
-   VAR bStableBlock                               INIT NIL
+   DATA   aCellValuesA  AS ARRAY                  INIT {}   // cell values buffers for each record - actual
+   DATA   bFirstPosBlock                          INIT NIL
+   DATA   bLastPosBlock                           INIT NIL
+   DATA   bPhyPosBlock                            INIT NIL
+   DATA   bPosBlock                               INIT NIL
+   DATA   bGoPosBlock                             INIT NIL
+   DATA   bHitBottomBlock                         INIT NIL
+   DATA   bHitTopBlock                            INIT NIL
+   DATA   bStableBlock                            INIT NIL
 
    METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
    METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
@@ -278,6 +287,8 @@ METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
    ::oParent := oParent
    ::oFont   := oFont
+
+   ::colorSpec := "N/W*, N/W"                     /* DEFAULT TO GUI Colors */
 
    ::create()
 
@@ -1887,6 +1898,61 @@ METHOD HbQtBrowse:panLeft()
 METHOD HbQtBrowse:panRight()
    ::TBRowse:panRight()
    RETURN Self
+
+
+METHOD HbQtBrowse:moveLeft()
+   LOCAL save_col, col_to_move := ::colPos
+
+   IF col_to_move > 1
+      save_col := ::getColumn( col_to_move )
+      ::setColumn( col_to_move, ::getcolumn( col_to_move - 1 ) )
+      ::setColumn( col_to_move - 1, save_col )
+      ::left()
+      ::refreshAll()
+   ENDIF
+
+   RETURN col_to_move > 1
+
+
+METHOD HbQtBrowse:moveRight()
+   LOCAL save_col, col_to_move := ::colPos
+
+   IF col_to_move < ::colCount
+      save_col := ::getColumn( col_to_move )
+      ::setColumn( col_to_move, ::getColumn( col_to_move + 1 ) )
+      ::setColumn( col_to_move + 1, save_col )
+      ::right()
+      ::refreshall()
+   ENDIF
+
+   RETURN col_to_move < ::colCount
+
+
+METHOD HbQtBrowse:moveHome()
+   LOCAL save_col, col_to_move := ::colPos
+
+   IF col_to_move > 1
+      save_col := ::getColumn( col_to_move )
+      ::delColumn( col_to_move )
+      ::insColumn( 1, save_col )
+      ::firstCol()
+   ENDIF
+
+   RETURN col_to_move > 1
+
+
+METHOD HbQtBrowse:moveEnd()
+
+   LOCAL save_col, col_to_move := ::colPos
+
+   IF col_to_move < ::colCount
+      save_col := ::getColumn( col_to_move )
+      ::addColumn( save_col )
+      ::delColumn( col_to_move )
+      ::lastCol()
+   ENDIF
+
+   RETURN col_to_move < ::colCount
 
 
 STATIC PROCEDURE _GENLIMITRTE()

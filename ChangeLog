@@ -16,6 +16,18 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-23 10:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+    % Organized: class declaration code.
+
+    + Implemented: :moveLeft()  - Moves current column left one column
+                   :moveRight() - Moves current column right one column
+                   :moveHome()  - Moves current column to first position
+                   :moveEnd()   - moves current column to last position
+                      
+  * hbqtwidgets/tests/browser.prg
+    + Added above methods of navigation.
+
 2012-12-23 07:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtbrowse.prg
   * hbqtwidgets/hbqtcolumn.prg
