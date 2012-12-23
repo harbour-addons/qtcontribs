@@ -126,7 +126,10 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD panEnd()
    METHOD panLeft()
    METHOD panRight()
+   ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
+   ACCESS rFreeze                                 METHOD getRFrozen           // get number of frozen columns
+   ASSIGN rFreeze                                 METHOD rFreeze              // set number of columns to freeze at right side
 
    /* HbQt Methods */
    METHOD create()
@@ -149,7 +152,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    DATA   oHeaderView
    DATA   oVScrollBar                             INIT      QScrollBar()
    DATA   oHScrollBar                             INIT      QScrollBar()
-   DATA   oViewport                               INIT      QWidget()
+   DATA   oViewport
    DATA   pCurIndex
 
    DATA   lFirst                                  INIT      .t.
@@ -233,6 +236,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD manageScrollContents( nX, nY )
    METHOD manageMouseDblClick( oMouseEvent )
    METHOD manageMousePress( oMouseEvent )
+   METHOD manageMouseRelease( oMouseEvent )
    METHOD manageMouseWheel( oWheelEvent )
 
    DATA   hColors                                 INIT {=>}
@@ -284,7 +288,6 @@ METHOD HbQtBrowse:create()
    LOCAL qRect
 
    ::oWidget := QFrame( ::oParent )
-   ::oWidget:setFrameStyle( QFrame_Panel + QFrame_Plain )
 
    /* Important here as other parts will be based on it*/
    ::oWidget:resize( ::oParent:width(), ::oParent:height() )
@@ -384,8 +387,6 @@ METHOD HbQtBrowse:create()
 
    ::connect()
 
-   // QApplication():sendEvent( ::oTableView, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
-
    RETURN Self
 
 
@@ -393,7 +394,7 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    LOCAL aCol, aVal, aValA, nColCount, nRowCount, nHeight
    LOCAL nViewH, i, xVal, oFontMetrics, n, nLeftWidth, nwVal, nwHead
-   LOCAL nMaxCellH
+   LOCAL nMaxCellH, lShowFooter
 
    ::TBrowse:doConfigure()
 
@@ -406,6 +407,34 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::oVScrollBar:hide()
    ELSE
       ::oVScrollBar:show()
+   ENDIF
+
+   lShowFooter := .F.
+   FOR i := 1 TO ::colCount
+      IF ! Empty( ::columns[ i ]:footing )
+         lShowFooter := .T.
+      ENDIF
+   NEXT
+   IF lShowFooter
+      IF HB_ISOBJECT( ::oLeftFooterView )
+         ::oLeftFooterView:show()
+      ENDIF
+      IF HB_ISOBJECT( ::oRightFooterView )
+         ::oRightFooterView:show()
+      ENDIF
+      IF HB_ISOBJECT( ::oFooterView )
+         ::oFooterView:show()
+      ENDIF
+   ELSE
+      IF HB_ISOBJECT( ::oLeftFooterView )
+         ::oLeftFooterView:hide()
+      ENDIF
+      IF HB_ISOBJECT( ::oRightFooterView )
+         ::oRightFooterView:hide()
+      ENDIF
+      IF HB_ISOBJECT( ::oFooterView )
+         ::oFooterView:hide()
+      ENDIF
    ENDIF
 
    ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
@@ -516,42 +545,29 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       NEXT
       ::oRightView:setFixedWidth( 4 + nLeftWidth )
       ::oRightFooterView:setFixedWidth( 4 + nLeftWidth )
-
-   ENDIF
-
-   IF HB_ISOBJECT( ::oLeftFooterView )
-      ::oLeftFooterView:hide()
-   ENDIF
-   IF HB_ISOBJECT( ::oRightFooterView )
-      ::oRightFooterView:hide()
    ENDIF
 
    IF ::nLeftFrozen == 0 .AND. HB_ISOBJECT( ::oLeftView )
       ::oLeftView:hide()
-      ::oLeftFooterView:hide()
    ELSEIF ::nLeftFrozen > 0 .AND. HB_ISOBJECT( ::oLeftView )
       ::oLeftView:show()
-      //::oLeftFooterView:show()
    ENDIF
 
    IF ::nRightFrozen == 0 .AND. HB_ISOBJECT( ::oRightView )
       ::oRightView:hide()
-      ::oRightFooterView:hide()
    ELSEIF ::nRightFrozen > 0 .AND. HB_ISOBJECT( ::oRightView )
       ::oRightView:show()
-      //::oRightFooterView:show()
    ENDIF
 
    FOR i := 1 TO ::colCount
       IF ISFROZEN( i )
          ::oTableView:hideColumn( i - 1 )
-         ::oFooterView:setSectionHidden( i - 1, .t. )
+         ::oFooterView:setSectionHidden( i - 1, .T. )
       ELSE
          ::oTableView:showColumn( i - 1 )
-         ::oFooterView:setSectionHidden( i - 1, .f. )
+         ::oFooterView:setSectionHidden( i - 1, .F. )
       ENDIF
    NEXT
-
 
    nColCount := ::colCount
    nRowCount := ::rowCount
@@ -730,6 +746,95 @@ METHOD HbQtBrowse:buildRightFreeze()
    RETURN Self
 
 
+METHOD HbQtBrowse:manageMouseDblClick( oMouseEvent )
+
+   IF HB_ISBLOCK( ::sl_navigate )
+      SWITCH oMouseEvent:button()
+      CASE Qt_LeftButton
+         Eval( ::sl_navigate, K_LDBLCLK, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      CASE Qt_RightButton
+         Eval( ::sl_navigate, K_RDBLCLK, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      CASE Qt_MidButton
+         Eval( ::sl_navigate, K_MDBLCLK, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      ENDSWITCH
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:manageMouseWheel( oWheelEvent )
+
+   IF oWheelEvent:orientation() == Qt_Vertical
+      IF oWheelEvent:delta() > 0
+         ::skipRows( -1 )
+      ELSE
+         ::skipRows( 1 )
+      ENDIF
+   ELSE
+      IF oWheelEvent:delta() > 0
+         ::skipCols( 1 )
+      ELSE
+         ::skipCols( -1 )
+      ENDIF
+   ENDIF
+
+   IF oWheelEvent:orientation() == Qt_Vertical .AND. HB_ISBLOCK( ::sl_navigate )
+      IF oWheelEvent:delta() > 0
+         Eval( ::sl_navigate, K_MWBACKWARD, { oWheelEvent:globalX(), oWheelEvent:globalY() }, Self )
+      ELSE
+         Eval( ::sl_navigate, K_MWFORWARD , { oWheelEvent:globalX(), oWheelEvent:globalY() }, Self )
+      ENDIF
+   ENDIF
+
+   RETURN Self
+
+METHOD HbQtBrowse:manageMousePress( oMouseEvent )
+
+   ::oModelIndex := ::oTableView:indexAt( oMouseEvent:pos() )
+   IF ::oModelIndex:isValid()
+      ::skipRows( ( ::oModelIndex:row() + 1 ) - ::rowPos )
+      ::skipCols( ( ::oModelIndex:column() + 1 ) - ::colPos )
+   ENDIF
+
+   IF HB_ISBLOCK( ::sl_navigate )
+      SWITCH oMouseEvent:button()
+      CASE Qt_LeftButton
+         Eval( ::sl_navigate, K_LBUTTONDOWN, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      CASE Qt_RightButton
+         Eval( ::sl_navigate, K_RBUTTONDOWN, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      CASE Qt_MidButton
+         Eval( ::sl_navigate, K_MBUTTONDOWN, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      ENDSWITCH
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:manageMouseRelease( oMouseEvent )
+
+   IF HB_ISBLOCK( ::sl_navigate )
+      SWITCH oMouseEvent:button()
+      CASE Qt_LeftButton
+         Eval( ::sl_navigate, K_LBUTTONUP, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      CASE Qt_RightButton
+         Eval( ::sl_navigate, K_MBUTTONUP, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      CASE Qt_MidButton
+         Eval( ::sl_navigate, K_MBUTTONUP, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         EXIT
+      ENDSWITCH
+   ENDIF
+
+   RETURN Self
+
+
 METHOD HbQtBrowse:execEvent( nEvent, oEvent )
    LOCAL lHandelled := .F.
    LOCAL nKey
@@ -774,6 +879,9 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
       SWITCH p1
       CASE QEvent_MouseButtonPress
          ::manageMousePress( p2 )
+         EXIT
+      CASE QEvent_MouseButtonRelease
+         ::manageMouseRelease( p2 )
          EXIT
       CASE QEvent_MouseButtonDblClick
          ::manageMouseDblClick( p2 )
@@ -884,20 +992,20 @@ METHOD HbQtBrowse:manageFrameResized()
 
 
 METHOD HbQtBrowse:manageCommitData( qWidget )
-   LOCAL cTxt    := qWidget:property( "text" ):toString()
-   LOCAL oCol    := ::columns[ ::colPos ]
-   LOCAL cTyp    := valtype( eval( oCol:block ) )
+   LOCAL cTxt  := qWidget:property( "text" ):toString()
+   LOCAL oCol  := ::columns[ ::colPos ]
+   LOCAL cTyp  := valtype( eval( oCol:block ) )
 
-   HB_TRACE( HB_TR_DEBUG, cTxt )
+   HB_TRACE( HB_TR_DEBUG, cTxt, cTyp )
    DO CASE
    CASE cTyp == "C"
-      oCol:setData( cTxt )
+      Eval( oCol:block, cTxt )
    CASE cTyp == "N"
-      oCol:setData( val( cTxt ) )
+      Eval( oCol:block, val( cTxt ) )
    CASE cTyp == "D"
-      oCol:setData( ctod( cTxt ) )
+      Eval( oCol:block, ctod( cTxt ) )
    CASE cTyp == "L"
-      oCol:setData( cTxt $ "Yy" )
+      Eval( oCol:block, cTxt $ "Yy" )
    ENDCASE
 
    RETURN Self
@@ -936,45 +1044,6 @@ METHOD HbQtBrowse:manageScrollContents( nX, nY )
 
    IF nX != 0
       ::setHorzOffset()
-   ENDIF
-
-   RETURN Self
-
-
-METHOD HbQtBrowse:manageMouseDblClick( oMouseEvent )
-
-   IF oMouseEvent:button() == Qt_LeftButton
-      // ??
-   ENDIF
-
-   RETURN Self
-
-
-METHOD HbQtBrowse:manageMouseWheel( oWheelEvent )
-
-   IF oWheelEvent:orientation() == Qt_Vertical
-      IF oWheelEvent:delta() > 0
-         ::skipRows( -1 )
-      ELSE
-         ::skipRows( 1 )
-      ENDIF
-   ELSE
-      IF oWheelEvent:delta() > 0
-         ::skipCols( 1 )
-      ELSE
-         ::skipCols( -1 )
-      ENDIF
-   ENDIF
-
-   RETURN Self
-
-
-METHOD HbQtBrowse:manageMousePress( oMouseEvent )
-
-   ::oModelIndex := ::oTableView:indexAt( oMouseEvent:pos() )
-   IF ::oModelIndex:isValid()
-      ::skipRows( ( ::oModelIndex:row() + 1 ) - ::rowPos )
-      ::skipCols( ( ::oModelIndex:column() + 1 ) - ::colPos )
    ENDIF
 
    RETURN Self
@@ -1123,9 +1192,13 @@ METHOD HbQtBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
       CASE Qt_EditRole
       CASE Qt_DisplayRole
          IF oCol:type == HBQTCOL_TYPE_FILEICON
-            RETURN nil
+            RETURN NIL
          ELSE
-            RETURN ::cellValue( nRow, nCol )
+            IF nCall == Qt_EditRole
+               RETURN ::cellValue( nRow, nCol )    /* Untransform, trim, etc */
+            ELSE
+               RETURN ::cellValue( nRow, nCol )
+            ENDIF
          ENDIF
       ENDSWITCH
       RETURN NIL
@@ -1468,33 +1541,89 @@ METHOD HbQtBrowse:skipRows( nRows )
    RETURN Self
 
 
+/* get number of frozen columns */
+METHOD HbQtBrowse:getFrozen()
+
+   IF ::nConfigure != 0
+      ::doConfigure()
+   ENDIF
+
+   RETURN ::nLeftFrozen
+
+
 METHOD HbQtBrowse:freeze( nColumns )  /* Overloaded */
-   LOCAL i, n := ::nFrozen
+   LOCAL i, n := ::nLeftFrozen
 
-   ::TBrowse:freeze( nColumns )
+   nColumns := Max( 0, Int( nColumns ) )
 
-   ::nFrozen := Max( 0, Int( nColumns ) )
-   ::aLeftFrozen := {}
-   IF ! Empty( ::nFrozen )
-      FOR i := 1 TO ::nFrozen
-         AAdd( ::aLeftFrozen, i )
-      NEXT
+   IF ! Empty( nColumns )
+      IF nColumns + ::nRightFrozen < ::colCount
+         ::aLeftFrozen := {}
+         FOR i := 1 TO nColumns
+            AAdd( ::aLeftFrozen, i )
+         NEXT
+      ENDIF
+   ELSE
+      ::aLeftFrozen := {}
    ENDIF
    ::nLeftFrozen := Len( ::aLeftFrozen )
+   ::nFrozen := Len( ::aLeftFrozen )
    ::setUnstable()
    ::configure( 128 )
    ::forceStable()
-   IF n < nColumns
+
+   IF n < ::nFrozen
       ::Right()
-      IF ::colPos > nColumns
-         ::Left()
+      IF ::colPos < ::nFrozen
+         ::Right()
       ENDIF
-   ELSEIF n > nColumns
-      ::Left()
-      ::Right()
+   ENDIF
+   ::down()
+   IF ! ::hitBottom()
+      ::up()
    ENDIF
 
-   RETURN ::nFrozen
+   RETURN ::nLeftFrozen
+
+
+METHOD HbQtBrowse:getRFrozen()         /* Not a TBrowse METHOD  */
+
+   IF ::nConfigure != 0
+      ::doConfigure()
+   ENDIF
+
+   RETURN ::nRightFrozen
+
+
+METHOD HbQtBrowse:rFreeze( nColumns )  /* Not a TBrowse METHOD  */
+   LOCAL i, n := ::nRightFrozen
+
+   ::nRightFrozen := Max( 0, Int( nColumns ) )
+   IF ! Empty( ::nRightFrozen )
+      IF ::nFrozen + ::nRightFrozen < ::colCount  /* At least 1 column must remain IN table view */
+         ::aRightFrozen := {}
+         FOR i := ::nRightFrozen TO 1 STEP -1
+            AAdd( ::aRightFrozen, ::colCount - i + 1 )
+         NEXT
+      ENDIF
+   ELSE
+      ::aRightFrozen := {}
+   ENDIF
+   ::nRightFrozen := Len( ::aRightFrozen )
+   ::setUnstable()
+   ::configure( 128 )
+   ::forceStable()
+   IF n < ::nRightFrozen
+      IF ::colPos > ::colCount - ::nRightFrozen
+         ::Left()
+      ENDIF
+   ENDIF
+   ::down()
+   IF ! ::hitBottom()
+      ::up()
+   ENDIF
+
+   RETURN ::nRightFrozen
 
 
 METHOD HbQtBrowse:rowCount()  /* Overloaded */

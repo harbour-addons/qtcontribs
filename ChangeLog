@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-23 07:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtcolumn.prg
+    + TBrowse: 
+       Implemented: :Footing
+       Implemented: :rFreeze
+         :rFreeze is equivalenet to :freeze with the difference that 
+           columns at the right of oBrowse are turned to frozen state
+           at the right side of the viewport.
+
+  * hbqtwidgets/tests/browser.prg
+    + F4 - :rFreeze++   F5 - rFreeze--
+    + F8 - MoveLeft     F8 - Move Right
+
+  ; NEXT: 1. in-built mechanism to <Search - Seek,Locate,Wild>
+          2. context menu for navigation, etc.
+          3. exposing different components of TBrowse window for finer tuning.
+    All controllable via :navigationBlock plus certain action on viewport.   
+
+2012-12-22 15:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: :panHome() and :panEnd() were not behaving properly.
+
 2012-12-22 15:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
     - Removed: static function not used.
@@ -30,7 +53,7 @@
   * hbqtwidgets/hbqtgetlist.prg
     + TBrowse:
        :verticalScrollbar := TRUE  [ Default: FALSE - Clipper Compatible ]
-          Displays the horizontal scroolbar to navigate the database/array.
+          Displays the vertical scroolbar to navigate the database/array.
           To use it effectively you need to define following blocks [with example]:
 
             oBrowse:firstPosBlock       := {| | 1                }
