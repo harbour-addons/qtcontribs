@@ -14,8 +14,8 @@
    <string>HbQt Validator </string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QPushButton" name="btnClipper">
+   <item row="1" column="1">
+    <widget class="QPushButton" name="btnPure">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -23,26 +23,9 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper Compatible GET System
-@ &lt;row&gt;,&lt;col&gt; SAY [Some Text]
-@ &lt;row&gt;,&lt;col&gt; GET cText VALID cText == [A]
-</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QPushButton" name="btnOOPLayout">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Clipper Compatible GET System
-Laid in a Form Layout
-What we miss...
-Page Up/Down</string>
+      <string>Clipper GETs Fetched In
+Pure Clipper Form
+Like GT Terminal</string>
      </property>
     </widget>
    </item>
@@ -55,14 +38,13 @@ Page Up/Down</string>
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper Compatible GET System
-Qt Designer Created Form 
-Integration</string>
+      <string>Clipper GETs Integrated In
+Qt Designer Created Form </string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QPushButton" name="btnPure">
+   <item row="0" column="1">
+    <widget class="QPushButton" name="btnOOPLayout">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -70,8 +52,51 @@ Integration</string>
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper Compatible GET System
-Pure Clipper </string>
+      <string>OOP GETs Fetched In
+Q FormLayout
+What we miss . Page Up/Down</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="btnClipper">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Clipper GETs Fetched In
+A Scrollable Widget
+</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QPushButton" name="btnInLayout">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Clipper GETs Fetched In
+QFormLayout</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="btnYet">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Yet To Be Implemented</string>
      </property>
     </widget>
    </item>

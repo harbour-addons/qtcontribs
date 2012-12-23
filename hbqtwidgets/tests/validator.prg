@@ -8,11 +8,10 @@
  */
 
 #include "hbtoqt.ch"
-
 #include "hbqtgui.ch"
 #include "set.ch"
-
 #include "hbqtstd.ch"
+
 #include "hbtrace.ch"
 
 
@@ -24,48 +23,21 @@ FUNCTION Main()
    oMain := hbqtui_validatormain()
    oMain:oWidget:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
 
-   oMain:btnClipper   : connect( "clicked()", {|| Clipper( oMain:oWidget ) } )
-   oMain:btnOOPLayout : connect( "clicked()", {|| OOPLayout( oMain:oWidget ) } )
-   oMain:btnUI        : connect( "clicked()", {|| UIGets( oMain:oWidget ) } )
-   oMain:btnPure      : connect( "clicked()", {|| NoParentPureClipper() } )
+   oMain:btnClipper   : connect( "clicked()", {|| Clipper( oMain:oWidget )         } )
+   oMain:btnOOPLayout : connect( "clicked()", {|| OOPLayout( oMain:oWidget )       } )
+   oMain:btnUI        : connect( "clicked()", {|| UIGets( oMain:oWidget )          } )
+   oMain:btnPure      : connect( "clicked()", {|| NoParentPureClipper()            } )
+   oMain:btnInLayout  : connect( "clicked()", {|| ClipperInLayout( oMain:oWidget ) } )
 
    oMain:show()
+
    QApplication():exec()
 
    RETURN NIL
 
 
 STATIC FUNCTION Clipper( oMain )
-
-   LOCAL oWnd
-   LOCAL nPdL := 22, nColGet := 25
-
-   LOCAL cText   := "ABC"
-   LOCAL dDate   := 0d19560604
-   LOCAL nNumb   := 6030.130001
-   LOCAL lMrd    := .T.
-   LOCAL cTele   := "(999)684-7318"
-   LOCAL cJust   := Space( 20 )
-   LOCAL cCata   := "IT3-BEL-903533AST63Z"
-   LOCAL nSlry   := 3000
-   LOCAL cNotes  := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
-   LOCAL cList   := "Two"
-   LOCAL aList   := { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten" }
-   LOCAL lOk     := .F.
-   LOCAL lCancel := .F.
-   LOCAL cDeptt  := "MIS"
-   LOCAL aDeptt  := { "Accounts","Store","MIS","HR","Technical" }
-   LOCAL lDone   := .T.
-
-   LOCAL GetList := {}
-   LOCAL SayList := {}
-   LOCAL GetParent := NIL
-
-   LOCAL val := Array( 3 )
-
-   val[ 1 ] := Space( 10 )
-   val[ 2 ] := 0
-   val[ 3 ] := ctod( "" )
+   LOCAL oWnd, GetParent, GetList, SayList
 
    /* Harbour Standard Settings */
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
@@ -92,58 +64,13 @@ STATIC FUNCTION Clipper( oMain )
    /* constraint of width and height limitations. QScrollArea will expose the scrollbars TO bring desired GETs into viewport */
    oWnd:setWidget( GetParent )
 
-   /* Harbour standards SAYs and GETs */
-   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
-
-   @  2, 02 SAY PadL( "Birthday:", nPdL )
-   @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
-
-   @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL )
-   @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
-
-   @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  PICTURE "Y"
-
-   @  5, 02 SAY PadL( "Telephone Number:", nPdL )
-   @  5, nColGet GET cTele PICTURE "@! (999)999-9999"
-
-   @  6, 02 SAY PadL( "Upper Lower Upper:", nPdL )
-   @  6, nColGet GET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
-
-   @  7, 02 SAY PadL( "Scrolling Catalog:", nPdL )
-   @  7, nColGet GET cCata PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
-
-   @  1, 52 SAY "Val[1]"
-   @  1, 60 GET val[1] PICTURE "@!"
-   @  2, 52 SAY "Val[2]"
-   @  2, 60 GET val[2] PICTURE "99"
-   @  3, 52 SAY "Val[3]"
-   @  3, 60 GET val[3]
-
-   @  5, 52 SAY "Deptt:"
-   @  5, 60, 5, 69 GET cDeptt COMBOBOX aDeptt VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:varGet() ), .T. }
-
-   @  7, 52 SAY "Salary:"
-   @  7, 60 GET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
-
-   @  9, 48 SAY "Done:"
-   @  9, 54 GET lDone CHECKBOX
-
-   @  9, 02 SAY "Notes:"
-   @ 10, 02, 17, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes ;
-                               PROPERTIES {|oGet,oControl| SetControlProp( oGet, oControl, "tooltip", "The notes must contain 'Harbour' somewhere" ) }
-
-   @  9, 60 SAY "Select:"
-   @ 10, 60, 17, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
-
-   @ 19, 25, 20, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
-   @ 19, 50, 20, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
-                                                                   iif( v == 1, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) }
-
+   /* Actually Initiate the READ */
+   FetchGets( @GetList, @SayList )
 
    /* QREAD creates the above GETs. In Clipper GET object is created at the time of @...GET is encountered,
     * but in HbQt it is not possible because PARENT window is not known until QREAD to bind the GETs
     */
-   QREAD PARENT GetParent
+   READ GetParent
 
    /* IMPORTANT: to release memory associated with this window and contained getlist
     * If oWnd would been the parent of GETs then 2nd param <GetParent> needs not be passed.
@@ -156,8 +83,67 @@ STATIC FUNCTION Clipper( oMain )
    RETURN NIL
 
 
-STATIC FUNCTION UiGets( oMain )
+STATIC FUNCTION NoParentPureClipper( oMain )
+   LOCAL GetList, SayList
 
+   HB_SYMBOL_UNUSED( oMain )
+
+   /* Harbour Standard Settings */
+   Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
+
+   /* Actually Initiate the READ */
+   FetchGets( @GetList, @SayList )
+
+   READ PROPERTIES {|oWnd, oGetList| SetFormProperties( oWnd, oGetList ) }
+
+   RETURN NIL
+
+
+STATIC FUNCTION ClipperInLayout( oMain )
+   LOCAL oWnd, oL, GetList, SayList
+
+   /* Harbour Standard Settings */
+   Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
+
+   /* HbQt Widgets Standard Settings */
+   /* Sets the number of pixels for spacing between lines; default is 6 */
+   HbQtSet( _QSET_LINESPACING, 2 )
+   /* Set thread wide FONT object used to distribute the space for GETs; default is "Courier New",10 */
+   QSET GETSFONT TO QFont( "Courier New", 8 )
+
+   /* A window to host different GUI elements including a window to host GET objects. This window itself can be the host of GET objects. */
+   /* A typical terminal window per GT can be thought of synonimous to this window if it itself is hosting GET objects */
+   oWnd := QWidget( oMain )
+   oWnd:setWindowFlags( Qt_Sheet )
+   oWnd:setWindowTitle( "Clipper Get System - In a FormLayout" )
+   /* Presseing ESCape will request window to close itself */
+   oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd, QCloseEvent() ), NIL ) } )
+
+   /* A window to host GET objects. This window can be any container type, e.g., QWidget, QDialog, QFrame, QGroupBox */
+   /* A typical terminal window per GT can be thought of synonimous to this window */
+   oL := QFormLayout()
+   oL:setLabelAlignment( Qt_AlignRight )
+   oL:setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
+   oL:setFormAlignment( Qt_AlignHCenter + Qt_AlignTop )
+   oWnd:setLayout( oL )
+
+   /* Actually Initiate the READ */
+   FetchGets( @GetList, @SayList )
+
+   READ oWnd
+
+   /* IMPORTANT: to release memory associated with this window and contained getlist
+    * If oWnd would been the parent of GETs then 2nd param <GetParent> needs not be passed.
+    */
+   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ) } )
+
+   /* Show up the GET screen ready to receive user input */
+   oWnd:show()
+
+   RETURN NIL
+
+
+STATIC FUNCTION UiGets( oMain )
    LOCAL oWnd
    LOCAL nPdL := 22
 
@@ -220,90 +206,6 @@ STATIC FUNCTION UiGets( oMain )
 
    /* Show up the GET screen ready to receive user input */
    oWnd:show()
-
-   RETURN NIL
-
-
-STATIC FUNCTION NoParentPureClipper()
-
-   LOCAL nPdL := 22, nColGet := 25
-
-   LOCAL cText   := "ABC"
-   LOCAL dDate   := 0d19560604
-   LOCAL nNumb   := 6030.130001
-   LOCAL lMrd    := .T.
-   LOCAL cTele   := "(999)684-7318"
-   LOCAL cJust   := Space( 20 )
-   LOCAL cCata   := "IT3-BEL-903533AST63Z"
-   LOCAL nSlry   := 3000
-   LOCAL cNotes  := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
-   LOCAL cList   := "Two"
-   LOCAL aList   := { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten" }
-   LOCAL lOk     := .F.
-   LOCAL lCancel := .F.
-   LOCAL cDeptt  := "MIS"
-   LOCAL aDeptt  := { "Accounts","Store","MIS","HR","Technical" }
-   LOCAL lDone   := .T.
-
-   LOCAL GetList := {}
-   LOCAL SayList := {}
-
-   LOCAL val     := Array( 3 )
-
-   val[ 1 ] := Space( 10 )
-   val[ 2 ] := 0
-   val[ 3 ] := ctod( "" )
-
-   /* Harbour Standard Settings */
-   Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
-
-   /* Harbour standards SAYs and GETs */
-   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
-
-   @  2, 02 SAY PadL( "Birthday:", nPdL )
-   @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
-
-   @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL )
-   @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
-
-   @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  PICTURE "Y"
-
-   @  5, 02 SAY PadL( "Telephone Number:", nPdL )
-   @  5, nColGet GET cTele PICTURE "@! (999)999-9999"
-
-   @  6, 02 SAY PadL( "Upper Lower Upper:", nPdL )
-   @  6, nColGet GET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
-
-   @  7, 02 SAY PadL( "Scrolling Catalog:", nPdL )
-   @  7, nColGet GET cCata PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
-
-   @  1, 52 SAY "Val[1]"
-   @  1, 60 GET val[1] PICTURE "@!"
-   @  2, 52 SAY "Val[2]"
-   @  2, 60 GET val[2] PICTURE "99"
-   @  3, 52 SAY "Val[3]"
-   @  3, 60 GET val[3]
-
-   @  5, 52 SAY "Deptt:"
-   @  5, 60, 5, 69 GET cDeptt COMBOBOX aDeptt VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:varGet() ), .T. }
-
-   @  7, 52 SAY "Salary:"
-   @  7, 60 GET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
-
-   @  9, 48 SAY "Done:"
-   @  9, 54 GET lDone CHECKBOX
-
-   @  9, 02 SAY "Notes:"
-   @ 10, 02, 17, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes
-
-   @  9, 60 SAY "Select:"
-   @ 10, 60, 17, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
-
-   @ 19, 25, 19, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
-   @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
-                                                      iif( v == 1, GetActive():parent():close(), NIL ) }
-
-   READ PROPERTIES {|oWnd, oGetList| SetFormProperties( oWnd, oGetList ) }
 
    RETURN NIL
 
@@ -431,6 +333,85 @@ STATIC FUNCTION OOPLayout( oMain )
    /* Show up the GET screen ready to receive user input */
    oWnd:show()
 
+   RETURN NIL
+
+
+STATIC FUNCTION fetchGets( GetList, SayList )
+
+   LOCAL nPdL    := 22
+   LOCAL nColGet := 25
+   LOCAL cText   := "ABC"
+   LOCAL dDate   := 0d19560604
+   LOCAL nNumb   := 6030.130001
+   LOCAL lMrd    := .T.
+   LOCAL cTele   := "(999)684-7318"
+   LOCAL cJust   := Space( 20 )
+   LOCAL cCata   := "IT3-BEL-903533AST63Z"
+   LOCAL nSlry   := 3000
+   LOCAL cNotes  := "We, the Harboureans, are entering a new era of true GUI implementation of our beloved Clipper language, let us keep the emotions high..."
+   LOCAL cList   := "Two"
+   LOCAL aList   := { "One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten" }
+   LOCAL lOk     := .F.
+   LOCAL lCancel := .F.
+   LOCAL cDeptt  := "MIS"
+   LOCAL aDeptt  := { "Accounts","Store","MIS","HR","Technical" }
+   LOCAL lDone   := .T.
+   LOCAL val     := Array( 3 )
+
+   val[ 1 ]      := Space( 10 )
+   val[ 2 ]      := 0
+   val[ 3 ]      := ctod( "" )
+
+   GetList       := {}
+   SayList       := {}
+
+   /* Harbour standards SAYs and GETs */
+   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
+
+   @  2, 02 SAY PadL( "Birthday:", nPdL )
+   @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
+
+   @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL )
+   @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
+
+   @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  PICTURE "Y"
+
+   @  5, 02 SAY PadL( "Telephone Number:", nPdL )
+   @  5, nColGet GET cTele PICTURE "@! (999)999-9999"
+
+   @  6, 02 SAY PadL( "Upper Lower Upper:", nPdL )
+   @  6, nColGet GET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
+
+   @  7, 02 SAY PadL( "Scrolling Catalog:", nPdL )
+   @  7, nColGet GET cCata PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
+
+   @  1, 52 SAY "Val[1]"
+   @  1, 60 GET val[1] PICTURE "@!"
+   @  2, 52 SAY "Val[2]"
+   @  2, 60 GET val[2] PICTURE "99"
+   @  3, 52 SAY "Val[3]"
+   @  3, 60 GET val[3]
+
+   @  5, 52 SAY "Deptt:"
+   @  5, 60, 5, 69 GET cDeptt COMBOBOX aDeptt VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:varGet() ), .T. }
+
+   @  7, 52 SAY "Salary:"
+   @  7, 60 GET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+
+   @  9, 48 SAY "Done:"
+   @  9, 54 GET lDone CHECKBOX
+
+   @  9, 02 SAY "Notes:"
+   @ 10, 02, 17, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes ;
+                               PROPERTIES {|oGet,oControl| SetControlProp( oGet, oControl, "tooltip", "The notes must contain 'Harbour' somewhere" ) }
+
+   @  9, 60 SAY "Select:"
+   @ 10, 60, 17, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
+
+   @ 19, 25, 19, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| HB_TRACE( HB_TR_ALWAYS, "OK Pushed"     ) }    WHEN nSlry > 700 .AND. nSlry < 17000 VALID nSlry == 6000
+   @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, ;
+                                                                                   { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
+                                                                   iif( v == 1, GetActive():parent():close(), NIL ) }
    RETURN NIL
 
 
