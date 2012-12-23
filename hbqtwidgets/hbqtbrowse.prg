@@ -1672,7 +1672,7 @@ METHOD HbQtBrowse:firstCol()
       ELSE
          ::setCurrentIndex( .f. )
       ENDIF
-      ::oHScrollBar:setValue( ::colPos - 1 )
+      ::oHScrollBar:setValue( 0 )
    ENDIF
    RETURN Self
 
@@ -1709,7 +1709,7 @@ METHOD HbQtBrowse:lastCol()
       ELSE
          ::setCurrentIndex( .f. )
       ENDIF
-      ::oHScrollBar:setValue( ::colPos - 1 )
+      ::oHScrollBar:setValue( ::colCount - 1 )
    ENDIF
 
    RETURN Self
@@ -1736,28 +1736,11 @@ METHOD HbQtBrowse:end()
 
 
 METHOD HbQtBrowse:panHome()
-
-   ::oHeaderView:setOffset( 0 )
-   ::oFooterView:setOffset( 0 )
-   ::oDbfModel:reset()
-
-   RETURN Self
+   RETURN ::firstCol()
 
 
 METHOD HbQtBrowse:panEnd()
-   LOCAL nOffset
-
-   IF ::oHeaderView:sectionSize( ::colCount - 1 ) > ::oViewport:width()
-      nOffSet := ::oHeaderView:sectionPosition( ::colCount - 1 )
-   ELSE
-      nOffSet := ::oHeaderView:sectionPosition( ::colCount - 1 ) + ;
-                 ::oHeaderView:sectionSize( ::colCount - 1 ) - ::oViewport:width()
-   ENDIF
-   ::oHeaderView:setOffset( nOffSet )
-   ::oFooterView:setOffset( nOffSet )
-   ::oDbfModel:reset()
-
-   RETURN Self
+   RETURN ::lastCol()
 
 
 METHOD HbQtBrowse:panLeft()
@@ -1773,9 +1756,7 @@ METHOD HbQtBrowse:panLeft()
 
 
 METHOD HbQtBrowse:panRight()
-
    ::TBRowse:panRight()
-
    RETURN Self
 
 

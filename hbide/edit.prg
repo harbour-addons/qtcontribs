@@ -753,10 +753,10 @@ METHOD IdeEdit:zoom( nKey )
 
 METHOD IdeEdit:setFont()
 
-   ::qFont := QFont()
-   ::qFont:setFamily( ::fontFamily )
+   ::qFont := QFont( ::fontFamily, ::currentPointSize )
+   //::qFont:setFamily( ::fontFamily )
    ::qFont:setFixedPitch( .t. )
-   ::qFont:setPointSize( ::currentPointSize )
+   //::qFont:setPointSize( ::currentPointSize )
 
    ::qEdit:setFont( ::qFont )
 
