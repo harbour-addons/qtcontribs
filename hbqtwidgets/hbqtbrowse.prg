@@ -51,6 +51,8 @@
  */
 
 
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
 #include "hbqtgui.ch"
 #include "inkey.ch"
 #include "error.ch"
@@ -59,7 +61,6 @@
 #include "hbtrace.ch"
 
 
-#define __ev_keypress__                           1                /* Keypress Event */
 #define __ev_mousepress_on_frozen__               31               /* Mousepress on Frozen */
 #define __ev_mousepress__                         2                /* Mousepress */
 #define __ev_xbpBrw_itemSelected__                3                /* xbeBRW_ItemSelected */
@@ -72,14 +73,11 @@
 #define __ev_columnheader_pressed__               111              /* Column Header Pressed */
 #define __ev_headersec_resized__                  121              /* Header Section Resized */
 #define __ev_footersec_resized__                  122              /* Footer Section Resized */
-#define __editor_closeEditor__                    1400
-#define __editor_commitData__                     1401
 
 #define __ev_tableViewBlock_main__                1501
 #define __ev_tableViewBlock_left__                1502
 #define __ev_tableViewBlock_right__               1503
 
-#define __ev_frame_resized__                      2001
 #define __ev_contextMenuRequested__               2002
 
 
@@ -96,6 +94,25 @@
 #define HBQTCOL_TYPE_MULTILINETEXT                7
 
 #define ISFROZEN( n )                             ( ascan( ::aLeftFrozen, n ) > 0 .OR. ascan( ::aRightFrozen, n ) > 0 )
+
+
+STATIC PROCEDURE _GENLIMITRTE()
+   LOCAL oError := ErrorNew()
+
+   oError:severity    := ES_ERROR
+   oError:genCode     := EG_LIMIT
+   oError:subSystem   := "TBROWSE"
+   oError:subCode     := 0
+   oError:description := hb_LangErrMsg( EG_LIMIT )
+   oError:canRetry    := .F.
+   oError:canDefault  := .F.
+   oError:fileName    := ""
+   oError:osCode      := 0
+
+   Eval( ErrorBlock(), oError )
+   __errInHandler()
+
+   RETURN
 
 
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont )
@@ -126,6 +143,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD panEnd()
    METHOD panLeft()
    METHOD panRight()
+   METHOD refreshAll()
+   METHOD refreshCurrent()
 
    ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
@@ -156,6 +175,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD cursorMode                              SETGET
 
    METHOD edit()                                  INLINE ::oTableView:edit( ::getCurrentIndex() )
+   METHOD openEditor( cTitle, lSaveOnLastGet, lDownAfterSave )
+   METHOD editBlock( bBlock )                     SETGET
 
 PROTECTED:
 
@@ -165,7 +186,6 @@ PROTECTED:
    METHOD cellValueA( nRow, nCol )
    METHOD create()
    METHOD execSlot( nEvent, p1, p2, p3 )
-   METHOD execEvent( nEvent, oEvent )
    METHOD supplyInfo( nMode, nCall, nRole, nX, nY )
    METHOD compatColor( nColor )
    METHOD compatIcon( cIcon )
@@ -251,14 +271,15 @@ PROTECTED:
 
    DATA   qDelegate
 
+   METHOD manageKeyPress( oEvent )
    METHOD manageFrameResized()
-   METHOD manageCommitData( qWidget )
-   METHOD manageEditorClosed( pWidget, nHint )
-   METHOD manageScrollContents( nX, nY )
    METHOD manageMouseDblClick( oMouseEvent )
    METHOD manageMousePress( oMouseEvent )
    METHOD manageMouseRelease( oMouseEvent )
    METHOD manageMouseWheel( oWheelEvent )
+   METHOD manageCommitData( qWidget )
+   METHOD manageEditorClosed( pWidget, nHint )
+   METHOD manageScrollContents( nX, nY )
 
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
@@ -275,6 +296,21 @@ PROTECTED:
 
    METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
    METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
+
+   /* Editor specific calls */
+   METHOD loadRow()
+   METHOD saveRow()
+   METHOD populateGets()
+   METHOD mangageEditorKeyPress( oKeyEvent )
+
+   DATA   aOriginal
+   DATA   aModified
+   DATA   aCaptions
+   DATA   bEditBlock
+   DATA   lSaveOnLastGet
+   DATA   lDownAfterSave
+   DATA   aGetList
+   DATA   aPosSize
 
    ENDCLASS
 
@@ -642,8 +678,8 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
 METHOD HbQtBrowse:connect()
 
-   ::oTableView       : connect( QEvent_KeyPress                     , {|p      | ::execEvent( __ev_keypress__                , p    ) } )
-   ::oWidget          : connect( QEvent_Resize                       , {|p      | ::execEvent( __ev_frame_resized__           , p    ) } )
+   ::oTableView       : connect( QEvent_KeyPress                     , {|oKeyEvent| ::manageKeyPress( oKeyEvent )                      } )
+   ::oWidget          : connect( QEvent_Resize                       , {|         | ::manageFrameResized(), .T.                        } )
 
 
    ::oLeftHeaderView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
@@ -663,8 +699,8 @@ METHOD HbQtBrowse:connect()
    ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
 
-   ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::execSlot( __editor_commitData__           , p    ) } )
-   ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1 | ::execSlot( __editor_closeEditor__, p, p1 ) } )
+   ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::manageCommitData( p )                              } )
+   ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1 | ::manageEditorClosed( p, p1 )    } )
 
    RETURN Self
 
@@ -846,40 +882,30 @@ METHOD HbQtBrowse:manageMouseRelease( oMouseEvent )
    RETURN Self
 
 
-METHOD HbQtBrowse:execEvent( nEvent, oEvent )
+METHOD HbQtBrowse:manageKeyPress( oEvent )
+
    LOCAL lHandelled := .F.
    LOCAL nKey
 
-   SWITCH nEvent
+   nKey := hbqt_qtEventToHbEvent( oEvent )
 
-   CASE __ev_keypress__
-      nKey := hbqt_qtEventToHbEvent( oEvent )
+   IF HB_ISBLOCK( SetKey( nKey ) )
+      Eval( SetKey( nKey ) )
+      RETURN .F.
+   ENDIF
 
-      IF HB_ISBLOCK( SetKey( nKey ) )
-         Eval( SetKey( nKey ) )
-         RETURN .F.
+   IF HB_ISBLOCK( ::sl_navigate )
+      lHandelled := Eval( ::sl_navigate, nKey, NIL, Self )
+      IF ! HB_ISLOGICAL( lHandelled )
+         lHandelled := .F.
       ENDIF
+   ENDIF
 
-      IF HB_ISBLOCK( ::sl_navigate )
-         lHandelled := Eval( ::sl_navigate, nKey, NIL, Self )
-         IF ! HB_ISLOGICAL( lHandelled )
-            lHandelled := .F.
-         ENDIF
-      ENDIF
+   IF ! lHandelled
+      ::applyKey( nKey )
+   ENDIF
 
-      IF ! lHandelled
-         ::applyKey( nKey )
-      ENDIF
-      /* SetAppEvent( xbeP_Keyboard, hbqt_qtEventToHbEvent( p1 ), NIL, Self ) */
-      RETURN .T.   /* Stop Propegation to parent */
-
-   CASE __ev_frame_resized__
-      ::manageFrameResized()
-      RETURN .T.
-
-   ENDSWITCH
-
-   RETURN .F.
+   RETURN .T.   /* Stop Propegation to parent */
 
 
 METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
@@ -914,12 +940,6 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
    CASE __ev_contextMenuRequested__
       oPoint := ::oTableView:mapToGlobal( QPoint( p1 ) )
       ::hbContextMenu( { oPoint:x(), oPoint:y() } )
-      EXIT
-   CASE __editor_commitData__
-      ::manageCommitData( p1 )
-      EXIT
-   CASE __editor_closeEditor__
-      ::manageEditorClosed( p1, p2 )
       EXIT
    CASE __ev_vertscroll_via_user__
       SWITCH p1
@@ -1018,6 +1038,9 @@ METHOD HbQtBrowse:manageCommitData( qWidget )
    CASE cTyp == "L"
       Eval( oCol:block, cTxt $ "Yy" )
    ENDCASE
+
+   ::refreshCurrent()
+   ::oTableView:setFocus()
 
    RETURN Self
 
@@ -1205,8 +1228,18 @@ METHOD HbQtBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
          IF oCol:type == HBQTCOL_TYPE_FILEICON
             RETURN NIL
          ELSE
-            IF nCall == Qt_EditRole
-               RETURN ::cellValue( nRow, nCol )    /* Untransform, trim, etc */
+            IF nCall == Qt_EditRole    /* Never Reached */
+               SWITCH oCol:valtype
+               CASE "C"
+                  RETURN Trim( Eval( oCol:block ) )
+               CASE "N"
+                  RETURN Val( Eval( oCol:block ) )
+               CASE "D"
+                  RETURN DToC( Eval( oCol:block ) )
+               CASE "L"
+                  RETURN iif( Eval( oCol:block ), "T", "F" )
+               ENDSWITCH
+               RETURN ""
             ELSE
                RETURN ::cellValue( nRow, nCol )
             ENDIF
@@ -1644,6 +1677,26 @@ METHOD HbQtBrowse:rowCount()  /* Overloaded */
    RETURN ::nRowsInView
 
 
+METHOD HbQtBrowse:refreshAll()
+
+   ::TBrowse:refreshAll()
+
+   ::forceStable()
+   ::setCurrentIndex( .T. )
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:refreshCurrent()
+
+   ::TBrowse:refreshCurrent()
+
+   ::forceStable()
+   ::setCurrentIndex( .T. )
+
+   RETURN Self
+
+
 METHOD HbQtBrowse:up()
    LOCAL lReset := ::rowPos == 1
 
@@ -1954,21 +2007,195 @@ METHOD HbQtBrowse:moveEnd()
 
    RETURN col_to_move < ::colCount
 
+/*----------------------------------------------------------------------*/
 
-STATIC PROCEDURE _GENLIMITRTE()
-   LOCAL oError := ErrorNew()
+METHOD HbQtBrowse:editBlock( bBlock )
 
-   oError:severity    := ES_ERROR
-   oError:genCode     := EG_LIMIT
-   oError:subSystem   := "TBROWSE"
-   oError:subCode     := 0
-   oError:description := hb_LangErrMsg( EG_LIMIT )
-   oError:canRetry    := .F.
-   oError:canDefault  := .F.
-   oError:fileName    := ""
-   oError:osCode      := 0
+   IF HB_ISBLOCK( bBlock )
+      ::bEditBlock := bBlock
+   ENDIF
 
-   Eval( ErrorBlock(), oError )
-   __errInHandler()
+   RETURN ::bEditBlock
 
-   RETURN
+
+METHOD HbQtBrowse:openEditor( cTitle, lSaveOnLastGet, lDownAfterSave )
+   LOCAL oDlg
+   LOCAL oVLayout, oHLayout
+   LOCAL oScrollArea, oPos, oCol
+   LOCAL oBtn1, oBtn2, oBtn3, oBtn4, oBtn5
+   LOCAL oEditor, oFLayout
+   LOCAL k1, k2, k3, k4, k5
+   LOCAL GetList := {}, SayList := {}
+
+   hb_default( @cTitle, "Modify Row Data" )
+   hb_default( @lSaveOnLastGet, .T. )
+   hb_default( @lDownAfterSave, .T. )
+
+   ::lSaveOnLastGet := lSaveOnLastGet
+   ::lDownAfterSave := lDownAfterSave
+
+   oDlg := QDialog( ::oWidget )
+   oDlg:setWindowTitle( cTitle )
+
+   IF Empty( ::aPosSize )
+      oPos := ::oWidget:mapToGlobal( QPoint( ::oWidget:width(), 0 ) )
+      oDlg:move( oPos:x(), oPos:y() )
+   ELSE
+      oDlg:setGeometry( ::aPosSize[ 3 ] )
+      oDlg:move( ::aPosSize[ 1 ], ::aPosSize[ 2 ] )
+   ENDIF
+
+   oEditor := QWidget()
+   oFLayout := QFormLayout()
+   oEditor:setLayout( oFLayout )
+
+   oScrollArea := QScrollArea( oDlg )
+   oScrollArea:setWidget( oEditor )
+
+   oVLayout := QVBoxLayout( oDlg )
+   oVLayout:setContentsMargins( 5,5,5,5 )
+
+   oHLayout := QHBoxLayout()
+   oVLayout:addWidget( oScrollArea )
+   oVLayout:addLayout( oHLayout )
+
+   //oHSpacerL := QSpacerItem
+   oBtn1 := QToolButton( oDlg )
+   oBtn1:setText( "Save" )
+   oHLayout:addWidget( oBtn1 )
+   oBtn2 := QToolButton( oDlg )
+   oBtn2:setText( "Down" )
+   oHLayout:addWidget( oBtn2 )
+   oBtn3 := QToolButton( oDlg )
+   oBtn3:setText( "Up" )
+   oHLayout:addWidget( oBtn3 )
+   oBtn4 := QToolButton( oDlg )
+   oBtn4:setText( "Bttm" )
+   oHLayout:addWidget( oBtn4 )
+   oBtn5 := QToolButton( oDlg )
+   oBtn5:setText( "Top" )
+   oHLayout:addWidget( oBtn5 )
+
+   oBtn1:connect( "clicked()", {||  ::saveRow() } )
+   oBtn2:connect( "clicked()", {||  ::down()    , ::loadRow(), ::populateGets() } )
+   oBtn3:connect( "clicked()", {||  ::up()      , ::loadRow(), ::populateGets() } )
+   oBtn4:connect( "clicked()", {||  ::goBottom(), ::loadRow(), ::populateGets() } )
+   oBtn5:connect( "clicked()", {||  ::goTop()   , ::loadRow(), ::populateGets() } )
+
+   k1 := SetKey( K_ALT_S   , {|| oBtn1:click() } )
+   k2 := SetKey( K_ALT_DOWN, {|| oBtn2:click() } )
+   k3 := SetKey( K_ALT_UP  , {|| oBtn3:click() } )
+   k4 := SetKey( K_ALT_PGDN, {|| oBtn4:click() } )
+   k5 := SetKey( K_ALT_PGUP, {|| oBtn5:click() } )
+
+   ::loadRow()
+
+   FOR EACH oCol IN ::columns
+      @ 1,1 QGET ::aModified[ oCol:__enumIndex() ] PICTURE oCol:Picture CAPTION oCol:heading ;
+                           WHEN  {|| iif( HB_ISBLOCK( oCol:preBlock ) , Eval( oCol:preBlock ) , .T. ) } ;
+                           VALID {|| iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock ), .T. ) }
+   NEXT
+
+   QREAD oFLayout LASTGETBLOCK {|| ::saveRow() }
+
+   ::aGetList := GetList
+
+   oDlg:exec()
+
+   ::aPosSize := {}
+   ASize( ::aPosSize, 5 )
+   ::aPosSize[ 1 ] := oDlg:pos():x()
+   ::aPosSize[ 2 ] := oDlg:pos():y()
+   ::aPosSize[ 3 ] := oDlg:geometry()
+   ::aPosSize[ 4 ] := oDlg:width()
+   ::aPosSize[ 5 ] := oDlg:height()
+
+   SetKey( K_ALT_S   , k1 )
+   SetKey( K_ALT_DOWN, k2 )
+   SetKey( K_ALT_UP  , k3 )
+   SetKey( K_ALT_PGDN, k4 )
+   SetKey( K_ALT_PGUP, k5 )
+
+   oDlg:setParent( QWidget() )
+
+   RETURN NIL
+
+
+METHOD HbQtBrowse:loadRow()
+   LOCAL oCol
+
+   ::aOriginal := {}
+   ::aCaptions := {}
+   FOR EACH oCol IN ::columns
+      AAdd( ::aOriginal, Eval( oCol:block ) )
+      AAdd( ::aCaptions, oCol:heading )
+   NEXT
+   ::aModified := AClone( ::aOriginal )
+
+   RETURN NIL
+
+
+METHOD HbQtBrowse:saveRow()
+   LOCAL lHandelled, oCol
+
+   IF HB_ISBLOCK( ::editBlock() )
+      lHandelled := Eval( ::editBlock(), Self, ::aOriginal, ::aModified, ::aCaptions )  /* User can RETURN any type */
+   ENDIF
+   lHandelled := iif( HB_ISLOGICAL( lHandelled ), lHandelled, .F. )
+   IF ! lHandelled
+      FOR EACH oCol IN ::columns
+         Eval( oCol:block, ::aModified[ oCol:__enumIndex() ] )
+      NEXT
+   ENDIF
+   ::refreshCurrent()
+
+   IF ::lDownAfterSave
+      ::down()
+      ::loadRow()
+      ::populateGets()
+   ENDIF
+
+   RETURN NIL
+
+
+METHOD HbQtBrowse:populateGets()
+   LOCAL oGet
+
+   FOR EACH oGet IN ::aGetList
+      oGet:varPut( ::aModified[ oGet:__enumIndex() ] )
+      oGet:display()
+   NEXT
+
+   RETURN NIL
+
+
+METHOD HbQtBrowse:mangageEditorKeyPress( oKeyEvent )
+
+   SWITCH oKeyEvent:key()
+   CASE K_ALT_S
+      ::save()
+      EXIT
+   CASE K_ALT_UP
+      ::up()
+      ::loadRow()
+      ::populateGets()
+      EXIT
+   CASE K_ALT_DOWN
+      ::down()
+      ::loadRow()
+      ::populateGets()
+      EXIT
+   CASE K_ALT_PGUP
+      ::goTop()
+      ::loadRow()
+      ::populateGets()
+      EXIT
+   CASE K_ALT_PGDN
+      ::goBottom()
+      ::loadRow()
+      ::populateGets()
+      EXIT
+   ENDSWITCH
+
+   RETURN .F.
+

@@ -138,7 +138,7 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
    RETURN oGetList
 
 
-FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties )
+FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout, cCaption, oGetList, oWnd
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
    LOCAL nEditPadding := 4
@@ -223,6 +223,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    ENDIF
 
    oGetList := HbQtGetList():New( aGetList )
+   oGetList:lastGetBlock := bOnLastGet
 
    IF Len( GetList ) >= 1
       FOR EACH aEdit IN GetList
@@ -316,15 +317,16 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    ENDIF
 
    IF ! HB_ISOBJECT( oParent )
-      IF lNoModal
-         oWnd:show()
-      ELSE
+      IF ! lNoModal
          oWnd:setModal( .T. )
-         oWnd:show()
       ENDIF
+      oWnd:show()
    ENDIF
 
    RETURN NIL
+
+
+/*----------------------------------------------------------------------*/
 
 
 CREATE CLASS HbQtGetList INHERIT HbGetList
@@ -340,7 +342,19 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    METHOD getIndex( oGet )
    METHOD setFocus( cGet )
 
+   DATA   bOnLastGet
+   METHOD lastGetBlock( bBlock )                  SETGET
+
    ENDCLASS
+
+
+METHOD HbQtGetList:lastGetBlock( bBlock )
+
+   IF HB_ISBLOCK( bBlock )
+      ::bOnLastGet := bBlock
+   ENDIF
+
+   RETURN ::bOnLastGet
 
 
 METHOD HbQtGetList:getIndex( oGet )
@@ -461,6 +475,7 @@ METHOD HbQtGetList:setFocus( cGet )
 
    RETURN oGet
 
+/*----------------------------------------------------------------------*/
 
 FUNCTION __hbqtRgbStringFromColorString( cToken, lExt )
 

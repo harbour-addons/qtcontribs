@@ -50,17 +50,23 @@ FUNCTION Main()
    oBrowse:AddColumn( HbQtColumnNew( "Fifth",  {|| aTest3[ n ] } ) )
 
    oBrowse:GetColumn( 1 ):Footing    := "Number"
+// oBrowse:GetColumn( 1 ):preBlock   := {|| .F.  }
+
    oBrowse:GetColumn( 2 ):Footing    := "String"
 
    oBrowse:GetColumn( 2 ):Picture    := "@!"
 
    oBrowse:GetColumn( 3 ):Footing    := "Number"
    oBrowse:GetColumn( 3 ):Picture    := "999,999.99"
+   oBrowse:GetColumn( 3 ):postBlock  := {|| GetActive():varGet() > 700 }
    oBrowse:GetColumn( 3 ):colorBlock := {|nVal| iif( nVal < 0, {3,2}, iif( nVal > 500, {4,2}, {1,2} ) ) }
 
    oBrowse:GetColumn( 4 ):Footing    := "Dates"
 
    oBrowse:GetColumn( 5 ):Footing    := "Logical"
+
+   /* TBrowse will call this METHOD when ready TO save edited row. Block must receive 4 parameters and must RETURN true/false */
+   oBrowse:editBlock := {|oBrw, aOriginal, aModified, aCaptions|  SaveMyData( oBrw, aOriginal, aModified, aCaptions, aTest0, aTest1, aTest2, aTest3, n ) }
 
    // needed since I've changed some columns _after_ I've added them to TBrowse object
    oBrowse:Configure()
@@ -112,6 +118,9 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    CASE nKey == K_F11
       oBrowse:moveEnd()                /* HbQt Entention */
 
+   CASE nKey == K_F12
+      oBrowse:openEditor( "Update Info", .T., .T. )
+
    CASE nKey > 32 .AND. nKey < 127
       oBrowse:edit()                   /* HbQt Entention */
 
@@ -122,4 +131,31 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    ENDCASE
 
    RETURN lHandelled
+
+
+STATIC FUNCTION SaveMyData( oBrw, aOriginal, aModified, aCaptions, aTest0, aTest1, aTest2, aTest3, n )
+   LOCAL i
+
+   HB_SYMBOL_UNUSED( oBrw )
+   HB_SYMBOL_UNUSED( aOriginal )
+
+   FOR i := 1 TO Len( aModified )
+      SWITCH aCaptions[ i ]
+      CASE "Second"
+         aTest0[ n ] := aModified[ i ]            /* You can compare original and modified values */
+         EXIT
+      CASE "Third"
+         aTest1[ n ] := aModified[ i ]
+         EXIT
+      CASE "Forth"
+         aTest2[ n ] := aModified[ i ]
+         EXIT
+      CASE "Fifth"
+         aTest3[ n ] := aModified[ i ]
+         EXIT
+      ENDSWITCH
+   NEXT
+
+   RETURN .T.
+
 

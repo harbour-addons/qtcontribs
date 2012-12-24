@@ -199,9 +199,16 @@
                                 { <label>, <{act}> }, <{prop}> } )
 
 
-   #command QREAD [ [ PARENT ] <GetParent> ] [ FONT <oFont> ] [ LINESPACING <nSpc> ] [ TITLE <title> ] [ ICON <icon> ] [<nomodal:NOMODAL>] [ PROPERTIES <prop> ];
+   #command QREAD [ [ PARENT ] <GetParent> ] ;
+                  [ FONT <oFont>           ] ;
+                  [ LINESPACING <nSpc>     ] ;
+                  [ TITLE <title>          ] ;
+                  [ ICON <icon>            ] ;
+                  [<nomodal:NOMODAL>       ] ;
+                  [ PROPERTIES <prop>      ] ;
+                  [ LASTGETBLOCK <bLast>   ] ;
                         => ;
-         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}> )
+         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}> )
 
 
 #endif

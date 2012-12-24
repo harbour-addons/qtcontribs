@@ -16,6 +16,108 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-23 23:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtstd.ch
+    + Added: clause LASTGETBLOCK <lastGetBlock>
+       With this QREAD command looks as:
+
+       #command QREAD [ [ PARENT ] <GetParent> ] ;
+                      [ FONT <oFont>           ] ;
+                      [ LINESPACING <nSpc>     ] ;
+                      [ TITLE <title>          ] ;
+                      [ ICON <icon>            ] ;
+                      [<nomodal:NOMODAL>       ] ;
+                      [ PROPERTIES <prop>      ] ;
+                      [ LASTGETBLOCK <bLast>   ] ;
+                            => ;
+             HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, ;
+                           <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}> )
+
+       ; Read below.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    + Added: method lastGetBlock( bBlock ) SETGET
+       Placeholder to hold <lastGetBlock> of QREAD.
+
+  * hbqtwidgets/hbqtgetsys.prg
+    + Implemented: to detect if GET in focus is the last GET in current GetList,
+                   and if yes, then fire the <lastGetObject> block. The check
+                   is performed in :postValidate() method.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: browser row editor honoring the :preBlock, :postBlock, :picture
+       properties of columns. Thanks to QGET/QREAD of HbQt which made it possible 
+       to happen. The whole process is application controlled as per the true spirit 
+       of TBrowse. The following methods are exposed to the application:
+
+         :editBlock( bBlock ) GETSET
+            The block is responsible to "SAVE" data collected with editor widget.
+            If no :editBlock is specifed, a simple oColumn:block is evaluated
+            with modified data as its only parameter.
+            :editBlock has to be defined as:
+
+            oBrowse:editBlock := {|oBrw, aOriginal, aModified, aCaptions|  ;
+                                      SaveMyData( oBrw, aOriginal, aModified, aCaptions ) }
+
+            at the minimum. Application may pass other parameters to the "SAVE" 
+            function as appropriate. Here is brief description of 4 parameters:
+            
+            <oBrw>      No need to explain, it is oBrowse in question.
+            <aOriginal> Array holding original values of the columns before "SAVE" 
+                        is requested. It is sent to facilitate better control 
+                        on determining what needs to be saved in real.
+            <aModified> Array holding modified values of the columns.
+            <aCaptions> Array holding <oColumn:heading> property. This facilitates
+                        to recognize which data item needs to be updated.
+             
+            NOTE: Tbrowse does not know anything about the data source. Also columns
+                  in a browse can be ordered to any position. So it is difficult 
+                  to guess where a modified value needs be saved. Here comes the 
+                  importance of <oColumn:heading>. I believe, you all must be 
+                  providing unique headings to columns, and if not, please set 
+                  your code right to grab the power of GUI editing.
+
+         :openEditor( cTitle, lSaveOnLastGet, lDownAfterSave )
+            The method needs to be called by the application, generally detecing 
+            an event in :navigationBlock, but may be by other means also. This opens 
+            a modal dialog adjoining the right edge of browser viewport. Editor will 
+            display <cTitle> in the title-bar. The position and size will be saved 
+            for current session of underlying browser. Next invocation will position
+            it at last closing coordinates. Edotor is composed of a scrollable 
+            QFormLayout based form containing the GETs of columns data. At the bottom 
+            are 5 buttons with corresponding accelerator keys. Focus will be 
+            positioned on the first GET ( column ). Navigation of the GETs is 
+            per Harbour standards. WHEN, VALID and PICTURE instance variables are 
+            applied over the GETs. 
+
+            When last GET is hit by ENTER, <lSaveOnLastGet> [Defaults to TRUE], will 
+            be examined. If TRUE, the <lastGetBlock> is fired with 4 parameters, i.e.,
+            <oBrw><aOriginal><aModified><aCaptions>. A LOGICAL is expected as the 
+            return value of the <lastGetBlock>. If it is TRUE, no further action is 
+            taken. If FALSE, <oColumn:block> is fired with modified value as parameter.
+
+            Then <lDownAfterSave> [Defaults to TRUE] is examined. If TRUE, the browser
+            is moved with :down(), column values are gathered, GETs are populated 
+            with new row value. The process goes on until user closes the Editor.
+            Editor can be closed either by ESCAPing or clicking on X button.
+
+            The bottom area buttons offer following functionality:
+
+            <Save> <ALT+S        > Triggers "SAVE" action as described above.
+            <Down> <ALT+DownArrow> Moves the browser :down() and refresh the GETs.
+            <Up>   <ALT+UpArrow  > Moves the browser :up() and refresh the GETs.
+            <Btm>  <ALT+PageDown > Moves the browser :goBottom() and refresh the GETs.
+            <Top>  <ALT+PageUp   > Moves the browser :goTop() and refresh the GETs.
+
+            The design and layout of the EDITOR is not yet final and may undergo
+            needed changes as per user inputs.
+  
+  * hbqtwidgets/tests/browser.prg
+    + Added: needed code to demonstrate the above mechanism.
+       Press F12 to activate the Editor.
+
+    ; Enjoy, and play with new toy.
+
 2012-12-23 15:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/tests/validatormain.ui
     + Added: two more buttons to demonstrate one more way to fetch the GETs.

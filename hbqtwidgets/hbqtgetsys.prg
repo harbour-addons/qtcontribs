@@ -1130,14 +1130,14 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
 
 METHOD HbQtGet:preValidate()
 
-   LOCAL lWhen := .T.
+   LOCAL lWhen
 
    IF HB_ISBLOCK( ::preBlock )
       lWhen := Eval( ::preBlock, Self )
       __GetListLast( ::oGetList )
    ENDIF
 
-   RETURN lWhen
+   RETURN iif( HB_ISLOGICAL( lWhen ), lWhen, .T. )
 
 /*----------------------------------------------------------------------*/
 
@@ -1158,7 +1158,19 @@ METHOD HbQtGet:postValidate()
       __GetListLast( ::oGetList )
    ENDIF
 
+   lValid := iif ( HB_ISLOGICAL( lValid ), lValid, .T. )
+
    ::setColor( iif( lValid, "normal", "warning" ) )
+
+   IF lValid
+      IF ! Empty( ::oGetList )
+         IF ::oGetList:isLastGet( Self )
+            IF HB_ISBLOCK( ::oGetList:lastGetBlock() )
+               Eval( ::oGetList:lastGetBlock() )
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF
 
    RETURN lValid
 
@@ -1197,6 +1209,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    IF HB_ISBLOCK( SetKey( nHbKey ) )
       Eval( SetKey( nHbKey ) )
+      RETURN .T.
    ENDIF
 
    IF ::cClassName == "QCHECKBOX"
