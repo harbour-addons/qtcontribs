@@ -122,11 +122,15 @@ STATIC FUNCTION BrowseMe( oWnd )
    oColumn            := HbQtColumnNew( "Notes"      , {|| TEST->notes    } )
    oBrowse:addColumn( oColumn )
 
+   /* Tbrowse Methods */
    oBrowse:freeze := 1
-   oBrowse:toolbar := .T.
-   oBrowse:statusbar := .T.
-   oBrowse:statusMessage := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
-   oBrowse:editBlock := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
+
+   /* HbQtBrowse Extentions */
+   oBrowse:toolbar         := .T.
+   oBrowse:statusbar       := .T.
+   oBrowse:statusMessage   := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
+   oBrowse:editBlock       := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
+   oBrowse:searchBlock     := {|xValue,nColPos,oBrw| LookMySearch( xValue,nColPos,oBrw ) }
    oBrowse:navigationBlock := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
 
    RETURN oBrowse
@@ -225,4 +229,19 @@ STATIC FUNCTION TBPrev()
    endif
 
    RETURN lMoved
+
+
+STATIC FUNCTION LookMySearch( xValue,nColPos,oBrw )
+   LOCAL nRec
+
+   IF IndexOrd() == 1 .AND. oBrw:getColumn( nColPos ):heading == "Last Name"
+      nRec := RecNo()
+      IF ! dbSeek( Trim( xValue ) )
+         dbGoto( nRec )
+      ELSE
+         oBrw:refreshAll()
+      ENDIF
+   ENDIF
+
+   RETURN .T.
 

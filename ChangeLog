@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-25 17:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/tests/browdb.prg
+    + Added: how to SEARCH implementation. Missed from previous.
+
 2012-12-25 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * Version bump.
