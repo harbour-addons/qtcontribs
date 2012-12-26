@@ -67,6 +67,8 @@ THREAD STATIC t_sets := {=>}
 
 
 INIT PROCEDURE __initHbQtSets()
+   QResource():registerResource_1( hbqtres_hbqtwidgets() )
+
    t_sets[ _QSET_GETSFONT    ] := QFont( "Courier New", 10 )
    t_sets[ _QSET_LINESPACING ] := 6
    t_sets[ _QSET_NOMOUSABLE  ] := .F.
@@ -76,6 +78,10 @@ INIT PROCEDURE __initHbQtSets()
 EXIT PROCEDURE __exitHbQtSets()
    t_sets := NIL
    RETURN
+
+
+FUNCTION __hbqtImage( cName )
+   RETURN ":/hbqt/resources" + "/" + cName + ".png"
 
 
 FUNCTION HbQtSet( nSet, xValue )

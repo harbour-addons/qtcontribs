@@ -51,7 +51,7 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    Set( _SET_DATEFORMAT, "yyyy.mm.dd" )
 
-   USE ( cPath + "test.dbf" ) NEW SHARED READONLY VIA 'DBFCDX'
+   USE ( cPath + "test.dbf" ) NEW SHARED VIA 'DBFCDX'
    IF NetErr()
       Alert( "Could not open table!" )
       RETURN NIL
@@ -65,7 +65,7 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    oBrowse := HbQtBrowseNew( 0,0, 20, 80, oWnd, QFont( "Courier New", 10 ) )
 
-   oBrowse:colorSpec     := "N/W*, N/W, W+/R*, W+/B*, N/GR*, B+/GR*, N/R*"
+   oBrowse:colorSpec := "N/W*, N/W, W+/R*, W+/B*, N/GR*, B+/GR*, N/R*"
 
    /* Navigation Blocks */
    oBrowse:skipBlock           := {|n| DbSkipBlock( n ) }
@@ -89,11 +89,10 @@ STATIC FUNCTION BrowseMe( oWnd )
       oBrowse:phyPosBlock      := {| | OrdKeyNo()       }    /* Not a TBrowse METHOD */
    ENDIF
 
-   oColumn            := HbQtColumnNew( "Record #", {|| RecNo()         } )
-// oColumn:type       := XBPCOL_TYPE_FILEICON
+   oColumn            := HbQtColumnNew( "Record #"   , {|| RecNo()        } )
    oBrowse:addColumn( oColumn )
 
-   oColumn            := HbQtColumnNew( "Last Name", {|| TEST->last     } )
+   oColumn            := HbQtColumnNew( "Last Name"  , {|| TEST->last     } )
    oColumn:colorBlock := {|| iif( SubStr( TEST->first,1,1 ) $ "ANLH", { 6,2 }, { 1,2 } ) }
    oBrowse:addColumn( oColumn )
 
@@ -124,10 +123,59 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:addColumn( oColumn )
 
    oBrowse:freeze := 1
+   oBrowse:toolbar := .T.
+   oBrowse:statusbar := .T.
+   oBrowse:statusMessage := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
+   oBrowse:editBlock := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
+   oBrowse:navigationBlock := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
 
    RETURN oBrowse
 
-/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION HandleMyOptions( nKey,xData,oBrw )
+   LOCAL lHandelled := .T.
+
+   HB_SYMBOL_UNUSED( xData )
+
+   DO CASE
+
+   CASE nKey == K_F6
+      oBrw:freeze++
+   CASE nKey == K_F7
+      oBrw:freeze--
+   CASE nKey == K_F12
+      oBrw:edit( "Update Field Values", .T., .T. )
+   OTHERWISE
+      lHandelled := .F.
+   ENDCASE
+
+   RETURN lHandelled
+
+
+STATIC FUNCTION SaveMyRecord( aMod,aData,oBrw )
+   LOCAL cColumn, nField
+
+   IF dbRLock()
+      FOR EACH cColumn IN aData[ 2 ]
+         nField := cColumn:__enumIndex()
+         IF aMod[ nField ] != aData[ 1, nField ]   /* DATA Changed or Not */
+            SWITCH cColumn
+            CASE "First Name"                      /* We are interested IN editing these two fields only */
+               REPLACE TEST->first WITH aMod[ nField ]
+               EXIT
+            CASE "Last Name"
+               REPLACE TEST->last  WITH aMod[ nField ]
+               EXIT
+            ENDSWITCH
+         ENDIF
+      NEXT
+      dbCommit()
+      dbRUnlock()
+      oBrw:refreshCurrent()
+   ENDIF
+
+   RETURN .T.
+
 
 STATIC FUNCTION DbSkipBlock( n )
    LOCAL nSkipped := 0
@@ -147,7 +195,6 @@ STATIC FUNCTION DbSkipBlock( n )
 
    RETURN  nSkipped
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION TBNext()
    LOCAL nSaveRecNum := recno()
@@ -165,7 +212,6 @@ STATIC FUNCTION TBNext()
 
    RETURN lMoved
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION TBPrev()
    LOCAL nSaveRecNum := Recno()
@@ -179,6 +225,4 @@ STATIC FUNCTION TBPrev()
    endif
 
    RETURN lMoved
-
-/*----------------------------------------------------------------------*/
 

@@ -188,7 +188,8 @@ int HBQAbstractItemModel::columnCount( const QModelIndex & /*parent = QModelInde
 QModelIndex HBQAbstractItemModel::index( int row, int column, const QModelIndex & parent ) const
 {
    HB_SYMBOL_UNUSED( parent );
-   return createIndex( row, column, row * column );
+   //return createIndex( row, column, row * column );
+   return createIndex( row, column );
 }
 
 QModelIndex HBQAbstractItemModel::parent( const QModelIndex & /* child */ ) const

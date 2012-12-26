@@ -16,6 +16,122 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-25 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    * Version bump.
+
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+    ! Minor.
+
+  + hbqtwidgets/hbqtwidgets.qrc
+  + hbqtwidgets/resources/*.png
+    + Resource Images.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: hbqtwidgets.qrc
+
+  * hbqtwidgets/hbqtgetlist.prg
+    + Added: __hbqtImage( cPngWithoutExt )
+       The function can be used in appln also to obtain many
+       common usage images. This may eliminate the need to have 
+       application local images. Hopefully will reduce the burden
+       on application part.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Changed: :editBlock's parameters.
+       oBrw:editBlock := {| oBrw, aOrg, aMod, aCap | ... }
+         =>
+       oBrw:editBlock := {| aMod, {aOrg,aCap}, oBrw | ... }
+       
+       It is in accordance with decided protocol where any application
+       supplied codeBlock, implemented over and above TBrowse blocks, 
+       will be fired with three parameters. First parameter will represent 
+       the most expected return value, 2nd will contain any additional 
+       data important and ancilliary to the 1st param, and 3rd will 
+       always be browse object in evaluating the block.
+
+    % Changed: method :openEditor(...) => edit(...)
+               method :edit() => editCell()
+                 Confirms to general common sense.
+
+    + Implemented: ToolBar on top of the browser window. 
+       Toolbar can be toggled to be displayed/hidden. Toolbar contains common 
+       actions a user always expect off a GUI browser, viz., 
+
+         Edit | Print | Search | GoTop | Up | Down | GoBottom | PanHome | Left |
+         Right | PanEnd | ComboToColumn | MoveFirst | MoveLeft | MoveRight | MoveLast
+       
+       Toggling the display of toolbar is controlled via ACCESS | ASSIGN method :toolbar.
+
+         oBrw:toolbar := ! oBrw:toolbar
+
+       By default ToolBar is hidden.
+
+       <Print> option is not active yet.
+
+    + Implemented: activation/execution of context menu. This is controlled as:
+
+         oBrw:contextMenuBlock := {| oPos, NIL, oBrw | ... }
+
+       When context menu request is detected, HbQtBrowse will look for :contextMenuBlock,
+       and if found, will evaluate it with global mouse position (QPoint) as 1st param,
+       NIL as 2nd, and Self as 3rd. It will be the responsibility of appln to respond 
+       to this event. 
+
+       And if :contextMenuBlock will not be supplied by the appln, a default context 
+       menu will be executed with some of the actions available on the toolbar.
+
+    + Implemented: StatusBar at the bottom of the browse window.
+       Again it is controlled by application, like:
+
+         oBrw:statusbar := .T. 
+           OR
+         oBrw:statusbar := ! oBrw:statusbar
+
+       To display message on the StatusBar:
+
+         oBrw:statusMessage := cMessage
+
+       To clear the StatusBar:
+
+         oBrw:statusMessage := ""       
+
+       By default ToolBar is hidden.
+    
+    + Implemented: SEARCH feature, interface and building blocks only.
+       Application will take responsibility to carry on the search operation.
+       HbQtBrowser merely provides the interface to communicate between browser 
+       interface and application code. How ...
+
+       1. Appln will post a block as:
+
+            oBrw:searchBlock := {|xSearch, nColPos, oBrw| ... }
+
+       2. The SEARCH event could be started either by browser interface or 
+          application inside :navigationBlock. 
+           
+          Interface: Click on the <Search> toolbar button.
+          Application: calling oBrw:search( xValue ).
+
+          In both instances, a single GET in a modal window will be presented.
+          If appln has initiated the SEARCH, and has provided <xValue> in 
+          :search( xValue ) call, then this variable is GET. If click on 
+          <Search> icon has initiated it, or <xValue> == NIL, then the 
+          value contained in current hilighted cell of browser will be GET.
+          In the latter case, column's PICTURE is also applied to it.
+          GET will terminate on RETURN press, and searchBlock will be evaluated
+          with GET value as 1st param. From here it is the responsibility of 
+          the appln to perform the actual search.
+
+          The demo code is included in tests/browser.prg and test/browdb.prg.
+          browser.prg addresses it for an array, while browdb.prg on a table.
+
+  * hbqtwidgets/tests/browdb.prg
+  * hbqtwidgets/tests/browser.prg
+    + Added: code to demonstrate above features.
+
+  ; NEXT: Printing a browser.
+
 2012-12-23 23:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtstd.ch
     + Added: clause LASTGETBLOCK <lastGetBlock>
