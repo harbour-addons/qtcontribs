@@ -16,6 +16,58 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-26 15:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: Browser Printing. How...
+
+       Activation: 
+         Application code - oBrw:print( cPrinter, lOpenPrintDialog )
+         Interface        - <Print> icon on the browser toolbar
+
+       After Activation:
+         Looks for oBrw:title. If a value is found, then it is interpreted as
+           SWITCH valtype( ::title )
+           CASE "C"
+              aTitle := hb_aTokens( ::title, ";" ) - Just like Alert().
+           CASE ""A"
+              aTitle := ::title
+           CASE "B"
+              aTitle := Eval( ::title, NIL, NIL, oBrw )
+              Again <aTitle> is tested for string or array, and treated as above.
+           ENDSWITCH
+         <aTitle> defaults to { "Browsed Data" }
+         <aTitle> is then printed on top of each page printed.
+         First 5 Lines are significant. If more are supplied, those are ignored.
+
+         Next line after <aTitle> is done with is :
+           DtoC( Date() ) + " " + Time() + " " + "Page:" + hb_ntos( #pageNo )
+         
+         Next follow Headers Line.
+
+         Then follows the actual data.
+
+         Columns are printed exactly as seen in the browser, with same font, 
+         picture and colors. So it gives a WYSIWYG look. Most of the time printed 
+         output is pleasing.
+
+         The only those columns, counted from left, make up to the printed output 
+         as many fit into the page width for printer in question. To start with 
+         PORTRAIT mode is selected, but you can always get LANDSCAPE output 
+         from the PREVIEWER dialog. More columns then will be automatically 
+         accomodated.
+
+         I found a nasty bug, apparently in Qt itself, as follows:
+         If QPrintDialog is executed, either inside browse code, or inside
+         previwer window, application GPFs. So far I have not found a solution
+         what is happening. It may be due that my laptop is not actively 
+         connected to a printer and hence Qt has some issues there. Later 
+         I will revisit the code in my office to get more clues. Till 
+         then...
+
+         If you find motivation to debug, please uncomment some code in 
+         hbqtbrowse.prg and recompile yourself. If you find any solution,
+         please report me back.
+
 2012-12-25 17:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/tests/browdb.prg
     + Added: how to SEARCH implementation. Missed from previous.

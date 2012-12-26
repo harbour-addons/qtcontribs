@@ -176,7 +176,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    METHOD editBlock( bBlock )                     SETGET
    METHOD search( xValue )
-   METHOD print()
+   METHOD print( cPrinter, lOpenPrintDialog )
    METHOD searchBlock( bBlock )                   SETGET
    METHOD contextMenuBlock( bBlock )              SETGET
    ACCESS toolbar                                 INLINE ::oToolBar:isVisible()
@@ -184,6 +184,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    ACCESS statusbar                               INLINE ::oStatusBar:isVisible()
    ASSIGN statusbar                               METHOD manageStatusbar
    ASSIGN statusMessage( cMessage )               INLINE iif( Empty( cMessage ), ::oStatusBar:clearMessage(), ::oStatusBar:showMessage( cMessage ) )
+   ACCESS title                                   METHOD getTitle
+   ASSIGN title                                   METHOD setTitle
 
 PROTECTED:
 
@@ -196,6 +198,7 @@ PROTECTED:
    METHOD supplyInfo( nMode, nCall, nRole, nX, nY )
    METHOD compatColor( nColor )
    METHOD compatIcon( cIcon )
+   METHOD compatBrush( nColor )
 
    DATA   oParent
    DATA   oFont
@@ -290,6 +293,7 @@ PROTECTED:
 
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
+   DATA   hBrushes                                INIT {=>}
 
    DATA   aCellValuesA  AS ARRAY                  INIT {}   // cell values buffers for each record - actual
 
@@ -367,6 +371,13 @@ PROTECTED:
    METHOD printPreview( oPrinter )
    METHOD paintRequested( oPrinter )
    METHOD printReport( oPrinter )
+
+   METHOD getTitle()
+   METHOD setTitle( xTitle )
+   METHOD drawTitle( oPainter, aTitle, nT, nRH, nCols, nPage, nML, aX, nF, aLen, nPxlX, nPxlW, nM, nAW, nLeading )
+   DATA   xTitle
+   DATA   oPenBlack
+   DATA   oPrinter
 
    ENDCLASS
 
@@ -1352,20 +1363,21 @@ METHOD HbQtBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
 
 
 METHOD HbQtBrowse:compatColor( nColor )
-
    IF ! hb_hHasKey( ::hColors, nColor )
       ::hColors[ nColor ] := QColor( nColor )
    ENDIF
-
    RETURN ::hColors[ nColor ]
 
+METHOD HbQtBrowse:compatBrush( nColor )
+   IF ! hb_hHasKey( ::hBrushes, nColor )
+      ::hBrushes[ nColor ] := QBrush( nColor )
+   ENDIF
+   RETURN ::hBrushes[ nColor ]
 
 METHOD HbQtBrowse:compatIcon( cIcon )
-
    IF ! hb_hHasKey( ::hIcons, cIcon )
       ::hIcons[ cIcon ] := QIcon( QPixmap( Trim( cIcon ) ) )
    ENDIF
-
    RETURN ::hIcons[ cIcon ]
 
 
@@ -2392,9 +2404,6 @@ METHOD HbQtBrowse:buildToolbar()
    RETURN Self
 
 
-METHOD HbQtBrowse:print()
-   RETURN Self
-
 METHOD HbQtBrowse:buildActions()
 
    WITH OBJECT ::oComboColumn := QComboBox()
@@ -2555,65 +2564,234 @@ METHOD HbQtBrowse:manageToolbar( lShow )
    RETURN ::oToolbar:isVisible()
 
 
-METHOD HbQtBrowse:printPreview( oPrinter )
-   LOCAL qDlg
+METHOD HbQtBrowse:getTitle()
+   RETURN ::xTitle
 
-   oPrinter := QPrinter()
+METHOD HbQtBrowse:setTitle( xTitle )
+   IF HB_ISCHAR( xTitle ) .OR. HB_ISARRAY( xTitle ) .OR. HB_ISBLOCK( xTitle )
+      ::xTitle := xTitle
+   ENDIF
+   RETURN ::xTitle
+
+
+METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
+   LOCAL i, oPrinterInfo, oList, oPrinter
+
+   hb_default( @lOpenPrintDialog, .T. )
+
+   IF HB_ISCHAR( cPrinter ) .AND. ! Empty( cPrinter )
+      oPrinterInfo := QPrinterInfo()
+      oList := oPrinterInfo:availablePrinters()
+      FOR i := 0 TO oList:size() - 1
+         IF cPrinter == oList:at( i ):printerName()
+            oPrinter := QPrinter( oList:at( i ) )
+         ENDIF
+      NEXT
+   ENDIF
+
+#if 0    /* Not known yet, application crashed IF QPrintDialog is opened and returned printer is used */
+   IF Empty( oPrinter )
+      //oDlg := QPrintDialog( ::oWidget )
+      oDlg := QPrintDialog()
+   ELSEIF lOpenPrintDialog
+      //oDlg := QPrintDialog( oPrinter, ::oWidget )
+      oDlg := QPrintDialog( oPrinter )
+   ENDIF
+   IF HB_ISOBJECT( oDlg )
+      oDlg:connect( "accepted(QPrinter*)", {|oPrn| oPrinter := oPrn } )
+      oDlg:exec()
+   ENDIF
+
+   HB_TRACE( HB_TR_ALWAYS, __objGetClsName( oPrinter ) )
+#endif
+
+   IF Empty( oPrinter )
+      oPrinter := QPrinter()
+      oPrinter:setOutputFormat( QPrinter_PdfFormat )     /* Until issue WITH QPrintDialog() is resolved, Printing will CREATE a .PDF file on disk */
+      oPrinter:setOrientation( QPrinter_Portrait )
+      oPrinter:setPaperSize( QPrinter_A4 )
+//    oPrinter:setFullPage( .T. )
+   ENDIF
+
+   ::printPreview( oPrinter )
 
 #if 0
-   qInfo := QPrinterInfo( oPrinter )
-   qList := qInfo:availablePrinters()
-   FOR i := 0 TO qList:size() - 1
-      qStr := qList:at( i )
-   NEXT
+   IF HB_ISOBJECT( oDlg )
+//    oDlg:setParent( QWidget() )
+   ENDIF
 #endif
-   oPrinter:setOutputFormat( QPrinter_PdfFormat )
-   oPrinter:setOrientation( ::qScene:orientation() )
-   oPrinter:setPaperSize( ::qScene:pageSize() )
-   // oPrinter:setFullPage( .t. )
 
-   qDlg := QPrintPreviewDialog( oPrinter, ::qView )
-   qDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+   RETURN Self
 
-   qDlg:setWindowTitle( "HBReportGenerator : " + iif( !empty( ::cSaved ), ::cSaved, "Untitled" ) )
-   qDlg:move( 20, 20 )
-   qDlg:resize( 400, 600 )
-   qDlg:exec()
-   qDlg:disconnect( "paintRequested(QPrinter*)" )
 
-   RETURN NIL //qStr
+METHOD HbQtBrowse:printPreview( oPrinter )
+   LOCAL oDlg
+
+   ::oPenBlack := QPen( Qt_black, 1, Qt_SolidLine, Qt_SquareCap, Qt_BevelJoin )
+
+   oDlg := QPrintPreviewDialog( oPrinter )//, ::oWidget )
+   oDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+
+   oDlg:setWindowTitle( "TBrowse Printed" )
+   oDlg:move( 20, 20 )
+   oDlg:resize( 400, 600 )
+   oDlg:exec()
+// oDlg:setParent( QWidget() )
+
+   RETURN NIL
 
 
 METHOD HbQtBrowse:paintRequested( oPrinter )
    ::printReport( oPrinter )
    RETURN Self
 
-#define TO_MMS( n )   ( ( n ) * 10 / 25.4 )
 
 METHOD HbQtBrowse:printReport( oPrinter )
-   LOCAL oPainter, a_, oRectF, oHqrObject, oTransformation
+   LOCAL oPainter, i, oFM, nH, nW, nRH, nAW, nRows, nCols, nT, n, aX, nX, cVal, nM, nF, xTmp
+   LOCAL oPage, oPaper, nMX, nMY, nML, nMT, nPxlX, nPxlW, nTtlMax, nPage, aLen, nLeading
+   LOCAL aTitle := {}
+   LOCAL nCGap := 2
+
+   IF HB_ISCHAR( ::title )
+      aTitle := hb_ATokens( ::title, ";" )
+   ELSEIF HB_ISARRAY( ::title )
+      aTitle := ::title
+   ELSEIF HB_ISBLOCK( ::title )
+      xTmp := Eval( ::title, NIL,  NIL, Self )
+      IF HB_ISCHAR( xTmp )
+         aTitle := hb_ATokens( xTmp, ";" )
+      ELSEIF HB_ISARRAY( xTmp )
+         aTitle := xTmp
+      ENDIF
+   ENDIF
+   IF Empty( aTitle ) .OR. ! HB_ISARRAY( aTitle )
+      aTitle := {}
+      AAdd( aTitle, "Browsed Data" )
+   ENDIF
+   IF Len( aTitle ) > 5
+      ASize( aTitle, 5 )
+   ENDIF
+   nTtlMax := 0
+   AEval( aTitle, {|e| nTtlMax := Max( nTtlMax, Len( e ) ) } )
 
    oPainter := QPainter()
-   oPainter:begin( oPrinter )
+   IF ! oPainter:begin( oPrinter )
+      Alert( "Printing could not been started!" )
+      RETURN NIL
+   ENDIF
 
-   oPainter:setWindow( ::qScene:paperRect() )
-   oPainter:setViewPort( 0, 0, oPrinter:width(), oPrinter:height() )
-   FOR EACH a_ IN ::aObjects
-      IF hb_hHasKey( ::hItems, a_[ 3 ] )
-         oHqrObject := ::hItems[ a_[ 3 ] ]
-         oRectF     := oHqrObject:geometry()
-         oRectF     := QRectF( TO_MMS( oRectF:x() ), TO_MMS( oRectF:y() ), TO_MMS( oRectF:width() ), TO_MMS( oRectF:height() ) )
+   oPainter:setFont( ::oFont )
 
-         oTransformation := oHqrObject:transform()
+   oPaper := oPrinter:paperRect()
+   oPage  := oPrinter:pageRect()
 
-         oTransformation:translate( 0,0 )
-         oPainter:resetMatrix()
-         oPainter:setWorldTransform( oTransformation )
+   nMX   := oPaper:width()  - oPage:width()
+   nMY   := oPaper:height() - oPage:height()
 
-         oHqrObject:draw( oPainter, oRectF, .f. )
+   nW    := oPrinter:width()  - nMX
+   nH    := oPrinter:height() - nMY
+
+   oFM   := QFontMetrics( oPainter:font() )
+   nAW   := oFM:averageCharWidth()
+   nRH   := oFM:lineSpacing()
+   nLeading := oFM:descent() + oFM:leading() + 1
+
+   nRows := Int( nH / nRH )
+   nCols := Int( nW / nAW )
+
+   nF := 0
+   nX := 0
+   aX := {}
+   aLen := {}
+   AAdd( aX, 0 )
+   FOR i := 1 TO ::colCount
+      cVal := ::cellValue( 1, i )
+      IF nX + Len( cVal ) > nCols
+         EXIT
       ENDIF
+      nX := nX + Len( cVal ) + nCGap
+      AAdd( aLen, Len( cVal ) )
+      AAdd( aX, nX )
+      nF++
    NEXT
+   nX  -= nCGap
+   nM  := Int( ( nCols - nX ) / 2 )
+   nML := nMX / 2
+   nMT := nMY / 2
+
+   nPxlX := nML + ( nM * nAW )
+   nPxlW := nX * nAW
+
+   nPage := 1
+   nT  := nMT
+   nT := ::drawTitle( oPainter, aTitle, nT, nRH, nCols, nPage, nML, aX, nF, aLen, nPxlX, nPxlW, nM, nAW, nLeading )
+
+   /* 1 Top Line, 1 bottom line, title lines - minimum 1 - paging info - headings - line */
+   nRows -= 1 + 1 + 1 + Len( aTitle ) + 1 + 1
+   n := 0
+   ::goTop()
+   DO WHILE .T.
+      IF n > nRows
+         oPainter:setPen( ::oPenBlack )
+         oPainter:drawLine( nPxlX, nT-nRH/2, nPxlX + nPxlW, nT-nRH/2 )
+         //
+         IF ! oPrinter:newPage()
+            Alert( "Printer misbehaving, exiting printing!" )
+            EXIT
+         ENDIF
+         //
+         nPage++
+         nT := nMT
+         nT := ::drawTitle( oPainter, aTitle, nT, nRH, nCols, nPage, nML, aX, nF, aLen, nPxlX, nPxlW, nM, nAW, nLeading )
+         n := 0
+      ENDIF
+      ::down()
+      IF ::hitBottom
+         EXIT
+      ENDIF
+      FOR i := 1 TO nF
+         oPainter:fillRect( nML + ( ( nM + aX[ i ] ) * nAW ), nT-nRH+nLeading, aLen[ i ] * nAW, nRH, ;
+                              __hbqtHbColorToQtValue( ::colorValue( ::cellColor( ::rowPos, i )[ 1 ] ), Qt_BackgroundRole ) )
+         oPainter:setPen( ::compatColor( __hbqtHbColorToQtValue( ::colorValue( ::cellColor( ::rowPos, i )[ 1 ] ), Qt_ForegroundRole ) ) )
+         oPainter:drawText( nML + ( ( nM + aX[ i ] ) * nAW ), nT, ::cellValue( ::rowPos, i ) )
+      NEXT
+      n++
+      nT += nRH
+   ENDDO
+   IF nT < nH
+      oPainter:setPen( ::oPenBlack )
+      oPainter:drawLine( nPxlX, nT-nRH/2, nPxlX + nPxlW, nT-nRH/2 )
+   ENDIF
+
    oPainter:end()
 
    RETURN Self
+
+
+METHOD HbQtBrowse:drawTitle( oPainter, aTitle, nT, nRH, nCols, nPage, nML, aX, nF, aLen, nPxlX, nPxlW, nM, nAW, nLeading )
+   LOCAL cPage := DToC( Date() ) + " " + Time() + " Page:" + hb_ntos( nPage )
+   LOCAL cText, i, nn
+
+   oPainter:setPen( ::oPenBlack )
+
+   FOR EACH cText IN aTitle
+      oPainter:drawText( nML, nT, PadC( cText, nCols ) )
+      nT += nRH
+   NEXT
+   oPainter:drawText( nML, nT, PadC( cPage, nCols ) )
+   nT += nRH
+   oPainter:drawLine( nPxlX, nT-nRH/2, nPxlX + nPxlW, nT-nRH/2 )
+   nT += nRH
+
+   FOR i := 1 TO nF
+      nN := nML + ( ( nM + aX[ i ] ) * nAW )
+      oPainter:fillRect( nN, nT-nRH+nLeading-nRH/4, aLen[ i ] * nAW, nRH, QColor( 220,220,220 ) )
+      oPainter:drawText( nN, nT-nRH/4, PadC( ::columns[ i ]:heading, aLen[ i ] ) )
+   NEXT
+   nT += nRH
+
+   oPainter:drawLine( nPxlX, nT-nRH/2, nPxlX + nPxlW, nT-nRH/2 )
+   nT += nRH
+
+   RETURN nT
 
