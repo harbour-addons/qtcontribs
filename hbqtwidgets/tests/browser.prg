@@ -78,11 +78,13 @@ FUNCTION Main()
    hb_DispBox( 4, 4, 17, 31, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )     /* Does nothing, but no ERROR */
 
    /* Make the toolbar visible */
-   oBrowse:toolbar := .T.
-   oBrowse:statusbar := .T.
+   oBrowse:toolbar   := .T.                       /* I always longed for this interface */
+   oBrowse:statusbar := .T.                       /* Yes, we want statusbar messages */
+   oBrowse:editable  := .F.                       /* User must not be able to edit via edit button */
+   oBrowse:statusMessage := "Ready !"
 
    oMain:setCentralWidget( oBrowse:oWidget )
-   oMain:resize( 360, 300 )
+   oMain:resize( 360, 360 )
    oMain:show()
 
    QApplication():exec()
@@ -131,7 +133,7 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
       oBrowse:moveEnd()                /* HbQt Entention */
 
    CASE nKey == K_F12
-      oBrowse:edit( "Update Info", .T., .T. )
+      oBrowse:edit( "Update Info", .T., .T. )  /* Even IF :editable is OFF, still application code can initiate it */
 
    CASE nKey > 32 .AND. nKey < 127
       oBrowse:editCell()               /* HbQt Entention */

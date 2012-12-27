@@ -115,5 +115,9 @@
     <file>resources/navigate-left-most.png</file>
     <file>resources/navigate-right.png</file>
     <file>resources/navigate-right-most.png</file>
+    <file>resources/minus-1.png</file>
+    <file>resources/minus-2.png</file>
+    <file>resources/plus-1.png</file>
+    <file>resources/plus-2.png</file>
   </qresource>
 </RCC>

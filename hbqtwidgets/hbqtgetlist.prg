@@ -602,3 +602,9 @@ FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
    RETURN 0
 
 
+FUNCTION __hbqtGetWindowFrameWidthHeight( oWnd )
+   LOCAL oRectFG := oWnd:frameGeometry()
+   LOCAL oRectG  := oWnd:geometry()
+
+   RETURN { oRectFG:width() - oRectG:width(), oRectFG:height() - oRectG:height() }
+

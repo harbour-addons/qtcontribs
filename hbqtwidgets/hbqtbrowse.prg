@@ -186,6 +186,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN statusMessage( cMessage )               INLINE iif( Empty( cMessage ), ::oStatusBar:clearMessage(), ::oStatusBar:showMessage( cMessage ) )
    ACCESS title                                   METHOD getTitle
    ASSIGN title                                   METHOD setTitle
+   ACCESS editable                                METHOD getEditable
+   ASSIGN editable                                METHOD setEditable
 
 PROTECTED:
 
@@ -209,8 +211,8 @@ PROTECTED:
    DATA   oModelIndex                             INIT   QModelIndex()
    DATA   oVHeaderView
    DATA   oHeaderView
-   DATA   oVScrollBar                             INIT   QScrollBar()
-   DATA   oHScrollBar                             INIT   QScrollBar()
+   DATA   oVScrollBar
+   DATA   oHScrollBar
    DATA   oViewport
    DATA   pCurIndex
 
@@ -290,6 +292,7 @@ PROTECTED:
    METHOD manageCommitData( qWidget )
    METHOD manageEditorClosed( pWidget, nHint )
    METHOD manageScrollContents( nX, nY )
+   METHOD manageColumnMoved( nLogicalIndex, nOldVisualIndex, nNewVisualIndex )
 
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
@@ -325,6 +328,7 @@ PROTECTED:
    DATA   lDownAfterSave
    DATA   aGetList
    DATA   aPosSize
+   DATA   lEditable
 
    METHOD execSearch()
    //
@@ -365,6 +369,11 @@ PROTECTED:
    DATA   oComboColumn
    DATA   oComboColumnM
 
+   DATA   oActFreezeLPlus
+   DATA   oActFreezeLMinus
+   DATA   oActFreezeRPlus
+   DATA   oActFreezeRMinus
+
    METHOD buildToolbar()
    METHOD toColumn( cColumn )
 
@@ -399,54 +408,53 @@ METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
 
 METHOD HbQtBrowse:create()
-   LOCAL qRect
 
    ::oWidget := QFrame( ::oParent )
 
    /* Important here as other parts will be based on it*/
    ::oWidget:resize( ::oParent:width(), ::oParent:height() )
 
+   /* Toolbar actions */
    ::buildActions()
-
-   /* Subclass of QTableView */
-   ::oTableView := HBQTableView()
-   ::oTableView:setFont( ::oFont )
-   /* Set block to receive protected information */
-   ::oTableView:hbSetBlock( {|p,p1,p2| ::execSlot( __ev_tableViewBlock_main__, p, p1, p2 ) } )
-   /* Some parameters */
-   ::oTableView:setTabKeyNavigation( .t. )
-   ::oTableView:setShowGrid( .t. )
-   ::oTableView:setGridStyle( ::gridStyle )   /* to be based on column definition */
-   ::oTableView:setSelectionMode( QAbstractItemView_SingleSelection )
-   ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
-   ::oTableView:setAlternatingRowColors( .t. )
-   ::oTableView:setContextMenuPolicy( Qt_CustomContextMenu )
-
-   /* Finetune Horizontal Scrollbar */
-   ::oTableView:setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-   //
-   ::oHScrollBar := QScrollBar()
-   ::oHScrollBar:setOrientation( Qt_Horizontal )
-
-   /*  Replace Vertical Scrollbar with our own */
-   ::oTableView:setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-   //
-   ::oVScrollBar := QScrollBar()
-   ::oVScrollBar:setOrientation( Qt_Vertical )
-
-   /*  Veritical Header because of Performance boost */
-   ::oVHeaderView := ::oTableView:verticalHeader()
-   ::oVHeaderView:hide()
-
-   /*  Horizontal Header Fine Tuning */
-   ::oHeaderView := ::oTableView:horizontalHeader()
-   ::oHeaderView:setHighlightSections( .F. )
 
    /* .DBF Manipulation Model */
    ::oDbfModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 141, t, role, x, y ) } )
 
-   /*  Attach Model with the View */
-   ::oTableView:setModel( ::oDbfModel )
+   /* Subclass of QTableView */
+   WITH OBJECT ::oTableView := HBQTableView()
+      /* Set block to receive protected information */
+      :hbSetBlock( {|p,p1,p2| ::execSlot( __ev_tableViewBlock_main__, p, p1, p2 ) } )
+      /* Some parameters */
+      :setFont( ::oFont )
+      :setTabKeyNavigation( .t. )
+      :setShowGrid( .t. )
+      :setGridStyle( ::gridStyle )                /* to be based on column definition */
+      :setSelectionMode( QAbstractItemView_SingleSelection )
+      :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+      :setAlternatingRowColors( .t. )
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setEditTriggers( QAbstractItemView_AnyKeyPressed )
+      /* Finetune Horizontal Scrollbar */
+      :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      /* Replace Vertical Scrollbar with our own */
+      :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      /* Veritical Header because of Performance boost */
+      :verticalHeader():hide()
+      /* Attach Model with the View */
+      :setModel( ::oDbfModel )
+   ENDWITH
+
+   ::oHScrollBar := QScrollBar()
+   ::oHScrollBar:setOrientation( Qt_Horizontal )
+
+   ::oVScrollBar := QScrollBar()
+   ::oVScrollBar:setOrientation( Qt_Vertical )
+
+   /*  Horizontal Header Fine Tuning */
+   WITH OBJECT ::oHeaderView := ::oTableView:horizontalHeader()
+      :setHighlightSections( .F. )
+      :setMovable( .T. )                /* Needs more time TO investigae Qt behvior - first efforts have been futile */
+   ENDWITH
 
    /*  Horizontal Footer */
    ::oFooterModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 142, t, role, x, y ) } )
@@ -466,10 +474,11 @@ METHOD HbQtBrowse:create()
    /*  Widget for ::setRightFrozen( aColumns )  */
    ::buildRightFreeze()
 
+   /* Toolbar hosting navigational actions */
    ::buildToolbar()
 
    WITH OBJECT ::oStatusBar := QStatusBar( ::oWidget )
-//      :setFont( ::oFont )
+//    :setFont( ::oFont )                         /* Should we keep it as is ? */
       :hide()
    ENDWITH
 
@@ -498,18 +507,15 @@ METHOD HbQtBrowse:create()
 
    ::oWidget:show()
 
-
    /* Viewport */
    ::oViewport := ::oTableView:viewport()
-
-   qRect := ::oWidget:geometry()
-   ::oWidget:setGeometry( qRect )
-
-   /* Handle the delegate */
+#if 0
+   /* Why we need it ? */
+   ::oWidget:setGeometry( ::oWidget:geometry() )
+#endif
+   /* Handle the delegate - but how TO ? */
    ::qDelegate := QItemDelegate()
    ::oTableView:setItemDelegate( ::qDelegate )
-
-   ::oTableView:setEditTriggers( QAbstractItemView_AnyKeyPressed )
 
    ::connect()
 
@@ -524,15 +530,19 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    ::TBrowse:doConfigure()
 
-   IF ! ::lHScroll
-      ::oHScrollBar:hide()
-   ELSE
-      ::oHScrollBar:show()
+   IF HB_ISOBJECT( ::oHScrollBar )
+      IF ! ::lHScroll
+         ::oHScrollBar:hide()
+      ELSE
+         ::oHScrollBar:show()
+      ENDIF
    ENDIF
-   IF ! ::lVScroll
-      ::oVScrollBar:hide()
-   ELSE
-      ::oVScrollBar:show()
+   IF HB_ISOBJECT( ::oVScrollBar )
+      IF ! ::lVScroll
+         ::oVScrollBar:hide()
+      ELSE
+         ::oVScrollBar:show()
+      ENDIF
    ENDIF
 
    lShowFooter := .F.
@@ -767,7 +777,6 @@ METHOD HbQtBrowse:connect()
    ::oTableView       : connect( QEvent_KeyPress                     , {|oKeyEvent| ::manageKeyPress( oKeyEvent )                      } )
    ::oWidget          : connect( QEvent_Resize                       , {|         | ::manageFrameResized(), .T.                        } )
 
-
    ::oLeftHeaderView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
    ::oLeftFooterView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
 
@@ -781,9 +790,11 @@ METHOD HbQtBrowse:connect()
 
    ::oVScrollBar      : connect( "actionTriggered(int)"              , {|i      | ::execSlot( __ev_vertscroll_via_user__      , i    ) } )
    ::oVScrollBar      : connect( "sliderReleased()"                  , {|i      | ::execSlot( __ev_vertscroll_sliderreleased__, i    ) } )
-
+#if 0
    ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
+#endif
+   ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )
 
    ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::manageCommitData( p )                              } )
    ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1 | ::manageEditorClosed( p, p1 )    } )
@@ -1405,10 +1416,14 @@ METHOD HbQtBrowse:setHorzScrollBarRange( lPageStep )
 
    hb_default( @lPageStep, .F. )
 
-   ::oHScrollBar:setMinimum( 0 )
-   ::oHScrollBar:setMaximum( ::colCount - 1 )
-   ::oHScrollBar:setSingleStep( 1 )
-   ::oHScrollBar:setPageStep( 1 )
+   IF HB_ISOBJECT( ::oHScrollBar )
+      WITH OBJECT ::oHScrollBar
+         :setMinimum( 0 )
+         :setMaximum( ::colCount - 1 )
+         :setSingleStep( 1 )
+         :setPageStep( 1 )
+      ENDWITH
+   ENDIF
 
    RETURN Self
 
@@ -1889,14 +1904,14 @@ METHOD HbQtBrowse:left()
 
 METHOD HbQtBrowse:right()
    LOCAL n, n1, n2, nLnWidth, nCol
-   LOCAL lUpdate := .f.
+   LOCAL lUpdate := .F.
 
    IF ::colPos < ::colCount
       nCol := ::colPos
 
       DO WHILE ++nCol <= ::colCount
          IF !( ISFROZEN( nCol ) )
-            lUpdate := .t.
+            lUpdate := .T.
             EXIT
          ENDIF
       ENDDO
@@ -1907,6 +1922,7 @@ METHOD HbQtBrowse:right()
          n  := ::oHeaderView:sectionViewportPosition( ::colPos - 1 )
          n1 := ::oHeaderView:sectionSize( ::colPos-1 )
          n2 := ::oViewport:width()
+
          IF n + n1 > n2
             nLnWidth := ::oTableView:lineWidth()
             IF n1 > n2
@@ -1918,9 +1934,9 @@ METHOD HbQtBrowse:right()
                ::oFooterView:setOffset( ::oFooterView:offSet()+(n1-(n2-n)+1) - nLnWidth )
 
             ENDIF
-            ::setCurrentIndex( .t. )
+            ::setCurrentIndex( .T. )
          ELSE
-            ::setCurrentIndex( .f. )
+            ::setCurrentIndex( .F. )
          ENDIF
 
          ::oHScrollBar:setValue( ::colPos - 1 )
@@ -2043,6 +2059,23 @@ METHOD HbQtBrowse:panRight()
    RETURN Self
 
 
+METHOD HbQtBrowse:manageColumnMoved( nLogicalIndex, nOldVisualIndex, nNewVisualIndex )
+   LOCAL save_col := ::getColumn( nOldVisualIndex + 1 )
+
+   HB_SYMBOL_UNUSED( nLogicalIndex )
+
+   ::delColumn( nOldVisualIndex + 1 )
+   IF nOldVisualIndex > nNewVisualIndex    /* Moved to left */
+      ::insColumn( nNewVisualIndex + 1, save_col )
+   ELSE
+      ::insColumn( nNewVisualIndex, save_col )
+   ENDIF
+   ::configure()
+   ::refreshAll()
+
+   HB_TRACE( HB_TR_ALWAYS, nOldVisualIndex, nNewVisualIndex )
+   RETURN Self
+
 METHOD HbQtBrowse:moveLeft()
    LOCAL save_col, col_to_move := ::colPos
 
@@ -2050,8 +2083,7 @@ METHOD HbQtBrowse:moveLeft()
       save_col := ::getColumn( col_to_move )
       ::setColumn( col_to_move, ::getcolumn( col_to_move - 1 ) )
       ::setColumn( col_to_move - 1, save_col )
-      ::left()
-      ::refreshAll()
+      QApplication():sendEvent( ::oTableView, QKeyEvent( QEvent_KeyPress, Qt_Key_Left, Qt_NoModifier ) )
    ENDIF
 
    RETURN col_to_move > 1
@@ -2064,8 +2096,7 @@ METHOD HbQtBrowse:moveRight()
       save_col := ::getColumn( col_to_move )
       ::setColumn( col_to_move, ::getColumn( col_to_move + 1 ) )
       ::setColumn( col_to_move + 1, save_col )
-      ::right()
-      ::refreshall()
+      QApplication():sendEvent( ::oTableView, QKeyEvent( QEvent_KeyPress, Qt_Key_Right, Qt_NoModifier ) )
    ENDIF
 
    RETURN col_to_move < ::colCount
@@ -2078,32 +2109,40 @@ METHOD HbQtBrowse:moveHome()
       save_col := ::getColumn( col_to_move )
       ::delColumn( col_to_move )
       ::insColumn( 1, save_col )
-      ::firstCol()
+      QApplication():sendEvent( ::oTableView, QKeyEvent( QEvent_KeyPress, Qt_Key_Home, Qt_ControlModifier ) )
    ENDIF
 
    RETURN col_to_move > 1
 
 
 METHOD HbQtBrowse:moveEnd()
-
    LOCAL save_col, col_to_move := ::colPos
 
    IF col_to_move < ::colCount
       save_col := ::getColumn( col_to_move )
       ::addColumn( save_col )
       ::delColumn( col_to_move )
-      ::lastCol()
+      QApplication():sendEvent( ::oTableView, QKeyEvent( QEvent_KeyPress, Qt_Key_End, Qt_ControlModifier ) )
    ENDIF
 
    RETURN col_to_move < ::colCount
 
 
+METHOD HbQtBrowse:getEditable()
+   RETURN ::lEditable
+
+METHOD HbQtBrowse:setEditable( lEdit )
+   IF HB_ISLOGICAL( lEdit )
+      ::lEditable := lEdit
+      ::oActEdit:setEnabled( ::lEditable )
+   ENDIF
+   RETURN ::lEditable
+
+
 METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
-   LOCAL oDlg
-   LOCAL oVLayout, oHLayout
-   LOCAL oScrollArea, oPos, oCol
-   LOCAL oBtn1, oBtn2, oBtn3, oBtn4, oBtn5
-   LOCAL oEditor, oFLayout
+   LOCAL oDlg, oVLayout, oScrollArea, oPos, oCol
+   LOCAL oBtn1, oBtn2, oBtn3, oBtn4, oBtn5, oToolbar
+   LOCAL oEditor, oFLayout, aFrame
    LOCAL k1, k2, k3, k4, k5
    LOCAL GetList := {}, SayList := {}
 
@@ -2117,14 +2156,6 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    oDlg := QDialog( ::oWidget )
    oDlg:setWindowTitle( cTitle )
 
-   IF Empty( ::aPosSize )
-      oPos := ::oWidget:mapToGlobal( QPoint( ::oWidget:width(), 0 ) )
-      oDlg:move( oPos:x(), oPos:y() )
-   ELSE
-      oDlg:setGeometry( ::aPosSize[ 3 ] )
-      oDlg:move( ::aPosSize[ 1 ], ::aPosSize[ 2 ] )
-   ENDIF
-
    oEditor := QWidget()
    oFLayout := QFormLayout()
    oEditor:setLayout( oFLayout )
@@ -2133,11 +2164,10 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    oScrollArea:setWidget( oEditor )
 
    oVLayout := QVBoxLayout( oDlg )
-   oVLayout:setContentsMargins( 5,5,5,5 )
+   oVLayout:setContentsMargins( 0,0,0,0 )
+   oVLayout:setSpacing( 0 )
 
-   oHLayout := QHBoxLayout()
    oVLayout:addWidget( oScrollArea )
-   oVLayout:addLayout( oHLayout )
 
    WITH OBJECT oBtn1 := QToolButton( oDlg )
       :setText( "Save" )
@@ -2146,8 +2176,6 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
       :setTooltip( "Save editied record" )
       :connect( "clicked()", {||  ::saveRow() } )
    ENDWITH
-   oHLayout:addWidget( oBtn1 )
-
    WITH OBJECT oBtn2 := QToolButton( oDlg )
       :setText( "Down" )
       :setIcon( QIcon( __hbqtImage( "go-down" ) ) )
@@ -2155,8 +2183,6 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
       :setTooltip( "Go down one record" )
       :connect( "clicked()", {||  ::down()    , ::loadRow(), ::populateGets() } )
    ENDWITH
-   oHLayout:addWidget( oBtn2 )
-
    WITH OBJECT oBtn3 := QToolButton( oDlg )
       :setText( "Up" )
       :setIcon( QIcon( __hbqtImage( "go-up" ) ) )
@@ -2164,8 +2190,6 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
       :setTooltip( "Go up one record" )
       :connect( "clicked()", {||  ::up()      , ::loadRow(), ::populateGets() } )
    ENDWITH
-   oHLayout:addWidget( oBtn3 )
-
    WITH OBJECT oBtn4 := QToolButton( oDlg )
       :setText( "Bttm" )
       :setIcon( QIcon( __hbqtImage( "go-bottom" ) ) )
@@ -2173,8 +2197,6 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
       :setTooltip( "Go bottom of browser" )
       :connect( "clicked()", {||  ::goBottom(), ::loadRow(), ::populateGets() } )
    ENDWITH
-   oHLayout:addWidget( oBtn4 )
-
    WITH OBJECT oBtn5 := QToolButton( oDlg )
       :setText( "Top" )
       :setIcon( QIcon( __hbqtImage( "go-top" ) ) )
@@ -2182,7 +2204,21 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
       :setTooltip( "Go top of browser" )
       :connect( "clicked()", {||  ::goTop()   , ::loadRow(), ::populateGets() } )
    ENDWITH
-   oHLayout:addWidget( oBtn5 )
+   WITH OBJECT oToolbar := QToolBar()
+      :setOrientation( Qt_Horizontal )
+      :setIconSize( QSize( 12,12 ) )
+      :setMovable( .F. )
+      :setFloatable( .F. )
+      :setFocusPolicy( Qt_NoFocus )
+      //
+      :addWidget( oBtn1 )
+      :addWidget( oBtn2 )
+      :addWidget( oBtn3 )
+      :addWidget( oBtn4 )
+      :addWidget( oBtn5 )
+   ENDWITH
+
+   oVLayout:addWidget( oToolbar )
 
    k1 := SetKey( K_ALT_S   , {|| oBtn1:click() } )
    k2 := SetKey( K_ALT_DOWN, {|| oBtn2:click() } )
@@ -2201,6 +2237,17 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    QREAD oFLayout LASTGETBLOCK {|| ::saveRow() }
 
    ::aGetList := GetList
+
+   oDlg:show()
+   IF Empty( ::aPosSize )
+      aFrame := __hbqtGetWindowFrameWidthHeight( oDlg )
+      oPos := ::oWidget:mapToGlobal( QPoint( ::oWidget:width(), 0 ) )
+      oDlg:move( oPos:x() + aFrame[ 1 ] / 2, oPos:y() - aFrame[ 2 ] + aFrame[ 1 ] / 2 )
+      oDlg:resize( oDlg:width(), ::oWidget:height() )
+   ELSE
+      oDlg:setGeometry( ::aPosSize[ 3 ] )
+      oDlg:move( ::aPosSize[ 1 ], ::aPosSize[ 2 ] )
+   ENDIF
 
    oDlg:exec()
 
@@ -2398,6 +2445,13 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActMoveToRight )
       :addAction( ::oActMoveToLast )
       //
+      :addSeparator()
+      :addAction( ::oActFreezeLPlus )
+      :addAction( ::oActFreezeLMinus )
+      :addAction( ::oActFreezeRPlus )
+      :addAction( ::oActFreezeRMinus )
+      :addSeparator()
+
       :hide()
    ENDWITH
 
@@ -2409,8 +2463,9 @@ METHOD HbQtBrowse:buildActions()
    WITH OBJECT ::oComboColumn := QComboBox()
       :setFocusPolicy( Qt_NoFocus )
       :setTooltip( "Scroll to column..." )
-      :connect( "currentIndexChanged(QString)", {|cColumn| ::toColumn( cColumn ) } )
    ENDWITH
+   ::oComboColumn:connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
+
    WITH OBJECT ::oActToColumn := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oComboColumn )
       :setTooltip( "Scroll to column..." )
@@ -2419,8 +2474,9 @@ METHOD HbQtBrowse:buildActions()
    WITH OBJECT ::oComboColumnM := QComboBox()
       :setFocusPolicy( Qt_NoFocus )
       :setTooltip( "Scroll to column..." )
-      :connect( "currentIndexChanged(QString)", {|cColumn| ::toColumn( cColumn ) } )
    ENDWITH
+   ::oComboColumnM:connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
+
    WITH OBJECT ::oActToColumnM := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oComboColumnM )
       :setTooltip( "Scroll to column..." )
@@ -2507,12 +2563,13 @@ METHOD HbQtBrowse:buildActions()
       :setTooltip( "Move current column left one column" )
       :connect( "triggered()", {|| ::moveLeft() } )
    ENDWITH
-   WITH OBJECT ::oActMoveToRight := QAction( ::oWidget )
-      :setText( "Move Right" )
-      :setIcon( QIcon( __hbqtImage( "navigate-right" ) ) )
-      :setTooltip( "Move current column right one column" )
-      :connect( "triggered()", {|| ::moveRight() } )
-   ENDWITH
+
+   ::oActMoveToRight := QAction( ::oWidget )
+   ::oActMoveToRight:setText( "Move Right" )
+   ::oActMoveToRight:setIcon( QIcon( __hbqtImage( "navigate-right" ) ) )
+   ::oActMoveToRight:setTooltip( "Move current column right one column" )
+   ::oActMoveToRight:connect( "triggered()", {|| ::moveRight() } )
+
    WITH OBJECT ::oActMoveToFirst := QAction( ::oWidget )
       :setText( "Move First" )
       :setIcon( QIcon( __hbqtImage( "navigate-left-most" ) ) )
@@ -2524,6 +2581,31 @@ METHOD HbQtBrowse:buildActions()
       :setIcon( QIcon( __hbqtImage( "navigate-right-most" ) ) )
       :setTooltip( "Move current column at last position" )
       :connect( "triggered()", {|| ::moveEnd() } )
+   ENDWITH
+
+   WITH OBJECT ::oActFreezeLPlus := QAction( ::oWidget )
+      :setText( "FreezePlus" )
+      :setIcon( QIcon( __hbqtImage( "plus-1" ) ) )
+      :setTooltip( "Freeze another column at left" )
+      :connect( "triggered()", {|| ::freeze++ } )
+   ENDWITH
+   WITH OBJECT ::oActFreezeLMinus := QAction( ::oWidget )
+      :setText( "FreezeMinus" )
+      :setIcon( QIcon( __hbqtImage( "minus-1" ) ) )
+      :setTooltip( "UnFreeze another column at left" )
+      :connect( "triggered()", {|| ::freeze-- } )
+   ENDWITH
+   WITH OBJECT ::oActFreezeRPlus := QAction( ::oWidget )
+      :setText( "FreezeRPlus" )
+      :setIcon( QIcon( __hbqtImage( "plus-2" ) ) )
+      :setTooltip( "Freeze another column at right" )
+      :connect( "triggered()", {|| ::rfreeze++ } )
+   ENDWITH
+   WITH OBJECT ::oActFreezeRMinus := QAction( ::oWidget )
+      :setText( "FreezeRMinus" )
+      :setIcon( QIcon( __hbqtImage( "minus-2" ) ) )
+      :setTooltip( "UnFreeze another column at right" )
+      :connect( "triggered()", {|| ::rfreeze-- } )
    ENDWITH
 
    RETURN Self

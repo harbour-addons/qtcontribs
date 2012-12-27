@@ -16,6 +16,38 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-27 02:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/resources/minus-1.png
+  + hbqtwidgets/resources/minus-2.png
+  + hbqtwidgets/resources/plus-1.png
+  + hbqtwidgets/resources/plus-2.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: above images.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    + Added: __hbqtGetWindowFrameWidthHeight( oWnd )
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: Browser Toolbar Actions - Freeze++, Freeze--, RFreeze++, RFreeze--
+
+    + Added: Variable :editable to flag if toolbar icon <Edit> should be 
+       enabled or not. By default it is ENABLED. It will be important 
+       in many cases. Still, application initiate the EDIT bu calling 
+       :edit(...) from its :navigationBlock.
+
+    + Started: methods to facilitate column movement by mouse.
+        Seems it is extremely difficult process, still making efforts.
+
+    ! Fixed: a nasty bug which was causing the horizontal navigation weired.
+
+    % Synchronized: editing interface to match the height of browser window.
+ 
+    % Code cleanup and organization.
+
+  * hbqtwidgets/tests/browdb.prg
+  * hbqtwidgets/tests/browser.prg
+    + Added: new synchronizations.
+
 2012-12-26 15:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtbrowse.prg
     + Implemented: Browser Printing. How...

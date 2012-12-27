@@ -74,7 +74,7 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
    oBrowse:verticalScrollbar   := .T.                        /* Not a TBrowse METHOD */
-   oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
+// oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
 
    /* Blocks TO control Scroolbars */
    oBrowse:firstPosBlock       := {| | 1                }    /* Not a TBrowse METHOD */
@@ -121,9 +121,6 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    oColumn            := HbQtColumnNew( "Notes"      , {|| TEST->notes    } )
    oBrowse:addColumn( oColumn )
-
-   /* Tbrowse Methods */
-   oBrowse:freeze := 1
 
    /* HbQtBrowse Extentions */
    oBrowse:toolbar         := .T.
