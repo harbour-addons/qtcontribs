@@ -146,7 +146,9 @@ CLASS HbQtGet INHERIT GET
    VAR    nToCol                                  INIT 0
    VAR    sl_data                                 INIT NIL
    VAR    sl_tooltip                              INIT ""
-   CLASSVAR    oFocusFrame
+   VAR    lFocusFrame                             INIT .F.
+
+   VAR    oFocusFrame
 
    METHOD execFocusOut( oFocusEvent )
    METHOD execFocusIn( oFocusEvent )
@@ -301,12 +303,6 @@ METHOD HbQtGet:create( oControl )
 
    ::oEdit:setToolTip( ::tooltip )
 
-   IF Empty( ::oFocusFrame )
-      ::oFocusFrame := QFocusFrame()
-      ::oFocusFrame:setStyleSheet( "border: 2px solid red" )
-      ::oFocusFrame:hide()
-   ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -405,6 +401,10 @@ METHOD HbQtGet:getList( oGetList )
 
    IF HB_ISOBJECT( oGetList )
       ::oGetList := oGetList
+      ::lFocusFrame := oGetList:focusFrame()
+      ::oFocusFrame := oGetList:oFocusFrame
+      ::oFocusFrame:setStyleSheet( "border: 2px solid red" )
+      ::oFocusFrame:hide()
    ENDIF
 
    RETURN ::oGetList
@@ -1094,7 +1094,9 @@ METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving
       ::assign()
    ENDIF
 
-   ::oFocusFrame:hide()
+   IF HB_ISOBJECT( ::oFocusFrame ) .AND. ::lFocusFrame
+      ::oFocusFrame:hide()
+   ENDIF
    ::hasFocus := .F.
 
    RETURN .F.
@@ -1109,8 +1111,10 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       ::oGetList:getActive( Self )
    ENDIF
 
-   ::oFocusFrame:setWidget( ::oEdit )
-   ::oFocusFrame:show()
+   IF HB_ISOBJECT( ::oFocusFrame ) .AND. ::lFocusFrame
+      ::oFocusFrame:setWidget( ::oEdit )
+      ::oFocusFrame:show()
+   ENDIF
 
    ::hasFocus := .T.
 

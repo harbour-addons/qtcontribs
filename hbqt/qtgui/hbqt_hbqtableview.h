@@ -83,6 +83,7 @@ public slots:
    void scrollTo( const QModelIndex & index, QAbstractItemView::ScrollHint hint = QAbstractItemView::EnsureVisible );
    QModelIndex navigate( int cursorAction );
    QModelIndex moveCursor( HBQTableView::CursorAction cursorAction, Qt::KeyboardModifiers modifiers );
+   QRect visualRect ( const QModelIndex & index ) const;
 };
 
 /*----------------------------------------------------------------------*/

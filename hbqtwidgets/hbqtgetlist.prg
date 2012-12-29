@@ -137,6 +137,7 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
             AAdd( t_GetList, { oWnd, GetList } )
          ENDIF
       ELSEIF PCount() == 2 .AND. n > 0
+         t_GetList[ n,2 ]:oFocusFrame:setParent( QWidget() )
          hb_ADel( t_GetList, n, .T. )
       ENDIF
    ENDIF
@@ -144,7 +145,7 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
    RETURN oGetList
 
 
-FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet )
+FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet, lNoFocusFrame )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout, cCaption, oGetList, oWnd
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
    LOCAL nEditPadding := 4
@@ -230,6 +231,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
 
    oGetList := HbQtGetList():New( aGetList )
    oGetList:lastGetBlock := bOnLastGet
+   oGetList:focusFrame := ! lNoFocusFrame
 
    IF Len( GetList ) >= 1
       FOR EACH aEdit IN GetList
@@ -337,6 +339,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
 
 CREATE CLASS HbQtGetList INHERIT HbGetList
 
+   METHOD new( aGetList )
    METHOD goNext( oGet )
    METHOD goPrevious( oGet )
    METHOD goTop( oGet )
@@ -351,7 +354,20 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    DATA   bOnLastGet
    METHOD lastGetBlock( bBlock )                  SETGET
 
+   DATA   oFocusFrame
+   DATA   lFocusFrame                             INIT .T.
+   METHOD focusFrame                              SETGET
+
    ENDCLASS
+
+
+METHOD HbQtGetList:new( aGetList )
+
+   ::HbGetList:new( aGetList )
+   ::oFocusFrame := QFocusFrame()
+   ::oFocusFrame:setStyleSheet( "border: 1px solid red;" )
+
+   RETURN Self
 
 
 METHOD HbQtGetList:lastGetBlock( bBlock )
@@ -480,6 +496,15 @@ METHOD HbQtGetList:setFocus( cGet )
    ENDIF
 
    RETURN oGet
+
+
+METHOD HbQtGetList:focusFrame( lFocusFrame )
+
+   IF HB_ISLOGICAL( lFocusFrame )
+      ::lFocusFrame := lFocusFrame
+   ENDIF
+
+   RETURN ::lFocusFrame
 
 /*----------------------------------------------------------------------*/
 

@@ -45,9 +45,9 @@ FUNCTION Main()
 
    oBrowse:AddColumn( HbQtColumnNew( "First",  {|| n } ) )
    oBrowse:AddColumn( HbQtColumnNew( "Second", {|x| iif( x == NIL, aTest0[ n ], aTest0[ n ] := x ) } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Third",  {|| aTest1[ n ] } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Forth",  {|| aTest2[ n ] } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Fifth",  {|| aTest3[ n ] } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Third",  {|x| iif( x == NIL, aTest1[ n ], aTest1[ n ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Forth",  {|x| iif( x == NIL, aTest2[ n ], aTest2[ n ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Fifth",  {|x| iif( x == NIL, aTest3[ n ], aTest3[ n ] := x ) } ) )
 
    oBrowse:GetColumn( 1 ):Footing    := "Number"
 // oBrowse:GetColumn( 1 ):preBlock   := {|| .F.  }
@@ -94,6 +94,7 @@ FUNCTION Main()
 
 STATIC FUNCTION navigate( nKey, xData, oBrowse )
    LOCAL lHandelled := .T.
+   LOCAL i, xResult
 
    HB_SYMBOL_UNUSED( xData )
 
@@ -110,13 +111,11 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
 
    CASE nKey == K_F4
       oBrowse:rFreeze++
-
    CASE nKey == K_F5
       oBrowse:rFreeze--
 
    CASE nKey == K_F6
       oBrowse:freeze++
-
    CASE nKey == K_F7
       oBrowse:freeze--
 
@@ -135,8 +134,15 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    CASE nKey == K_F12
       oBrowse:edit( "Update Info", .T., .T. )  /* Even IF :editable is OFF, still application code can initiate it */
 
-   CASE nKey > 32 .AND. nKey < 127
-      oBrowse:editCell()               /* HbQt Entention */
+   CASE nKey == K_SH_F12 // K_RETURN
+      oBrowse:panHome()
+      FOR i := 1 TO oBrowse:colCount
+         xResult := oBrowse:editCell()  /* HbQt Entention */
+         IF xResult == NIL
+            EXIT                        /* Sure ESCape is pressed */
+         ENDIF
+         oBrowse:Right()
+      NEXT
 
    OTHERWISE
       oBrowse:applyKey( nKey )

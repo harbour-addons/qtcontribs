@@ -158,4 +158,9 @@ void HBQTableView::scrollTo( const QModelIndex & index, QAbstractItemView::Scrol
    QTableView::scrollTo( index, hint );
 }
 
+QRect HBQTableView::visualRect ( const QModelIndex & index ) const
+{
+   return QTableView::visualRect( index );
+}
+
 #endif

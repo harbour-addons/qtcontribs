@@ -172,7 +172,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD verticalScrollbar                       SETGET
    METHOD cursorMode                              SETGET
 
-   METHOD editCell()                              INLINE ::oTableView:edit( ::getCurrentIndex() )
+   METHOD editCell( cPicture, cColor, bWhen, bValid )
    METHOD edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    METHOD editBlock( bBlock )                     SETGET
    METHOD search( xValue )
@@ -188,6 +188,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN title                                   METHOD setTitle
    ACCESS editable                                METHOD getEditable
    ASSIGN editable                                METHOD setEditable
+   METHOD toColumn( cnColumn )
 
 PROTECTED:
 
@@ -375,7 +376,6 @@ PROTECTED:
    DATA   oActFreezeRMinus
 
    METHOD buildToolbar()
-   METHOD toColumn( cColumn )
 
    METHOD printPreview( oPrinter )
    METHOD paintRequested( oPrinter )
@@ -2127,6 +2127,33 @@ METHOD HbQtBrowse:moveEnd()
 
    RETURN col_to_move < ::colCount
 
+METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid )
+   LOCAL oDlg, nRes
+   LOCAL oRect   := ::oTableView:visualrect( ::getCurrentIndex() )
+   LOCAL oPos    := ::oTableView:mapToGlobal( QPoint( oRect:x(), oRect:y() ) )
+   LOCAL oCol    := ::getColumn( ::colPos )
+   LOCAL xValue  := Eval( oCol:block )
+   LOCAL GetList := {}, SayList := {}
+
+   oDlg := QDialog( ::oTableView )
+   oDlg:setWindowTitle( oCol:heading )
+
+   @ 0,0 QGET xValue PICTURE iif( Empty( cPicture ), oCol:Picture, cPicture ) ;
+                     COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
+                     WHEN    {|oGet| iif( HB_ISBLOCK( bWhen ) , Eval( bWhen, oGet ) , iif( HB_ISBLOCK( oCol:preBlock ) , Eval( oCol:preBlock , oGet ), .T. ) ) } ;
+                     VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) }
+
+   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ), Eval( oCol:block, xValue ) } NOFOCUSFRAME
+
+   oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+   oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
+   oDlg:move( oPos:x()-4, oPos:y() + ::oTableView:horizontalHeader():height() )
+   nRes := oDlg:exec()
+   oDlg:setParent( QWidget() )
+
+   ::refreshCurrent()
+
+   RETURN iif( nRes == 0, NIL, xValue )
 
 METHOD HbQtBrowse:getEditable()
    RETURN ::lEditable
@@ -2162,6 +2189,9 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
 
    oScrollArea := QScrollArea( oDlg )
    oScrollArea:setWidget( oEditor )
+   oScrollArea:horizontalScrollBar():setFocusPolicy( Qt_NoFocus )
+   oScrollArea:verticalScrollBar():setFocusPolicy( Qt_NoFocus )
+   oScrollArea:setFocusPolicy( Qt_NoFocus )
 
    oVLayout := QVBoxLayout( oDlg )
    oVLayout:setContentsMargins( 0,0,0,0 )
@@ -2248,7 +2278,7 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
       oDlg:setGeometry( ::aPosSize[ 3 ] )
       oDlg:move( ::aPosSize[ 1 ], ::aPosSize[ 2 ] )
    ENDIF
-
+   oDlg:setWindowFlags( Qt_Dialog )
    oDlg:exec()
 
    ::aPosSize := {}
@@ -2353,19 +2383,25 @@ METHOD HbQtBrowse:search( xValue )
    LOCAL oCol := ::getColumn( ::colPos )
    LOCAL GetList := {} , SayList := {}, oDlg
 
-   oDlg := QDialog( ::oWidget )
-   oDlg:setWindowTitle( oCol:heading )
-
    IF xValue == NIL
       ::xSearchValue := Eval( oCol:block )
    ELSE
       ::xSearchValue := xValue
    ENDIF
 
-   @ 1,2 QSAY "Find:" QGET ::xSearchValue PICTURE oCol:picture
+   oDlg := QDialog( ::oWidget )
+   oDlg:setWindowTitle( oCol:heading )
+
+   @ 1,2 QGET ::xSearchValue PICTURE oCol:picture
    QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ), ::execSearch() }
    ::oSearchGet  := GetList[ 1 ]
 
+// oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+   oDlg:show()
+   oDlg:move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() ) //- __hbqtGetWindowFrameWidthHeight( oDlg )[2] )
+   oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+   oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
+// oDlg:setStyleSheet( "background-color: lightyellow;" )
    oDlg:exec()
    oDlg:setParent( QWidget() )
 
@@ -2611,16 +2647,25 @@ METHOD HbQtBrowse:buildActions()
    RETURN Self
 
 
-METHOD HbQtBrowse:toColumn( cColumn )
-   LOCAL oCol
+METHOD HbQtBrowse:toColumn( cnColumn )
+   LOCAL i, oCol
 
-   ::panHome()
-   FOR EACH oCol IN ::columns
-      IF oCol:heading == cColumn
-         EXIT
+   IF HB_ISCHAR( cnColumn )
+      FOR EACH oCol IN ::columns
+         IF oCol:heading == cnColumn
+            cnColumn := oCol:__enumIndex()
+            EXIT
+         ENDIF
+      NEXT
+   ENDIF
+   IF HB_ISNUMERIC( cnColumn )
+      IF cnColumn > 0 .AND. cnColumn <= ::colCount .AND. cnColumn != ::colPos
+         ::panHome()
+         FOR i := 2 TO cnColumn
+            ::Right()
+         NEXT
       ENDIF
-      ::Right()
-   NEXT
+   ENDIF
 
    RETURN Self
 

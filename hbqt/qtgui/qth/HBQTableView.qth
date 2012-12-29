@@ -52,6 +52,7 @@ HB_FUNC( QT_HBQTABLEVIEW )
 
 <PROTOS>
 void hbSetBlock( PHB_ITEM block )
+QRect visualRect ( const QModelIndex & index ) const
 </PROTOS>
 
 <SLOTS>

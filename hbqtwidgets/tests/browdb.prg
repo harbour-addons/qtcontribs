@@ -1,4 +1,4 @@
-/*
+      /*
  * $Id$
  */
 
@@ -133,7 +133,8 @@ STATIC FUNCTION BrowseMe( oWnd )
    RETURN oBrowse
 
 
-STATIC FUNCTION HandleMyOptions( nKey,xData,oBrw )
+STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
+   LOCAL xResult, i
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
@@ -141,11 +142,41 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrw )
    DO CASE
 
    CASE nKey == K_F6
-      oBrw:freeze++
+      oBrowse:freeze++
    CASE nKey == K_F7
-      oBrw:freeze--
+      oBrowse:freeze--
    CASE nKey == K_F12
-      oBrw:edit( "Update Field Values", .T., .T. )
+      oBrowse:edit( "Update Field Values", .T., .T. )
+   CASE nKey == K_SH_F12
+      IF dbRLock()
+         oBrowse:panHome()
+         oBrowse:Right()
+         FOR i := 2 TO oBrowse:colCount()
+            xResult := oBrowse:editCell()  /* HbQt Entention */
+            IF xResult == NIL
+               EXIT                        /* ESCape is pressed */
+            ENDIF
+            SWITCH oBrowse:getColumn( i ):heading
+            CASE "Last Name"  ; REPLACE TEST->last     WITH xResult ; EXIT
+            CASE "First Name" ; REPLACE TEST->first    WITH xResult ; EXIT
+            CASE "Salary"     ; REPLACE TEST->Salary   WITH xResult ; EXIT
+            CASE "HireDate"   ; REPLACE TEST->HireDate WITH xResult ; EXIT
+            CASE "Age"        ; REPLACE TEST->Age      WITH xResult ; EXIT
+            CASE "City"       ; REPLACE TEST->City     WITH xResult ; EXIT
+            CASE "State"      ; REPLACE TEST->State    WITH xResult ; EXIT
+            CASE "Zip"        ; REPLACE TEST->Zip      WITH xResult ; EXIT
+            CASE "Notes"      ; REPLACE TEST->Notes    WITH xResult ; EXIT
+            ENDSWITCH
+            oBrowse:refreshCurrent()
+            IF i < oBrowse:colCount()
+               oBrowse:Right()
+            ENDIF
+         NEXT
+         IF xResult != NIL
+            dbCommit()
+         ENDIF
+         dbRUnlock()
+      ENDIF
    OTHERWISE
       lHandelled := .F.
    ENDCASE

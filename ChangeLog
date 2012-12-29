@@ -16,6 +16,108 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-12-29 00:19 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqtableview.cpp
+  * hbqt/qtgui/hbqt_hbqtableview.h
+  * hbqt/qtgui/qth/HBQTableView.qth
+    + Added: method - QRect visualRect( QModelIndex )
+       The method was a "vrtual protected".
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: QREAD ... NOFOCUSFRAME 
+       Flag to disable displaying a red bordered frame around the active GET.
+       Was needed to implement in-place editing of browser cells ( Read below ).
+
+  * hbqtwidgets/hbqtgetlist.prg
+  * hbqtwidgets/hbqtgetsys.prg
+    % Changed: the way FocusFrame was being constructed.
+      Now every GetList has its own oFocusFrame instead of a single frame across
+      the whole application, which had a drawback to not show-up if multiple 
+      GET screens were floated at once. Also the visiblility of focus frame 
+      is controllable by QREAD clause NOFOCUSFRAME.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: in-place cell editing with PICTURE, COLOR, WHEN, VALID clauses.
+       This is in addition to record editing in a separate adjoining dialog which 
+       is called by application as oBrw:edit(...) or by clicking on the <Edit>
+       icon of browser toolbar.
+
+       On the contrary, Cell editing is only callable by the application. This 
+       can be called as :
+
+         oBrw:editCell( [<cPicture>], [<cColor>], [<bWhen>], [<bValid>] ) -> xModifiedValue
+           <cPicture> Defaults to oColumn:picture.
+           <cColor>   Defaults to "N/BG*"
+           <bWhen>    Defaults to oColumn:preBlock
+           <bValid>   Defaults to oColumn:postBlock
+
+       How it works;
+         
+          ...
+          oBrw:navigationBlock( {|...| NavigateMe(...) } )
+          ...
+
+          FUNCTION NavigateMe( nKey...)
+             SWITCH nKey
+             CASE K_SH_F12
+                xModifiedValue := oBrw:editCell()
+                IF xModifiedValue != NIL  /* In Case ESC is Pressed */      
+                   // Save xModifiedValue at appropriate container.
+                ENDIF
+             ENDSWITCH
+
+         The above is the minimum required. If :editCell() is called without 
+         supplying any arguments, then defaults are applied to GET the value.
+         If ESCape is pressed on the GET then NIL is returned. In that case 
+         appln can take the appropriate action.
+
+         Current highlighted cell is subject to :cellEdit() call.
+         oColumn:block with <xModifiedValue> is __ALWAYS__ called when 
+         RETURN is pressed on GET and is postValidated.
+
+  * hbqtwidgets/tests/browser.prg
+    + Added code to demonstrate how to use cell editing.
+
+  * hbqtwidgets/tests/browdb.prg
+    + Added: following CASE statement in navigation SWITCH:
+         
+         CASE nKey == K_SH_F12
+            IF dbRLock()
+               oBrowse:panHome()
+               oBrowse:Right()
+               FOR i := 2 TO oBrowse:colCount()
+                  xResult := oBrowse:editCell()  /* HbQt Entention */
+                  IF xResult == NIL
+                     EXIT                        /* ESCape is pressed */
+                  ENDIF
+                  SWITCH oBrowse:getColumn( i ):heading
+                  CASE "Last Name"  ; REPLACE TEST->last     WITH xResult ; EXIT
+                  CASE "First Name" ; REPLACE TEST->first    WITH xResult ; EXIT
+                  CASE "Salary"     ; REPLACE TEST->Salary   WITH xResult ; EXIT
+                  CASE "HireDate"   ; REPLACE TEST->HireDate WITH xResult ; EXIT
+                  CASE "Age"        ; REPLACE TEST->Age      WITH xResult ; EXIT
+                  CASE "City"       ; REPLACE TEST->City     WITH xResult ; EXIT
+                  CASE "State"      ; REPLACE TEST->State    WITH xResult ; EXIT
+                  CASE "Zip"        ; REPLACE TEST->Zip      WITH xResult ; EXIT
+                  CASE "Notes"      ; REPLACE TEST->Notes    WITH xResult ; EXIT
+                  ENDSWITCH
+                  oBrowse:refreshCurrent()
+                  IF i < oBrowse:colCount()
+                     oBrowse:Right()
+                  ENDIF
+               NEXT
+               IF xResult != NIL
+                  dbCommit()
+               ENDIF
+               dbRUnlock()
+            ENDIF
+         OTHERWISE
+
+    ; This demonstrate the exact usage one might had employed in Clipper 
+      application to fetch data entry in a browser. In any real-world 
+      senario, ground is ready to be exploited. Now I can dream of porting 
+      my Harbour simulated console/GUI applns to HbQt.
+
 2012-12-27 02:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/resources/minus-1.png
   + hbqtwidgets/resources/minus-2.png

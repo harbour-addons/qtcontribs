@@ -204,11 +204,12 @@
                   [ LINESPACING <nSpc>     ] ;
                   [ TITLE <title>          ] ;
                   [ ICON <icon>            ] ;
-                  [<nomodal:NOMODAL>       ] ;
+                  [ <nomodal:NOMODAL>      ] ;
                   [ PROPERTIES <prop>      ] ;
                   [ LASTGETBLOCK <bLast>   ] ;
+                  [ <nofous:NOFOCUSFRAME>  ] ;
                         => ;
-         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}> )
+         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}>, <.nofous.> )
 
 
 #endif
