@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-02 08:18 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/qth/QApplication.qth
+    + Implemented: QWidgetList allWidgets(), QWidgetList topLevelWidgets().
+
+       oList := QApplication():topLevelWidgets()
+       FOR i := 1 to oList:count() - 1
+          oWidget := oList:at( i )
+          oWidget:show()
+       NEXT
+
 2012-12-29 00:19 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqtableview.cpp
   * hbqt/qtgui/hbqt_hbqtableview.h
