@@ -16,6 +16,192 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-03 13:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtstd.ch
+    + Added: HBQTBRW_* constants, usable to configure HbQtBrowse interface.
+
+  * hbqtwidgets/hbqtalert.prg
+    + Implemented: Function 
+       HbQtGetSome( <xVariable>, [<xCaption>], [<xPicture>], [<xWhen>], [<xValid>], [<cTitle>] ) -> <xVariable>
+
+       A general purpose function to fetch values of one or many GETS in a modal dialog.
+
+       <xVariable> an array of variables or a single variable to GET.
+          
+                   If <xVariable> is an array of variables then all the following 
+                   parameters must be an array of attributes matching the length of 
+                   <xVariables>. Function does not check for the number of array indexes.
+
+       <xCaption>  variable(s)|Literal(s) describing the GET. Defaults to "Variable_" + hb_ntos( nIndex ).
+       <xPicture>  variable(s)|Literal(s) of PICTURE templates. Defaults to "".
+       <xWhen>     block(s) to supply for :preValidate. Defaults to {|| .T. }.
+       <xValid>    block(s) to supply for :postValidate. Defaults to {|| .T. }.
+
+       <cTitle>    Title to display on GETs dialog's titlebar. Defaults to "Enter Some Values!".
+
+       RETURNS     <xVariable> in the form they are supplied to the function. If ESCape is 
+                   pressed then original values supplied to the function are returned.
+
+                   GETs dialog is centered on the window which has focus at the time of 
+                   calling this function.
+
+       NOTE:       Name of the function may be changed. If you have a better name, please forward.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: <GoTo> icon on the browser's toolbar to navigate to a designated record.
+    + Implemented: ACCESS/ASSIGN method :gotoBlock  to execute :goto() method, either via 
+       appln call or activating it via toolbar icon <Goto>. Interface just exposes the 
+       visual elements to inform the appln about user interaction. The actual navigation 
+       is performed at the appln level only. How...
+
+         Appln: oBrowse:gotoBlock := {|| GotoMyRecord() }  
+         User:  Clicks on the <Goto> icon. :gotoBlock is evaluated.
+         Appln:
+           STATIC FUNCTION GotoMyRecord()
+           LOCAL nRec, nPRec := RecNo()
+           IF ( nRec := HbQtGetSome( nPRec, "Record Number", , , , "GoTo ?" ) ) > 0
+              dbGoto( nRec )
+           ELSE
+             RETURN .F.
+           ENDIF
+           RETURN nPRec != nRec
+
+       If the :gotoBlock returns TRUE, the browser is refreshed, otherwise not.
+
+    + Added: <Indexes> combobox on the browser's toolbar to change the index order.
+    + Implemented: ACCESS/ASSIGN method :indexes. This accepts an array of index information as:
+
+        AAdd( aIndexes, { "Natural Order", {|oBrw| dbSetOrder( 0 ), oBrw:refreshAll(), oBrw:forceStable() } } )
+        AAdd( aIndexes, { "Last Name"    , {|oBrw| dbSetOrder( 1 ), oBrw:refreshAll(), oBrw:forceStable() } } )
+        oBrowse:indexes := { aIndexes, 2 }
+
+        First element of <aIndexes> is used to populate the <Indexes> combobox.
+        Second element is a codeblock which will be executed when an option in combobox 
+          is activated. 
+        Second element of :indexes ASSIGNed array is used to activate <Indexes> combobox.
+ 
+        <Indexes> combobox is viaible only if appln has supplied :indexes information.
+
+        This is a convenient mechanism to armour the end user with many more options.
+
+    % ReImplemented <Search> option. Please discard the previous documentation. 
+       This new implementation empowers you with executing an incremental search, 
+       a search within the unindexed field and much more. How...
+
+        Appln: oBrowse:searchBlock := {|xValue,nMode,oBrw| LookMySearch( xValue,nMode,oBrw ) } 
+                                         -> 
+                                      { [<xValue>], [<cPicture>], [<nMode]> }
+
+        Appln: Inside :navigationBlock - :search( [<xValue>], [<cPicture>], [<nMode]> )
+        Interface: <Search> icon - :search()
+        
+        METHOD Search( [<xValue>], [<cPicture>], [<nMode]> )
+          If [<xValue>] == NIL, :searchBlock will be called to obtain <Search> info as:
+            IF HB_ISBLOCK( ::searchBlock )
+               aInfo := Eval( ::searchBlock, NIL, NIL, Self )
+            ENDIF
+
+          It will be the responsibility of the appln to supply info regarding what to fetch 
+          and how to respond to search creteria. If appln does not return back an array of 
+          3 elements, viz., 1. What to search as a variable of type CDNL, viz., 
+          space( 30 ), 0, or whatever, and mode of search (read below), then these three values
+          defaults to : 1. the value returned by Eval( ::getColumn( ::colPos ):block )
+                        2. ::getColumn( ::colPos ):picture
+                        3. HBQTBRW_SEARCH_ONCE 
+                             Other options:
+                           HBQTBRW_SEARCH_INCREMENTAL
+                           HBQTBRW_SEARCH_BYFIELD
+          depending upon the above three values, interface exposes a modal GET at the 
+          last+ row of the browser window to fetch <Search> value, initially set with 
+          value of <xValue>.
+
+          The next action is carried out in accordance with <nMode>:
+          IF nMode == HBQTBRW_SEARCH_ONCE
+            Dialog to fetch value is closed, :serachBlock is evaluated again with modified 
+            <xValue>, <nMode> and <Self>. Appln takes appropriate action. Typicaly, 
+            appln will invoke this mode if an index is active.
+          
+          IF nMode == HBQTBRW_SEARCH_INCREMENTAL
+            Dialog to fetch serach value stays, with every change in the GET value, 
+            :serachBlock is evaluated with modified <xValue>, <nMode> and <Self>. 
+            Appln takes appropriate action. Dialog to fetch search value stays until 
+            RETURN is pressed which mark the end of the <Search> event. For the duration 
+            of search, browser cursor is changed to ROW mode. Typicaly, 
+            appln will invoke this mode if an index is active.
+
+          IF nMode == HBQTBRW_SEARCH_BYFIELD
+            Dialog to fetch value is closed. A timer event is started inside the interface
+            at a 10 ms interval, which calls :searchBlock as usual. Then :searchBlock is 
+            expected to return TRUE or FALSE to flag that <Search> is found or not. If NOT,
+            then browser is moved down by one row. If YES or :hitBottom is detected then 
+            <Serach> event is terminated. Appln can detect <ESC> press in the :navigationBlock,
+            and can terminate the <Search> accordingly (study example below).
+
+          In case of nMode == INCREMENTAL, after <Search> event is terminated, 
+            :searchBlock is once again evaluated with no parameters. This is useful 
+            to implement a lookup browser.
+
+          Here is a minimum useful example, you can extend it to extreme:
+
+          STATIC nLastKey := 0
+
+          FUNCTION Main()
+             LOCAL oBrowse := ...
+
+             oBrowse:searchBlock     := {|xValue,nMode,oBrw| LookMySearch( xValue,nMode,oBrw ) }
+             oBrowse:navigationBlock := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
+
+             RETURN NIL
+
+          STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
+             LOCAL xResult, i
+             LOCAL lHandelled := .T.
+
+             nLastKey := nKey
+             ...
+
+             RETURN .t. 
+
+          STATIC FUNCTION LookMySearch( xValue,nMode,oBrw )
+             LOCAL nRec
+          
+             IF xValue == NIL .AND. oBrw == NIL
+                /* search is finished, take other action, this will help to build a selectable browser */
+                Alert( "Current Record Number Is : " + hb_ntos( RecNo() ) )
+          
+             ELSEIF xValue == NIL                           /* Interface is requesting to initiate search */
+                IF IndexOrd() == 1
+                   RETURN { Space( Len( TEST->last ) ), NIL, HBQTBRW_SEARCH_INCREMENTAL }
+                ELSE
+                   RETURN { NIL, NIL, HBQTBRW_SEARCH_BYFIELD }
+                ENDIF
+          
+             ELSE
+                IF IndexOrd() == 1                          /* Interface is requesting to do the search as per needs */
+                   nRec := RecNo()
+                   IF ! dbSeek( Trim( xValue ) )
+                      dbGoto( nRec )
+                   ELSE
+                      oBrw:refreshAll()
+                   ENDIF
+                ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
+                   IF nLastKey == K_ESC
+                      nLastKey := 0
+                      RETURN .T.
+                   ENDIF
+                   RETURN Eval( oBrw:getColumn( oBrw:colPos ):block ) = xValue
+          
+                ENDIF
+          
+             ENDIF
+          
+             RETURN .T.
+          
+
+  * hbqtwidgets/tests/browdb.prg
+  * hbqtwidgets/tests/browser.prg
+    + Added: constructs to demonstrate above features.
+
 2012-01-02 08:18 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/qth/QApplication.qth
     + Implemented: QWidgetList allWidgets(), QWidgetList topLevelWidgets().

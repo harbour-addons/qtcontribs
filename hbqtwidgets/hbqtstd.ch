@@ -53,6 +53,13 @@
 #ifndef HB_QSTD_CH_
    #define HB_QSTD_CH_
 
+   #define HBQTBRW_CURSOR_NONE                    1
+   #define HBQTBRW_CURSOR_CELL                    2
+   #define HBQTBRW_CURSOR_ROW                     3
+
+   #define HBQTBRW_SEARCH_ONCE                    0
+   #define HBQTBRW_SEARCH_INCREMENTAL             1
+   #define HBQTBRW_SEARCH_BYFIELD                 2
 
    #define _QGET_GET                              1
    #define _QGET_CAPTION                          2

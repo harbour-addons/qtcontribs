@@ -222,3 +222,86 @@ STATIC FUNCTION TerminateAlert( aButtons )
 
    RETURN .T.
 
+
+FUNCTION HbQtGetSome( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
+   LOCAL i, cType, oDlg, nVrbls, nRes, oLay, bWhen, bValid
+   LOCAL aVariables := {}
+   LOCAL aCaptions  := {}
+   LOCAL aPictures  := {}
+   LOCAL aWhens     := {}
+   LOCAL aValids    := {}
+   LOCAL GetList    := {}
+   LOCAL SayList    := {}
+
+   hb_default( @cTitle, "Enter Some Values!" )
+
+   cType := ValType( xVariable )
+   IF cType $ "CDNL"
+      AAdd( aVariables, xVariable )
+      AAdd( aCaptions , xCaption  )
+      AAdd( aPictures , xPicture  )
+      AAdd( aWhens    , xWhen     )
+      AAdd( aValids   , xValid    )
+   ELSE
+      aVariables := xVariable
+      IF HB_ISARRAY( xCaption )
+         aCaptions := xCaption
+      ENDIF
+      IF HB_ISARRAY( xPicture )
+         aPictures := xPicture
+      ENDIF
+      IF HB_ISARRAY( xWhen )
+         aWhens := xWhen
+      ENDIF
+      IF HB_ISARRAY( xValid )
+         aValids := xValid
+      ENDIF
+   ENDIF
+   nVrbls := Len( aVariables )
+
+   ASize( aCaptions, nVrbls )
+   ASize( aPictures, nVrbls )
+   ASize( aWhens   , nVrbls )
+   ASize( aValids  , nVrbls )
+
+   FOR i := 1 TO nVrbls
+      hb_default( @aCaptions[ i ], "Variable_" + hb_ntos( i ) )
+      hb_default( @aPictures[ i ], "" )
+      hb_default( @aWhens[ i ]   , {|| .T. } )
+      hb_default( @aValids[ i ]  , {|| .T. } )
+   NEXT
+
+   WITH OBJECT oLay := QFormLayout()
+      :setLabelAlignment( Qt_AlignRight )
+      :setFieldGrowthPolicy( QFormLayout_FieldsStayAtSizeHint )
+      :setFormAlignment( Qt_AlignHCenter )
+   ENDWITH
+   WITH OBJECT oDlg := QDialog( QApplication():focusWidget() )
+      :setWindowTitle( cTitle )
+      :setLayout( oLay )
+   ENDWITH
+
+   FOR i := 1 TO nVrbls
+      bWhen  := __getBlock( aWhens, i )
+      bValid := __getBlock( aValids, i )
+      @ 1,1 QGET aVariables[ i ] PICTURE aPictures[ i ] CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
+   NEXT
+   QREAD oLay LASTGETBLOCK {|| oDlg:done( 1 ) }
+
+   nRes := oDlg:exec()
+   oDlg:setParent( QWidget() )
+
+   IF nRes > 0
+      IF cType $ "CDNL"
+         xVariable := aVariables[ 1 ]
+      ELSE
+         xVariable := aVariables
+      ENDIF
+   ENDIF
+
+   RETURN xVariable
+
+
+STATIC FUNCTION __getBlock( aBlocks, nIndex )
+   RETURN aBlocks[ nIndex ]
+

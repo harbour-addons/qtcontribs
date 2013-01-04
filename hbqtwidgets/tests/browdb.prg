@@ -9,17 +9,14 @@
 
 
 #include "hbtoqt.ch"
+#include "hbqtstd.ch"
 #include "hbqtgui.ch"
 #include "inkey.ch"
 
 
 REQUEST DBFCDX
 
-
-#define HBQTBRW_CURSOR_NONE                       1
-#define HBQTBRW_CURSOR_CELL                       2
-#define HBQTBRW_CURSOR_ROW                        3
-
+STATIC nLastKey
 
 FUNCTION Main()
 
@@ -48,6 +45,7 @@ FUNCTION Main()
 STATIC FUNCTION BrowseMe( oWnd )
    LOCAL oBrowse, oColumn
    LOCAL cPath := hb_DirBase() + ".." + hb_ps() + ".." + hb_ps() + ".." + hb_ps() + "tests" + hb_ps()
+   LOCAL aIndexes := {}
 
    Set( _SET_DATEFORMAT, "yyyy.mm.dd" )
 
@@ -71,10 +69,6 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:skipBlock           := {|n| DbSkipBlock( n ) }
    oBrowse:goTopBlock          := {| | DbGoTop()        }
    oBrowse:goBottomBlock       := {| | DbGoBottom()     }
-
-   oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
-   oBrowse:verticalScrollbar   := .T.                        /* Not a TBrowse METHOD */
-// oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
 
    /* Blocks TO control Scroolbars */
    oBrowse:firstPosBlock       := {| | 1                }    /* Not a TBrowse METHOD */
@@ -123,12 +117,21 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:addColumn( oColumn )
 
    /* HbQtBrowse Extentions */
+   oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
+   oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
+// oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
    oBrowse:toolbar         := .T.
    oBrowse:statusbar       := .T.
    oBrowse:statusMessage   := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
    oBrowse:editBlock       := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
-   oBrowse:searchBlock     := {|xValue,nColPos,oBrw| LookMySearch( xValue,nColPos,oBrw ) }
+   oBrowse:searchBlock     := {|xValue,nMode,oBrw| LookMySearch( xValue,nMode,oBrw ) }
    oBrowse:navigationBlock := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
+
+   AAdd( aIndexes, { "Natural Order", {|oBrw| dbSetOrder( 0 ), oBrw:refreshAll(), oBrw:forceStable() } } )
+   AAdd( aIndexes, { "Last Name"    , {|oBrw| dbSetOrder( 1 ), oBrw:refreshAll(), oBrw:forceStable() } } )
+   oBrowse:indexes         := { aIndexes, 2 }
+
+   oBrowse:gotoBlock       := {|| GotoMyRecord() }
 
    RETURN oBrowse
 
@@ -139,8 +142,12 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
 
    HB_SYMBOL_UNUSED( xData )
 
+   nLastKey := nKey
+
    DO CASE
 
+   CASE nKey == K_CTRL_F
+      oBrowse:search()
    CASE nKey == K_F6
       oBrowse:freeze++
    CASE nKey == K_F7
@@ -259,17 +266,51 @@ STATIC FUNCTION TBPrev()
    RETURN lMoved
 
 
-STATIC FUNCTION LookMySearch( xValue,nColPos,oBrw )
+STATIC FUNCTION LookMySearch( xValue,nMode,oBrw )
    LOCAL nRec
 
-   IF IndexOrd() == 1 .AND. oBrw:getColumn( nColPos ):heading == "Last Name"
-      nRec := RecNo()
-      IF ! dbSeek( Trim( xValue ) )
-         dbGoto( nRec )
+   IF xValue == NIL .AND. oBrw == NIL
+      /* search is finished, take other action, this will help to build a selectable browser */
+      Alert( "Current Record Number Is : " + hb_ntos( RecNo() ) )
+
+   ELSEIF xValue == NIL                           /* Interface is requesting to initiate search */
+      IF IndexOrd() == 1
+         RETURN { Space( Len( TEST->last ) ), NIL, HBQTBRW_SEARCH_INCREMENTAL }
       ELSE
-         oBrw:refreshAll()
+         RETURN { NIL, NIL, HBQTBRW_SEARCH_BYFIELD }
       ENDIF
+
+   ELSE
+      IF IndexOrd() == 1                          /* Interface is requesting to do the search as per needs */
+         nRec := RecNo()
+         IF ! dbSeek( Trim( xValue ) )
+            dbGoto( nRec )
+         ELSE
+            oBrw:refreshAll()
+         ENDIF
+      ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
+         IF nLastKey == K_ESC
+            nLastKey := 0
+            RETURN .T.
+         ENDIF
+         RETURN Eval( oBrw:getColumn( oBrw:colPos ):block ) = xValue
+
+      ENDIF
+
    ENDIF
 
    RETURN .T.
+
+
+STATIC FUNCTION GotoMyRecord()
+   LOCAL nPRec := RecNo()
+   LOCAL nRec
+
+   IF ( nRec := HbQtGetSome( nPRec, "Record Number", , , , "GoTo ?" ) ) > 0
+      dbGoto( nRec )
+   ELSE
+      RETURN .F.
+   ENDIF
+
+   RETURN nPRec != nRec
 

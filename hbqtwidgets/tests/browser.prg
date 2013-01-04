@@ -178,11 +178,13 @@ STATIC FUNCTION SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTes
    RETURN .T.
 
 
-STATIC FUNCTION SearchMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3, n )
    LOCAL nn
 
+   HB_SYMBOL_UNUSED( nMode )
+
    IF ! Empty( xSearch )
-      SWITCH nColPos
+      SWITCH oBrw:colPos
       CASE 1
          IF xSearch > 0 .AND. xSearch <= Len( aTest0 )
             n := xSearch
@@ -190,7 +192,7 @@ STATIC FUNCTION SearchMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aT
          EXIT
       CASE 2
          xSearch := Lower( Trim( xSearch ) )
-         IF ( nn := AScan( aTest0, {|e| Lower( e ) == xSearch } ) ) > 0
+         IF ( nn := AScan( aTest0, {|e| Lower( e ) = xSearch } ) ) > 0
             n := nn
          ENDIF
          EXIT

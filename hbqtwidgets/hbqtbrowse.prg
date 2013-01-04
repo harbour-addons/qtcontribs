@@ -79,10 +79,6 @@
 #define __ev_tableViewBlock_right__               1503
 
 
-#define HBQTBRW_CURSOR_NONE                       1
-#define HBQTBRW_CURSOR_CELL                       2
-#define HBQTBRW_CURSOR_ROW                        3
-
 #define HBQTCOL_TYPE_ICON                         1
 #define HBQTCOL_TYPE_BITMAP                       2
 #define HBQTCOL_TYPE_SYSICON                      3
@@ -131,6 +127,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD pageDown()
    METHOD goTop()
    METHOD goBottom()
+   METHOD goTo()
    METHOD left()
    METHOD right()
    METHOD firstCol()
@@ -150,6 +147,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    /* HbQt Extentions */
    METHOD navigationBlock( bBlock )               SETGET
 
+   METHOD gotoBlock( bBlock )                     SETGET
    /* Xbase++ */
    METHOD firstPosBlock( bBlock )                 SETGET
    METHOD lastPosBlock( bBlock )                  SETGET
@@ -175,7 +173,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD editCell( cPicture, cColor, bWhen, bValid )
    METHOD edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    METHOD editBlock( bBlock )                     SETGET
-   METHOD search( xValue )
+   METHOD search( xValue, cPicture, nMode )
    METHOD print( cPrinter, lOpenPrintDialog )
    METHOD searchBlock( bBlock )                   SETGET
    METHOD contextMenuBlock( bBlock )              SETGET
@@ -189,6 +187,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    ACCESS editable                                METHOD getEditable
    ASSIGN editable                                METHOD setEditable
    METHOD toColumn( cnColumn )
+   ACCESS indexes                                 METHOD getIndexes
+   ASSIGN indexes                                 METHOD setIndexes
 
 PROTECTED:
 
@@ -230,7 +230,7 @@ PROTECTED:
 
    DATA   lHScroll                                INIT   .F.
    DATA   lVScroll                                INIT   .F.
-   DATA   nCursorMode                             INIT   0
+   DATA   nCursorMode                             INIT   HBQTBRW_CURSOR_CELL
 
    DATA   lSizeCols                               INIT   .T.
    METHOD sizeCols                                SETGET
@@ -301,6 +301,7 @@ PROTECTED:
 
    DATA   aCellValuesA  AS ARRAY                  INIT {}   // cell values buffers for each record - actual
 
+   DATA   bGotoBlock                              INIT NIL
    DATA   bNavigationBlock                        INIT NIL
    DATA   bSearchBlock                            INIT NIL
    DATA   bEditBlock                              INIT NIL
@@ -331,12 +332,16 @@ PROTECTED:
    DATA   aPosSize
    DATA   lEditable
 
-   METHOD execSearch()
+   METHOD execSearch( cSearch )
+   METHOD setGETIncremental( oGet,oEdit,oBrw )
+   METHOD execSearchByField()
    //
    DATA   oStatusBar
    DATA   oSearchGet
    DATA   xSearchValue
    DATA   aSearchList
+   DATA   oSearchTimer
+   DATA   nSearchMode
 
    METHOD manageContextMenu( oPos )
    //
@@ -354,6 +359,7 @@ PROTECTED:
    DATA   oActGoTop
    DATA   oActGoDown
    DATA   oActGoBottom
+   DATA   oActGoTo
    //
    DATA   oActPanHome
    DATA   oActLeft
@@ -369,11 +375,16 @@ PROTECTED:
    DATA   oActToColumnM
    DATA   oComboColumn
    DATA   oComboColumnM
-
+   //
    DATA   oActFreezeLPlus
    DATA   oActFreezeLMinus
    DATA   oActFreezeRPlus
    DATA   oActFreezeRMinus
+   //
+   METHOD execIndex( cIndex )
+   DATA   oActIndexes
+   DATA   oComboIndexes
+   DATA   aIndexes                                INIT {}
 
    METHOD buildToolbar()
 
@@ -442,6 +453,8 @@ METHOD HbQtBrowse:create()
       :verticalHeader():hide()
       /* Attach Model with the View */
       :setModel( ::oDbfModel )
+//    :setStyleSheet( "selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 white); " )
+      :setStyleSheet( "selection-background-color: rgb(80,160,240);" )
    ENDWITH
 
    ::oHScrollBar := QScrollBar()
@@ -1518,8 +1531,18 @@ METHOD HbQtBrowse:cursorMode( nMode )
 
    IF HB_ISNUMERIC( nMode )
       ::nCursorMode := nMode
-      ::setUnstable()
-      ::configure( 128 )
+      ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+      IF ::rowPos == 1
+         ::down()
+         IF ! ::hitBottom
+            ::up()
+         ENDIF
+      ELSE
+         ::up()
+         IF ! ::hitTop
+            ::down()
+         ENDIF
+      ENDIF
    ENDIF
 
    RETURN ::nCursorMode
@@ -1567,7 +1590,6 @@ METHOD HbQtBrowse:setCellHeight( nCellHeight )
    NEXT
    RETURN Self
 
-
 METHOD HbQtBrowse:cellValue( nRow, nCol )
 
    IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
@@ -1578,7 +1600,6 @@ METHOD HbQtBrowse:cellValue( nRow, nCol )
    ENDIF
 
    RETURN NIL
-
 
 METHOD HbQtBrowse:cellValueA( nRow, nCol )
 
@@ -1591,6 +1612,12 @@ METHOD HbQtBrowse:cellValueA( nRow, nCol )
 
    RETURN NIL
 
+
+METHOD HbQtBrowse:gotoBlock( bBlock )
+   IF bBlock != NIL
+      ::bGotoBlock := __eInstVar53( Self, "GOTONBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bGotoBlock
 
 METHOD HbQtBrowse:navigationBlock( bBlock )
    IF bBlock != NIL
@@ -1657,6 +1684,35 @@ METHOD HbQtBrowse:searchBlock( bBlock )
       ::bSearchBlock := __eInstVar53( Self, "SEARCHBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bSearchBlock
+
+
+METHOD HbQtBrowse:getIndexes()
+   RETURN ::aIndexes
+
+METHOD HbQtBrowse:setIndexes( aIndexes )
+   LOCAL xTmp
+   IF HB_ISARRAY( aIndexes ) .AND. HB_ISARRAY( aIndexes[ 1 ] )
+      ::oActIndexes:setVisible( .T. )
+      ::aIndexes := aIndexes[ 1 ]
+      ::oComboIndexes:clear()
+      FOR EACH xTmp IN ::aIndexes
+         ::oComboIndexes:addItem( xTmp[ 1 ] )
+      NEXT
+      IF HB_ISNUMERIC( aIndexes[ 2 ] )
+         ::oComboIndexes:setCurrentIndex( aIndexes[ 2 ]-1 )
+      ENDIF
+   ENDIF
+   RETURN ::aIndexes
+
+METHOD HbQtBrowse:execIndex( cIndex )
+   LOCAL n
+   IF ( n := AScan( ::aIndexes, {|e_| e_[ 1 ] == cIndex } ) ) > 0
+      IF HB_ISBLOCK( ::aIndexes[ n,2 ] )
+         Eval( ::aIndexes[ n,2 ], Self )
+      ENDIF
+   ENDIF
+   RETURN Self
+
 
 METHOD HbQtBrowse:skipCols( nCols )
    LOCAL i
@@ -1813,7 +1869,6 @@ METHOD HbQtBrowse:up()
 
    RETURN Self
 
-
 METHOD HbQtBrowse:down()
    LOCAL lReset := ::rowPos >= ::rowCount
 
@@ -1825,7 +1880,6 @@ METHOD HbQtBrowse:down()
 
    RETURN Self
 
-
 METHOD HbQtBrowse:pageUp()
 
    ::TBrowse:pageUp()
@@ -1835,7 +1889,6 @@ METHOD HbQtBrowse:pageUp()
    ::updateVertScrollBar()
 
    RETURN Self
-
 
 METHOD HbQtBrowse:pageDown()
 
@@ -1847,7 +1900,6 @@ METHOD HbQtBrowse:pageDown()
 
    RETURN Self
 
-
 METHOD HbQtBrowse:goTop()
 
    ::TBrowse:goTop()
@@ -1858,7 +1910,6 @@ METHOD HbQtBrowse:goTop()
 
    RETURN Self
 
-
 METHOD HbQtBrowse:goBottom()
 
    ::TBrowse:goBottom()
@@ -1866,6 +1917,17 @@ METHOD HbQtBrowse:goBottom()
    ::forceStable()
    ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
+
+   RETURN Self
+
+METHOD HbQtBrowse:goTo()
+
+   IF HB_ISBLOCK( ::gotoBlock() )
+      IF Eval( ::gotoBlock(), NIL, NIL, Self )
+         ::refreshAll()
+         ::updateVertScrollBar()
+      ENDIF
+   ENDIF
 
    RETURN Self
 
@@ -2379,41 +2441,104 @@ METHOD HbQtBrowse:mangageEditorKeyPress( oKeyEvent )
    RETURN .F.
 
 
-METHOD HbQtBrowse:search( xValue )
+METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    LOCAL oCol := ::getColumn( ::colPos )
    LOCAL GetList := {} , SayList := {}, oDlg
+   LOCAL aInfo, nCursor
 
-   IF xValue == NIL
-      ::xSearchValue := Eval( oCol:block )
+   IF ! HB_ISOBJECT( ::oSearchTimer )
+      ::oSearchTimer := QTimer( ::oWidget )
+      ::oSearchTimer:setInterval( 10 )
+      ::oSearchTimer:connect( "timeout()", {|| ::execSearchByField() } )
+   ENDIF
+   IF ::oSearchTimer:isActive()
+      ::oSearchTimer:stop()
+   ENDIF
+
+   IF xValue == NIL                               /* User has clicked on <search> button */
+      IF HB_ISBLOCK( ::searchBlock )
+         aInfo := Eval( ::searchBlock, NIL, NIL, Self )
+      ENDIF
+      IF ! HB_ISARRAY( aInfo )
+         ::xSearchValue := Eval( oCol:block )
+         cPicture       := oCol:picture
+         nMode          := HBQTBRW_SEARCH_ONCE
+      ELSE
+         ASize( aInfo, 4 )
+         ::xSearchValue := iif( aInfo[ 1 ] == NIL, Eval( oCol:block ), aInfo[ 1 ] )
+         cPicture       := iif( aInfo[ 2 ] == NIL, oCol:picture, aInfo[ 2 ] )
+         nMode          := iif( Empty( aInfo[ 3 ] ), HBQTBRW_SEARCH_ONCE, aInfo[ 3 ] )
+      ENDIF
    ELSE
       ::xSearchValue := xValue
    ENDIF
 
+   hb_default( @nMode, HBQTBRW_SEARCH_ONCE )
+   ::nSearchMode := nMode
+
    oDlg := QDialog( ::oWidget )
-   oDlg:setWindowTitle( oCol:heading )
 
-   @ 1,2 QGET ::xSearchValue PICTURE oCol:picture
-   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ), ::execSearch() }
-   ::oSearchGet  := GetList[ 1 ]
+   IF nMode == HBQTBRW_SEARCH_INCREMENTAL
+      nCursor := ::cursorMode
+      ::cursorMode := HBQTBRW_CURSOR_ROW
+      @ 1,2 QGET ::xSearchValue PICTURE cPicture PROPERTIES {|oGet,oEdit,oBrw| ::setGETIncremental( oGet,oEdit,oBrw ) }
+      QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) }
+   ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
+      @ 1,2 QGET ::xSearchValue PICTURE cPicture
+      QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) }
+   ELSEIF nMode == HBQTBRW_SEARCH_ONCE
+      @ 1,2 QGET ::xSearchValue PICTURE cPicture
+      QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ), ::execSearch() }
+   ENDIF
+   ::oSearchGet := GetList[ 1 ]
 
-// oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
-   oDlg:show()
-   oDlg:move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() ) //- __hbqtGetWindowFrameWidthHeight( oDlg )[2] )
-   oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
-   oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
-// oDlg:setStyleSheet( "background-color: lightyellow;" )
-   oDlg:exec()
-   oDlg:setParent( QWidget() )
+   WITH OBJECT oDlg
+      :show()
+      :hide()
+      :move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() )
+      :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+      :setAttribute( Qt_WA_TranslucentBackground, .T. )
+      :setStyleSheet( "background-color: lightyellow;" )
+      :exec()
+      :setParent( QWidget() )
+   ENDWITH
 
+   ::cursorMode := nCursor
+
+   IF nMode == HBQTBRW_SEARCH_INCREMENTAL         /* Inform appln that interface is done with */
+      IF HB_ISBLOCK( ::searchBlock )
+         Eval( ::searchBlock )
+      ENDIF
+   ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
+      IF HB_ISBLOCK( ::searchBlock )
+         ::oSearchTimer:start()
+      ENDIF
+   ENDIF
    RETURN NIL
 
 
-METHOD HbQtBrowse:execSearch()
+METHOD HbQtBrowse:setGETIncremental( oGet,oEdit,oBrw )
+   HB_SYMBOL_UNUSED( oGet )
+   HB_SYMBOL_UNUSED( oBrw )
+   oEdit:connect( "textEdited(QString)", {|cText| ::execSearch( cText, ::colPos, Self ) } )
+   RETURN Self
 
-   IF HB_ISBLOCK( ::searchBlock )
-      Eval( ::searchBlock, ::xSearchValue, ::colPos, Self )
+METHOD HbQtBrowse:execSearchByField()
+   IF Eval( ::searchBlock, ::xSearchValue, ::nSearchMode, Self )
+      ::oSearchTimer:stop()
+   ELSE
+      ::down()
+      IF ::hitBottom
+         ::oSearchTimer:stop()
+      ENDIF
    ENDIF
+   RETURN Self
 
+METHOD HbQtBrowse:execSearch( cSearch )
+   IF HB_ISBLOCK( ::searchBlock )
+      hb_default( @cSearch, ::xSearchValue )
+      Eval( ::searchBlock, cSearch, ::nSearchMode, Self )
+   ENDIF
    RETURN .T.
 
 
@@ -2460,6 +2585,9 @@ METHOD HbQtBrowse:buildToolbar()
       :setFloatable( .F. )
       :setFocusPolicy( Qt_NoFocus )
       //
+      :addAction( ::oActIndexes )
+      :addSeparator()
+      //
       :addAction( ::oActEdit )
       :addAction( ::oActPrint )
       :addAction( ::oActSearch )
@@ -2468,6 +2596,7 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActGoUp )
       :addAction( ::oActGoDown )
       :addAction( ::oActGoBottom )
+      :addAction( ::oActGoTo )
       :addSeparator()
       :addAction( ::oActPanHome )
       :addAction( ::oActLeft )
@@ -2495,13 +2624,14 @@ METHOD HbQtBrowse:buildToolbar()
 
 
 METHOD HbQtBrowse:buildActions()
+   LOCAL nComboWidth := 80
 
    WITH OBJECT ::oComboColumn := QComboBox()
       :setFocusPolicy( Qt_NoFocus )
       :setTooltip( "Scroll to column..." )
+      :setMaximumWidth( nComboWidth )
+      :connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
    ENDWITH
-   ::oComboColumn:connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
-
    WITH OBJECT ::oActToColumn := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oComboColumn )
       :setTooltip( "Scroll to column..." )
@@ -2510,12 +2640,23 @@ METHOD HbQtBrowse:buildActions()
    WITH OBJECT ::oComboColumnM := QComboBox()
       :setFocusPolicy( Qt_NoFocus )
       :setTooltip( "Scroll to column..." )
+      :connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
    ENDWITH
-   ::oComboColumnM:connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
-
    WITH OBJECT ::oActToColumnM := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oComboColumnM )
       :setTooltip( "Scroll to column..." )
+   ENDWITH
+
+   WITH OBJECT ::oComboIndexes := QComboBox()
+      :setFocusPolicy( Qt_NoFocus )
+      :setTooltip( "Indexes..." )
+      :setMaximumWidth( nComboWidth )
+      :connect( "activated(QString)", {|cIndex| ::execIndex( cIndex ) } )
+   ENDWITH
+   WITH OBJECT ::oActIndexes := QWidgetAction( ::oWidget )
+      :setDefaultWidget( ::oComboIndexes )
+      :setTooltip( "Indexes..." )
+      :setVisible( .F. )
    ENDWITH
 
    WITH OBJECT ::oActEdit := QAction( ::oWidget )
@@ -2567,6 +2708,12 @@ METHOD HbQtBrowse:buildActions()
       :setTooltip( "Go to bottom record" )
       :connect( "triggered()", {|| ::goBottom() } )
    ENDWITH
+   WITH OBJECT ::oActGoTo := QAction( ::oWidget )
+      :setText( "GoTo" )
+      :setIcon( QIcon( __hbqtImage( "go-jump" ) ) )
+      :setTooltip( "Go to requested record" )
+      :connect( "triggered()", {|| ::goto() } )
+   ENDWITH
 
    WITH OBJECT ::oActLeft := QAction( ::oWidget )
       :setText( "Left" )
@@ -2599,13 +2746,12 @@ METHOD HbQtBrowse:buildActions()
       :setTooltip( "Move current column left one column" )
       :connect( "triggered()", {|| ::moveLeft() } )
    ENDWITH
-
-   ::oActMoveToRight := QAction( ::oWidget )
-   ::oActMoveToRight:setText( "Move Right" )
-   ::oActMoveToRight:setIcon( QIcon( __hbqtImage( "navigate-right" ) ) )
-   ::oActMoveToRight:setTooltip( "Move current column right one column" )
-   ::oActMoveToRight:connect( "triggered()", {|| ::moveRight() } )
-
+   WITH OBJECT ::oActMoveToRight := QAction( ::oWidget )
+      :setText( "Move Right" )
+      :setIcon( QIcon( __hbqtImage( "navigate-right" ) ) )
+      :setTooltip( "Move current column right one column" )
+      :connect( "triggered()", {|| ::moveRight() } )
+   ENDWITH
    WITH OBJECT ::oActMoveToFirst := QAction( ::oWidget )
       :setText( "Move First" )
       :setIcon( QIcon( __hbqtImage( "navigate-left-most" ) ) )
