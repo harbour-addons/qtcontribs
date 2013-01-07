@@ -84,6 +84,14 @@ FUNCTION __hbqtImage( cName )
    RETURN ":/hbqt/resources" + "/" + cName + ".png"
 
 
+FUNCTION __hbqtGetNextIdAsString( cString )
+   STATIC hIDs := {=>}
+   IF ! hb_hHasKey( hIDs, cString )
+      hIDs[ cString ] := 0
+   ENDIF
+   RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
+
+
 FUNCTION HbQtSet( nSet, xValue )
    LOCAL xOldValue := t_sets[ nSet ]
 

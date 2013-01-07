@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-07 13:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetlist.prg
+    + Added: internal function __hbqtGetNextIdAsString( cString ) -> cString_<runningNumber>
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Changed: :setFocus() from PROTECTED to PUBLIC.
+    + Implemented: vertical navigation with K_UP, K_DOWN, K_PGUP, K_PGDN,
+       K_CTRL_PGUP, K_CTRL_PGDN while inside INCREMENTAL search mode.
+       Under many situations this behaviour is very much required.
+
 2012-01-07 05:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtalert.prg
     % Renamed: HbQtGetSome(...) => HbQtBulkGet(...)

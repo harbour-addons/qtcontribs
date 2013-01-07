@@ -190,9 +190,12 @@ CLASS HbQtBrowse INHERIT TBrowse
    ACCESS indexes                                 METHOD getIndexes
    ASSIGN indexes                                 METHOD setIndexes
 
+   METHOD setFocus()                              INLINE ::oTableView:setFocus()
+
 PROTECTED:
 
    METHOD cellValue( nRow, nCol )                /* Overloaded */
+   METHOD cellColor( nRow, nCol )                /* Overloaded */
 
    /* HbQt Internal Methods */
    METHOD cellValueA( nRow, nCol )
@@ -280,7 +283,6 @@ PROTECTED:
    METHOD getCurrentIndex()                       INLINE ::oDbfModel:index( ::rowPos - 1, ::colPos - 1 )
    ACCESS getDbfModel()                           INLINE ::oDbfModel
    METHOD openPersistentEditor()
-   METHOD setFocus()                              INLINE ::oTableView:setFocus()
 
    DATA   qDelegate
 
@@ -1001,7 +1003,7 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
 
    IF HB_ISBLOCK( SetKey( nKey ) )
       Eval( SetKey( nKey ) )
-      RETURN .F.
+      RETURN .T.                                  /* Stop Propegation to parent */
    ENDIF
 
    IF HB_ISBLOCK( ::bNavigationBlock )
@@ -1015,7 +1017,7 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
       ::applyKey( nKey )
    ENDIF
 
-   RETURN .T.   /* Stop Propegation to parent */
+   RETURN .T.                                     /* Stop Propegation to parent */
 
 
 METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
@@ -1590,11 +1592,20 @@ METHOD HbQtBrowse:setCellHeight( nCellHeight )
    NEXT
    RETURN Self
 
+METHOD HbQtBrowse:cellColor( nRow, nCol )
+
+   IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
+      nCol >= 1 .AND. nCol <= ::colCount
+
+      RETURN ::aCellColors[ nRow, nCol ]
+   ENDIF
+
+   RETURN NIL
+
 METHOD HbQtBrowse:cellValue( nRow, nCol )
 
    IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
-      nCol >= 1 .AND. nCol <= ::colCount .AND. ;
-      ::aCellStatus[ nRow ]
+      nCol >= 1 .AND. nCol <= ::colCount
 
       RETURN ::aCellValues[ nRow, nCol ]
    ENDIF
@@ -1604,8 +1615,7 @@ METHOD HbQtBrowse:cellValue( nRow, nCol )
 METHOD HbQtBrowse:cellValueA( nRow, nCol )
 
    IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
-      nCol >= 1 .AND. nCol <= ::colCount .AND. ;
-      ::aCellStatus[ nRow ]
+      nCol >= 1 .AND. nCol <= ::colCount
 
       RETURN ::aCellValuesA[ nRow, nCol ]
    ENDIF
@@ -2445,6 +2455,7 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    LOCAL oCol := ::getColumn( ::colPos )
    LOCAL GetList := {} , SayList := {}, oDlg
    LOCAL aInfo, nCursor
+   LOCAL k1,k2,k3,k4,k5,k6
 
    IF ! HB_ISOBJECT( ::oSearchTimer )
       ::oSearchTimer := QTimer( ::oWidget )
@@ -2492,16 +2503,28 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    ENDIF
    ::oSearchGet := GetList[ 1 ]
 
+   k1 := SetKey( K_UP       , {|| ::up()       } )
+   k2 := SetKey( K_DOWN     , {|| ::down()     } )
+   k3 := SetKey( K_PGUP     , {|| ::pageUp()   } )
+   k4 := SetKey( K_PGDN     , {|| ::pageDown() } )
+   k5 := SetKey( K_CTRL_PGUP, {|| ::goTop()    } )
+   k6 := SetKey( K_CTRL_PGDN, {|| ::goBottom() } )
    WITH OBJECT oDlg
       :show()
       :hide()
       :move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() )
       :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
       :setAttribute( Qt_WA_TranslucentBackground, .T. )
-      :setStyleSheet( "background-color: lightyellow;" )
+      :setStyleSheet( "background-color: lightblue;" )
       :exec()
       :setParent( QWidget() )
    ENDWITH
+   SetKey( K_UP       , k1 )
+   SetKey( K_DOWN     , k2 )
+   SetKey( K_PGUP     , k3 )
+   SetKey( K_PGDN     , k4 )
+   SetKey( K_CTRL_PGUP, k5 )
+   SetKey( K_CTRL_PGDN, k6 )
 
    ::cursorMode := nCursor
 
