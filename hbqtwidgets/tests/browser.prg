@@ -141,7 +141,9 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
          IF xResult == NIL
             EXIT                        /* Sure ESCape is pressed */
          ENDIF
-         oBrowse:Right()
+         IF i < oBrowse:colCount
+            oBrowse:Right()
+         ENDIF
       NEXT
 
    OTHERWISE

@@ -223,8 +223,8 @@ STATIC FUNCTION TerminateAlert( aButtons )
    RETURN .T.
 
 
-FUNCTION HbQtGetSome( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
-   LOCAL i, cType, oDlg, nVrbls, nRes, oLay, bWhen, bValid
+FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
+   LOCAL i, cType, oDlg, nVrbls, nRes, oLay, bWhen, bValid, aCombo
    LOCAL aVariables := {}
    LOCAL aCaptions  := {}
    LOCAL aPictures  := {}
@@ -284,7 +284,13 @@ FUNCTION HbQtGetSome( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
    FOR i := 1 TO nVrbls
       bWhen  := __getBlock( aWhens, i )
       bValid := __getBlock( aValids, i )
-      @ 1,1 QGET aVariables[ i ] PICTURE aPictures[ i ] CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
+      IF HB_ISARRAY( aVariables[ i ] )
+         aCombo := aVariables[ i ]
+         aVariables[ i ] := aCombo[ 1 ]
+         @ 1, 1, 1, ( Len( aVariables[ i ] ) + 3 ) QGET aVariables[ i ] COMBOBOX aCombo CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
+      ELSE
+         @ 1, 1 QGET aVariables[ i ] PICTURE aPictures[ i ] CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
+      ENDIF
    NEXT
    QREAD oLay LASTGETBLOCK {|| oDlg:done( 1 ) }
 

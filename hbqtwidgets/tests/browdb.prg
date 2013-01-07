@@ -306,7 +306,7 @@ STATIC FUNCTION GotoMyRecord()
    LOCAL nPRec := RecNo()
    LOCAL nRec
 
-   IF ( nRec := HbQtGetSome( nPRec, "Record Number", , , , "GoTo ?" ) ) > 0
+   IF ( nRec := HbQtBulkGet( nPRec, "Record Number", , , , "GoTo ?" ) ) > 0
       dbGoto( nRec )
    ELSE
       RETURN .F.

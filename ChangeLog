@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-07 05:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtalert.prg
+    % Renamed: HbQtGetSome(...) => HbQtBulkGet(...)
+    + Added: treating the GET in a combobox if one of the elements of 
+       HbQtBulkGet()'s <xVariable> is an array of character strings. The 
+       RETURN value will be a string of choice selected in combobox. the 
+       first prompt in such array will be the default option when combo 
+       is presented.
+
+       Thanks to Angel Pais for the idea.
+
+  * hbqtwidgets/tests/browdb.prg
+    % Changed: call to HbQtGetSome() with HbQtBulkGet().
+
+  * hbqtwidgets/tests/browser.prg
+    % Minor.
+
 2012-01-03 13:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtstd.ch
     + Added: HBQTBRW_* constants, usable to configure HbQtBrowse interface.
