@@ -308,7 +308,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       NEXT
 
       aGetList[ 1 ]:edit:setFocus()
-      aGetList[ 1 ]:edit:selectAll()
+      IF __objGetClsName( aGetList[ 1 ]:edit ) == "QLineEdit"
+         aGetList[ 1 ]:edit:selectAll()
+      ENDIF
 
       IF lFit                                     /* Fit to the contents maintaining margins */
          IF lFLayout

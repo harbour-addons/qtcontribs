@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogScroll</class>
+ <widget class="QDialog" name="DialogScroll">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>205</width>
+    <height>193</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Scroll</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>12</x>
+     <y>8</y>
+     <width>177</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <widget class="QRadioButton" name="rdwDnBtmTopDn">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>12</y>
+      <width>145</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Down-Bottom-Top-Down</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rdwDnBtm">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>40</y>
+      <width>141</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Down-Bottom</string>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="rdwBtm">
+    <property name="geometry">
+     <rect>
+      <x>16</x>
+      <y>68</y>
+      <width>141</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Always Bottom</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>32</x>
+     <y>120</y>
+     <width>69</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Interval in MS</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinInterval">
+   <property name="geometry">
+    <rect>
+     <x>105</x>
+     <y>116</y>
+     <width>65</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>10</number>
+   </property>
+   <property name="maximum">
+    <number>50000</number>
+   </property>
+   <property name="singleStep">
+    <number>10</number>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnOK">
+   <property name="geometry">
+    <rect>
+     <x>16</x>
+     <y>156</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>OK</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnCancel">
+   <property name="geometry">
+    <rect>
+     <x>112</x>
+     <y>156</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+   <property name="autoDefault">
+    <bool>false</bool>
+   </property>
+   <property name="default">
+    <bool>false</bool>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

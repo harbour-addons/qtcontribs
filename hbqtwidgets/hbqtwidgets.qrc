@@ -119,5 +119,6 @@
     <file>resources/minus-2.png</file>
     <file>resources/plus-1.png</file>
     <file>resources/plus-2.png</file>
+    <file>resources/scroll.png</file>
   </qresource>
 </RCC>

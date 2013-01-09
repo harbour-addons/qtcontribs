@@ -191,6 +191,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN indexes                                 METHOD setIndexes
 
    METHOD setFocus()                              INLINE ::oTableView:setFocus()
+   METHOD scroll( nMode, nMSInterval )
 
 PROTECTED:
 
@@ -345,6 +346,9 @@ PROTECTED:
    DATA   oSearchTimer
    DATA   nSearchMode
 
+   METHOD execScroll( nMode )
+   DATA   oScrollTimer
+
    METHOD manageContextMenu( oPos )
    //
    DATA   bContextMenuBlock
@@ -383,12 +387,15 @@ PROTECTED:
    DATA   oActFreezeRPlus
    DATA   oActFreezeRMinus
    //
+   DATA   oActScroll
+   //
    METHOD execIndex( cIndex )
    DATA   oActIndexes
    DATA   oComboIndexes
    DATA   aIndexes                                INIT {}
 
    METHOD buildToolbar()
+   METHOD stopAllTimers()
 
    METHOD printPreview( oPrinter )
    METHOD paintRequested( oPrinter )
@@ -2457,13 +2464,11 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    LOCAL aInfo, nCursor
    LOCAL k1,k2,k3,k4,k5,k6
 
+   ::stopAllTimers()
    IF ! HB_ISOBJECT( ::oSearchTimer )
       ::oSearchTimer := QTimer( ::oWidget )
       ::oSearchTimer:setInterval( 10 )
       ::oSearchTimer:connect( "timeout()", {|| ::execSearchByField() } )
-   ENDIF
-   IF ::oSearchTimer:isActive()
-      ::oSearchTimer:stop()
    ENDIF
 
    IF xValue == NIL                               /* User has clicked on <search> button */
@@ -2639,6 +2644,8 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActFreezeRPlus )
       :addAction( ::oActFreezeRMinus )
       :addSeparator()
+      :addAction( ::oActScroll )
+      :addSeparator()
 
       :hide()
    ENDWITH
@@ -2812,6 +2819,99 @@ METHOD HbQtBrowse:buildActions()
       :setTooltip( "UnFreeze another column at right" )
       :connect( "triggered()", {|| ::rfreeze-- } )
    ENDWITH
+
+   WITH OBJECT ::oActScroll := QAction( ::oWidget )
+      :setText( "Scroll" )
+      :setIcon( QIcon( __hbqtImage( "scroll" ) ) )
+      :setTooltip( "Auto scroll" )
+      :connect( "triggered()", {|| ::Scroll() } )
+   ENDWITH
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:scroll( nMode, nMSInterval )
+   LOCAL oDlg, nRes, lStop := .F.
+   LOCAL GetList := {}, SayList := {}
+
+   ::stopAllTimers()
+
+   IF nMode == NIL
+      oDlg := hbqtui_scroll( ::oWidget )
+      oDlg:btnOK:connect( "clicked()", {|| oDlg:done( 1 ) } )
+      oDlg:btnCancel:connect( "clicked()", {|| oDlg:done( 0 ) } )
+      oDlg:rdwDnBtmTopDn:setChecked( .T. )
+      nRes := oDlg:exec()
+      IF nRes == 1
+         nMode       := iif( oDlg:rdwDnBtmTopDn:isChecked(), 1, iif( oDlg:rdwDnBtm:isChecked(), 2, 3 ) )
+         nMSInterval := oDlg:spinInterval:value()
+      ENDIF
+      oDlg:setParent( QWidget() )
+      IF nRes == 0
+         RETURN Self
+      ENDIF
+   ENDIF
+
+   hb_default( @nMSInterval, 10 )
+
+   IF ! HB_ISOBJECT( ::oScrollTimer )
+      ::oScrollTimer := QTimer( ::oWidget )
+      ::oScrollTimer:setInterval( nMSInterval )
+      ::oScrollTimer:connect( "timeout()", {|| ::execScroll( nMode ) } )
+   ENDIF
+   ::oScrollTimer:start()
+
+   oDlg := QDialog( ::oWidget )
+
+   @ 1,2,1,15 QGET lStop PUSHBUTTON "Stop"
+   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) }
+
+   WITH OBJECT oDlg
+      :show()
+      :hide()
+      :move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() )
+      :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+      :setAttribute( Qt_WA_TranslucentBackground, .T. )
+      :show()
+      :exec()
+      :setParent( QWidget() )
+   ENDWITH
+   ::oScrollTimer:stop()
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:execScroll( nMode )
+
+   SWITCH nMode
+   CASE 1
+      ::down()
+      IF ::hitBottom
+         ::goTop()
+      ENDIF
+      EXIT
+   CASE 2
+      ::down()
+      EXIT
+   CASE 3
+      ::goBottom()
+      EXIT
+   ENDSWITCH
+   RETURN Self
+
+
+METHOD HbQtBrowse:stopAllTimers()
+
+   IF HB_ISOBJECT( ::oSearchTimer )
+      IF ::oSearchTimer:isActive()
+         ::oSearchTimer:stop()
+      ENDIF
+   ENDIF
+   IF HB_ISOBJECT( ::oScrollTimer )
+      IF ::oScrollTimer:isActive()
+         ::oScrollTimer:stop()
+      ENDIF
+   ENDIF
 
    RETURN Self
 

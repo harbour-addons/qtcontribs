@@ -16,6 +16,44 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-08 19:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/scroll.ui
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: scroll.ui - Widget to fetch user options for a scroll.
+
+  + hbqtwidgets/resources/scroll.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: scroll.png.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    % :selectAll() was wrongly called on other type of GET then QLineEdit.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: appln callable method :scroll( [<nMode>], [<nMSInterval>] )
+             Interface icon <Scroll> on the browser toolbar which call :scroll().
+       
+       This is a convinient mechanism to to present table with auto 
+       scroll option where data is refreshed in a fixed interval. It is a 
+       most useful function for upper management to provide a dash-board 
+       like functionality. 
+
+       If :scroll() is called without any parameter, then a dialog to 
+       fetch user options is presented, otherwise scroll is initiated 
+       immediately.
+
+       <nMode> has three possible values:
+       1. Scroll down-bottom-top-down - scrolling starts from current record,
+           when :hitBottom is detected, jumps to top of the browser and starts 
+           scrolling downwards.
+       2. Scroll down-bottom - scrolling starts from current record and keeps 
+           on downward. It does not check if :hitBottom is reached or not.
+           Useful when user needs what latest records are being pushed into 
+           the table.
+       3. Sctoll to bottom of browser and issues :goBottom() always.
+           Useful when user needs to review the latest info.
+
+       A <Stop> push button stays in the bottom row+ location to stop the scrolling.
+
 2012-01-07 13:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
     + Added: internal function __hbqtGetNextIdAsString( cString ) -> cString_<runningNumber>
