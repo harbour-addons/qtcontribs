@@ -184,6 +184,21 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
          ENDIF
          dbRUnlock()
       ENDIF
+   CASE nKey > 32 .AND. nKey <= 127
+      IF oBrowse:getColumn( oBrowse:colPos ):heading == "Last Name"
+         xResult := oBrowse:editCell( "@K ", , , , nKey )
+      ELSE
+         xResult := oBrowse:editCell( , , , , nKey )
+      ENDIF
+
+      IF xResult != NIL
+         IF dbRLock()
+            Eval( oBrowse:getColumn( oBrowse:colPos ):block, xResult )
+            dbCommit()
+            dbRUnlock()
+            oBrowse:Right()
+         ENDIF
+      ENDIF
    OTHERWISE
       lHandelled := .F.
    ENDCASE

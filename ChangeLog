@@ -16,6 +16,48 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-09 14:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/hbmk2_qt.hb
+    % Changed: class constructor from "NEW" to "INIT".
+       This is in-line with Class(y) compatibility and will be useful 
+       when Przemek will implement true objects in Harbour. 
+       Though it will not be necessary at this moment, but still 
+       re-build everything.
+
+  * hbqt/qtcore/qth/QCoreApplication.qth
+    % Detached: 2nd paarmeter of :postEvent() to use just like on stack object.
+
+  + hbqtwidgets/resources/stop.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: stop.png.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    + Fixed: wrong implemention of sending :selectAll() to QLineEdit.
+
+  * hbqtwidgets/hbqtgetsys.prg
+    % Experimented: but failed, code still resides.
+   
+  * hbqtwidgets/hbqtbrowse.prg
+    - Deactivated: moving the columns with mouse. Will come to it later.
+    + Added: <Stop> browser toolbar icon adjoining <Scroll>.
+       The icon remains in disabled state until a <Scroll> is initiated.
+       Once clicked, its state is again disabled.
+
+    % Removed: the <Stop> button appearing at the bottom row after <Scroll> 
+       is initiated. Now toolbar icon <Stop> is enabled instead.
+
+      <Scroll> event is now terminated if any other event is initiated.
+      This is necessary to avoid multiple initializations leading to 
+      weired behavior.
+
+    + Enhanced: oBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
+       <nKey> is the key you would like to stuff in the edit buffer.
+       This implementation respects "@K" function of <cPicture> parameter 
+       or oColumn:picture clause is <cPicture> is not passed to :editCell().
+
+  * hbqtwidgets/tests/browdb.prg
+    + Added: code to demonstrate how "@K " in oBrowse:editCell() can be exploited.
+
 2012-01-08 19:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/scroll.ui
   * hbqtwidgets/hbqtwidgets.hbp

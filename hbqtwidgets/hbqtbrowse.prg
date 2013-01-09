@@ -170,7 +170,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD verticalScrollbar                       SETGET
    METHOD cursorMode                              SETGET
 
-   METHOD editCell( cPicture, cColor, bWhen, bValid )
+   METHOD editCell( cPicture, cColor, bWhen, bValid, nKey )
    METHOD edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    METHOD editBlock( bBlock )                     SETGET
    METHOD search( xValue, cPicture, nMode )
@@ -348,6 +348,7 @@ PROTECTED:
 
    METHOD execScroll( nMode )
    DATA   oScrollTimer
+   DATA   nScrollMode
 
    METHOD manageContextMenu( oPos )
    //
@@ -388,6 +389,7 @@ PROTECTED:
    DATA   oActFreezeRMinus
    //
    DATA   oActScroll
+   DATA   oActStop
    //
    METHOD execIndex( cIndex )
    DATA   oActIndexes
@@ -815,8 +817,8 @@ METHOD HbQtBrowse:connect()
 #if 0
    ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
+   ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )  /* Revisit Later */
 #endif
-   ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )
 
    ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::manageCommitData( p )                              } )
    ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1 | ::manageEditorClosed( p, p1 )    } )
@@ -826,93 +828,75 @@ METHOD HbQtBrowse:connect()
 
 METHOD HbQtBrowse:buildLeftFreeze()
 
-   /*  Left Freeze */
-   ::oLeftView := HBQTableView()
-   ::oLeftView:setFont( ::oFont )
-   //
-   ::oLeftView:setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-   ::oLeftView:setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-   ::oLeftView:setTabKeyNavigation( .t. )
-   ::oLeftView:setShowGrid( .t. )
-   ::oLeftView:setGridStyle( ::gridStyle )   /* to be based on column definition */
-   ::oLeftView:setSelectionMode( QAbstractItemView_SingleSelection )
-   ::oLeftView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
-   ::oLeftView:setFocusPolicy( Qt_NoFocus )
-   //
-   /*  Veritical Header because of Performance boost */
-   ::oLeftVHeaderView := ::oLeftView:verticalHeader()
-   ::oLeftVHeaderView:hide()
+   ::oLeftDbfModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 151, t, role, x, y ) } )
+   WITH OBJECT ::oLeftView := HBQTableView()
+      :setFont( ::oFont )
+      :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      :setTabKeyNavigation( .t. )
+      :setShowGrid( .t. )
+      :setGridStyle( ::gridStyle )   /* to be based on column definition */
+      :setSelectionMode( QAbstractItemView_SingleSelection )
+      :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+      :setFocusPolicy( Qt_NoFocus )
+      :setModel( ::oLeftDbfModel )
+      :verticalHeader():hide()
+   ENDWITH
+
    /*  Horizontal Header Fine Tuning */
    ::oLeftHeaderView := ::oLeftView:horizontalHeader()
    ::oLeftHeaderView:setHighlightSections( .F. )
 
-   ::oLeftDbfModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 151, t, role, x, y ) } )
-
-   ::oLeftView:setModel( ::oLeftDbfModel )
-   //
-   //::oLeftView:hide()
-
-   /*  Horizontal Footer */
-   ::oLeftFooterView := QHeaderView( Qt_Horizontal )
-   //
-   ::oLeftFooterView:setHighlightSections( .F. )
-   ::oLeftFooterView:setMinimumHeight( 20 )
-   ::oLeftFooterView:setMaximumHeight( 20 )
-   ::oLeftFooterView:setResizeMode( QHeaderView_Fixed )
-   ::oLeftFooterView:setFocusPolicy( Qt_NoFocus )
-   //
    ::oLeftFooterModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 152, t, role, x, y ) } )
-
-   ::oLeftFooterView:setModel( ::oLeftFooterModel )
-   //
-   //::oLeftFooterView:hide()
+   WITH OBJECT ::oLeftFooterView := QHeaderView( Qt_Horizontal )
+      :setHighlightSections( .F. )
+      :setMinimumHeight( 20 )
+      :setMaximumHeight( 20 )
+      :setResizeMode( QHeaderView_Fixed )
+      :setFocusPolicy( Qt_NoFocus )
+      :setModel( ::oLeftFooterModel )
+   ENDWITH
 
    RETURN Self
 
 
 METHOD HbQtBrowse:buildRightFreeze()
-   LOCAL oVHdr
 
-   /*  Left Freeze */
-   ::oRightView := HBQTableView()
-   ::oRightView:setFont( ::oFont )
-   //
-   ::oRightView:setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-   ::oRightView:setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-   ::oRightView:setTabKeyNavigation( .t. )
-   ::oRightView:setShowGrid( .t. )
-   ::oRightView:setGridStyle( ::gridStyle )   /* to be based on column definition */
-   ::oRightView:setSelectionMode( QAbstractItemView_SingleSelection )
-   ::oRightView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
-   //
-   /*  Veritical Header because of Performance boost */
-   oVHdr := ::oRightView:verticalHeader()
-   oVHdr:hide()
+   ::oRightDbfModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 161, t, role, x, y ) } )
+   WITH OBJECT ::oRightView := HBQTableView()
+      :setFont( ::oFont )
+      :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      :setTabKeyNavigation( .t. )
+      :setShowGrid( .t. )
+      :setGridStyle( ::gridStyle )   /* to be based on column definition */
+      :setSelectionMode( QAbstractItemView_SingleSelection )
+      :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
+      :setModel( ::oRightDbfModel )
+      :verticalHeader():hide()
+   ENDWITH
+
    /*  Horizontal Header Fine Tuning */
    ::oRightHeaderView := ::oRightView:horizontalHeader()
    ::oRightHeaderView:setHighlightSections( .F. )
 
-   ::oRightDbfModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 161, t, role, x, y ) } )
-
-   ::oRightView:setModel( ::oRightDbfModel )
-
    /*  Horizontal Footer */
-   ::oRightFooterView := QHeaderView( Qt_Horizontal )
-   //
-   ::oRightFooterView:setHighlightSections( .F. )
-   ::oRightFooterView:setMinimumHeight( 20 )
-   ::oRightFooterView:setMaximumHeight( 20 )
-   ::oRightFooterView:setResizeMode( QHeaderView_Fixed )
-   ::oRightFooterView:setFocusPolicy( Qt_NoFocus )
-   //
    ::oRightFooterModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 162, t, role, x, y ) } )
-
-   ::oRightFooterView:setModel( ::oRightFooterModel )
+   WITH OBJECT ::oRightFooterView := QHeaderView( Qt_Horizontal )
+      :setHighlightSections( .F. )
+      :setMinimumHeight( 20 )
+      :setMaximumHeight( 20 )
+      :setResizeMode( QHeaderView_Fixed )
+      :setFocusPolicy( Qt_NoFocus )
+      :setModel( ::oRightFooterModel )
+   ENDWITH
 
    RETURN Self
 
 
 METHOD HbQtBrowse:manageMouseDblClick( oMouseEvent )
+
+   ::stopAllTimers()
 
    IF HB_ISBLOCK( ::bNavigationBlock )
       SWITCH oMouseEvent:button()
@@ -932,6 +916,8 @@ METHOD HbQtBrowse:manageMouseDblClick( oMouseEvent )
 
 
 METHOD HbQtBrowse:manageMouseWheel( oWheelEvent )
+
+   ::stopAllTimers()
 
    IF oWheelEvent:orientation() == Qt_Vertical
       IF oWheelEvent:delta() > 0
@@ -959,6 +945,8 @@ METHOD HbQtBrowse:manageMouseWheel( oWheelEvent )
 
 METHOD HbQtBrowse:manageMousePress( oMouseEvent )
 
+   ::stopAllTimers()
+
    ::oModelIndex := ::oTableView:indexAt( oMouseEvent:pos() )
    IF ::oModelIndex:isValid()
       ::skipRows( ( ::oModelIndex:row() + 1 ) - ::rowPos )
@@ -984,6 +972,8 @@ METHOD HbQtBrowse:manageMousePress( oMouseEvent )
 
 METHOD HbQtBrowse:manageMouseRelease( oMouseEvent )
 
+   ::stopAllTimers()
+
    IF HB_ISBLOCK( ::bNavigationBlock )
       SWITCH oMouseEvent:button()
       CASE Qt_LeftButton
@@ -1005,6 +995,8 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
 
    LOCAL lHandelled := .F.
    LOCAL nKey
+
+   ::stopAllTimers()
 
    nKey := hbqt_qtEventToHbEvent( oEvent )
 
@@ -2206,7 +2198,7 @@ METHOD HbQtBrowse:moveEnd()
 
    RETURN col_to_move < ::colCount
 
-METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid )
+METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    LOCAL oDlg, nRes
    LOCAL oRect   := ::oTableView:visualrect( ::getCurrentIndex() )
    LOCAL oPos    := ::oTableView:mapToGlobal( QPoint( oRect:x(), oRect:y() ) )
@@ -2217,7 +2209,10 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid )
    oDlg := QDialog( ::oTableView )
    oDlg:setWindowTitle( oCol:heading )
 
-   @ 0,0 QGET xValue PICTURE iif( Empty( cPicture ), oCol:Picture, cPicture ) ;
+   cPicture := iif( Empty( cPicture ), oCol:Picture, cPicture )
+   hb_default( @cPicture, "" )
+
+   @ 0,0 QGET xValue PICTURE cPicture ;
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
                      WHEN    {|oGet| iif( HB_ISBLOCK( bWhen ) , Eval( bWhen, oGet ) , iif( HB_ISBLOCK( oCol:preBlock ) , Eval( oCol:preBlock , oGet ), .T. ) ) } ;
                      VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) }
@@ -2227,6 +2222,13 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid )
    oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
    oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
    oDlg:move( oPos:x()-4, oPos:y() + ::oTableView:horizontalHeader():height() )
+   IF HB_ISNUMERIC( nKey )
+      IF ! ( "K" $ Upper( cPicture ) )
+         GetList[ 1 ]:edit():home( .F. )
+      ENDIF
+      GetList[ 1 ]:edit():insert( Chr( nKey ) )
+//    QApplication():postEvent( oDlg, QKeyEvent( QEvent_KeyPress, hbqt_hbEventToQtEvent( nKey ), hbqt_EventModifier( nKey ) ) )
+   ENDIF
    nRes := oDlg:exec()
    oDlg:setParent( QWidget() )
 
@@ -2645,6 +2647,7 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActFreezeRMinus )
       :addSeparator()
       :addAction( ::oActScroll )
+      :addAction( ::oActStop )
       :addSeparator()
 
       :hide()
@@ -2826,13 +2829,19 @@ METHOD HbQtBrowse:buildActions()
       :setTooltip( "Auto scroll" )
       :connect( "triggered()", {|| ::Scroll() } )
    ENDWITH
+   WITH OBJECT ::oActStop := QAction( ::oWidget )
+      :setText( "StopScroll" )
+      :setIcon( QIcon( __hbqtImage( "stop" ) ) )
+      :setTooltip( "Stop Auto Scrolling" )
+      :connect( "triggered()", {|| ::stopAllTimers() } )
+      :setEnabled( .F. )
+   ENDWITH
 
    RETURN Self
 
 
 METHOD HbQtBrowse:scroll( nMode, nMSInterval )
-   LOCAL oDlg, nRes, lStop := .F.
-   LOCAL GetList := {}, SayList := {}
+   LOCAL oDlg, nRes
 
    ::stopAllTimers()
 
@@ -2854,29 +2863,15 @@ METHOD HbQtBrowse:scroll( nMode, nMSInterval )
 
    hb_default( @nMSInterval, 10 )
 
+   ::nScrollMode := nMode
+
    IF ! HB_ISOBJECT( ::oScrollTimer )
       ::oScrollTimer := QTimer( ::oWidget )
-      ::oScrollTimer:setInterval( nMSInterval )
-      ::oScrollTimer:connect( "timeout()", {|| ::execScroll( nMode ) } )
+      ::oScrollTimer:connect( "timeout()", {|| ::execScroll( ::nScrollMode ) } )
    ENDIF
+   ::oScrollTimer:setInterval( nMSInterval )
    ::oScrollTimer:start()
-
-   oDlg := QDialog( ::oWidget )
-
-   @ 1,2,1,15 QGET lStop PUSHBUTTON "Stop"
-   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) }
-
-   WITH OBJECT oDlg
-      :show()
-      :hide()
-      :move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() )
-      :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
-      :setAttribute( Qt_WA_TranslucentBackground, .T. )
-      :show()
-      :exec()
-      :setParent( QWidget() )
-   ENDWITH
-   ::oScrollTimer:stop()
+   ::oActStop:setEnabled( .T. )
 
    RETURN Self
 
@@ -2901,6 +2896,8 @@ METHOD HbQtBrowse:execScroll( nMode )
 
 
 METHOD HbQtBrowse:stopAllTimers()
+
+   ::oActStop:setEnabled( .F. )
 
    IF HB_ISOBJECT( ::oSearchTimer )
       IF ::oSearchTimer:isActive()

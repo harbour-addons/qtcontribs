@@ -305,12 +305,13 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          IF HB_ISBLOCK( aEdit[ _QGET_PROPERTIES ] )
             Eval( aEdit[ _QGET_PROPERTIES ], oEdit, oEdit:edit() )
          ENDIF
+
+         IF __objGetClsName( oEdit:edit() ) == "QLINEEDIT"
+            oEdit:edit:selectAll()
+         ENDIF
       NEXT
 
       aGetList[ 1 ]:edit:setFocus()
-      IF __objGetClsName( aGetList[ 1 ]:edit ) == "QLineEdit"
-         aGetList[ 1 ]:edit:selectAll()
-      ENDIF
 
       IF lFit                                     /* Fit to the contents maintaining margins */
          IF lFLayout

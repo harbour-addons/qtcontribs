@@ -1127,7 +1127,15 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       QApplication():sendEvent( ::oEdit, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
 
    ENDIF
-
+#if 0
+   IF ::cClassName == "QLINEEDIT"
+      IF "K" $ ::cPicFunc
+         ::edit():home( .T. )
+      ELSE
+         ::edit():home( .F. )
+      ENDIF
+   ENDIF
+#endif
    RETURN .F.
 
 /*----------------------------------------------------------------------*/

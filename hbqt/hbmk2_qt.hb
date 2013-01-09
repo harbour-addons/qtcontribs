@@ -1402,7 +1402,8 @@ METHOD HbQtSource:new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileNa
    /* Separate constructor function */
    ::new_:= {}
    f := "HB_FUNC( QT_" + Upper( ::cQtObject ) + " )"
-   ::cFunc := "HB_FUNC_STATIC( NEW )"
+// ::cFunc := "HB_FUNC_STATIC( NEW )"
+   ::cFunc := "HB_FUNC_STATIC( INIT )"
 
    n := AScan( ::code_, {| e | f $ e } )
 
@@ -1794,7 +1795,8 @@ METHOD HbQtSource:build()
    AAdd( aLine, "" )
    AAdd( aLine, "static void s_registerMethods( HB_USHORT uiClass )" )
    AAdd( aLine, "{" )
-   AAdd( aLine, "   hb_clsAdd( uiClass, " + PadR( '"new"', 40 ) + ", HB_FUNCNAME( " + PadR( Upper( "NEW" ), 40 ) + " ) );" )
+// AAdd( aLine, "   hb_clsAdd( uiClass, " + PadR( '"new"', 40 ) + ", HB_FUNCNAME( " + PadR( Upper( "NEW" ), 40 ) + " ) );" )
+   AAdd( aLine, "   hb_clsAdd( uiClass, " + PadR( '"init"', 40 ) + ", HB_FUNCNAME( " + PadR( Upper( "INIT" ), 40 ) + " ) );" )
    FOR EACH oMtd IN ::aMethods
       IF ! Empty( oMtd:cHBFunc )
          AAdd( aLine, "   hb_clsAdd( uiClass, " + PadR( '"' + oMtd:cHBFunc + '"', 40 ) + ", HB_FUNCNAME( " + PadR( Upper( oMtd:cHBFunc ), 40 ) + " ) );" )

@@ -60,8 +60,8 @@ QCoreApplication * instance ()
 QStringList libraryPaths ()
 QString organizationDomain ()
 QString organizationName ()
-void postEvent ( QObject * receiver, QEvent * event )
-void postEvent ( QObject * receiver, QEvent * event, int priority )
+void postEvent ( QObject * receiver, QEvent * event )                 [*D=2*]
+void postEvent ( QObject * receiver, QEvent * event, int priority )   [*D=2*]
 void processEvents ( QEventLoop::ProcessEventsFlags flags = QEventLoop::AllEvents )
 void processEvents ( QEventLoop::ProcessEventsFlags flags, int maxtime )
 void removeLibraryPath ( const QString & path )
