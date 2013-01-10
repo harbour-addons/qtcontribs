@@ -193,6 +193,10 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD setFocus()                              INLINE ::oTableView:setFocus()
    METHOD scroll( nMode, nMSInterval )
 
+   ACCESS widget                                  INLINE ::oTableView
+   ACCESS searchText                              INLINE ::oSearchLabel:text()
+   ASSIGN searchText( cText )                     INLINE ::oSearchLabel:setText( cText )
+
 PROTECTED:
 
    METHOD cellValue( nRow, nCol )                /* Overloaded */
@@ -341,6 +345,8 @@ PROTECTED:
    //
    DATA   oStatusBar
    DATA   oSearchGet
+   DATA   oSearchLabel
+   DATA   isSearchActive                          INIT .F.
    DATA   xSearchValue
    DATA   aSearchList
    DATA   oSearchTimer
@@ -501,8 +507,14 @@ METHOD HbQtBrowse:create()
    /* Toolbar hosting navigational actions */
    ::buildToolbar()
 
+   ::oSearchLabel := QLabel()
+   ::oSearchLabel:setText( "" )
+   ::oSearchLabel:setFont( ::oFont )
+   ::oSearchLabel:setStyleSheet( "margin-left: 5px; margin-right: 5px; color: red;" )
    WITH OBJECT ::oStatusBar := QStatusBar( ::oWidget )
-//    :setFont( ::oFont )                         /* Should we keep it as is ? */
+      :setFont( ::oFont )
+      :setSizeGripEnabled( .F. )
+      :addPermanentWidget( ::oSearchLabel )
       :hide()
    ENDWITH
 
@@ -1694,6 +1706,12 @@ METHOD HbQtBrowse:searchBlock( bBlock )
    ENDIF
    RETURN ::bSearchBlock
 
+METHOD HbQtBrowse:contextMenuBlock( bBlock )
+   IF HB_ISOBJECT( bBlock )
+     ::bContextMenuBlock := __eInstVar53( Self, "CONTEXTMENUBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bContextMenuBlock
+
 
 METHOD HbQtBrowse:getIndexes()
    RETURN ::aIndexes
@@ -2223,11 +2241,10 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
    oDlg:move( oPos:x()-4, oPos:y() + ::oTableView:horizontalHeader():height() )
    IF HB_ISNUMERIC( nKey )
-      IF ! ( "K" $ Upper( cPicture ) )
+      IF ! ( "K" $ Upper( cPicture ) ) .AND. ValType( xValue ) == "C"
          GetList[ 1 ]:edit():home( .F. )
       ENDIF
       GetList[ 1 ]:edit():insert( Chr( nKey ) )
-//    QApplication():postEvent( oDlg, QKeyEvent( QEvent_KeyPress, hbqt_hbEventToQtEvent( nKey ), hbqt_EventModifier( nKey ) ) )
    ENDIF
    nRes := oDlg:exec()
    oDlg:setParent( QWidget() )
@@ -2245,7 +2262,6 @@ METHOD HbQtBrowse:setEditable( lEdit )
       ::oActEdit:setEnabled( ::lEditable )
    ENDIF
    RETURN ::lEditable
-
 
 METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    LOCAL oDlg, oVLayout, oScrollArea, oPos, oCol
@@ -2380,7 +2396,6 @@ METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
 
    RETURN NIL
 
-
 METHOD HbQtBrowse:loadRow()
    LOCAL oCol
 
@@ -2393,7 +2408,6 @@ METHOD HbQtBrowse:loadRow()
    ::aModified := AClone( ::aOriginal )
 
    RETURN NIL
-
 
 METHOD HbQtBrowse:saveRow()
    LOCAL lHandelled, oCol
@@ -2417,7 +2431,6 @@ METHOD HbQtBrowse:saveRow()
 
    RETURN NIL
 
-
 METHOD HbQtBrowse:populateGets()
    LOCAL oGet
 
@@ -2427,7 +2440,6 @@ METHOD HbQtBrowse:populateGets()
    NEXT
 
    RETURN NIL
-
 
 METHOD HbQtBrowse:mangageEditorKeyPress( oKeyEvent )
 
@@ -2596,13 +2608,77 @@ METHOD HbQtBrowse:manageContextMenu( oPos )
    RETURN NIL
 
 
-METHOD HbQtBrowse:contextMenuBlock( bBlock )
+METHOD HbQtBrowse:scroll( nMode, nMSInterval )
+   LOCAL oDlg, nRes
 
-   IF HB_ISOBJECT( bBlock )
-     ::bContextMenuBlock := bBlock
+   ::stopAllTimers()
+
+   IF nMode == NIL
+      oDlg := hbqtui_scroll( ::oWidget )
+      oDlg:btnOK:connect( "clicked()", {|| oDlg:done( 1 ) } )
+      oDlg:btnCancel:connect( "clicked()", {|| oDlg:done( 0 ) } )
+      oDlg:rdwDnBtmTopDn:setChecked( .T. )
+      nRes := oDlg:exec()
+      IF nRes == 1
+         nMode       := iif( oDlg:rdwDnBtmTopDn:isChecked(), 1, iif( oDlg:rdwDnBtm:isChecked(), 2, 3 ) )
+         nMSInterval := oDlg:spinInterval:value()
+      ENDIF
+      oDlg:setParent( QWidget() )
+      IF nRes == 0
+         RETURN Self
+      ENDIF
    ENDIF
 
-   RETURN ::bContextMenuBlock
+   hb_default( @nMSInterval, 10 )
+
+   ::nScrollMode := nMode
+
+   IF ! HB_ISOBJECT( ::oScrollTimer )
+      ::oScrollTimer := QTimer( ::oWidget )
+      ::oScrollTimer:connect( "timeout()", {|| ::execScroll( ::nScrollMode ) } )
+   ENDIF
+   ::oScrollTimer:setInterval( nMSInterval )
+   ::oScrollTimer:start()
+   ::oActStop:setEnabled( .T. )
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:execScroll( nMode )
+
+   SWITCH nMode
+   CASE 1
+      ::down()
+      IF ::hitBottom
+         ::goTop()
+      ENDIF
+      EXIT
+   CASE 2
+      ::down()
+      EXIT
+   CASE 3
+      ::goBottom()
+      EXIT
+   ENDSWITCH
+   RETURN Self
+
+
+METHOD HbQtBrowse:stopAllTimers()
+
+   ::oActStop:setEnabled( .F. )
+
+   IF HB_ISOBJECT( ::oSearchTimer )
+      IF ::oSearchTimer:isActive()
+         ::oSearchTimer:stop()
+      ENDIF
+   ENDIF
+   IF HB_ISOBJECT( ::oScrollTimer )
+      IF ::oScrollTimer:isActive()
+         ::oScrollTimer:stop()
+      ENDIF
+   ENDIF
+
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
 
@@ -2836,79 +2912,6 @@ METHOD HbQtBrowse:buildActions()
       :connect( "triggered()", {|| ::stopAllTimers() } )
       :setEnabled( .F. )
    ENDWITH
-
-   RETURN Self
-
-
-METHOD HbQtBrowse:scroll( nMode, nMSInterval )
-   LOCAL oDlg, nRes
-
-   ::stopAllTimers()
-
-   IF nMode == NIL
-      oDlg := hbqtui_scroll( ::oWidget )
-      oDlg:btnOK:connect( "clicked()", {|| oDlg:done( 1 ) } )
-      oDlg:btnCancel:connect( "clicked()", {|| oDlg:done( 0 ) } )
-      oDlg:rdwDnBtmTopDn:setChecked( .T. )
-      nRes := oDlg:exec()
-      IF nRes == 1
-         nMode       := iif( oDlg:rdwDnBtmTopDn:isChecked(), 1, iif( oDlg:rdwDnBtm:isChecked(), 2, 3 ) )
-         nMSInterval := oDlg:spinInterval:value()
-      ENDIF
-      oDlg:setParent( QWidget() )
-      IF nRes == 0
-         RETURN Self
-      ENDIF
-   ENDIF
-
-   hb_default( @nMSInterval, 10 )
-
-   ::nScrollMode := nMode
-
-   IF ! HB_ISOBJECT( ::oScrollTimer )
-      ::oScrollTimer := QTimer( ::oWidget )
-      ::oScrollTimer:connect( "timeout()", {|| ::execScroll( ::nScrollMode ) } )
-   ENDIF
-   ::oScrollTimer:setInterval( nMSInterval )
-   ::oScrollTimer:start()
-   ::oActStop:setEnabled( .T. )
-
-   RETURN Self
-
-
-METHOD HbQtBrowse:execScroll( nMode )
-
-   SWITCH nMode
-   CASE 1
-      ::down()
-      IF ::hitBottom
-         ::goTop()
-      ENDIF
-      EXIT
-   CASE 2
-      ::down()
-      EXIT
-   CASE 3
-      ::goBottom()
-      EXIT
-   ENDSWITCH
-   RETURN Self
-
-
-METHOD HbQtBrowse:stopAllTimers()
-
-   ::oActStop:setEnabled( .F. )
-
-   IF HB_ISOBJECT( ::oSearchTimer )
-      IF ::oSearchTimer:isActive()
-         ::oSearchTimer:stop()
-      ENDIF
-   ENDIF
-   IF HB_ISOBJECT( ::oScrollTimer )
-      IF ::oScrollTimer:isActive()
-         ::oScrollTimer:stop()
-      ENDIF
-   ENDIF
 
    RETURN Self
 

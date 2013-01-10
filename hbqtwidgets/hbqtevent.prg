@@ -830,3 +830,19 @@ FUNCTION hbqt_EventModifier( key )
 
    RETURN Qt_NoModifier
 
+
+FUNCTION __hbqtKeyBoard( cnKey, oWidget )
+   LOCAL nKey
+
+   hb_default( @oWidget, QApplication():focusWidget() )
+
+   IF HB_ISCHAR( cnKey )
+      nKey := Asc( cnKey )
+   ELSE
+      nKey := cnKey
+   ENDIF
+
+   QApplication():postEvent( oWidget, QKeyEvent( QEvent_KeyPress, hbqt_hbEventToQtEvent( nKey ), hbqt_EventModifier( nKey ) ) )
+
+   RETURN NIL
+

@@ -16,6 +16,32 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-09 18:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtevent.prg
+    + Added: function __hbqtKeyboard( <ncKey>, [<oWidget>] )
+       Posts <ncKey> into <oWidget>'s event queue. 
+       <oWidget> defaults to QApplication():focusWidget().
+        The function provides a convinient mechanism to initiate another 
+        action from with current action after returning from current 
+        action. This protocol is the backbone of any GUI application.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: public method :widget() which returns the main component 
+       of browser and can be used to post events. This is :oTableView in HbQtBrowse().
+
+    + Added: ACESS/ASSIGN METHOD searchText( <cSearchText> ).
+       This displays <cSearchText> at the right side of statusbar 
+       of browser widget. this is a convinient method to avoid creation of 
+       widget to display user-input. ( Read below ).
+
+  * hbqtwidgets/tests/browdb.prg
+    + Added: code to demonstrate how INCREMENTAL search can be terminated from 
+       withing appln :navigationBlock.
+    
+    + Added: code to demonstrate how an incremental search can be performed 
+       taking use of oBrowse:searchText() method and how to take other actions
+       while still in incremental search.
+
 2012-01-09 14:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/hbmk2_qt.hb
     % Changed: class constructor from "NEW" to "INIT".

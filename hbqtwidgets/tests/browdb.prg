@@ -16,7 +16,9 @@
 
 REQUEST DBFCDX
 
-STATIC nLastKey
+STATIC nLastKey      := 0
+STATIC lSearchActive := .F.
+STATIC cSearchText   := ""
 
 FUNCTION Main()
 
@@ -137,7 +139,7 @@ STATIC FUNCTION BrowseMe( oWnd )
 
 
 STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
-   LOCAL xResult, i
+   LOCAL xResult, i, nRec
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
@@ -148,12 +150,16 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
 
    CASE nKey == K_CTRL_F
       oBrowse:search()
+
    CASE nKey == K_F6
       oBrowse:freeze++
+
    CASE nKey == K_F7
       oBrowse:freeze--
+
    CASE nKey == K_F12
       oBrowse:edit( "Update Field Values", .T., .T. )
+
    CASE nKey == K_SH_F12
       IF dbRLock()
          oBrowse:panHome()
@@ -184,6 +190,38 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
          ENDIF
          dbRUnlock()
       ENDIF
+
+   CASE nKey >= 48 .AND. nKey <= 57 .AND. oBrowse:getColumn( oBrowse:colPos ):heading == "Salary"
+      IF lSearchActive
+         lSearchActive  := .F.
+         cSearchText    := ""
+         oBrowse:searchText := cSearchText
+      ENDIF
+      xResult := oBrowse:editCell( , , , , nKey )
+      IF xResult != NIL .AND. dbRLock()
+         REPLACE TEST->Salary WITH xResult
+         dbCommit()
+         dbRUnlock()
+         oBrowse:refreshCurrent()
+      ENDIF
+
+   CASE ( IsAlpha( Chr( nKey ) ) .OR. nKey == K_BS ) .AND. oBrowse:getColumn( oBrowse:colPos ):heading == "Salary" .AND. IndexOrd() == 1
+      IF ! lSearchActive
+         lSearchActive := .T.
+      ENDIF
+      IF nKey == K_BS
+         cSearchText := Left( cSearchText, Len( cSearchText ) - 1 )
+      ELSE
+         cSearchText += Chr( nKey )
+      ENDIF
+      oBrowse:searchText := cSearchText
+      nRec := RecNo()
+      IF ! dbSeek( cSearchText )
+         dbGoto( nRec )
+      ELSE
+         oBrowse:refreshAll()
+      ENDIF
+
    CASE nKey > 32 .AND. nKey <= 127
       IF oBrowse:getColumn( oBrowse:colPos ):heading == "Last Name"
          xResult := oBrowse:editCell( "@K ", , , , nKey )
@@ -199,8 +237,10 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
             oBrowse:Right()
          ENDIF
       ENDIF
+
    OTHERWISE
       lHandelled := .F.
+
    ENDCASE
 
    RETURN lHandelled
@@ -229,6 +269,62 @@ STATIC FUNCTION SaveMyRecord( aMod,aData,oBrw )
    ENDIF
 
    RETURN .T.
+
+
+STATIC FUNCTION LookMySearch( xValue,nMode,oBrw )
+   LOCAL nRec
+
+   IF xValue == NIL .AND. oBrw == NIL
+      /* search is finished, take other action, this will help to build a selectable browser */
+      Alert( "Current Record Number Is : " + hb_ntos( RecNo() ) )
+
+   ELSEIF xValue == NIL                           /* Interface is requesting to initiate search */
+      IF IndexOrd() == 1
+         RETURN { Space( Len( TEST->last ) ), "@ ", HBQTBRW_SEARCH_INCREMENTAL }
+      ELSE
+         RETURN { NIL, NIL, HBQTBRW_SEARCH_BYFIELD }
+      ENDIF
+
+   ELSE
+      IF IndexOrd() == 1                          /* Interface is requesting to do the search as per needs */
+         xValue := Trim( xValue )
+         IF IsDigit( Right( xValue, 1 ) )         /* You can store this value in a static variable and initiate some other process */
+            __hbqtKeyBoard( K_ENTER )
+            __hbqtKeyBoard( Right( xValue, 1 ), oBrw:widget() )
+            RETURN .T.
+         ENDIF
+
+         nRec := RecNo()
+         IF ! dbSeek( xValue )
+            dbGoto( nRec )
+         ELSE
+            oBrw:refreshAll()
+         ENDIF
+      ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
+         IF nLastKey == K_ESC
+            nLastKey := 0
+            RETURN .T.
+         ENDIF
+         RETURN Eval( oBrw:getColumn( oBrw:colPos ):block ) = xValue
+
+      ENDIF
+
+   ENDIF
+
+   RETURN .T.
+
+
+STATIC FUNCTION GotoMyRecord()
+   LOCAL nPRec := RecNo()
+   LOCAL nRec
+
+   IF ( nRec := HbQtBulkGet( nPRec, "Record Number", , , , "GoTo ?" ) ) > 0
+      dbGoto( nRec )
+   ELSE
+      RETURN .F.
+   ENDIF
+
+   RETURN nPRec != nRec
 
 
 STATIC FUNCTION DbSkipBlock( n )
@@ -279,53 +375,4 @@ STATIC FUNCTION TBPrev()
    endif
 
    RETURN lMoved
-
-
-STATIC FUNCTION LookMySearch( xValue,nMode,oBrw )
-   LOCAL nRec
-
-   IF xValue == NIL .AND. oBrw == NIL
-      /* search is finished, take other action, this will help to build a selectable browser */
-      Alert( "Current Record Number Is : " + hb_ntos( RecNo() ) )
-
-   ELSEIF xValue == NIL                           /* Interface is requesting to initiate search */
-      IF IndexOrd() == 1
-         RETURN { Space( Len( TEST->last ) ), NIL, HBQTBRW_SEARCH_INCREMENTAL }
-      ELSE
-         RETURN { NIL, NIL, HBQTBRW_SEARCH_BYFIELD }
-      ENDIF
-
-   ELSE
-      IF IndexOrd() == 1                          /* Interface is requesting to do the search as per needs */
-         nRec := RecNo()
-         IF ! dbSeek( Trim( xValue ) )
-            dbGoto( nRec )
-         ELSE
-            oBrw:refreshAll()
-         ENDIF
-      ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
-         IF nLastKey == K_ESC
-            nLastKey := 0
-            RETURN .T.
-         ENDIF
-         RETURN Eval( oBrw:getColumn( oBrw:colPos ):block ) = xValue
-
-      ENDIF
-
-   ENDIF
-
-   RETURN .T.
-
-
-STATIC FUNCTION GotoMyRecord()
-   LOCAL nPRec := RecNo()
-   LOCAL nRec
-
-   IF ( nRec := HbQtBulkGet( nPRec, "Record Number", , , , "GoTo ?" ) ) > 0
-      dbGoto( nRec )
-   ELSE
-      RETURN .F.
-   ENDIF
-
-   RETURN nPRec != nRec
 
