@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-11 02:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/resources/stop.png
+    % Changed: <Stop> icon image.
+
 2012-01-09 18:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtevent.prg
     + Added: function __hbqtKeyboard( <ncKey>, [<oWidget>] )
