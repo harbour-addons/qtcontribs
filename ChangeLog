@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2012-01-11 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtalert.prg
+    ! Fixed: text rendering was not don with monospace font.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Changed: ACCESS|ASSIGN MESSAGE editable() => editEnabled()
+    + Added: ACCESS|ASSIGN MESSAGE columnsComboEnabled( lEnabled )
+       This hides the <toColumn> combobox on the browser toolbar.
+    + Added: ACCESS|ASSIGN MESSAGE printingEnabled( lEnabled )
+       This hides the <Print> toolbar button.
+
+    ; NOTE: the above switches are operational on toolbar actions.
+       From withing application all actions are available.
+
+    % Rearranged: toolbar icons sequence. Now it is more usable.
+
+    ! Fixed: <Search> variable was not sent to appln callback in 
+       trimmed state causing to fail the serach on character columns.
+
+  * hbqtwidgets/tests/browdb.prg
+  * hbqtwidgets/tests/browser.prg
+    % Some adjustments.
+
 2012-01-11 02:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/resources/stop.png
     % Changed: <Stop> icon image.

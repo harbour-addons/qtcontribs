@@ -78,9 +78,9 @@ FUNCTION Main()
    hb_DispBox( 4, 4, 17, 31, hb_UTF8ToStrBox( "┌─┐│┘─└│ " ) )     /* Does nothing, but no ERROR */
 
    /* Make the toolbar visible */
-   oBrowse:toolbar   := .T.                       /* I always longed for this interface */
-   oBrowse:statusbar := .T.                       /* Yes, we want statusbar messages */
-   oBrowse:editable  := .F.                       /* User must not be able to edit via edit button */
+   oBrowse:toolbar       := .T.                       /* I always longed for this interface */
+   oBrowse:statusbar     := .T.                       /* Yes, we want statusbar messages */
+   oBrowse:editEnabled   := .F.                       /* User must not be able to edit via edit button */
    oBrowse:statusMessage := "Ready !"
 
    oMain:setCentralWidget( oBrowse:oWidget )

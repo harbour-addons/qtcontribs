@@ -169,17 +169,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
             IF xResult == NIL
                EXIT                        /* ESCape is pressed */
             ENDIF
-            SWITCH oBrowse:getColumn( i ):heading
-            CASE "Last Name"  ; REPLACE TEST->last     WITH xResult ; EXIT
-            CASE "First Name" ; REPLACE TEST->first    WITH xResult ; EXIT
-            CASE "Salary"     ; REPLACE TEST->Salary   WITH xResult ; EXIT
-            CASE "HireDate"   ; REPLACE TEST->HireDate WITH xResult ; EXIT
-            CASE "Age"        ; REPLACE TEST->Age      WITH xResult ; EXIT
-            CASE "City"       ; REPLACE TEST->City     WITH xResult ; EXIT
-            CASE "State"      ; REPLACE TEST->State    WITH xResult ; EXIT
-            CASE "Zip"        ; REPLACE TEST->Zip      WITH xResult ; EXIT
-            CASE "Notes"      ; REPLACE TEST->Notes    WITH xResult ; EXIT
-            ENDSWITCH
+            ReplaceField( oBrowse, i, xResult )
             oBrowse:refreshCurrent()
             IF i < oBrowse:colCount()
                oBrowse:Right()
@@ -231,7 +221,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
 
       IF xResult != NIL
          IF dbRLock()
-            Eval( oBrowse:getColumn( oBrowse:colPos ):block, xResult )
+            ReplaceField( oBrowse, oBrowse:colPos, xResult )
             dbCommit()
             dbRUnlock()
             oBrowse:Right()
@@ -244,6 +234,25 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
    ENDCASE
 
    RETURN lHandelled
+
+
+STATIC FUNCTION ReplaceField( oBrowse, nColumn, xValue )
+
+   SWITCH oBrowse:getColumn( nColumn ):heading
+
+   CASE "Last Name"  ; REPLACE TEST->last     WITH xValue ; EXIT
+   CASE "First Name" ; REPLACE TEST->first    WITH xValue ; EXIT
+   CASE "Salary"     ; REPLACE TEST->Salary   WITH xValue ; EXIT
+   CASE "HireDate"   ; REPLACE TEST->HireDate WITH xValue ; EXIT
+   CASE "Age"        ; REPLACE TEST->Age      WITH xValue ; EXIT
+   CASE "City"       ; REPLACE TEST->City     WITH xValue ; EXIT
+   CASE "State"      ; REPLACE TEST->State    WITH xValue ; EXIT
+   CASE "Zip"        ; REPLACE TEST->Zip      WITH xValue ; EXIT
+   CASE "Notes"      ; REPLACE TEST->Notes    WITH xValue ; EXIT
+
+   ENDSWITCH
+
+   RETURN NIL
 
 
 STATIC FUNCTION SaveMyRecord( aMod,aData,oBrw )

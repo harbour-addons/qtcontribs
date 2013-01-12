@@ -184,11 +184,16 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN statusMessage( cMessage )               INLINE iif( Empty( cMessage ), ::oStatusBar:clearMessage(), ::oStatusBar:showMessage( cMessage ) )
    ACCESS title                                   METHOD getTitle
    ASSIGN title                                   METHOD setTitle
-   ACCESS editable                                METHOD getEditable
-   ASSIGN editable                                METHOD setEditable
    METHOD toColumn( cnColumn )
    ACCESS indexes                                 METHOD getIndexes
    ASSIGN indexes                                 METHOD setIndexes
+
+   ACCESS editEnabled                             METHOD getEditable
+   ASSIGN editEnabled                             METHOD setEditable
+   ACCESS columnsComboEnabled                     METHOD getToColumnCombo
+   ASSIGN columnsComboEnabled                     METHOD setToColumnCombo
+   ACCESS priningtEnabled                         METHOD getPrinting
+   ASSIGN printingEnabled                         METHOD setPrinting
 
    METHOD setFocus()                              INLINE ::oTableView:setFocus()
    METHOD scroll( nMode, nMSInterval )
@@ -337,7 +342,11 @@ PROTECTED:
    DATA   lDownAfterSave
    DATA   aGetList
    DATA   aPosSize
-   DATA   lEditable
+
+   /* Toolbar Option Switches */
+   DATA   lEditable                               INIT .T.
+   DATA   lToColumnCombo                          INIT .T.
+   DATA   lPrinting                               INIT .T.
 
    METHOD execSearch( cSearch )
    METHOD setGETIncremental( oGet,oEdit,oBrw )
@@ -436,6 +445,7 @@ METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
 
 METHOD HbQtBrowse:create()
+   LOCAL oPal
 
    ::oWidget := QFrame( ::oParent )
 
@@ -452,7 +462,6 @@ METHOD HbQtBrowse:create()
    WITH OBJECT ::oTableView := HBQTableView()
       /* Set block to receive protected information */
       :hbSetBlock( {|p,p1,p2| ::execSlot( __ev_tableViewBlock_main__, p, p1, p2 ) } )
-      /* Some parameters */
       :setFont( ::oFont )
       :setTabKeyNavigation( .t. )
       :setShowGrid( .t. )
@@ -462,17 +471,16 @@ METHOD HbQtBrowse:create()
       :setAlternatingRowColors( .t. )
       :setContextMenuPolicy( Qt_CustomContextMenu )
       :setEditTriggers( QAbstractItemView_AnyKeyPressed )
-      /* Finetune Horizontal Scrollbar */
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-      /* Replace Vertical Scrollbar with our own */
       :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-      /* Veritical Header because of Performance boost */
       :verticalHeader():hide()
       /* Attach Model with the View */
       :setModel( ::oDbfModel )
-//    :setStyleSheet( "selection-background-color: qlineargradient(x1: 0, y1: 0, x2: 0.5, y2: 0.5, stop: 0 #FF92BB, stop: 1 white); " )
-      :setStyleSheet( "selection-background-color: rgb(80,160,240);" )
    ENDWITH
+
+   oPal := ::oTableView:palette()
+   oPal:SetColor( QPalette_Inactive, QPalette_Highlight, QColor( 150,215,250 ) )
+   ::oTableView:setPalette( oPal )
 
    ::oHScrollBar := QScrollBar()
    ::oHScrollBar:setOrientation( Qt_Horizontal )
@@ -2253,15 +2261,38 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
 
    RETURN iif( nRes == 0, NIL, xValue )
 
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtBrowse:getToColumnCombo()
+   RETURN ::lToColumnCombo
+METHOD HbQtBrowse:setToColumnCombo( lToColumnCombo )
+   IF HB_ISLOGICAL( lToColumnCombo )
+      ::lToColumnCombo := lToColumnCombo
+      ::oActToColumn:setVisible( ::lToColumnCombo )
+   ENDIF
+   RETURN ::lToColumnCombo
+
+
 METHOD HbQtBrowse:getEditable()
    RETURN ::lEditable
-
 METHOD HbQtBrowse:setEditable( lEdit )
    IF HB_ISLOGICAL( lEdit )
       ::lEditable := lEdit
-      ::oActEdit:setEnabled( ::lEditable )
+      ::oActEdit:setVisible( ::lEditable )
    ENDIF
    RETURN ::lEditable
+
+
+METHOD HbQtBrowse:getPrinting()
+   RETURN ::lPrinting
+METHOD HbQtBrowse:setPrinting( lPrinting )
+   IF HB_ISLOGICAL( lPrinting )
+      ::lPrinting := lPrinting
+      ::oActPrint:setVisible( ::lPrinting )
+   ENDIF
+   RETURN ::lPrinting
+
+/*----------------------------------------------------------------------*/
 
 METHOD HbQtBrowse:edit( cTitle, lSaveOnLastGet, lDownAfterSave )
    LOCAL oDlg, oVLayout, oScrollArea, oPos, oCol
@@ -2477,6 +2508,8 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    LOCAL GetList := {} , SayList := {}, oDlg
    LOCAL aInfo, nCursor
    LOCAL k1,k2,k3,k4,k5,k6
+   LOCAL oParent := ::oTableView:viewport()
+   LOCAL oBtmCtr := oParent:mapToGlobal( QPoint( oParent:width() / 2, oParent:height() ) )
 
    ::stopAllTimers()
    IF ! HB_ISOBJECT( ::oSearchTimer )
@@ -2506,7 +2539,7 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    hb_default( @nMode, HBQTBRW_SEARCH_ONCE )
    ::nSearchMode := nMode
 
-   oDlg := QDialog( ::oWidget )
+   oDlg := QDialog( oParent )
 
    IF nMode == HBQTBRW_SEARCH_INCREMENTAL
       nCursor := ::cursorMode
@@ -2531,7 +2564,7 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    WITH OBJECT oDlg
       :show()
       :hide()
-      :move( oDlg:pos():x(), ::oWidget:mapToGlobal( QPoint( oDlg:pos():x(), ::oWidget:height() - oDlg:height() ) ):y() )
+      :move( oBtmCtr:x() - ( oDlg:width() / 2 ), oBtmCtr:y() - ( oDlg:height() / 2 ) )
       :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
       :setAttribute( Qt_WA_TranslucentBackground, .T. )
       :setStyleSheet( "background-color: lightblue;" )
@@ -2544,6 +2577,8 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    SetKey( K_PGDN     , k4 )
    SetKey( K_CTRL_PGUP, k5 )
    SetKey( K_CTRL_PGDN, k6 )
+
+   ::xSearchValue := iif( ValType( ::xSearchValue ) == "C", Trim( ::xSearchValue ), ::xSearchValue )
 
    ::cursorMode := nCursor
 
@@ -2698,18 +2733,17 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActPrint )
       :addAction( ::oActSearch )
       :addSeparator()
-      :addAction( ::oActGoTop )
-      :addAction( ::oActGoUp )
-      :addAction( ::oActGoDown )
-      :addAction( ::oActGoBottom )
-      :addAction( ::oActGoTo )
-      :addSeparator()
+      :addAction( ::oActToColumn )
       :addAction( ::oActPanHome )
       :addAction( ::oActLeft )
       :addAction( ::oActRight )
       :addAction( ::oActPanEnd )
       :addSeparator()
-      :addAction( ::oActToColumn )
+      :addAction( ::oActGoTop )
+      :addAction( ::oActGoUp )
+      :addAction( ::oActGoDown )
+      :addAction( ::oActGoBottom )
+      :addAction( ::oActGoTo )
       :addSeparator()
       :addAction( ::oActMoveToFirst )
       :addAction( ::oActMoveToLeft )
