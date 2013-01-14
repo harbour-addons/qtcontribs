@@ -122,18 +122,18 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
    oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
 // oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
-   oBrowse:toolbar         := .T.
-   oBrowse:statusbar       := .T.
-   oBrowse:statusMessage   := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
-   oBrowse:editBlock       := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
-   oBrowse:searchBlock     := {|xValue,nMode,oBrw| LookMySearch( xValue,nMode,oBrw ) }
-   oBrowse:navigationBlock := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
+   oBrowse:toolbar             := .T.
+   oBrowse:statusbar           := .T.
+   oBrowse:statusMessage       := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
+   oBrowse:editBlock           := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
+   oBrowse:searchBlock         := {|xValue,nMode,oBrw| LookMySearch( xValue,nMode,oBrw ) }
+   oBrowse:helpBlock           := {|| { { "Hi","This is HbQtBrowse!" }, 0 } }
+   oBrowse:navigationBlock     := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
 
    AAdd( aIndexes, { "Natural Order", {|oBrw| dbSetOrder( 0 ), oBrw:refreshAll(), oBrw:forceStable() } } )
    AAdd( aIndexes, { "Last Name"    , {|oBrw| dbSetOrder( 1 ), oBrw:refreshAll(), oBrw:forceStable() } } )
-   oBrowse:indexes         := { aIndexes, 2 }
-
-   oBrowse:gotoBlock       := {|| GotoMyRecord() }
+   oBrowse:indexes             := { aIndexes, 2 }
+   oBrowse:gotoBlock           := {|| GotoMyRecord() }
 
    RETURN oBrowse
 

@@ -121,5 +121,6 @@
     <file>resources/plus-2.png</file>
     <file>resources/scroll.png</file>
     <file>resources/stop.png</file>
+    <file>resources/help.png</file>
   </qresource>
 </RCC>

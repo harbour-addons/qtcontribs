@@ -158,6 +158,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD hitTopBlock( bBlock )                   SETGET
    METHOD stableBlock( bBlock )                   SETGET
 
+   METHOD helpBlock( bBlock )                     SETGET
+
    ACCESS rFreeze                                 METHOD getRFrozen           // get number of frozen columns
    ASSIGN rFreeze                                 METHOD rFreeze              // set number of columns to freeze at right side
 
@@ -175,6 +177,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD editBlock( bBlock )                     SETGET
    METHOD search( xValue, cPicture, nMode )
    METHOD print( cPrinter, lOpenPrintDialog )
+   METHOD help( xInfo, nTimeout )
    METHOD searchBlock( bBlock )                   SETGET
    METHOD contextMenuBlock( bBlock )              SETGET
    ACCESS toolbar                                 INLINE ::oToolBar:isVisible()
@@ -292,9 +295,6 @@ PROTECTED:
    METHOD setIndex( qModelIndex )                 INLINE ::oTableView:setCurrentIndex( qModelIndex )
    METHOD getCurrentIndex()                       INLINE ::oDbfModel:index( ::rowPos - 1, ::colPos - 1 )
    ACCESS getDbfModel()                           INLINE ::oDbfModel
-   METHOD openPersistentEditor()
-
-   DATA   qDelegate
 
    METHOD manageKeyPress( oEvent )
    METHOD manageFrameResized()
@@ -303,7 +303,6 @@ PROTECTED:
    METHOD manageMouseRelease( oMouseEvent )
    METHOD manageMouseWheel( oWheelEvent )
    METHOD manageCommitData( qWidget )
-   METHOD manageEditorClosed( pWidget, nHint )
    METHOD manageScrollContents( nX, nY )
    METHOD manageColumnMoved( nLogicalIndex, nOldVisualIndex, nNewVisualIndex )
 
@@ -325,6 +324,7 @@ PROTECTED:
    DATA   bHitBottomBlock                         INIT NIL
    DATA   bHitTopBlock                            INIT NIL
    DATA   bStableBlock                            INIT NIL
+   DATA   bHelpBlock                              INIT NIL
 
    METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
    METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
@@ -371,6 +371,8 @@ PROTECTED:
    DATA   oContextMenu
 
    METHOD buildActions()
+   //
+   DATA   oActHelp
    //
    DATA   oActSave
    DATA   oActEdit
@@ -551,15 +553,7 @@ METHOD HbQtBrowse:create()
 
    ::oWidget:show()
 
-   /* Viewport */
    ::oViewport := ::oTableView:viewport()
-#if 0
-   /* Why we need it ? */
-   ::oWidget:setGeometry( ::oWidget:geometry() )
-#endif
-   /* Handle the delegate - but how TO ? */
-   ::qDelegate := QItemDelegate()
-   ::oTableView:setItemDelegate( ::qDelegate )
 
    ::connect()
 
@@ -839,9 +833,6 @@ METHOD HbQtBrowse:connect()
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
    ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )  /* Revisit Later */
 #endif
-
-   ::qDelegate        : connect( "commitData(QWidget*)"              , {|p      | ::manageCommitData( p )                              } )
-   ::qDelegate        : connect( "closeEditor(QWidget*,QAbstractItemDelegate::EndEditHint)", {|p,p1 | ::manageEditorClosed( p, p1 )    } )
 
    RETURN Self
 
@@ -1171,48 +1162,11 @@ METHOD HbQtBrowse:manageCommitData( qWidget )
    RETURN Self
 
 
-METHOD HbQtBrowse:manageEditorClosed( pWidget, nHint )
-
-   pWidget:close()
-
-   SWITCH nHint
-   CASE QAbstractItemDelegate_NoHint                 /* 0  RETURN is presses    */
-
-   CASE QAbstractItemDelegate_EditNextItem           /* 1  TAB is pressed       */
-      ::skipCols( 1 )
-
-   CASE QAbstractItemDelegate_EditPreviousItem       /* 2  SHIFT_TAB is pressed */
-      ::skipCols( -1 )
-
-   CASE QAbstractItemDelegate_SubmitModelCache       /* 3  ENTER is pressed     */
-      #if 0
-      IF ::colPos < ::colCount
-         ::skipCols( 1 )
-         ::editCell()
-      ENDIF
-      #endif
-   CASE QAbstractItemDelegate_RevertModelCache       /* 4  ESC is pressed       */
-
-   ENDSWITCH
-
-   RETURN Self
-
-
 METHOD HbQtBrowse:manageScrollContents( nX, nY )
-
    HB_SYMBOL_UNUSED( nY )
-
    IF nX != 0
       ::setHorzOffset()
    ENDIF
-
-   RETURN Self
-
-
-METHOD HbQtBrowse:openPersistentEditor()
-
-   ::oTableView:openPersistentEditor( ::oDbfModel:index( ::rowPos - 1, ::colPos - 1 ) )
-
    RETURN Self
 
 
@@ -1713,6 +1667,12 @@ METHOD HbQtBrowse:searchBlock( bBlock )
       ::bSearchBlock := __eInstVar53( Self, "SEARCHBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bSearchBlock
+
+METHOD HbQtBrowse:helpBlock( bBlock )
+   IF bBlock != NIL
+      ::bHelpBlock := __eInstVar53( Self, "HELPBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bHelpBlock
 
 METHOD HbQtBrowse:contextMenuBlock( bBlock )
    IF HB_ISOBJECT( bBlock )
@@ -2562,12 +2522,10 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    k5 := SetKey( K_CTRL_PGUP, {|| ::goTop()    } )
    k6 := SetKey( K_CTRL_PGDN, {|| ::goBottom() } )
    WITH OBJECT oDlg
-      :show()
-      :hide()
-      :move( oBtmCtr:x() - ( oDlg:width() / 2 ), oBtmCtr:y() - ( oDlg:height() / 2 ) )
       :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
       :setAttribute( Qt_WA_TranslucentBackground, .T. )
       :setStyleSheet( "background-color: lightblue;" )
+      :connect( QEvent_Show, {|| oDlg:move( oBtmCtr:x() - ( oDlg:width() / 2 ), oBtmCtr:y() - ( oDlg:height() / 2 ) ) } )
       :exec()
       :setParent( QWidget() )
    ENDWITH
@@ -2679,6 +2637,32 @@ METHOD HbQtBrowse:scroll( nMode, nMSInterval )
    RETURN Self
 
 
+METHOD HbQtBrowse:help( xInfo, nTimeout )
+   LOCAL aInfo
+
+   IF xInfo == NIL .AND. HB_ISBLOCK( ::helpBlock )
+      aInfo := Eval( ::helpBlock, NIL, NIL, Self )
+      IF HB_ISARRAY( aInfo )
+         IF Len( aInfo ) == 2 .AND. HB_ISNUMERIC( aInfo[ 2 ] )
+            xInfo := aInfo[ 1 ]
+            nTimeout := aInfo[ 2 ]
+         ELSEIF Len( aInfo ) == 1
+            xInfo := aInfo[ 1 ]
+         ENDIF
+      ENDIF
+   ENDIF
+
+   IF ! Empty( xInfo )
+      hb_default( @nTimeout, 0 )
+
+      IF HB_ISARRAY( xInfo )
+         Alert( xInfo )
+      ENDIF
+   ENDIF
+
+   RETURN Self
+
+
 METHOD HbQtBrowse:execScroll( nMode )
 
    SWITCH nMode
@@ -2726,9 +2710,8 @@ METHOD HbQtBrowse:buildToolbar()
       :setFloatable( .F. )
       :setFocusPolicy( Qt_NoFocus )
       //
+      :addAction( ::oActHelp )
       :addAction( ::oActIndexes )
-      :addSeparator()
-      //
       :addAction( ::oActEdit )
       :addAction( ::oActPrint )
       :addAction( ::oActSearch )
@@ -2800,6 +2783,13 @@ METHOD HbQtBrowse:buildActions()
       :setDefaultWidget( ::oComboIndexes )
       :setTooltip( "Indexes..." )
       :setVisible( .F. )
+   ENDWITH
+
+   WITH OBJECT ::oActHelp := QAction( ::oWidget )
+      :setText( "Help" )
+      :setIcon( QIcon( __hbqtImage( "help" ) ) )
+      :setTooltip( "Show Help" )
+      :connect( "triggered()", {|| ::help() } )
    ENDWITH
 
    WITH OBJECT ::oActEdit := QAction( ::oWidget )

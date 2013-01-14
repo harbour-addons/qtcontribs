@@ -16,7 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2012-01-11 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-11 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtwidgets.qrc
+  + hbqtwidgets/resources/help.png
+    + Added: help.png.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Fixed: flickering of windows when <Search> was initiated.
+    + Added: <Help> icon on the toolbar.
+    + Started: implementation of displaying appln supplied help info 
+       in an integrated way. Currently Alert() is being used but 
+       is scheduled to be presented in a meaningful way. Complete 
+       documentation will follow after it reaches a satisfactory level.
+
+  * hbqtwidgets/tests/browdb.prg
+    + Added: code to show a help alert when <Help> icon is clicked.
+
+2013-01-11 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtalert.prg
     ! Fixed: text rendering was not don with monospace font.
 
@@ -39,11 +55,11 @@
   * hbqtwidgets/tests/browser.prg
     % Some adjustments.
 
-2012-01-11 02:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-11 02:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/resources/stop.png
     % Changed: <Stop> icon image.
 
-2012-01-09 18:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-09 18:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtevent.prg
     + Added: function __hbqtKeyboard( <ncKey>, [<oWidget>] )
        Posts <ncKey> into <oWidget>'s event queue. 
@@ -69,7 +85,7 @@
        taking use of oBrowse:searchText() method and how to take other actions
        while still in incremental search.
 
-2012-01-09 14:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-09 14:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/hbmk2_qt.hb
     % Changed: class constructor from "NEW" to "INIT".
        This is in-line with Class(y) compatibility and will be useful 
@@ -111,7 +127,7 @@
   * hbqtwidgets/tests/browdb.prg
     + Added: code to demonstrate how "@K " in oBrowse:editCell() can be exploited.
 
-2012-01-08 19:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-08 19:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/scroll.ui
   * hbqtwidgets/hbqtwidgets.hbp
     + Added: scroll.ui - Widget to fetch user options for a scroll.
@@ -149,7 +165,7 @@
 
        A <Stop> push button stays in the bottom row+ location to stop the scrolling.
 
-2012-01-07 13:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-07 13:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
     + Added: internal function __hbqtGetNextIdAsString( cString ) -> cString_<runningNumber>
 
@@ -159,7 +175,7 @@
        K_CTRL_PGUP, K_CTRL_PGDN while inside INCREMENTAL search mode.
        Under many situations this behaviour is very much required.
 
-2012-01-07 05:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-07 05:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtalert.prg
     % Renamed: HbQtGetSome(...) => HbQtBulkGet(...)
     + Added: treating the GET in a combobox if one of the elements of 
@@ -176,7 +192,7 @@
   * hbqtwidgets/tests/browser.prg
     % Minor.
 
-2012-01-03 13:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-03 13:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtstd.ch
     + Added: HBQTBRW_* constants, usable to configure HbQtBrowse interface.
 
@@ -362,7 +378,7 @@
   * hbqtwidgets/tests/browser.prg
     + Added: constructs to demonstrate above features.
 
-2012-01-02 08:18 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-02 08:18 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/qth/QApplication.qth
     + Implemented: QWidgetList allWidgets(), QWidgetList topLevelWidgets().
 
