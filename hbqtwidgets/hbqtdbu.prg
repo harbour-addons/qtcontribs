@@ -405,9 +405,11 @@ METHOD HbQtDBU:create( oParent )
    ::qLeftFrameLay:addWidget( ::oTreeTables )
 
    ::qLeftFrame:setMinimumWidth( 120 )
+   ::qLeftFrame:hide()
 
    ::qRightFrame:setMinimumWidth( 125 )
    ::qRightFrame:setMaximumWidth( 205 )
+   ::qRightFrame:hide()
 
    ::qStack := QStackedWidget()
 
@@ -515,6 +517,12 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
       ENDWITH
       oParent:addChild( oTreeItem )
       oParent:sortChildren( 0, Qt_AscendingOrder )
+   ENDIF
+
+   IF ::tablesTreeEnabled
+      IF ! ::qLeftFrame:isVisible()
+         ::qLeftFrame:show()
+      ENDIF
    ENDIF
 
    RETURN Self
@@ -2098,21 +2106,6 @@ METHOD HbQtMdiBrowser:buildBrowser()
       :posBlock            := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
       :goPosBlock          := {|n| iif( ::indexOrd() == 0, ::goto( n ), ::ordKeyGoto( n ) ) }
       :phyPosBlock         := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
-#if 0  /* Under application control - no defaults */
-      :horizontalScrollbar := .T.
-      :verticalScrollbar   := .F.
-      :toolbar             := .T.
-      :statusbar           := .T.
-      :statusMessage       := "F1:Help  F2:OrdZ  F4:Goto  F5:Scrl  F6:Util  F7:Seek  F8:Frez  F9:Stru  F10:Lock"
-      :editBlock           := {|aMod,aData  | ::saveRecord( aMod, aData )     }
-      :searchBlock         := {|xValue,nMode| ::manageSearch( xValue, nMode ) }
-      :navigationBlock     := {|nKey,xData  | ::handleOptions( nKey, xData )  }
-#if 0
-      AAdd( aIndexes, { "Natural Order", {|oBrw| ( ::cAlias )->( dbSetOrder( 0 ) ), oBrw:refreshAll(), oBrw:forceStable() } } )
-      AAdd( aIndexes, { "Last Name"    , {|oBrw| ( ::cAlias )->( dbSetOrder( 1 ) ), oBrw:refreshAll(), oBrw:forceStable() } } )
-      :indexes         := { aIndexes, 2 }
-#endif
-#endif
 //    :hbContextMenu := {|mp1| ::execEvent( __browser_contextMenu__, mp1 ) }
    ENDWITH
 

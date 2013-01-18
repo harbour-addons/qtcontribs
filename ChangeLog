@@ -16,6 +16,52 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-18 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtdbu.prg
+    % Minor.
+
+  + hbdbu
+  + hbdbu/resources
+  + hbdbu/resources/cube.png
+  + hbdbu/resources/dashboard.png
+  + hbdbu/resources/exit.png
+  + hbdbu/resources/n-0.png
+  + hbdbu/resources/n-1.png
+  + hbdbu/resources/n-2.png
+  + hbdbu/resources/n-3.png
+  + hbdbu/resources/n-4.png
+  + hbdbu/resources/n-5.png
+  + hbdbu/resources/n-6.png
+  + hbdbu/resources/n-7.png
+  + hbdbu/resources/n-8.png
+  + hbdbu/resources/n-9.png
+  + hbdbu/dbu.prg
+  + hbdbu/dbu.qrc
+  + hbdbu/dbu.ui
+  + hbdbu/hbdbu.hbp
+  + hbdbu/mydbu.hbp
+    + Initial commit of HbDBU.
+       Just play with this toy. Do not initiate embedding HbQtDbu() 
+       in your applications as refinement in internal architect is 
+       on the cards. Some details are scheduled to be changed.
+
+    ; Note that the HbDBU contains all elements which I am employing 
+       for our in-production implementation but guarded against the 
+       directives. You can unfold them as you deem fit. The real-time 
+       usage is always preferred to expose the full functionality 
+       than a reduced demo application, so hope that you will bear 
+       with me.
+
+       The detailed documentation will follow after internal architect 
+       will reach my satisfaction level. Next couple of weeks I am 
+       onto this only. 
+
+       If you deem appropriate, extend your opinions and experiences 
+       of any DBU you had been living with. Hopefully maximum will 
+       make-up inside HbDBU.
+
+    ; Enjoy with the multi-platform compliant HbDBU.
+
 2013-01-17 18:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/hbqtdbu.prg
   + hbqtwidgets/hbqttoolbar.prg

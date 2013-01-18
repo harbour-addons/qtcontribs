@@ -1,0 +1,17 @@
+<RCC>
+  <qresource prefix="dbu">
+    <file>resources/cube.png</file>
+    <file>resources/exit.png</file>
+    <file>resources/dashboard.png</file>
+    <file>resources/n-0.png</file>
+    <file>resources/n-1.png</file>
+    <file>resources/n-2.png</file>
+    <file>resources/n-3.png</file>
+    <file>resources/n-4.png</file>
+    <file>resources/n-5.png</file>
+    <file>resources/n-6.png</file>
+    <file>resources/n-7.png</file>
+    <file>resources/n-8.png</file>
+    <file>resources/n-9.png</file>
+  </qresource>
+</RCC>

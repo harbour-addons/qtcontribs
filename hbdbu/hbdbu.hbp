@@ -1,0 +1,36 @@
+#
+# $Id$
+#
+
+-3rd=hbide_version=1.0
+-3rd=hbide_title=HbDBU
+-3rd=hbide_output=hbdbu
+
+-w3
+-es2
+-inc
+
+
+-obin/${hb_plat}/${hb_comp}/${hb_name}
+-instpath=${HB_BIN}/
+
+
+hbqtwidgets.hbc
+hbqt.hbc
+
+
+dbu.prg
+dbu.ui
+dbu.qrc
+
+
+-3rd=hbide_file=dbu.ch
+
+ 
+# Always build in shared mode for these platforms because the
+# tool is included in std distro and we want to minimize its size.
+-3rd=hbide_file={_HB_BUILD_&(!(HB_BUILD_DYN='no')&(win|wce|os2))}-shared
+
+$hb_pkg_install.hbm
+
+ 

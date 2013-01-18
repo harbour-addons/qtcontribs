@@ -1,0 +1,78 @@
+#
+# $Id$
+#
+
+#           W A R N I N G
+#  This file is only for understanding purpose
+#  You must not compile HbDBU with it as it contains paths to my development env.
+#
+
+-3rd=hbide_version=1.0
+-3rd=hbide_title=QCacheMGR
+-3rd=hbide_output=QCacheMGR
+
+-w3
+-es2
+-inc
+
+#
+#  Here you will define which other RDDs you need. These directives will be 
+#  needed to control the compilation process.
+#
+-d{__CACHE__}__CACHE__
+-d{__ADS__}__ADS__
+
+
+# These macros {__CACHE__} and {__ADS__} needs to be defined as Env Variables
+# SET __CACHERDD__=yes
+# SET __ADS__=yes
+
+
+# Which libraries are needed
+#
+hbqtwidgets.hbc
+hbqt.hbc
+{__ADS__}rddads.hbc
+{__CACHE__}xhb.hbc
+
+# Library Paths
+#
+-L{__CACHE__}../../dev_libs/mingw/harbour
+-L{__CACHE__}../../../dev_libs/mingw/harbour
+
+# Additional Libraries need to be linked
+#
+-l{__CACHE__}cbind
+-l{__CACHE__}cacherdd
+-l{__CACHE__}xhb
+-l{__ADS__}rddads
+
+
+# Header Paths
+#
+-i{__CACHE__}../cacherdd/include
+
+
+# Where to create hbmk2 related build files
+#
+-workdir={__CACHE__}../../dev_objs/qdbu
+
+# What name should carry the executable
+#
+-o{__CACHE__}../../dev_exes/QCacheMGR
+
+
+# The Source Files
+#
+dbu.prg
+dbu.ui
+dbu.qrc
+
+
+#  Additional file containing functions : DecryptPass() and UserLogin()
+#  which needs to remain hidden from SVN.
+#
+{__CACHE__}dbumisc.prg
+
+
+ 
