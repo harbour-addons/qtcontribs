@@ -23,6 +23,8 @@ hbqtalert.prg
 hbqtevent.prg
 hbqtbrowse.prg
 hbqtcolumn.prg
+hbqttoolbar.prg
+hbqtdbu.prg
 
 hbqtwidgets.qrc
 

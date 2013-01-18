@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-17 18:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/hbqtdbu.prg
+  + hbqtwidgets/hbqttoolbar.prg
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: Class HbQtToolbar() and HbQtDbu().
+       The last week has been so hectic but results are very fruitful.
+       HbQtDbu() is a COM like implementation of GUI Database Manager 
+       which can be embedded into any application. All its components 
+       are fully configurable. A detailed overview and a usable and 
+       expandable application will be committed in a couple of days.
+
+    ; You will really relish this implementation.
+
 2013-01-11 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtwidgets.qrc
   + hbqtwidgets/resources/help.png
