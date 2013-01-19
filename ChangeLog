@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-18 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/projmanager.prg
+    ! Fixed: to properly pass "Launch Parameters" of "Propereties" dialog 
+       while launching the application. A long standing bug.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: :showIndicator( cRgbColorString )
+       Places a 2 pixel high line with <cRgbColorString> on top of the 
+       browser window. This facilitates the place a warning system on the 
+       tables having utmost sensivity.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Made public some attributes of the MdiBrowser, i.e., :connection(), :driver().
+
+  * hbdbu/dbu.prg
+    + Added code to show a RED line on top of the browser if a table is opened 
+       via a specific connection.
+
 2013-01-18 16:29 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     * Version-bump.
@@ -23,6 +41,7 @@
   * qtcontribs.hbp
     + Added: build parameters for HbDBU.
 
+>>>>>>> .r143
 2013-01-18 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtdbu.prg
     % Minor.

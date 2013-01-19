@@ -205,6 +205,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    ACCESS searchText                              INLINE ::oSearchLabel:text()
    ASSIGN searchText( cText )                     INLINE ::oSearchLabel:setText( cText )
 
+   METHOD showIndicator( rgbColorString )
+
 PROTECTED:
 
    METHOD cellValue( nRow, nCol )                /* Overloaded */
@@ -256,6 +258,7 @@ PROTECTED:
    DATA   lReset                                  INIT   .F.
    DATA   lHorzMove                               INIT   .f.
 
+   DATA   oIndicator
    DATA   oTableView
    DATA   oGridLayout
    DATA   oFooterView
@@ -527,6 +530,10 @@ METHOD HbQtBrowse:create()
       :addPermanentWidget( ::oSearchLabel )
       :hide()
    ENDWITH
+   WITH OBJECT ::oIndicator := QLabel( ::oWidget )
+      :setMaximumHeight( 2 )
+      :hide()
+   ENDWITH
 
    /* Place all widgets in a Grid Layout */
    WITH OBJECT ::oGridLayout := QGridLayout( ::oWidget )
@@ -534,21 +541,22 @@ METHOD HbQtBrowse:create()
       :setHorizontalSpacing( 0 )
       :setVerticalSpacing( 0 )
 
-      :addWidget( ::oToolbar        , 0, 0, 1, 4 )
+      :addWidget( ::oIndicator      , 0, 0, 1, 4 )
+      :addWidget( ::oToolbar        , 1, 0, 1, 4 )
 
-      :addWidget( ::oLeftView       , 1, 0, 1, 1 )
-      :addWidget( ::oLeftFooterView , 2, 0, 1, 1 )
+      :addWidget( ::oLeftView       , 2, 0, 1, 1 )
+      :addWidget( ::oLeftFooterView , 3, 0, 1, 1 )
 
-      :addWidget( ::oTableView      , 1, 1, 1, 1 )
-      :addWidget( ::oFooterView     , 2, 1, 1, 1 )
+      :addWidget( ::oTableView      , 2, 1, 1, 1 )
+      :addWidget( ::oFooterView     , 3, 1, 1, 1 )
 
-      :addWidget( ::oRightView      , 1, 2, 1, 1 )
-      :addWidget( ::oRightFooterView, 2, 2, 1, 1 )
+      :addWidget( ::oRightView      , 2, 2, 1, 1 )
+      :addWidget( ::oRightFooterView, 3, 2, 1, 1 )
 
-      :addWidget( ::oHScrollBar     , 3, 0, 1, 3 )
+      :addWidget( ::oHScrollBar     , 4, 0, 1, 3 )
 
-      :addWidget( ::oVScrollBar     , 1, 3, 2, 1 )
-      :addWidget( ::oStatusBar      , 4, 0, 1, 4 )
+      :addWidget( ::oVScrollBar     , 2, 3, 2, 1 )
+      :addWidget( ::oStatusBar      , 5, 0, 1, 4 )
    ENDWITH
 
    ::oWidget:show()
@@ -2962,6 +2970,18 @@ METHOD HbQtBrowse:toColumn( cnColumn )
 
    RETURN Self
 
+
+METHOD HbQtBrowse:showIndicator( rgbColorString )
+
+   IF HB_ISCHAR( rgbColorString )
+      ::oIndicator:setStyleSheet( "" )
+      ::oIndicator:setStyleSheet( "background-color: " + rgbColorString + ";" )
+      ::oIndicator:show()
+   ELSE
+      ::oIndicator:hide()
+   ENDIF
+
+   RETURN Self
 
 METHOD HbQtBrowse:manageStatusbar( lShow )
    IF HB_ISLOGICAL( lShow )

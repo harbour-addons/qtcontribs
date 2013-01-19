@@ -1685,7 +1685,7 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:launchProject( cProject, cExe )
-   LOCAL cTargetFN, cTmp, oProject, cPath
+   LOCAL cTargetFN, cTmp, oProject, cPath, cParam, a_
    LOCAL qProcess, qStr
 
    IF empty( cProject )
@@ -1727,7 +1727,12 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
 
          IF !empty( oProject )
             IF !empty( oProject:launchParams )
-               qStr:append( oProject:launchParams )
+               a_:= hb_ATokens( oProject:launchParams, " " )
+               FOR EACH cParam IN a_
+                  IF ! Empty( cParam )
+                     qStr:append( AllTrim( cParam ) )
+                  ENDIF
+               NEXT
             ENDIF
             qProcess:startDetached( cTargetFN, qStr, hbide_pathToOSPath( oProject:wrkDirectory ) )
          ELSE

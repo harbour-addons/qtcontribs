@@ -496,6 +496,11 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse )
       :helpBlock           := {|                  | { ::helpInfo(), 0 } }
    ENDWITH
 
+   /* Indicate that the table belongs TO production environment and hence be modified WITH care */
+   IF oMdiBrowse:connection() $ "ECP_1,ECP_2,ECP_3,Cluster"
+      oHbQtBrowse:showIndicator( "red" )
+   ENDIF
+
    RETURN NIL
 
 

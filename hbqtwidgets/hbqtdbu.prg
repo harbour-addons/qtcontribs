@@ -386,9 +386,11 @@ METHOD HbQtDBU:create( oParent )
    ::qMidFrame:setLayout( ::qLayout )
    ::qRightFrame:setLayout( ::qRightFrameLay )
 
-   ::qLeftSplitter:addWidget( ::qLeftFrame )
-   ::qLeftSplitter:addWidget( ::qMidFrame )
-   ::qLeftSplitter:addWidget( ::qRightFrame )
+   WITH OBJECT ::qLeftSplitter
+      :addWidget( ::qLeftFrame  )
+      :addWidget( ::qMidFrame   )
+      :addWidget( ::qRightFrame )
+   ENDWITH
 
    WITH OBJECT ::oTreeTables := QTreeWidget()
       :setColumnCount( 1 )
@@ -1924,6 +1926,8 @@ CLASS HbQtMdiBrowser
    METHOD skipBlock( nHowMany )
 
    ACCESS alias                                   INLINE ::cAlias
+   ACCESS driver                                  INLINE ::cDriver
+   ACCESS connection                              INLINE ::cConxn
    ACCESS dbStruct                                INLINE ::aStruct
    ACCESS numIndexes                              INLINE iif( Len( ::aIndex ) == 0, 0,  Len( ::aIndex ) - 1 )
 
