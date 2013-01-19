@@ -41,3 +41,7 @@ hbxbp/hbxbp.hbp
 #
 hbide/hbide.hbp
 
+
+#    Qt based Harbour DBU
+#
+hbdbu/hbdbu.hbp

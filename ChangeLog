@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-18 16:29 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    * Version-bump.
+
+  * qtcontribs.hbp
+    + Added: build parameters for HbDBU.
+
 2013-01-18 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtdbu.prg
     % Minor.
