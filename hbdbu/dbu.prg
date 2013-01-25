@@ -67,6 +67,7 @@
 
 #include "inkey.ch"
 #include "hbtoqt.ch"
+#include "hbqtstd.ch"
 #include "hbqtgui.ch"
 #include "hbtrace.ch"
 #include "hbclass.ch"
@@ -104,9 +105,11 @@ CREATE CLASS DbuMGR
    DATA   oLayDash
    DATA   aDash                                   INIT {}
    DATA   oTimerDash
+   DATA   oSplash
 
    DATA   oExitAct
    DATA   oDashAct
+   DATA   oInfoAct
 
    DATA   lCache                                  INIT .F.
    DATA   lAds                                    INIT .F.
@@ -127,7 +130,7 @@ CREATE CLASS DbuMGR
    METHOD openMyTable( cTable,cAlias,cDriver,cConxn )
    METHOD checkIfTableExists( cTable, cDriver, cConxn )
    METHOD populateTree( cTable,cDriver,cConxn )
-   METHOD configureBrowser( oHbQtBrowse, oMdiBrowse )
+   METHOD configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
    METHOD setDatabaseParams()
    METHOD getATable( cConxn )
    METHOD fetchDbuData()
@@ -141,6 +144,7 @@ CREATE CLASS DbuMGR
    METHOD getPath( cFile )
    METHOD execDashboard()
    METHOD updateDashboard()
+   METHOD showStats( oMdiBrowse )
 
    ENDCLASS
 
@@ -149,6 +153,7 @@ METHOD DbuMGR:new( aParams )
 
    hb_HCaseMatch( ::hConxns , .F. )
    hb_HCaseMatch( ::hDbuData, .F. )
+   hb_HKeepOrder( ::hDbuData, .T. )
 
    ::aParams := aParams
 #ifdef __CACHE__
@@ -161,28 +166,42 @@ METHOD DbuMGR:new( aParams )
    ::fetchDbuData()
    ::setDatabaseParams()
    IF hb_HHasKey( ::hDbuData, "CacheServer" )
-      ::openConnections( hb_ATokens( ::hDbuData[ "CacheServer" ], "|" ) )
+      ::openConnections( ::hDbuData[ "CacheServer" ] )
    ENDIF
 
    RETURN Self
 
 
 METHOD DbuMGR:create()
+   LOCAL aRdds := {}
+   LOCAL cTitle
+
+#if defined(__CACHE__)
+   AAdd( aRdds, "CACHERDD" )
+#endif
+#ifdef __ADS__
+   AAdd( aRdds, "ADS" )
+#endif
+
+#ifdef __CACHE__
+   cTitle := "CacheMGR - " + ::hConxns[ "Default_ServerIP" ]
+#else
+   cTitle := "HbDBU"
+#endif
+
+   ::oSplash := QSplashScreen( QPixmap( __hbqtImage( "harbour-dbu" ) ) )
+   ::oSplash:show()
+
+   QApplication():processEvents()
 
    WITH OBJECT ::oWidget := hbqtui_dbu()
       :dockCache:hide()
       :dockAdvantage:hide()
-
       :setWindowIcon( ::getImage( "cube" ) )
-#ifdef __CACHE__
-      :setWindowTitle( "CacheMGR - " + ::hConxns[ "Default_ServerIP" ] )
-#else
-      :setWindowTitle( "HbDBU" )
-#endif
+      :setWindowTitle( cTitle )
       :statusBar():hide()
       :connect( QEvent_Close, {|oEvent| ::exit( .T., oEvent ) } )
    ENDWITH
-
 
    WITH OBJECT ::oExitAct := QAction( ::oWidget:oWidget )
       :setIcon( ::getImage( "exit" ) )
@@ -194,12 +213,19 @@ METHOD DbuMGR:create()
       :setTooltip( "Cache Servers Dashboard" )
       :connect( "triggered()", {|| ::execDashboard() } )
    ENDWITH
+   WITH OBJECT ::oInfoAct := QAction( ::oWidget:oWidget )
+      :setIcon( QIcon( __hbqtImage( "info" ) ) )
+      :setTooltip( "About HbDBU" )
+      :connect( "triggered()", {|| dbu_help( 1 ) } )
+   ENDWITH
 
    WITH OBJECT ::oToolbar := QToolBar( ::oWidget:oWidget )
       :setObjectName( "MainToolBar" )
       :setIconSize( QSize( 24,24 ) )
       :addAction( ::oExitAct )
       :addAction( ::oDashAct )
+      :addSeparator()
+      :addAction( ::oInfoAct )
    ENDWITH
    ::oWidget:addToolbar( Qt_TopToolBarArea, ::oToolbar )
 
@@ -210,27 +236,19 @@ METHOD DbuMGR:create()
       :existsTableBlock     := {|cTable,cDriver,cConxn       | ::checkIfTableExists( cTable, cDriver, cConxn ) }
       :populateTreeBlock    := {|cTable,cDriver,cConxn       | ::populateTree( cTable,cDriver,cConxn )         }
       :browseConfigureBlock := {|oBrowse,oMdiBrowse,oDbu     | ::configureBrowser( oBrowse, oMdiBrowse, oDbu ) }
-#if defined(__CACHE__) .AND. defined(__ADS__)
-      :rddsBlock         := {|| { "CACHERDD","ADS" } }
-#else
- #if defined(__CACHE__)
-      :rddsBlock         := {|| { "CACHERDD" } }
- #else
-  #if defined(__ADS__)
-      :rddsBlock         := {|| { "ADS" } }
-  #endif
- #endif
-#endif
+      :rddsBlock            := {|| aRdds }
    ENDWITH
    ::oWidget:stackedWidget:addWidget( ::oDbu:oWidget )
    ::oWidget:stackedWidget:setCurrentIndex( 1 )
 
-   ::restEnvironment()
-   ::oWidget:dockCache:hide()
-   ::oWidget:show()
-   ::oDbu:tablesStructureEnabled := .F.
-
    ::populateProdTables()
+
+   ::oWidget:dockCache:hide()
+   ::restEnvironment()
+   ::oWidget:show()
+   ::oSplash:close()
+   ::oSplash:setParent( QWidget() )
+
 
    RETURN Self
 
@@ -241,11 +259,13 @@ METHOD DbuMGR:exit( lAsk, oEvent )
    IF lAsk
       lExit := Alert( "Exit DbuMGR ?", { "Yes", "No" } ) == 1
    ENDIF
+   IF lExit
+      ::saveEnvironment()
+   ENDIF
    IF HB_ISOBJECT( oEvent )
       oEvent:ignore()
    ENDIF
    IF lExit
-      ::saveEnvironment()
       QApplication():exit( 0 )
    ENDIF
 
@@ -443,11 +463,10 @@ METHOD DbuMGR:fetchDbuData()
          IF ( n := at( "=", s ) ) > 0
             cKey   := upper( alltrim( substr( s, 1, n-1 ) ) )
             cValue := alltrim( substr( s, n+1 ) )
-            IF hb_HHasKey( ::hDbuData, cKey )
-               ::hDbuData[ cKey ] := ::hDbuData[ cKey ] + cValue
-            ELSE
-               ::hDbuData[ cKey ] := cValue
+            IF ! hb_HHasKey( ::hDbuData, cKey )
+               ::hDbuData[ cKey ] := {}
             ENDIF
+            AAdd( ::hDbuData[ cKey ], cValue )
          ENDIF
       ENDIF
    NEXT
@@ -456,14 +475,13 @@ METHOD DbuMGR:fetchDbuData()
 
 
 METHOD DbuMGR:populateProdTables()
-   LOCAL aTables := {}, cTables, cTable, OpenViaCache
+   LOCAL aTables := {}, cTables, cTable
 
    IF ! ::lCache
       RETURN NIL
    ENDIF
 
-   OpenViaCache := hb_ATokens( ::hDbuData[ "OpenViaCache" ], ";" )
-   FOR EACH cTables IN OpenViaCache
+   FOR EACH cTables IN ::hDbuData[ "OpenViaCache" ]
       FOR EACH cTable IN hb_ATokens( cTables, ";" )
          AAdd( aTables, cTable )
       NEXT
@@ -483,17 +501,26 @@ METHOD DbuMGR:populateProdTables()
    RETURN NIL
 
 
-METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse )
+METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
+
+   HB_SYMBOL_UNUSED( oDBU )
 
    WITH OBJECT oHbQtBrowse
       :horizontalScrollbar := .T.
-      :verticalScrollbar   := .F.
+      :verticalScrollbar   := .T.
       :toolbar             := .T.
       :statusbar           := .F.
-      :editBlock           := {|aMod,aData,oBrw   | ::saveRecord( aMod, aData, oBrw, oMdiBrowse )     }
-      :searchBlock         := {|xValue,nMode,oBrw | ::manageSearch( xValue, nMode, oBrw, oMdiBrowse ) }
-      :navigationBlock     := {|nKey,xData,oBrw   | ::handleOptions( nKey, xData, oBrw, oMdiBrowse )  }
-      :helpBlock           := {|                  | { ::helpInfo(), 0 } }
+      :editBlock           := {|aMod,aData,oBrw  | ::saveRecord( aMod, aData, oBrw, oMdiBrowse )     }
+      :searchBlock         := {|xValue,nMode,oBrw| ::manageSearch( xValue, nMode, oBrw, oMdiBrowse ) }
+      :navigationBlock     := {|nKey,xData,oBrw  | ::handleOptions( nKey, xData, oBrw, oMdiBrowse )  }
+      :helpBlock           := {|                 | { ::helpInfo(), 0 } }
+#ifdef __CACHE__                                  /* CacheRDD does not support OrdKey*() functions */
+      :firstPosBlock       := {| | 1                    }
+      :lastPosBlock        := {| | oMdiBrowse:lastRec() }
+      :posBlock            := {| | oMdiBrowse:recNo()   }
+      :goPosBlock          := {|n| oMdiBrowse:goto( n ) }
+      :phyPosBlock         := {| | oMdiBrowse:recNo()   }
+#endif
    ENDWITH
 
    /* Indicate that the table belongs TO production environment and hence be modified WITH care */
@@ -512,16 +539,41 @@ METHOD DbuMGR:saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
    RETURN .T.
 
 
+STATIC FUNCTION __getBlankValue( xValue )
+
+   SWITCH ValType( xValue )
+   CASE "C" ; RETURN Space( Len( xValue ) )
+   CASE "N" ; RETURN 0
+   CASE "D" ; RETURN CToD( "" )
+   CASE "L" ; RETURN .F.
+   ENDSWITCH
+
+   RETURN ""
+
 METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
-   HB_SYMBOL_UNUSED( xValue )
-   HB_SYMBOL_UNUSED( nMode )
-   HB_SYMBOL_UNUSED( oHbQtBrowse )
-   HB_SYMBOL_UNUSED( oMdiBrowse )
+
+   IF xValue == NIL .AND. oHbQtBrowse == NIL
+      // Nothing TO do
+   ELSEIF xValue == NIL
+      IF oMdiBrowse:indexOrd() > 0
+         xValue := __getBlankValue( oMdiBrowse:indexKeyValue() )
+         RETURN { xValue, "@ ", HBQTBRW_SEARCH_INCREMENTAL }
+      ELSE
+         RETURN { __getBlankValue( Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block ) ), NIL, HBQTBRW_SEARCH_BYFIELD }
+      ENDIF
+   ELSE
+      IF oMdiBrowse:indexOrd() > 0
+         oMdiBrowse:search( xValue )
+      ELSEIF nMode == HBQTBRW_SEARCH_BYFIELD
+         RETURN Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block ) = xValue
+      ENDIF
+   ENDIF
+
    RETURN .T.
 
 
 METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
-   LOCAL i, xResult, nRec, xValue
+   LOCAL i, xResult, nRec, xValue, aRecList, aList, astr, aMnu, oCol, cFilter
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
@@ -529,6 +581,14 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
    oMdiBrowse:dispInfo()
 
    DO CASE
+   CASE nKey == K_CTRL_PGUP
+      oHbQtBrowse:goTop()
+      RETURN .F.
+
+   CASE nKey == K_CTRL_PGDN
+      oHbQtBrowse:goBottom()
+      RETURN .F.
+
    CASE nKey == K_F5
       oHbQtBrowse:Scroll()
 
@@ -549,23 +609,6 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
       oHbQtBrowse:freeze++
    CASE nKey == K_SH_F8
       oHbQtBrowse:freeze--
-
-   CASE nKey == K_ENTER
-      IF dbRLock()
-         FOR i := oHbQtBrowse:colPos TO oHbQtBrowse:colCount()
-            xResult := oHbQtBrowse:editCell()
-            IF xResult == NIL
-               EXIT
-            ENDIF
-            Eval( oHbQtBrowse:getColumn( i ):block, xResult )      /* Even this is not required, or DBU must not set the SETGET block, just the GET block */
-            oHbQtBrowse:refreshCurrent()
-            IF i < oHbQtBrowse:colCount()
-               oHbQtBrowse:right()
-            ENDIF
-         NEXT
-         dbCommit()
-         dbRUnlock()
-      ENDIF
 
    CASE nKey == K_F7
       IF ::getSearchValue( oMdiBrowse, @xValue )    /* Seek      */
@@ -594,14 +637,142 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
          oHbQtBrowse:RefreshAll()
       ENDIF
 
-   CASE nKey == K_ALT_F5                          /* Add Column */
+   CASE nKey == K_ALT_F5                          /* Insert Column */
+      aStr := oMdiBrowse:dbStruct()
+      aMnu := {}
+      aeval( aStr, {|e_| AAdd( aMnu, e_[ 1 ] ) } )
+      IF ! Empty( nRec := HbQtAChoice( , , , , aMnu, , , , , "Select a Field" ) )
+         oCol := HbQtColumnNew( aStr[ nRec, 1 ], oMdiBrowse:fieldBlock( aStr[ nRec, 1 ] ) )
+         oHbQtBrowse:insColumn( oHbQtBrowse:ColPos, oCol )
+         oHbQtBrowse:RefreshAll()
+      ENDIF
+
+   CASE nKey == K_ALT_P                           /* SET SCOPE */
+      oMdiBrowse:setScope()
+
+   CASE nKey == K_ALT_W                           /* clear SCOPE */
+      oMdiBrowse:clearScope()
+
+   CASE nKey == K_ALT_INS                         /* append BLANK */
+      oMdiBrowse:append()
+
+   CASE nKey == K_ALT_DEL                         /* delete RECORD */
+      oMdiBrowse:delete( .T. )
+
+   CASE nKey == K_ALT_L                           /* Lock RECORD */
+      IF ! oMdiBrowse:lock()
+         Alert( "Could not lock record!" )
+      ENDIF
+
+   CASE nKey == K_ALT_U                           /* Unlock RECORD */
+      IF ! oMdiBrowse:unLock()
+         Alert( "Could not unlock record!" )
+      ENDIF
+
+   CASE nKey == K_ALT_K                           /* Unlock a selective RECORD */
+      IF ! Empty( aRecList := oMdiBrowse:dbrLockList() )
+         aList := {}
+         AEval( aRecList, {|n| AAdd( aList, hb_ntos( n ) ) } )
+         IF ! Empty( nRec := HbQtAChoice( , , , , aList ) )
+            oMdiBrowse:unLock( aRecList[ nRec ] )
+         ENDIF
+      ENDIF
+
+   CASE nKey ==  K_ALT_F                          /* FILTER */
+      cFilter := trim( HbQtBulkGet( Space( 50 ), 'Filter Expression' ) )
+      IF ! Empty( cFilter )
+         oMdiBrowse:setFilter( cFilter )
+         oMdiBrowse:goTop()
+      ENDIF
+
+   CASE nKey == K_ALT_R                           /* clear FILTER */
+      oMdiBrowse:clearFilter()
+      oMdiBrowse:goTop()
+
+   CASE nKey == K_ALT_T
+      ::showStats( oMdiBrowse )
+
+   CASE nKey == K_ENTER
+      IF dbRLock()
+         xResult := oHbQtBrowse:editCell()
+         IF xResult != NIL
+            Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block, xResult )      /* Even this is not required, or DBU must not set the SETGET block, just the GET block */
+            dbCommit()
+            oHbQtBrowse:refreshCurrent()
+         ENDIF
+         dbRUnlock()
+      ENDIF
+
+   CASE nKey == K_ALT_ENTER
+      IF dbRLock()
+         FOR i := oHbQtBrowse:colPos TO oHbQtBrowse:colCount()
+            xResult := oHbQtBrowse:editCell()
+            IF xResult == NIL
+               EXIT
+            ENDIF
+            Eval( oHbQtBrowse:getColumn( i ):block, xResult )      /* Even this is not required, or DBU must not set the SETGET block, just the GET block */
+            oHbQtBrowse:refreshCurrent()
+            IF i < oHbQtBrowse:colCount()
+               oHbQtBrowse:right()
+            ENDIF
+         NEXT
+         dbCommit()
+         dbRUnlock()
+      ENDIF
+
+   CASE nKey == K_CTRL_ENTER
+      DO WHILE .T.
+         IF dbRLock()
+            xResult := oHbQtBrowse:editCell()
+            IF xResult == NIL
+               EXIT
+            ENDIF
+            Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block, xResult )
+            dbCommit()
+            dbRUnlock()
+            oHbQtBrowse:refreshCurrent()
+            oHbQtBrowse:down()
+            IF oHbQtBrowse:hitBottom
+               EXIT
+            ENDIF
+         ENDIF
+      ENDDO
+
+   CASE nKey == K_CTRL_F1
+      oHbQtBrowse:search( NIL, NIL, HBQTBRW_SEARCH_BYFIELD )
 
    OTHERWISE
       lHandelled := .F.
+
    ENDCASE
 
    RETURN lHandelled
 
+
+METHOD DbuMGR:showStats( oMdiBrowse )
+   LOCAL aStats := {}
+
+   aadd( aStats, pad( '   Generic'                                    ,                32 ) + "." )
+#ifdef __CACHE__
+   aadd( aStats, pad( 'Server Time     = ' + CacheGetServerTime(),                     32 ) + "." )
+   aadd( aStats, pad( 'Server Date     = ' + DToC( CacheGetServerDate()  ),            32 ) + "." )
+   aadd( aStats, pad( 'Insert Lock Mode= ' + hb_ntos( CacheInsertLockMode() ),         32 ) + "." )
+#endif
+   aadd( aStats, pad( 'LastRec()       = ' + hb_ntos( oMdiBrowse:lastRec()  ),         32 ) + "." )
+   aadd( aStats, pad( 'OrdKeyNo()      = ' + hb_ntos( oMdiBrowse:ordKeyNo() ),         32 ) + "." )
+   aadd( aStats, pad( 'OrdKeyCount()   = ' + hb_ntos( oMdiBrowse:ordKeyCount() ),      32 ) + "." )
+   aadd( aStats, pad( '   Field Info'                                           ,      32 ) + "." )
+   aadd( aStats, pad( 'FCount()        = ' + hb_ntos( oMdiBrowse:fCount() ),           32 ) + "." )
+   aadd( aStats, pad( 'DbFieldInfo()   = ' + hb_ntos( oMdiBrowse:dbFieldInfo( 1,1 ) ), 32 ) + "." )
+   aadd( aStats, pad( '   Index Info'                              ,                   32 ) + "." )
+   aadd( aStats, pad( 'IndexKey()      = ' + hb_ntos( oMdiBrowse:indexKey() ),         32 ) + "." )
+   aadd( aStats, pad( 'IndexOrd()      = ' + hb_ntos( oMdiBrowse:indexOrd() ),         32 ) + "." )
+   aadd( aStats, pad( 'IndexExt()      = ' + hb_ntos( oMdiBrowse:indexExt() ),         32 ) + "." )
+   aadd( aStats, Pad( 'OrdKey()        = ' + hb_ntos( oMdiBrowse:ordKey() ),           32 ) + "." )
+
+   Alert( aStats, , , , "Various Statistics" )
+
+   RETURN NIL
 
 METHOD DbuMGR:getSearchValue( oMdiBrowse, xValue )
    IF oMdiBrowse:indexOrd() > 0
@@ -617,62 +788,131 @@ METHOD DbuMGR:getSearchValue( oMdiBrowse, xValue )
 METHOD DbuMGR:helpInfo()
    LOCAL v_:= {}
 
-   aadd( v_, 'F2      NatOrd    Sets the index to 0 for natural record order' )
-   aadd( v_, 'F3      Order                            Set a new index order' )
-   aadd( v_, 'F4      Goto                  Goto a specific record by number' )
-   aadd( v_, 'F5      Scroll     Auto scrolls the browser current-bottom-top' )
-   aadd( v_, 'F7      Seek              Search for a record by Current Index' )
-   aadd( v_, 'F8      Freeze                        Freezes leftmoost column' )
-   aadd( v_, 'F10     Lock           Toggles locks status of currents record' )
-   aadd( v_, 'Sh+F8   UnFreeze                 UnFreezes last freezed column' )
-   aadd( v_, 'Sh+F5   MoveRight      Moves current column right one position' )
-   aadd( v_, 'Sh+F6   MoveLeft         Moves current column left on position' )
-   aadd( v_, 'Alt+F5  InsColumn            Insert column at current location' )
-   aadd( v_, 'Alt+F6  DelColumn           Deletes currently hilighted column' )
-   aadd( v_, '                                                              ' )
-   aadd( v_, 'ENTER   Edit                                 Edit current cell' )
-   aadd( v_, '                                                              ' )
-   aadd( v_, 'Alt_E                                                Seek Last' )
-   aadd( v_, 'Alt_Y                                                Seek Soft' )
-   aadd( v_, 'ALT_Z                                             Skip Records' )
-   aadd( v_, 'Alt_F                                             Set a Filter' )
-   aadd( v_, 'Alt_R                                             Clear Filter' )
-   aadd( v_, 'Alt_P                                                Set Scope' )
-   aadd( v_, 'Alt_O                                              Clear Scope' )
-   aadd( v_, 'Alt_INS                                  Append a blank Record' )
-   aadd( v_, 'Alt_DEL                                  Delete Current Record' )
-   aadd( v_, 'Alt_T                                          Show Statistics' )
-   aadd( v_, 'Alt_V                                        Performance Stats' )
-   aadd( v_, 'Alt_X                                     Sum Average High Low' )
-   aadd( v_, 'Ctrl_F1                                          Find in field' )
-   aadd( v_, '                                                              ' )
-   aadd( v_, 'Alt_L                                      Lock Current Record' )
-   aadd( v_, 'Alt_U                                    Unlock Current Record' )
-   aadd( v_, 'Alt_K                                Unlock a Selective Record' )
-   aadd( v_, 'Alt_S                                   List of Locked Records' )
-   aadd( v_, 'Alt_I                                                Lock Info' )
-   aadd( v_, 'Alt_G                                     List of Global Locks' )
-   aadd( v_, 'Alt_X                                Lock Info Column (Toggle)' )
+   aadd( v_, 'F2       Sets the index to 0 for natural record order' )
+   aadd( v_, 'F3                              Set a new index order' )
+   aadd( v_, 'F4                   Goto a specific record by number' )
+   aadd( v_, 'F5        Auto scrolls the browser current-bottom-top' )
+   aadd( v_, 'F7               Search for a record by Current Index' )
+   aadd( v_, 'F8                           Freezes leftmoost column' )
+   aadd( v_, 'F10           Toggles locks status of currents record' )
+   aadd( v_, 'Sh+F8                   UnFreezes last freezed column' )
+   aadd( v_, 'Sh+F5         Moves current column right one position' )
+   aadd( v_, 'Sh+F6           Moves current column left on position' )
+   aadd( v_, 'Alt+F5              Insert column at current location' )
+   aadd( v_, 'Alt+F6             Deletes currently hilighted column' )
+   aadd( v_, '                                                     ' )
+   aadd( v_, 'ENTER                               Edit current cell' )
+   aadd( v_, 'Alt+ENTER      Edit current row starting current cell' )
+   aadd( v_, 'Ctrl+ENTER          Edit current column then next row' )
+   aadd( v_, '                                                     ' )
+   aadd( v_, 'Alt_E                                       Seek Last' )
+   aadd( v_, 'Alt_Y                                       Seek Soft' )
+   aadd( v_, 'ALT_Z                                    Skip Records' )
+   aadd( v_, 'Alt_F                                    Set a Filter' )
+   aadd( v_, 'Alt_R                                    Clear Filter' )
+   aadd( v_, 'Alt_P                                       Set Scope' )
+   aadd( v_, 'Alt_O                                     Clear Scope' )
+   aadd( v_, 'Alt_INS                         Append a blank Record' )
+   aadd( v_, 'Alt_DEL                         Delete Current Record' )
+   aadd( v_, 'Alt_T                                 Show Statistics' )
+// aadd( v_, 'Alt_V                               Performance Stats' )
+// aadd( v_, 'Alt_X                            Sum Average High Low' )
+   aadd( v_, 'Ctrl_F1                                 Find in field' )
+   aadd( v_, '                                                     ' )
+   aadd( v_, 'Alt_L                             Lock Current Record' )
+   aadd( v_, 'Alt_U                           Unlock Current Record' )
+   aadd( v_, 'Alt_K                       Unlock a Selective Record' )
+   aadd( v_, 'Alt_S                          List of Locked Records' )
+// aadd( v_, 'Alt_I                                       Lock Info' )
+// aadd( v_, 'Alt_G                            List of Global Locks' )
+// aadd( v_, 'Alt_X                       Lock Info Column (Toggle)' )
 
    RETURN v_
 
 
+STATIC FUNCTION __arrayToString( aStrings, cDlm )
+   LOCAL cStr := ""
+   aeval( aStrings, {|e| cStr += e + cDlm } )
+   RETURN cStr
+
+
 METHOD DbuMGR:saveEnvironment()
    LOCAL oSettings
+   LOCAL oWgt := ::oWidget:oWidget
    LOCAL cFile := ::getPath( "settings.dbu" )
 
-   oSettings := QSettings( cFile, QSettings_IniFormat )
-   oSettings:setValue( "dbusettings", QVariant( ::oWidget:oWidget:saveState() ) )
+   WITH OBJECT oSettings := QSettings( cFile, QSettings_IniFormat )
+      :setValue( "dbuSettings"     , QVariant( oWgt:saveState() ) )
+      :setValue( "dbuSplitter"     , QVariant( ::oDbu:splitter:saveState() ) )
+      :setValue( "dbuPosAndSize"   , QVariant( QRect( oWgt:x(), oWgt:y(), oWgt:width(), oWgt:height() ) ) )
+      :setValue( "dbuTablesVisible", QVariant( ::oDbu:tablesPanel:isVisible() ) )
+      :setValue( "dbuStructVisible", QVariant( ::oDbu:structPanel:isVisible() ) )
+      :setValue( "dbuPanelNames"   , QVariant( __arrayToString( ::oDbu:getPanelNames(), "~" ) ) )
+      :setValue( "dbuPanelsInfo"   , QVariant( __arrayToString( ::oDbu:getPanelsInfo(), "~" ) ) )
+      :setValue( "dbuTreeInfo"     , QVariant( __arrayToString( ::oDbu:getTreeInfo()  , "~" ) ) )
+   ENDWITH
 
-   RETURN NIL
+   RETURN oSettings
 
 
 METHOD DbuMGR:restEnvironment()
-   LOCAL oSettings
+   LOCAL oSettings, oWgt := ::oWidget:oWidget
    LOCAL cFile := ::getPath( "settings.dbu" )
+   LOCAL oRect, lVal, cInfo
 
    oSettings := QSettings( cFile, QSettings_IniFormat )
-   ::oWidget:oWidget:restoreState( oSettings:value( "dbusettings" ):toByteArray() )
+   oWgt:restoreState( oSettings:value( "dbuSettings" ):toByteArray() )
+
+   IF oSettings:contains( "dbuPosAndSize" )
+      oRect := oSettings:value( "dbuPosAndSize" ):toRect()
+      oWgt:move( oRect:x(), oRect:y() )
+      oWgt:resize( oRect:width(), oRect:height() )
+   ENDIF
+
+   IF oSettings:contains( "dbuTablesVisible" )
+      lVal := oSettings:value( "dbuTablesVisible" ):toBool()
+      IF lVal
+         IF ! ::oDbu:tablesPanel:isVisible()
+            ::oDbu:tablesPanel:show()
+         ENDIF
+      ELSE
+         IF ::oDbu:tablesPanel:isVisible()
+            ::oDbu:tablesPanel:hide()
+         ENDIF
+      ENDIF
+   ENDIF
+   IF oSettings:contains( "dbuStructVisible" )
+      lVal := oSettings:value( "dbuStructVisible" ):toBool()
+      IF lVal
+         IF ! ::oDbu:structPanel:isVisible()
+            ::oDbu:structPanel:show()
+         ENDIF
+      ELSE
+         IF ::oDbu:structPanel:isVisible()
+            ::oDbu:structPanel:hide()
+         ENDIF
+      ENDIF
+   ENDIF
+   IF oSettings:contains( "dbuSplitter" )
+      ::oDbu:splitter:restoreState( oSettings:value( "dbuSplitter" ):toByteArray() )
+   ENDIF
+
+   IF oSettings:contains( "dbuPanelNames" )
+      ::oDbu:addPanels( hb_ATokens( oSettings:value( "dbuPanelNames" ):toString(), "~" ) )
+   ENDIF
+   IF oSettings:contains( "dbuPanelsInfo" )
+      ::oDbu:loadTables( hb_ATokens( oSettings:value( "dbuPanelsInfo" ):toString(), "~" ) )
+   ENDIF
+
+   IF oSettings:contains( "dbuTreeInfo" )
+      FOR EACH cInfo IN hb_ATokens( oSettings:value( "dbuTreeInfo" ):toString(), "~" )
+         IF ! Empty( cInfo )
+            IF ! ( "CACHERDD" $ cInfo )
+               ::oDbu:populateTree( hb_ATokens( cInfo, " " ) )
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
 
    RETURN NIL
 
@@ -888,4 +1128,63 @@ METHOD DashBoard:update()
    ::oLabelLocks     : setText( cText )
 #endif
    RETURN Self
+
+
+FUNCTION dbu_help( nOption )
+   LOCAL txt_:= {}
+   LOCAL cTitle, s
+
+   SWITCH nOption
+   CASE 1
+      cTitle := 'About HbDBU'
+      AAdd( txt_, "<b>Harbour DBU ( HbDBU )</b>" )
+      AAdd( txt_, "Developed by" )
+      AAdd( txt_, "Pritpal Bedi ( bedipritpal@hotmail.com )" )
+      AAdd( txt_, "" )
+      AAdd( txt_, "built with:" )
+      AAdd( txt_, "QtContribs " + " r" + "145" )
+      AAdd( txt_, HB_COMPILER() )
+      AAdd( txt_, "Qt " + QT_VERSION_STR() )
+      AAdd( txt_, "" )
+      AAdd( txt_, "Visit the project website at:" )
+      AAdd( txt_, "<a href='http://harbour-project.org/'>http://harbour-project.org/</a>" )
+      AAdd( txt_, "<a href='http://hbide.vouch.info/'>http://hbide.vouch.info/</a>" )
+      EXIT
+
+   CASE 2
+      cTitle := 'Mailing List'
+      AAdd( txt_, "<b>Harbour Development Mailing List</b>" )
+      AAdd( txt_, "" )
+      AAdd( txt_, "Please visit the home page:" )
+      AAdd( txt_, "<a href='http://groups.google.com/group/harbour-devel/'>http://groups.google.com/group/harbour-devel/</a>" )
+      AAdd( txt_, "" )
+      AAdd( txt_, "<b>QtContribs Developers/Users Mailing List</b>" )
+      AAdd( txt_, "" )
+      AAdd( txt_, "<a href='http://groups.google.com/group/qtcontribs/'>http://groups.google.com/group/qtcontribs/</a>" )
+      EXIT
+
+   CASE 4
+      cTitle := 'About Harbour'
+      AAdd( txt_, "<b>About Harbour</b>" )
+      AAdd( txt_, "" )
+      AAdd( txt_, '"Harbour is the Free Open Source Software implementation' )
+      AAdd( txt_, 'of a multi-platform, multi-threading, object-oriented, scriptable' )
+      AAdd( txt_, 'programming language, backwards compatible with Clipper/xBase.' )
+      AAdd( txt_, 'Harbour consists of a compiler and runtime libraries with multiple' )
+      AAdd( txt_, 'UI and database backends, its own make system and a large' )
+      AAdd( txt_, 'collection of libraries and interfaces to many popular APIs."' )
+      AAdd( txt_, "" )
+      AAdd( txt_, "Get downloads, samples, contribs and much more at:" )
+      AAdd( txt_, "<a href='http://harbour-project.org/'>http://harbour-project.org/</a>" )
+      EXIT
+
+   END
+
+   IF !Empty( txt_ )
+      s := ""
+      AEval( txt_, {|e| s += e + Chr( 10 ) } )
+      HbQtMsgBox( s, cTitle )
+   ENDIF
+
+   RETURN nil
 

@@ -16,6 +16,55 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-25 15:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/resources/info.png
+    + Image miissed from prev commit.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Many, many, many changes. All will be reflected in documenttaion.
+       Difficult to jot down in ChangeLog.
+
+  * hbdbu/dbu.prg
+    + Fully functional and usable HbDBU. A different experience!
+  
+  ; WHAT HAS BEEN ACCOMPLISHED IN HbDBU - A BRIEF OVERVIEW
+
+         COMPONENT
+    * All components are completely configurable on application level.
+    * Multiple Panels to spread browsers.
+    * Allows opening same table n number of times.
+    * Allows opening same table on any panel.
+    * Allows index manipulation on browser level.
+
+         APPLICATION
+    * Splash screen.
+    * About HbDBU.
+    * Shows how to pull information about HbDBU's various components 
+       and save them and then how to retrieve and populate them 
+       back on next run. These are :
+        1. Tables Tree structure.
+        2. Created Panels.
+        3. Opened tables with index order, record number, column position, 
+            contained columns, columns order.
+    * Implements almost all database actions, viz., 
+        1. Edit a field.
+        2. Edit a record.
+        3. Delete a record.
+        4. Append new record.
+        5. Set and Clear a scope.
+        6. Set and clear a filter.
+        7. Seek, soft-seek, seek-last.
+        8. Find in Field.
+        9. Lock/Unlock a current/selective record.
+        10.List of locked records.
+    * Editing is implemented as:
+        1. Edit only current cell.
+        2. Edit row cell-by-cell.
+        3. Edit cell row-by-row. 
+
+    * Remembers exact state of last run including entries in 
+       Tables Tree, created panels, opened tables with exact views.
+
 2013-01-25 13:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/resources/add-column.png
   + hbqtwidgets/resources/delete-column.png
