@@ -1260,7 +1260,6 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
       cSource := AllTrim( hbide_stripFilter( ::aProjData[ n, TRE_ORIGINAL ] ) )
       IF Left( cSource, 2 ) == ".."               /* Assumed that relative paths for upper folder than .hbp base path start WITH ".." */
          cSource := hbide_pathNormalized( ::oPM:getProjectPathFromTitle( ::aProjData[ n,5 ] ) + cSource )
-         msgBox( cSource )
       ENDIF
       hb_fNameSplit( cSource, , , @cExt )
       IF lower( cExt ) == ".ui"
