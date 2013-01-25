@@ -16,6 +16,57 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-25 13:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/resources/add-column.png
+  + hbqtwidgets/resources/delete-column.png
+  + hbqtwidgets/resources/select-column.png
+  + hbqtwidgets/resources/harbour-dbu.png
+    % Image for HbDBU splash screen.
+
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: few more icons.
+
+  * hbqtwidgets/hbqtalert.prg
+    + Added: function HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItems, ;
+                                   cUserFunc, nInitItem, nWindowRow, cTitle, oParent )
+       Currently only minimum functionality but is scheduled to be enhanced
+       per Clipper documentation.
+
+    + Added: function FUNCTION HbQtMsgBox( cMsg, cTitle ).
+       Scheduled to be enhanced.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    * Enhanced: function __hbqtGetNextIdAsString( cString ).
+
+  * hbqtwidgets/hbqtbrowse.prg
+    -+ Replaced: Index ComboBox and JumpToColumn comboBox with drop-down menu 
+        embedded toolbuttons. It occupies less horizontal space plus offers 
+        better toolbar look.
+
+    + Added: toolbar icons <Add a Column> and <Delete Current Column>
+       <Delete Current Column> is straight forward. Clicking on it will delete 
+        the current highlighted column off the browser view.
+       <Add a Column> needs :addColumnsBlock to be supplied by the 
+        application which will be responsible to populate <Add Columns Menu>
+        as well as inserting a properly configured column based on the 
+        selection of field name from drop down menu. For example:
+ 
+          oHbQtBrowse:addColumnsBlock := {| nMode, cColumn, oBrowse | AddMyColumn( nMode, cColumn, oBrowse ) }
+
+        The block is evaluated with nMode == 0 once when user clicks on the 
+        <Add Columns Icon> first time which requests the appln to supply 
+        the names of the columns or fields and populates the drop down menu with them.
+
+        The block is called with mode == 1 when user activates a prompt
+        of drop-down menu. <cColumn> contains the name of the activated propmt.
+        It is the responsibility of the application to insert a column depending 
+        on the <cColumn> value.
+
+        Please study the implementation code inside tests/browdb.prg.
+
+  * hbqtwidgets/tests/browdb.prg
+    + Added: Code to demonstrate the usage of :addColumnsBlock.
+
 2013-01-25 13:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/main.prg
     ! Removed: residual trace message.

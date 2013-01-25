@@ -313,3 +313,75 @@ FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
 STATIC FUNCTION __getBlock( aBlocks, nIndex )
    RETURN aBlocks[ nIndex ]
 
+
+FUNCTION HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItems, cUserFunc, nInitItem, nWindowRow, cTitle, oParent )
+   LOCAL oDlg, oVLay, oBtnOK, oBtnCancel, oHLay, oList, nRes, nChoice, cItem
+
+   HB_SYMBOL_UNUSED( nLeft )
+   HB_SYMBOL_UNUSED( nRight )
+   HB_SYMBOL_UNUSED( nTop )
+   HB_SYMBOL_UNUSED( nBottom )
+   HB_SYMBOL_UNUSED( xSelectableItems )
+   HB_SYMBOL_UNUSED( cUserFunc )
+   HB_SYMBOL_UNUSED( nInitItem )
+   HB_SYMBOL_UNUSED( nWindowRow )
+
+   hb_default( @oParent, QApplication():focusWidget() )
+   hb_default( @cTitle, "Select an Option" )
+
+   oDlg   := QDialog( oParent )
+   oVLay  := QVBoxLayout( oDlg )
+   oList  := QListWidget( oDlg )
+   oVLay  :  addWidget( oList )
+   oHLay  := QHBoxLayout()
+   oVLay  :  addLayout( oHLay )
+   oBtnOK := QPushButton( oDlg )
+   oBtnOK :  setText( "OK" )
+   oHLay  :  addWidget( oBtnOK )
+
+   oBtnCancel := QPushButton( oDlg )
+   oBtnCancel :  setText( "Cancel" )
+   oHLay      :  addWidget( oBtnCancel )
+
+   oBtnOK     :  connect( "clicked()", {|| oDlg:done( 1 ) } )
+   oBtnCancel :  connect( "clicked()", {|| oDlg:done( 0 ) } )
+   oList      :  setFont( QFont( "Courier New", 10 ) )
+   oList      :  connect( "itemDoubleClicked(QListWidgetItem*)", {||  oDlg:done( 1 ) } )
+
+   FOR EACH cItem IN acMenuItems
+      oList:addItem( cItem )
+   NEXT
+
+   oDlg:setWindowTitle( cTitle )
+   nRes := oDlg:exec()
+
+   nChoice := iif( nRes == 0, 0, oList:currentRow()+1 )
+
+   oDlg:setParent( QWidget() )
+
+   RETURN nChoice
+
+
+FUNCTION HbQtMsgBox( cMsg, cTitle )
+   LOCAL oMB
+
+   hb_default( @cTitle, "  " )
+
+   cMsg := strtran( cMsg, chr( 13 ) + chr( 10 ), "<br />" )
+   cMsg := strtran( cMsg, chr( 13 ), "<br />" )
+   cMsg := strtran( cMsg, chr( 10 ), "<br />" )
+
+   oMB := QMessageBox()
+   oMB:setText( /* "<b>" + */ cMsg /* + "</b>" */ )
+   oMB:setIcon( QMessageBox_Information )
+   oMB:setParent( QApplication():focusWidget() )
+   oMB:setWindowFlags( Qt_Dialog )
+   oMB:setWindowTitle( cTitle )
+
+   oMB:exec()
+
+   oMB:setParent( QWidget() )
+
+   RETURN NIL
+
+

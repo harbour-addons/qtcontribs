@@ -132,8 +132,10 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    AAdd( aIndexes, { "Natural Order", {|oBrw| dbSetOrder( 0 ), oBrw:refreshAll(), oBrw:forceStable() } } )
    AAdd( aIndexes, { "Last Name"    , {|oBrw| dbSetOrder( 1 ), oBrw:refreshAll(), oBrw:forceStable() } } )
-   oBrowse:indexes             := { aIndexes, 2 }
+   oBrowse:indexes             := aIndexes
+
    oBrowse:gotoBlock           := {|| GotoMyRecord() }
+   oBrowse:addColumnsBlock     := {|nMode,cColumn,oBrw | AddMyColumns( nMode,cColumn,oBrw ) }
 
    RETURN oBrowse
 
@@ -321,6 +323,26 @@ STATIC FUNCTION LookMySearch( xValue,nMode,oBrw )
    ENDIF
 
    RETURN .T.
+
+
+STATIC FUNCTION AddMyColumns( nMode,cColumn,oBrw )
+   LOCAL aStr, a_, n
+
+   IF nMode == 0
+      aStr := {}
+      FOR EACH a_ IN dbStruct()
+         AAdd( aStr, a_[ 1 ] )
+      NEXT
+      RETURN aStr
+
+   ELSEIF nMode == 1 .AND. HB_ISSTRING( cColumn ) .AND. ! Empty( cColumn )
+      n := AScan( dbStruct(), {|e_|  e_[ 1 ] == cColumn } )
+      IF n > 0
+         oBrw:insColumn( oBrw:colPos, HbQtColumnNew( dbStruct()[ n,1 ], {|| FieldGet( n ) } ) )
+      ENDIF
+   ENDIF
+
+   RETURN NIL
 
 
 STATIC FUNCTION GotoMyRecord()

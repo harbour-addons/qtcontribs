@@ -122,5 +122,10 @@
     <file>resources/scroll.png</file>
     <file>resources/stop.png</file>
     <file>resources/help.png</file>
+    <file>resources/select-column.png</file>
+    <file>resources/add-column.png</file>
+    <file>resources/delete-column.png</file>
+    <file>resources/info.png</file>
+    <file>resources/harbour-dbu.png</file>
   </qresource>
 </RCC>

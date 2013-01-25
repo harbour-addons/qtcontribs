@@ -86,10 +86,15 @@ FUNCTION __hbqtImage( cName )
 
 FUNCTION __hbqtGetNextIdAsString( cString )
    STATIC hIDs := {=>}
+   IF Empty( hIDs )
+      hb_HCaseMatch( hIDs, .F. )
+   ENDIF
    IF ! hb_hHasKey( hIDs, cString )
       hIDs[ cString ] := 0
+   ELSE
+      cString += "_" + hb_ntos( ++hIDs[ cString ] )
    ENDIF
-   RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
+   RETURN cString
 
 
 FUNCTION HbQtSet( nSet, xValue )

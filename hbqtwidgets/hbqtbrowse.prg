@@ -159,6 +159,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD stableBlock( bBlock )                   SETGET
 
    METHOD helpBlock( bBlock )                     SETGET
+   METHOD addColumnsBlock( bBlock )               SETGET
 
    ACCESS rFreeze                                 METHOD getRFrozen           // get number of frozen columns
    ASSIGN rFreeze                                 METHOD rFreeze              // set number of columns to freeze at right side
@@ -190,6 +191,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD toColumn( cnColumn )
    ACCESS indexes                                 METHOD getIndexes
    ASSIGN indexes                                 METHOD setIndexes
+   METHOD execIndex( cIndex )
 
    ACCESS editEnabled                             METHOD getEditable
    ASSIGN editEnabled                             METHOD setEditable
@@ -220,6 +222,8 @@ PROTECTED:
    METHOD compatColor( nColor )
    METHOD compatIcon( cIcon )
    METHOD compatBrush( nColor )
+
+   METHOD addAColumn( cColumn )
 
    DATA   oParent
    DATA   oFont
@@ -328,6 +332,7 @@ PROTECTED:
    DATA   bHitTopBlock                            INIT NIL
    DATA   bStableBlock                            INIT NIL
    DATA   bHelpBlock                              INIT NIL
+   DATA   bAddColumnsBlock                        INIT NIL
 
    METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
    METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
@@ -400,6 +405,8 @@ PROTECTED:
    //
    DATA   oActToColumn
    DATA   oActToColumnM
+   DATA   oColumnsButton
+   DATA   oColumnsMenu
    DATA   oComboColumn
    DATA   oComboColumnM
    //
@@ -411,9 +418,15 @@ PROTECTED:
    DATA   oActScroll
    DATA   oActStop
    //
-   METHOD execIndex( cIndex )
+   DATA   oActAddColumn
+   DATA   oActDelColumn
+   DATA   oAddColumnsButton
+   DATA   oAddColumnsMenu
+   //
    DATA   oActIndexes
    DATA   oComboIndexes
+   DATA   oIndexButton
+   DATA   oIndexMenu
    DATA   aIndexes                                INIT {}
 
    METHOD buildToolbar()
@@ -429,6 +442,8 @@ PROTECTED:
    DATA   xTitle
    DATA   oPenBlack
    DATA   oPrinter
+
+   FRIEND FUNCTION __addColumnBlock()
 
    ENDCLASS
 
@@ -496,7 +511,7 @@ METHOD HbQtBrowse:create()
    /*  Horizontal Header Fine Tuning */
    WITH OBJECT ::oHeaderView := ::oTableView:horizontalHeader()
       :setHighlightSections( .F. )
-      :setMovable( .T. )                /* Needs more time TO investigae Qt behvior - first efforts have been futile */
+//    :setMovable( .T. )                /* Needs more time TO investigae Qt behvior - first efforts have been futile */
    ENDWITH
 
    /*  Horizontal Footer */
@@ -572,7 +587,7 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    LOCAL aCol, aVal, aValA, nColCount, nRowCount, nHeight, oCol
    LOCAL nViewH, i, xVal, oFontMetrics, n, nLeftWidth, nwVal, nwHead
-   LOCAL nMaxCellH, lShowFooter
+   LOCAL nMaxCellH, lShowFooter, oAct, cMenu
 
    ::TBrowse:doConfigure()
 
@@ -808,14 +823,23 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::oRightDbfModel:reset()
    ENDIF
 
-   ::oComboColumn:clear()
    ::oComboColumnM:clear()
    FOR EACH oCol IN ::columns
-      ::oComboColumn:addItem( oCol:heading )
       ::oComboColumnM:addItem( oCol:heading )
    NEXT
 
+   ::oColumnsMenu:clear()
+   FOR EACH oCol IN ::columns
+      cMenu := oCol:heading
+      oAct := ::oColumnsMenu:addAction( cMenu )
+      oAct:connect( "triggered(bool)", __toColumnBlock( Self, cMenu ) )
+   NEXT
+
    RETURN Self
+
+
+STATIC FUNCTION __toColumnBlock( obj, cMenu )
+   RETURN {|| obj:toColumn( cMenu ) }
 
 
 METHOD HbQtBrowse:connect()
@@ -1682,6 +1706,13 @@ METHOD HbQtBrowse:helpBlock( bBlock )
    ENDIF
    RETURN ::bHelpBlock
 
+METHOD HbQtBrowse:addColumnsBlock( bBlock )
+   IF bBlock != NIL
+      ::bAddColumnsBlock := __eInstVar53( Self, "ADDCOLUMNSBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bAddColumnsBlock
+
+
 METHOD HbQtBrowse:contextMenuBlock( bBlock )
    IF HB_ISOBJECT( bBlock )
      ::bContextMenuBlock := __eInstVar53( Self, "CONTEXTMENUBLOCK", bBlock, "B", 1001 )
@@ -1689,21 +1720,22 @@ METHOD HbQtBrowse:contextMenuBlock( bBlock )
    RETURN ::bContextMenuBlock
 
 
+STATIC FUNCTION __execIndexBlock( obj, cIndex )
+   RETURN {|| obj:execIndex( cIndex ) }
+
 METHOD HbQtBrowse:getIndexes()
    RETURN ::aIndexes
 
 METHOD HbQtBrowse:setIndexes( aIndexes )
-   LOCAL xTmp
-   IF HB_ISARRAY( aIndexes ) .AND. HB_ISARRAY( aIndexes[ 1 ] )
+   LOCAL aIndex, oAct
+   IF HB_ISARRAY( aIndexes )
+      ::aIndexes := aIndexes
       ::oActIndexes:setVisible( .T. )
-      ::aIndexes := aIndexes[ 1 ]
-      ::oComboIndexes:clear()
-      FOR EACH xTmp IN ::aIndexes
-         ::oComboIndexes:addItem( xTmp[ 1 ] )
+      ::oIndexMenu:clear()
+      FOR EACH aIndex IN ::aIndexes
+         oAct := ::oIndexMenu:addAction( aIndex[ 1 ] )
+         oAct:connect( "triggered()", __execIndexBlock( Self, aIndex[ 1 ] ) )
       NEXT
-      IF HB_ISNUMERIC( aIndexes[ 2 ] )
-         ::oComboIndexes:setCurrentIndex( aIndexes[ 2 ]-1 )
-      ENDIF
    ENDIF
    RETURN ::aIndexes
 
@@ -2192,6 +2224,7 @@ METHOD HbQtBrowse:moveEnd()
 
    RETURN col_to_move < ::colCount
 
+
 METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    LOCAL oDlg, nRes
    LOCAL oRect   := ::oTableView:visualrect( ::getCurrentIndex() )
@@ -2537,6 +2570,8 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
       :exec()
       :setParent( QWidget() )
    ENDWITH
+   ::oTableView:setFocus()
+
    SetKey( K_UP       , k1 )
    SetKey( K_DOWN     , k2 )
    SetKey( K_PGUP     , k3 )
@@ -2750,6 +2785,8 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActScroll )
       :addAction( ::oActStop )
       :addSeparator()
+      :addAction( ::oActAddColumn )
+      :addAction( ::oActDelColumn )
 
       :hide()
    ENDWITH
@@ -2758,16 +2795,16 @@ METHOD HbQtBrowse:buildToolbar()
 
 
 METHOD HbQtBrowse:buildActions()
-   LOCAL nComboWidth := 80
 
-   WITH OBJECT ::oComboColumn := QComboBox()
-      :setFocusPolicy( Qt_NoFocus )
+   ::oColumnsMenu := QMenu()
+   WITH OBJECT ::oColumnsButton := QToolButton()
       :setTooltip( "Scroll to column..." )
-      :setMaximumWidth( nComboWidth )
-      :connect( "activated(QString)", {|cColumn| ::toColumn( cColumn ) } )
+      :setIcon( QIcon( __hbqtImage( "select-column" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::oColumnsMenu )
    ENDWITH
    WITH OBJECT ::oActToColumn := QWidgetAction( ::oWidget )
-      :setDefaultWidget( ::oComboColumn )
+      :setDefaultWidget( ::oColumnsButton )
       :setTooltip( "Scroll to column..." )
    ENDWITH
 
@@ -2781,15 +2818,15 @@ METHOD HbQtBrowse:buildActions()
       :setTooltip( "Scroll to column..." )
    ENDWITH
 
-   WITH OBJECT ::oComboIndexes := QComboBox()
-      :setFocusPolicy( Qt_NoFocus )
+   ::oIndexMenu := QMenu()
+   WITH OBJECT ::oIndexButton := QToolButton()
       :setTooltip( "Indexes..." )
-      :setMaximumWidth( nComboWidth )
-      :connect( "activated(QString)", {|cIndex| ::execIndex( cIndex ) } )
+      :setIcon( QIcon( __hbqtImage( "sort" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::oIndexMenu )
    ENDWITH
    WITH OBJECT ::oActIndexes := QWidgetAction( ::oWidget )
-      :setDefaultWidget( ::oComboIndexes )
-      :setTooltip( "Indexes..." )
+      :setDefaultWidget( ::oIndexButton )
       :setVisible( .F. )
    ENDWITH
 
@@ -2945,8 +2982,51 @@ METHOD HbQtBrowse:buildActions()
       :setEnabled( .F. )
    ENDWITH
 
+   ::oAddColumnsMenu := QMenu()
+   ::oAddColumnsMenu:connect( "aboutToShow()", {|| ::addAColumn() } )
+   WITH OBJECT ::oAddColumnsButton := QToolButton()
+      :setTooltip( "Add a Column..." )
+      :setIcon( QIcon( __hbqtImage( "add-column" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::oAddColumnsMenu )
+      :connect( "clicked()", {|| ::addAColumn() } )
+   ENDWITH
+   WITH OBJECT ::oActAddColumn := QWidgetAction( ::oWidget )
+      :setDefaultWidget( ::oAddColumnsButton )
+      :setTooltip( "Add a Column..." )
+   ENDWITH
+   WITH OBJECT ::oActDelColumn := QAction( ::oWidget )
+      :setText( "Delete Current Column" )
+      :setIcon( QIcon( __hbqtImage( "delete-column" ) ) )
+      :setTooltip( "Delete Current Column" )
+      :connect( "triggered()", {|| iif( ::colCount > 1, ::delColumn( ::colPos ), NIL ), ::configure(), ::refreshAll(), ::forceStable() } )
+   ENDWITH
+
    RETURN Self
 
+
+STATIC FUNCTION __addColumnBlock( obj, cColumn )
+   RETURN {||  obj:addAColumn( cColumn ) }
+
+METHOD HbQtBrowse:addAColumn( cColumn )
+   LOCAL aNames, oAct
+
+   IF HB_ISSTRING( cColumn )
+      Eval( ::addColumnsBlock, 1, cColumn, Self )
+   ELSE
+      IF HB_ISBLOCK( ::addColumnsBlock )
+         IF ::oAddColumnsMenu:isEmpty()
+            aNames := Eval( ::addColumnsBlock, 0, NIL, Self )
+            IF HB_ISARRAY( aNames )
+               FOR EACH cColumn IN aNames
+                  oAct := ::oAddColumnsMenu:addAction( cColumn )
+                  oAct:connect( "triggered(bool)", __addColumnBlock( Self, cColumn ) )
+               NEXT
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN Self
 
 METHOD HbQtBrowse:toColumn( cnColumn )
    LOCAL i, oCol
