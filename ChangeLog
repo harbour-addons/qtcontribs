@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-25 13:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/main.prg
+    ! Fixed: Double-click on a node in Project Tree representing source
+       file with relative path was not being opened. Thanks to 
+       Gregory Shashkoff for the report and exact explanation.
+
 2013-01-18 18:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/projmanager.prg
     ! Fixed: to properly pass "Launch Parameters" of "Propereties" dialog 
