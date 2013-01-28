@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-28 11:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: many constants, pulled by Luigi Ferraris, thanks.
+       Please follow hbqtgui.ch's formatting standards when providing 
+       such constants. Thanks anyway.
+
 2013-01-25 15:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/resources/info.png
     + Image miissed from prev commit.

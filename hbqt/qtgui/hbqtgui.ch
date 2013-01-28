@@ -2155,7 +2155,226 @@
 #define QTabBar_TriangularWest                    6   // Triangular tabs on the left of the pages.
 #define QTabBar_TriangularEast                    7   // Triangular tabs on the right of the pages.
 
-/*----------------------------------------------------------------------*/
+// This enum specifies where the tick marks are to be drawn relative to the slider's groove and the handle the user moves.
+#define QSlider_NoTicks                           0  // Do not draw any tick marks.
+#define QSlider_TicksBothSides                    3  // Draw tick marks on both sides of the groove.
+#define QSlider_TicksAbove                        1  // Draw tick marks above the (horizontal) slider
+#define QSlider_TicksBelow                        2  // Draw tick marks below the (horizontal) slider
+#define QSlider_TicksLeft                         QSlider_TicksAbove   // Draw tick marks to the left of the (vertical) slider
+#define QSlider_TicksRight                        QSlider_TicksBelow   // Draw tick marks to the right of the (vertical) slider
+
+//  This enum type defines the types of variable that a QVariant can contain.
+#define QVariant_Invalid                          0     // no type
+#define QVariant_BitArray                         13    // a QBitArray
+#define QVariant_Bitmap                           73    // a QBitmap
+#define QVariant_Bool                             1     // a bool
+#define QVariant_Brush                            66    // a QBrush
+#define QVariant_ByteArray                        12    // a QByteArray
+#define QVariant_Char                             7     // a QChar
+#define QVariant_Color                            67    // a QColor
+#define QVariant_Cursor                           74    // a QCursor
+#define QVariant_Date                             14    // a QDate
+#define QVariant_DateTime                         16    // a QDateTime
+#define QVariant_Double                           6     // a double
+#define QVariant_EasingCurve                      29    // a QEasingCurve
+#define QVariant_Font                             64    // a QFont
+#define QVariant_Hash                             28    // a QVariantHash
+#define QVariant_Icon                             69    // a QIcon
+#define QVariant_Image                            70    // a QImage
+#define QVariant_Int                              2     // an int
+#define QVariant_KeySequence                      76    // a QKeySequence
+#define QVariant_Line                             23    // a QLine
+#define QVariant_LineF                            24    // a QLineF
+#define QVariant_List                             9     // a QVariantList
+#define QVariant_Locale                           18    // a QLocale
+#define QVariant_LongLong                         4     // a qlonglong
+#define QVariant_Map                              8     // a QVariantMap
+#define QVariant_Matrix                           80    // a QMatrix(obsolete)
+#define QVariant_Transform                        81    // a QTransform
+#define QVariant_Matrix4x4                        82    // a QMatrix4x4
+#define QVariant_Palette                          68    // a QPalette
+#define QVariant_Pen                              77    // a QPen
+#define QVariant_Pixmap                           65    // a QPixmap
+#define QVariant_Point                            25    // a QPoint
+#define QVariant_PointArray                       71    // a QPointArray as the same Polygon
+#define QVariant_PointF                           26    // a QPointF
+#define QVariant_Polygon                          71    // a QPolygon
+#define QVariant_Quaternion                       86    // a QQuaternion
+#define QVariant_Rect                             19    // a QRect
+#define QVariant_RectF                            20    // a QRectF
+#define QVariant_RegExp                           27    // a QRegExp
+#define QVariant_Region                           72    // a QRegion
+#define QVariant_Size                             21    // a QSize
+#define QVariant_SizeF                            22    // a QSizeF
+#define QVariant_SizePolicy                       75    // a QSizePolicy
+#define QVariant_String                           10    // a QString
+#define QVariant_StringList                       11    // a QStringList
+#define QVariant_TextFormat                       79    // a QTextFormat
+#define QVariant_TextLength                       78    // a QTextLength
+#define QVariant_Time                             15    // a QTime
+#define QVariant_UInt                             3     // a uint
+#define QVariant_ULongLong                        5     // a qulonglong
+#define QVariant_Url                              17    // a QUrl
+#define QVariant_Vector2D                         83    // a QVector2D
+#define QVariant_Vector3D                         84    // a QVector3D
+#define QVariant_Vector4D                         85    // a QVector4D
+#define QVariant_UserType                         127   // Base value for user-defined types.
+
+// describes the icon that is shown when a balloon message is displayed.
+#define QSystemTrayIcon_NoIcon                    0  // No icon is shown.
+#define QSystemTrayIcon_Information               1  // An information icon is shown.
+#define QSystemTrayIcon_Warning                   2  // A standard warning icon is shown.
+#define QSystemTrayIcon_Critical                  3  // A critical warning icon is shown.
+
+// This type is used to determine the direction of a box layout.
+#define QBoxLayout_LeftToRight                    0  // Horizontal from left to right.
+#define QBoxLayout_RightToLeft                    1  // Horizontal from right to left.
+#define QBoxLayout_TopToBottom                    2  // Vertical from top to bottom.
+#define QBoxLayout_BottomToTop                    3  // Vertical from bottom to top.
+
+// These enums describe flags for standard buttons. Each button has a defined ButtonRole.
+#define QDialogButtonBox_Ok                       0x00000400  // An "OK" button defined with the AcceptRole.
+#define QDialogButtonBox_Open                     0x00002000  // A "Open" button defined with the AcceptRole.
+#define QDialogButtonBox_Save                     0x00000800  // A "Save" button defined with the AcceptRole.
+#define QDialogButtonBox_Cancel                   0x00400000  // A "Cancel" button defined with the RejectRole.
+#define QDialogButtonBox_Close                    0x00200000  // A "Close" button defined with the RejectRole.
+#define QDialogButtonBox_Discard                  0x00800000  // A "Discard" or "Don't Save" button, depending on the platform, defined with the DestructiveRole.
+#define QDialogButtonBox_Apply                    0x02000000  // An "Apply" button defined with the ApplyRole.
+#define QDialogButtonBox_Reset                    0x04000000  // A "Reset" button defined with the ResetRole.
+#define QDialogButtonBox_RestoreDefaults          0x08000000  // A "Restore Defaults" button defined with the ResetRole.
+#define QDialogButtonBox_Help                     0x01000000  // A "Help" button defined with the HelpRole.
+#define QDialogButtonBox_SaveAll                  0x00001000  // A "Save All" button defined with the AcceptRole.
+#define QDialogButtonBox_Yes                      0x00004000  // A "Yes" button defined with the YesRole.
+#define QDialogButtonBox_YesToAll                 0x00008000  // A "Yes to All" button defined with the YesRole.
+#define QDialogButtonBox_No                       0x00010000  // A "No" button defined with the NoRole.
+#define QDialogButtonBox_NoToAll                  0x00020000  // A "No to All" button defined with the NoRole.
+#define QDialogButtonBox_Abort                    0x00040000  // An "Abort" button defined with the RejectRole.
+#define QDialogButtonBox_Retry                    0x00080000  // A "Retry" button defined with the AcceptRole.
+#define QDialogButtonBox_Ignore                   0x00100000  // An "Ignore" button defined with the AcceptRole.
+#define QDialogButtonBox_NoButton                 0x00000000  // An invalid button.
+
+// This enum describes the roles that can be used to describe buttons in the button box. Combinations of these roles are as flags used to describe different aspects of their behavior.
+#define QDialogButtonBox_InvalidRole              -1 // The button is invalid.
+#define QDialogButtonBox_AcceptRole               0  // Clicking the button causes the dialog to be accepted (e.g. OK).
+#define QDialogButtonBox_RejectRole               1  // Clicking the button causes the dialog to be rejected (e.g. Cancel).
+#define QDialogButtonBox_DestructiveRole          2  // Clicking the button causes a destructive change (e.g. for Discarding Changes) and closes the dialog.
+#define QDialogButtonBox_ActionRole               3  // Clicking the button causes changes to the elements within the dialog.
+#define QDialogButtonBox_HelpRole                 4  // The button can be clicked to request help.
+#define QDialogButtonBox_YesRole                  5  // The button is a "Yes"-like button.
+#define QDialogButtonBox_NoRole                   6  // The button is a "No"-like button.
+#define QDialogButtonBox_ApplyRole                8  // The button applies current changes.
+#define QDialogButtonBox_ResetRole                7  // The button resets the dialog's fields to default values.
+
+// enum QClipboard::Mode
+#define QClipboard_Clipboard                      0  // indicates that data should be stored and retrieved from the global clipboard.
+#define QClipboard_Selection                      1  // indicates that data should be stored and retrieved from the global mouse selection. Support for Selection is provided only on systems with a global mouse selection (e.g. X11).
+#define QClipboard_FindBuffer                     2  // indicates that data should be stored and retrieved from the Find buffer. This mode is used for holding search strings on Mac OS X.
+
+// enum    #define QKeySequence_SequenceFormat
+#define QKeySequence_NativeText                   0  // The key sequence as a platform specific string. This means that it will be shown translated and on the Mac it will resemble a key sequence from the menu bar. This enum is best used when you want to display the string to the user.
+#define QKeySequence_PortableText                 1  // The key sequence is given in a "portable" format, suitable for reading and writing to a file. In many cases, it will look similar to the native text on Windows and X11.
+
+// enum    #define QKeySequence_SequenceMatch
+#define QKeySequence_NoMatch                      0  // The key sequences are different; not even partially matching.
+#define QKeySequence_PartialMatch                 1  // The key sequences match partially, but are not the same.
+#define QKeySequence_ExactMatch                   2  // The key sequences are the same.
+
+// enum    #define QKeySequence_StandardKey
+#define QKeySequence_AddTab                       19 // Add new tab.
+#define QKeySequence_Back                         13 // Navigate back.
+#define QKeySequence_Bold                         27 // Bold text.
+#define QKeySequence_Close                        4  // Close document/tab.
+#define QKeySequence_Copy                         9  // Copy.
+#define QKeySequence_Cut                          8  // Cut.
+#define QKeySequence_Delete                       7  // Delete.
+#define QKeySequence_DeleteEndOfLine              60 // Delete end of line.
+#define QKeySequence_DeleteEndOfWord              59 // Delete word from the end of the cursor.
+#define QKeySequence_DeleteStartOfWord            58 // Delete the beginning of a word up to the cursor.
+#define QKeySequence_Find                         22 // Find in document.
+#define QKeySequence_FindNext                     23 // Find next result.
+#define QKeySequence_FindPrevious                 24 // Find previous result.
+#define QKeySequence_Forward                      14 // Navigate forward.
+#define QKeySequence_HelpContents                 1  // Open help contents.
+#define QKeySequence_InsertLineSeparator          62 // Insert a new line.
+#define QKeySequence_InsertParagraphSeparator     61 // Insert a new paragraph.
+#define QKeySequence_Italic                       28 // Italic text.
+#define QKeySequence_MoveToEndOfBlock             41 // Move cursor to end of block. This shortcut is only used on the OS X.
+#define QKeySequence_MoveToEndOfDocument          43 // Move cursor to end of document.
+#define QKeySequence_MoveToEndOfLine              39 // Move cursor to end of line.
+#define QKeySequence_MoveToNextChar               30 // Move cursor to next character.
+#define QKeySequence_MoveToNextLine               34 // Move cursor to next line.
+#define QKeySequence_MoveToNextPage               36 // Move cursor to next page.
+#define QKeySequence_MoveToNextWord               32 // Move cursor to next word.
+#define QKeySequence_MoveToPreviousChar           31 // Move cursor to previous character.
+#define QKeySequence_MoveToPreviousLine           35 // Move cursor to previous line.
+#define QKeySequence_MoveToPreviousPage           37 // Move cursor to previous page.
+#define QKeySequence_MoveToPreviousWord           33 // Move cursor to previous word.
+#define QKeySequence_MoveToStartOfBlock           40 // Move cursor to start of a block. This shortcut is only used on OS X.
+#define QKeySequence_MoveToStartOfDocument        42 // Move cursor to start of document.
+#define QKeySequence_MoveToStartOfLine            38 // Move cursor to start of line.
+#define QKeySequence_New                          6  // Create new document.
+#define QKeySequence_NextChild                    20 // Navigate to next tab or child window.
+#define QKeySequence_Open                         3  // Open document.
+#define QKeySequence_Paste                        10 // Paste.
+#define QKeySequence_Preferences                  64 // Open the preferences dialog.
+#define QKeySequence_PreviousChild                21 // Navigate to previous tab or child window.
+#define QKeySequence_Print                        18 // Print document.
+#define QKeySequence_Quit                         65 // Quit the application.
+#define QKeySequence_Redo                         12 // Redo.
+#define QKeySequence_Refresh                      15 // Refresh or reload current document.
+#define QKeySequence_Replace                      25 // Find and replace.
+#define QKeySequence_SaveAs                       63 // Save document after prompting the user for a file name.
+#define QKeySequence_Save                         5  // Save document.
+#define QKeySequence_SelectAll                    26 // Select all text.
+#define QKeySequence_SelectEndOfBlock             55 // Extend selection to the end of a text block. This shortcut is only used on OS X.
+#define QKeySequence_SelectEndOfDocument          57 // Extend selection to end of document.
+#define QKeySequence_SelectEndOfLine              53 // Extend selection to end of line.
+#define QKeySequence_SelectNextChar               44 // Extend selection to next character.
+#define QKeySequence_SelectNextLine               48 // Extend selection to next line.
+#define QKeySequence_SelectNextPage               50 // Extend selection to next page.
+#define QKeySequence_SelectNextWord               46 // Extend selection to next word.
+#define QKeySequence_SelectPreviousChar           45 // Extend selection to previous character.
+#define QKeySequence_SelectPreviousLine           49 // Extend selection to previous line.
+#define QKeySequence_SelectPreviousPage           51 // Extend selection to previous page.
+#define QKeySequence_SelectPreviousWord           47 // Extend selection to previous word.
+#define QKeySequence_SelectStartOfBlock           54 // Extend selection to the start of a text block. This shortcut is only used on OS X.
+#define QKeySequence_SelectStartOfDocument        56 // Extend selection to start of document.
+#define QKeySequence_SelectStartOfLine            52 // Extend selection to start of line.
+#define QKeySequence_Underline                    29 // Underline text.
+#define QKeySequence_Undo                         11 // Undo.
+#define QKeySequence_UnknownKey                   0  // Unbound key.
+#define QKeySequence_WhatsThis                    2  // Activate whats this.
+#define QKeySequence_ZoomIn                       16 // Zoom in.
+#define QKeySequence_ZoomOut                      17 // Zoom out.
+
+//enum QDateTimeEdit::Section
+#define QDateTimeEdit_NoSection                   0x0000
+#define QDateTimeEdit_AmPmSection                 0x0001
+#define QDateTimeEdit_MSecSection                 0x0002
+#define QDateTimeEdit_SecondSection               0x0004
+#define QDateTimeEdit_MinuteSection               0x0008
+#define QDateTimeEdit_HourSection                 0x0010
+#define QDateTimeEdit_DaySection                  0x0100
+#define QDateTimeEdit_MonthSection                0x0200
+#define QDateTimeEdit_YearSection                 0x0400
+
+// enum QProgressBar::Direction
+#define QProgressBar_TopToBottom                  0  // The text is rotated 90 degrees clockwise.
+#define QProgressBar_BottomToTop                  1  // The text is rotated 90 degrees counter-clockwise.
+
+//enum QItemSelectionModel::SelectionFlag
+#define QItemSelectionModel_NoUpdate              0x0000   // No selection will be made.
+#define QItemSelectionModel_Clear                 0x0001   // The complete selection will be cleared.
+#define QItemSelectionModel_Select                0x0002   // All specified indexes will be selected.
+#define QItemSelectionModel_Deselect              0x0004   // All specified indexes will be deselected.
+#define QItemSelectionModel_Toggle                0x0008   // All specified indexes will be selected or deselected depending on their current state.
+#define QItemSelectionModel_Current               0x0010   // The current selection will be updated.
+#define QItemSelectionModel_Rows                  0x0020   // All indexes will be expanded to span rows.
+#define QItemSelectionModel_Columns               0x0040   // All indexes will be expanded to span columns.
+#define QItemSelectionModel_SelectCurrent         hb_bitOr(QItemSelectionModel_Select, QItemSelectionModel_Current) // A combination of Select and Current, provided for convenience.
+#define QItemSelectionModel_ToggleCurrent         hb_bitOr(QItemSelectionModel_Toggle, QItemSelectionModel_Current) // A combination of Toggle and Current, provided for convenience.
+#define QItemSelectionModel_ClearAndSelect        hb_bitOr(QItemSelectionModel_Clear, QItemSelectionModel_Select)   // A combination of Clear and Select, provided for convenience.
+
 
 #define QGraphicsScene_BspTreeIndex                          0
 #define QGraphicsScene_NoIndex                               -1
