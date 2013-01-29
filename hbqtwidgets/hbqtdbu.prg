@@ -790,13 +790,13 @@ METHOD HbQtDBU:getTreeInfo()
             IF i > 0
                ii := At( "][", cInfo )
                IF ii > 0
-                  cConxn := StrTran( AllTrim( SubStr( cInfo, n + 2 ) ), "]" )
+                  cConxn := StrTran( AllTrim( SubStr( cInfo, ii + 2 ) ), "]" )
                   cInfo  := SubStr( cInfo, 1, ii - 1 )
                ELSE
                   cConxn := ""
                ENDIF
-               cTable  := AllTrim( SubStr( cInfo, 1, n - 1 ) )
-               cDriver := StrTran( AllTrim( SubStr( cInfo, n + 1 ) ), "]" )
+               cTable  := StrTran( AllTrim( SubStr( cInfo, 1, i - 1 ) ), ":", "&" )
+               cDriver := StrTran( AllTrim( SubStr( cInfo, i + 1 ) ), "]" )
                AAdd( aInfo, cSection + " " + cParent + " " + oInfo:text( 0 ) + " " + cTable + " " + cDriver + " " + cConxn + " " )
             ENDIF
          NEXT
@@ -807,7 +807,7 @@ METHOD HbQtDBU:getTreeInfo()
 
 
 METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, cIcon )
-   LOCAL oTreeItem, oParent, cSection, oSection
+   LOCAL oTreeItem, oParent, cSection, oSection, oNode
 
    IF HB_ISARRAY( xSection )
       ASize( xSection, 7 )
@@ -821,6 +821,7 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
    ELSE
       cSection := xSection
    ENDIF
+   cTable := StrTran( cTable, "&", ":" )
 
    IF HB_ISCHAR( cSection ) .AND. ! Empty( cSection )
       oSection := findItem( ::oTreeTables:invisibleRootItem(), cSection )
@@ -843,13 +844,16 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
          oSection:setExpanded( .T. )
       ENDIF
 
-      WITH OBJECT oTreeItem := QTreeWidgetItem()
-         :setText( 0, cNode )
-         :setTooltip( 0, cTable + " [" + cDriver + iif( Empty( cConxn ), "", "][" + cConxn ) + "]" )
-         :setIcon( 0, QIcon( iif( Empty( cIcon ), __hbqtImage( "table" ), cIcon ) ) )
-      ENDWITH
-      oParent:addChild( oTreeItem )
-      oParent:sortChildren( 0, Qt_AscendingOrder )
+      oNode := findItem( oParent, cNode )
+      IF oNode == nil
+         WITH OBJECT oTreeItem := QTreeWidgetItem()
+            :setText( 0, cNode )
+            :setTooltip( 0, cTable + " [" + cDriver + iif( Empty( cConxn ), "", "][" + cConxn ) + "]" )
+            :setIcon( 0, QIcon( iif( Empty( cIcon ), __hbqtImage( "table" ), cIcon ) ) )
+         ENDWITH
+         oParent:addChild( oTreeItem )
+         oParent:sortChildren( 0, Qt_AscendingOrder )
+      ENDIF
    ENDIF
 
    IF ::tablesTreeEnabled
@@ -2394,6 +2398,9 @@ PROTECTED:
 
    FRIEND FUNCTION __setOrderBlock
 
+   DATA   hScope                                  INIT {=>}
+   DATA   cFilter                                 INIT ""
+
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
@@ -2409,15 +2416,17 @@ METHOD HbQtMdiBrowser:init( oManager, oPanel, aInfo )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:destroy()
+   LOCAL nArea
 
    IF !empty( ::qTimer )
       ::qTimer:disconnect( "timeout()" )
    ENDIF
    ::qTimer := NIL
 
-   IF ::lOpened
-      ( ::cAlias )->( dbCloseArea() )
-   ENDIF
+   nArea := Select()
+   Select( ::cAlias )
+   dbCloseArea()
+   Select( nArea )
 
    RETURN Self
 
@@ -2660,8 +2669,8 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
       NEXT
       qRect := QRect( qRect[ 1 ], qRect[ 2 ], qRect[ 3 ], qRect[ 4 ] )
       ::qMdi:setGeometry( qRect )
-      ::qMdi:resize( ::qMdi:width()+1, ::qMdi:height()+1 )
-      ::qMdi:resize( ::qMdi:width()-1, ::qMdi:height()-1 )
+      ::qMdi:resize( ::qMdi:width()+5, ::qMdi:height()+5 )
+      ::qMdi:resize( ::qMdi:width()-5, ::qMdi:height()-5 )
    ELSE
       ::qMdi:resize( 610, 400 )
    ENDIF
@@ -2718,7 +2727,7 @@ METHOD HbQtMdiBrowser:execEvent( nEvent, p, p1 )
       ENDIF
       EXIT
    CASE __mdiSubWindow_buttonXclicked__
-HB_TRACE( HB_TR_ALWAYS, "HbQtMdiBrowser:execEvent( nEvent, p, p1 )  __mdiSubWindow_buttonXclicked__" )
+      HB_TRACE( HB_TR_DEBUG, "HbQtMdiBrowser:execEvent( nEvent, p, p1 )  __mdiSubWindow_buttonXclicked__" )
       ::oPanel:destroyBrw( Self )
       RETURN .T.
 #if 0
@@ -2931,7 +2940,6 @@ METHOD HbQtMdiBrowser:previous()
 
    RETURN lMoved
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:seekAsk( nMode )
    LOCAL xValue
@@ -3044,7 +3052,16 @@ METHOD HbQtMdiBrowser:toColumn( ncIndex )
 METHOD HbQtMdiBrowser:setFilter( cFilter )
 
    IF ::nType == BRW_TYPE_DBF
-      RETURN ( ::cAlias )->( dbSetFilter( &( "{|| " + cFilter + " }" ), '"' + cFilter + '"' ) )
+      IF Empty( cFilter ) .OR. ! HB_ISSTRING( cFilter )
+         cFilter := ::cFilter
+      ENDIF
+      cFilter := trim( HbQtBulkGet( Pad( cFilter, 50 ), 'Filter Expression' ) )
+      IF Empty( cFilter )
+         RETURN NIL
+      ENDIF
+      ::cFilter := cFilter
+      ( ::cAlias )->( dbSetFilter( &( "{|| " + cFilter + " }" ), '"' + cFilter + '"' ) )
+      ::goTop()
    ELSE
    ENDIF
 
@@ -3055,7 +3072,8 @@ METHOD HbQtMdiBrowser:setFilter( cFilter )
 METHOD HbQtMdiBrowser:clearFilter()
 
    IF ::nType == BRW_TYPE_DBF
-      RETURN ( ::cAlias )->( dbClearFilter() )
+      ( ::cAlias )->( dbClearFilter() )
+      ::goTop()
    ELSE
    ENDIF
 
@@ -3398,24 +3416,36 @@ METHOD HbQtMdiBrowser:append()
 /*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:setScope()
-   LOCAL cScope
+   LOCAL cScope, nOrd
 
-   IF ::indexOrd() > 0
-      cScope := HbQtBulkGet( ::indexKeyValue(), 'Scope Top' )
+   IF ( nOrd := ::indexOrd() ) > 0
+      IF hb_HHasKey( ::hScope, nOrd )
+         cScope := ::hScope[ nOrd ][ 1 ]
+      ELSE
+         cScope := __hbqtGetBlankValue( ::indexKeyValue() )
+         ::hScope[ nOrd ] := { cScope, cScope }
+      ENDIF
+      cScope := HbQtBulkGet( cScope, 'Scope Top' )
+      ::hScope[ nOrd ][ 1 ] := cScope
       IF valtype( cScope ) == 'C'
          cScope := trim( cScope )
       ENDIF
       IF ! empty( cScope )
          ( ::cAlias )->( OrdScope( 0, cScope ) )
          ::goTop()
-         cScope := HbQtBulkGet( ::indexKeyValue(), 'Scope Bottom' )
+         cScope := HbQtBulkGet( ::hScope[ nOrd ][ 2 ], 'Scope Bottom' )
+         ::hScope[ nOrd ][ 2 ] := cScope
          IF  valtype( cScope ) == 'C'
             cScope := trim( cScope )
          ENDIF
          IF ! empty( cScope )
             ( ::cAlias )->( OrdScope( 1, cScope ) )
+         ELSE
+            ( ::cAlias )->( OrdScope( 1, NIL ) )
          ENDIF
          ::goTop()
+      ELSE
+         ( ::cAlias )->( OrdScope( 0, NIL ) )
       ENDIF
    ENDIF
 
@@ -3492,12 +3522,8 @@ METHOD HbQtMdiBrowser:use()
       CASE "ADS"
          bError := ErrorBlock( {|o| break( o ) } )
          BEGIN SEQUENCE
-            IF empty( ::cAlias )
-               USE ( ::cTable ) SHARED NEW VIA ( ::cDriver )
-            ELSE
-               USE ( ::cTable ) ALIAS ( ::cAlias ) SHARED NEW VIA ( ::cDriver )
-            ENDIF
-            IF NetErr()
+            USE ( ::cTable ) ALIAS ( ::cAlias ) SHARED NEW VIA ( ::cDriver )
+            IF ( ::cAlias )->( NetErr() )
                Alert( { ::cTable, "Could Not Been Opened!" } )
                lErr := .t.
             ENDIF
@@ -3513,9 +3539,6 @@ METHOD HbQtMdiBrowser:use()
 
    IF lErr
       RETURN .f.
-   ENDIF
-   IF empty( ::cAlias )
-      ::cAlias := alias()
    ENDIF
 
    RETURN .T.

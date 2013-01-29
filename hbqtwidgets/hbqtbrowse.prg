@@ -209,6 +209,10 @@ CLASS HbQtBrowse INHERIT TBrowse
 
    METHOD showIndicator( rgbColorString )
 
+   METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
+   METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
+
+
 PROTECTED:
 
    METHOD cellValue( nRow, nCol )                /* Overloaded */
@@ -333,9 +337,6 @@ PROTECTED:
    DATA   bStableBlock                            INIT NIL
    DATA   bHelpBlock                              INIT NIL
    DATA   bAddColumnsBlock                        INIT NIL
-
-   METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
-   METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
 
    /* Editor specific calls */
    METHOD loadRow()
@@ -860,8 +861,8 @@ METHOD HbQtBrowse:connect()
 
    ::oVScrollBar      : connect( "actionTriggered(int)"              , {|i      | ::execSlot( __ev_vertscroll_via_user__      , i    ) } )
    ::oVScrollBar      : connect( "sliderReleased()"                  , {|i      | ::execSlot( __ev_vertscroll_sliderreleased__, i    ) } )
-#if 0
-   ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
+#if 1
+// ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
    ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )  /* Revisit Later */
 #endif
@@ -2157,20 +2158,33 @@ METHOD HbQtBrowse:panRight()
 
 
 METHOD HbQtBrowse:manageColumnMoved( nLogicalIndex, nOldVisualIndex, nNewVisualIndex )
-   LOCAL save_col := ::getColumn( nOldVisualIndex + 1 )
+   LOCAL nMoved := nOldVisualIndex + 1
+   LOCAL nAt    := nNewVisualIndex + 1
+   LOCAL oCol   := ::getColumn( nMoved )
 
    HB_SYMBOL_UNUSED( nLogicalIndex )
 
-   ::delColumn( nOldVisualIndex + 1 )
-   IF nOldVisualIndex > nNewVisualIndex    /* Moved to left */
-      ::insColumn( nNewVisualIndex + 1, save_col )
-   ELSE
-      ::insColumn( nNewVisualIndex, save_col )
+HB_TRACE( HB_TR_ALWAYS, nMoved, ::getColumn( nMoved ):heading, nAt, ::getColumn( nAt ):heading )
+   IF nMoved > nAt        /* Moved left */
+      ::insColumn( nAt, oCol )
+      ::configure()
+      ::refreshAll()
+      ::forceStable()
+      ::delColumn( nMoved + 1 )
+      ::configure()
+      ::refreshAll()
+      ::forceStable()
+   ELSE                   /* Moved Right */
+      ::insColumn( nAt, oCol )
+      ::configure()
+      ::refreshAll()
+      ::forceStable()
+      ::delColumn( nMoved )
+      ::configure()
+      ::refreshAll()
+      ::forceStable()
    ENDIF
-   ::configure()
-   ::refreshAll()
 
-   HB_TRACE( HB_TR_ALWAYS, nOldVisualIndex, nNewVisualIndex )
    RETURN Self
 
 METHOD HbQtBrowse:moveLeft()

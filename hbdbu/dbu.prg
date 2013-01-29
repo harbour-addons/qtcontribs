@@ -244,11 +244,10 @@ METHOD DbuMGR:create()
    ::populateProdTables()
 
    ::oWidget:dockCache:hide()
-   ::restEnvironment()
    ::oWidget:show()
+   ::restEnvironment()
    ::oSplash:close()
    ::oSplash:setParent( QWidget() )
-
 
    RETURN Self
 
@@ -257,7 +256,7 @@ METHOD DbuMGR:exit( lAsk, oEvent )
    LOCAL lExit := .T.
 
    IF lAsk
-      lExit := Alert( "Exit DbuMGR ?", { "Yes", "No" } ) == 1
+      lExit := Alert( "Exit HbDBU ?", { "Yes", "No" } ) == 1
    ENDIF
    IF lExit
       ::saveEnvironment()
@@ -532,23 +531,26 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
 
 
 METHOD DbuMGR:saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
-   HB_SYMBOL_UNUSED( aMod )
-   HB_SYMBOL_UNUSED( aData )
+   LOCAL cColumn, n, nField, aStruct
+
    HB_SYMBOL_UNUSED( oHbQtBrowse )
-   HB_SYMBOL_UNUSED( oMdiBrowse )
+
+   IF oMdiBrowse:lock()
+      FOR EACH cColumn IN aData[ 2 ]
+         n := cColumn:__enumIndex()
+         IF aMod[ n ] != aData[ 1, n ]   /* DATA Changed or Not */
+            aStruct     := oMdiBrowse:dbStruct()
+            IF ( nField := AScan( aStruct, {|e_| e_[ 1 ] == cColumn } ) ) > 0
+               REPLACE ( oMdiBrowse:alias() )->&( aStruct[ nField,1 ] ) WITH aMod[ n ]
+            ENDIF
+         ENDIF
+      NEXT
+      ( oMdiBrowse:alias() )->( dbCommit() )
+      oMdiBrowse:unlock()
+      oMdiBrowse:refreshAll()
+   ENDIF
+
    RETURN .T.
-
-
-STATIC FUNCTION __getBlankValue( xValue )
-
-   SWITCH ValType( xValue )
-   CASE "C" ; RETURN Space( Len( xValue ) )
-   CASE "N" ; RETURN 0
-   CASE "D" ; RETURN CToD( "" )
-   CASE "L" ; RETURN .F.
-   ENDSWITCH
-
-   RETURN ""
 
 METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
@@ -556,10 +558,10 @@ METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
       // Nothing TO do
    ELSEIF xValue == NIL
       IF oMdiBrowse:indexOrd() > 0
-         xValue := __getBlankValue( oMdiBrowse:indexKeyValue() )
+         xValue := __hbqtGetBlankValue( oMdiBrowse:indexKeyValue() )
          RETURN { xValue, "@ ", HBQTBRW_SEARCH_INCREMENTAL }
       ELSE
-         RETURN { __getBlankValue( Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block ) ), NIL, HBQTBRW_SEARCH_BYFIELD }
+         RETURN { __hbqtGetBlankValue( Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block ) ), NIL, HBQTBRW_SEARCH_BYFIELD }
       ENDIF
    ELSE
       IF oMdiBrowse:indexOrd() > 0
@@ -573,7 +575,7 @@ METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
 
 METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
-   LOCAL i, xResult, nRec, xValue, aRecList, aList, astr, aMnu, oCol, cFilter
+   LOCAL i, xResult, nRec, xValue, aRecList, aList, astr, aMnu, oCol
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
@@ -679,11 +681,7 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
       ENDIF
 
    CASE nKey ==  K_ALT_F                          /* FILTER */
-      cFilter := trim( HbQtBulkGet( Space( 50 ), 'Filter Expression' ) )
-      IF ! Empty( cFilter )
-         oMdiBrowse:setFilter( cFilter )
-         oMdiBrowse:goTop()
-      ENDIF
+      oMdiBrowse:setFilter()
 
    CASE nKey == K_ALT_R                           /* clear FILTER */
       oMdiBrowse:clearFilter()

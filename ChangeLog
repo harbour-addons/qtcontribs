@@ -16,6 +16,31 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-28 18:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtgetlist.prg
+    + Added: function hbqtGetBlankValue( xValue )->xBlankValueOfTypeXValue
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Made public: methods :skipRows( nRows ) and :skipCols( nCols )
+
+  * hbqtwidgets/hbqtdbu.prg
+    ! Fixed: double-click on Table tree node was not opening the table.
+    ! Fixed: duplicate entries in Tables tree.
+    + Implemented: SCOPE and FILTER expressions are retained for the 
+       current session.
+    ! Few optimizations.
+
+  * hbdbu/dbu.prg
+    + Implemented: Interface clicked :edit() event to "Save Record".
+
+  ; NOTE: appears Qt has a bug in QHeaderView:sectionMoved() signal.
+          In no way I am able to control its behavior. So second attempt
+          has been failure again.
+  
+          Numeric fields cannot be resized because we are passing a 
+          formatted string when data request is received. As per standard
+          grid behavior, ... is shown if text is hidder at the right.
+
 2013-01-28 11:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqtgui.ch
     + Added: many constants, pulled by Luigi Ferraris, thanks.

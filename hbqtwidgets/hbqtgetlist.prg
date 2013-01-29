@@ -92,10 +92,21 @@ FUNCTION __hbqtGetNextIdAsString( cString )
    IF ! hb_hHasKey( hIDs, cString )
       hIDs[ cString ] := 0
    ELSE
-      cString += "_" + hb_ntos( ++hIDs[ cString ] )
+      cString += hb_ntos( ++hIDs[ cString ] )
    ENDIF
    RETURN cString
 
+
+FUNCTION __hbqtGetBlankValue( xValue )
+
+   SWITCH ValType( xValue )
+   CASE "C" ; RETURN Space( Len( xValue ) )
+   CASE "N" ; RETURN 0
+   CASE "D" ; RETURN CToD( "" )
+   CASE "L" ; RETURN .F.
+   ENDSWITCH
+
+   RETURN ""
 
 FUNCTION HbQtSet( nSet, xValue )
    LOCAL xOldValue := t_sets[ nSet ]
