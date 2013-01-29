@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-29 11:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/qth/QDate.qth
+    + Added: missing public functions, thanks Luigi for pointer.
+
 2013-01-28 18:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtgetlist.prg
     + Added: function hbqtGetBlankValue( xValue )->xBlankValueOfTypeXValue
