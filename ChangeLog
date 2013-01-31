@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-01-31 12:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/main.prg
+    ! Fixed: normalizing the file names supplied on command line.
+       Bug is reported by Massimo, thanks.
+
 2013-01-29 11:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/qth/QDate.qth
     + Added: missing public functions, thanks Luigi for pointer.

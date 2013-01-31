@@ -676,7 +676,7 @@ METHOD HbIde:create( aParams )
 /*----------------------------------------------------------------------*/
 
 METHOD HbIde:parseParams()
-   LOCAL s, cExt
+   LOCAL s, cPath, cName, cExt, cCurPath
    LOCAL aIni := {}
 
    FOR EACH s IN ::aParams
@@ -686,8 +686,17 @@ METHOD HbIde:parseParams()
       CASE left( s, 1 ) == "-"
          // Switches, futuristic
       OTHERWISE
-         hb_fNameSplit( s, , , @cExt )
+         cCurPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+         hb_fNameSplit( s, @cPath, @cName, @cExt )
+         IF Empty( cPath )
+            cPath := cCurPath
+         ELSEIF Left( s, 2 ) == ".."
+            cPath := cCurPath
+         ENDIF
          cExt := lower( cExt )
+         IF ! Empty( cExt )
+            s := cPath + cName + cExt
+         ENDIF
          DO CASE
          CASE cExt == ".ini"
             aadd( aIni, s )
