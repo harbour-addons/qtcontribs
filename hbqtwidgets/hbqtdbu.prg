@@ -1616,6 +1616,13 @@ METHOD HbQtDBU:evalExpression( cExpression, cValue )
    RETURN lRet
 
 
+STATIC PROCEDURE ErrorBreak()
+   IF .T.
+      BREAK
+   ENDIF
+   RETURN
+
+
 METHOD HbQtDBU:selectAField( cAlias )
    LOCAL aStruct, nChoice, cVar, nPos, aMenu := {}
 

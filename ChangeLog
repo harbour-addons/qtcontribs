@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-01 11:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtdbu.prg
+    + Fixed: unresolved external "ErrorBreak()". Seems the function 
+       is contained in xhb lib which I was using in test scenariors.
+       Sorry for this negligence.
+
 2013-01-31 17:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/resources/link.png
   * hbqtwidgets/hbqtwidgets.qrc
