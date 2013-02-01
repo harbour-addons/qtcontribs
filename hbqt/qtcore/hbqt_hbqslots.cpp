@@ -128,7 +128,7 @@ int HBQSlots::hbConnect( PHB_ITEM pObj, char * pszSignal, PHB_ITEM bBlock )
             if( i == 0 )
             {
                QString signal = pszSignal;
-               QByteArray theSignal = QMetaObject::normalizedSignature( signal.toAscii() );
+               QByteArray theSignal = QMetaObject::normalizedSignature( signal.toLatin1() );
 
                if( QMetaObject::checkConnectArgs( theSignal, theSignal ) )
                {
@@ -180,7 +180,7 @@ int HBQSlots::hbDisconnect( PHB_ITEM pObj, char * pszSignal )
    if( object )
    {
       QString signal = pszSignal;
-      QByteArray theSignal = signal.toAscii();
+      QByteArray theSignal = signal.toLatin1();
 
       int signalId = object->metaObject()->indexOfSignal( QMetaObject::normalizedSignature( theSignal ) );
       if( signalId != -1 )
@@ -259,12 +259,12 @@ int HBQSlots::qt_metacall( QMetaObject::Call c, int id, void ** arguments )
                   pList += "HB_" + s.toUpper();
                }
             }
-            paramString = parList.join( "$" ).toAscii();
+            paramString = parList.join( "$" ).toLatin1();
             object->setProperty( szParams, paramString );
 
             object->setProperty( szPList, pList );
 
-            HB_TRACE( HB_TR_DEBUG, ( "    %p   SlotsProxy pList %s ", object, ( char * ) pList.join( "$" ).toAscii().data() ) );
+            HB_TRACE( HB_TR_DEBUG, ( "    %p   SlotsProxy pList %s ", object, ( char * ) pList.join( "$" ).toLatin1().data() ) );
          }
       }
 
@@ -318,9 +318,9 @@ int hbqt_QtConnect( QObject *sender, const char * pszSignal, QObject *receiver, 
    if( sender && receiver )
    {
       QString signal = pszSignal;
-      QByteArray theSignal = QMetaObject::normalizedSignature( signal.toAscii() );
+      QByteArray theSignal = QMetaObject::normalizedSignature( signal.toLatin1() );
       QString slot = pszSlot;
-      QByteArray theSlot = QMetaObject::normalizedSignature( slot.toAscii() );
+      QByteArray theSlot = QMetaObject::normalizedSignature( slot.toLatin1() );
 
       if( QMetaObject::checkConnectArgs( theSignal, theSlot ) )
       {
@@ -363,9 +363,9 @@ int hbqt_QtDisconnect( QObject * sender, const char * pszSignal, QObject * recei
    if( sender && receiver )
    {
       QString signal = pszSignal;
-      QByteArray theSignal = QMetaObject::normalizedSignature( signal.toAscii() );
+      QByteArray theSignal = QMetaObject::normalizedSignature( signal.toLatin1() );
       QString slot = pszSlot;
-      QByteArray theSlot = QMetaObject::normalizedSignature( slot.toAscii() );
+      QByteArray theSlot = QMetaObject::normalizedSignature( slot.toLatin1() );
 
       if( QMetaObject::checkConnectArgs( theSignal, theSlot ) )
       {

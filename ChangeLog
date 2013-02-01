@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-01 13:58 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/hbqt_hbqslots.cpp
+  * hbqt/qtcore/hbqt_init.cpp
+  * hbqt/qtgui/hbqt_init.cpp
+    % Changed: :toAscii() => :toLatin1().
+      Now QtCore module can be compiled under Qt 5.0.1 and seems to be 
+      working fine upto Qt 4.8.3.
+
 2013-02-01 13:37 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/qth/HBQString.qth
   * hbqt/qtcore/qth/QAbstractItemModel.qth

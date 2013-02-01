@@ -884,7 +884,7 @@ HB_FUNC( HBQT_FINDCHILD )
          {
             QString widget = hb_parc( 3 );
             widget = "HB_" + widget.toUpper();
-            hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, child, widget.toAscii().data(), NULL, 1 ) );
+            hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, child, widget.toLatin1().data(), NULL, 1 ) );
          }
       }
    }

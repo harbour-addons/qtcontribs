@@ -237,7 +237,7 @@ static void hbqt_SlotsExecString( PHB_ITEM * codeBlock, void ** arguments, QStri
    QString text = *reinterpret_cast< QString( * ) >( arguments[ 1 ] );
    hb_vmPushEvalSym();
    hb_vmPush( codeBlock );
-   hb_vmPushString( text.toAscii().data(), text.toAscii().length() );
+   hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
    hb_vmSend( 1 );
 }
 
