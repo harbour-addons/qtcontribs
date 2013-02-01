@@ -51,7 +51,7 @@ bool isRegistered ( int type )
 //bool save ( QDataStream & stream, int type, const void * data )
 int type ( const char * typeName )
 const char * typeName ( int type )
-void unregisterType ( const char * typeName )
+void unregisterType ( const char * typeName )                                  [*V=-0x040900*]
 </PROTOS>
 
 <SLOTS>

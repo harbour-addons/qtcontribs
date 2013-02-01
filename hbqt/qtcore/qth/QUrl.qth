@@ -57,7 +57,9 @@ HB_FUNC( QT_QURL )
  */
 HB_FUNC( QT_QURL_SETQUERYDELIMITERS )
 {
+   #if QT_VERSION <= 0x040900
    hbqt_par_QUrl( 1 )->setQueryDelimiters( ( char ) hb_parni( 2 ), ( char ) hb_parni( 3 ) );
+   #endif
 }
 </CODE>
 
@@ -68,26 +70,26 @@ enum ParsingMode { TolerantMode, StrictMode }
 </ENUMS>
 
 <PROTOS>
-void addEncodedQueryItem ( const QByteArray & key, const QByteArray & value )
-void addQueryItem ( const QString & key, const QString & value )
-QList<QByteArray> allEncodedQueryItemValues ( const QByteArray & key ) const
-QStringList allQueryItemValues ( const QString & key ) const
+void addEncodedQueryItem ( const QByteArray & key, const QByteArray & value )  [*V=-0x040900*]
+void addQueryItem ( const QString & key, const QString & value )               [*V=-0x040900*]
+QList<QByteArray> allEncodedQueryItemValues ( const QByteArray & key ) const   [*V=-0x040900*]
+QStringList allQueryItemValues ( const QString & key ) const                   [*V=-0x040900*]
 QString authority () const
 void clear ()
-QByteArray encodedFragment () const
-QByteArray encodedHost () const
-QByteArray encodedPassword () const
-QByteArray encodedPath () const
-QByteArray encodedQuery () const
-QByteArray encodedQueryItemValue ( const QByteArray & key ) const
+QByteArray encodedFragment () const                                            [*V=-0x040900*]
+QByteArray encodedHost () const                                                [*V=-0x040900*]
+QByteArray encodedPassword () const                                            [*V=-0x040900*]
+QByteArray encodedPath () const                                                [*V=-0x040900*]
+QByteArray encodedQuery () const                                               [*V=-0x040900*]
+QByteArray encodedQueryItemValue ( const QByteArray & key ) const              [*V=-0x040900*]
 QList<QPair<QByteArray, QByteArray> > encodedQueryItems () const
-QByteArray encodedUserName () const
+QByteArray encodedUserName () const                                            [*V=-0x040900*]
 QString errorString () const
 QString fragment () const
-bool hasEncodedQueryItem ( const QByteArray & key ) const
+bool hasEncodedQueryItem ( const QByteArray & key ) const                      [*V=-0x040900*]
 bool hasFragment () const
 bool hasQuery () const
-bool hasQueryItem ( const QString & key ) const
+bool hasQueryItem ( const QString & key ) const                                [*V=-0x040900*]
 QString host () const
 bool isEmpty () const
 bool isParentOf ( const QUrl & childUrl ) const
@@ -97,26 +99,26 @@ QString password () const
 QString path () const
 int port () const
 int port ( int defaultPort ) const
-QString queryItemValue ( const QString & key ) const
+QString queryItemValue ( const QString & key ) const                           [*V=-0x040900*]
 QList<QPair<QString, QString> > queryItems () const
-char queryPairDelimiter () const
-char queryValueDelimiter () const
-void removeAllEncodedQueryItems ( const QByteArray & key )
-void removeAllQueryItems ( const QString & key )
-void removeEncodedQueryItem ( const QByteArray & key )
-void removeQueryItem ( const QString & key )
+char queryPairDelimiter () const                                               [*V=-0x040900*]
+char queryValueDelimiter () const                                              [*V=-0x040900*]
+void removeAllEncodedQueryItems ( const QByteArray & key )                     [*V=-0x040900*]
+void removeAllQueryItems ( const QString & key )                               [*V=-0x040900*]
+void removeEncodedQueryItem ( const QByteArray & key )                         [*V=-0x040900*]
+void removeQueryItem ( const QString & key )                                   [*V=-0x040900*]
 QUrl resolved ( const QUrl & relative ) const
 QString scheme () const
 void setAuthority ( const QString & authority )
-void setEncodedFragment ( const QByteArray & fragment )
-void setEncodedHost ( const QByteArray & host )
-void setEncodedPassword ( const QByteArray & password )
-void setEncodedPath ( const QByteArray & path )
-void setEncodedQuery ( const QByteArray & query )
+void setEncodedFragment ( const QByteArray & fragment )                        [*V=-0x040900*]
+void setEncodedHost ( const QByteArray & host )                                [*V=-0x040900*]
+void setEncodedPassword ( const QByteArray & password )                        [*V=-0x040900*]
+void setEncodedPath ( const QByteArray & path )                                [*V=-0x040900*]
+void setEncodedQuery ( const QByteArray & query )                              [*V=-0x040900*]
 void setEncodedQueryItems ( const QList<QPair<QByteArray, QByteArray> > & query )
-void setEncodedUrl ( const QByteArray & encodedUrl )
-void setEncodedUrl ( const QByteArray & encodedUrl, ParsingMode parsingMode )
-void setEncodedUserName ( const QByteArray & userName )
+void setEncodedUrl ( const QByteArray & encodedUrl )                           [*V=-0x040900*]
+void setEncodedUrl ( const QByteArray & encodedUrl, ParsingMode parsingMode )  [*V=-0x040900*]
+void setEncodedUserName ( const QByteArray & userName )                        [*V=-0x040900*]
 void setFragment ( const QString & fragment )
 void setHost ( const QString & host )
 void setPassword ( const QString & password )

@@ -216,7 +216,7 @@ void squeeze ()
 bool startsWith ( const QString & s, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
 bool startsWith ( const QLatin1String & s, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
 bool startsWith ( const QChar & c, Qt::CaseSensitivity cs = Qt::CaseSensitive ) const
-QByteArray toAscii () const
+QByteArray toAscii () const                         [*V=-0x050000*]
 QString toCaseFolded () const
 double toDouble ( bool * ok = 0 ) const
 float toFloat ( bool * ok = 0 ) const
@@ -248,7 +248,7 @@ int compare ( const QString & s1, const QString & s2 )
 int compare ( const QString & s1, const QLatin1String & s2, Qt::CaseSensitivity cs = Qt::CaseSensitive )
 int compare ( const QLatin1String & s1, const QString & s2, Qt::CaseSensitivity cs = Qt::CaseSensitive )
 int compare ( const QString & s1, const QStringRef & s2, Qt::CaseSensitivity cs = Qt::CaseSensitive )
-QString fromAscii ( const char * str, int size = -1 )
+QString fromAscii ( const char * str, int size = -1 )       [*V=-050000*]
 QString fromLatin1 ( const char * str, int size = -1 )
 QString fromLocal8Bit ( const char * str, int size = -1 )
 QString fromRawData ( const QChar * unicode, int size )

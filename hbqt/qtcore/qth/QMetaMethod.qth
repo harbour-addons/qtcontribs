@@ -53,7 +53,7 @@ Access access () const
 MethodType methodType () const
 QList<QByteArray> parameterNames () const
 QList<QByteArray> parameterTypes () const
-const char * signature () const
+const char * signature () const                                                [*V=-0x040900*]
 const char * tag () const
 const char * typeName () const
 </PROTOS>

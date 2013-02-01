@@ -2057,7 +2057,11 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
    AAdd( txt_, "HB_FUNC_STATIC( " + Upper( oMtd:cHBFunc ) + " )" )
    AAdd( txt_, "{" )
    IF ! empty( oMtd:cVersion )
-      AAdd( txt_, "   #if QT_VERSION >= " + oMtd:cVersion )
+      IF Left( oMtd:cVersion, 1 ) == "-"
+         AAdd( txt_, "   #if QT_VERSION <= " + SubStr( oMtd:cVersion, 2 ) )
+      ELSE
+         AAdd( txt_, "   #if QT_VERSION >= " + oMtd:cVersion )
+      ENDIF
    ELSEIF ::cQtVer > "0x040500"
       AAdd( txt_, "   #if QT_VERSION >= " + ::cQtVer )
    ENDIF

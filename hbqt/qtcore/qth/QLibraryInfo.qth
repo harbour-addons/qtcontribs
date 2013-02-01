@@ -51,7 +51,9 @@ QDate buildDate (){
    #endif
 }
 QString buildKey (){
+   #if QT_VERSION <= 0x050000
    hb_retstr_utf8( QLibraryInfo::buildKey().toUtf8().data() );
+   #endif
 }
 QString licensedProducts (){
    hb_retstr_utf8( QLibraryInfo::licensedProducts().toUtf8().data() );

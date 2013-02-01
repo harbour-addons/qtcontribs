@@ -64,7 +64,7 @@ bool isMinimal () const
 bool isValid () const
 int lastIndexIn ( const QString & str, int offset = -1, CaretMode caretMode = CaretAtZero ) const
 int matchedLength () const
-int numCaptures () const
+int numCaptures () const                                                       [*V=-0x040900*]
 QString pattern () const
 PatternSyntax patternSyntax () const
 int pos ( int nth = 0 ) const

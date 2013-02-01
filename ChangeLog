@@ -16,6 +16,30 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-01 12:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/qth/HBQString.qth
+  * hbqt/qtcore/qth/QAbstractItemModel.qth
+  * hbqt/qtcore/qth/QChar.qth
+  * hbqt/qtcore/qth/QCoreApplication.qth
+  * hbqt/qtcore/qth/QLibraryInfo.qth
+  * hbqt/qtcore/qth/QLocale.qth
+  * hbqt/qtcore/qth/QMetaMethod.qth
+  * hbqt/qtcore/qth/QMetaType.qth
+  * hbqt/qtcore/qth/QRegExp.qth
+  * hbqt/qtcore/qth/QTextCodec.qth
+  * hbqt/qtcore/qth/QUrl.qth
+    + Added:  [*V=-0x040900*]
+       A version info prefixed with minus sign will be used as 
+        #if QT_VERSION <= 0x040900
+
+  * hbqt/hbmk2_qt.hb
+    + Added: necessary modification to honor [*V=-0x040900*] mark-up.
+
+  ; WARNING - Regression is possible with code written upto Qt 4.8.4.
+              I cannot test until all modules are built with latest 
+              version which will take a sustained effort from all of us.
+              You need to report back if any piece of code misbehaves.
+
 2013-02-01 11:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtdbu.prg
     + Fixed: unresolved external "ErrorBreak()". Seems the function 

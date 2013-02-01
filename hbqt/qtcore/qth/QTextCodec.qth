@@ -56,18 +56,18 @@ QString toUnicode ( const QByteArray & a ) const
 QString toUnicode ( const char * chars ) const
 
 
-#                Public Statics         I do not know it these will work, though compile OK
-QTextCodec * codecForCStrings ()
-QTextCodec * codecForHtml ( const QByteArray & ba, QTextCodec * defaultCodec )
+#                Public Statics       
+QTextCodec * codecForCStrings ()                                                [*V=-0x040900*]
+QTextCodec * codecForHtml ( const QByteArray & ba, QTextCodec * defaultCodec ) 
 QTextCodec * codecForHtml ( const QByteArray & ba )
 QTextCodec * codecForLocale ()
 QTextCodec * codecForMib ( int mib )
 QTextCodec * codecForName ( const QByteArray & name )
 QTextCodec * codecForName ( const char * name )
-QTextCodec * codecForTr ()
-void setCodecForCStrings ( QTextCodec * codec )
+QTextCodec * codecForTr ()                                                      [*V=-0x040900*]
+void setCodecForCStrings ( QTextCodec * codec )                                 [*V=-0x040900*]
 void setCodecForLocale ( QTextCodec * c )
-void setCodecForTr ( QTextCodec * c )
+void setCodecForTr ( QTextCodec * c )                                           [*V=-0x040900*]
 
 
 </PROTOS>

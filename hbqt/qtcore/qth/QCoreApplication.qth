@@ -79,8 +79,8 @@ void setOrganizationDomain ( const QString & orgDomain )
 void setOrganizationName ( const QString & orgName )
 bool startingUp ()
 bool testAttribute ( Qt::ApplicationAttribute attribute )
-QString translate ( const char * context, const char * sourceText, const char * disambiguation, Encoding encoding, int n )
-QString translate ( const char * context, const char * sourceText, const char * disambiguation = 0, Encoding encoding = CodecForTr )
+QString translate ( const char * context, const char * sourceText, const char * disambiguation, Encoding encoding, int n )               [*V=-050000*]
+QString translate ( const char * context, const char * sourceText, const char * disambiguation = 0, Encoding encoding = CodecForTr )     [*V=-050000*]
 </PROTOS>
 
 <SLOTS>
