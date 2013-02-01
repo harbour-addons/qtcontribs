@@ -164,7 +164,6 @@ CLASS HbQtGet INHERIT GET
    METHOD unTransformThis( cData )
    METHOD timesOccurs( cToken, cText )
    METHOD fixup( cText )
-   METHOD returnPressed()
    METHOD isDateBad()
    METHOD postValidate()
    METHOD preValidate()
@@ -316,7 +315,6 @@ METHOD HbQtGet:connect()
    SWITCH ::cClassName
    CASE "QLINEEDIT"
       ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T.                                         } )
-      ::oEdit:connect( "returnPressed()"        , {|| ::returnPressed(), .F.                                    } )
       EXIT
    CASE "QPLAINTEXTEDIT"
       EXIT
@@ -1205,16 +1203,6 @@ METHOD HbQtGet:isDateBad()
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbQtGet:returnPressed()
-
-   IF ::postValidate()
-      ::navigate( _QGET_NAV_NEXT )
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
 METHOD HbQtGet:execKeyPress( oKeyEvent )
    LOCAL nKey := oKeyEvent:key()
    LOCAL nHbKey := HbQt_QtEventToHbEvent( oKeyEvent )
@@ -1294,6 +1282,11 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          ENDIF
          oKeyEvent:accept() ; RETURN .T.
       ELSEIF ::cClassName == "QCHECKBOX"
+         IF ::postValidate()
+            ::navigate( _QGET_NAV_NEXT )
+         ENDIF
+         oKeyEvent:accept() ; RETURN .T.
+      ELSEIF ::cClassName == "QLINEEDIT"
          IF ::postValidate()
             ::navigate( _QGET_NAV_NEXT )
          ENDIF

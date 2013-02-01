@@ -317,17 +317,18 @@ STATIC FUNCTION __getBlock( aBlocks, nIndex )
 FUNCTION HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItems, cUserFunc, nInitItem, nWindowRow, cTitle, oParent )
    LOCAL oDlg, oVLay, oBtnOK, oBtnCancel, oHLay, oList, nRes, nChoice, cItem
 
-   HB_SYMBOL_UNUSED( nLeft )
-   HB_SYMBOL_UNUSED( nRight )
-   HB_SYMBOL_UNUSED( nTop )
-   HB_SYMBOL_UNUSED( nBottom )
+   HB_SYMBOL_UNUSED( nLeft            )
+   HB_SYMBOL_UNUSED( nRight           )
+   HB_SYMBOL_UNUSED( nTop             )
+   HB_SYMBOL_UNUSED( nBottom          )
    HB_SYMBOL_UNUSED( xSelectableItems )
-   HB_SYMBOL_UNUSED( cUserFunc )
-   HB_SYMBOL_UNUSED( nInitItem )
-   HB_SYMBOL_UNUSED( nWindowRow )
+   HB_SYMBOL_UNUSED( cUserFunc        )
+   HB_SYMBOL_UNUSED( nInitItem        )
+   HB_SYMBOL_UNUSED( nWindowRow       )
 
-   hb_default( @oParent, QApplication():focusWidget() )
+// hb_default( @oParent, QApplication():focusWidget() )
    hb_default( @cTitle, "Select an Option" )
+   hb_default( @nInitItem, 1 )
 
    oDlg   := QDialog( oParent )
    oVLay  := QVBoxLayout( oDlg )
@@ -353,6 +354,7 @@ FUNCTION HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItem
    NEXT
 
    oDlg:setWindowTitle( cTitle )
+   oDlg:connect( QEvent_Show, {|| oList:setCurrentRow( nInitItem - 1 ), oList:setFocus() } )
    nRes := oDlg:exec()
 
    nChoice := iif( nRes == 0, 0, oList:currentRow()+1 )
@@ -383,5 +385,27 @@ FUNCTION HbQtMsgBox( cMsg, cTitle )
    oMB:setParent( QWidget() )
 
    RETURN NIL
+
+
+FUNCTION HbQtGetAt( nGlobalX, nGlobalY, cVar, cPic, cColor, bValid )
+   LOCAL oDlg, nRes
+   LOCAL GetList := {}, SayList := {}
+
+//   hb_default( @bValid, {|| .T. } )
+
+   WITH OBJECT oDlg  := QDialog()
+      :connect( QEvent_Show, {|| oDlg:move( nGlobalX, nGlobalY ) } )
+      :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+      :setAttribute( Qt_WA_TranslucentBackground, .T. )
+   ENDWITH
+
+   @ 0,0 QGET cVar PICTURE cPic COLOR cColor VALID {|| Eval( bValid ) }
+   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) } NOFOCUSFRAME
+
+   nRes := oDlg:exec()
+
+   oDlg:setParent( QWidget() )
+
+   RETURN iif( nRes == 0, NIL, cVar )
 
 

@@ -157,6 +157,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD hitBottomBlock( bBlock )                SETGET
    METHOD hitTopBlock( bBlock )                   SETGET
    METHOD stableBlock( bBlock )                   SETGET
+   METHOD verticalMovementBlock( bBlock )         SETGET
 
    METHOD helpBlock( bBlock )                     SETGET
    METHOD addColumnsBlock( bBlock )               SETGET
@@ -335,8 +336,11 @@ PROTECTED:
    DATA   bHitBottomBlock                         INIT NIL
    DATA   bHitTopBlock                            INIT NIL
    DATA   bStableBlock                            INIT NIL
+   DATA   bVerticalMovementBlock                  INIT NIL
    DATA   bHelpBlock                              INIT NIL
    DATA   bAddColumnsBlock                        INIT NIL
+
+   DATA   lVerticalMovementBlock                  INIT .F.
 
    /* Editor specific calls */
    METHOD loadRow()
@@ -1689,6 +1693,13 @@ METHOD HbQtBrowse:stableBlock( bBlock )
    ENDIF
    RETURN ::bStableBlock
 
+METHOD HbQtBrowse:verticalMovementBlock( bBlock )
+   IF bBlock != NIL
+      ::bVerticalMovementBlock := __eInstVar53( Self, "VERTICALMOVEMENTBLOCK", bBlock, "B", 1001 )
+      ::lVerticalMovementBlock := .T.
+   ENDIF
+   RETURN ::bVerticalMovementBlock
+
 METHOD HbQtBrowse:editBlock( bBlock )
    IF bBlock != NIL
       ::bEditBlock := __eInstVar53( Self, "EDITBLOCK", bBlock, "B", 1001 )
@@ -1903,6 +1914,10 @@ METHOD HbQtBrowse:up()
    ::setCurrentIndex( lReset )
    ::updateVertScrollBar()
 
+   IF ::lVerticalMovementBlock .AND. ! ::hitTop
+      Eval( ::bVerticalMovementBlock, 6, NIL, Self )
+   ENDIF
+
    RETURN Self
 
 METHOD HbQtBrowse:down()
@@ -1914,6 +1929,10 @@ METHOD HbQtBrowse:down()
    ::setCurrentIndex( lReset )
    ::updateVertScrollBar()
 
+   IF ::lVerticalMovementBlock .AND. ! ::hitBottom
+      Eval( ::bVerticalMovementBlock, 5, NIL, Self )
+   ENDIF
+
    RETURN Self
 
 METHOD HbQtBrowse:pageUp()
@@ -1923,6 +1942,10 @@ METHOD HbQtBrowse:pageUp()
    ::forceStable()
    ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
+
+   IF ::lVerticalMovementBlock .AND. ! ::hitTop
+      Eval( ::bVerticalMovementBlock, 4, NIL, Self )
+   ENDIF
 
    RETURN Self
 
@@ -1934,6 +1957,10 @@ METHOD HbQtBrowse:pageDown()
    ::setCurrentIndex( .t. )
    ::updateVertScrollBar()
 
+   IF ::lVerticalMovementBlock .AND. ! ::hitBottom
+      Eval( ::bVerticalMovementBlock, 3, NIL, Self )
+   ENDIF
+
    RETURN Self
 
 METHOD HbQtBrowse:goTop()
@@ -1943,6 +1970,10 @@ METHOD HbQtBrowse:goTop()
    ::forceStable()
    ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
+
+   IF ::lVerticalMovementBlock .AND. ! ::hitTop
+      Eval( ::bVerticalMovementBlock, 0, NIL, Self )
+   ENDIF
 
    RETURN Self
 
@@ -1954,6 +1985,10 @@ METHOD HbQtBrowse:goBottom()
    ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
 
+   IF ::lVerticalMovementBlock .AND. ! ::hitBottom
+      Eval( ::bVerticalMovementBlock, 1, NIL, Self )
+   ENDIF
+
    RETURN Self
 
 METHOD HbQtBrowse:goTo()
@@ -1962,6 +1997,9 @@ METHOD HbQtBrowse:goTo()
       IF Eval( ::gotoBlock(), NIL, NIL, Self )
          ::refreshAll()
          ::updateVertScrollBar()
+         IF ::lVerticalMovementBlock
+            Eval( ::bVerticalMovementBlock, 2, NIL, Self )
+         ENDIF
       ENDIF
    ENDIF
 
@@ -2242,7 +2280,7 @@ METHOD HbQtBrowse:moveEnd()
 METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    LOCAL oDlg, nRes
    LOCAL oRect   := ::oTableView:visualrect( ::getCurrentIndex() )
-   LOCAL oPos    := ::oTableView:mapToGlobal( QPoint( oRect:x(), oRect:y() ) )
+   LOCAL oPos    := ::oTableView:viewport():mapToGlobal( oRect:topLeft() )
    LOCAL oCol    := ::getColumn( ::colPos )
    LOCAL xValue  := Eval( oCol:block )
    LOCAL GetList := {}, SayList := {}
@@ -2262,7 +2300,7 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
 
    oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
    oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
-   oDlg:move( oPos:x()-4, oPos:y() + ::oTableView:horizontalHeader():height() )
+   oDlg:move( oPos:x - 6, oPos:y() )
    IF HB_ISNUMERIC( nKey )
       IF ! ( "K" $ Upper( cPicture ) ) .AND. ValType( xValue ) == "C"
          GetList[ 1 ]:edit():home( .F. )

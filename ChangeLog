@@ -16,11 +16,89 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2013-01-31 12:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-31 17:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/resources/link.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: one more image.
+
+  * hbqtwidgets/hbqtgetlist.prg
+    % Code formatting.
+
+  * hbqtwidgets/hbqtgetsys.prg
+    % Code cleanup.    
+
+  * hbqtwidgets/hbqtalert.prg
+    + Added: FUNCTION HbQtGetAt( nGlobalX, nGlobalY, cVar, cPic, cColor, bValid ) -> cVar | NIL
+       The function fetches a single GET at global <nGlobalX>,<nGlobalY> 
+       screen coordinates inside a transparent modal dialog. WHEN clause 
+       is omitted because appln will call this function on a GET which has 
+       to be fetched actually.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: SET/GET METHODE verticalMovementBlock( bBlock ).
+       The method is a callback reporting to appln when an actual vertical 
+       movement occurs. By actual movement means if no hittop/hitbottom 
+       is reached. The method was necessary to implement <LINKED TABLES>
+       protocol implemented in HbDBU (Read Below).
+
+        oBrowse:verticalMovementBlock := {|nMode,p2,oBrw| ::updateLinks( nMode, p2, oBrw ) }
+          <nMode> == 0,1,2,3,4,5,6 ( Will document later ).
+          <p2>    == NIL
+          <oBrw>  == Reporting Browse Object
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Added: credits to my employers, Curacao, for supporting this project.
+
+    ! Fixed: few errors reported on the list.
+    % Optimized: code offered on the list.          
+    + Implemented: <Linked Tables> protocol. In Clipper language 
+       relational tables. N number of tables can be nested 
+       to build a complex relational hirarchy (parent/child/grandchild).
+
+       How it Works:
+
+       1. Open some tables on a HbDBU panel, organize them with positioning and sizing.
+       2. Set the appropriate indexes.
+       3. Close HbDBU to save these settings, just-in-case.
+       4. Click on the <Link> icon on HbDBU's toolbar.
+       5. A dialog will appear with a list of aliases open on the current panel.
+       6. Drag and drop the aliases over to its desired parent. This can be done in 
+          any combination, viz., parent
+                                   child_1
+                                     grandchild_1_1
+                                   child_2
+                                   child_3
+                                     grandchild_3_1
+                                 parent_2
+                                 ...
+       7. Once satisfied, what would you like to see, close HbDBU and run again, 
+          just-in-case.  Do not worry, your session is saved.
+       8. Double-click on <Link Expression> column of an alias, a GET will open-up.
+       9. Press F2 which will open a list of fields of its parent alias.
+       10.Double-click on a field, which will be inserted at the current 
+          cursor position. Build appropriate and valid expression matching 
+          with its current index expression.
+       11.Note that you won't be able to leave the GET until expression is 
+          syntactically valid. No check is performed for the type of returned 
+          value of expression evaluation. The reason is that the links map 
+          building is independent of current index, which could be set 
+          at later time.
+       12.Press <OK> button to activate the links. If you have appropriate indexes 
+          already set, the browsers will instantly reflect the linked data only.
+          Any vertical movement in the parent browser will refresh the child browsers.
+       13.Now a step advanced: uncheck the checkbox at the left of some child, 
+          the child browser will stop to be refreshed. Old link-expression 
+          will stay though. (This is subject to change, I am thinking).
+       14.Close HbDBU, run it again, click on the <Lin> icon, click on <OK>
+          to activate the links.
+
+       ;  Hopefully you will offer some advice.   
+
+2013-01-31 17:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/main.prg
     % Small optimization to the last commit.
 
-2013-01-31 12:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+2013-01-31 17:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/main.prg
     ! Fixed: normalizing the file names supplied on command line.
        Bug is reported by Massimo, thanks.

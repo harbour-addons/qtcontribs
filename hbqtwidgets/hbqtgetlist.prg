@@ -92,7 +92,7 @@ FUNCTION __hbqtGetNextIdAsString( cString )
    IF ! hb_hHasKey( hIDs, cString )
       hIDs[ cString ] := 0
    ELSE
-      cString += hb_ntos( ++hIDs[ cString ] )
+      cString += "_" + hb_ntos( ++hIDs[ cString ] )
    ENDIF
    RETURN cString
 
@@ -244,11 +244,12 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          nMinY := Min( nMinY, nY )
          nMaxY := Max( nMaxY, nY + nH )
 
-         oLabel := QLabel( oWnd )
-         oLabel:setText( cText )
-         oLabel:setFont( oFont )
-         oLabel:setAlignment( Qt_AlignLeft + Qt_AlignVCenter )
-         oLabel:move( nX, nY )
+         WITH OBJECT oLabel := QLabel( oWnd )
+            :setText( cText )
+            :setFont( oFont )
+            :setAlignment( Qt_AlignLeft + Qt_AlignVCenter )
+            :move( nX, nY )
+         ENDWITH
          oLabel:resize( nW, nH )
       NEXT
    ENDIF
@@ -266,27 +267,29 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          ELSE
             oEdit      := HbQtGet():new( aEdit[ _QGET_CONTROL ] )
          ENDIF
-         oEdit:widget  := aEdit[ _QGET_TYPE ]
-         oEdit:parent  := oWnd
-         oEdit:font    := oFont
-         oEdit:getList := oGetList
-         oEdit:get     := oGet                    /* This is important - all variables will be initialized here instead of in :new() */
+         WITH OBJECT oEdit
+            :widget  := aEdit[ _QGET_TYPE ]
+            :parent  := oWnd
+            :font    := oFont
+            :getList := oGetList
+            :get     := oGet                    /* This is important - all variables will be initialized here instead of in :new() */
 
-         oEdit:toRow   := aEdit[ _QGET_TOROW  ]
-         oEdit:toCol   := aEdit[ _QGET_TOCOL  ]
-         oEdit:data    := aEdit[ _QGET_DATA   ]
+            :toRow   := aEdit[ _QGET_TOROW  ]
+            :toCol   := aEdit[ _QGET_TOCOL  ]
+            :data    := aEdit[ _QGET_DATA   ]
 
-         IF ! Empty( aEdit[ _QGET_COLOR ] )
-            oEdit:color := aEdit[ _QGET_COLOR ]
-         ENDIF
+            IF ! Empty( aEdit[ _QGET_COLOR ] )
+               :color := aEdit[ _QGET_COLOR ]
+            ENDIF
 
-         IF HB_ISBLOCK( aEdit[ _QGET_VALIDATOR ] )
-            oEdit:inputValidator := aEdit[ _QGET_VALIDATOR ]
-         ENDIF
+            IF HB_ISBLOCK( aEdit[ _QGET_VALIDATOR ] )
+               :inputValidator := aEdit[ _QGET_VALIDATOR ]
+            ENDIF
 
-         oEdit:mousable := ! aEdit[ _QGET_NOMOUSE ]
+            :mousable := ! aEdit[ _QGET_NOMOUSE ]
 
-         oEdit:create()
+            :create()
+         ENDWITH
 
          IF Empty( aEdit[ _QGET_CONTROL ] )
             nX    := ( oGet:col * nAvgWid ) + 6
@@ -303,10 +306,12 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             IF ! lFLayout
                oEdit:setPosAndSize( { nX, nY }, { nW, nH } )
             ELSE
-               oEdit:edit():setMinimumWidth( nW )
-               oEdit:edit():setMinimumHeight( nH )
-               oEdit:edit():setMaximumWidth( nW )
-               oEdit:edit():setMaximumHeight( nH )
+               WITH OBJECT oEdit:edit()
+                  :setMinimumWidth( nW )
+                  :setMinimumHeight( nH )
+                  :setMaximumWidth( nW )
+                  :setMaximumHeight( nH )
+               ENDWITH
             ENDIF
          ENDIF
 

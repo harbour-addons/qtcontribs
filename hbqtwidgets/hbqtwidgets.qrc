@@ -127,5 +127,6 @@
     <file>resources/delete-column.png</file>
     <file>resources/info.png</file>
     <file>resources/harbour-dbu.png</file>
+    <file>resources/link.png</file>
   </qresource>
 </RCC>

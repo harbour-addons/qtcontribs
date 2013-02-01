@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -60,8 +58,6 @@
  *                             Pritpal Bedi
  *                              03Jan2013
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 REQUEST DBFCDX
@@ -121,6 +117,7 @@ REQUEST DBFNSX
 #define __mdiSubWindow_windowStateChanged__       2049
 #define __mdiSubWindow_buttonXclicked__           2050
 #define __dbu_treeTableDoubleClicked__            2051
+#define __buttonLink_clicked__                    2052
 
 /*----------------------------------------------------------------------*/
 
@@ -262,8 +259,8 @@ CLASS HbQtDBU
    METHOD getIndexInfo( cAlias )
    METHOD setIndex( cAlias, cIndex )
    METHOD setOrder( cAlias, nOrder )
-   METHOD setScope( cAlias )
-   METHOD clearScope( cAlias )
+   METHOD setScope( cAlias, cScopeTop, cScopeBottom )
+   METHOD clearScope( cAlias, nScope )
    METHOD dbRLockList( cAlias )
    METHOD fieldBlock( cAlias, cFieldName )
    METHOD setFilter( cAlias, cFilter )
@@ -272,6 +269,7 @@ CLASS HbQtDBU
    METHOD fCount( cAlias )
    METHOD indexExt( cAlias )
    METHOD ordKey( cAlias, ncOrder, cOrdBagName )
+   METHOD dbStruct( cAlias )
 
    METHOD next( cAlias )
    METHOD previous( cAlias )
@@ -287,6 +285,10 @@ CLASS HbQtDBU
 
    METHOD addPanels( aPanels )
    METHOD loadTables( aPanelsInfo )
+
+   METHOD updateLinks( cAlias )
+   METHOD setLinksInfo( aInfo )
+   METHOD getLinksInfo()
 
    /* END */
 
@@ -339,7 +341,7 @@ PROTECTED:
    DATA   lStructOpen                             INIT  .f.
    DATA   lDeletedOn                              INIT  .t.
    DATA   qComboAction
-   DATA   sp0,sp1,sp2,sp3
+   DATA   sp0,sp1,sp2,sp3,sp4,sp5
 
    DATA   nPrevMode                               INIT  0
 
@@ -361,6 +363,8 @@ PROTECTED:
    METHOD dispStatusInfo()
    METHOD buildLeftToolbar()
    METHOD buildTablesButton()
+   METHOD linkTables()
+   METHOD manageLinkTree( nMode, p, p1 )
    METHOD showTablesTree()
    METHOD fetchFldsList( cAlias )
    METHOD getBrowserByAlias( cAlias )
@@ -391,11 +395,17 @@ PROTECTED:
    DATA   lTablesTree                             INIT .T.
 
    METHOD configureBrowse( oMdiBrowse )
+   METHOD selectAField( cAlias )
+   METHOD evalExpression( cExpression, cValue )
+   METHOD fetchLinkedChildren( qItm, aMaps )
 
+   DATA   hRelatns                                INIT {=>}
+   DATA   hTopLevels                              INIT {=>}
+   DATA   hMaps                                   INIT {=>}
+   DATA   oRoot
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:init( oParent )
 
@@ -404,7 +414,6 @@ METHOD HbQtDBU:init( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:create( oParent )
 
@@ -523,6 +532,7 @@ METHOD HbQtDBU:configureBrowse( oMdiBrowse )
    ENDIF
    RETURN Self
 
+
 STATIC FUNCTION findItem( oParent, cItem )
    LOCAL i, oItem
    IF oParent:text( 0 ) == cItem
@@ -535,6 +545,7 @@ STATIC FUNCTION findItem( oParent, cItem )
       ENDIF
    NEXT
    RETURN NIL
+
 
 METHOD HbQtDBU:navigateBrwStruct( nKey )
    LOCAL cField
@@ -555,6 +566,7 @@ METHOD HbQtDBU:navigateBrwStruct( nKey )
 
    RETURN lHandelled
 
+
 METHOD HbQtDBU:searchBrwStruct( xValue, nMode, oBrw )
 
    IF xValue == NIL .AND. oBrw == NIL
@@ -574,6 +586,7 @@ METHOD HbQtDBU:searchBrwStruct( xValue, nMode, oBrw )
 
    RETURN .T.
 
+
 METHOD HbQtDBU:updateBrwStruct( oBrw )
    LOCAL nRecLen := 0
 
@@ -590,6 +603,7 @@ METHOD HbQtDBU:updateBrwStruct( oBrw )
    ::qRightFrame:resize( ::qRightFrame:width()-5, ::qRightFrame:height()-5 )
 
    RETURN Self
+
 
 METHOD HbQtDBU:buildBrwStruct()
    LOCAL oBrowse, oColumn, aHelp
@@ -711,7 +725,6 @@ METHOD HbQtDBU:setPopulateTreeBlock( bBlock )
 METHOD HbQtDBU:getPopulateTreeBlock()
    RETURN ::bPopulateTree
 
-
 METHOD browseConfigureBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
       ::bBrowseConfigure := bBlock
@@ -753,8 +766,6 @@ METHOD HbQtDBU:setTablesStructureEnabled( lEnabled )
    RETURN ::lTablesStructure
 
 
-/*----------------------------------------------------------------------*/
-
 METHOD HbQtDBU:background( oBrush )
    LOCAL oOldBrush := ::sl_brush
    LOCAL oPanel
@@ -768,7 +779,6 @@ METHOD HbQtDBU:background( oBrush )
 
    RETURN oOldBrush
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:getTreeInfo()
    LOCAL aInfo := {}
@@ -864,7 +874,6 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:getPanelNames()
    LOCAL oPanel, aNames := {}, aAttr
@@ -881,7 +890,6 @@ METHOD HbQtDBU:getPanelNames()
 
    RETURN aNames
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:getPanelsInfo()
    LOCAL oMdiBrw, oPanel, aSub, n, cColumns
@@ -923,7 +931,6 @@ METHOD HbQtDBU:getPanelsInfo()
 
    RETURN aInfo
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:addPanels( aPanels )
    LOCAL cPanel, aPnl
@@ -992,8 +999,6 @@ METHOD HbQtDBU:isPanel( cPanel )
    RETURN ascan( ::aPanels, {|o| o:oWidget:objectName() == cPanel } ) > 0
 
 
-/*----------------------------------------------------------------------*/
-
 METHOD HbQtDBU:fetchFldsList( cAlias )
    LOCAL aFlds := {}, cA, oBrw, a_, oPanel, aBrw
 
@@ -1021,7 +1026,6 @@ METHOD HbQtDBU:fetchFldsList( cAlias )
 
    RETURN aFlds
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtDBU:getBrowserByAlias( cAlias )
    LOCAL oPanel, aBrw
@@ -1035,7 +1039,6 @@ METHOD HbQtDBU:getBrowserByAlias( cAlias )
    NEXT
    RETURN NIL
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtDBU:dispStatusInfo()
 
@@ -1069,7 +1072,6 @@ METHOD HbQtDBU:buildStatusPanels()
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtDBU:execEvent( nEvent, p, p1 )
    LOCAL cTable, cPath, cPanel, qMime, qList, i, cExt, qUrl, aPopulate, cInfo, n, nn, cDriver, cConxn
@@ -1170,6 +1172,10 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
       IF !empty( ::oCurBrw )
          ::oCurPanel:destroyBrw( ::oCurBrw )
       ENDIF
+      EXIT
+
+   CASE __buttonLink_clicked__
+      ::linkTables()
       EXIT
 
    CASE __qPanelsButton_clicked__
@@ -1300,7 +1306,6 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:copyStructToClipboard()
    LOCAL aStruct, i, cTmp
@@ -1321,6 +1326,317 @@ METHOD HbQtDBU:copyStructToClipboard()
    ENDIF
 
    RETURN cTmp
+
+
+METHOD HbQtDBU:updateLinks( cAlias )
+   LOCAL aRel, cScope
+
+   IF hb_HHasKey( ::hRelatns, cAlias )
+      FOR EACH aRel IN ::hRelatns[ cAlias ]
+         IF aRel[ 4 ] == Qt_Checked
+            ::evalExpression( aRel[ 2 ], @cScope )
+            ::setScope( aRel[ 1 ], cScope, cScope )
+            ::updateLinks( aRel[ 1 ] )
+         ENDIF
+      NEXT
+   ENDIF
+
+   RETURN .F.
+
+
+METHOD HbQtDBU:setLinksInfo( aInfo )
+   LOCAL s, ss, a_, x_, n, cPanel
+
+   FOR EACH s IN aInfo
+      IF ( n := At( ":", s ) ) > 0
+         cPanel := SubStr( s, 1, n-1 )
+         s      := SubStr( s, n+1 )
+         a_     := {}
+         FOR EACH ss IN hb_ATokens( s, "^" )
+            IF ! Empty( ss )
+               x_:= hb_ATokens( ss, ";" )
+               x_[ 5 ] := Val( x_[ 5 ] )
+               AAdd( a_, x_ )
+            ENDIF
+         NEXT
+         ::hMaps[ cPanel ] := a_
+      ENDIF
+   NEXT
+
+   RETURN Self
+
+
+METHOD HbQtDBU:getLinksInfo()
+   LOCAL aMap, s, a_, aInfo := {}
+
+   IF ! Empty( ::hMaps )
+      FOR EACH aMap IN ::hMaps
+         s      := ""
+         FOR EACH a_ IN aMap
+            s += a_[ 1 ] + ";" + a_[ 2 ] + ";" + a_[ 3 ] + ";" + a_[ 4 ] + ";" + hb_ntos( a_[ 5 ] ) + ";^"
+         NEXT
+         AAdd( aInfo, aMap:__enumKey() + ":" + s )
+      NEXT
+   ENDIF
+
+   RETURN aInfo
+
+
+METHOD HbQtDBU:linkTables()
+   LOCAL oDlg, oTree, oLay, oHLay, oBtnOK, oBtnCancel, a_, oChild, aMaps
+   LOCAL nRet, aBrowser, oBrw, qItm, oFont, oParent, oList, i, n, aRelatns, cScope, aRel
+
+   IF Empty( ::oCurPanel:aBrowsers )
+      Alert( "No tables is open on this panel !" )
+      RETURN Self
+   ELSEIF Len( ::oCurPanel:aBrowsers ) == 1
+      Alert( "Link can only be established if more than one table is open !" )
+      RETURN nil
+   ENDIF
+
+   oFont := QFont( "Courier new", 10 )
+
+   oLay  := QVBoxLayout()
+   oHLay := QHBoxLayout()
+
+   WITH OBJECT oDlg := QDialog( ::oWidget )
+      :setWindowTitle( "Build Links Map for Tables on " + ::oCurPanel:name() )
+      :setWindowIcon( QIcon( __hbqtImage( "link" ) ) )
+      :setLayout( oLay )
+      :setAcceptDrops( .t. )
+      :connect( QEvent_DragEnter, {|p| ::manageLinkTree( 11, p ) } )
+      :connect( QEvent_DragMove , {|p| ::manageLinkTree( 12, p ) } )
+      :connect( QEvent_Drop     , {|p| ::manageLinkTree( 13, p ) } )
+   ENDWITH
+
+   oList := QStringList()
+   oList:append( "Table" )
+   oList:append( "Link Expression" )
+   oList:append( "FOR Expression" )
+   WITH OBJECT oTree := QTreeWidget()
+      :setColumnCount( 3 )
+      :setHeaderLabels( oList )
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setDragEnabled( .T. )
+      :setDropIndicatorShown( .T. )
+      :setAcceptDrops( .T. )
+      :setDragDropMode( QAbstractItemView_InternalMove )
+      :setExpandsOnDoubleClick( .F. )
+      :setAutoExpandDelay( 100 )
+      :setAlternatingRowColors( .T. )
+      :setIndentation( 10 )
+      :connect( "itemCollapsed(QTreeWidgetItem*)"        , {|p   | ::manageLinkTree( 1, p     ) } )
+      :connect( "itemExpanded(QTreeWidgetItem*)"         , {|p   | ::manageLinkTree( 2, p     ) } )
+      :connect( "customContextMenuRequested(QPoint)"     , {|p   | ::manageLinkTree( 3, p     ) } )
+      :connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|p,p1| ::manageLinkTree( 4, p, p1 ) } )
+   ENDWITH
+   WITH OBJECT oTree:Header()
+      :resizeSection( 0, 150 )
+      :resizeSection( 1, 250 )
+      :resizeSection( 2, 150 )
+      :setDefaultAlignment( Qt_AlignHCenter )
+   ENDWITH
+
+   oLay:addWidget( oTree )
+   oBtnOK     := QPushButton()
+   oBtnOK     :  setText( "OK" )
+   oBtnOK     :  connect( "clicked()", {||  oDlg:done( 1 ) } )
+
+   oBtnCancel := QPushButton()
+   oBtnCancel :  setText( "Cancel" )
+   oBtnCancel :  connect( "clicked()", {||  oDlg:done( 0 ) } )
+
+   oLay:addLayout( oHLay )
+   WITH OBJECT oHLay
+      :addStretch()
+      :addWidget( oBtnOK )
+      :addWidget( oBtnCancel )
+   ENDWITH
+
+   WITH OBJECT ::oRoot := QTreeWidgetItem()
+      :setText( 0, "Aliases" )
+      :setFlags( 0 )
+      :setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsEnabled, Qt_ItemIsDropEnabled ) )
+   ENDWITH
+   oTree:invisibleRootItem():addChild( ::oRoot )
+
+   IF hb_HHasKey( ::hMaps, ::oCurPanel:name() )
+      aMaps := ::hMaps[ ::oCurPanel:name() ]
+   ENDIF
+   IF Empty( aMaps )
+      aMaps := {}
+   ENDIF
+   FOR EACH aBrowser IN ::oCurPanel:aBrowsers
+      oBrw := aBrowser[ SUB_BROWSER ]
+      IF AScan( aMaps, {|e_| e_[ 1 ] == oBrw:cAlias } ) == 0
+         AAdd( aMaps, { oBrw:cAlias, "", "", "", Qt_Checked } )
+      ENDIF
+   NEXT
+   FOR EACH a_ IN aMaps
+      oParent := findItem( ::oRoot, a_[ 2 ] )
+      IF Empty( oParent )
+         oParent := ::oRoot
+      ENDIF
+      IF ( n := AScan( ::oCurPanel:aBrowsers, {|e_| e_[ SUB_BROWSER ]:cAlias == a_[ 1 ] } ) ) > 0
+         oBrw := ::oCurPanel:aBrowsers[ n, SUB_BROWSER ]
+         WITH OBJECT qItm := QTreeWidgetItem()
+            :setFlags( 0 )
+            :setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDragEnabled, Qt_ItemIsEnabled, Qt_ItemIsDropEnabled, Qt_ItemIsUserCheckable ) )
+
+            :setText( 0, oBrw:cAlias )
+            :setFont( 0, oFont )
+            :setBackground( 0, QBrush( QColor( 250, 250, 250 ) ) )
+            :setToolTip( 0, oBrw:cTable + "[" + oBrw:cDriver + " " + ;
+                          hb_ntos( oBrw:indexOrd() ) + " " + iif( oBrw:indexOrd() > 0, oBrw:ordName(), "" ) + "]" )
+
+            :setText( 1, iif( oParent == ::oRoot, "", a_[ 3 ] ) )
+            :setFont( 1, oFont )
+            :setTooltip( 1, "Provide a link expression based on parent!" + Chr( 10 ) + "Must use parents alias to identify a field." + Chr( 10 ) + "F2 <List of Fields>" )
+
+            :setText( 2, iif( oParent == ::oRoot, "", a_[ 4 ] ) )
+            :setFont( 2, oFont )
+            :setTooltip( 2, "Provide a FOR expression if needs further filtering!" + Chr( 10 ) + "Must use table alias to identify a field." + Chr( 10 ) + "F2 <List of Fields>" )
+
+            :setCheckState( 0, a_[ 5 ] )
+         ENDWITH
+         oParent:addChild( qItm )
+         oParent:setExpanded( .T. )
+      ENDIF
+   NEXT
+
+   oDlg:resize( 600, 400 )
+   nRet := oDlg:exec()
+
+   IF nRet > 0
+      ::hRelatns := {=>}
+      aMaps := {}
+      IF ::oRoot:childCount() > 0
+         FOR i := 0 TO ::oRoot:childCount() - 1
+            oChild := ::oRoot:child( i )
+            AAdd( aMaps, { oChild:text( 0 ), "", oChild:text( 1 ), oChild:text( 2 ), oChild:checkState( 0 ) } )
+            ::fetchLinkedChildren( oChild, @aMaps )
+         NEXT
+      ENDIF
+      ::hMaps[ ::oCurPanel:name() ] := aMaps
+      IF ! Empty( ::hRelatns )
+         FOR EACH aRelatns IN ::hRelatns
+            FOR EACH aRel IN aRelatns
+               IF aRel[ 4 ] == Qt_Checked
+                  ::evalExpression( aRel[ 2 ], @cScope )
+                  ::setScope( aRel[ 1 ], cScope, cScope )
+               ENDIF
+            NEXT
+         NEXT
+      ENDIF
+   ENDIF
+
+   oDlg:setParent( QWidget() )
+   RETURN Self
+
+
+METHOD HbQtDBU:fetchLinkedChildren( qItm, aMaps )
+   LOCAL i, oChild, aChilds := {}
+
+   IF qItm:childCount() > 0
+      FOR i := 0 TO qItm:childCount() - 1
+         oChild := qItm:child( i )
+         IF ! Empty( oChild:text( 1 ) )             /* Must have a valid link expression */
+            AAdd( aChilds, { oChild:text( 0 ), oChild:text( 1 ), oChild:text( 2 ), oChild:checkState( 0 ) } )
+         ENDIF
+      NEXT
+      IF ! Empty( aChilds )
+         ::hRelatns[ qItm:text( 0 ) ] := aChilds
+      ENDIF
+      FOR i := 0 TO qItm:childCount() - 1
+         oChild := qItm:child( i )
+         AAdd( aMaps, { oChild:text( 0 ), qItm:text( 0 ), oChild:text( 1 ), oChild:text( 2 ), oChild:checkState( 0 ) } )
+         ::fetchLinkedChildren( qItm:child( i ), @aMaps )
+      NEXT
+   ENDIF
+
+   RETURN Self
+
+METHOD HbQtDBU:manageLinkTree( nMode, p, p1 )
+   LOCAL nW, nX, nY, nCol, oRec, oPos, cPic, cVar, cAlias, kf2
+
+   SWITCH nMode
+   CASE 1
+      EXIT
+   CASE 2
+      EXIT
+   CASE 3
+      EXIT
+   CASE 4    /* Double-clicked*/
+      IF p1 == 0
+         RETURN Self
+      ENDIF
+      nCol    := p1
+      cVar    := pad( p:text( nCol ), 100 )
+      nX      := p:treeWidget():Header():sectionViewportPosition( nCol )
+      nW      := p:treeWidget():Header():sectionSize( nCol )
+      oRec    := p:treeWidget():visualItemRect( p )
+      nY      := oRec:y()
+      oPos    := p:treeWidget():viewport():mapToGlobal( QPoint( nX, nY ) )
+      cPic    :=  "@S" + hb_ntos( Int( nW/8 )-1 )
+      cAlias  := iif( nCol == 2, p:text( 0 ), iif( Empty( p:parent() ), "", iif( p:parent():text( 0 ) == "Aliases", "", p:parent():text( 0 ) ) ) )
+
+      kf2 := SetKey( K_F2, {|| ::selectAField( cAlias )  } )
+
+      cVar := HbQtGetAt( oPos:x() - 6, oPos:y(), cVar, cPic, "B/W*", {|| ::evalExpression( Trim( GetActive():varGet() ) ) } )
+      IF cVar != NIL
+         p:setText( p1, AllTrim( cVar ) )
+      ENDIF
+      SetKey( K_F2, kf2 )
+      EXIT
+   CASE 11   /* Just IN CASE we need external drops */
+      p:acceptProposedAction()
+      EXIT
+   CASE 12
+      p:acceptProposedAction()
+      EXIT
+   CASE 13
+      EXIT
+   ENDSWITCH
+
+   RETURN Self
+
+
+METHOD HbQtDBU:evalExpression( cExpression, cValue )
+   LOCAL bError := ErrorBlock( {|| ErrorBreak() } )
+   LOCAL lRet := .F.
+
+   BEGIN SEQUENCE
+      cValue := Eval( &( "{|| " + cExpression + " }" ) )
+      IF cValue != NIL
+         lRet := .T.
+      ENDIF
+   END SEQUENCE
+
+   ErrorBlock( bError )
+   RETURN lRet
+
+
+METHOD HbQtDBU:selectAField( cAlias )
+   LOCAL aStruct, nChoice, cVar, nPos, aMenu := {}
+
+   IF Empty( cAlias )
+      RETURN Self
+   ENDIF
+
+   aStruct := ::dbStruct( cAlias )
+   AEval( aStruct, {|e_| AAdd( aMenu, e_[ 1 ] ) } )
+
+   nChoice := HbQtAChoice( , , , , aMenu, , , , , cAlias + " : Select a Field" )
+   IF nChoice > 0
+      cVar := GetActive():buffer()
+      nPos := GetActive():pos()
+      cVar := SubStr( cVar, 1, nPos ) + ( cAlias + "->" + aStruct[ nChoice, 1 ] ) + SubStr( cVar, nPos + 1 )
+      GetActive():varPut( cVar )
+      GetActive():display()
+      GetActive():pos := nPos + Len( cAlias + "->" + aStruct[ nChoice, 1 ] )
+   ENDIF
+
+   RETURN NIL
 
 
 METHOD HbQtDBU:showTablesTree()
@@ -1379,7 +1695,6 @@ METHOD HbQtDBU:showTablesTree()
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtDBU:open( aDbfs )
    LOCAL aInfo, cTable
@@ -1398,7 +1713,6 @@ METHOD HbQtDBU:open( aDbfs )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:loadTables( aPanelsInfo )
    LOCAL cInfo, aInfo, oCurPanel
@@ -1421,7 +1735,6 @@ METHOD HbQtDBU:loadTables( aPanelsInfo )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:addArray( aData, aAttr )
 
@@ -1430,7 +1743,6 @@ METHOD HbQtDBU:addArray( aData, aAttr )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildToolbar()
 
@@ -1441,6 +1753,7 @@ METHOD HbQtDBU:buildToolbar()
    ::sp1 := QLabel(); ::sp1:setMinimumWidth( nW )
    ::sp2 := QLabel(); ::sp2:setMinimumWidth( nW )
    ::sp3 := QLabel(); ::sp3:setMinimumWidth( nW )
+   ::sp4 := QLabel(); ::sp4:setMinimumWidth( nW )
 
    qTBar := HbQtToolbar():new()
    qTBar:imageWidth  := 12
@@ -1465,12 +1778,13 @@ METHOD HbQtDBU:buildToolbar()
    qTBar:addItem( ::sp2 )
    ::buildTablesButton()
    qTBar:addItem( ::sp3 )
+   qTBar:addItem( { "Link"     , "Link A Child Table"             , QIcon( __hbqtImage( "link"      ) ), {|| ::execEvent( __buttonLink_clicked__     ) }, .F. } )
+   qTBar:addItem( ::sp4 )
    qTBar:addItem( { "Toggle"   , "Show/Hide Tables Tree Pane"     , QIcon( __hbqtImage( "form"      ) ), {|| ::execEvent( __buttonShowForm_clicked__ ) }, .F. } )
    qTBar:addItem( { "Structure", "Show/Hide Tables Structure Pane", QIcon( __hbqtImage( "dbstruct"  ) ), {|| ::execEvent( __buttonDbStruct_clicked__ ) }, .F. } )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildLeftToolbar()
 
@@ -1513,7 +1827,6 @@ METHOD HbQtDBU:buildLeftToolbar()
 
    RETURN NIL
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildPanelsButton()
 
@@ -1531,7 +1844,6 @@ METHOD HbQtDBU:buildPanelsButton()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildConxnCombo()
 
@@ -1541,7 +1853,6 @@ METHOD HbQtDBU:buildConxnCombo()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildRddsCombo()
 
@@ -1571,7 +1882,6 @@ METHOD HbQtDBU:loadRddsCombo()
    NEXT
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildTablesButton()
 
@@ -1589,7 +1899,6 @@ METHOD HbQtDBU:buildTablesButton()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:buildIndexButton()
 
@@ -1607,12 +1916,10 @@ METHOD HbQtDBU:buildIndexButton()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_getMenuBlock( oPanel, oBrw, cIndex )
    RETURN {|| oPanel:setIndex( oBrw, cIndex ) }
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:updateIndexMenu( oBrw )
    LOCAL qAct, aIndex, cIndex
@@ -1634,7 +1941,6 @@ METHOD HbQtDBU:updateIndexMenu( oBrw )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtDBU:loadConxnCombo( cDriver )
    LOCAL aConxns, cConxn, a_
@@ -1764,6 +2070,13 @@ METHOD HbQtDBU:ordKeyCount( cAlias )
    ENDIF
    RETURN NIL
 
+METHOD HbQtDBU:dbStruct( cAlias )
+   LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
+   IF ! Empty( oMdiBrowse )
+      RETURN oMdiBrowse:dbStruct()
+   ENDIF
+   RETURN NIL
+
 METHOD HbQtDBU:ordKeyNo( cAlias )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
@@ -1834,15 +2147,15 @@ METHOD HbQtDBU:setOrder( cAlias, nOrder )
    ENDIF
    RETURN NIL
 
-METHOD HbQtDBU:setScope( cAlias )
+METHOD HbQtDBU:setScope( cAlias, cScopeTop, cScopeBottom )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
-      RETURN oMdiBrowse:setScope()
+      RETURN oMdiBrowse:setScope( cScopeTop, cScopeBottom )
    ENDIF
    RETURN NIL
 
-METHOD HbQtDBU:clearScope( cAlias )
-   LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
+METHOD HbQtDBU:clearScope( cAlias, nScope )
+   LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias, nScope )
    IF ! Empty( oMdiBrowse )
       RETURN oMdiBrowse:clearScope()
    ENDIF
@@ -1970,6 +2283,7 @@ PROTECTED:
 
    DATA   aBrowsers                               INIT  {}
    ACCESS subWindows()                            INLINE ::aBrowsers
+   ACCESS name                                    INLINE ::oWidget:objectName()
 
    METHOD init( cPanel, oManager )
    METHOD destroy()
@@ -1990,7 +2304,6 @@ PROTECTED:
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:init( cPanel, oManager )
 
@@ -2011,7 +2324,6 @@ METHOD HbQtPanelBrowse:init( cPanel, oManager )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:destroy()
    LOCAL aBrw, oSub
@@ -2026,14 +2338,12 @@ METHOD HbQtPanelBrowse:destroy()
       aBrw := NIL
    NEXT
    ::aBrowsers    := NIL
-
    ::qMenuWindows := NIL
    ::qStruct      := NIL
    ::oWidget      := NIL
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:setViewStyle( nStyle )
    LOCAL qObj, a_
@@ -2050,7 +2360,9 @@ METHOD HbQtPanelBrowse:setViewStyle( nStyle )
             FOR EACH a_ IN ::aBrowsers
                a_[ 2 ]:setWindowState( Qt_WindowNoState )
             NEXT
-            ::oWidget:setActiveSubWindow( qObj )
+            IF ! Empty( qObj )
+               ::oWidget:setActiveSubWindow( qObj )
+            ENDIF
          ENDIF
 
          SWITCH nStyle
@@ -2068,7 +2380,9 @@ METHOD HbQtPanelBrowse:setViewStyle( nStyle )
             FOR EACH a_ IN ::aBrowsers
                a_[ 2 ]:setWindowState( Qt_WindowMaximized )
             NEXT
-            ::oWidget:setActiveSubWindow( qObj )
+            IF ! Empty( qObj )
+               ::oWidget:setActiveSubWindow( qObj )
+            ENDIF
             EXIT
          CASE HBQTMDI_STYLE_TILEDVERT
             ::tileVertically()
@@ -2084,72 +2398,78 @@ METHOD HbQtPanelBrowse:setViewStyle( nStyle )
    ENDIF
    RETURN nOldStyle
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:tileVertically()
    LOCAL qObj, qVPort, nH, nT, nW, a_
 
-   qObj   := ::oWidget:activeSubWindow()
-   qVPort := ::oWidget:viewport()
-   nH     := qVPort:height() / Len( ::aBrowsers )
-   nW     := qVPort:width()
-   nT     := 0
-   FOR EACH a_ IN ::aBrowsers
-      a_[ 2 ]:setGeometry( QRect( 0, nT, nW, nH ) )
-      nT += nH
-   NEXT
-   ::oWidget:setActiveSubWindow( qObj )
+   IF Len( ::aBrowsers ) > 0
+      qObj   := ::oWidget:activeSubWindow()
+      qVPort := ::oWidget:viewport()
+      nH     := qVPort:height() / Len( ::aBrowsers )
+      nW     := qVPort:width()
+      nT     := 0
+      FOR EACH a_ IN ::aBrowsers
+         a_[ 2 ]:setGeometry( QRect( 0, nT, nW, nH ) )
+         nT += nH
+      NEXT
+      IF ! Empty( qObj )
+         ::oWidget:setActiveSubWindow( qObj )
+      ENDIF
+   ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:tileHorizontally()
    LOCAL qObj, qVPort, nH, nT, nW, nL, a_
 
-   qObj   := ::oWidget:activeSubWindow()
-   qVPort := ::oWidget:viewport()
-   nH     := qVPort:height()
-   nW     := qVPort:width() / Len( ::aBrowsers )
-   nT     := 0
-   nL     := 0
-   FOR EACH a_ IN ::aBrowsers
-      a_[ 2 ]:setGeometry( QRect( nL, nT, nW, nH ) )
-      nL += nW
-   NEXT
-   ::oWidget:setActiveSubWindow( qObj )
+   IF Len( ::aBrowsers ) > 0
+      qObj   := ::oWidget:activeSubWindow()
+      qVPort := ::oWidget:viewport()
+      nH     := qVPort:height()
+      nW     := qVPort:width() / Len( ::aBrowsers )
+      nT     := 0
+      nL     := 0
+      FOR EACH a_ IN ::aBrowsers
+         a_[ 2 ]:setGeometry( QRect( nL, nT, nW, nH ) )
+         nL += nW
+      NEXT
+      IF ! Empty( qObj )
+         ::oWidget:setActiveSubWindow( qObj )
+      ENDIF
+   ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:tilesZoom( nMode )
    LOCAL qMdi, nT, nL, nH, nW, qRect, a_
 
-   IF ::nViewStyle == HBQTMDI_STYLE_TILEDVERT .OR. ::nViewStyle == HBQTMDI_STYLE_TILEDHORZ
-      IF ::nViewStyle == HBQTMDI_STYLE_TILEDVERT
-         nT := 0
-         FOR EACH a_ IN ::aBrowsers
-            qMdi  := a_[ 2 ]
-            qRect := qMdi:geometry()
-            nH    := qRect:height() + ( nMode * ( qRect:height() / 4 ) )
-            qMdi:setGeometry( QRect( 0, nT, qRect:width(), nH ) )
-            nT    += nH
-         NEXT
-      ELSE
-         nL := 0
-         FOR EACH a_ IN ::aBrowsers
-            qMdi  := a_[ 2 ]
-            qRect := qMdi:geometry()
-            nW    := qRect:width() + ( nMode * ( qRect:width() / 4 ) )
-            qMdi:setGeometry( QRect( nL, 0, nW, qRect:height() ) )
-            nL    += nW
-         NEXT
-      ENDIF
+   IF Len( ::aBrowsers ) > 0
+      IF ::nViewStyle == HBQTMDI_STYLE_TILEDVERT .OR. ::nViewStyle == HBQTMDI_STYLE_TILEDHORZ
+         IF ::nViewStyle == HBQTMDI_STYLE_TILEDVERT
+            nT := 0
+            FOR EACH a_ IN ::aBrowsers
+               qMdi  := a_[ 2 ]
+               qRect := qMdi:geometry()
+               nH    := qRect:height() + ( nMode * ( qRect:height() / 4 ) )
+               qMdi:setGeometry( QRect( 0, nT, qRect:width(), nH ) )
+               nT    += nH
+            NEXT
+         ELSE
+            nL := 0
+            FOR EACH a_ IN ::aBrowsers
+               qMdi  := a_[ 2 ]
+               qRect := qMdi:geometry()
+               nW    := qRect:width() + ( nMode * ( qRect:width() / 4 ) )
+               qMdi:setGeometry( QRect( nL, 0, nW, qRect:height() ) )
+               nL    += nW
+            NEXT
+         ENDIF
 
-      ::prepare()
+         ::prepare()
+      ENDIF
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:saveGeometry()
    LOCAL a_
@@ -2160,7 +2480,6 @@ METHOD HbQtPanelBrowse:saveGeometry()
    ENDIF
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:restGeometry()
    LOCAL a_
@@ -2171,7 +2490,6 @@ METHOD HbQtPanelBrowse:restGeometry()
    NEXT
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:destroyBrw( oBrw )
    LOCAL n, oSub
@@ -2189,7 +2507,6 @@ METHOD HbQtPanelBrowse:destroyBrw( oBrw )
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:execEvent( nEvent, p )
    LOCAL n, oBrw
@@ -2199,13 +2516,14 @@ METHOD HbQtPanelBrowse:execEvent( nEvent, p )
       IF ! empty( ::aBrowsers )
          IF ( n := ascan( ::aBrowsers, {|e_| hbqt_IsEqual( e_[ SUB_WINDOW ], p ) } ) )  > 0
             oBrw := ::aBrowsers[ n, SUB_BROWSER ]
+            IF Select( oBrw:Alias() ) > 0
+               oBrw:configure()
+               oBrw:oBrw:refreshAll()
+               oBrw:oBrw:setFocus()
 
-            oBrw:configure()
-            oBrw:oBrw:refreshAll()
-            oBrw:oBrw:setFocus()
-
-            ::oManager:updateIndexMenu( oBrw )
-            ::oManager:updateBrwStruct( oBrw )
+               ::oManager:updateIndexMenu( oBrw )
+               ::oManager:updateBrwStruct( oBrw )
+            ENDIF
          ENDIF
       ENDIF
       EXIT
@@ -2213,7 +2531,6 @@ METHOD HbQtPanelBrowse:execEvent( nEvent, p )
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:setIndex( oBrw, cIndex )
    IF ascan( ::aBrowsers, {|e_| e_[ SUB_BROWSER ] == oBrw } ) > 0
@@ -2221,7 +2538,6 @@ METHOD HbQtPanelBrowse:setIndex( oBrw, cIndex )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:getIndexInfo( oBrw )
    IF ascan( ::aBrowsers, {|e_| e_[ SUB_BROWSER ] == oBrw } )  > 0
@@ -2229,7 +2545,6 @@ METHOD HbQtPanelBrowse:getIndexInfo( oBrw )
    ENDIF
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:setCurrentBrowser( oBrw )
    IF ascan( ::aBrowsers, {|e_| e_[ SUB_BROWSER ] == oBrw } )  > 0
@@ -2237,7 +2552,6 @@ METHOD HbQtPanelBrowse:setCurrentBrowser( oBrw )
    ENDIF
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:prepare()
    LOCAL aSub
@@ -2246,7 +2560,6 @@ METHOD HbQtPanelBrowse:prepare()
    NEXT
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:addBrowser( aInfo )
    LOCAL oMdiBrw
@@ -2259,7 +2572,6 @@ METHOD HbQtPanelBrowse:addBrowser( aInfo )
    ::oManager:updateBrwStruct( oMdiBrw )
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtPanelBrowse:activateBrowser()
    IF Len( ::aBrowsers ) > 0
@@ -2308,8 +2620,8 @@ CLASS HbQtMdiBrowser
    METHOD getIndexInfo()
    METHOD setIndex( cIndex )
    METHOD setOrder( nOrder )
-   METHOD setScope()
-   METHOD clearScope()
+   METHOD setScope( cScopeTop, cScopeBottom )
+   METHOD clearScope( nScope )
    METHOD dbRLockList()
    METHOD fieldBlock( cFieldName )
    METHOD setFilter( cFilter )
@@ -2403,7 +2715,6 @@ PROTECTED:
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:init( oManager, oPanel, aInfo )
 
@@ -2413,7 +2724,6 @@ METHOD HbQtMdiBrowser:init( oManager, oPanel, aInfo )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:destroy()
    LOCAL nArea
@@ -2430,7 +2740,6 @@ METHOD HbQtMdiBrowser:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
    LOCAL xVrb, cT, cName, a_
@@ -2543,7 +2852,6 @@ METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:execAddAColumn( nMode, xData )
    LOCAL aNames, n
@@ -2565,32 +2873,32 @@ METHOD HbQtMdiBrowser:execAddAColumn( nMode, xData )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION __setOrderBlock( oMdiBrowse, cIndex )
    RETURN {|n| n := iif( cIndex == "Natural Order", 0, AScan( oMdiBrowse:aIndex, {|e| e == cIndex } ) ), oMdiBrowse:setOrder( n ), oMdiBrowse:dispInfo() }
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:buildBrowser()
 
    ::oWnd := QWidget()
 
    WITH OBJECT ::oBrw := HbQtBrowseNew( 0, 0, 10, 10, ::oWnd, QFont( "Courier new", 10 ) )
-      :cursorMode          := ::nCursorType
+      :cursorMode            := ::nCursorType
 
-      :skipBlock           := {|n| ::skipBlock( n )  }
-      :goTopBlock          := {| | ::goTop()         }
-      :goBottomBlock       := {| | ::goBottom()      }
-      :gotoBlock           := {| | ::gotoRecord()    }
+      :skipBlock             := {|n| ::skipBlock( n )  }
+      :goTopBlock            := {| | ::goTop()         }
+      :goBottomBlock         := {| | ::goBottom()      }
+      :gotoBlock             := {| | ::gotoRecord()    }
 
-      :firstPosBlock       := {| | 1                 }
-      :lastPosBlock        := {| | iif( ::indexOrd() == 0, ::lastRec(), ::ordKeyCount()   ) }
-      :posBlock            := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
-      :goPosBlock          := {|n| iif( ::indexOrd() == 0, ::goto( n ), ::ordKeyGoto( n ) ) }
-      :phyPosBlock         := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
+      :firstPosBlock         := {| | 1                 }
+      :lastPosBlock          := {| | iif( ::indexOrd() == 0, ::lastRec(), ::ordKeyCount()   ) }
+      :posBlock              := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
+      :goPosBlock            := {|n| iif( ::indexOrd() == 0, ::goto( n ), ::ordKeyGoto( n ) ) }
+      :phyPosBlock           := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
 
-//    :hbContextMenu := {|mp1| ::execEvent( __browser_contextMenu__, mp1 ) }
+      :verticalMovementBlock := {|| ::oManager:updateLinks( ::cAlias ) }
+
+//    :hbContextMenu         := {|mp1| ::execEvent( __browser_contextMenu__, mp1 ) }
    ENDWITH
 
    WITH OBJECT ::qLayout := QHBoxLayout( ::oWnd )
@@ -2630,6 +2938,7 @@ METHOD HbQtMdiBrowser:buildColumns()
 
    RETURN Self
 
+
 METHOD HbQtMdiBrowser:dataLink( nField )
    LOCAL bBlock
 
@@ -2641,7 +2950,6 @@ METHOD HbQtMdiBrowser:dataLink( nField )
 
    RETURN bBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:buildMdiWindow()
    LOCAL qRect, cR
@@ -2683,7 +2991,6 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:configure()
    LOCAL nOff
@@ -2707,7 +3014,6 @@ METHOD HbQtMdiBrowser:configure()
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:execEvent( nEvent, p, p1 )
 
@@ -2820,7 +3126,6 @@ METHOD HbQtMdiBrowser:buildContextMenu()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_fieldsArray( obj, cPmt, nIndex )
    RETURN { cPmt, {|| obj:toColumn( nIndex ) } }
@@ -2829,7 +3134,6 @@ STATIC FUNCTION hbide_fieldsArray( obj, cPmt, nIndex )
 STATIC FUNCTION hbide_indexArray( obj, cIndex, nOrder )
    RETURN { cIndex, {|| obj:setOrder( nOrder ) } }
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:dispInfo()
    LOCAL cTitle
@@ -2845,12 +3149,10 @@ METHOD HbQtMdiBrowser:dispInfo()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:fetchAlias( cTable )
    RETURN __hbqtGetNextIdAsString( cTable )
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:saveField( nField, x )
    IF ( ::cAlias )->( DbrLock() )
@@ -2861,7 +3163,6 @@ METHOD HbQtMdiBrowser:saveField( nField, x )
    ENDIF
    RETURN x
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:skipBlock( nHowMany )
    LOCAL nRecs, nCurPos
@@ -3017,7 +3318,6 @@ METHOD HbQtMdiBrowser:search( cSearch, lSoft, lLast, nMode )
 
    RETURN lFound
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:refreshAll()
 
@@ -3026,7 +3326,6 @@ METHOD HbQtMdiBrowser:refreshAll()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:toColumn( ncIndex )
    LOCAL nIndex
@@ -3047,7 +3346,6 @@ METHOD HbQtMdiBrowser:toColumn( ncIndex )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:setFilter( cFilter )
 
@@ -3067,7 +3365,6 @@ METHOD HbQtMdiBrowser:setFilter( cFilter )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:clearFilter()
 
@@ -3079,7 +3376,6 @@ METHOD HbQtMdiBrowser:clearFilter()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:dbFieldInfo( nInfoType, nFieldPos, expNewSetting )
 
@@ -3090,7 +3386,6 @@ METHOD HbQtMdiBrowser:dbFieldInfo( nInfoType, nFieldPos, expNewSetting )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:ordKey( ncOrder, cOrdBagName )
 
@@ -3101,7 +3396,6 @@ METHOD HbQtMdiBrowser:ordKey( ncOrder, cOrdBagName )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:fCount()
 
@@ -3112,7 +3406,6 @@ METHOD HbQtMdiBrowser:fCount()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:indexExt()
 
@@ -3123,7 +3416,6 @@ METHOD HbQtMdiBrowser:indexExt()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:fieldBlock( cFieldName )
 
@@ -3134,7 +3426,6 @@ METHOD HbQtMdiBrowser:fieldBlock( cFieldName )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:dbrLockList()
 
@@ -3145,7 +3436,6 @@ METHOD HbQtMdiBrowser:dbrLockList()
 
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:lock( nRec )
 
@@ -3156,7 +3446,6 @@ METHOD HbQtMdiBrowser:lock( nRec )
 
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:unLock( nRec )
 
@@ -3167,7 +3456,6 @@ METHOD HbQtMdiBrowser:unLock( nRec )
 
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:gotoRecord()   /* On browser toolbar icon */
    LOCAL nPRec := ::recNo()
@@ -3181,6 +3469,7 @@ METHOD HbQtMdiBrowser:gotoRecord()   /* On browser toolbar icon */
 
    RETURN nPRec != nRec
 
+
 METHOD HbQtMdiBrowser:goToAsk()       /* On DBU toolbar icon */
    LOCAL nRec
 
@@ -3190,7 +3479,6 @@ METHOD HbQtMdiBrowser:goToAsk()       /* On DBU toolbar icon */
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:ordKeyGoto( nRec )
 
@@ -3207,7 +3495,6 @@ METHOD HbQtMdiBrowser:ordKeyGoto( nRec )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:goto( nRec )
 
@@ -3224,7 +3511,6 @@ METHOD HbQtMdiBrowser:goto( nRec )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:goTop()
 
@@ -3238,7 +3524,6 @@ METHOD HbQtMdiBrowser:goTop()
    ENDIF
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:goBottom()
 
@@ -3253,7 +3538,6 @@ METHOD HbQtMdiBrowser:goBottom()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:setOrder( nOrder )
 
@@ -3266,7 +3550,6 @@ METHOD HbQtMdiBrowser:setOrder( nOrder )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:indexOrd()
 
@@ -3278,7 +3561,6 @@ METHOD HbQtMdiBrowser:indexOrd()
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:ordKeyNo()
 
@@ -3292,7 +3574,6 @@ METHOD HbQtMdiBrowser:ordKeyNo()
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:recNo()
 
@@ -3306,7 +3587,6 @@ METHOD HbQtMdiBrowser:recNo()
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:ordKeyCount()
 
@@ -3320,7 +3600,6 @@ METHOD HbQtMdiBrowser:ordKeyCount()
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:lastRec()
 
@@ -3332,7 +3611,6 @@ METHOD HbQtMdiBrowser:lastRec()
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:setIndex( cIndex )
    LOCAL n
@@ -3345,7 +3623,6 @@ METHOD HbQtMdiBrowser:setIndex( cIndex )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:getIndexInfo()
    LOCAL a_:= {}, i, cKey
@@ -3364,7 +3641,6 @@ METHOD HbQtMdiBrowser:getIndexInfo()
 
    RETURN ::aIndex
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:ordName( nOrder )
    DEFAULT nOrder TO ::indexOrd()
@@ -3375,7 +3651,6 @@ METHOD HbQtMdiBrowser:ordName( nOrder )
 
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:indexKeyValue( nOrder )
    LOCAL xValue
@@ -3386,7 +3661,6 @@ METHOD HbQtMdiBrowser:indexKeyValue( nOrder )
 
    RETURN xValue
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:indexKey( nOrder )
    DEFAULT nOrder TO ::indexOrd()
@@ -3397,7 +3671,6 @@ METHOD HbQtMdiBrowser:indexKey( nOrder )
 
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:append()
 
@@ -3413,57 +3686,76 @@ METHOD HbQtMdiBrowser:append()
    ENDIF
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
-METHOD HbQtMdiBrowser:setScope()
+METHOD HbQtMdiBrowser:setScope( cScopeTop, cScopeBottom )
    LOCAL cScope, nOrd
 
    IF ( nOrd := ::indexOrd() ) > 0
-      IF hb_HHasKey( ::hScope, nOrd )
-         cScope := ::hScope[ nOrd ][ 1 ]
-      ELSE
+      IF ! hb_HHasKey( ::hScope, nOrd )
          cScope := __hbqtGetBlankValue( ::indexKeyValue() )
          ::hScope[ nOrd ] := { cScope, cScope }
       ENDIF
-      cScope := HbQtBulkGet( cScope, 'Scope Top' )
+      IF cScopeTop != NIL
+         cScope := cScopeTop
+      ELSE
+         cScope := ::hScope[ nOrd ][ 1 ]
+         IF ValType( cScope ) == "C"
+            cScope := Pad( cScope, Len( ::indexKeyValue() ) )
+         ENDIF
+         cScope := HbQtBulkGet( cScope, 'Scope Top' )
+      ENDIF
       ::hScope[ nOrd ][ 1 ] := cScope
       IF valtype( cScope ) == 'C'
          cScope := trim( cScope )
       ENDIF
-      IF ! empty( cScope )
+
+      IF Empty( cScope )
+         ( ::cAlias )->( OrdScope( 0, NIL ) )
+      ELSE
          ( ::cAlias )->( OrdScope( 0, cScope ) )
          ::goTop()
-         cScope := HbQtBulkGet( ::hScope[ nOrd ][ 2 ], 'Scope Bottom' )
-         ::hScope[ nOrd ][ 2 ] := cScope
-         IF  valtype( cScope ) == 'C'
-            cScope := trim( cScope )
-         ENDIF
-         IF ! empty( cScope )
-            ( ::cAlias )->( OrdScope( 1, cScope ) )
+
+         IF cScopeBottom != NIL
+            cScope := cScopeBottom
          ELSE
+            IF ValType( cScope ) == "C"
+               cScope := Pad( ::hScope[ nOrd ][ 2 ], Len( __hbqtGetBlankValue( ::indexKeyValue() ) ) )
+            ENDIF
+            cScope := HbQtBulkGet( cScope, 'Scope Bottom' )
+         ENDIF
+         ::hScope[ nOrd ][ 2 ] := cScope
+
+         IF  valtype( cScope ) == 'C'
+             cScope := trim( cScope )
+         ENDIF
+         IF Empty( cScope )
             ( ::cAlias )->( OrdScope( 1, NIL ) )
+         ELSE
+            ( ::cAlias )->( OrdScope( 1, cScope ) )
          ENDIF
          ::goTop()
-      ELSE
-         ( ::cAlias )->( OrdScope( 0, NIL ) )
       ENDIF
    ENDIF
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
-METHOD HbQtMdiBrowser:clearScope()
+METHOD HbQtMdiBrowser:clearScope( nScope )
 
    IF ::indexOrd() > 0
-      ( ::cAlias )->( OrdScope( 0, NIL ) )
-      ( ::cAlias )->( OrdScope( 1, NIL ) )
+      IF nScope == NIL
+         ( ::cAlias )->( OrdScope( 0, NIL ) )
+         ( ::cAlias )->( OrdScope( 1, NIL ) )
+      ELSEIF nScope == 0
+         ( ::cAlias )->( OrdScope( 0, NIL ) )
+      ELSEIF nScope == 1
+         ( ::cAlias )->( OrdScope( 1, NIL ) )
+      ENDIF
       ::goTop()
    ENDIF
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:delete( lAsk )
 
@@ -3486,7 +3778,6 @@ METHOD HbQtMdiBrowser:delete( lAsk )
    ENDIF
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:recall()
 
@@ -3504,7 +3795,6 @@ METHOD HbQtMdiBrowser:recall()
    ENDIF
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:use()
    LOCAL bError, oErr
@@ -3543,7 +3833,6 @@ METHOD HbQtMdiBrowser:use()
 
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMdiBrowser:exists()
    LOCAL lExists
@@ -3562,7 +3851,6 @@ METHOD HbQtMdiBrowser:exists()
 
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_pathToOSPath( cPath )
    LOCAL n
@@ -3578,7 +3866,6 @@ STATIC FUNCTION hbide_pathToOSPath( cPath )
 
    RETURN cPath
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_array2string( a_, cDlm )
    LOCAL s := ""
@@ -3587,7 +3874,6 @@ STATIC FUNCTION hbide_array2string( a_, cDlm )
 
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lAllowMulti )
    LOCAL i, oDlg, nRes, oList, aFiles := {}
@@ -3617,12 +3903,10 @@ STATIC FUNCTION hbide_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lA
 
    RETURN iif( nRes == 0, NIL, iif( lAllowMulti, aFiles, aFiles[ 1 ] ) )
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_posAndSize( oWidget )
 
    RETURN hb_ntos( oWidget:x() )     + "," + hb_ntos( oWidget:y() )      + "," + ;
           hb_ntos( oWidget:width() ) + "," + hb_ntos( oWidget:height() ) + ","
 
-/*----------------------------------------------------------------------*/
 
