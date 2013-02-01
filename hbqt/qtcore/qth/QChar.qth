@@ -94,7 +94,7 @@ bool isUpper () const
 Joining joining () const
 QChar mirroredChar () const
 uchar row () const
-char toAscii () const                                        [*V=-050000*]
+char toAscii () const                                                          [*V=-0x040900*]
 QChar toCaseFolded () const
 char toLatin1 () const
 QChar toLower () const

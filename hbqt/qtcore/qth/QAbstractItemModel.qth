@@ -70,11 +70,11 @@ virtual int rowCount ( const QModelIndex & parent = QModelIndex() ) const = 0
 virtual bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole )
 virtual bool setHeaderData ( int section, Qt::Orientation orientation, const QVariant & value, int role = Qt::EditRole )
 virtual bool setItemData ( const QModelIndex & index, const QMap<int, QVariant> & roles )
-void setSupportedDragActions ( Qt::DropActions actions )      [*V=-050000*]
+void setSupportedDragActions ( Qt::DropActions actions )                       [*V=-0x040900*]
 QModelIndex sibling ( int row, int column, const QModelIndex & index ) const
 virtual void sort ( int column, Qt::SortOrder order = Qt::AscendingOrder )
 virtual QSize span ( const QModelIndex & index ) const
-Qt::DropActions supportedDragActions () const                 [*V=-050000*]
+Qt::DropActions supportedDragActions () const                                  [*V=-0x040900*]
 virtual Qt::DropActions supportedDropActions () const
 </PROTOS>
 
