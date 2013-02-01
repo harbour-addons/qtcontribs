@@ -84,12 +84,20 @@ REQUEST CACHERDD
 
 FUNCTION Main( ... )
    LOCAL oMgr
+   LOCAL oSplash
 
    hbqt_errorSys()
    QResource():registerResource_1( hbqtres_dbu() )
 
+   oSplash := QSplashScreen( QPixmap( __hbqtImage( "harbour-dbu" ) ) )
+   oSplash:show()
+   QApplication():processEvents()
+
    oMgr := DbuMGR():new( hb_AParams() )
    oMgr:create()
+
+   oSplash:close()
+   oSplash:setParent( QWidget() )
 
    QApplication():exec()
 
@@ -136,7 +144,7 @@ CREATE CLASS DbuMGR
    METHOD fetchDbuData()
    METHOD saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
    METHOD manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
-   METHOD handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
+   METHOD handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    METHOD getSearchValue( oMdiBrowse, xValue )
    METHOD helpInfo()
    METHOD saveEnvironment()
@@ -188,11 +196,6 @@ METHOD DbuMGR:create()
 #else
    cTitle := "HbDBU"
 #endif
-
-   ::oSplash := QSplashScreen( QPixmap( __hbqtImage( "harbour-dbu" ) ) )
-   ::oSplash:show()
-
-   QApplication():processEvents()
 
    WITH OBJECT ::oWidget := hbqtui_dbu()
       :dockCache:hide()
@@ -246,8 +249,6 @@ METHOD DbuMGR:create()
    ::oWidget:dockCache:hide()
    ::oWidget:show()
    ::restEnvironment()
-   ::oSplash:close()
-   ::oSplash:setParent( QWidget() )
 
    RETURN Self
 
@@ -502,8 +503,6 @@ METHOD DbuMGR:populateProdTables()
 
 METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
 
-   HB_SYMBOL_UNUSED( oDBU )
-
    WITH OBJECT oHbQtBrowse
       :horizontalScrollbar := .T.
       :verticalScrollbar   := .T.
@@ -511,7 +510,7 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
       :statusbar           := .F.
       :editBlock           := {|aMod,aData,oBrw  | ::saveRecord( aMod, aData, oBrw, oMdiBrowse )     }
       :searchBlock         := {|xValue,nMode,oBrw| ::manageSearch( xValue, nMode, oBrw, oMdiBrowse ) }
-      :navigationBlock     := {|nKey,xData,oBrw  | ::handleOptions( nKey, xData, oBrw, oMdiBrowse )  }
+      :navigationBlock     := {|nKey,xData,oBrw  | ::handleOptions( nKey, xData, oBrw, oMdiBrowse, oDbu )  }
       :helpBlock           := {|                 | { ::helpInfo(), 0 } }
 #ifdef __CACHE__                                  /* CacheRDD does not support OrdKey*() functions */
       :firstPosBlock       := {| | 1                    }
@@ -574,11 +573,12 @@ METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
    RETURN .T.
 
 
-METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
+METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    LOCAL i, xResult, nRec, xValue, aRecList, aList, astr, aMnu, oCol
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
+   HB_SYMBOL_UNUSED( oDbu )
 
    oMdiBrowse:dispInfo()
 
@@ -650,10 +650,16 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse )
       ENDIF
 
    CASE nKey == K_ALT_P                           /* SET SCOPE */
-      oMdiBrowse:setScope()
+      IF oMdiBrowse:indexOrd() > 0
+         oMdiBrowse:setScope()
+      ELSE
+         Alert( "Please set an index on current table !" )
+      ENDIF
 
    CASE nKey == K_ALT_W                           /* clear SCOPE */
-      oMdiBrowse:clearScope()
+      IF oMdiBrowse:indexOrd() > 0
+         oMdiBrowse:clearScope()
+      ENDIF
 
    CASE nKey == K_ALT_INS                         /* append BLANK */
       oMdiBrowse:append()
@@ -848,6 +854,7 @@ METHOD DbuMGR:saveEnvironment()
       :setValue( "dbuPanelNames"   , QVariant( __arrayToString( ::oDbu:getPanelNames(), "~" ) ) )
       :setValue( "dbuPanelsInfo"   , QVariant( __arrayToString( ::oDbu:getPanelsInfo(), "~" ) ) )
       :setValue( "dbuTreeInfo"     , QVariant( __arrayToString( ::oDbu:getTreeInfo()  , "~" ) ) )
+      :setValue( "dbuLinksInfo"    , QVariant( __arrayToString( ::oDbu:getLinksInfo() , "~" ) ) )
    ENDWITH
 
    RETURN oSettings
@@ -910,6 +917,9 @@ METHOD DbuMGR:restEnvironment()
             ENDIF
          ENDIF
       NEXT
+   ENDIF
+   IF oSettings:contains( "dbuLinksInfo" )
+     ::oDbu:setLinksInfo( hb_ATokens( oSettings:value( "dbuLinksInfo" ):toString(), "~" ) )
    ENDIF
 
    RETURN NIL
@@ -1138,6 +1148,8 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, "<b>Harbour DBU ( HbDBU )</b>" )
       AAdd( txt_, "Developed by" )
       AAdd( txt_, "Pritpal Bedi ( bedipritpal@hotmail.com )" )
+      AAdd( txt_, "Supported by" )
+      AAdd( txt_, "Curacao ( <a href='http://icuracao.com/'>http://icuracao.com )" )
       AAdd( txt_, "" )
       AAdd( txt_, "built with:" )
       AAdd( txt_, "QtContribs " + " r" + "145" )

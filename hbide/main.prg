@@ -688,15 +688,19 @@ METHOD HbIde:parseParams()
       OTHERWISE
          cCurPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
          hb_fNameSplit( s, @cPath, @cName, @cExt )
-         IF Empty( cPath )
-            cPath := cCurPath
-         ELSEIF Left( s, 2 ) == ".."
-            cPath := cCurPath
+         IF ! Empty( cExt )
+            IF Empty( cPath )
+               cPath := cCurPath
+            ELSEIF Left( s, 2 ) == ".."
+               cPath := cCurPath
+            ENDIF
+            IF Left( s, 2 ) == ".."
+               s := cPath + s
+            ELSE
+               s := cPath + cName + cExt
+            ENDIF
          ENDIF
          cExt := lower( cExt )
-         IF ! Empty( cExt )
-            s := cPath + cName + cExt
-         ENDIF
          DO CASE
          CASE cExt == ".ini"
             aadd( aIni, s )
