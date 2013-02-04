@@ -186,9 +186,9 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
    HBQGraphicsItem * item = NULL;
 
-   if( itemAt( mouseEvent->scenePos() ) )
+   if( itemAt( mouseEvent->scenePos(), QTransform() ) )
    {
-      item = dynamic_cast< HBQGraphicsItem * >( itemAt( mouseEvent->scenePos() ) );
+      item = dynamic_cast< HBQGraphicsItem * >( itemAt( mouseEvent->scenePos(), QTransform() ) );
    }
    if( item && mouseEvent->buttons() == Qt::NoButton )
    {
@@ -248,7 +248,7 @@ void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {
    QPointF mousePos( event->buttonDownScenePos( Qt::LeftButton ).x(), event->buttonDownScenePos( Qt::LeftButton ).y() );
 
-   movingItem = itemAt( mousePos.x(), mousePos.y() );
+   movingItem = itemAt( mousePos.x(), mousePos.y(), QTransform() );
 
    if( movingItem != 0 && event->button() == Qt::LeftButton )
       mouseOldPos = movingItem->pos();
@@ -257,19 +257,19 @@ void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
 
    if( event->buttons() == Qt::LeftButton )
    {
-      if( ! itemAt( event->scenePos() ) )
+      if( ! itemAt( event->scenePos(), QTransform() ) )
       {
          emit itemSelected( parent(), event->scenePos() );
       }
       else
       {
-         if( itemAt( event->scenePos() ) == m_paperBorder || itemAt( event->scenePos() ) == m_pageBorder )
+         if( itemAt( event->scenePos(), QTransform() ) == m_paperBorder || itemAt( event->scenePos(), QTransform() ) == m_pageBorder )
          {
             emit itemSelected( this, event->scenePos() );
          }
       }
 
-      HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos() ) );
+      HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos(), QTransform() ) );
       if( ! item )
       {
          if( block )
@@ -422,7 +422,7 @@ void HBQGraphicsScene::keyPressEvent( QKeyEvent * keyEvent )
 
 void HBQGraphicsScene::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 {
-   HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos() ) );
+   HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos(), QTransform() ) );
 
    if( ! item )
    {

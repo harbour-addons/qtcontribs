@@ -64,28 +64,40 @@
 
 #if QT_VERSION >= 0x040500
 
-#include <QtGui/QApplication>
+#include <QtCore/QStringList>
+#include <QtCore/QTextCodec>
 
-#include <QtGui/QItemSelection>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextCharFormat>
 #include <QtGui/QTextBlock>
 #include <QtGui/QSessionManager>
 #include <QtGui/QColor>
 #include <QtGui/QBrush>
-#include <QtGui/QAbstractButton>
-#include <QtGui/QAction>
-#include <QtGui/QMdiSubWindow>
-#include <QtGui/QPrinter>
-#include <QtGui/QStandardItem>
-#include <QtGui/QListWidgetItem>
-#include <QtGui/QTreeWidgetItem>
-#include <QtGui/QWidget>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QStandardItem>
 #include <QtGui/QCloseEvent>
 
-#include <QtCore/QStringList>
-#include <QtCore/QTextCodec>
+#if QT_VERSION <= 0x040900
+#include <QtGui/QPrinter>
+#include <QtGui/QAction>
+#include <QtGui/QItemSelection>
+#include <QtGui/QApplication>
+#include <QtGui/QListWidgetItem>
+#include <QtGui/QTreeWidgetItem>
+#include <QtGui/QMdiSubWindow>
+#include <QtGui/QAbstractButton>
+#include <QtGui/QWidget>
+#else
+#include <QtCore/QItemSelection>
+#include <QtPrintSupport/QPrinter>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QListWidgetItem>
+#include <QtWidgets/QTreeWidgetItem>
+#include <QtWidgets/QMdiSubWindow>
+#include <QtWidgets/QAbstractButton>
+#include <QtWidgets/QWidget>
+#endif
 
 
 HB_EXTERN_BEGIN
@@ -729,7 +741,6 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::UpdateLater                       , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::ContextMenu                       , "hb_QContextMenuEvent"              );
    hbqt_events_register_createobj( QEvent::InputMethod                       , "hb_QInputMethodEvent"              );
-   hbqt_events_register_createobj( QEvent::AccessibilityPrepare              , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::TabletMove                        , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::LocaleChange                      , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::LanguageChange                    , "hb_QEvent"                         );
@@ -757,7 +768,6 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::FileOpen                          , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::Shortcut                          , "hb_QShortcutEvent"                 );
    hbqt_events_register_createobj( QEvent::WhatsThisClicked                  , "hb_QEvent"                         );
-   hbqt_events_register_createobj( QEvent::AccessibilityHelp                 , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::ToolBarChange                     , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::ApplicationActivate               , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::ApplicationActivated              , "hb_QEvent"                         );
@@ -769,14 +779,18 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::HoverEnter                        , "hb_QHoverEvent"                    );
    hbqt_events_register_createobj( QEvent::HoverLeave                        , "hb_QHoverEvent"                    );
    hbqt_events_register_createobj( QEvent::HoverMove                         , "hb_QHoverEvent"                    );
+#if QT_VERSION <= 0x040900
+   hbqt_events_register_createobj( QEvent::AccessibilityPrepare              , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::AccessibilityDescription          , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::AccessibilityHelp                 , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::MenubarUpdated                    , "hb_QEvent"                         );
+#endif
    hbqt_events_register_createobj( QEvent::ParentAboutToChange               , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::WinEventAct                       , "hb_QEvent"                         );
 #if defined( QT_KEYPAD_NAVIGATION )
    hbqt_events_register_createobj( QEvent::EnterEditFocus                    , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::LeaveEditFocus                    , "hb_QEvent"                         );
 #endif
-   hbqt_events_register_createobj( QEvent::MenubarUpdated                    , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::GraphicsSceneMouseMove            , "hb_QGraphicsSceneMouseEvent"       );
    hbqt_events_register_createobj( QEvent::GraphicsSceneMousePress           , "hb_QGraphicsSceneMouseEvent"       );
    hbqt_events_register_createobj( QEvent::GraphicsSceneMouseRelease         , "hb_QGraphicsSceneMouseEvent"       );
@@ -854,9 +868,10 @@ static void hbqt_lib_init( void * cargo )
    HB_TRACE( HB_TR_DEBUG, ( "hbqt_lib_init %p", s_app ) );
 
    hbqt_registerCallbacks();
-
+#if QT_VERSION <= 0x040900
    QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
    QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
+#endif
 }
 
 static void hbqt_lib_exit( void * cargo )

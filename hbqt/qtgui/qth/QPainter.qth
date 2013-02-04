@@ -200,7 +200,9 @@ const QFont & font () const
 QFontInfo fontInfo () const
 QFontMetrics fontMetrics () const
 bool hasClipping () const
-void initFrom ( const QWidget * widget )
+
+//void initFrom ( const QWidget * widget )   /* Needs some work - later */
+
 bool isActive () const
 Qt::LayoutDirection layoutDirection () const
 qreal opacity () const

@@ -53,7 +53,7 @@ qreal m11 () const
 qreal m12 () const
 qreal m21 () const
 qreal m22 () const
-qreal det () const
+qreal det () const                                                             [*V=-0x040900*]
 qreal dx () const
 qreal dy () const
 QMatrix inverted ( bool * invertible = 0 ) const

@@ -21,7 +21,9 @@ New         =
 #include <QtGui/QTextDocument>
 #include <QtGui/QTextBlock>
 #include <QtGui/QTextCursor>
-
+#if QT_VERSION >= 0x050000
+#include <QtPrintSupport/QPrinter>
+#endif
 
 /*
  * QTextDocument ( QObject * parent = 0 )

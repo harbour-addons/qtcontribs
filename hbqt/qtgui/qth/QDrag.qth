@@ -30,10 +30,17 @@ New         =
  */
 HB_FUNC( QT_QDRAG )
 {
+#if QT_VERSION <= 0x040900
    if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWIDGET" ) )
    {
       __HB_RETPTRGC__( new QDrag( hbqt_par_QWidget( 1 ) ) );
    }
+#else
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QDrag( hbqt_par_QObject( 1 ) ) );
+   }
+#endif
    else
    {
       hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );

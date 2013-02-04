@@ -20,8 +20,11 @@ Destructor  =
 </CLASS>
 
 <CODE>
+#if QT_VERSION <= 0x040900
 #include <QtGui/QItemSelection>
-
+#else
+#include <QtCore/QItemSelection>
+#endif
 
 /* QItemSelection ()
  * QItemSelection ( const QModelIndex & topLeft, const QModelIndex & bottomRight )

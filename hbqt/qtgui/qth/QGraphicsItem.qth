@@ -145,8 +145,16 @@ QGraphicsWidget * parentWidget () const
 QPointF pos () const
 void removeSceneEventFilter ( QGraphicsItem * filterItem )
 void resetTransform ()
-void rotate ( qreal angle )
-void scale ( qreal sx, qreal sy )
+void rotate ( qreal angle )                                                    [*V=-0x040900*]
+
+void scale ( qreal sx, qreal sy ){
+   #if QT_VERSION <= 0x040900
+   ( ( QGraphicsEllipseItem * ) hbqt_par_ptr( 0 ) )->scale( hb_parnd( 1 ), hb_parnd( 2 ) );
+   #else
+   ( ( QGraphicsEllipseItem * ) hbqt_par_ptr( 0 ) )->scale();
+   #endif
+}
+
 QGraphicsScene * scene () const
 QRectF sceneBoundingRect () const
 QPointF scenePos () const
@@ -175,13 +183,13 @@ void setTransform ( const QTransform & matrix, bool combine = false )
 void setVisible ( bool visible )
 void setZValue ( qreal z )
 virtual QPainterPath shape () const
-void shear ( qreal sh, qreal sv )
+void shear ( qreal sh, qreal sv )                                              [*V=-0x040900*]
 void show ()
 QString toolTip () const
 QGraphicsItem * topLevelItem () const
 QGraphicsWidget * topLevelWidget () const
 QTransform transform () const
-void translate ( qreal dx, qreal dy )
+void translate ( qreal dx, qreal dy )                                          [*V=-0x040900*]
 virtual int type () const
 void ungrabKeyboard ()
 void ungrabMouse ()

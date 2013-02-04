@@ -18,6 +18,9 @@ New         = pParent
 
 <CODE>
 #include <QtGui/QTextEdit>
+#if QT_VERSION >= 0x050000
+#include <QtPrintSupport/QPrinter>
+#endif
 
 
 /* QTextEdit ( QWidget * parent = 0 )

@@ -19,8 +19,13 @@ Constructor = No
 </CLASS>
 
 <CODE>
+#if QT_VERSION <= 0x040900
 #include <QtGui/QAbstractProxyModel>
 #include <QtGui/QItemSelection>
+#else
+#include <QtCore/QAbstractProxyModel>
+#include <QtCore/QItemSelection>
+#endif
 
 /* QAbstractProxyModel ( QObject * parent = 0 )
  * ~QAbstractProxyModel ()

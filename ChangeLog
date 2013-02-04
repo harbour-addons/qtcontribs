@@ -16,6 +16,53 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-04 15:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/qth/QAbstractProxyModel.qth
+  * hbqt/qtgui/qth/QApplication.qth
+  * hbqt/qtgui/qth/QColorDialog.qth
+  * hbqt/qtgui/qth/QDesktopServices.qth
+  * hbqt/qtgui/qth/QDirModel.qth
+  * hbqt/qtgui/qth/QDrag.qth
+  * hbqt/qtgui/qth/QFont.qth
+  * hbqt/qtgui/qth/QGraphicsItem.qth
+  * hbqt/qtgui/qth/QGraphicsScene.qth
+  * hbqt/qtgui/qth/QHeaderView.qth
+  * hbqt/qtgui/qth/QImage.qth
+  * hbqt/qtgui/qth/QItemSelection.qth
+  * hbqt/qtgui/qth/QItemSelectionModel.qth
+  * hbqt/qtgui/qth/QLCDNumber.qth
+  * hbqt/qtgui/qth/QMatrix.qth
+  * hbqt/qtgui/qth/QMouseEvent.qth
+  * hbqt/qtgui/qth/QPageSetupDialog.qth
+  * hbqt/qtgui/qth/QPaintDevice.qth
+  * hbqt/qtgui/qth/QPainter.qth
+  * hbqt/qtgui/qth/QPixmap.qth
+  * hbqt/qtgui/qth/QPlainTextEdit.qth
+  * hbqt/qtgui/qth/QRegion.qth
+  * hbqt/qtgui/qth/QSortFilterProxyModel.qth
+  * hbqt/qtgui/qth/QSound.qth
+  * hbqt/qtgui/qth/QStringListModel.qth
+  * hbqt/qtgui/qth/QTextDocument.qth
+  * hbqt/qtgui/qth/QTextEdit.qth
+
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+  * hbqt/qtgui/hbqt_hbqplaintextedit.h
+  * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.h
+  * hbqt/qtgui/hbqt_hbqtableview.h
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+  * hbqt/qtgui/hbqt_init.cpp
+  * hbqt/qtgui/hbqt_utils.cpp
+
+  * hbqt/hbmk2_qt.hb
+    + Changes: needed to get HbQt compile on Qt 5.0.1.
+       Still a couple of more changes are required in the engine 
+       to get QtGui compilable with latest Qt, which hopefully will 
+       make up today. Most of the QtGui compiles fine. Stay tuned...
+
 2013-02-01 13:58 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/hbqt_hbqslots.cpp
   * hbqt/qtcore/hbqt_init.cpp

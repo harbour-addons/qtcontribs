@@ -55,8 +55,13 @@
 
 #include "hbqt.h"
 
-#include <QtGui/QTableView>
 #include <QtGui/QMouseEvent>
+
+#if QT_VERSION <= 0x040900
+#include <QtGui/QTableView>
+#else
+#include <QtWidgets/QTableView>
+#endif
 
 #define HBQT_HBQTABLEVIEW_scrollContentsBy        1
 

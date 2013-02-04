@@ -78,8 +78,6 @@ HB_EXTERN_BEGIN
 extern void * hbqt_gcAllocate_QKeyEvent( void * pObj, bool bNew );
 HB_EXTERN_END
 
-#include <QtGui/QApplication>
-
 #define selectionMode_none                        0
 #define selectionMode_stream                      1
 #define selectionMode_column                      2

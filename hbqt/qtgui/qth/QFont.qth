@@ -154,7 +154,7 @@ void cleanup ()
 void initialize ()
 void insertSubstitution ( const QString & familyName, const QString & substituteName )
 void insertSubstitutions ( const QString & familyName, const QStringList & substituteNames )
-void removeSubstitution ( const QString & familyName )
+void removeSubstitution ( const QString & familyName )                         [*V=-0x040900*]
 QString substitute ( const QString & familyName )
 QStringList substitutes ( const QString & familyName )
 QStringList substitutions ()

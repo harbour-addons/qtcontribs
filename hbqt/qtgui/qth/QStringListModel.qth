@@ -18,8 +18,11 @@ New         =
 </CLASS>
 
 <CODE>
+#if QT_VERSION <= 0x040900
 #include <QtGui/QStringListModel>
-
+#else
+#include <QtCore/QStringListModel>
+#endif
 
 /*
  * QStringListModel ( QObject * parent = 0 )

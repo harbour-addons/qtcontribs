@@ -53,8 +53,8 @@ int defaultSectionSize () const
 int hiddenSectionCount () const
 void hideSection ( int logicalIndex )
 bool highlightSections () const
-bool isClickable () const
-bool isMovable () const
+bool isClickable () const                                                      [*V=-0x040900*]
+bool isMovable () const                                                        [*V=-0x040900*]
 bool isSectionHidden ( int logicalIndex ) const
 bool isSortIndicatorShown () const
 int length () const
@@ -66,7 +66,7 @@ int minimumSectionSize () const
 void moveSection ( int from, int to )
 int offset () const
 Qt::Orientation orientation () const
-ResizeMode resizeMode ( int logicalIndex ) const
+ResizeMode resizeMode ( int logicalIndex ) const                               [*V=-0x040900*]
 void resizeSection ( int logicalIndex, int size )
 void resizeSections ( QHeaderView::ResizeMode mode )
 bool restoreState ( const QByteArray & state )
@@ -78,14 +78,14 @@ int sectionViewportPosition ( int logicalIndex ) const
 bool sectionsHidden () const
 bool sectionsMoved () const
 void setCascadingSectionResizes ( bool enable )
-void setClickable ( bool clickable )
+void setClickable ( bool clickable )                                           [*V=-0x040900*]
 void setDefaultAlignment ( Qt::Alignment alignment )
 void setDefaultSectionSize ( int size )
 void setHighlightSections ( bool highlight )
 void setMinimumSectionSize ( int size )
-void setMovable ( bool movable )
-void setResizeMode ( ResizeMode mode )
-void setResizeMode ( int logicalIndex, ResizeMode mode )
+void setMovable ( bool movable )                                               [*V=-0x040900*]
+void setResizeMode ( ResizeMode mode )                                         [*V=-0x040900*]
+void setResizeMode ( int logicalIndex, ResizeMode mode )                       [*V=-0x040900*]
 void setSectionHidden ( int logicalIndex, bool hide )
 void setSortIndicator ( int logicalIndex, Qt::SortOrder order )
 void setSortIndicatorShown ( bool show )

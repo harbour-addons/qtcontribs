@@ -40,7 +40,7 @@ int height () const
 int heightMM () const
 int logicalDpiX () const
 int logicalDpiY () const
-int numColors () const
+int numColors () const                                                         [*V=-0x040900*]
 virtual QPaintEngine * paintEngine () const = 0
 bool paintingActive () const
 int physicalDpiX () const

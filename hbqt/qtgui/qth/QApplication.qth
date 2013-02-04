@@ -53,7 +53,7 @@ enum Type { Tty, GuiClient, GuiServer }
 </ENUMS>
 
 <PROTOS>
-virtual void commitData ( QSessionManager & manager )
+virtual void commitData ( QSessionManager & manager )                          [*V=-0x040900*]
 #
 # Disabled because OS2 does not like it
 // QInputContext * inputContext () const
@@ -66,7 +66,7 @@ bool isSessionRestored () const
 // int qwsProcessEvent ( QWSEvent * )
 // void qwsSetCustomColors ( QRgb * colortable, int start, int numColors )
 #
-virtual void saveState ( QSessionManager & manager )
+virtual void saveState ( QSessionManager & manager )                           [*V=-0x040900*]
 QString sessionId () const
 QString sessionKey () const
 #
@@ -97,9 +97,9 @@ QSize globalStrut ()
 bool isEffectEnabled ( Qt::UIEffect effect )
 bool isLeftToRight ()
 bool isRightToLeft ()
-Qt::LayoutDirection keyboardInputDirection ()
+Qt::LayoutDirection keyboardInputDirection ()                                  [*V=-0x040900*]
 int keyboardInputInterval ()
-QLocale keyboardInputLocale ()
+QLocale keyboardInputLocale ()                                                 [*V=-0x040900*]
 Qt::KeyboardModifiers keyboardModifiers ()
 //bool keypadNavigationEnabled ()
 Qt::LayoutDirection layoutDirection ()
@@ -121,7 +121,7 @@ void setDoubleClickInterval ( int )
 void setEffectEnabled ( Qt::UIEffect effect, bool enable = true )
 void setFont ( const QFont & font, const char * className = 0 )
 void setGlobalStrut ( const QSize & )
-void setGraphicsSystem ( const QString & system )
+void setGraphicsSystem ( const QString & system )                              [*V=-0x040900*]
 void setKeyboardInputInterval ( int )
 //void setKeypadNavigationEnabled ( bool enable )
 void setLayoutDirection ( Qt::LayoutDirection direction )
@@ -137,11 +137,11 @@ void setWindowIcon ( const QIcon & icon )
 int startDragDistance ()
 int startDragTime ()
 QStyle * style ()
-void syncX ()
+void syncX ()                                                                  [*V=-0x040900*]
 QWidget * topLevelAt ( const QPoint & point )
 QWidget * topLevelAt ( int x, int y )
 QList<QWidget*> topLevelWidgets ()
-Type type ()
+Type type ()                                                                   [*V=-0x040900*]
 int wheelScrollLines ()
 QWidget * widgetAt ( const QPoint & point )
 QWidget * widgetAt ( int x, int y )

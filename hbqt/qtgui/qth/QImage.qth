@@ -114,8 +114,8 @@ bool load ( QIODevice * device, const char * format )
 // bool loadFromData ( const uchar * data, int len, const char * format = 0 )
 bool loadFromData ( const QByteArray & data, const char * format = 0 )
 QImage mirrored ( bool horizontal = false, bool vertical = true ) const
-int numBytes () const
-int numColors () const
+int numBytes () const                                                          [*V=-0x040900*]
+int numColors () const                                                         [*V=-0x040900*]
 QPoint offset () const
 QRgb pixel ( const QPoint & position ) const
 QRgb pixel ( int x, int y ) const
@@ -135,7 +135,7 @@ void setColor ( int index, QRgb colorValue )
 void setColorTable ( const QVector<QRgb> colors )
 void setDotsPerMeterX ( int x )
 void setDotsPerMeterY ( int y )
-void setNumColors ( int numColors )
+void setNumColors ( int numColors )                                            [*V=-0x040900*]
 void setOffset ( const QPoint & offset )
 void setPixel ( const QPoint & position, uint index_or_rgb )
 void setPixel ( int x, int y, uint index_or_rgb )

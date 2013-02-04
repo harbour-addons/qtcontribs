@@ -59,7 +59,7 @@ const QPoint & globalPos () const
 int globalX () const
 int globalY () const
 const QPoint & pos () const
-QPointF posF () const
+QPointF posF () const                                                          [*V=-0x040900*]
 int x () const
 int y () const
 </PROTOS>

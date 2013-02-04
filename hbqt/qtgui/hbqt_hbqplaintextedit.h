@@ -56,25 +56,40 @@
 #include "hbqt.h"
 
 #include <QtCore/QPointer>
-
-#include <QtGui/QPlainTextEdit>
 #include <QtCore/QtCore>
-#include <QtGui/QClipboard>
 #include <QtCore/QMimeData>
+
+#include <QtGui/QBitmap>
+#include <QtGui/QClipboard>
 #include <QtGui/QKeyEvent>
+#include <QtGui/QDrag>
 #include <QtGui/QDragEnterEvent>
 #include <QtGui/QDragMoveEvent>
 #include <QtGui/QDropEvent>
 #include <QtGui/QTextBlock>
 #include <QtGui/QPainter>
+
+#if QT_VERSION <= 0x040900
+#include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 #include <QtGui/QCompleter>
 #include <QtGui/QAbstractItemView>
 #include <QtGui/QScrollBar>
 #include <QtGui/QToolTip>
 #include <QtGui/QVBoxLayout>
+#include <QtGui/QPlainTextEdit>
 #include <QtGui/QLabel>
-#include <QtGui/QBitmap>
+#else
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QCompleter>
+#include <QtWidgets/QAbstractItemView>
+#include <QtWidgets/QScrollBar>
+#include <QtWidgets/QToolTip>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QPlainTextEdit>
+#include <QtWidgets/QLabel>
+#endif
 
 #include "hbqt_hbqsyntaxhighlighter.h"
 

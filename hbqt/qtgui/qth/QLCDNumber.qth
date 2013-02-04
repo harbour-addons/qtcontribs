@@ -57,11 +57,11 @@ bool checkOverflow ( double num ) const
 int digitCount () const                                     [*V=0x040600*]
 int intValue () const
 Mode mode () const
-int numDigits () const
+int numDigits () const                                      [*V=-0x040900*]
 SegmentStyle segmentStyle () const
 void setDigitCount ( int numDigits )                        [*V=0x040600*]
 void setMode ( Mode )
-void setNumDigits ( int nDigits )
+void setNumDigits ( int nDigits )                           [*V=-0x040900*]
 void setSegmentStyle ( SegmentStyle )
 bool smallDecimalPoint () const
 double value () const

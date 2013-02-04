@@ -71,7 +71,7 @@ enum ShareMode { ImplicitlyShared, ExplicitlyShared }
 </ENUMS>
 
 <PROTOS>
-QPixmap alphaChannel () const
+QPixmap alphaChannel () const                                                  [*V=-0x040900*]
 qint64 cacheKey () const
 #
 // QRgb * clut () const
@@ -83,9 +83,91 @@ QBitmap createMaskFromColor ( const QColor & maskColor, Qt::MaskMode mode ) cons
 QBitmap createMaskFromColor ( const QColor & maskColor ) const
 int depth () const
 void detach ()
-void fill ( const QColor & color = Qt::white )
-void fill ( const QWidget * widget, const QPoint & offset )
-void fill ( const QWidget * widget, int x, int y )
+
+
+//void fill ( const QColor & color = Qt::white )
+//void fill ( const QWidget * widget, const QPoint & offset )
+//void fill ( const QWidget * widget, int x, int y )
+//void fill ( const QPaintDevice * paintDevice, int x, int y )
+//void fill ( const QPaintDevice * paintDevice, const QPoint & offset )
+void fill ( const QPaintDevice * paintDevice, const QPoint & offset, const QColor & color, const QWidget * widget ){
+   QPixmap * p = ( QPixmap * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+#if QT_VERSION <= 0x040900
+         case 3:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) )
+            {
+               p->fill( hbqt_par_QWidget( 1 ), hb_parni( 2 ), hb_parni( 3 ) );
+               return;
+            }
+            break;
+         }
+         case 2:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && hbqt_par_isDerivedFrom( 2, "QPOINT" ) )
+            {
+               p->fill( hbqt_par_QWidget( 1 ), *hbqt_par_QPoint( 2 ) );
+               return;
+            }
+            break;
+         }
+         case 1:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QCOLOR" ) )
+            {
+               p->fill( *hbqt_par_QColor( 1 ) );
+               return;
+            }
+            break;
+         }
+         case 0:
+         {
+            p->fill( *hbqt_par_QColor( 1 ) );
+            return;
+         }
+#else
+         case 3:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QPAINTDEVICE" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) )
+            {
+               p->fill( hbqt_par_QPaintDevice( 1 ), hb_parni( 2 ), hb_parni( 3 ) );
+               return;
+            }
+            break;
+         }
+         case 2:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QPAINTDEVICE" ) && hbqt_par_isDerivedFrom( 2, "QPOINT" ) )
+            {
+               p->fill( hbqt_par_QPaintDevice( 1 ), *hbqt_par_QPoint( 2 ) );
+               return;
+            }
+            break;
+         }
+         case 1:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QCOLOR" ) )
+            {
+               p->fill( *hbqt_par_QColor( 1 ) );
+               return;
+            }
+            break;
+         }
+         case 0:
+         {
+            p->fill( *hbqt_par_QColor( 1 ) );
+            return;
+         }
+#endif
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+
 // Qt::HANDLE handle () const
 bool hasAlpha () const
 bool hasAlphaChannel () const
@@ -108,7 +190,7 @@ QPixmap scaled ( int width, int height, Qt::AspectRatioMode aspectRatioMode = Qt
 QPixmap scaled ( const QSize & size, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio, Qt::TransformationMode transformMode = Qt::FastTransformation ) const
 QPixmap scaledToHeight ( int height, Qt::TransformationMode mode = Qt::FastTransformation ) const
 QPixmap scaledToWidth ( int width, Qt::TransformationMode mode = Qt::FastTransformation ) const
-void setAlphaChannel ( const QPixmap & alphaChannel )
+void setAlphaChannel ( const QPixmap & alphaChannel )                          [*V=-0x040900*]
 void scroll ( int dx, int dy, int x, int y, int width, int height, QRegion * exposed = 0 )                    [*V=0x040600*]
 void scroll ( int dx, int dy, const QRect & rect, QRegion * exposed = 0 )                                     [*V=0x040600*]
 void setMask ( const QBitmap & mask )
@@ -128,9 +210,121 @@ QPixmap fromImage ( const QImage & image, Qt::ImageConversionFlags flags = Qt::A
 //QPixmap fromWinHBITMAP ( HBITMAP bitmap, HBitmapFormat format = NoAlpha )
 //QPixmap fromX11Pixmap ( Qt::HANDLE pixmap, ShareMode mode = ImplicitlyShared )
 
-QPixmap grabWidget ( QWidget * widget, const QRect & rectangle )
-QPixmap grabWidget ( QWidget * widget, int x = 0, int y = 0, int width = -1, int height = -1 )
-
+//QPixmap grabWidget ( QWidget * widget, const QRect & rectangle )
+//QPixmap grabWidget ( QWidget * widget, int x = 0, int y = 0, int width = -1, int height = -1 )
+QPixmap grabWidget ( QWidget * widget, int x = 0, int y = 0, int width = -1, int height = -1, QObject * obj ){
+   QPixmap * p = ( QPixmap * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+#if QT_VERSION <= 0x040900
+         case 5:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) && HB_ISNUM( 4 ) && HB_ISNUM( 5 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QWidget( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 4:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) && HB_ISNUM( 4 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QWidget( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 3:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QWidget( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 2:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISNUM( 2 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QWidget( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            else if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && hbqt_par_isDerivedFrom( 2, "QRECT" ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QWidget( 1 ), *hbqt_par_QRect( 2 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 1:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QWidget( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+#else
+         case 5:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) && HB_ISNUM( 4 ) && HB_ISNUM( 5 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QObject( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 4:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) && HB_ISNUM( 4 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QObject( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 3:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QObject( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 2:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && HB_ISNUM( 2 ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QObject( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            else if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && hbqt_par_isDerivedFrom( 2, "QRECT" ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QObject( 1 ), *hbqt_par_QRect( 2 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+         case 1:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+            {
+               hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QPixmap( p->grabWidget( hbqt_par_QObject( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parnidef( 4, -1 ), hb_parnidef( 5, -1 ) ) ), "HB_QPIXMAP", hbqt_del_QPixmap, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+               return;
+            }
+            break;
+         }
+#endif
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
 //QPixmap grabWindow ( WId window, int x = 0, int y = 0, int width = -1, int height = -1 )
 QTransform trueMatrix ( const QTransform & matrix, int width, int height )
 QMatrix trueMatrix ( const QMatrix & m, int w, int h )

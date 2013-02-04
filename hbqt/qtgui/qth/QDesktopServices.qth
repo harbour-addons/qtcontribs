@@ -45,7 +45,9 @@ enum StandardLocation { DesktopLocation, DocumentsLocation, FontsLocation, Appli
 
 <PROTOS>
 QString displayName ( StandardLocation type ){
+   #if QT_VERSION <= 0x040900
    hb_retstr_utf8( QDesktopServices::displayName( ( QDesktopServices::StandardLocation ) hb_parni( 1 ) ).toUtf8().data() );
+   #endif
 }
 bool openUrl ( const QUrl & url ){
    hb_retl( QDesktopServices::openUrl( *hbqt_par_QUrl( 1 ) ) );
@@ -56,7 +58,9 @@ void setUrlHandler ( const QString & scheme, QObject * receiver, const char * me
    hb_strfree( pText );
 }
 QString storageLocation ( StandardLocation type ){
+   #if QT_VERSION <= 0x040900
    hb_retstr_utf8( QDesktopServices::storageLocation( ( QDesktopServices::StandardLocation ) hb_parni( 1 ) ).toUtf8().data() );
+   #endif
 }
 void unsetUrlHandler ( const QString & scheme ){
    void * pText;

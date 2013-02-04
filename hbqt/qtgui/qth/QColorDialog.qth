@@ -46,6 +46,7 @@ HB_FUNC( QT_QCOLORDIALOG )
       __HB_RETPTRGC__( new QColorDialog() );
    }
 }
+
 </CODE>
 
 <ENUMS>
@@ -65,8 +66,18 @@ void setOptions ( ColorDialogOptions options )
 virtual void setVisible ( bool visible )
 bool testOption ( ColorDialogOption option ) const
 
+void customColor ( int index ){
+   QColorDialog * p = ( QColorDialog * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      #if QT_VERSION <= 0x040900
+      hb_retnl( p->customColor( hb_parni( 1 ) ) );
+      #else
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QColor( p->customColor( hb_parni( 1 ) ) ), "HB_QCOLOR", hbqt_del_QColor, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+      #endif
+   }
+}
 
-QRgb customColor ( int index )
 int customCount ()
 QColor getColor ( const QColor & initial, QWidget * parent, const QString & title, ColorDialogOptions options = 0 )
 QColor getColor ( const QColor & initial = Qt::white, QWidget * parent = 0 )

@@ -53,14 +53,24 @@
 #ifndef HBQT_HBQGRAPHICSSCENE_H
 #define HBQT_HBQGRAPHICSSCENE_H
 
+#include <QtCore/QList>
+
+#include <QtGui/QCursor>
+#include <QtGui/QKeyEvent>
+
+#if QT_VERSION <= 0x040900
 #include <QtGui/QGraphicsScene>
 #include <QtGui/QPrinter>
 #include <QtGui/QGraphicsSceneMouseEvent>
 #include <QtGui/QGraphicsLineItem>
-#include <QtGui/QCursor>
-#include <QtGui/QKeyEvent>
 #include <QtGui/QGraphicsView>
-#include <QtCore/QList>
+#else
+#include <QtPrintSupport/QPrinter>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsLineItem>
+#include <QtWidgets/QGraphicsView>
+#endif
 
 #include "hbqt_hbqgraphicsitem.h"
 

@@ -27,8 +27,11 @@ Constructor =
 </DOC>
 
 <CODE>
+#if QT_VERSION <= 0x040900
 #include <QtGui/QSortFilterProxyModel>
-
+#else
+#include <QtCore/QSortFilterProxyModel>
+#endif
 
 /*
  * QSortFilterProxyModel ( QObject * parent = 0 )

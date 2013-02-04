@@ -59,7 +59,11 @@
 
 #include <QtGui/QSyntaxHighlighter>
 #include <QtGui/QTextBlockUserData>
+#if QT_VERSION <= 0x040900
 #include <QtGui/QPlainTextEdit>
+#else
+#include <QtWidgets/QPlainTextEdit>
+#endif
 
 class QTextDocument;
 class HBQPlainTextEdit;

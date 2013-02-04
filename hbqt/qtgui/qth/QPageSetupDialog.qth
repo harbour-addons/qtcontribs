@@ -53,10 +53,10 @@ flags PageSetupDialogOptions
 <PROTOS>
 virtual int exec ()
 void open ( QObject * receiver, const char * member )
-PageSetupDialogOptions options () const
+PageSetupDialogOptions options () const                                        [*V=-0x040900*]
 QPrinter * printer ()
-void setOption ( PageSetupDialogOption option, bool on = true )
-void setOptions ( PageSetupDialogOptions options )
+void setOption ( PageSetupDialogOption option, bool on = true )                [*V=-0x040900*]
+void setOptions ( PageSetupDialogOptions options )                             [*V=-0x040900*]
 virtual void setVisible ( bool visible )
-bool testOption ( PageSetupDialogOption option ) const
+bool testOption ( PageSetupDialogOption option ) const                         [*V=-0x040900*]
 </PROTOS>

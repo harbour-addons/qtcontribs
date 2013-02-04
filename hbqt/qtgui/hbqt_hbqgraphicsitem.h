@@ -55,6 +55,7 @@
 
 #include "hbqt.h"
 
+#if QT_VERSION <= 0x040900
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QGraphicsScene>
@@ -63,6 +64,16 @@
 #include <QtGui/QWidget>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QDesktopWidget>
+#else
+#include <QtGui/QPainter>
+#include <QtWidgets/QGraphicsItem>
+#include <QtWidgets/QStyleOptionGraphicsItem>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QTreeWidget>
+#include <QtWidgets/QDesktopWidget>
+#endif
 #include <QtCore/QModelIndex>
 #include <QtCore/QEvent>
 #include <QtCore/QMimeData>

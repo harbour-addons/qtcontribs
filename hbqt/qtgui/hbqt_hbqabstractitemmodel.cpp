@@ -64,9 +64,13 @@
 #include <QtGui/QIcon>
 #include <QtGui/QFont>
 #include <QtGui/QPixmap>
-#include <QtGui/QWidget>
 #include <QtCore/QFlags>
 
+#if QT_VERSION <= 0x040900
+#include <QtGui/QWidget>
+#else
+#include <QtWidgets/QWidget>
+#endif
 
 QVariant hbqt_fetchData( PHB_ITEM block, int type, int role, int par1, int par2 )
 {

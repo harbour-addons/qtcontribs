@@ -85,7 +85,7 @@ QRegion intersected ( const QRect & rect ) const
 bool intersects ( const QRegion & region ) const
 bool intersects ( const QRect & rect ) const
 bool isEmpty () const
-int numRects () const
+int numRects () const                                                          [*V=-0x040900*]
 QVector<QRect> rects () const
 void setRects ( const QRect * rects, int number )
 QRegion subtracted ( const QRegion & r ) const
