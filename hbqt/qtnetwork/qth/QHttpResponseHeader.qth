@@ -17,6 +17,7 @@ Inherit     = QHttpHeader
 Type        = Core
 New         =
 Destructor  = 
+VersionUpto = 0x040900
 </CLASS>
 
 <CODE>

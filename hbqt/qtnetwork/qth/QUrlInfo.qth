@@ -18,6 +18,7 @@
 QObject     = no
 Inherit     = 
 New         = 
+VersionUpto = 0x040900
 </CLASS>
 
 <CODE>

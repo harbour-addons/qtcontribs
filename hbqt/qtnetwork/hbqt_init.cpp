@@ -61,7 +61,7 @@
 #include "hbapiitm.h"
 #include "hbinit.h"
 
-#if QT_VERSION >= 0x040500
+#if QT_VERSION <= 0x040900
 
 #include <QtNetwork/QUrlInfo>
 #include <QtNetwork/QNetworkProxy>
@@ -86,7 +86,7 @@ static void hbqt_SlotsExecQHttpResponseHeader( PHB_ITEM * codeBlock, void ** arg
 
    hb_vmPushEvalSym();
    hb_vmPush( codeBlock );
-   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QHttpResponseHeader( ( *reinterpret_cast< QHttpResponseHeader( * ) >( arguments[ 1 ] ) ) ), "HB_QHTTPRESPONSEHEADER", hbqt_del_QHttpResponseHeader, HBQT_BIT_OWNER ); 
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QHttpResponseHeader( ( *reinterpret_cast< QHttpResponseHeader( * ) >( arguments[ 1 ] ) ) ), "HB_QHTTPRESPONSEHEADER", hbqt_del_QHttpResponseHeader, HBQT_BIT_OWNER );
    hb_vmPush( p0 );
    hb_vmSend( 1 );
    hb_itemRelease( p0 );
@@ -98,7 +98,7 @@ static void hbqt_SlotsExecQNetworkProxyPointer( PHB_ITEM * codeBlock, void ** ar
 
    hb_vmPushEvalSym();
    hb_vmPush( codeBlock );
-   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkProxy( ( *reinterpret_cast< QNetworkProxy( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKPROXY", hbqt_del_QNetworkProxy, HBQT_BIT_OWNER ); 
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkProxy( ( *reinterpret_cast< QNetworkProxy( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKPROXY", hbqt_del_QNetworkProxy, HBQT_BIT_OWNER );
    PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, *reinterpret_cast< void*( * ) >( arguments[ 2 ] ), ( const char * ) pList.at( 1 ).data(), NULL, HBQT_BIT_QOBJECT );
    hb_vmPush( p0 );
    hb_vmPush( p1 );
@@ -113,7 +113,7 @@ static void hbqt_SlotsExecQNetworkRequest( PHB_ITEM * codeBlock, void ** argumen
 
    hb_vmPushEvalSym();
    hb_vmPush( codeBlock );
-   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkRequest( ( *reinterpret_cast< QNetworkRequest( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKREQUEST", hbqt_del_QNetworkRequest, HBQT_BIT_OWNER ); 
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkRequest( ( *reinterpret_cast< QNetworkRequest( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKREQUEST", hbqt_del_QNetworkRequest, HBQT_BIT_OWNER );
    hb_vmPush( p0 );
    hb_vmSend( 1 );
    hb_itemRelease( p0 );
@@ -125,7 +125,7 @@ static void hbqt_SlotsExecQUrlInfo( PHB_ITEM * codeBlock, void ** arguments, QSt
 
    hb_vmPushEvalSym();
    hb_vmPush( codeBlock );
-   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QUrlInfo( ( *reinterpret_cast< QUrlInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QURLINFO", hbqt_del_QUrlInfo, HBQT_BIT_OWNER ); 
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QUrlInfo( ( *reinterpret_cast< QUrlInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QURLINFO", hbqt_del_QUrlInfo, HBQT_BIT_OWNER );
    hb_vmPush( p0 );
    hb_vmSend( 1 );
    hb_itemRelease( p0 );

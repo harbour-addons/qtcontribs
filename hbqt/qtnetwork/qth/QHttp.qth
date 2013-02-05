@@ -17,6 +17,7 @@
 <CLASS>
 Inherit     = QObject
 New         = pParent
+VersionUpto = 0x040900
 </CLASS>
 
 <CODE>

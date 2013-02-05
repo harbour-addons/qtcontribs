@@ -18,6 +18,7 @@ Type        = Core
 New         =
 Destructor  = no
 Constructor = no
+VersionUpto = 0x040900
 </CLASS>
 
 <CODE>

@@ -16,6 +16,21 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-04 18:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    + Version bump.
+
+  * hbqt/qtnetwork/hbqt_init.cpp
+  * hbqt/qtnetwork/qth/QFtp.qth
+  * hbqt/qtnetwork/qth/QHttp.qth
+  * hbqt/qtnetwork/qth/QHttpHeader.qth
+  * hbqt/qtnetwork/qth/QHttpRequestHeader.qth
+  * hbqt/qtnetwork/qth/QHttpResponseHeader.qth
+  * hbqt/qtnetwork/qth/QUrlInfo.qth
+  * hbqt/qtopengl/qth/QGLWidget.qth
+    + All modules comiliable with Qt 5.0.1 except for QtWebKit.
+       hbmk2 reports: dependency not found "qtwebkit".
+
 2013-02-04 17:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/hbmk2_qt.hb
     ! Fixed: last commit was not compiling QDirModel.qth.

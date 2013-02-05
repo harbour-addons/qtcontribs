@@ -68,8 +68,8 @@ const QGLContext * overlayContext () const                                [*R=9*
 void qglClearColor ( const QColor & c ) const
 void qglColor ( const QColor & c ) const
 QPixmap renderPixmap ( int w = 0, int h = 0, bool useContext = false )
-void renderText ( int x, int y, const QString & str, const QFont & font = QFont(), int listBase = 2000 )
-void renderText ( double x, double y, double z, const QString & str, const QFont & font = QFont(), int listBase = 2000 )
+void renderText ( int x, int y, const QString & str, const QFont & font = QFont() )
+void renderText ( double x, double y, double z, const QString & str, const QFont & font = QFont() )
 void setColormap ( const QGLColormap & cmap )
 void setMouseTracking ( bool enable )
 void swapBuffers ()
