@@ -2112,6 +2112,9 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
       AEval( oMtd:fBody_, {| e | AAdd( txt_, e ) } )
       AAdd( txt_, "}" )
       AAdd( txt_, "" )
+      IF ! empty( oMtd:cVersion ) .OR. ::cQtVer > "0x040500" .OR. ::lQtVerLessThan
+         AAdd( txt_, "   #endif" )
+      ENDIF
       RETURN txt_
    ENDIF
 
@@ -2257,10 +2260,8 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
 
    ENDIF
 
-   AAdd( txt_, "   }" )           // if( p )
-   IF ! empty( oMtd:cVersion ) .OR. ;
-      ::cQtVer > "0x040500"    .OR. ;
-      ::lQtVerLessThan
+   AAdd( txt_, "   }" )
+   IF ! empty( oMtd:cVersion ) .OR. ::cQtVer > "0x040500" .OR. ::lQtVerLessThan
       AAdd( txt_, "   #endif" )
    ENDIF
    AAdd( txt_, "}" )              // HB_FUNC()
