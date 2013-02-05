@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-05 13:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/gtqtc/gtqtc.cpp
+  * hbqt/gtqtc/gtqtc.h
+    + Compilable for all versions of Qt inclusing 5.0.1.
+
 2013-02-04 18:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     + Version bump.

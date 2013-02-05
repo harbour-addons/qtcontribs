@@ -1725,6 +1725,8 @@ void DrawingArea::mouseDoubleClickEvent( QMouseEvent *event )
    case Qt::NoButton:
       QWidget::mouseDoubleClickEvent( event );
       return;
+   default:
+      return;
    }
    if( c != 0 )
    {
@@ -1806,6 +1808,8 @@ void DrawingArea::mousePressEvent( QMouseEvent *event )
    case Qt::NoButton:
       QWidget::mousePressEvent( event );
       return;
+   default:
+      return;
    }
    if( c != 0 )
    {
@@ -1846,6 +1850,8 @@ void DrawingArea::mouseReleaseEvent( QMouseEvent *event )
    case Qt::XButton2:
    case Qt::NoButton:
       QWidget::mouseReleaseEvent( event );
+      return;
+   default:
       return;
    }
    if( c != 0 )

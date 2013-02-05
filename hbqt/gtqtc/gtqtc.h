@@ -55,21 +55,30 @@
 
 #define HB_GT_NAME  QTC
 
-#include <QtGui/QtGui>
 #include <QtCore/QObject>
 #include <QtCore/QList>
-#include <QtGui/QApplication>
-#include <QtGui/QMainWindow>
-#include <QtGui/QDesktopWidget>
-#include <QtGui/QWidget>
+#include <QtCore/QThread>
+
 #include <QtGui/QFont>
-#include <QtGui/QPainter>
-#include <QtGui/QPaintDevice>
 #include <QtGui/QColor>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QMouseEvent>
 #include <QtGui/QClipboard>
-#include <QtCore/QThread>
+#include <QtGui/QPaintDevice>
+#include <QtGui/QPainter>
+#include <QtCore/QBasicTimer>
+
+#if QT_VERSION <= 0x040900
+#include <QtGui/QApplication>
+#include <QtGui/QMainWindow>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QWidget>
+#else
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QDesktopWidget>
+#include <QtWidgets/QWidget>
+#endif
 
 #include "hbset.h"
 #include "hbgtcore.h"
