@@ -203,7 +203,20 @@ QModelIndex HBQAbstractItemModel::parent( const QModelIndex & /* child */ ) cons
 
 void HBQAbstractItemModel::reset()
 {
+#if QT_VERSION <= 0x040900
    QAbstractItemModel::reset();
+#else
+   int rows = hbqt_fetchData( block, HBQT_QAIM_rowCount, 0, 0, 0 ).toInt();
+   int i;
+   for( i = rows; i > 0; i-- )
+   {
+      removeRow( i - 1 );
+   }
+   for( i = rows; i > 0; i-- )
+   {
+      insertRow( 0 );
+   }
+#endif
 }
 
 #endif

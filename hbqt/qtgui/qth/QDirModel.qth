@@ -15,7 +15,7 @@
 Inherit     = QAbstractItemModel
 Type        = Core
 New         = 
-VersionLess = 0x040900
+VersionUpto = 0x040900
 </CLASS>
 
 <CODE>

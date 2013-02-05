@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-04 17:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+  * hbqt/qtgui/qth/QDirModel.qth
+  * hbqt/qtgui/qth/QWindowsStyle.qth
+  * hbqt/hbmk2_qt.hb
+    + Implemented: necessary constructs to let HbQt compile with 
+       Qt 5.0.1 while remaining backward compatible upto 4.8.4.
+       QtGui module now compiles fine.
+
 2013-02-04 15:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/qth/QAbstractProxyModel.qth
   * hbqt/qtgui/qth/QApplication.qth

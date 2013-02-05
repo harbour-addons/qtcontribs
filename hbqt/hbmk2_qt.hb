@@ -1317,6 +1317,7 @@ CREATE CLASS HbQtSource
    VAR    lPaintEvent                             INIT .F.
    VAR    lBuildExtended                          INIT .F.
    VAR    lQtVerLessThan                          INIT .F.
+   VAR    cQtVerLessThan                          INIT ""
 
    METHOD new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileName )
    METHOD parseProto( cProto, fBody_ )
@@ -1360,6 +1361,9 @@ METHOD HbQtSource:new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileNa
 
    ::cQtModule    := cQtModule
    ::cQtVer       := cQtVer
+   IF Empty( ::cQtVer )
+      ::cQtVer := "0x040500"
+   ENDIF
 
    ::cQtObject    := tmp
 
@@ -1388,10 +1392,12 @@ METHOD HbQtSource:new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileNa
    IF ( n := AScan( ::cls_, {| e_ | upper( e_[ 1 ] ) == "VERSION" } ) ) > 0
       IF ! Empty( ::cls_[ n, 2 ] )
          ::cQtVer := ::cls_[ n, 2 ]
-         IF Left( ::cQtVer, 1 ) == "-"
-            ::lQtVerLessThan := .T.
-            ::cQtVer := SubStr( ::cQtVer, 2 )
-         ENDIF
+      ENDIF
+   ENDIF
+   IF ( n := AScan( ::cls_, {| e_ | upper( e_[ 1 ] ) == "VERSIONUPTO" } ) ) > 0
+      IF ! Empty( ::cls_[ n, 2 ] )
+         ::cQtVerLessThan := ::cls_[ n, 2 ]
+         ::lQtVerLessThan := .T.
       ENDIF
    ENDIF
 
@@ -1569,12 +1575,10 @@ METHOD HbQtSource:build()
 
    /* Pull .cpp copyright text */
    aLine := hbqtgen_BuildCopyrightText()
-   IF ::lQtVerLessThan
-      AAdd( aLine, "#if QT_VERSION <= " + ::cQtVer )
-   ELSEIF  ::cQtVer > "0x040500"
-      AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer )
+   IF ::lQtVerLessThan                                            /* Only Once at top of the source */
+      AAdd( aLine, "#if QT_VERSION <= " + ::cQtVerLessThan )
    ELSE
-      AAdd( aLine, "#if QT_VERSION >= 0x040500" )
+      AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer )
    ENDIF
    AAdd( aLine, "" )
 
@@ -1628,11 +1632,12 @@ METHOD HbQtSource:build()
    NEXT
    AAdd( aLine, "}" )
    AAdd( aLine, "" )
+
    IF ::cQtVer > "0x040500"
       AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer )
    ENDIF
-
    AAdd( aLine, "" )
+
    FOR EACH s IN ::hRef
       AAdd( aLine, "extern HB_EXPORT void hbqt_del_" + s:__enumKey() + "( void * pObj, int iFlags );" )
    NEXT
@@ -1735,7 +1740,7 @@ METHOD HbQtSource:build()
       ENDIF
       AAdd( aLine, "" )
    ENDIF
-
+#if 0                           /* Why this construct without any material ?? */
    IF ::cQtVer > "0x040500"
       AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer )
    ENDIF
@@ -1743,6 +1748,7 @@ METHOD HbQtSource:build()
    IF ::cQtVer > "0x040500"
       AAdd( aLine, "#endif" )
    ENDIF
+#endif
    AAdd( aLine, "" )
 
    AAdd( aLine, "static PHB_ITEM s_oClass = NULL;" )
@@ -2095,6 +2101,8 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
       ELSE
          AAdd( txt_, "   #if QT_VERSION >= " + oMtd:cVersion )
       ENDIF
+   ELSEIF ::lQtVerLessThan
+      AAdd( txt_, "   #if QT_VERSION <= " + ::cQtVerLessThan )
    ELSEIF ::cQtVer > "0x040500"
       AAdd( txt_, "   #if QT_VERSION >= " + ::cQtVer )
    ENDIF
@@ -2251,7 +2259,8 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
 
    AAdd( txt_, "   }" )           // if( p )
    IF ! empty( oMtd:cVersion ) .OR. ;
-      ::cQtVer > "0x040500"
+      ::cQtVer > "0x040500"    .OR. ;
+      ::lQtVerLessThan
       AAdd( txt_, "   #endif" )
    ENDIF
    AAdd( txt_, "}" )              // HB_FUNC()
