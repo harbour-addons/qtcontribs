@@ -933,7 +933,7 @@ STATIC FUNCTION hbqtui_pullTranslate( cCmd )
    LOCAL cName
    LOCAL cEnd
    LOCAL cDisamb
-   LOCAL oError
+// LOCAL oError
 
    /* Examples:
       object->setWindowTitle(QApplication_translate("DialogName", "[Dialog Title]\"\303\263Title\"", 0, QApplication_UnicodeUTF8))
@@ -965,6 +965,9 @@ STATIC FUNCTION hbqtui_pullTranslate( cCmd )
          cEnd := SubStr( cArgs, n4 )    /* "QApplication_UnicodeUTF8" */
       ELSEIF ( n4 := At( "QApplication_CodecForTr", cArgs ) ) > 0
          cEnd := SubStr( cArgs, n4 )    /* "QApplication_CodecForTr" */
+      ELSE    /* > 5.0.0 */
+         cEnd := "NIL"
+#if 0
       ELSE
          oError := ErrorNew()
          oError:severity    := ES_ERROR
@@ -977,9 +980,10 @@ STATIC FUNCTION hbqtui_pullTranslate( cCmd )
          oError:operation   := ProcName()
          oError:Description := "Unsupported QT-encoding in QApplication:translate() call"
          Eval( ErrorBlock(), oError )
+#endif
       ENDIF
 
-      IF ! Empty( cEnd )
+      IF cEnd != "NIL" // ! Empty( cEnd )
          /* Known translation */
          cArgs := Left( cArgs, n4 - 1 )
          /*  "[Dialog Title]\"\303\263Title\"", 0, */
@@ -1002,6 +1006,25 @@ STATIC FUNCTION hbqtui_pullTranslate( cCmd )
             cText := ' QApplication():translate( "' + cName + '", ' + cArgs + ', ' + cDisamb + ', ' + cEnd + " )"
          ELSE
             cText := ' QApplication():translate( "' + cName + '", e' + cArgs + ', ' + cDisamb + ', ' + cEnd + " )"
+         ENDIF
+         /* Finally translate to CP used by application */
+         cCmd := SubStr( cCmd, 1, n - 1 ) + cText + " )"
+      ELSE       /* 5.0.1 */
+         n4 := hb_RAt( ",", cArgs )
+         cDisamb := AllTrim( SubStr( cArgs, n4 + 1 ) )
+         IF cDisamb == "0"
+            cDisamb := '""'
+         ENDIF
+         cArgs := AllTrim( Left( cArgs, n4 - 1 ) )
+
+         IF "DOCTYPE HTML PUBLIC" $ cArgs .OR. "<html>" $ cArgs
+            cArgs := StrTran( cArgs, '\"', '"' )
+            cArgs := StrTran( cArgs, '\n', " " )
+            cArgs := StrTran( cArgs, '""' )
+            cArgs := "[" + Substr( cArgs, 2, Len( cArgs ) - 2 ) + "]"
+            cText := ' QApplication():translate( "' + cName + '", '  + cArgs + ', ' + cDisamb + " )"
+         ELSE
+            cText := ' QApplication():translate( "' + cName + '", e' + cArgs + ', ' + cDisamb + " )"
          ENDIF
          /* Finally translate to CP used by application */
          cCmd := SubStr( cCmd, 1, n - 1 ) + cText + " )"
@@ -1132,7 +1155,9 @@ STATIC PROCEDURE hbqtui_replaceConstants( /* @ */ cString )
       IF n > 0
          cString := SubStr( cString, 1, n-1 ) + SubStr( cString, n + 1 )
       ENDIF
-
+   ELSEIF ( n := At( "QStringLiteral(", cString ) ) > 0   /* 5.0.1 */
+      n1 := hb_At( ")", cString, n )
+      cString := SubStr( cString, 1, n-1 ) + SubStr( cString, n + Len( "QStringLiteral(" ), n1 - n - Len( "QStringLiteral(" ) ) + SubStr( cString, n1 + 1 )
    ENDIF
 
    IF hbqtui_occurs( cString, "|" ) > 0

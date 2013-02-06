@@ -79,8 +79,91 @@ void setOrganizationDomain ( const QString & orgDomain )
 void setOrganizationName ( const QString & orgName )
 bool startingUp ()
 bool testAttribute ( Qt::ApplicationAttribute attribute )
-QString translate ( const char * context, const char * sourceText, const char * disambiguation, Encoding encoding, int n )            [*V=-0x040900*]
-QString translate ( const char * context, const char * sourceText, const char * disambiguation = 0, Encoding encoding = CodecForTr )  [*V=-0x040900*]
+//QString translate ( const char * context, const char * sourceText, const char * disambiguation, Encoding encoding, int n )
+QString translate ( const char * context, const char * sourceText, const char * disambiguation = 0, Encoding encoding = CodecForTr ){
+#if QT_VERSION <= 0x040900
+   QCoreApplication * p = ( QCoreApplication * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+         case 5:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) && HB_ISNUM( 4 ) && HB_ISNUM( 5 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ), ( const char * ) hb_parc( 3 ), ( QCoreApplication::Encoding ) hb_parni( 4 ), hb_parni( 5 ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+         case 4:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) && HB_ISNUM( 4 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ), ( const char * ) hb_parc( 3 ), ( HB_ISNUM( 4 ) ? ( QCoreApplication::Encoding ) hb_parni( 4 ) : ( QCoreApplication::Encoding ) QCoreApplication::CodecForTr ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+         case 3:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ), ( const char * ) hb_parc( 3 ), ( HB_ISNUM( 4 ) ? ( QCoreApplication::Encoding ) hb_parni( 4 ) : ( QCoreApplication::Encoding ) QCoreApplication::CodecForTr ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+         case 2:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ), ( const char * ) hb_parc( 3 ), ( HB_ISNUM( 4 ) ? ( QCoreApplication::Encoding ) hb_parni( 4 ) : ( QCoreApplication::Encoding ) QCoreApplication::CodecForTr ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+#else
+   QCoreApplication * p = ( QCoreApplication * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+         case 4:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) && HB_ISNUM( 4 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ), ( const char * ) hb_parc( 3 ), hb_parni( 4 ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+         case 3:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ), ( const char * ) hb_parc( 3 ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+         case 2:
+         {
+            if( HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
+            {
+               hb_retstr_utf8( p->translate( ( const char * ) hb_parc( 1 ), ( const char * ) hb_parc( 2 ) ).toUtf8().data() );
+               return;
+            }
+            break;
+         }
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+#endif
+}
 </PROTOS>
 
 <SLOTS>
