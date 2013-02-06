@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-06 15:19 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+    ! Final fix for HBQAbstractItemModel() where :reset() method was 
+       deprecated in Qt 5.0.1.
+
+    ; NOTE: now all the demos, HbIDE, HbDBU are working fine on 
+            HbQt 5.0.1.
+
+            It is time to cheer.
+
 2013-02-05 18:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/gtqtc/gtqtc.hbc
   * hbqt/qtcore/hbqtcore.hbc

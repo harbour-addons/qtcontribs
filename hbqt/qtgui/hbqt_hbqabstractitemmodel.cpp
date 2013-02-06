@@ -192,7 +192,6 @@ int HBQAbstractItemModel::columnCount( const QModelIndex & /*parent = QModelInde
 QModelIndex HBQAbstractItemModel::index( int row, int column, const QModelIndex & parent ) const
 {
    HB_SYMBOL_UNUSED( parent );
-   //return createIndex( row, column, row * column );
    return createIndex( row, column );
 }
 
@@ -206,16 +205,7 @@ void HBQAbstractItemModel::reset()
 #if QT_VERSION <= 0x040900
    QAbstractItemModel::reset();
 #else
-   int rows = hbqt_fetchData( block, HBQT_QAIM_rowCount, 0, 0, 0 ).toInt();
-   int i;
-   for( i = rows; i > 0; i-- )
-   {
-      removeRow( i - 1 );
-   }
-   for( i = rows; i > 0; i-- )
-   {
-      insertRow( 0 );
-   }
+   emit QAbstractItemModel::layoutChanged();
 #endif
 }
 
