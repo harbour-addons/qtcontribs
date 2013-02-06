@@ -65,6 +65,10 @@ FUNCTION hbmk_plugin_qt( hbmk )
       hbmk_Register_Input_File_Extension( hbmk, ".h" )
       hbmk_Register_Input_File_Extension( hbmk, ".qth" )
 
+      IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )              /* To honor Qt 5.0.1 */
+         hb_SetEnv( "HB_QT_MAJOR_VER", "4" )
+      ENDIF
+
       EXIT
 
    CASE "pre_all"

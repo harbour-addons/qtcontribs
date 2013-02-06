@@ -16,6 +16,31 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-05 18:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/gtqtc/gtqtc.hbc
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtgui/hbqtgui.hbc
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+    + Necessary filters to set right Qt libs based on its major version.
+       Majot Qt version is detected via HB_QT_MAJOR_VER env variable 
+       until a suitable method is not detected.
+
+  * hbqt/hbmk2_qt.hb
+    + Added: code to initialize HB_QT_MAJOR_VER env variable to 4 if 
+       definition is not provided.
+
+    ; NOTE: must set env variable HB_QT_MAJOR_VER to 5 before 
+            compiling HbQt with Qt 5+.
+
+  * hbide/docks.prg
+    - Commented out QMainWindow:setStyleSheet() call.
+    + HbIDE compiles and runs fine with Qt 5.0.1.
+      HbDBU compiles fine with Qt 5 and shows up, but HbQtBrowse()
+       does not display row contents. I know the reason. 
+       Qt has dprecated QABstractItemMode:reset() method and there 
+       is no way ( so far ) to simulate this behavior. 
+
 2013-02-05 16:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/qth/QCoreApplication.qth
     ! A crucial fix where number of parameters are changed.

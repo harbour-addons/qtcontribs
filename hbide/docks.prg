@@ -1577,7 +1577,7 @@ METHOD IdeDocks:animateComponents( nMode )
    ::qAnimateAction:setChecked( ::nAnimantionMode != HBIDE_ANIMATION_NONE )
 
    /* Main Window */
-   ::oDlg:oWidget:setStyleSheet( GetStyleSheet( "QMainWindow", ::nAnimantionMode ) )
+// ::oDlg:oWidget:setStyleSheet( GetStyleSheet( "QMainWindow", ::nAnimantionMode ) )
 
    /* Main Menu Bar with all its submenus */
    ::oDlg:menubar():oWidget:setStyleSheet( GetStyleSheet( "QMenuBar", nMode ) )
