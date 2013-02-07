@@ -202,11 +202,7 @@ QModelIndex HBQAbstractItemModel::parent( const QModelIndex & /* child */ ) cons
 
 void HBQAbstractItemModel::reset()
 {
-#if QT_VERSION <= 0x040900
-   QAbstractItemModel::reset();
-#else
    emit QAbstractItemModel::layoutChanged();
-#endif
 }
 
 #endif

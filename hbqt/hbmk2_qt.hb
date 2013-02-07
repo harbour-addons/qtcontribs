@@ -66,7 +66,13 @@ FUNCTION hbmk_plugin_qt( hbmk )
       hbmk_Register_Input_File_Extension( hbmk, ".qth" )
 
       IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )              /* To honor Qt 5.0.1 */
-         hb_SetEnv( "HB_QT_MAJOR_VER", "4" )
+         cTmp := qt_version_detect( hbmk, "uic", "UIC_BIN" )
+         hbmk_OutStd( hbmk, ".............................." + cTmp )
+         IF " 5." $ cTmp
+            hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
+         ELSE
+            hb_SetEnv( "HB_QT_MAJOR_VER", "4" )
+         ENDIF
       ENDIF
 
       EXIT
@@ -406,6 +412,16 @@ FUNCTION hbmk_plugin_qt( hbmk )
    ENDSWITCH
 
    RETURN cRetVal
+
+STATIC FUNCTION qt_version_detect( hbmk, cName, cEnvQT, lPostfix )
+   LOCAL cTmp := ""
+   LOCAL cBIN := qt_tool_detect( hbmk, cName, cEnvQT, lPostfix )
+
+   IF ! Empty( cBIN )
+      hb_processRun( cBIN + " -v",,, @cTmp )
+   ENDIF
+
+   RETURN cTmp
 
 STATIC FUNCTION qt_tool_detect( hbmk, cName, cEnvQT, lPostfix )
    LOCAL cBIN
