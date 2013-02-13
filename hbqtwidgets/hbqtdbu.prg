@@ -2909,7 +2909,7 @@ METHOD HbQtMdiBrowser:buildBrowser()
       :goPosBlock            := {|n| iif( ::indexOrd() == 0, ::goto( n ), ::ordKeyGoto( n ) ) }
       :phyPosBlock           := {| | iif( ::indexOrd() == 0, ::recNo()  , ::ordKeyNo()      ) }
 
-      :verticalMovementBlock := {|| ::oManager:updateLinks( ::cAlias ) }
+      :verticalMovementBlock := {|| ::dispInfo(),::oManager:updateLinks( ::cAlias ) }
 
 //    :hbContextMenu         := {|mp1| ::execEvent( __browser_contextMenu__, mp1 ) }
    ENDWITH
@@ -3381,7 +3381,7 @@ METHOD HbQtMdiBrowser:setFilter( cFilter )
       ::cFilter := cFilter
       ( ::cAlias )->( dbSetFilter( &( "{|| " + cFilter + " }" ), '"' + cFilter + '"' ) )
       ::oBrw:rowPos := 1
-      ::goTop()
+      ::oBrw:goTop()
    ELSE
    ENDIF
 
@@ -3392,7 +3392,7 @@ METHOD HbQtMdiBrowser:clearFilter()
 
    IF ::nType == BRW_TYPE_DBF
       ( ::cAlias )->( dbClearFilter() )
-      ::goTop()
+      ::oBrw:goTop()
    ELSE
    ENDIF
 
@@ -3539,7 +3539,6 @@ METHOD HbQtMdiBrowser:goTop()
    IF ::nType == BRW_TYPE_DBF
       IF Select( ::cAlias ) > 0
          ( ::cAlias )->( DbGotop() )
-         ::refreshAll()
       ENDIF
    ELSE
       ::nIndex := 1
@@ -3552,7 +3551,6 @@ METHOD HbQtMdiBrowser:goBottom()
    IF ::nType == BRW_TYPE_DBF
       IF Select( ::cAlias ) > 0
          ( ::cAlias )->( DbGoBottom() )
-         ::refreshAll()
       ENDIF
    ELSE
       ::nIndex := Len( ::aData )
@@ -3735,7 +3733,7 @@ METHOD HbQtMdiBrowser:setScope( cScopeTop, cScopeBottom )
          ( ::cAlias )->( OrdScope( 0, NIL ) )
       ELSE
          ( ::cAlias )->( OrdScope( 0, cScope ) )
-         ::goTop()
+         ::oBrw:goTop()
 
          IF cScopeBottom != NIL
             cScope := cScopeBottom
@@ -3755,7 +3753,7 @@ METHOD HbQtMdiBrowser:setScope( cScopeTop, cScopeBottom )
          ELSE
             ( ::cAlias )->( OrdScope( 1, cScope ) )
          ENDIF
-         ::goTop()
+         ::oBrw:goTop()
       ENDIF
    ENDIF
 
@@ -3773,7 +3771,7 @@ METHOD HbQtMdiBrowser:clearScope( nScope )
       ELSEIF nScope == 1
          ( ::cAlias )->( OrdScope( 1, NIL ) )
       ENDIF
-      ::goTop()
+      ::oBrw:goTop()
    ENDIF
 
    RETURN Self

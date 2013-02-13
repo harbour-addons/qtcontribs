@@ -582,14 +582,6 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    oMdiBrowse:dispInfo()
 
    DO CASE
-   CASE nKey == K_CTRL_PGUP
-      oHbQtBrowse:goTop()
-      RETURN .F.
-
-   CASE nKey == K_CTRL_PGDN
-      oHbQtBrowse:goBottom()
-      RETURN .F.
-
    CASE nKey == K_F5
       oHbQtBrowse:Scroll()
 

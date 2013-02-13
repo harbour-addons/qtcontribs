@@ -1993,11 +1993,10 @@ METHOD HbQtBrowse:goTop()
 
    ::TBrowse:goTop()
 
-   ::forceStable()
-   ::setCurrentIndex( .T. )
+   ::refreshAll()
    ::updateVertScrollBar()
 
-   IF ::lVerticalMovementBlock .AND. ! ::hitTop
+   IF ::lVerticalMovementBlock // .AND. ! ::hitTop
       Eval( ::bVerticalMovementBlock, 0, NIL, Self )
    ENDIF
 
@@ -2007,11 +2006,10 @@ METHOD HbQtBrowse:goBottom()
 
    ::TBrowse:goBottom()
 
-   ::forceStable()
-   ::setCurrentIndex( .T. )
+   ::refreshAll()
    ::updateVertScrollBar()
 
-   IF ::lVerticalMovementBlock .AND. ! ::hitBottom
+   IF ::lVerticalMovementBlock // .AND. ! ::hitBottom
       Eval( ::bVerticalMovementBlock, 1, NIL, Self )
    ENDIF
 
