@@ -120,6 +120,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    /* Overloaded Methods */
    METHOD new( nTop, nLeft, nBottom, nRight, oParent, oFont )
    METHOD doConfigure()
+   METHOD refreshWindow()
    METHOD rowCount()
    METHOD up()
    METHOD down()
@@ -210,14 +211,14 @@ CLASS HbQtBrowse INHERIT TBrowse
 
    METHOD showIndicator( rgbColorString )
 
-   METHOD skipRows( nRows )                                 // INTERNAL - skips <nRows> back or forward : Resizing
-   METHOD skipCols( nCols )                                 // INTERNAL - skips <nCols> right or left   : Resizing
+   METHOD skipRows( nRows )                       // INTERNAL - skips <nRows> back or forward : Resizing
+   METHOD skipCols( nCols )                       // INTERNAL - skips <nCols> right or left   : Resizing
 
 
 PROTECTED:
 
-   METHOD cellValue( nRow, nCol )                /* Overloaded */
-   METHOD cellColor( nRow, nCol )                /* Overloaded */
+   METHOD cellValue( nRow, nCol )                 /* Overloaded */
+   METHOD cellColor( nRow, nCol )                 /* Overloaded */
 
    /* HbQt Internal Methods */
    METHOD cellValueA( nRow, nCol )
@@ -457,7 +458,7 @@ METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
    ::TBrowse:new( nTop, nLeft, nBottom, nRight )
 
-   hb_default( @oFont, QFont( "Courier new", 10 ) )
+   hb_default( @oFont, HbQtSet( _QSET_GETSFONT ) )
 
    ::oParent := oParent
    ::oFont   := oFont
@@ -502,6 +503,8 @@ METHOD HbQtBrowse:create()
       /* Attach Model with the View */
       :setModel( ::oDbfModel )
    ENDWITH
+
+   ::oViewport := ::oTableView:viewport()
 
    oPal := ::oTableView:palette()
    oPal:SetColor( QPalette_Inactive, QPalette_Highlight, QColor( 150,215,250 ) )
@@ -579,11 +582,34 @@ METHOD HbQtBrowse:create()
       :addWidget( ::oStatusBar      , 5, 0, 1, 4 )
    ENDWITH
 
-   ::oWidget:show()
-
-   ::oViewport := ::oTableView:viewport()
-
    ::connect()
+
+// ::oWidget:show()
+
+// ::oWidget:connect( QEvent_Show, {|| ::refreshWindow() } )
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:refreshWindow()
+   LOCAL oFontMetrics, nHeight, nViewH
+
+   IF len( ::columns ) > 0
+      oFontMetrics := QFontMetrics( ::oTableView:font() )
+      nHeight := oFontMetrics:height() + 3
+
+      nViewH := ::oTableView:viewport():height()
+      ::nRowsInView := Int( nViewH / nHeight )
+      IF ( nViewH % nHeight ) > ( nHeight / 2 )
+         ::nRowsInView++
+      ENDIF
+
+      /* Probably this is the appropriate time to update row heights */
+      ::nCellHeight := nHeight
+      ::setCellHeight( nHeight )
+
+      ::refreshAll()
+   ENDIF
 
    RETURN Self
 

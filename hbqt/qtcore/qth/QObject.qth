@@ -48,7 +48,7 @@ void dumpObjectTree ()
 QList<QByteArray> dynamicPropertyNames () const
 virtual bool event ( QEvent * e )
 virtual bool eventFilter ( QObject * watched, QEvent * event )
-//T findChild ( const QString & name = QString() ) const
+//T findChild ( const QString & name = QString() ) const /* is implemented in object class */
 //QList<T> findChildren ( const QString & name = QString() ) const
 //QList<T> findChildren ( const QRegExp & regExp ) const
 bool inherits ( const char * className ) const

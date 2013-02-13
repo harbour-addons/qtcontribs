@@ -17,6 +17,36 @@
 */
 
 2013-02-06 19:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/qth/QObject.qth
+    % Flagged that :findChild(0 method is implemented in a different way,
+       and should never be called via .qth.
+
+  * hbqt/qtcore/hbqt_bind.cpp
+  * hbqt/qtcore/hbqt_misc.prg
+    + Implemented: QObject:findChild() method.
+       Thanks to Francesco Perillo for the code.
+
+  * hbqtwidgets/hbqtalert.prg
+    + Added: QLabel:setOpenExternalLinks( .t. ).
+       Now a html formated strings can be supplied to Alert().
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: HbQtBrowse:refreshWindow() method which can be 
+       called with a connect to an event. The primary function of this 
+       method is to recalculate the viewport area and set the number of 
+       browser rows accordingly to reclaim the unoccupied area, 
+       which at certain circumstances is not available when browser 
+       is visible first time.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Implemented: availability of field selection when filter 
+       expression is built, requested by Massimo. Also made the expression 
+       builder title meaneingful.
+
+  * hbdbu/dbu.prg
+    % Reflection of above changes.
+
+2013-02-06 19:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
     ! :Method :reset() now emits :layoutChanged() signal.
       This is made uniform for all versions and also is more efficient.

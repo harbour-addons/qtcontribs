@@ -129,6 +129,7 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
 
    oLabel:setAlignment( Qt_AlignHCenter )
    oLabel:setText( cMsg )
+   oLabel:setOpenExternalLinks( .T. )
    oLabel:setFont( QFont( "Courier new", 10 ) )
    oLabel:setStyleSheet( "padding: 10px;" )
 

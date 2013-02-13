@@ -60,18 +60,29 @@ CREATE CLASS HbQtObjectHandler
 
    VAR    __hEvents  PROTECTED INIT { => }
 
-   VAR    __Slots    /* TOFIX: add PROTECTED or clean this mess     ANS: It is like this by design, cannot be made PROTECTED */
-   VAR    __Events   /* TOFIX: add PROTECTED or clean this mess */
+   VAR    __Slots
+   VAR    __Events
 
    METHOD connect( cnEvent, bBlock )
    METHOD disconnect( cnEvent )
    METHOD setSlots()
    METHOD setEvents()
+   METHOD findChild( cObjectName )
 
    DESTRUCTOR FUNCTION __hbqt_destroy()
    ERROR HANDLER onError()
 
    ENDCLASS
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtObjectHandler:findChild( cObjectName )
+
+   IF ! __objDerivedFrom( Self, "QOBJECT" )
+      RETURN NIL
+   ENDIF
+
+   RETURN __hbqt_findChild( Self, cObjectName )
 
 /*----------------------------------------------------------------------*/
 

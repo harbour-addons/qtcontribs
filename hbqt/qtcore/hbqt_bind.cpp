@@ -1211,6 +1211,26 @@ HB_FUNC( __HBQT_DESTROY )
       hbqt_bindDestroyHbObject( pObject );
 }
 
+HB_FUNC( __HBQT_FINDCHILD )
+{
+   QObject * parentWidget;
+   QObject * P;
+
+   if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && HB_ISCHAR( 2 ) )
+   {
+       parentWidget = (QObject *) hbqt_par_ptr( 1 );
+       if( parentWidget )
+       {
+          void * pText01 = NULL;
+          P = parentWidget->findChild<QObject *>( hb_parstr_utf8( 2, &pText01, NULL ) ) ;
+          hb_strfree( pText01 );
+          hb_itemReturnRelease( hbqt_bindGetHbObjectByQtObject( P ) );
+          return;
+       }
+   }
+   hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+}
+
 int __hbqt_bindItemsInGlobalList( void )
 {
    int i = 0;

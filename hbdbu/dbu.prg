@@ -74,7 +74,7 @@
 #include "common.ch"
 
 #ifdef __ADS__
-#include "ads.ch"
+// #include "ads.ch"
 #endif
 
 #ifdef __CACHE__
@@ -83,8 +83,7 @@ REQUEST CACHERDD
 
 
 FUNCTION Main( ... )
-   LOCAL oMgr
-   LOCAL oSplash
+   LOCAL oMgr, oSplash
 
    hbqt_errorSys()
    QResource():registerResource_1( hbqtres_dbu() )

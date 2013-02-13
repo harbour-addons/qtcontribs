@@ -667,6 +667,8 @@ METHOD HbQtDBU:buildBrwStruct()
    ::oBrwStruct := oBrowse
    ::qRightFrameLay:addWidget( ::oBrwStruct:oWidget )
 
+   ::oBrwStruct:refreshWindow()
+
    RETURN Self
 
 
@@ -2649,6 +2651,8 @@ CLASS HbQtMdiBrowser
    DATA   aIndex                                  INIT  {}
    ACCESS dbStruct                                INLINE ::aStruct
 
+   METHOD selectAField()
+
 PROTECTED:
 
    DATA   oWnd
@@ -2857,6 +2861,8 @@ METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
 
    ::oBrw:addColumnsBlock := {|nMode, xData|  ::execAddAColumn( nMode, xData ) }
 
+   ::oBrw:oWidget:connect( QEvent_WindowActivate, {|| ::oBrw:refreshWindow() } )
+
    RETURN Self
 
 
@@ -2974,7 +2980,7 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
    ::qMdi:show()
 
    ::qMdi:setWindowTitle( ::cTable )
-   ::qMdi:setObjectName( hb_ntos( nID ) )
+   ::qMdi:setObjectName( ::cAlias )
    ::qMdi:setWindowIcon( QIcon( __hbqtImage( "dbf_p" + hb_ntos( ::nID ) ) ) )
 
    IF ! empty( ::aInfo[ TBL_GEOMETRY ] )
@@ -2984,8 +2990,6 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
       NEXT
       qRect := QRect( qRect[ 1 ], qRect[ 2 ], qRect[ 3 ], qRect[ 4 ] )
       ::qMdi:setGeometry( qRect )
-      ::qMdi:resize( ::qMdi:width()+5, ::qMdi:height()+5 )
-      ::qMdi:resize( ::qMdi:width()-5, ::qMdi:height()-5 )
    ELSE
       ::qMdi:resize( 610, 400 )
    ENDIF
@@ -2995,6 +2999,9 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
    ::qMdi:connect( "windowStateChanged(Qt::WindowStates,Qt::WindowStates)", ;
                                  {|p,p1| ::execEvent( __mdiSubWindow_windowStateChanged__, p, p1 ) } )
    ::qMdi:connect( QEvent_Close, {|oEvent| oEvent:accept(), ::execEvent( __mdiSubWindow_buttonXclicked__ ) } )
+
+   ::qMdi:hide()
+   ::qMdi:show()
 
    RETURN Self
 
@@ -3051,7 +3058,9 @@ METHOD HbQtMdiBrowser:execEvent( nEvent, p, p1 )
       EXIT
 #endif
    CASE __mdiSubWindow_windowStateChanged__
+      HB_TRACE( HB_TR_DEBUG, p, p1, ::qMdi:objectName() )
       IF p1 == 8
+         ::oBrw:refreshWindow()
          ::oPanel:setCurrentBrowser( Self )
       ENDIF
       EXIT
@@ -3355,17 +3364,23 @@ METHOD HbQtMdiBrowser:toColumn( ncIndex )
 
 
 METHOD HbQtMdiBrowser:setFilter( cFilter )
+   LOCAL kf2
 
    IF ::nType == BRW_TYPE_DBF
       IF Empty( cFilter ) .OR. ! HB_ISSTRING( cFilter )
          cFilter := ::cFilter
       ENDIF
-      cFilter := trim( HbQtBulkGet( Pad( cFilter, 50 ), 'Filter Expression' ) )
+
+      kf2 := SetKey( K_F2, {|| ::selectAField() } )
+      cFilter := trim( HbQtBulkGet( Pad( cFilter, 100 ), 'Filter Expression', "@S50", , , ::cAlias + " [F2-Field]" ) )
+      SetKey( K_F2, kf2 )
+
       IF Empty( cFilter )
          RETURN NIL
       ENDIF
       ::cFilter := cFilter
       ( ::cAlias )->( dbSetFilter( &( "{|| " + cFilter + " }" ), '"' + cFilter + '"' ) )
+      ::oBrw:rowPos := 1
       ::goTop()
    ELSE
    ENDIF
@@ -3859,6 +3874,25 @@ METHOD HbQtMdiBrowser:exists()
    RETURN .F.
 
 
+METHOD HbQtMdiBrowser:selectAField()
+   LOCAL aStruct, nChoice, cVar, nPos, aMenu := {}
+
+   aStruct := ::dbStruct
+   AEval( aStruct, {|e_| AAdd( aMenu, e_[ 1 ] ) } )
+
+   nChoice := HbQtAChoice( , , , , aMenu, , , , , ::cAlias + " : Select a Field" )
+   IF nChoice > 0
+      cVar := GetActive():buffer()
+      nPos := GetActive():pos()
+      cVar := SubStr( cVar, 1, nPos ) + ( ::cAlias + "->" + aStruct[ nChoice, 1 ] ) + SubStr( cVar, nPos + 1 )
+      GetActive():varPut( cVar )
+      GetActive():display()
+      GetActive():pos := nPos + Len( ::cAlias + "->" + aStruct[ nChoice, 1 ] )
+   ENDIF
+
+   RETURN NIL
+
+
 STATIC FUNCTION hbide_pathToOSPath( cPath )
    LOCAL n
 
@@ -3907,6 +3941,7 @@ STATIC FUNCTION hbide_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lA
          AAdd( aFiles, oList:At( i ) )
       NEXT
    ENDIF
+   oDlg:setParent( QWidget() )
 
    RETURN iif( nRes == 0, NIL, iif( lAllowMulti, aFiles, aFiles[ 1 ] ) )
 
