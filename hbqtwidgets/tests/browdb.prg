@@ -136,6 +136,7 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    oBrowse:gotoBlock           := {|| GotoMyRecord() }
    oBrowse:addColumnsBlock     := {|nMode,cColumn,oBrw | AddMyColumns( nMode,cColumn,oBrw ) }
+   oBrowse:pressHeaderBlock    := {|nCol,cColumn,oBrw| nCol := iif( cColumn == "Last Name", 1, 0 ), dbSetOrder( nCol ), oBrw:refreshAll(), oBrw:forceStable() }
 
    RETURN oBrowse
 

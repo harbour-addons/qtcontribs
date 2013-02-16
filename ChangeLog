@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-15 18:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: SET/GET Method :pressHeaderBlock().
+       The block is executed whenever user clicks on any column header 
+       and passes <nCol>,<cName>,<oBrw> arguments.
+
+    % Changed: :verticalMovementBlock() passes the K_ constant associated
+       with the movement, i.e., K_UP,K_DOWN,K_PGUP, K_PGDN, K_CTRL_PGUP,
+       K_CTRL_PGDN instead of 0 to 5. 
+
+    + :verticalMovementBlock() is also executed when :configure() is called
+        on browser and passes -3 as first argument.
+
+    % Restructured and rewritten code to handle initial showing of 
+       browser object. This fixes the long-standing glich where 
+       browser rows were not displayed according to the height of the 
+       viewport.
+
+  * hbqtwidgets/tests/browdb.prg
+    + Demonstrated: the use of :pressHeaderBlock().
+       Clicking on the "Last Name" column header sets the index to "Last".
+       Clicking on any other header set index to natural order.
+
 2013-02-13 14:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtbrowse.prg
   * hbqtwidgets/hbqtdbu.prg
