@@ -481,6 +481,7 @@ METHOD HbQtBrowse:create()
    LOCAL oPal
 
    ::oWidget := QFrame( ::oParent )
+   ::oWidget:setObjectName( __hbqtGetNextIdAsString( "TBROWSE" ) )
 
    /* Important here as other parts will be based on it*/
    ::oWidget:resize( ::oParent:width(), ::oParent:height() )

@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-18 14:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtcore/hbqt_misc.prg
+    + Implemented: in error handler, to find a child of the name 
+       representing the error message. Now, manually built dialogs 
+       have the same feature as Qt Creator created dialogs.
+
+         oMain:cChildName -> object represented by cChildName.
+
+       The limitation in this approach is that you must have to 
+       set the name in upper case.
+
+       This implementation is made possible on top of oObj:findChild() method.
+       Now you can construct a dialog and its children and then pass 
+       only main window object to functions which can then access 
+       its children transparently.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: setObjectName( "TBROWSE" ) suffixed with next counter, 
+       Just in case one wants to find it as oMain:TBrowse.
+
 2013-02-15 18:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtbrowse.prg
     + Implemented: SET/GET Method :pressHeaderBlock().

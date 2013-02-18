@@ -110,12 +110,14 @@ METHOD HbQtObjectHandler:setEvents()
 
 METHOD HbQtObjectHandler:onError()
    LOCAL cMsg := __GetMessage()
-   LOCAL oError
+   LOCAL oError, oObj
 
    IF SubStr( cMsg, 1, 1 ) == "_"
       cMsg := SubStr( cMsg, 2 )
    ENDIF
-   cMsg := "Message not found :" + cMsg
+   IF ! Empty( oObj := ::findChild( cMsg ) )
+      RETURN oObj
+   ENDIF
 
    oError := ErrorNew()
 
@@ -127,7 +129,7 @@ METHOD HbQtObjectHandler:onError()
    oError:canDefault  := .F.
    oError:Args        := hb_AParams()
    oError:operation   := ProcName()
-   oError:Description := cMsg
+   oError:Description := "Message not found..:" + cMsg
 
    Eval( ErrorBlock(), oError )
 
@@ -241,7 +243,7 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
    RETURN .F.
 
 /*----------------------------------------------------------------------*/
-//
+//                        Holding Conneced States
 /*----------------------------------------------------------------------*/
 
 CLASS HbQtConnecteds
