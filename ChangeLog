@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-22 09:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/hbide_v.ch
+    % Version Bump.
+
 2013-02-18 14:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtcore/hbqt_misc.prg
     + Implemented: in error handler, to find a child of the name 
