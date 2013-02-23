@@ -77,6 +77,7 @@
    #define _QGET_TYPE                             14
    #define _QGET_DATA                             15
    #define _QGET_PROPERTIES                       16
+   #define _QGET_SAYPROPERTIES                    17
 
 
    /* Constants for _QGET_DATA array elements */
@@ -100,8 +101,8 @@
    #command QSET NOMOUSABLE [TO] <lMouse>         =>   HbQtSet( _QSET_NOMOUSABLE , <lMouse>  )
 
 
-   #command @ <row>, <col> QSAY <exp> [PICTURE <pic>] [COLOR <clr>] => ;
-         AAdd( SayList, { <row>, <col>, <exp>, <pic>, <clr> } )
+   #command @ <row>, <col> QSAY <exp> [PICTURE <pic>] [COLOR <clr>] [ PROPERTIES <props> ] => ;
+         AAdd( SayList, { <row>, <col>, <exp>, <pic>, <clr>, <{props}> } )
 
 
    #command @ <row>, <col> QGET <v> ;
@@ -116,12 +117,13 @@
                               [PROPERTIES <prop>    ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
-                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL, <{prop}> } )
+                                <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QLineEdit", NIL, <{prop}>, NIL } )
 
 
    #command @ <row>, <col> QSAY <sayExp> ;
                               [PICTURE <sayPic>     ] ;
                               [COLOR <sayColor>     ] ;
+                              [PROPERTIES <sayProps>] ;
                            QGET <v> ;
                               [PICTURE <pic>        ] ;
                               [VALID <valid>        ] ;
@@ -135,7 +137,7 @@
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, <pic>, <{valid}>, <{when}> ),;
                                 <cap>, <color>, <{validator}>, <.noMouse.>, <row>, <col>, NIL, NIL, ;
-                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL, <{prop}> } )
+                                <sayExp>, <sayPic>, <sayColor>, <oControl>, "QLineEdit", NIL, <{prop}>, <{sayProps}> } )
 
 
    #command @ <row>, <col> QGET <v> CHECKBOX  ;
@@ -148,7 +150,7 @@
                               [PROPERTIES <prop>    ] ;
                        => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
-                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL, <{prop}> } )
+                                <cap>, <color>, NIL, <.noMouse.>, <row>, <col>, NIL, NIL, NIL, NIL, NIL, <oControl>, "QCheckBox", NIL, <{prop}>, NIL } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> MEMOEDIT ;
@@ -161,7 +163,7 @@
                               [PROPERTIES <prop>    ] ;
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
-                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL, <{prop}> } )
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPlainTextEdit", NIL, <{prop}>, NIL } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> LISTBOX <items> ;
@@ -175,7 +177,7 @@
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QListWidget", ;
-                                { <items> }, <{prop}> } )
+                                { <items> }, <{prop}>, NIL } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> COMBOBOX <items> ;
@@ -189,7 +191,7 @@
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QComboBox", ;
-                                { <items> }, <{prop}> } )
+                                { <items> }, <{prop}>, NIL } )
 
 
    #command @ <top>, <left>, <bottom>, <right> QGET <v> PUSHBUTTON <label> [ACTION <act>] ;
@@ -203,7 +205,7 @@
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QPushButton", ;
-                                { <label>, <{act}> }, <{prop}> } )
+                                { <label>, <{act}> }, <{prop}>, NIL } )
 
 
    #command QREAD [ [ PARENT ] <GetParent> ] ;

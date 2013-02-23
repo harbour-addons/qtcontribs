@@ -371,7 +371,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    @  2, 02 SAY PadL( "Birthday:", nPdL )
    @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
 
-   @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL )
+   @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL ) PROPERTIES {|oSay,aCoord| MySayProperties( oSay, aCoord ) }
    @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
 
    @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  PICTURE "Y"
@@ -466,3 +466,10 @@ STATIC FUNCTION SetControlProp( oGet, oControl, cProp, xValue )
 
    RETURN NIL
 
+STATIC FUNCTION MySayProperties( oSay, aCoord )
+
+   HB_SYMBOL_UNUSED( aCoord )
+
+   oSay:setText( "Salary..." )
+
+   RETURN NIL

@@ -1266,6 +1266,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       ENDIF
       EXIT
 
+   CASE Qt_Key_Enter
    CASE Qt_Key_Return
       IF ::cClassName $ "QLISTWIDGET,QCOMBOBOX,QPUSHBUTTON"
          IF ::postValidate()

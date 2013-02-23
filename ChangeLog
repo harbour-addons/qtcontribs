@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-22 19:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqtwidgets/hbqtstd.ch
+    + Added: clause @ ... QSAY ... PROPERTIES <prop>
+    + Added: clause @ ... QSAY ... PROPERTIES <prop> QGET ...
+
+  * hbqtwidgets/hbqtgetlist.prg
+    + Implemented: PROPERTIES clause of @ ... QSAY PROPERTIES ... [ QGET ... ]
+       The block is evaluated with <oQLabel>,<{nX,nY,nW,nH}>.
+       User can then change the properrties of oQLabel as he/she 
+       deem appropriate to their needs. 
+
+       CAUTION: do not mess-up with Windows look and feel. A wrong 
+                usage may spoil overall screen design.
+
+  * hbqtwidgets/hbqtgetsys.prg
+    + Implemented: num-pad placed ENTER key which now behaves like 
+        standard ENTER key is pressed. Pointed-out by Alain.
+
+  * hbqtwidgets/tests/validator.prg
+    + Added: code to demonstrate the use of @ ... QSAY ... PROPERTIES clause.
+
 2013-02-22 18:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
     + Added: detection of Shift+Delete which must behave like Ctrl+X.

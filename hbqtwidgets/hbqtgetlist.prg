@@ -221,7 +221,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          oGet:col   := aEdit[ _QGET_COL ]
          IF Empty( aEdit[ _QGET_CONTROL ] )
             IF ! Empty( aEdit[ _QGET_SAY ] )
-               AAdd( SayList, { aEdit[ _QGET_ROW ], aEdit[ _QGET_COL ], aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ] } )
+               AAdd( SayList, { aEdit[ _QGET_ROW ], aEdit[ _QGET_COL ], aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ], aEdit[ _QGET_SAYPROPERTIES ] } )
                oGet:col += Len( Transform( aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ] ) ) + 1
             ENDIF
          ELSE
@@ -248,9 +248,14 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             :setText( cText )
             :setFont( oFont )
             :setAlignment( Qt_AlignLeft + Qt_AlignVCenter )
+            :setOpenExternalLinks( .T. )
             :move( nX, nY )
+            :resize( nW, nH )
          ENDWITH
-         oLabel:resize( nW, nH )
+
+         IF HB_ISBLOCK( aPic[ 6 ] )
+            Eval( aPic[ 6 ], oLabel, { nX, nY, nW, nH } )
+         ENDIF
       NEXT
    ENDIF
 
