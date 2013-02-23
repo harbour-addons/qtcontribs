@@ -202,6 +202,9 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD applyTheme( cTheme )
    METHOD setEncoding( cCodec )
 
+   METHOD nextEditor()
+   METHOD previousEditor()
+
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
@@ -609,6 +612,39 @@ METHOD IdeEditsManager:getEditorBySource( cSource )
    ENDIF
 
    RETURN Nil
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:nextEditor()
+   LOCAL nCurIndex := ::qTabWidget:currentIndex()
+
+   IF ::qTabWidget:count() > 1
+      IF nCurIndex == ::qTabWidget:count() - 1
+         nCurIndex := 0
+      ELSE
+         nCurIndex++
+      ENDIF
+   ENDIF
+   ::qTabWidget:setCurrentIndex( nCurIndex )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:previousEditor()
+
+   LOCAL nCurIndex := ::qTabWidget:currentIndex()
+
+   IF ::qTabWidget:count() > 1
+      IF nCurIndex == 0
+         nCurIndex := ::qTabWidget:count() - 1
+      ELSE
+         nCurIndex--
+      ENDIF
+   ENDIF
+   ::qTabWidget:setCurrentIndex( nCurIndex )
+
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
 

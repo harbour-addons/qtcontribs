@@ -589,7 +589,7 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
 
    SWITCH nEvent
 
-   CASE QEvent_KeyPress     /* The key is sent here prior TO applying TO editor */
+   CASE QEvent_KeyPress     /* The key is sent here prior to applying to editor */
       ::unmatchPair()
 
       key    := p:key()
@@ -604,7 +604,21 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
       CASE Qt_Key_Backtab
          p:accept()
          ::handleTab( key )
-         RETURN .t.
+         RETURN .T.
+      CASE Qt_Key_Right
+         IF lAlt
+            p:accept()
+            ::oEM:nextEditor()
+            RETURN .T.
+         ENDIF
+         EXIT
+      CASE Qt_Key_Left
+         IF lAlt
+            p:accept()
+            ::oEM:previousEditor()
+            RETURN .T.
+         ENDIF
+         EXIT
       ENDSWITCH
 
       IF ::oSC:execKey( Self, key, lAlt, lCtrl, lShift )   /* User Defined Actions */
@@ -2255,7 +2269,6 @@ METHOD IdeEdit:upperCaseKeywords()
 
       qDoc:setUndoRedoEnabled( .t. )
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -3519,12 +3532,12 @@ FUNCTION hbide_harbourKeywords()
                     'elseif'           => NIL,;
                     'endif'            => NIL,;
                     'end'              => NIL,;
-                    'endswitch'        => NIL,;
                     'docase'           => NIL,;
                     'case'             => NIL,;
                     'endcase'          => NIL,;
                     'otherwise'        => NIL,;
                     'switch'           => NIL,;
+                    'endswitch'        => NIL,;
                     'do'               => NIL,;
                     'while'            => NIL,;
                     'enddo'            => NIL,;
@@ -3562,6 +3575,8 @@ FUNCTION hbide_harbourKeywords()
                     'handler'          => NIL,;
                     'loop'             => NIL,;
                     'in'               => NIL,;
+                    'object'           => NIL,;
+                    'endwith'          => NIL,;
                     'nil'              => NIL }
    RETURN s_b_
 

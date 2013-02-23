@@ -1134,6 +1134,11 @@ bool HBQPlainTextEdit::hbKeyPressSelection( QKeyEvent * event )
    shift = event->modifiers() & Qt::ShiftModifier;
    isNavable = isNavableKey( k );
 
+   if( shift && k == Qt::Key_Delete )
+   {
+      hbCut( Qt::Key_X );
+      return true;
+   }
    if( ctrl && shift && ! isNavable )
    {
       return false;
@@ -1265,7 +1270,7 @@ bool HBQPlainTextEdit::hbKeyPressSelection( QKeyEvent * event )
    }
    else if( ! ctrl && k >= ' ' && k < 127 && columnBegins >= 0 && selectionMode == selectionMode_stream )
    {
-      hbCut( Qt::Key_Delete );
+      hbCut( shift ? Qt::Key_X : Qt::Key_Delete );
       hbClearSelection();
    }
    else if( ! ctrl && k >= ' ' && k < 127 )

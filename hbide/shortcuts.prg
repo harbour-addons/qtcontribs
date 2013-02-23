@@ -233,6 +233,9 @@ CLASS IdeShortcuts INHERIT IdeObject
    METHOD toPrevFunction()
    METHOD execToolsBox()
 
+   METHOD nextEditor()
+   METHOD previousEditor()
+
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
@@ -972,173 +975,181 @@ METHOD IdeShortcuts:loadKeys()
 /*----------------------------------------------------------------------*/
 METHOD IdeShortcuts:getWord( lSelect )
    RETURN ::oEdit:getWord( lSelect )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:getLine( nLine, lSelect )
    RETURN ::oEdit:getLine( nLine, lSelect )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:getText()
    RETURN ::oEdit:getText()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:duplicateLine()
    RETURN ::oEdit:duplicateLine()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:deleteLine()
    RETURN ::oEdit:deleteLine()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:moveLineUp()
    RETURN ::oEdit:moveLine( -1 )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:moveLineDown()
    RETURN ::oEdit:moveLine( 1 )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:gotoLine( nLine )
    RETURN ::oEdit:goTo( nLine )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:indentRight()
    RETURN ::oEdit:blockIndent( 1 )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:indentLeft()
    RETURN ::oEdit:blockIndent( -1 )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:blockComment()
    RETURN ::oEdit:blockComment()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:streamComment()
    RETURN ::oEdit:streamComment()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:insert( cText )
    RETURN ::oEdit:insertText( cText )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:separator( cSep )
    RETURN ::oEdit:insertSeparator( cSep )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:print()
    RETURN ::oEdit:printPreview()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toUpper()
    RETURN ::oEdit:caseUpper()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toLower()
    RETURN ::oEdit:caseLower()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:invertCase()
    RETURN ::oEdit:caseInvert()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:zoom( nKey )
    RETURN ::oEdit:zoom( nKey )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:cut()
    RETURN ::oEdit:cut()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:copy()
    RETURN ::oEdit:copy()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:paste()
    RETURN ::oEdit:paste()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:selectAll()
    RETURN ::oEdit:selectAll()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:redo()
    RETURN ::oEdit:redo()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:undo()
    RETURN ::oEdit:undo()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:setBookMark()
    RETURN ::oEdit:setNewMark()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:gotoMark( nIndex )
    RETURN ::oEdit:gotoMark( nIndex )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:switchToReadOnly()
    RETURN ::oEdit:setReadOnly()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:single2doubleQuotes()
    RETURN ::oEdit:convertDQuotes()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:double2singleQuotes()
    RETURN ::oEdit:convertQuotes()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:tabs2spaces()
    RETURN ::oEdit:tabs2spaces()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:removeTrailingSpaces()
    RETURN ::oEdit:removeTrailingSpaces()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toggleLineNumbersDisplay()
    RETURN ::oEdit:toggleLineNumbers()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:presentSkeletons()
    RETURN ::oEdit:presentSkeletons()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:gotoFunction()
    RETURN ::oEdit:gotoFunction()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toggleCurrentLineHilight()
    RETURN ::oEdit:toggleCurrentLineHighlightMode()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toggleStreamSelectionMode()
    RETURN ::oEdit:toggleStreamSelectionMode()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toggleColumnSelectionMode()
    RETURN ::oEdit:toggleColumnSelectionMode()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toggleLineSelectionMode()
    RETURN ::oEdit:toggleLineSelectionMode()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:togglePersistentSelection()
    RETURN ::oEdit:togglePersistentSelection()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:clearSelection()
    RETURN ::oEdit:clearSelection()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:findAgain()
    RETURN ::oEdit:findEx()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:execToolsBox()
    RETURN ::oEdit:execToolsBox()
+
 /*----------------------------------------------------------------------*/
 //                              Navigation
 /*----------------------------------------------------------------------*/
 METHOD IdeShortcuts:home()
    RETURN ::oEM:home()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:end()
    RETURN ::oEM:end()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:down()
    RETURN ::oEM:down()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:up()
    RETURN ::oEM:up()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:goBottom()
    RETURN ::oEM:goBottom()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:goTop()
    RETURN ::oEM:goTop()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:left()
    RETURN ::oEM:left()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:right()
    RETURN ::oEM:right()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:panEnd()
    RETURN ::oEM:panEnd()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:panHome()
    RETURN ::oEM:panHome()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:pageUp()
    RETURN ::oEM:pageUp()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:pageDown()
    RETURN ::oEM:pageDown()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:find( cString, nPosFrom )
    RETURN ::oEM:find( cString, nPosFrom )
+
+METHOD IdeShortcuts:nextEditor()
+   RETURN ::oEM:nextEditor()
+
+METHOD IdeShortcuts:previousEditor()
+   RETURN ::oEM:previousEditor()
+
 /*----------------------------------------------------------------------*/
 //                     Other Cpmponents
 /*----------------------------------------------------------------------*/
@@ -1147,14 +1158,14 @@ METHOD IdeShortcuts:replace()
       ::oFR:replace()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:execTool( ... )
    RETURN ::oTM:execTool( ... )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:help( cTopic )
    HB_SYMBOL_UNUSED( cTopic )
    RETURN ::oHelpDock:show()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:exit( lWarn )
    IF HB_ISLOGICAL( lWarn ) .AND. lWarn
       IF hbide_getYesNo( "Exit HbIDE ?", , "Macro Executed" )
@@ -1164,86 +1175,86 @@ METHOD IdeShortcuts:exit( lWarn )
       PostAppEvent( xbeP_Close, NIL, NIL, ::oDlg )
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:newSource( cType )
    HB_SYMBOL_UNUSED( cType )
    RETURN ::oSM:editSource( '' )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:open()
    RETURN ::oSM:openSource()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:save()
    RETURN ::oSM:saveSource( ::oEM:getTabCurrent(), .f., .f. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:saveAs()
    RETURN ::oSM:saveSource( ::oEM:getTabCurrent(), .t., .t. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:saveAll()
    RETURN ::oSM:saveAllSources()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:close()
    RETURN ::oSM:closeSource()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:revertToSaved()
    RETURN Self
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:findDlg()
    IF !Empty( ::qCurEdit )
       ::oFR:show()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:findDlgEx()
    IF !Empty( ::qCurEdit )
       ::oSearchReplace:beginFind()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:build( cProj )
    IF ! HB_ISSTRING( cProj )
       cProj := ""
    ENDIF
    RETURN ::oPM:buildProject( cProj, .F., .F. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:buildLaunch( cProj )
    IF ! HB_ISSTRING( cProj )
       cProj := ""
    ENDIF
    RETURN ::oPM:buildProject( cProj, .T., .F. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:reBuild( cProj )
    IF ! HB_ISSTRING( cProj )
       cProj := ""
    ENDIF
    RETURN ::oPM:buildProject( cProj, .F., .T. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:reBuildLaunch( cProj )
    IF ! HB_ISSTRING( cProj )
       cProj := ""
    ENDIF
    RETURN ::oPM:buildProject( cProj, .T., .T. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:launch( cProj )
    IF ! HB_ISSTRING( cProj )
       cProj := ""
    ENDIF
    RETURN ::oPM:launchProject( cProj )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:dlgKeyboardMappings()
    RETURN ::oTM:show()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:dlgToolsAndUtils()
    RETURN ::oSC:show()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:setView( cView )
    IF empty( cView )
       cView := "Stats"
    ENDIF
    RETURN ::oDK:setView( cView )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:compilePPO()
    RETURN ::oPM:buildProject( '', .F., .F., .T., .T. )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toggleStatusBar()
    IF ::lStatusBarVisible
       ::oSBar:oWidget:hide()
@@ -1252,15 +1263,16 @@ METHOD IdeShortcuts:toggleStatusBar()
    ENDIF
    ::oIde:lStatusBarVisible := ! ::lStatusBarVisible
    RETURN Self
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:execPlugin( cPlugin, ... )
    RETURN hbide_execPlugin( cPlugin, ::oIde, ... )
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toNextFunction()
    RETURN ::oEdit:toNextFunction()
-/*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:toPrevFunction()
    RETURN ::oEdit:toPreviousFunction()
+
 /*----------------------------------------------------------------------*/
 //                       Public API Definitions
 /*----------------------------------------------------------------------*/
@@ -1355,6 +1367,12 @@ METHOD IdeShortcuts:loadMethods()
    aadd( ::aMethods, { 'gotoLine( nLine )', ;
                        'gotoLine(  )', ;
                        'Attempt is made to position the cursor at <nLine>. If <nLine> is not supplied, a "Goto" dialog is opened to supply <nLine>.'  } )
+   aadd( ::aMethods, { 'nextEditor()', ;
+                       'nextEditor()', ;
+                       'Right editing instance (next tab) from current editor will be brought to focus. If current tab will be last one then focus will shift to first tab.'  } )
+   aadd( ::aMethods, { 'previousEditor()', ;
+                       'previousEditor()', ;
+                       'Left editing instance (previous tab) from current editor will be brought to focus. If current tab will be first one then focus will shift to last tab.'  } )
 
    aadd( ::aMethods, { '          Files', ;
                        '', ;

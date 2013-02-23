@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-22 18:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+    + Added: detection of Shift+Delete which must behave like Ctrl+X.
+
+  * hbide/themes.prg
+    + Added: some Harbour keywords to colorize per specs.
+
+  * hbide/edit.prg
+  * hbide/editor.prg
+    + Implemented: ::nextEditor() and ::previousEditor() methods.
+       Assigned: Alt+Right Arrow to ::nextEditor()
+                 Alt+Left Arrow to ::previousEditor()
+         The assigment is permanent. You can assign these methods 
+         to other keys but these keys cannot be overriden.
+
+         The methods navigate right or left editing instance in a 
+         cirriculatory manner, means jumping to first or last editing 
+         tab depending upon the arrow hit.
+
+         This enables to you navigate between tabs without leaving the 
+         keyboard. Till now you had to click on a tab to activate 
+         contained editing instance.
+
+         The pointer was received from Francesco Saverio Giudice.
+
+  * hbide/shortcuts.prg
+    + Added: above two methods to be callable via user macros.
+
 2013-02-22 09:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/hbide_v.ch
     % Version Bump.

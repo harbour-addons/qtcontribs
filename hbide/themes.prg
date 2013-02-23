@@ -223,7 +223,7 @@ METHOD IdeThemes:create( oIde, cThemesFile )
    aadd( ::aPatterns, { "PreprocessorDirectives", s, .f. } )
 
    /* Harbour Keywords */
-   b_:= { 'function','procedure','thread','return','static','local','default', ;
+   b_:= { 'next','function','procedure','thread','return','static','local','default', ;
           'if','else','elseif','endif','end', ;
           'docase','case','endcase','otherwise', ;
           'switch','endswitch', ;
@@ -234,7 +234,7 @@ METHOD IdeThemes:create( oIde, cThemesFile )
           'class','endclass','method','data','var','destructor','inline','assign','access',;
           'inherit','init','create','virtual','message', 'from', 'setget',;
           'begin','sequence','try','catch','always','recover','hb_symbol_unused', ;
-          'error','handler','private','public' }
+          'error','handler','private','protected','public' }
    s := ""; aeval( b_, {|e| s += iif( empty( s ), "", "|" ) + "\b" + e + "\b" } )
    aadd( ::aPatterns, { "HarbourKeywords"   , s, .f. } )
 
