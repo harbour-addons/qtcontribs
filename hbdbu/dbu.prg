@@ -181,7 +181,7 @@ METHOD DbuMGR:new( aParams )
 
 METHOD DbuMGR:create()
    LOCAL aRdds := {}
-   LOCAL cTitle
+   LOCAL cTitle, cParam, cPath, cName, cExt, s, cCurPath
 
 #if defined(__CACHE__)
    AAdd( aRdds, "CACHERDD" )
@@ -244,6 +244,27 @@ METHOD DbuMGR:create()
    ::oWidget:stackedWidget:setCurrentIndex( 1 )
 
    ::populateProdTables()
+   FOR EACH cParam IN ::aParams
+      IF ".dbf" $ Lower( cParam )
+         cCurPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+         hb_fNameSplit( cParam, @cPath, @cName, @cExt )
+         IF ! Empty( cExt ) .AND. Lower( cExt ) == ".dbf"
+            IF Empty( cPath )
+               cPath := cCurPath
+            ELSEIF Left( cParam, 2 ) == ".."
+               cPath := cCurPath
+            ENDIF
+            IF Left( cParam, 2 ) == ".."
+               s := cPath + s
+            ELSE
+               s := cPath + cName + cExt
+            ENDIF
+            IF ! Empty( s )
+               ::oDBU:openATable( s )
+            ENDIF
+         ENDIF
+      ENDIF
+   NEXT
 
    ::oWidget:dockCache:hide()
    ::oWidget:show()

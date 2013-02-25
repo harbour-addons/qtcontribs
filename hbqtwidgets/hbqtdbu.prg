@@ -290,6 +290,8 @@ CLASS HbQtDBU
    METHOD setLinksInfo( aInfo )
    METHOD getLinksInfo()
 
+   METHOD openATable( cDBF )
+
    /* END */
 
 PROTECTED:
@@ -1704,6 +1706,14 @@ METHOD HbQtDBU:showTablesTree()
 
    RETURN Self
 
+
+METHOD HbQtDBU:openATable( cDBF )
+
+   ::oCurPanel:addBrowser( { NIL, ;
+                             cDBF, ;
+                             NIL, ;
+                             iif( ! ( ::qRddCombo:currentText() $ "DBFCDX,DBFNTX,DBFNSX" ), "DBFCDX", ::qRddCombo:currentText() ) } )
+   RETURN Self
 
 METHOD HbQtDBU:open( aDbfs )
    LOCAL aInfo, cTable
