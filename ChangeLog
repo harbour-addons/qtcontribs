@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-25 13:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/sources.prg
+    + Implemented: protocol to keep watch on the sopened source 
+       and report if it is changed from out-side of current HbIDE 
+       instance and then asks to reload or not.
+
+       Pointer sent by Massimo, thanks.
+
+       Not heavily tested, so your feedback will be valuable.
+
 2013-02-22 19:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbqtwidgets/hbqtstd.ch
     + Added: clause @ ... QSAY ... PROPERTIES <prop>

@@ -73,6 +73,8 @@
 
 CLASS IdeSourcesManager INHERIT IdeObject
 
+   DATA   oFileWatcher
+
    METHOD new( oIde )
    METHOD create( oIde )
    METHOD destroy()
@@ -88,6 +90,7 @@ CLASS IdeSourcesManager INHERIT IdeObject
    METHOD revertSource( nTab )
    METHOD openSource()
    METHOD selectSource( cMode, cFile, cTitle, cDftPath )
+   METHOD requestSourceReload( cSource )
 
    ENDCLASS
 
@@ -96,6 +99,9 @@ CLASS IdeSourcesManager INHERIT IdeObject
 METHOD IdeSourcesManager:new( oIde )
 
    ::oIde := oIde
+
+   ::oFileWatcher := QFileSystemWatcher()
+   ::oFileWatcher:connect( "fileChanged(QString)", {|cSource| ::requestSourceReload( cSource ) } )
 
    RETURN Self
 
@@ -114,6 +120,19 @@ METHOD IdeSourcesManager:create( oIde )
    ::oIde := oIde
 
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeSourcesManager:requestSourceReload( cSource )
+
+   IF ::oEM:isOpen( cSource )  /* Only watch which are already open */
+      IF hbide_getYesNo( cSource + " has been changed by some external process!", "Want to re-load it again ?", "File Changed Notification!" )
+         ::oEM:reLoad( cSource )
+      ENDIF
+      ::oEM:setSourceVisible( cSource ) /* Should the changed file be brrought to focus? I think no. */
+   ENDIF
+
+   RETURN NIL
 
 /*----------------------------------------------------------------------*/
 
@@ -200,6 +219,8 @@ METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cV
    DEFAULT nPos  TO 0
    DEFAULT nHPos TO 0
    DEFAULT nVPos TO 0
+
+   ::oFileWatcher:addPath( cSourceFile )
 
    ::oEM:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    IF lVisible
