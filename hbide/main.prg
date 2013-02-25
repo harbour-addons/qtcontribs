@@ -403,9 +403,8 @@ METHOD HbIde:create( aParams )
 
    ::oColorizeEffect := QGraphicsColorizeEffect()
 
-   qPixmap := QPixmap( ":/resources" + hb_ps() + "hbidesplash.png" )
+   qPixmap := QPixmap( ":/resources/hbide-2013.png" )
    qSplash := QSplashScreen()
-   // qSplash:setWindowFlags( hb_bitOr( Qt_WindowStaysOnTopHint, qSplash:windowFlags() ) )
    qSplash:setPixmap( qPixmap )
    qSplash:show()
    ::showApplicationCursor( Qt_BusyCursor )

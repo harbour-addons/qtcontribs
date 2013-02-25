@@ -16,6 +16,18 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-25 14:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbide/resources/hbide-2013.png
+  * hbide/hbide.qrc
+  * hbide/main.prg
+    + Added: new HbIDE splash screen with correct copyright years.
+       Was a long neglected necessity which is flared up by Massimo.
+
+  + hbqtwidgets/resources/hbdbu-2013.png
+  * hbqtwidgets/hbqtwidgets.qrc
+  * hbdbu/dbu.prg
+    + Added: new look HbDBU splash screen.
+
 2013-02-25 13:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/sources.prg
     + Implemented: protocol to keep watch on the sopened source 

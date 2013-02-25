@@ -88,7 +88,7 @@ FUNCTION Main( ... )
    hbqt_errorSys()
    QResource():registerResource_1( hbqtres_dbu() )
 
-   oSplash := QSplashScreen( QPixmap( __hbqtImage( "harbour-dbu" ) ) )
+   oSplash := QSplashScreen( QPixmap( __hbqtImage( "hbdbu-2013" ) ) )
    oSplash:show()
    QApplication():processEvents()
 
