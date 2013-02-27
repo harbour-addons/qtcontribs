@@ -220,7 +220,9 @@ METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cV
    DEFAULT nHPos TO 0
    DEFAULT nVPos TO 0
 
-   ::oFileWatcher:addPath( cSourceFile )
+   IF hb_FileExists( cSourceFile )
+      ::oFileWatcher:addPath( cSourceFile )
+   ENDIF
 
    ::oEM:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    IF lVisible
@@ -276,10 +278,16 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
          ::oIde:setCodePage( oEdit:cCodePage )
          cBuffer := oEdit:prepareBufferToSave( oEdit:qEdit:toPlainText() )
          //
-         IF !hb_memowrit( cFileToSave, cBuffer )
+         IF hb_FileExists( cFileToSave )
+            ::oFileWatcher:removePath( cFileToSave )
+         ENDIF
+         IF ! hb_memowrit( cFileToSave, cBuffer )
             MsgBox( "Error saving the file " + oEdit:sourceFile + ".",, 'Error saving file!' )
             lCancel := .T.
             RETURN .F.
+         ENDIF
+         IF hb_FileExists( cFileToSave )
+            ::oFileWatcher:addPath( cFileToSave )
          ENDIF
 
          hb_fNameSplit( cFileToSave, @cPath, @cFile, @cExt )

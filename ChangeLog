@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-27 15:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  * hbide/sources.prg
+    ! Fixed: where QFileSystemWatcher() was being set on a source yet 
+       not created. Reported by Alain and detected on Linux.
+
 2013-02-25 15:37 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbdbu/dbu.prg
   * hbqtwidgets/hbqtdbu.prg
