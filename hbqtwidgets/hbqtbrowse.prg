@@ -510,9 +510,8 @@ METHOD HbQtBrowse:create()
       :verticalHeader():hide()
       /* Attach Model with the View */
       :setModel( ::oDbfModel )
+      :horizontalScrollBar():hide()
    ENDWITH
-
-   ::oViewport := ::oTableView:viewport()
 
    oPal := ::oTableView:palette()
    oPal:SetColor( QPalette_Inactive, QPalette_Highlight, QColor( 150,215,250 ) )
@@ -520,9 +519,13 @@ METHOD HbQtBrowse:create()
 
    ::oHScrollBar := QScrollBar()
    ::oHScrollBar:setOrientation( Qt_Horizontal )
+   ::oHScrollBar:hide()
 
    ::oVScrollBar := QScrollBar()
    ::oVScrollBar:setOrientation( Qt_Vertical )
+   ::oVScrollBar:hide()
+
+   ::oViewport := ::oTableView:viewport()
 
    /*  Horizontal Header Fine Tuning */
    WITH OBJECT ::oHeaderView := ::oTableView:horizontalHeader()
@@ -551,10 +554,11 @@ METHOD HbQtBrowse:create()
    /* Toolbar hosting navigational actions */
    ::buildToolbar()
 
-   ::oSearchLabel := QLabel()
-   ::oSearchLabel:setText( "" )
-   ::oSearchLabel:setFont( ::oFont )
-   ::oSearchLabel:setStyleSheet( "margin-left: 5px; margin-right: 5px; color: red;" )
+   WITH OBJECT ::oSearchLabel := QLabel()
+      :setText( "" )
+      :setFont( ::oFont )
+      :setStyleSheet( "margin-left: 5px; margin-right: 5px; color: red;" )
+   ENDWITH
    WITH OBJECT ::oStatusBar := QStatusBar( ::oWidget )
       :setFont( ::oFont )
       :setSizeGripEnabled( .F. )
@@ -605,7 +609,13 @@ METHOD HbQtBrowse:refreshWindow()
    IF len( ::columns ) > 0
       ::nCellHeight := QFontMetrics( ::oTableView:font() ):height() + 3
 
-      nViewH := ::oViewport:height()
+      nViewH := ::oWidget:height() - ;
+                iif( ::oIndicator:isVisible(), ::oIndicator:height(), 0 ) - ;
+                iif( ::oToolbar:isVisible(), ::oToolbar:height(), 0 ) - ;
+                iif( ::oHScrollBar:isVisible(), ::oHScrollBar:height(), 0 ) - ;
+                iif( ::oStatusBar:isVisible(), ::oStatusBar:height(), 0 ) - ;
+                ::oTableView:horizontalHeader():height()
+
       IF nViewH <= 0
          _GENLIMITRTE( "Viewport has 0 height" )
       ENDIF
@@ -2750,7 +2760,7 @@ METHOD HbQtBrowse:help( xInfo, nTimeout )
       hb_default( @nTimeout, 0 )
 
       IF HB_ISARRAY( xInfo )
-         Alert( xInfo )
+         Alert( xInfo, , , , "Help - HbQtBrowse" )
       ENDIF
    ENDIF
 

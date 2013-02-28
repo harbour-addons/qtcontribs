@@ -187,6 +187,7 @@ CLASS HbQtDBU
 
    FRIEND CLASS HbQtPanelBrowse
    FRIEND CLASS HbQtMdiBrowser
+   FRIEND CLASS HbQtCreateTable
 
    DATA   oWidget
 
@@ -209,6 +210,9 @@ CLASS HbQtDBU
 
    ACCESS openTableBlock                          METHOD getOpenTableBlock
    ASSIGN openTableBlock                          METHOD setOpenTableBlock
+
+   ACCESS saveTableBlock                          METHOD getSaveTableBlock
+   ASSIGN saveTableBlock                          METHOD setSaveTableBlock
 
    ACCESS existsTableBlock                        METHOD getExistsTableBlock
    ASSIGN existsTableBlock                        METHOD setExistsTableBlock
@@ -291,6 +295,7 @@ CLASS HbQtDBU
    METHOD getLinksInfo()
 
    METHOD openATable( cDBF )
+   METHOD createTable( cDriver, cConxn, aStruct, aIndexes )
 
    /* END */
 
@@ -360,7 +365,7 @@ PROTECTED:
    METHOD updateIndexMenu( oBrw )
    METHOD buildRddsCombo()
    METHOD buildConxnCombo()
-   METHOD loadConxnCombo( cDriver )
+   METHOD loadConxnCombo( cDriver, oConxnCombo )
    METHOD buildStatusPanels()
    METHOD dispStatusInfo()
    METHOD buildLeftToolbar()
@@ -372,11 +377,12 @@ PROTECTED:
    METHOD getBrowserByAlias( cAlias )
 
    /* Bring functionality on application level keeping defaults intact */
-   METHOD loadRddsCombo()
+   METHOD loadRddsCombo( oRddCombo )
 
    DATA   bConnections
    DATA   bSelectTable
    DATA   bOpenTable
+   DATA   bSaveTable
    DATA   bExistsTable
    DATA   bRdds
    DATA   bPopulateTree
@@ -389,6 +395,8 @@ PROTECTED:
    METHOD copyStructToClipboard()
    DATA   aBrwStruct                              INIT {}
    DATA   oBrwStruct
+   DATA   aCopiedStruct                           INIT {}
+   METHOD copiedStruct()                          INLINE ::aCopiedStruct
 
    DATA   sl_brush
    DATA   hTreeItems                              INIT {=>}
@@ -692,6 +700,15 @@ METHOD HbQtDBU:setOpenTableBlock( bBlock )
 METHOD HbQtDBU:getOpenTableBlock()
    RETURN ::bOpenTable
 
+METHOD HbQtDBU:setSaveTableBlock( bBlock )
+   IF HB_ISBLOCK( bBlock )
+      ::bSaveTable := bBlock
+   ENDIF
+   RETURN ::bSaveTable
+
+METHOD HbQtDBU:getSaveTableBlock()
+   RETURN ::bSaveTable
+
 METHOD HbQtDBU:setConnectionsBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
       ::bConnections := bBlock
@@ -713,7 +730,7 @@ METHOD HbQtDBU:getExistsTableBlock()
 METHOD HbQtDBU:setRddsBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
       ::bRdds := bBlock
-      ::loadRddsCombo()
+      ::loadRddsCombo( ::qRddCombo )
    ENDIF
    RETURN ::bRdds
 
@@ -1314,7 +1331,9 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
 METHOD HbQtDBU:copyStructToClipboard()
    LOCAL aStruct, i, cTmp
 
-   IF !empty( aStruct := ::oCurBrw:dbStruct() )
+   IF ! empty( aStruct := ::oCurBrw:dbStruct() )
+      ::aCopiedStruct := AClone( aStruct )
+
       i := 0
       aeval( aStruct, {|e_| iif( Len( e_[ 1 ] ) > i, i := len( e_[ 1 ] ), NIL ) } )
       i += 2
@@ -1707,6 +1726,42 @@ METHOD HbQtDBU:showTablesTree()
    RETURN Self
 
 
+METHOD HbQtDBU:createTable( cDriver, cConxn, aStruct, aIndexes )
+   LOCAL cTable, cName, cPath, cExt, aIdx, nArea
+
+   IF HB_ISBLOCK( ::saveTableBlock ) .AND. ! Empty( cTable := Eval( ::saveTableBlock, cDriver, cConxn, aStruct, aIndexes, Self ) )
+      Alert( cTable + " : has been created !" )
+   ELSE
+      IF cDriver $ "DBFCDX,DBFNTX,DBFNSX,ADS"
+         IF ! Empty( cTable := hbide_saveAFile( ::oWidget, "Save Table", "Database File (*.dbf)", ::cWrkFolderLast ) )
+            hb_fNameSplit( cTable, @cPath, @cName, @cExt )
+            ::cWrkFolderLast := cPath
+            IF Lower( cExt ) == ".dbf"
+               nArea := Select()
+               dbCreate( cTable, aStruct, cDriver )
+               IF ! NetErr() .AND. hb_FileExists( cTable )
+                  USE ( cTable ) NEW EXCLUSIVE ALIAS "NewTable" VIA ( cDriver )
+                  IF ! NetErr()
+                     FOR EACH aIdx IN aIndexes
+                        INDEX ON &( aIdx[ 2 ] ) TAG ( aIdx[ 1 ] )
+                     NEXT
+                     USE
+                     Alert( "Table: " + cTable + ", has been created successfully!" )
+                  ELSE
+                     Alert( "Some error in creating : " + cTable )
+                  ENDIF
+               ENDIF
+               Select( nArea )
+            ELSE
+               Alert( "Table name must be of type .dbf" )
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF
+
+   RETURN Self
+
+
 METHOD HbQtDBU:openATable( cDBF )
 
    ::oCurPanel:addBrowser( { NIL, ;
@@ -1798,6 +1853,7 @@ METHOD HbQtDBU:buildToolbar()
    ::buildTablesButton()
    qTBar:addItem( ::sp3 )
    qTBar:addItem( { "Link"     , "Link A Child Table"             , QIcon( __hbqtImage( "link"      ) ), {|| ::execEvent( __buttonLink_clicked__     ) }, .F. } )
+   qTBar:addItem( { "Create"   , "Create a Table"                 , QIcon( __hbqtImage( "table-add" ) ), {|| hbQtCreateTable():new( Self ):create()    }, .F. } )
    qTBar:addItem( ::sp4 )
    qTBar:addItem( { "Toggle"   , "Show/Hide Tables Tree Pane"     , QIcon( __hbqtImage( "form"      ) ), {|| ::execEvent( __buttonShowForm_clicked__ ) }, .F. } )
    qTBar:addItem( { "Structure", "Show/Hide Tables Structure Pane", QIcon( __hbqtImage( "dbstruct"  ) ), {|| ::execEvent( __buttonDbStruct_clicked__ ) }, .F. } )
@@ -1851,16 +1907,46 @@ METHOD HbQtDBU:buildPanelsButton()
 
    ::qPanelsMenu := QMenu()
 
-   ::qPanelsButton := QToolButton()
-   ::qPanelsButton:setTooltip( "HbQtDBU Panels" )
-   ::qPanelsButton:setIcon( QIcon( __hbqtImage( "panel_8" ) ) )
-   ::qPanelsButton:setPopupMode( QToolButton_MenuButtonPopup )
-   ::qPanelsButton:setMenu( ::qPanelsMenu )
-
-   ::qPanelsButton:connect( "clicked()", {|| ::execEvent( __qPanelsButton_clicked__ ) } )
+   WITH OBJECT ::qPanelsButton := QToolButton()
+      :setTooltip( "HbQtDBU Panels" )
+      :setIcon( QIcon( __hbqtImage( "panel_8" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::qPanelsMenu )
+      :connect( "clicked()", {|| ::execEvent( __qPanelsButton_clicked__ ) } )
+   ENDWITH
 
    ::qToolbar:addItem( ::qPanelsButton )
 
+   RETURN Self
+
+
+METHOD HbQtDBU:buildRddsCombo()
+
+   WITH OBJECT ::qRddCombo := QComboBox()
+      :setToolTip( "Rdd to open next table" )
+      :connect( "currentIndexChanged(QString)", {|p| ::loadConxnCombo( p, ::qConxnCombo ) } )
+   ENDWITH
+   ::qToolBar:addItem( ::qRddCombo )
+   //
+   ::loadRddsCombo( ::qRddCombo )
+   ::qRddCombo:setCurrentIndex( 0 )
+
+   RETURN Self
+
+METHOD HbQtDBU:loadRddsCombo( oRddCombo )
+   LOCAL aRdds := {}, r_, cRdd
+
+   IF HB_ISBLOCK( ::rddsBlock ) .AND. HB_ISARRAY( r_:= Eval( ::rddsBlock, NIL, NIL, Self ) )
+      aeval( ::aRdds, {|e| aadd( aRdds, e ) } )
+      aeval( r_     , {|e| aadd( aRdds, e ) } )
+   ELSE
+      aRdds := ::aRdds
+   ENDIF
+   oRddCombo:clear()
+   FOR EACH cRdd IN aRdds
+      cRdd := alltrim( cRdd )
+      oRddCombo:addItem( cRdd )
+   NEXT
    RETURN Self
 
 
@@ -1872,33 +1958,23 @@ METHOD HbQtDBU:buildConxnCombo()
 
    RETURN Self
 
+METHOD HbQtDBU:loadConxnCombo( cDriver, oConxnCombo )
+   LOCAL aConxns, cConxn, a_
 
-METHOD HbQtDBU:buildRddsCombo()
+   IF HB_ISOBJECT( ::qConxnCombo )
+      DEFAULT cDriver TO ::currentDriver()
 
-   ::qRddCombo := QComboBox()
-   ::qRddCombo:setToolTip( "Rdd to open next table" )
-   ::qRddCombo:connect( "currentIndexChanged(QString)", {|p| ::loadConxnCombo( p ) } )
-   ::qToolBar:addItem( ::qRddCombo )
-   //
-   ::loadRddsCombo()
-   ::qRddCombo:setCurrentIndex( 0 )
-
-   RETURN Self
-
-METHOD HbQtDBU:loadRddsCombo()
-   LOCAL aRdds := {}, r_, cRdd
-
-   IF HB_ISBLOCK( ::rddsBlock ) .AND. HB_ISARRAY( r_:= Eval( ::rddsBlock, NIL, NIL, Self ) )
-      aeval( ::aRdds, {|e| aadd( aRdds, e ) } )
-      aeval( r_     , {|e| aadd( aRdds, e ) } )
-   ELSE
-      aRdds := ::aRdds
+      ::aConxns := {}
+      IF HB_ISBLOCK( ::connectionsBlock ) .AND. HB_ISARRAY( aConxns := Eval( ::connectionsBlock, cDriver, NIL, Self ) )
+         aeval( aConxns, {|e| aadd( ::aConxns, e ) } )
+      ENDIF
+      oConxnCombo:clear()
+      FOR EACH cConxn IN ::aConxns
+         a_:= hb_aTokens( cConxn, ";" )
+         oConxnCombo:addItem( alltrim( a_[ 1 ] ) )
+      NEXT
    ENDIF
-   ::qRddCombo:clear()
-   FOR EACH cRdd IN aRdds
-      cRdd := alltrim( cRdd )
-      ::qRddCombo:addItem( cRdd )
-   NEXT
+
    RETURN Self
 
 
@@ -1960,25 +2036,6 @@ METHOD HbQtDBU:updateIndexMenu( oBrw )
 
    RETURN Self
 
-
-METHOD HbQtDBU:loadConxnCombo( cDriver )
-   LOCAL aConxns, cConxn, a_
-
-   IF HB_ISOBJECT( ::qConxnCombo )
-      DEFAULT cDriver TO ::currentDriver()
-
-      ::aConxns := {}
-      IF HB_ISBLOCK( ::connectionsBlock ) .AND. HB_ISARRAY( aConxns := Eval( ::connectionsBlock, cDriver, NIL, Self ) )
-         aeval( aConxns, {|e| aadd( ::aConxns, e ) } )
-      ENDIF
-      ::qConxnCombo:clear()
-      FOR EACH cConxn IN ::aConxns
-         a_:= hb_aTokens( cConxn, ";" )
-         ::qConxnCombo:addItem( alltrim( a_[ 1 ] ) )
-      NEXT
-   ENDIF
-
-   RETURN Self
 
 /*----------------------------------------------------------------------*/
 //             Methods TO ACCESS HbQtMdiBrowse methods
@@ -3070,7 +3127,6 @@ METHOD HbQtMdiBrowser:execEvent( nEvent, p, p1 )
    CASE __mdiSubWindow_windowStateChanged__
       HB_TRACE( HB_TR_DEBUG, p, p1, ::qMdi:objectName() )
       IF p1 == 8
-         ::oBrw:refreshWindow()
          ::oPanel:setCurrentBrowser( Self )
       ENDIF
       EXIT
@@ -3797,9 +3853,9 @@ METHOD HbQtMdiBrowser:delete( lAsk )
    ENDIF
 
    IF ::nType == BRW_TYPE_DBF
-      IF ( ::cAlias )->( DbRLock() )
-         ( ::cAlias )->( DbDelete() )
-         ( ::cAlias )->( DbCommit() )
+      IF ( ::cAlias )->( DbRLock()   )
+         ( ::cAlias )->( DbDelete()  )
+         ( ::cAlias )->( DbCommit()  )
          ( ::cAlias )->( DbRUnlock() )
          ::refreshAll()
       ENDIF
@@ -3952,6 +4008,29 @@ STATIC FUNCTION hbide_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lA
    oDlg:setParent( QWidget() )
 
    RETURN iif( nRes == 0, NIL, iif( lAllowMulti, aFiles, aFiles[ 1 ] ) )
+
+
+STATIC FUNCTION hbide_saveAFile( oWnd, cTitle, cFilter, cDftDir )
+   LOCAL oDlg, xRes
+
+   DEFAULT cTitle   TO "Save File"
+   DEFAULT cFilter  TO "Database Tables (*.dbf)"
+   DEFAULT cDftDir  TO hb_dirBase()
+
+   WITH OBJECT oDlg := QFileDialog( oWnd )
+      :setWindowTitle( cTitle )
+      :setNameFilter( cFilter )
+      :setDirectory( cDftDir )
+      :setFilter( QDir_AllDirs + QDir_Files + QDir_NoDotAndDotDot )
+      :setFileMode( QFileDialog_AnyFile )
+      :setFileMode( QFileDialog_AnyFile )
+      :setAcceptMode( QFileDialog_AcceptSave )
+      :setConfirmOverwrite( .T. )
+   ENDWITH
+
+   xRes := oDlg:getSaveFileName( oWnd, cTitle, "" )
+
+   RETURN xRes
 
 
 STATIC FUNCTION hbide_posAndSize( oWidget )

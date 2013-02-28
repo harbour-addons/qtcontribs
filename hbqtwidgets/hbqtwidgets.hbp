@@ -25,6 +25,7 @@ hbqtbrowse.prg
 hbqtcolumn.prg
 hbqttoolbar.prg
 hbqtdbu.prg
+dbucreate.prg
 
 hbqtwidgets.qrc
 

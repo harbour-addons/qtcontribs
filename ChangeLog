@@ -16,6 +16,65 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-02-27 15:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/resources/table-add.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added one more image.
+
+  + hbqtwidgets/dbucreate.prg
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added dbucreate.prg
+
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtdbu.prg
+    + Implemented: <Create a Table> action which can be activated via 
+       an icon on the HbDBU's top toolbar. A modeless, stay-on-top window 
+       is displayed. Window is devided into two sections. Top one hosts an 
+       array browser to fetch table structure. Lower one host another array
+       browser to fetch index tags and expression.
+
+       These are the actions available for editing, etc.
+
+       K_F1        to view these instructions
+       
+       K_ENTER     to start editing
+
+       K_CTRL_INS  to insert a blank row
+       K_CTRL_DEL  to delete current row
+       K_CTRL_UP   to move current row up
+       K_CTRL_DOWN to move current row down
+
+       K_CTRL_V    to paste copied structure ( from Structure pane at the right of HbDBU )
+
+       K_CTRL_P    to print the structure info
+
+       initiating editing will always position the cursor on "Name" field and then will 
+       continue circulatory as Name->Type->Len->Dec->NextRow->... A new row will 
+       automatically appened at the bottom if "Dec" field is reached and current 
+       row is the last one. To leave the editing mode, just press ESC. If "Name"
+       field will be blank, the row will be deleted, browser will be refreshed.
+       "Len" and "Dec" fields are auto assigned for (L)ogical and (D)ate fields.
+
+       If required you can paste entire structure of an opened table. Click on the 
+       browser window whose structure is nneded to be pasted, click on <Structure>
+       browser on the right-most pane, press CTRL+C, resturn back to <Create a Table>
+       window, press CTRL+V, and see structure pasted here. The existing structure 
+       will be replaced so be carefull.
+
+       Window is modeless so it is possible to start creating tables in multiple
+       windows simultaneously.
+
+       I am familiar with only DBFCDX and ADS (CDX) file types only. Let me know if 
+       anything is missing. 
+
+       This implementation also demnstrate an example how a parent/child relational 
+       form can be developed, like an invoice. This code has all the constructs 
+       in-place to achieve that, so strech your imagination in this direction.
+       The complete code is contained in dbucreate.prg only, study it.
+
+  * hbdbu/dbu.prg
+    % Version bump.
+
 2013-02-27 15:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   * hbide/sources.prg
     ! Fixed: where QFileSystemWatcher() was being set on a source yet 
