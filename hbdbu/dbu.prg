@@ -152,6 +152,7 @@ CREATE CLASS DbuMGR
    METHOD execDashboard()
    METHOD updateDashboard()
    METHOD showStats( oMdiBrowse )
+   METHOD saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
 
    ENDCLASS
 
@@ -199,7 +200,7 @@ METHOD DbuMGR:create()
    WITH OBJECT ::oWidget := hbqtui_dbu()
       :dockCache:hide()
       :dockAdvantage:hide()
-      :setWindowIcon( ::getImage( "cube" ) )
+      :setWindowIcon( QIcon( __hbqtImage( "cube-2" ) ) )
       :setWindowTitle( cTitle )
       :statusBar():hide()
       :connect( QEvent_Close, {|oEvent| ::exit( .T., oEvent ) } )
@@ -239,6 +240,7 @@ METHOD DbuMGR:create()
       :populateTreeBlock    := {|cTable,cDriver,cConxn       | ::populateTree( cTable,cDriver,cConxn )         }
       :browseConfigureBlock := {|oBrowse,oMdiBrowse,oDbu     | ::configureBrowser( oBrowse, oMdiBrowse, oDbu ) }
       :rddsBlock            := {|| aRdds }
+      :saveTableBlock       := {|cDriver,xConxn,aStruct,aIndex,oDbu| ::saveMyTable( cDriver,xConxn,aStruct,aIndex,oDbu ) }
    ENDWITH
    ::oWidget:stackedWidget:addWidget( ::oDbu:oWidget )
    ::oWidget:stackedWidget:setCurrentIndex( 1 )
@@ -412,6 +414,57 @@ METHOD DbuMGR:selectMyTable( cDriver, cConxn /*, oDbu */ )
    ENDIF
    RETURN NIL
 
+
+METHOD DbuMGR:saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
+   LOCAL cTable := NIL
+
+#ifdef __CACHE__
+   LOCAL nConxn, nArea, aIdx, lCreate := .F.
+
+   IF cDriver == "CACHERDD"
+      cTable := Trim( hbqtBulkGet( Space( 20 ), "Table Name ?", "@!" ) )
+      IF ! Empty( cTable )
+         nConxn := CacheSetConnection( ::hConxns[ cConxn + "_Connection" ] )
+         IF CacheExistTable( cTable )
+            IF Alert( { cTable + ", already exists!", "DO you want to overwrite it ?" }, { "No", "Yes" }, , , "WARNING : Table could be Overwritten" ) == 2
+               IF GetCreateTablePass()
+                  CacheDropTable( cTable )
+                  lCreate := .T.
+               ENDIF
+            ENDIF
+         ELSE
+            lCreate := .T.
+         ENDIF
+         IF lCreate
+            nArea := Select()
+            dbCreate( cTable, aStruct, cDriver )
+            IF ! NetErr() .AND. CacheExistTable( cTable )
+               USE ( cTable ) NEW EXCLUSIVE ALIAS "NewTable" VIA ( cDriver )
+               IF ! NetErr()
+                  FOR EACH aIdx IN aIndexes
+                     INDEX ON &( aIdx[ 2 ] ) TAG ( aIdx[ 1 ] ) TO ( cTable )
+                  NEXT
+                  USE
+                  Alert( cTable + " : has been created successfully!" )
+               ELSE
+                  Alert( "Some error in opening : " + cTable )
+               ENDIF
+            ELSE
+               Alert( "Some error in creating : " + cTable )
+            ENDIF
+            Select( nArea )
+         ENDIF
+         CacheSetConnection( nConxn )
+      ENDIF
+   ENDIF
+#else
+   HB_SYMBOL_UNUSED( cDriver )
+   HB_SYMBOL_UNUSED( cConxn )
+   HB_SYMBOL_UNUSED( aStruct )
+   HB_SYMBOL_UNUSED( aIndexes )
+#endif
+
+   RETURN cTable
 
 METHOD DbuMGR:openMyTable( cTable, cAlias, cDriver, cConxn )
 

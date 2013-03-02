@@ -130,5 +130,6 @@
     <file>resources/link.png</file>
     <file>resources/hbdbu-2013.png</file>
     <file>resources/table-add.png</file>
+    <file>resources/cube-2.png</file>
   </qresource>
 </RCC>

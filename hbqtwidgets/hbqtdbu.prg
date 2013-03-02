@@ -1360,6 +1360,8 @@ METHOD HbQtDBU:updateLinks( cAlias )
             ::evalExpression( aRel[ 2 ], @cScope )
             ::setScope( aRel[ 1 ], cScope, cScope )
             ::updateLinks( aRel[ 1 ] )
+         ELSE
+            ::setScope( aRel[ 1 ], "", "" )
          ENDIF
       NEXT
    ENDIF
@@ -1547,6 +1549,8 @@ METHOD HbQtDBU:linkTables()
                IF aRel[ 4 ] == Qt_Checked
                   ::evalExpression( aRel[ 2 ], @cScope )
                   ::setScope( aRel[ 1 ], cScope, cScope )
+               ELSE
+                  ::setScope( aRel[ 1 ], "", "" )
                ENDIF
             NEXT
          NEXT
@@ -1730,7 +1734,7 @@ METHOD HbQtDBU:createTable( cDriver, cConxn, aStruct, aIndexes )
    LOCAL cTable, cName, cPath, cExt, aIdx, nArea
 
    IF HB_ISBLOCK( ::saveTableBlock ) .AND. ! Empty( cTable := Eval( ::saveTableBlock, cDriver, cConxn, aStruct, aIndexes, Self ) )
-      Alert( cTable + " : has been created !" )
+      HB_SYMBOL_UNUSED( cTable )
    ELSE
       IF cDriver $ "DBFCDX,DBFNTX,DBFNSX,ADS"
          IF ! Empty( cTable := hbide_saveAFile( ::oWidget, "Save Table", "Database File (*.dbf)", ::cWrkFolderLast ) )

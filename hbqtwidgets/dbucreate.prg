@@ -126,13 +126,13 @@ METHOD HbQtCreateTable:create()
       :setObjectName( Upper( __hbqtGetNextIdAsString( "CreateTable" ) ) )
    ENDWITH
 
+   WITH OBJECT ::oComboConxn := QComboBox( ::oWidget )
+      :setTooltip( "Connection to create this table." )
+   ENDWITH
    WITH OBJECT ::oComboRDD := QComboBox( ::oWidget )
       ::oDbu:loadRddsCombo( ::oComboRDD )
       :setTooltip( "Rdd Driver to create this table." )
-   ENDWITH
-   WITH OBJECT ::oComboConxn := QComboBox( ::oWidget )
       :connect( "currentIndexChanged(QString)", {|p| ::oDbu:loadConxnCombo( p, ::oComboConxn ) } )
-      :setTooltip( "Connection to create this table." )
    ENDWITH
    oHLay1:addWidget( ::oComboRDD )
    oHLay1:addWidget( ::oComboConxn )

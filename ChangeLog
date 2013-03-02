@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-01 19:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/resources/cube-2.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: another image to represent HbDBU.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Changed: the inactive btowser row/column selection background color.
+       Now it distinguishly separates active and inactive windows.
+
+  * hbqtwidgets/hbqtdbu.prg
+    % Minor.
+
+  * hbqtwidgets/dbucreate.prg
+    ! Fixed: where <Connections> combo-box was not being populated 
+       with the change in <RDD Driver> drop-down pick list on 
+       <Create a Table> dialog.
+
+  * hbdbu/dbu.prg
+    + Added code to demonstrate how oDbu:saveTableBlock() can be exploited.
+    % Changed: HbDBU's task-bar icon.
+
 2013-02-27 15:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/resources/table-add.png
   * hbqtwidgets/hbqtwidgets.qrc

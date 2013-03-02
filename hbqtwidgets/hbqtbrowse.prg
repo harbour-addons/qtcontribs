@@ -514,7 +514,7 @@ METHOD HbQtBrowse:create()
    ENDWITH
 
    oPal := ::oTableView:palette()
-   oPal:SetColor( QPalette_Inactive, QPalette_Highlight, QColor( 150,215,250 ) )
+   oPal:SetColor( QPalette_Inactive, QPalette_Highlight, QColor( 255,255,175 ) )
    ::oTableView:setPalette( oPal )
 
    ::oHScrollBar := QScrollBar()
