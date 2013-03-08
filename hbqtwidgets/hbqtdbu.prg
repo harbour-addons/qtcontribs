@@ -414,6 +414,8 @@ PROTECTED:
    DATA   hMaps                                   INIT {=>}
    DATA   oRoot
 
+   DATA   aLastClosePos                           INIT {}
+
    ENDCLASS
 
 
@@ -3063,6 +3065,9 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
       ::qMdi:setGeometry( qRect )
    ELSE
       ::qMdi:resize( 610, 400 )
+      IF ! Empty( ::oManager:aLastClosePos )
+         ::qMdi:move( ::oManager:aLastClosePos[ 1 ], ::oManager:aLastClosePos[ 2 ] )
+      ENDIF
    ENDIF
    ::dispInfo()
 
@@ -3119,6 +3124,7 @@ METHOD HbQtMdiBrowser:execEvent( nEvent, p, p1 )
       EXIT
    CASE __mdiSubWindow_buttonXclicked__
       HB_TRACE( HB_TR_DEBUG, "HbQtMdiBrowser:execEvent( nEvent, p, p1 )  __mdiSubWindow_buttonXclicked__" )
+      ::oManager:aLastClosePos := { ::qMdi:pos():x(), ::qMdi:pos():y() }
       ::oPanel:destroyBrw( Self )
       RETURN .T.
 #if 0

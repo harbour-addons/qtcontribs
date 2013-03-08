@@ -431,6 +431,8 @@ PROTECTED:
    DATA   oActScroll
    DATA   oActStop
    //
+   DATA   oActCopySel
+   //
    DATA   oActAddColumn
    DATA   oActDelColumn
    DATA   oAddColumnsButton
@@ -457,6 +459,8 @@ PROTECTED:
    DATA   oPrinter
 
    FRIEND FUNCTION __addColumnBlock()
+
+   METHOD copySelectionToClipboard()
 
    ENDCLASS
 
@@ -500,7 +504,8 @@ METHOD HbQtBrowse:create()
       :setTabKeyNavigation( .t. )
       :setShowGrid( .t. )
       :setGridStyle( ::gridStyle )                /* to be based on column definition */
-      :setSelectionMode( QAbstractItemView_SingleSelection )
+//      :setSelectionMode( QAbstractItemView_SingleSelection )
+      :setSelectionMode( QAbstractItemView_ContiguousSelection )
       :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
       :setAlternatingRowColors( .t. )
       :setContextMenuPolicy( Qt_CustomContextMenu )
@@ -939,6 +944,104 @@ METHOD HbQtBrowse:buildRightFreeze()
    RETURN Self
 
 
+METHOD HbQtBrowse:copySelectionToClipboard()
+   LOCAL oSelModel := ::oTableView:selectionModel()
+   LOCAL aRows := {}, aCols := {}, aData := {}, a_
+   LOCAL i, j, s, nRow
+// LOCAL oSelection := oSelModel:selection()
+
+   nRow := ::rowPos
+
+   FOR i := 0 TO ::rowCount - 1
+      IF oSelModel:rowIntersectsSelection( i, QModelIndex() )
+         AAdd( aRows, i + 1 )
+      ENDIF
+   NEXT
+   IF Empty( aRows )
+      RETURN Self
+   ENDIF
+
+   FOR i := 0 TO ::colCount - 1
+      IF oSelModel:columnIntersectsSelection( i, QModelIndex() )
+         AAdd( aCols, i + 1 )
+      ENDIF
+   NEXT
+   IF Empty( aCols )
+      RETURN Self
+   ENDIF
+
+   FOR i := 1 TO Len( aRows )
+      IF i == 1
+         a_:= {}
+         FOR j := 1 TO Len( aCols )
+            AAdd( a_, ::getColumn( aCols[ j ] ):heading )
+         NEXT
+         AAdd( aData, a_ )
+      ENDIF
+
+      ::rowPos := aRows[ i ]
+      ::forceStable()
+
+      a_:= {}
+      FOR j := 1 TO Len( aCols )
+         AAdd( a_, Eval( ::getColumn( aCols[ j ] ):block ) )
+      NEXT
+      AAdd( aData, a_ )
+   NEXT
+
+//   oSelModel:Select( oSelection, 0x0002 /*QItemSelectionModel_Select*/ )
+
+   ::rowPos := nRow
+   ::forceStable()
+
+   IF ! Empty( aData )
+      s := Array2CSV( aData )
+      QClipboard():setText( s )
+   ENDIF
+
+   RETURN Self
+
+
+STATIC FUNCTION Array2CSV( aArray )
+   LOCAL i, s
+   LOCAL nRows := len( aArray )
+   LOCAL nCols := len( aArray[ 1 ] )
+   LOCAL aTyp  := array( nCols )
+   LOCAL aCsv  := {}
+
+   s := ''
+   aeval( aArray[ 1 ], {|e, j| s += X2Csv( e, "C" ) + if( j == nCols, '', Chr( K_TAB )/*','*/ ) } )
+   aadd( aCsv, s )
+
+   aeval( aArray[ 2 ], {|e,i| aTyp[ i ] := valtype( e ) } )
+
+   FOR i := 2 TO nRows
+      s := ''
+      aeval( aArray[ i ], {|e, j| s += X2Csv( e, aTyp[ j ] ) + if( j == nCols, '', Chr( K_TAB )/*','*/ ) } )
+      aadd( aCsv, s )
+   NEXT
+
+   s := ''
+   aeval( aCsv, {|e| s += e + hb_eol() } )
+
+   RETURN s
+
+STATIC FUNCTION X2Csv( x, cTyp )
+
+   DO CASE
+   CASE cTyp == 'C'
+      RETURN x
+   CASE cTyp == 'N'
+      RETURN ltrim( str( x ) )
+   CASE cTyp == 'D'
+      RETURN dtoc( x )
+   CASE cTyp == 'L'
+      RETURN iif( x, 'Yes','No' )
+   ENDCASE
+
+   RETURN ""
+
+
 METHOD HbQtBrowse:manageMouseDblClick( oMouseEvent )
 
    ::stopAllTimers()
@@ -1044,6 +1147,10 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
    ::stopAllTimers()
 
    nKey := hbqt_qtEventToHbEvent( oEvent )
+
+   IF nKey == K_CTRL_C                            /* Copy Selection */
+      ::copySelectionToClipboard()
+   ENDIF
 
    IF HB_ISBLOCK( SetKey( nKey ) )
       Eval( SetKey( nKey ) )
@@ -2696,7 +2803,7 @@ METHOD HbQtBrowse:manageContextMenu( oPos )
       oMenu:addAction( ::oActPanHome )
       oMenu:addAction( ::oActPanEnd )
       oMenu:addSeparator()
-      oMenu:addAction( ::oActToColumnM )
+      oMenu:addAction( ::oActCopySel )
 
       oMenu:exec( oPoint )
       oMenu:setParent( QWidget() )
@@ -2848,6 +2955,8 @@ METHOD HbQtBrowse:buildToolbar()
       :addSeparator()
       :addAction( ::oActAddColumn )
       :addAction( ::oActDelColumn )
+      :addSeparator()
+      :addAction( ::oActCopySel )
 
       :hide()
    ENDWITH
@@ -3061,6 +3170,13 @@ METHOD HbQtBrowse:buildActions()
       :setIcon( QIcon( __hbqtImage( "delete-column" ) ) )
       :setTooltip( "Delete Current Column" )
       :connect( "triggered()", {|| iif( ::colCount > 1, ::delColumn( ::colPos ), NIL ), ::configure(), ::refreshAll(), ::forceStable() } )
+   ENDWITH
+
+   WITH OBJECT ::oActCopySel := QAction( ::oWidget )
+      :setText( "Copy Selection" )
+      :setIcon( QIcon( __hbqtImage( "copy" ) ) )
+      :setTooltip( "Copy Selected Data to Clipboard" )
+      :connect( "triggered()", {|| ::copySelectionToClipboard() } )
    ENDWITH
 
    RETURN Self

@@ -16,6 +16,33 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-07 19:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
+  + hbqtwidgets/resources/copy.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: another image.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: selection of multiple rows and columns by dragging
+       the mouse and then copy the selection on clipboard. A new 
+       icon "Copy Clipboard" is provided on the HbQtBrowse:toolbar 
+       to activate copy operation after selection. Alternatively,
+       ALT+C key can be used to copy selection.
+
+       The records are separated with hb_eol().
+       The columns are separated by K_TAB.
+       MS Excel, Notepad, HbIDE pastes this copy properly.
+
+       The first row contains the column headers, so no need to 
+       remember the field names manually.
+
+       NOTE: it has not been possible to scroll past the last row visible
+             in the browser window for selection process. Columns 
+             can be scrolled till end.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Implemented: to open next browser at position where last browser
+       was closed, if any. Only position is relevant, not size.    
+
 2013-03-01 19:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/resources/cube-2.png
   * hbqtwidgets/hbqtwidgets.qrc
