@@ -1935,6 +1935,7 @@ FUNCTION hbide_getUI( cUI, qParent )
       CASE "fetchdate"           ; RETURN hbqtui_FetchDate( qParent )
       CASE "format"              ; RETURN hbqtui_Format( qParent )
       CASE "changelog"           ; RETURN hbqtui_Changelog( qParent )
+      CASE "functionsmap"        ; RETURN hbqtui_FunctionsMap( qParent )
       ENDSWITCH
    ENDIF
 

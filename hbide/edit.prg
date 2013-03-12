@@ -562,6 +562,9 @@ METHOD IdeEdit:execContextMenu( p )
       CASE "Diff"
          ::oEditor:vssExecute( "Diff" )
          EXIT
+      CASE "Show Selected Text"
+         ::oIde:showFragment( ::getSelectedText(), "Selected Text", QIcon( hbide_image( "selectionline" ) ) )
+         EXIT
       CASE "Get Latest Version"
          ::oEditor:vssExecute( "Get" )
          EXIT

@@ -714,6 +714,13 @@ METHOD IdeFindReplace:updateFindReplaceData( cMode )
 #define F_FILE                                    '<font color=green>'
 #define F_SEARCH                                  '<font color=IndianRed>'
 
+#define F_HASH                                    '<font face="courier" size="5" color=green>'
+#define F_HASH_T                                  '<font face="courier" size="5" color=red>'
+#define F_HASH_1                                  '<font face="courier" size="4" color=black>'
+#define F_HASH_2                                  '<font face="courier" size="4" color=LightBlue>'
+#define F_HASH_S                                  '<font face="courier" size="3" color=IndianRed>'
+#define F_HASH_U                                  '<font face="courier" size="5" color=blue>'
+
 #define F_END                                     '</font>'
 
 #define LOG_MISSING                               1
@@ -725,6 +732,7 @@ METHOD IdeFindReplace:updateFindReplaceData( cMode )
 #define LOG_SECTION_ITEM                          7
 #define LOG_EMPTY                                 8
 #define LOG_INFO                                  9
+#define LOG_HASH                                  10
 
 /*----------------------------------------------------------------------*/
 
@@ -1555,6 +1563,585 @@ STATIC FUNCTION hbide_isSourceOfType( cSource, aFilter )
    cExt := lower( cExt )
 
    RETURN  ascan( aFilter, {|e| cExt $ e } ) > 0
+
+/*----------------------------------------------------------------------*/
+//                            CLASS FunctionsMap
+/*----------------------------------------------------------------------*/
+
+CLASS IdeFunctionsMap INHERIT IdeObject
+
+   DATA   aItems                                  INIT {}
+   DATA   lStop                                   INIT .f.
+   DATA   aInfo                                   INIT {}
+
+   DATA   cBegins
+   DATA   cEnds
+   DATA   nSearched                               INIT 0
+   DATA   nFounds                                 INIT 0
+   DATA   nMisses                                 INIT 0
+
+   DATA   cOrigExpr
+   DATA   compRegEx
+   DATA   cReplWith
+   DATA   lRegEx                                  INIT .F.
+   DATA   lMatchCase                              INIT .F.
+   DATA   lNotDblClick                            INIT .F.
+
+   DATA   hInfo
+
+   METHOD new( oIde )
+   METHOD create( oIde )
+   METHOD destroy()                               VIRTUAL
+   METHOD show()
+   METHOD print()
+   METHOD paintRequested( qPrinter )
+   METHOD map()
+   METHOD mapABunch( aFiles )
+   METHOD showLog( nType, cMsg, aLines )
+
+   METHOD execEvent( nEvent, p )
+   METHOD execContextMenu( p )
+   METHOD buildUI()
+   METHOD clear()
+   METHOD moveCursor()
+
+   ENDCLASS
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:new( oIde )
+
+   ::oIde := oIde
+
+   ::hInfo := {=>}
+
+   hb_HCaseMatch( ::hInfo, .F. )
+   hb_HKeepOrder( ::hInfo, .T. )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:create( oIde )
+
+   DEFAULT oIde TO ::oIde
+   ::oIde := oIde
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:buildUI()
+   LOCAL aProjList, cProj, qItem
+
+   ::oUI := hbide_getUI( "functionsmap" )
+
+   ::oFunctionsMapDock:oWidget:setWidget( ::oUI:oWidget )
+
+   /* Populate Projects Name */
+   IF !empty( ::oPM )
+      aProjList := ::oPM:getProjectsTitleList()
+      FOR EACH cProj IN aProjList
+         IF !empty( cProj )
+            WITH OBJECT qItem := QListWidgetItem()
+               :setFlags( Qt_ItemIsUserCheckable + Qt_ItemIsEnabled + Qt_ItemIsSelectable )
+               :setText( cProj )
+               :setCheckState( 0 )
+            ENDWITH
+            ::oUI:listProjects:addItem( qItem )
+            aadd( ::aItems, qItem )
+         ENDIF
+      NEXT
+   ENDIF
+
+   ::oUI:editResults:setReadOnly( .t. )
+   ::oUI:editResults:setFont( QFont( "Courier new", 10 ) )
+   ::oUI:editResults:setContextMenuPolicy( Qt_CustomContextMenu )
+
+   ::oUI:labelStatus:setText( "Ready" )
+
+   ::oUI:buttonCreate :connect( "clicked()"                         , {| | ::map() }                            )
+   ::oUI:buttonStop   :connect( "clicked()"                         , {| | ::lStop := .T. }                     )
+   ::oUI:buttonClose  :connect( "clicked()"                         , {| | ::oFunctionsMapDock:hide() }         )
+   ::oUI:editResults  :connect( "copyAvailable(bool)"               , {|p| ::execEvent( __editResults__ , p ) } )
+   ::oUI:editResults  :connect( "customContextMenuRequested(QPoint)", {|p| ::execContextMenu( p ) }             )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:execEvent( nEvent, p )
+   LOCAL qCursor, cSource, nInfo
+
+   IF ::lQuitting
+      RETURN Self
+   ENDIF
+
+   SWITCH nEvent
+
+   CASE __editResults__
+      IF p .AND. ! ::lNotDblClick
+         qCursor := ::oUI:editResults:textCursor()
+         nInfo := qCursor:blockNumber() + 1
+
+         IF nInfo <= Len( ::aInfo ) .AND. ::aInfo[ nInfo, 1 ] == -2
+            cSource := ::aInfo[ nInfo, 2 ]
+
+            ::oSM:editSource( cSource, 0, 0, 0, NIL, NIL, .f., .t. )
+            WITH OBJECT qCursor := ::oIde:qCurEdit:textCursor()
+               :setPosition( 0 )
+               :movePosition( QTextCursor_Down , QTextCursor_MoveAnchor, ::aInfo[ nInfo, 3 ] - 1 )
+               :movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, ::aInfo[ nInfo, 4 ] - 1 )
+               :movePosition( QTextCursor_Right, QTextCursor_KeepAnchor, Len( ::aInfo[ nInfo, 5 ] ) )
+            ENDWITH
+            ::oIde:qCurEdit:setTextCursor( qCursor )
+            ::oIde:manageFocusInEditor()
+         ENDIF
+      ELSE
+         ::lNotDblClick := .F.
+      ENDIF
+      EXIT
+
+   ENDSWITCH
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:execContextMenu( p )
+   LOCAL qMenu, qAct, cFind
+
+   qMenu := QMenu()
+
+   qMenu:addAction( "Copy"       )
+   qMenu:addAction( "Select All" )
+   qMenu:addAction( "Clear"      )
+   qMenu:addAction( "Print"      )
+   qMenu:addAction( "Save as..." )
+   qMenu:addSeparator()
+   qMenu:addAction( "Find"       )
+   qMenu:addSeparator()
+   qMenu:addAction( "Zom In"  )
+   qMenu:addAction( "Zoom Out" )
+
+   IF ! empty( qAct := qMenu:exec( ::oUI:editResults:mapToGlobal( p ) ) )
+      SWITCH qAct:text()
+
+      CASE "Save as..."
+         EXIT
+      CASE "Find"
+         IF !empty( cFind := hbide_fetchAString( ::oUI:editResults, , "Find what?", "Find" ) )
+            ::lNotDblClick := .T.
+            IF !( ::oUI:editResults:find( cFind, 0 ) )
+               MsgBox( "Not Found" )
+            ENDIF
+         ENDIF
+         EXIT
+      CASE "Print"
+         ::print()
+         EXIT
+      CASE "Clear"
+         ::oUI:editResults:clear()
+         ::aInfo := {}
+         EXIT
+      CASE "Copy"
+         ::lNotDblClick := .T.
+         ::oUI:editResults:copy()
+         EXIT
+      CASE "Select All"
+         ::oUI:editResults:selectAll()
+         EXIT
+      CASE "Zoom In"
+         ::oUI:editResults:zoomIn()
+         EXIT
+      CASE "Zoom Out"
+         ::oUI:editResults:zoomOut()
+         EXIT
+      ENDSWITCH
+   ENDIF
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:show()
+
+   IF empty( ::oUI )
+      ::buildUI()
+   ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:clear()
+
+   ::oUI:editResults:clear()
+   ::aInfo := {}
+   ::hInfo := {=>}
+
+   hb_HCaseMatch( ::hInfo, .F. )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:map()
+   LOCAL a_
+   LOCAL qItem, aFilter, cProjPath
+   LOCAL nStart, nEnd, cSource, cProjTitle, aProjFiles
+   LOCAL aProjSrc   := {}
+   LOCAL aProjs     := {}
+
+   ::clear()
+
+   ::lRegEx := .T.
+   ::cOrigExpr := "\b[A-Za-z0-9_]+ ?(?=\()"
+   ::compRegEx := hb_regExComp( ::cOrigExpr, ::lMatchCase )
+   IF ! hb_isRegEx( ::compRegEx )
+      MsgBox( "Error in Regular Expression" )
+      RETURN Self
+   ENDIF
+
+   aFilter := hbide_buildFilter( .T., .T., .T., .F., .F., .F. )
+
+   /* Process Projects */
+   IF !empty( ::aItems )
+      FOR EACH qItem IN ::aItems
+         IF qItem:checkState() == 2
+            aadd( aProjs, qItem:text() )
+         ENDIF
+      NEXT
+   ENDIF
+   IF !empty( aProjs )
+      FOR EACH cProjTitle IN aProjs
+         a_:= {}
+         IF ! empty( aProjFiles := ::oPM:getSourcesByProjectTitle( cProjTitle ) )
+            cProjPath := ::oPM:getProjectPathFromTitle( cProjTitle )
+            FOR EACH cSource IN aProjFiles
+               IF hbide_isSourceOfType( cSource, aFilter )
+                  aadd( a_, hbide_syncProjPath( cProjPath, hbide_stripFilter( cSource ) ) )
+               ENDIF
+            NEXT
+         ENDIF
+         IF !empty( a_ )
+            aadd( aProjSrc, { cProjTitle, a_ } )
+         ENDIF
+      NEXT
+   ENDIF
+
+   /* Supress Find button - user must not click it again */
+   ::oUI:buttonCreate:setEnabled( .f. )
+   ::oUI:buttonStop:setEnabled( .t. )
+
+   ::nSearched := 0
+   ::nFounds   := 0
+   ::nMisses   := 0
+
+   ::oUI:labelStatus:setText( "Ready" )
+
+   ::cBegins := dtoc( date() ) + "-" + time()
+   nStart := seconds()
+
+   IF ! empty( aProjs )
+      IF ! empty( aProjSrc )
+         FOR EACH a_ IN aProjSrc
+            ::oUI:editResults:append( F_HASH + "Processing : " + a_[ 1 ] + F_END ) ; ::moveCursor()
+            ::mapABunch( a_[ 2 ] )
+         NEXT
+         IF ! Empty( ::hInfo ) .AND. ! ::lStop
+            ::showLog( LOG_HASH, , ::hInfo )
+         ENDIF
+      ENDIF
+   ENDIF
+
+   ::cEnds := dtoc( date() ) + "-" + time()
+   nEnd := seconds()
+
+   ::oUI:labelStatus:setText( "[ Time: " + hb_ntos( nEnd - nStart ) + " ] " + "[ Processed: " + hb_ntos( ::nSearched ) + " ]" )
+   ::lStop := .f.
+   ::oUI:buttonStop:setEnabled( .f. )
+   ::oUI:buttonCreate:setEnabled( .t. )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+#define FUNC_COUNT                                1
+#define FUNC_CALLED                               2
+#define FUNC_SOURCES                              3
+#define FUNC_DATA                                 4
+#define FUNC_SYNTAX                               5
+
+METHOD IdeFunctionsMap:mapABunch( aFiles )
+   LOCAL cSource, nLine, aBuffer, cLine, aMatch, regEx
+   LOCAL aSumData, cComments, aTags, aSummary, aFuncList, aBufLines
+   LOCAL aTag, cType, cFunc, aM, cExt, n, cLineO, cF, nTags
+
+   FOR EACH cSource IN aFiles
+      QApplication():processEvents()
+      IF ::lStop                                 /* Stop button is pressed */
+         EXIT
+      ENDIF
+
+      cSource := hbide_pathToOSPath( cSource )
+      IF hb_fileExists( cSource )
+         ::oUI:editResults:append( F_HASH + hbide_getNBS( 10 ) + cSource + F_END ) ; ::moveCursor()
+
+         hb_FNameSplit( cSource, , , @cExt )
+
+         ::nSearched++
+
+         aFuncList := {}
+         aBufLines := {}
+         aSumData  := {}
+
+         aBuffer   := hb_ATokens( StrTran( hb_MemoRead( cSource ), Chr( 13 ) ), Chr( 10 ) )
+
+         cComments := CheckComments( aBuffer )
+         aSummary  := Summarize( aBuffer, cComments, @aSumData , iif( Upper( cExt ) == ".PRG", 9, 1 ) )
+         aTags     := UpdateTags( cSource, aSummary, aSumData, @aFuncList, @aBufLines, aBuffer )
+         nTags     := Len( aTags )
+
+         /* Symbols Contained */
+         FOR EACH aTag IN aTags
+            IF ! aSumData[ aTag:__enumIndex(), 1 ]                        // Is not commented out
+               cType := Upper( aTag[ 6 ] )
+               IF "CLAS" $ cType .OR. "PROC" $ cType .OR. "FUNC" $ cType  // We do not need methods
+                  cFunc := AllTrim( aTag[ 7 ] )
+                  n     := At( "(", cFunc )                            // hbide_buildFilter( ... )
+                  IF n > 0
+                     cFunc := AllTrim( SubStr( cFunc, 1, n-1 ) )
+                  ENDIF
+                  n := At( " ", cFunc )                                // IdeFunctionsMap INHERIT IdeObject
+                  IF n > 0
+                     cFunc := AllTrim( SubStr( cFunc, 1, n-1 ) )
+                  ENDIF
+                  cFunc += "()"                                        // Normalize
+                  IF ! hb_HHasKey( ::hInfo, cFunc )
+                     ::hInfo[ cFunc ] := { 0, {}, {}, {}, NIL }
+                  ENDIF
+                  AAdd( ::hInfo[ cFunc ][ FUNC_SOURCES ], cSource )
+                  AAdd( ::hInfo[ cFunc ][ FUNC_DATA    ], aTag    )
+                  ::hInfo[ cFunc ][ FUNC_SYNTAX ] := aTag[ 7 ]
+               ENDIF
+            ENDIF
+            QApplication():processEvents()
+            IF ::lStop                                 /* Stop button is pressed */
+               EXIT
+            ENDIF
+         NEXT
+
+         IF ::lStop                                 /* Stop button is pressed */
+            EXIT
+         ENDIF
+
+         /* Symbols Called */
+         nLine  := 0
+         regEx  := ::compRegEx
+         FOR EACH cLineO IN aBuffer
+            nLine++
+            IF Asc( substr( cComments, nLine, 1 ) ) != 3                  // Not a commented line
+               IF AScan( aSumData, {|e_|  e_[ 2 ] == nLine } ) == 0       // Should not be contained symbol
+                  cLine := cLineO
+                  IF ( n := At( "//", cLine ) ) > 0                       // Remove inline comment . NOTE we cannot remove / * * / comments
+                     cLine := SubStr( cLine, 1, n-1 )
+                  ENDIF
+                  IF ( n := At( "&&", cLine ) ) > 0                       // Remove inline comment
+                     cLine := SubStr( cLine, 1, n-1 )
+                  ENDIF
+                  //       exp, string, lMatchCase, lNewLine, nMaxMatch, nMatchWhich, lMatchOnly
+                  IF ! Empty( aMatch := hb_regexAll( regEx, cLine, ::lMatchCase, .F., 0, 1, .F.  ) )
+                     FOR EACH aM IN aMatch
+                        IF ! hbide_objectMessage( cLine, aM[ 2 ] )
+                           cFunc := AllTrim( aM[ 1 ] ) + "()"
+                           IF ! hb_HHasKey( ::hInfo, cFunc )
+                              ::hInfo[ cFunc ] := { 0, {}, {}, {}, NIL }
+                           ENDIF
+                           ::hInfo[ cFunc ][ FUNC_COUNT ]++
+                           n  := AScan( aTags, {|e_|  nLine < e_[ 3 ] } )
+                           cF := iif( nTags == 0, "", iif( n == 0, aTags[ nTags, 7 ], iif( n == 1, "", aTags[ n-1, 7 ] ) ) )
+
+                           AAdd( ::hInfo[ cFunc ][ FUNC_CALLED ], { cSource, nLine, cLineO, aM[ 2 ], aM[ 3 ], cF } )
+                        ENDIF
+                     NEXT
+                  ENDIF
+               ENDIF
+            ENDIF
+            QApplication():processEvents()
+            IF ::lStop                                 /* Stop button is pressed */
+               EXIT
+            ENDIF
+         NEXT
+      ELSE
+         ::nMisses++
+      ENDIF
+   NEXT
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:showLog( nType, cMsg, aLines )
+   LOCAL qResult, hHash, cSource, cTmp, nUnCalled := 0
+   LOCAL nSrcLine, aInf, cText
+
+   HB_SYMBOL_UNUSED( cMsg )
+   HB_SYMBOL_UNUSED( aLines )
+
+   qResult := ::oUI:editResults
+
+   SWITCH nType
+
+   CASE LOG_HASH
+      qResult:clear()                   /* Needed because ::hInfo is composite */
+      FOR EACH hHash IN ::hInfo
+         IF ! Empty( hHash[ FUNC_CALLED ] )
+            cTmp  := LTrim( Str( hHash[ FUNC_COUNT ], 5, 0 ) )
+            cText := iif( Empty( hHash[ FUNC_SYNTAX ] ), hHash:__enumKey(), hHash[ FUNC_SYNTAX ] )// + "  ( " + cTmp + " )"
+            qResult:append( F_HASH + "<b>" + cText + "</b>" + F_END + F_HASH_T + "(" + cTmp + ")" + F_END ) ; ::moveCursor()
+            AAdd( ::aInfo, { 0, NIL, NIL } )
+
+            IF ! Empty( hHash[ FUNC_SOURCES ] )
+               FOR EACH cSource IN hHash[ FUNC_SOURCES ]
+                  nSrcLine := hHash[ FUNC_DATA ][ cSource:__enumIndex() ][ 3 ]
+                  cTmp := LTrim( Str( nSrcLine, 5, 0 ) )
+                  cText := "(" + cTmp + ")" + hbide_getNBS( 2 ) + cSource
+                  qResult:append( F_HASH_S + "<i>" + cText + "</i>" + F_END ) ; ::moveCursor()
+                  AAdd( ::aInfo, { -2, cSource, nSrcLine, 1, hHash[ FUNC_DATA ][ cSource:__enumIndex() ][ 8 ] } )
+                  QApplication():processEvents()
+                  IF ::lStop                                 /* Stop button is pressed */
+                     EXIT
+                  ENDIF
+               NEXT
+            ENDIF
+
+            cSource := ""
+            FOR EACH aInf IN hHash[ FUNC_CALLED ]
+               IF cSource != aInf[ 1 ]
+                  cText   := hbide_getNBS( 5 ) + aInf[ 1 ]
+                  qResult:append( F_HASH_2 + "<b>" + cText + "</b>" + F_END ) ; ::moveCursor()
+                  AAdd( ::aInfo, { 0, NIL, NIL } )
+                  cSource := aInf[ 1 ]
+               ENDIF
+               cTmp := LTrim( Str( aInf[ 2 ], 5, 0 ) )
+               cTmp := hbide_getNBS( 5 ) + "(" + hbide_getNBS( 5 - Len( cTmp ) ) + cTmp + ")"
+               cText := cTmp + hbide_getNBS( 1 ) + aInf[ 6 ]
+               qResult:append( F_HASH_1 + cText + F_END ) ; ::moveCursor()
+               AAdd( ::aInfo, { -2, aInf[ 1 ], aInf[ 2 ], aInf[ 4 ], SubStr( hHash:__enumKey(), 1, Len( hHash:__enumKey() ) - 2 ) } )
+               QApplication():processEvents()
+               IF ::lStop                                 /* Stop button is pressed */
+                  EXIT
+               ENDIF
+            NEXT
+         ELSE
+            nUnCalled++
+         ENDIF
+         QApplication():processEvents()
+         IF ::lStop                                 /* Stop button is pressed */
+            EXIT
+         ENDIF
+      NEXT
+
+      IF ::lStop                                 /* Stop button is pressed */
+         EXIT
+      ENDIF
+
+      IF nUnCalled > 0
+         qResult:append( F_HASH_U + "   " + F_END ) ; ::moveCursor()
+         AAdd( ::aInfo, { 0, NIL, NIL } )
+         qResult:append( F_HASH_U + "<i><u>" + "List of Non-Called Functions: " + hb_ntos( nUnCalled )+ "</u></i>" + F_END ) ; ::moveCursor()
+         AAdd( ::aInfo, { 0, NIL, NIL } )
+         qResult:append( F_HASH_U + "   " + F_END ) ; ::moveCursor()
+         AAdd( ::aInfo, { 0, NIL, NIL } )
+      ENDIF
+
+      FOR EACH hHash IN ::hInfo
+         IF Empty( hHash[ FUNC_CALLED ] )
+            cText := iif( Empty( hHash[ FUNC_SYNTAX ] ), hHash:__enumKey(), hHash[ FUNC_SYNTAX ] )
+            qResult:append( F_HASH + "<b>" + cText + "</b>" + F_END ) ; ::moveCursor()
+            AAdd( ::aInfo, { 0, NIL, NIL } )
+
+            IF ! Empty( hHash[ FUNC_SOURCES ] )
+               FOR EACH cSource IN hHash[ FUNC_SOURCES ]
+                  nSrcLine := hHash[ FUNC_DATA ][ cSource:__enumIndex() ][ 3 ]
+                  cTmp := LTrim( Str( nSrcLine, 5, 0 ) )
+                  cText := "(" + cTmp + ")" + hbide_getNBS( 2 ) + cSource
+                  qResult:append( F_HASH_S + "<i>" + cText + "</i>" + F_END ) ; ::moveCursor()
+                  AAdd( ::aInfo, { -2, cSource, nSrcLine, 1, hHash[ FUNC_DATA ][ cSource:__enumIndex() ][ 8 ] } )
+               NEXT
+            ENDIF
+         ENDIF
+         QApplication():processEvents()
+         IF ::lStop                                 /* Stop button is pressed */
+            EXIT
+         ENDIF
+      NEXT
+      EXIT
+
+   ENDSWITCH
+
+   ::moveCursor()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:moveCursor()
+
+   WITH OBJECT ::oUI:editResults:textCursor()
+      :movePosition( QTextCursor_StartOfLine )
+      :movePosition( QTextCursor_Down )
+   ENDWITH
+   QApplication():processEvents()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION hbide_getNBS( nTimes )
+   LOCAL i, cStr := ""
+
+   FOR i := 1 TO nTimes
+      cStr += "&nbsp;"
+   NEXT
+
+   RETURN cStr
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION hbide_objectMessage( cLine, nStart )
+   LOCAL i, s
+
+   IF nStart > 2
+      FOR i := nStart - 1 TO 2 STEP -1
+         s := SubStr( cLine, i, 1 )
+         IF ! ( s == " " )
+            RETURN s == ":"
+         ENDIF
+      NEXT
+   ENDIF
+
+   RETURN .F.
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:print()
+   LOCAL qDlg
+
+   qDlg := QPrintPreviewDialog( ::oUI:oWidget )
+   qDlg:setWindowTitle( "Print : Functions Map" )
+   qDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+   qDlg:resize( 500, 600 )
+   qDlg:exec()
+
+   RETURN self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeFunctionsMap:paintRequested( qPrinter )
+   ::oUI:editResults:print( qPrinter )
+   RETURN Self
 
 /*----------------------------------------------------------------------*/
 

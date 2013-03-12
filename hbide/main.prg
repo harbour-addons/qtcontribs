@@ -181,6 +181,7 @@ CLASS HbIde
    DATA   oUiS                                           /* UI Source Writer               */
    DATA   oPWZ                                           /* Project Wizard                 */
    DATA   oParts                                         /* HbIDE Parts Manager            */
+   DATA   oFM                                            /* Functions Map Manager          */
 
    DATA   nRunMode                                INIT   HBIDE_RUN_MODE_INI
    DATA   nAnimantionMode                         INIT   HBIDE_ANIMATION_NONE
@@ -279,6 +280,7 @@ CLASS HbIde
    DATA   oFormatDock
    DATA   oCuiEdDock
    DATA   oUISrcDock
+   DATA   oFunctionsMapDock
 
    DATA   qAnimateAction
    DATA   qStatusBarAction
@@ -378,6 +380,8 @@ CLASS HbIde
    METHOD parseParams()
    METHOD showCodeFregment( oXbp )
    METHOD setCodePage( cCodePage )
+   METHOD showFragment( cCode, cTitle, oIcon )
+   METHOD printFragment( oPlainTextEdit )
 
    ENDCLASS
 
@@ -506,6 +510,7 @@ METHOD HbIde:create( aParams )
    /* Once create Find/Replace dialog */
    ::oFR := IdeFindReplace():new():create( Self )
    ::oFF := IdeFindInFiles():new():create( Self )
+   ::oFM := IdeFunctionsMap():new():create( Self )
 
    /* Sources Manager */
    ::oSM := IdeSourcesManager():new():create( Self )
@@ -1407,7 +1412,7 @@ METHOD HbIde:updateFuncList( lSorted )
 /*----------------------------------------------------------------------*/
 
 METHOD HbIde:showCodeFregment( oXbp )
-   LOCAL xTmp2, n, i, cAnchor, oEdit, lFound, qCursor, nLine, cCode, qWidget, nVPos, qH
+   LOCAL xTmp2, n, i, cAnchor, oEdit, lFound, qCursor, nLine, cCode, nVPos
 
    xTmp2 := oXbp:text()
 
@@ -1446,27 +1451,54 @@ METHOD HbIde:showCodeFregment( oXbp )
             ENDIF
          ENDIF
          IF ! Empty( cCode )
-            qWidget := QPlainTextEdit( ::oDlg:oWidget )
-            qWidget:setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
-            qWidget:setWindowTitle( oEdit:document():metaInformation( QTextDocument_DocumentTitle ) + " : " + cAnchor )
-            qWidget:setWindowIcon( QIcon( hbide_identifierImage( ::aTags[ n, 6 ] ) ) )
-            qWidget:setWordWrapMode( QTextOption_NoWrap )
-            qWidget:setFont( QFont( "Courier New", 8 ) )
-            qH := ::oTH:setSyntaxHilighting( qWidget, "Pritpal's Favourite", , .F. )
-            qH:hbSetInitialized( .T. )
-            qWidget:setPlainText( cCode )
-            qWidget:setGeometry( iif( Empty( ::qFuncFragmentWindowGeometry ), QRect( 500, 200, 300, 300 ), ::qFuncFragmentWindowGeometry:translated( 10,20 ) ) )
-            qWidget:connect( QEvent_Close , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry(), qWidget:setParent( QWidget() ) } )
-            qWidget:connect( QEvent_Move  , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry() } )
-            qWidget:connect( QEvent_Resize, {|| ::qFuncFragmentWindowGeometry := qWidget:geometry() } )
-
-            qWidget:show()
+            ::showFragment( cCode, oEdit:document():metaInformation( QTextDocument_DocumentTitle ) + " : " + cAnchor, QIcon( hbide_identifierImage( ::aTags[ n, 6 ] ) )  )
          ENDIF
       ENDIF
    ENDIF
    ::manageFocusInEditor()
 
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbIde:showFragment( cCode, cTitle, oIcon )
+   LOCAL qWidget, qH
+
+   WITH OBJECT qWidget := QPlainTextEdit( ::oDlg:oWidget )
+      :setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
+      :setWindowTitle( cTitle )
+      :setWindowIcon( oIcon )
+      :setWordWrapMode( QTextOption_NoWrap )
+      :setFont( QFont( "Courier New", 8 ) )
+      qH := ::oTH:setSyntaxHilighting( qWidget, "Pritpal's Favourite", , .F. )
+      qH:hbSetInitialized( .T. )
+      :setPlainText( cCode )
+      :setGeometry( iif( Empty( ::qFuncFragmentWindowGeometry ), QRect( 500, 200, 300, 300 ), ::qFuncFragmentWindowGeometry:translated( 10,20 ) ) )
+      :connect( QEvent_Close   , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry(), qWidget:setParent( QWidget() ) } )
+      :connect( QEvent_Move    , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry() } )
+      :connect( QEvent_Resize  , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry() } )
+      :connect( QEvent_KeyPress, {|oKeyEvent|
+                                    IF oKeyEvent:key() == Qt_Key_P .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+                                       ::printFragment( qWidget )
+                                    ENDIF
+                                    RETURN .F.
+                                 } )
+      :show()
+   ENDWITH
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbIde:printFragment( oPlainTextEdit )
+   LOCAL qDlg := QPrintPreviewDialog( oPlainTextEdit )
+
+   qDlg:setWindowTitle( "HbIDE Fragment Previewer" )
+   qDlg:connect( "paintRequested(QPrinter*)", {|p| oPlainTextEdit:print( p ) } )
+   qDlg:resize( 500, 600 )
+   qDlg:exec()
+
+   RETURN self
 
 /*----------------------------------------------------------------------*/
 

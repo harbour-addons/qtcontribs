@@ -93,6 +93,7 @@ format.ui
 changelog.ui
 projectwizard.ui
 panels.ui
+functionsmap.ui
 
 hbide.qrc
 settings.qrc

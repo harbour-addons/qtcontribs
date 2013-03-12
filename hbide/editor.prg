@@ -295,6 +295,8 @@ METHOD IdeEditsManager:create( oIde )
    aadd( ::aActions, { "Checkin"      , ::qSrcControlSub:addAction( "Checkin"            ) } )
    aadd( ::aActions, { ""             , ::qSrcControlSub:addSeparator() } )
    aadd( ::aActions, { "Diff"         , ::qSrcControlSub:addAction( "Diff"               ) } )
+   //
+   aadd( ::aActions, { "Show Selected Text", ::qContextMenu:addAction( "Show Selected Text" ) } )
 
 
    /* Define code completer */

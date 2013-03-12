@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id$
  */
 
@@ -114,6 +114,7 @@
 #define __dockFormat_visibilityChanged__          2041
 #define __dockCuiEd_visibilityChanged__           2042
 #define __dockUISrc_visibilityChanged__           2043
+#define __dockFunctionsMap_visibilityChanged__    2044
 
 /*----------------------------------------------------------------------*/
 
@@ -194,6 +195,7 @@ CLASS IdeDocks INHERIT IdeObject
    METHOD hideAllDocks()
    METHOD buildCuiEdWidget()
    METHOD buildUISrcDock()
+   METHOD buildFunctionsMapDock()
    METHOD showSelectedTextToolbar( oEdit )
 
    ENDCLASS
@@ -502,6 +504,7 @@ METHOD IdeDocks:buildDockWidgets()
    ::buildFormatWidget()
    ::buildCuiEdWidget()
    ::buildUiSrcDock()
+   ::buildFunctionsMapDock()
 
    /* Bottom Docks */
    ::oDlg:oWidget:tabifyDockWidget( ::oDockB:oWidget              , ::oDockB1:oWidget              )
@@ -545,6 +548,13 @@ METHOD IdeDocks:execEvent( nEvent, p, p1 )
    ENDIF
 
    SWITCH nEvent
+   CASE __dockFunctionsMap_visibilityChanged__
+      IF p; ::oFM:show(); ENDIF
+      IF ! p .AND. ! p1:isVisible()
+         p1:raise()
+      ENDIF
+      EXIT
+
    CASE __dockUISrc_visibilityChanged__
       IF p; ::oUiS:show(); ENDIF
       IF ! p .AND. ! p1:isVisible()
@@ -996,14 +1006,16 @@ METHOD IdeDocks:getADockWidget( nAreas, cObjectName, cWindowTitle, nFlags )
    nBasic := hb_bitOR( QDockWidget_DockWidgetClosable, nFlags )
 
    oDock := XbpWindow():new()
-   oDock:oWidget := QDockWidget( ::oDlg:oWidget )
-   oDock:oWidget:setObjectName( cObjectName )
    ::oDlg:addChild( oDock )
-   oDock:oWidget:setFeatures( nBasic )
-   oDock:oWidget:setAllowedAreas( nAreas )
-   oDock:oWidget:setWindowTitle( cWindowTitle )
-   oDock:oWidget:setFocusPolicy( Qt_NoFocus )
-   oDock:oWidget:setStyleSheet( getStyleSheet( "QDockWidget", ::nAnimantionMode ) )
+
+   WITH OBJECT oDock:oWidget := QDockWidget( ::oDlg:oWidget )
+      :setObjectName( cObjectName )
+      :setFeatures( nBasic )
+      :setAllowedAreas( nAreas )
+      :setWindowTitle( cWindowTitle )
+      :setFocusPolicy( Qt_NoFocus )
+      :setStyleSheet( getStyleSheet( "QDockWidget", ::nAnimantionMode ) )
+   ENDWITH
    oDock:hide()
 
    RETURN oDock
@@ -1095,15 +1107,17 @@ METHOD IdeDocks:setButtonState( cButton, lChecked )
 METHOD IdeDocks:buildStackedWidget()
 
    ::oIde:oStackedWidget := XbpWindow():new( ::oDa )
-   ::oStackedWidget:oWidget := QMdiArea( ::oDa:oWidget )
-   ::oStackedWidget:oWidget:setObjectName( "editMdiArea" )
-   ::oStackedWidget:oWidget:setDocumentMode( .t. )
-   ::oStackedWidget:oWidget:setOption( QMdiArea_DontMaximizeSubWindowOnActivation, .t. )
-   ::oStackedWidget:oWidget:setVerticalScrollBarPolicy( Qt_ScrollBarAsNeeded )
-   ::oStackedWidget:oWidget:setHorizontalScrollBarPolicy( Qt_ScrollBarAsNeeded )
-   ::oStackedWidget:oWidget:setActivationOrder( QMdiArea_CreationOrder )
-   ::oStackedWidget:oWidget:setTabsMovable( .t. )
-// ::oStackedWidget:oWidget:setTabsClosable( .t. )  /* Later */
+   WITH OBJECT ::oStackedWidget:oWidget := QMdiArea( ::oDa:oWidget )
+      :setObjectName( "editMdiArea" )
+      :setDocumentMode( .t. )
+      :setOption( QMdiArea_DontMaximizeSubWindowOnActivation, .t. )
+      :setVerticalScrollBarPolicy( Qt_ScrollBarAsNeeded )
+      :setHorizontalScrollBarPolicy( Qt_ScrollBarAsNeeded )
+      :setActivationOrder( QMdiArea_CreationOrder )
+      :setTabsMovable( .t. )
+      // :setTabsClosable( .t. )  /* Later */
+   ENDWITH
+
    ::oStackedWidget:setTabShape( ::oINI:nPanelsTabShape )
    ::oStackedWidget:setTabPosition( ::oINI:nPanelsTabPosition )
 
@@ -1760,6 +1774,17 @@ METHOD IdeDocks:buildUISrcDock()
    ::oIde:oUISrcDock := ::getADockWidget( nAreas, "dockUISrc", "UI Source Manager", QDockWidget_DockWidgetFloatable )
    ::oDlg:oWidget:addDockWidget( Qt_RightDockWidgetArea, ::oUISrcDock:oWidget, Qt_Horizontal )
    ::oUISrcDock:oWidget:connect( "visibilityChanged(bool)", {|p| ::execEvent( __dockUISrc_visibilityChanged__, p, ::oUISrcDock:oWidget ) } )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeDocks:buildFunctionsMapDock()
+   LOCAL nAreas := Qt_LeftDockWidgetArea + Qt_RightDockWidgetArea + Qt_TopDockWidgetArea + Qt_BottomDockWidgetArea
+
+   ::oIde:oFunctionsMapDock := ::getADockWidget( nAreas, "dockFunctionsMap", "Functions Map", QDockWidget_DockWidgetFloatable )
+   ::oDlg:oWidget:addDockWidget( Qt_RightDockWidgetArea, ::oFunctionsMapDock:oWidget, Qt_Horizontal )
+   ::oFunctionsMapDock:oWidget:connect( "visibilityChanged(bool)", {|p| ::execEvent( __dockFunctionsMap_visibilityChanged__, p, ::oFunctionsMapDock:oWidget ) } )
 
    RETURN Self
 
