@@ -647,7 +647,7 @@ METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
 
 METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
-   LOCAL i, xResult, nRec, xValue, aRecList, aList, astr, aMnu, oCol
+   LOCAL i, xResult, nRec, xValue, aRecList, aList //, aStr, aMnu, oCol
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
@@ -656,6 +656,9 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    oMdiBrowse:dispInfo()
 
    DO CASE
+   CASE nKey == K_ALT_O
+      oHbQtBrowse:activateIndexMenu()
+
    CASE nKey == K_F5
       oHbQtBrowse:Scroll()
 
@@ -705,14 +708,7 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
       ENDIF
 
    CASE nKey == K_ALT_F5                          /* Insert Column */
-      aStr := oMdiBrowse:dbStruct()
-      aMnu := {}
-      aeval( aStr, {|e_| AAdd( aMnu, e_[ 1 ] ) } )
-      IF ! Empty( nRec := HbQtAChoice( , , , , aMnu, , , , , "Select a Field" ) )
-         oCol := HbQtColumnNew( aStr[ nRec, 1 ], oMdiBrowse:fieldBlock( aStr[ nRec, 1 ] ) )
-         oHbQtBrowse:insColumn( oHbQtBrowse:ColPos, oCol )
-         oHbQtBrowse:RefreshAll()
-      ENDIF
+      oHbQtBrowse:activateColumnsMenu()
 
    CASE nKey == K_ALT_P                           /* SET SCOPE */
       IF oMdiBrowse:indexOrd() > 0

@@ -215,6 +215,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN searchText( cText )                     INLINE ::oSearchLabel:setText( cText )
 
    METHOD showIndicator( rgbColorString )
+   METHOD activateIndexMenu()
+   METHOD activateColumnsMenu()
 
    METHOD skipRows( nRows )                       // INTERNAL - skips <nRows> back or forward : Resizing
    METHOD skipCols( nCols )                       // INTERNAL - skips <nCols> right or left   : Resizing
@@ -2786,6 +2788,16 @@ METHOD HbQtBrowse:execSearch( cSearch )
       Eval( ::searchBlock, cSearch, ::nSearchMode, Self )
    ENDIF
    RETURN .T.
+
+
+METHOD HbQtBrowse:activateColumnsMenu()
+   ::oAddColumnsButton:showMenu()
+   RETURN Self
+
+
+METHOD HbQtBrowse:activateIndexMenu()
+   ::oIndexButton:showMenu()
+   RETURN Self
 
 
 METHOD HbQtBrowse:manageContextMenu( oPos )

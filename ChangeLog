@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-12 15:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r183)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: METHOD activateIndexMenu()
+                   METHOD activateColumnsMenu()
+       As the name implies, calling these methods will activate the 
+       respective menu options on the HbQtBrowserr toolbar.
+
+  * hbdbu/dbu.prg
+    + Added: code to exploit above two methods.     
+
 2013-03-07 19:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)
   + hbqtwidgets/resources/copy.png
   * hbqtwidgets/hbqtwidgets.qrc
