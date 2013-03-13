@@ -111,6 +111,11 @@ STATIC PROCEDURE _GENLIMITRTE( cDesc )
    RETURN
 
 
+STATIC FUNCTION _SKIP_RESULT( xResult )
+
+   RETURN iif( HB_ISNUMERIC( xResult ), Int( xResult ), 0 )
+
+
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont )
    RETURN HbQtBrowse():new( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
@@ -143,6 +148,9 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD panRight()
    METHOD refreshAll()
    METHOD refreshCurrent()
+   METHOD stabilize()
+   METHOD forceStable()
+   METHOD setVisible()
 
    ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
@@ -221,6 +229,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD skipRows( nRows )                       // INTERNAL - skips <nRows> back or forward : Resizing
    METHOD skipCols( nCols )                       // INTERNAL - skips <nCols> right or left   : Resizing
 
+   METHOD dispFrames()                            // display TBrowse border, columns' headings, footings and separators
+   METHOD dispRow( nRow )                         // display TBrowse data
 
 PROTECTED:
 
@@ -603,10 +613,6 @@ METHOD HbQtBrowse:create()
 
    ::connect()
 
-// ::oWidget:show()
-
-// ::oWidget:connect( QEvent_Show, {|| ::refreshWindow() } )
-
    RETURN Self
 
 
@@ -671,7 +677,6 @@ METHOD HbQtBrowse:refreshWindow()
 
 
 METHOD HbQtBrowse:doConfigure()     /* Overloaded */
-
    LOCAL oCol
    LOCAL i, xVal, oFontMetrics, n, nLeftWidth, nwVal, nwHead
    LOCAL nMaxCellH, lShowFooter, oAct, cMenu
@@ -843,6 +848,92 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    IF HB_ISBLOCK( ::verticalMovementBlock )
       Eval( ::verticalMovementBlock, 0, NIL, Self )
    ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:stabilize()
+   LOCAL nRowCount, nToMove, nMoved, lRead, lStat
+
+   IF ::nConfigure != 0
+      ::doConfigure()
+   ENDIF
+
+   IF ! ::lStable .OR. ::lInvalid .OR. ::lFrames .OR. ::lRefresh .OR. ;
+      ::nMoveOffset != 0 .OR. ::nBufferPos != ::nRowPos
+
+      nRowCount := ::rowCount
+
+      IF ::lRefresh
+         AFill( ::aCellStatus, .F. )
+         ::nLastRow := nRowCount
+         ::nLastScroll := 0
+         ::lRefresh := .F.
+      ENDIF
+
+      ::setVisible()
+
+      lRead := .F.
+      IF ::nMoveOffset != 0
+         ::setPosition()
+         lRead := .T.
+      ENDIF
+
+      IF ::nLastScroll > 0
+         FOR EACH lStat IN ::aCellStatus DESCEND
+            IF ! lStat
+               IF lRead
+                  RETURN .F.
+               ENDIF
+               lRead := ::readRecord( lStat:__enumIndex() )
+            ENDIF
+         NEXT
+      ELSE
+         FOR EACH lStat IN ::aCellStatus
+            IF ! lStat
+               IF lRead
+                  RETURN .F.
+               ENDIF
+               lRead := ::readRecord( lStat:__enumIndex() )
+            ENDIF
+         NEXT
+      ENDIF
+
+      IF ::nRowPos > ::nLastRow
+         ::nRowPos := ::nLastRow
+      ENDIF
+      IF ::nBufferPos != ::nRowPos
+         nToMove := ::nRowPos - ::nBufferPos
+         nMoved := _SKIP_RESULT( Eval( ::bSkipBlock, nToMove ) )
+         IF nToMove > 0
+            IF nMoved < 0
+               nMoved := 0
+            ENDIF
+         ELSEIF nToMove < 0
+            nMoved := nToMove
+         ELSE
+            nMoved := 0
+         ENDIF
+         ::nBufferPos += nMoved
+         ::nRowPos := ::nBufferPos
+      ENDIF
+      ::lStable := .T.
+      ::lInvalid := .F.
+   ENDIF
+
+   RETURN .T.
+
+
+METHOD HbQtBrowse:forceStable()
+
+   DO WHILE ! ::stabilize()
+//      QApplication():processEvents()
+   ENDDO
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:setVisible()
 
    RETURN Self
 
@@ -1996,8 +2087,7 @@ METHOD HbQtBrowse:rowCount()  /* Overloaded */
 METHOD HbQtBrowse:refreshAll()
 
    ::TBrowse:refreshAll()
-
-   ::forceStable()
+//   ::forceStable()
    ::setCurrentIndex( .T. )
 
    RETURN Self
@@ -2006,8 +2096,7 @@ METHOD HbQtBrowse:refreshAll()
 METHOD HbQtBrowse:refreshCurrent()
 
    ::TBrowse:refreshCurrent()
-
-   ::forceStable()
+//   ::forceStable()
    ::setCurrentIndex( .T. )
 
    RETURN Self
@@ -3504,3 +3593,15 @@ METHOD HbQtBrowse:drawTitle( oPainter, aTitle, nT, nRH, nCols, nPage, nML, aX, n
 
    RETURN nT
 
+
+METHOD HbQtBrowse:dispFrames()
+
+   ::lFrames := .F.
+
+   RETURN Self
+
+METHOD HbQtBrowse:dispRow( nRow )
+
+   HB_SYMBOL_UNUSED( nRow )
+
+   RETURN Self

@@ -16,6 +16,35 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-13 15:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r186)
+  + hbqtwidgets/menues.prg
+  + hbqtwidgets/statusbar.prg
+  + hbqtwidgets/treeview.prg
+    + Added: Classes from HbXBP but without any framework. These must be 
+       usable with any framework. Work-in-progress.
+
+  + hbqtwidgets/alert.prg
+  + hbqtwidgets/getlist.prg
+  + hbqtwidgets/getsys.prg
+  + hbqtwidgets/toolbar.prg
+
+  - hbqtwidgets/hbqtalert.prg
+  - hbqtwidgets/hbqttoolbar.prg
+  - hbqtwidgets/hbqtgetlist.prg
+  - hbqtwidgets/hbqtgetsys.prg
+    % Renamed few sources to portray contents presisely.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    % Deleted, Added changed/new sources.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Overloaded few more methods of TBrowse to eliminate the unnecessary 
+       GT specific display calls and columns specific metrix calculations.
+       This must speed-up HbQtBrowse():refreshAll() method.
+
+  * hbqtwidgets/hbqtdbu.prg
+    % Minor.
+
 2013-03-13 15:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r185)
   * hbide/findreplace.prg
     ! Fixed: not to consider lines starting with 

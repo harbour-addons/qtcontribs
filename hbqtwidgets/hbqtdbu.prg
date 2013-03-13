@@ -626,7 +626,7 @@ METHOD HbQtDBU:buildBrwStruct()
    AAdd( aHelp, "K_CTRL_C   Copy Structure to Clipboard" )
    AAdd( aHelp, "L_DBLCLK            Navigate to Column" )
 
-   oBrowse := HbQtBrowseNew( 5, 5, 16, 30, ::oWidget, QFont( "Courier New", 8 ) )
+   oBrowse := HbQtBrowseNew( 0, 0, 10, 50, ::oWidget, QFont( "Courier New", 8 ) )
    oBrowse:colorSpec      := "N/W*, N/BG, W+/R*, W+/B"
 
    oBrowse:GoTopBlock     := {|| n := 1 }
@@ -679,6 +679,7 @@ METHOD HbQtDBU:buildBrwStruct()
    ::oBrwStruct := oBrowse
    ::qRightFrameLay:addWidget( ::oBrwStruct:oWidget )
 
+   ::oBrwStruct:configure()
    ::oBrwStruct:refreshWindow()
 
    RETURN Self

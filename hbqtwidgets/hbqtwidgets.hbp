@@ -17,15 +17,21 @@ hbqt.hbc
 -instfile=inc:hbqtstd.ch
 -instfile=inc:hbqtwidgets.hbx
 
-hbqtgetsys.prg
-hbqtgetlist.prg
-hbqtalert.prg
+getsys.prg
+getlist.prg
+
 hbqtevent.prg
 hbqtbrowse.prg
 hbqtcolumn.prg
-hbqttoolbar.prg
 hbqtdbu.prg
 dbucreate.prg
+
+alert.prg
+
+toolbar.prg
+statusbar.prg
+menues.prg
+treeview.prg
 
 hbqtwidgets.qrc
 
