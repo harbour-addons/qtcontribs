@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-13 16:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r187)
+  * hbdbu/dbu.prg
+  * hbide/hbide_v.ch
+    % Revision bump.
+
 2013-03-13 15:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r186)
   + hbqtwidgets/menues.prg
   + hbqtwidgets/statusbar.prg
