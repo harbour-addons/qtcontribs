@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-13 15:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r185)
+  * hbide/findreplace.prg
+    ! Fixed: not to consider lines starting with 
+       METHOD, ACCESS, ASSIGN, MESSAGE in CLASS definitions.
+
+    % Refined: Functions Map layout. 
+       Now it shows out like this, publishing the call with arguments:
+
+       Alert()(10)
+            E:\harbour\addons\hbdbu\dbu.prg
+            (  282) exit                  : Alert( "Exit HbDBU ?", { "Yes", "No" } )
+            (  329) setDatabaseParams     : Alert( "Could not Connect to Cache Server" )
+            (  429) saveMyTable           : Alert( { cTable + ", already exists!", "DO you want to overwrite it ?" }, { "No", "Yes" }, , , "WARNING : Table could be Overwritten" )
+            (  448) saveMyTable           : Alert( cTable + " : has been created successfully!" )
+
+       It helps to locate certain instances of wrongly passed arguments.
+
 2013-03-12 15:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r184)
   + hbide/resources/map.png
   * hbide/hbide.qrc

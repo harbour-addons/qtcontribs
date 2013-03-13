@@ -734,6 +734,8 @@ METHOD IdeFindReplace:updateFindReplaceData( cMode )
 #define LOG_INFO                                  9
 #define LOG_HASH                                  10
 
+#define LEFTEQUAL( l, r )                         ( Upper( Left( l, Len( r ) ) ) == r )
+
 /*----------------------------------------------------------------------*/
 
 CLASS IdeFindInFiles INHERIT IdeObject
@@ -1695,6 +1697,7 @@ METHOD IdeFunctionsMap:execEvent( nEvent, p )
                :movePosition( QTextCursor_Right, QTextCursor_KeepAnchor, Len( ::aInfo[ nInfo, 5 ] ) )
             ENDWITH
             ::oIde:qCurEdit:setTextCursor( qCursor )
+            ::oIde:qCurEdit:centerCursor()
             ::oIde:manageFocusInEditor()
          ENDIF
       ELSE
@@ -1876,7 +1879,7 @@ METHOD IdeFunctionsMap:map()
 METHOD IdeFunctionsMap:mapABunch( aFiles )
    LOCAL cSource, nLine, aBuffer, cLine, aMatch, regEx
    LOCAL aSumData, cComments, aTags, aSummary, aFuncList, aBufLines
-   LOCAL aTag, cType, cFunc, aM, cExt, n, cLineO, cF, nTags
+   LOCAL aTag, cType, cFunc, aM, cExt, n, cLineO, cF, nTags, cInClass
 
    FOR EACH cSource IN aFiles
       QApplication():processEvents()
@@ -1943,28 +1946,38 @@ METHOD IdeFunctionsMap:mapABunch( aFiles )
             nLine++
             IF Asc( substr( cComments, nLine, 1 ) ) != 3                  // Not a commented line
                IF AScan( aSumData, {|e_|  e_[ 2 ] == nLine } ) == 0       // Should not be contained symbol
-                  cLine := cLineO
-                  IF ( n := At( "//", cLine ) ) > 0                       // Remove inline comment . NOTE we cannot remove / * * / comments
-                     cLine := SubStr( cLine, 1, n-1 )
-                  ENDIF
-                  IF ( n := At( "&&", cLine ) ) > 0                       // Remove inline comment
-                     cLine := SubStr( cLine, 1, n-1 )
-                  ENDIF
-                  //       exp, string, lMatchCase, lNewLine, nMaxMatch, nMatchWhich, lMatchOnly
-                  IF ! Empty( aMatch := hb_regexAll( regEx, cLine, ::lMatchCase, .F., 0, 1, .F.  ) )
-                     FOR EACH aM IN aMatch
-                        IF ! hbide_objectMessage( cLine, aM[ 2 ] )
-                           cFunc := AllTrim( aM[ 1 ] ) + "()"
-                           IF ! hb_HHasKey( ::hInfo, cFunc )
-                              ::hInfo[ cFunc ] := { 0, {}, {}, {}, NIL }
-                           ENDIF
-                           ::hInfo[ cFunc ][ FUNC_COUNT ]++
-                           n  := AScan( aTags, {|e_|  nLine < e_[ 3 ] } )
-                           cF := iif( nTags == 0, "", iif( n == 0, aTags[ nTags, 7 ], iif( n == 1, "", aTags[ n-1, 7 ] ) ) )
+                  cInClass := Upper( SubStr( LTrim( cLineO ), 1, 7 ) )
+                  IF ! ( cInClass $ "METHOD ,ACCESS ,ASSIGN ,MESSAGE" )
+                     cLine := cLineO
+                     IF ( n := At( "//", cLine ) ) > 0                    // Remove inline comment . NOTE we cannot remove / * * / comments
+                        cLine := SubStr( cLine, 1, n-1 )
+                     ENDIF
+                     IF ( n := At( "&&", cLine ) ) > 0                    // Remove inline comment
+                        cLine := SubStr( cLine, 1, n-1 )
+                     ENDIF
+                     //       exp, string, lMatchCase, lNewLine, nMaxMatch, nMatchWhich, lMatchOnly
+                     IF ! Empty( aMatch := hb_regexAll( regEx, cLine, ::lMatchCase, .F., 0, 1, .F.  ) )
+                        FOR EACH aM IN aMatch
+                           IF ! hbide_objectMessage( cLine, aM[ 2 ] )
+                              cFunc := AllTrim( aM[ 1 ] ) + "()"
+                              IF ! hb_HHasKey( ::hInfo, cFunc )
+                                 ::hInfo[ cFunc ] := { 0, {}, {}, {}, NIL }
+                              ENDIF
+                              ::hInfo[ cFunc ][ FUNC_COUNT ]++
+                              n      := AScan( aTags, {|e_|  nLine < e_[ 3 ] } )
+                              cF     := AllTrim( iif( nTags == 0, "", iif( n == 0, aTags[ nTags, 7 ], iif( n == 1, "", aTags[ n-1, 7 ] ) ) ) )
 
-                           AAdd( ::hInfo[ cFunc ][ FUNC_CALLED ], { cSource, nLine, cLineO, aM[ 2 ], aM[ 3 ], cF } )
-                        ENDIF
-                     NEXT
+                              IF ( n := At( "(", cF ) ) > 0   /* IF a FUNC or PROC */
+                                 cF := Trim( SubStr( cF, 1, n-1 ) )
+                              ENDIF
+                              IF ( n := At( " ", cF ) ) > 0   /* IF a CLASS */
+                                 cF := Trim( SubStr( cF, 1, n-1 ) )
+                              ENDIF
+
+                              AAdd( ::hInfo[ cFunc ][ FUNC_CALLED ], { cSource, nLine, cLineO, aM[ 2 ], aM[ 3 ], cF, hbide_pullFuncBody( cLineO, aM[ 2 ] ) } )
+                           ENDIF
+                        NEXT
+                     ENDIF
                   ENDIF
                ENDIF
             ENDIF
@@ -1981,6 +1994,26 @@ METHOD IdeFunctionsMap:mapABunch( aFiles )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
+
+STATIC FUNCTION hbide_pullFuncBody( cSource, nStart )
+   LOCAL i, nOp := 0, nCl := 0, s
+
+   FOR i := nStart TO Len( cSource )
+      s := SubStr( cSource, i, 1 )
+      IF s == "("
+         nOp++
+      ELSEIF s == ")"
+         nCl++
+      ENDIF
+      IF nOp > 0 .AND. nCl == nOp
+         EXIT
+      ENDIF
+   NEXT
+
+   RETURN SubStr( cSource, nStart, i - nStart + 1 )
+
+/*----------------------------------------------------------------------*/
+
 
 METHOD IdeFunctionsMap:showLog( nType, cMsg, aLines )
    LOCAL qResult, hHash, cSource, cTmp, nUnCalled := 0
@@ -2010,7 +2043,7 @@ METHOD IdeFunctionsMap:showLog( nType, cMsg, aLines )
                   qResult:append( F_HASH_S + "<i>" + cText + "</i>" + F_END ) ; ::moveCursor()
                   AAdd( ::aInfo, { -2, cSource, nSrcLine, 1, hHash[ FUNC_DATA ][ cSource:__enumIndex() ][ 8 ] } )
                   QApplication():processEvents()
-                  IF ::lStop                                 /* Stop button is pressed */
+                  IF ::lStop
                      EXIT
                   ENDIF
                NEXT
@@ -2026,11 +2059,11 @@ METHOD IdeFunctionsMap:showLog( nType, cMsg, aLines )
                ENDIF
                cTmp := LTrim( Str( aInf[ 2 ], 5, 0 ) )
                cTmp := hbide_getNBS( 5 ) + "(" + hbide_getNBS( 5 - Len( cTmp ) ) + cTmp + ")"
-               cText := cTmp + hbide_getNBS( 1 ) + aInf[ 6 ]
+               cText := cTmp + hbide_getNBS( 1 ) + Pad( aInf[ 6 ], 20 ) +  hbide_getNBS( 20 - Len( aInf[ 6 ] ) ) + " : " + aInf[ 7 ]
                qResult:append( F_HASH_1 + cText + F_END ) ; ::moveCursor()
                AAdd( ::aInfo, { -2, aInf[ 1 ], aInf[ 2 ], aInf[ 4 ], SubStr( hHash:__enumKey(), 1, Len( hHash:__enumKey() ) - 2 ) } )
                QApplication():processEvents()
-               IF ::lStop                                 /* Stop button is pressed */
+               IF ::lStop
                   EXIT
                ENDIF
             NEXT
@@ -2038,12 +2071,12 @@ METHOD IdeFunctionsMap:showLog( nType, cMsg, aLines )
             nUnCalled++
          ENDIF
          QApplication():processEvents()
-         IF ::lStop                                 /* Stop button is pressed */
+         IF ::lStop
             EXIT
          ENDIF
       NEXT
 
-      IF ::lStop                                 /* Stop button is pressed */
+      IF ::lStop
          EXIT
       ENDIF
 
@@ -2106,7 +2139,7 @@ STATIC FUNCTION hbide_getNBS( nTimes )
       cStr += "&nbsp;"
    NEXT
 
-   RETURN cStr
+   RETURN iif( Empty( cStr ), "&nbsp;", cStr )
 
 /*----------------------------------------------------------------------*/
 
