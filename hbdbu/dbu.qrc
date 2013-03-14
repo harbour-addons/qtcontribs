@@ -13,5 +13,7 @@
     <file>resources/n-7.png</file>
     <file>resources/n-8.png</file>
     <file>resources/n-9.png</file>
+    <file>resources/save-env.png</file>
+    <file>resources/rest-env.png</file>
   </qresource>
 </RCC>

@@ -16,6 +16,53 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-14 16:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r188)
+  * hbqtwidgets/hbqtdbu.prg
+    + Made some methods and functions public.
+    + Added: couple of more methods, internal usage.
+
+  + hbdbu/resources/rest-env.png
+  + hbdbu/resources/save-env.png
+  * hbdbu/dbu.qrc
+    + Added: two more images for HbDBU's toolbar.
+
+  * hbdbu/dbu.prg
+    + Implemented: command-line parameters extended to accept the environment
+       file ( .dbu ) to restore settings from.
+
+    + Implemented: command-line parameters to accept default RDD to use 
+       for next .dbf files provided on the command-line.
+
+    + Implemented: to memorize last RDD to make it default for next run.
+
+    + Added: <Save Environment> icon on the toolbar.
+       Activating it will open file save dialog asking for a .dbu, and if 
+       provided correctly, including the .dbu extention, will save the 
+       current environment into it, which can be opened and/or merged with 
+       your current session on will.
+
+    + Added: <Merge Environment> icon on the toolbar.
+       When invoked will ask for a .dbu in file open dialog. The environment 
+       contained therein will be merged into your existing environment.
+
+    EXAMPLES:
+       hbdbu.exe e:\dev_exes\ntx.dbu dbfntx e:\harbour\tests\test.dbf
+         will open the test.dbf with DBFNTX driver.
+
+       hbdbu.exe e:\dev_exes\ntx.dbu dbfntx e:\harbour\tests\test.dbf \
+                                     dbfcdx e:\harbour\tests\test.dbf
+         will open the test.dbf with DBFNTX drive and 2nd copy of test.dbf 
+         with DBFCDX rdd.
+
+       hbdbu.exe e:\envs\mylastenv.dbu 
+         will open mylastenv.dbu contained view.
+
+       hbdbu.exe e:\envs\mylastenv.dbu DBFCDX e:\harbour\tests\test.dbf
+         will open the view in mylastenv.dbu and also test.dbf with DBFCDX rdd.
+
+    NOTE: this implementation allows you to save and execute n number of views.
+          Also this empowers you to link .dbf and .dbu's with HbDBU via explorer.
+
 2013-03-13 16:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r187)
   * hbdbu/dbu.prg
   * hbide/hbide_v.ch

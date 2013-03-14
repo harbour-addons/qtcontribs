@@ -117,6 +117,8 @@ CREATE CLASS DbuMGR
    DATA   oExitAct
    DATA   oDashAct
    DATA   oInfoAct
+   DATA   oSaveAct
+   DATA   oRestAct
 
    DATA   lCache                                  INIT .F.
    DATA   lAds                                    INIT .F.
@@ -124,6 +126,10 @@ CREATE CLASS DbuMGR
    DATA   hConxns                                 INIT {=>}
    DATA   aConxns                                 INIT {}
    DATA   hDbuData                                INIT {=>}
+
+   DATA   cSettingsPath                           INIT ""
+   DATA   cSettingsFile                           INIT "settings.dbu"
+   DATA   cDefaultRDD                             INIT "DBFCDX"
 
    METHOD getImage( cName )                       INLINE QIcon( ":/dbu/resources/" + cName + ".png" )
 
@@ -146,7 +152,9 @@ CREATE CLASS DbuMGR
    METHOD handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    METHOD getSearchValue( oMdiBrowse, xValue )
    METHOD helpInfo()
+   METHOD saveEnvAs()
    METHOD saveEnvironment()
+   METHOD restEnvFrom()
    METHOD restEnvironment()
    METHOD getPath( cFile )
    METHOD execDashboard()
@@ -182,7 +190,7 @@ METHOD DbuMGR:new( aParams )
 
 METHOD DbuMGR:create()
    LOCAL aRdds := {}
-   LOCAL cTitle, cParam, cPath, cName, cExt, s, cCurPath
+   LOCAL cTitle, cParam, s
 
 #if defined(__CACHE__)
    AAdd( aRdds, "CACHERDD" )
@@ -216,6 +224,16 @@ METHOD DbuMGR:create()
       :setTooltip( "Cache Servers Dashboard" )
       :connect( "triggered()", {|| ::execDashboard() } )
    ENDWITH
+   WITH OBJECT ::oSaveAct := QAction( ::oWidget:oWidget )
+      :setIcon( QIcon( ::getImage( "save-env" ) ) )
+      :setTooltip( "Save Environment As..." )
+      :connect( "triggered()", {|| ::saveEnvAs() } )
+   ENDWITH
+   WITH OBJECT ::oRestAct := QAction( ::oWidget:oWidget )
+      :setIcon( QIcon( ::getImage( "rest-env" ) ) )
+      :setTooltip( "Merge Environment From..." )
+      :connect( "triggered()", {|| ::restEnvFrom() } )
+   ENDWITH
    WITH OBJECT ::oInfoAct := QAction( ::oWidget:oWidget )
       :setIcon( QIcon( __hbqtImage( "info" ) ) )
       :setTooltip( "About HbDBU" )
@@ -226,7 +244,10 @@ METHOD DbuMGR:create()
       :setObjectName( "MainToolBar" )
       :setIconSize( QSize( 24,24 ) )
       :addAction( ::oExitAct )
+      :addSeparator()
       :addAction( ::oDashAct )
+      :addAction( ::oSaveAct )
+      :addAction( ::oRestAct )
       :addSeparator()
       :addAction( ::oInfoAct )
    ENDWITH
@@ -245,32 +266,31 @@ METHOD DbuMGR:create()
    ::oWidget:stackedWidget:addWidget( ::oDbu:oWidget )
    ::oWidget:stackedWidget:setCurrentIndex( 1 )
 
-   ::populateProdTables()
+   /* Process command line params */
    FOR EACH cParam IN ::aParams
-      IF ".dbf" $ Lower( cParam )
-         cCurPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
-         hb_fNameSplit( cParam, @cPath, @cName, @cExt )
-         IF ! Empty( cExt ) .AND. Lower( cExt ) == ".dbf"
-            IF Empty( cPath )
-               cPath := cCurPath
-            ELSEIF Left( cParam, 2 ) == ".."
-               cPath := cCurPath
-            ENDIF
-            IF Left( cParam, 2 ) == ".."
-               s := cPath + s
-            ELSE
-               s := cPath + cName + cExt
-            ENDIF
-            IF ! Empty( s )
-               ::oDBU:openATable( s )
-            ENDIF
+      IF ".dbu" $ Lower( cParam )
+         ::getPath( cParam )
+
+      ELSEIF ".dbf" $ Lower( cParam )
+         // Parse to pull-out RDD
+         s := ::getPath( cParam )
+         IF ! Empty( s )
+            ::oDBU:openATable( s )
          ENDIF
+
+      ELSEIF Upper( cParam ) $ "DBFCDX,DBFNTX,DBFNSX" + iif( ::lAds, ",ADS", "" ) + iif( ::lCache, ",CACHERDD", "" )
+         ::cDefaultRDD := Upper( cParam )
+         ::oDbu:setCurrentDriver( ::cDefaultRDD )
+
       ENDIF
    NEXT
 
+   ::oDbu:clearTablesTree()
+   ::populateProdTables()
+
    ::oWidget:dockCache:hide()
-   ::oWidget:show()
    ::restEnvironment()
+   ::oWidget:show()
 
    RETURN Self
 
@@ -311,7 +331,7 @@ METHOD DbuMGR:setDatabaseParams()
 #endif
 
 #ifdef __CACHE__
-   ASize( ::aParams, 5 )
+   ASize( ::aParams, Max( 5, Len( ::aParams ) ) )
 
    cServerIP  := ::aParams[ 1 ]
    cPort      := ::aParams[ 2 ]
@@ -850,61 +870,20 @@ METHOD DbuMGR:getSearchValue( oMdiBrowse, xValue )
    RETURN .F.
 
 
-METHOD DbuMGR:helpInfo()
-   LOCAL v_:= {}
+METHOD DbuMGR:saveEnvAs()
+   LOCAL cFile
 
-   aadd( v_, 'F2       Sets the index to 0 for natural record order' )
-   aadd( v_, 'F3                              Set a new index order' )
-   aadd( v_, 'F4                   Goto a specific record by number' )
-   aadd( v_, 'F5        Auto scrolls the browser current-bottom-top' )
-   aadd( v_, 'F7               Search for a record by Current Index' )
-   aadd( v_, 'F8                           Freezes leftmoost column' )
-   aadd( v_, 'F10           Toggles locks status of currents record' )
-   aadd( v_, 'Sh+F8                   UnFreezes last freezed column' )
-   aadd( v_, 'Sh+F5         Moves current column right one position' )
-   aadd( v_, 'Sh+F6           Moves current column left on position' )
-   aadd( v_, 'Alt+F5              Insert column at current location' )
-   aadd( v_, 'Alt+F6             Deletes currently hilighted column' )
-   aadd( v_, '                                                     ' )
-   aadd( v_, 'ENTER                               Edit current cell' )
-   aadd( v_, 'Alt+ENTER      Edit current row starting current cell' )
-   aadd( v_, 'Ctrl+ENTER          Edit current column then next row' )
-   aadd( v_, '                                                     ' )
-   aadd( v_, 'Alt_E                                       Seek Last' )
-   aadd( v_, 'Alt_Y                                       Seek Soft' )
-   aadd( v_, 'ALT_Z                                    Skip Records' )
-   aadd( v_, 'Alt_F                                    Set a Filter' )
-   aadd( v_, 'Alt_R                                    Clear Filter' )
-   aadd( v_, 'Alt_P                                       Set Scope' )
-   aadd( v_, 'Alt_O                                     Clear Scope' )
-   aadd( v_, 'Alt_INS                         Append a blank Record' )
-   aadd( v_, 'Alt_DEL                         Delete Current Record' )
-   aadd( v_, 'Alt_T                                 Show Statistics' )
-// aadd( v_, 'Alt_V                               Performance Stats' )
-// aadd( v_, 'Alt_X                            Sum Average High Low' )
-   aadd( v_, 'Ctrl_F1                                 Find in field' )
-   aadd( v_, '                                                     ' )
-   aadd( v_, 'Alt_L                             Lock Current Record' )
-   aadd( v_, 'Alt_U                           Unlock Current Record' )
-   aadd( v_, 'Alt_K                       Unlock a Selective Record' )
-   aadd( v_, 'Alt_S                          List of Locked Records' )
-// aadd( v_, 'Alt_I                                       Lock Info' )
-// aadd( v_, 'Alt_G                            List of Global Locks' )
-// aadd( v_, 'Alt_X                       Lock Info Column (Toggle)' )
+   cFile := hbdbu_saveAFile( ::oWidget:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
+      ::getPath( cFile )
+   ENDIF
 
-   RETURN v_
-
-
-STATIC FUNCTION __arrayToString( aStrings, cDlm )
-   LOCAL cStr := ""
-   aeval( aStrings, {|e| cStr += e + cDlm } )
-   RETURN cStr
-
+   RETURN Self
 
 METHOD DbuMGR:saveEnvironment()
    LOCAL oSettings
    LOCAL oWgt := ::oWidget:oWidget
-   LOCAL cFile := ::getPath( "settings.dbu" )
+   LOCAL cFile := ::getPath()
 
    WITH OBJECT oSettings := QSettings( cFile, QSettings_IniFormat )
       :setValue( "dbuSettings"     , QVariant( oWgt:saveState() ) )
@@ -916,14 +895,30 @@ METHOD DbuMGR:saveEnvironment()
       :setValue( "dbuPanelsInfo"   , QVariant( __arrayToString( ::oDbu:getPanelsInfo(), "~" ) ) )
       :setValue( "dbuTreeInfo"     , QVariant( __arrayToString( ::oDbu:getTreeInfo()  , "~" ) ) )
       :setValue( "dbuLinksInfo"    , QVariant( __arrayToString( ::oDbu:getLinksInfo() , "~" ) ) )
+      :setValue( "dbuDriver"       , QVariant( ::oDbu:currentDriver() ) )
    ENDWITH
 
    RETURN oSettings
 
 
+METHOD DbuMGR:restEnvFrom()
+   LOCAL cFile
+
+   cFile := hbdbu_fetchAFile( ::oWidget:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
+      ::getPath( cFile )
+
+      // Close existing panels and browsers or should we merge ?
+      // merging make sense as .dbu can be opened via "Open With" option of explorer.
+      //
+      ::restEnvironment()
+   ENDIF
+
+   RETURN Self
+
 METHOD DbuMGR:restEnvironment()
    LOCAL oSettings, oWgt := ::oWidget:oWidget
-   LOCAL cFile := ::getPath( "settings.dbu" )
+   LOCAL cFile := ::getPath()
    LOCAL oRect, lVal, cInfo
 
    oSettings := QSettings( cFile, QSettings_IniFormat )
@@ -982,30 +977,102 @@ METHOD DbuMGR:restEnvironment()
    IF oSettings:contains( "dbuLinksInfo" )
      ::oDbu:setLinksInfo( hb_ATokens( oSettings:value( "dbuLinksInfo" ):toString(), "~" ) )
    ENDIF
+   IF oSettings:contains( "dbuDriver" )
+      ::cDefaultRDD := Upper( oSettings:value( "dbuDriver" ):toString() )
+      ::oDbu:setCurrentDriver( ::cDefaultRDD )
+   ENDIF
 
    RETURN NIL
 
 
 METHOD DbuMGR:getPath( cFile )
-   LOCAL cPath, cIni
+   LOCAL cPath, cName, cExt
 
-   IF .T.
-      IF ! hb_FileExists( cIni := hb_dirBase() + cFile )
-      #if defined( __PLATFORM__WINDOWS )
+   DEFAULT cFile TO ( ::cSettingsPath + ::cSettingsFile )
+
+   hb_FNameSplit( cFile, @cPath, @cName, @cExt )
+
+   IF Lower( cExt ) == ".dbu"
+      IF Empty( cPath )
+         #if defined( __PLATFORM__WINDOWS )
          cPath := hb_DirSepAdd( GetEnv( "APPDATA" ) ) + "dbu\"
-      #elif defined( __PLATFORM__UNIX )
+         #elif defined( __PLATFORM__UNIX )
          cPath := hb_DirSepAdd( GetEnv( "HOME" ) ) + ".dbu/"
-      #elif defined( __PLATFORM__OS2 )
+         #elif defined( __PLATFORM__OS2 )
          cPath := hb_DirSepAdd( GetEnv( "HOME" ) ) + ".dbu/"
-      #endif
+         #endif
          IF ! hb_dirExists( cPath )
             hb_DirCreate( cPath )
          ENDIF
-         cIni := cPath + cFile
+      ELSEIF Left( cPath, 2 ) == ".."
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
       ENDIF
+
+      ::cSettingsPath := cPath
+      ::cSettingsFile := cName + cExt
+
+      ::oWidget:oWidget:setWindowTitle( "HbDBU [" + ::cSettingsPath + ::cSettingsFile + "]" )
+   ELSE
+      IF Empty( cPath )
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+      ELSEIF Left( cPath, 2 ) == ".."
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+      ENDIF
+
    ENDIF
 
-   RETURN cIni
+   RETURN cPath + cName + cExt
+
+
+METHOD DbuMGR:helpInfo()
+   LOCAL v_:= {}
+
+   aadd( v_, 'F2       Sets the index to 0 for natural record order' )
+   aadd( v_, 'F3                              Set a new index order' )
+   aadd( v_, 'F4                   Goto a specific record by number' )
+   aadd( v_, 'F5        Auto scrolls the browser current-bottom-top' )
+   aadd( v_, 'F7               Search for a record by Current Index' )
+   aadd( v_, 'F8                           Freezes leftmoost column' )
+   aadd( v_, 'F10           Toggles locks status of currents record' )
+   aadd( v_, 'Sh+F8                   UnFreezes last freezed column' )
+   aadd( v_, 'Sh+F5         Moves current column right one position' )
+   aadd( v_, 'Sh+F6           Moves current column left on position' )
+   aadd( v_, 'Alt+F5              Insert column at current location' )
+   aadd( v_, 'Alt+F6             Deletes currently hilighted column' )
+   aadd( v_, '                                                     ' )
+   aadd( v_, 'ENTER                               Edit current cell' )
+   aadd( v_, 'Alt+ENTER      Edit current row starting current cell' )
+   aadd( v_, 'Ctrl+ENTER          Edit current column then next row' )
+   aadd( v_, '                                                     ' )
+   aadd( v_, 'Alt_E                                       Seek Last' )
+   aadd( v_, 'Alt_Y                                       Seek Soft' )
+   aadd( v_, 'ALT_Z                                    Skip Records' )
+   aadd( v_, 'Alt_F                                    Set a Filter' )
+   aadd( v_, 'Alt_R                                    Clear Filter' )
+   aadd( v_, 'Alt_P                                       Set Scope' )
+   aadd( v_, 'Alt_O                                     Clear Scope' )
+   aadd( v_, 'Alt_INS                         Append a blank Record' )
+   aadd( v_, 'Alt_DEL                         Delete Current Record' )
+   aadd( v_, 'Alt_T                                 Show Statistics' )
+// aadd( v_, 'Alt_V                               Performance Stats' )
+// aadd( v_, 'Alt_X                            Sum Average High Low' )
+   aadd( v_, 'Ctrl_F1                                 Find in field' )
+   aadd( v_, '                                                     ' )
+   aadd( v_, 'Alt_L                             Lock Current Record' )
+   aadd( v_, 'Alt_U                           Unlock Current Record' )
+   aadd( v_, 'Alt_K                       Unlock a Selective Record' )
+   aadd( v_, 'Alt_S                          List of Locked Records' )
+// aadd( v_, 'Alt_I                                       Lock Info' )
+// aadd( v_, 'Alt_G                            List of Global Locks' )
+// aadd( v_, 'Alt_X                       Lock Info Column (Toggle)' )
+
+   RETURN v_
+
+
+STATIC FUNCTION __arrayToString( aStrings, cDlm )
+   LOCAL cStr := ""
+   aeval( aStrings, {|e| cStr += e + cDlm } )
+   RETURN cStr
 
 
 METHOD DbuMGR:execDashboard()

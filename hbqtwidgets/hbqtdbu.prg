@@ -232,6 +232,7 @@ CLASS HbQtDBU
    METHOD browseConfigureBlock( bBlock )          SETGET
    METHOD browseColumnsBlock( bBlock )            SETGET
 
+   METHOD clearTablesTree()
    METHOD populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, cIcon )
 
    METHOD background( oBrush )                    SETGET
@@ -297,13 +298,15 @@ CLASS HbQtDBU
    METHOD openATable( cDBF )
    METHOD createTable( cDriver, cConxn, aStruct, aIndexes )
 
+   ACCESS currentDriver()                         INLINE ::qRddCombo:currentText()
+   METHOD setCurrentDriver( cDriver )             INLINE ::qRddCombo:setCurrentIndex( ::qRddCombo:findText( cDriver ) )
+   ACCESS currentConxn()                          INLINE ::qConxnCombo:currentText()
+   ACCESS currentConnection()                     INLINE ::qConxnCombo:currentText()
+
    /* END */
 
 PROTECTED:
    DATA   oParent
-
-   ACCESS currentDriver()                         INLINE ::qRddCombo:currentText()
-   ACCESS currentConxn()                          INLINE ::qConxnCombo:currentText()
 
    DATA   oCurBrw
    DATA   oCurPanel
@@ -840,6 +843,10 @@ METHOD HbQtDBU:getTreeInfo()
    RETURN aInfo
 
 
+METHOD HbQtDBU:clearTablesTree()
+   ::oTreeTables:clear()
+   RETURN Self
+
 METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, cIcon )
    LOCAL oTreeItem, oParent, cSection, oSection, oNode
 
@@ -1141,7 +1148,7 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
          ENDIF
       ELSE
          IF ::currentDriver() $ "DBFCDX,DBFNTX,DBFNSX,ADS"
-            IF !empty( cTable := hbide_fetchAFile( ::oWidget, "Select a Table", "Database File (*.dbf)", ::cWrkFolderLast ) )
+            IF !empty( cTable := hbdbu_fetchAFile( ::oWidget, "Select a Table", "Database File (*.dbf)", ::cWrkFolderLast ) )
                hb_fNameSplit( cTable, @cPath )
                ::cWrkFolderLast := cPath
                ::oCurPanel:addBrowser( { NIL, cTable } )
@@ -1740,7 +1747,7 @@ METHOD HbQtDBU:createTable( cDriver, cConxn, aStruct, aIndexes )
       HB_SYMBOL_UNUSED( cTable )
    ELSE
       IF cDriver $ "DBFCDX,DBFNTX,DBFNSX,ADS"
-         IF ! Empty( cTable := hbide_saveAFile( ::oWidget, "Save Table", "Database File (*.dbf)", ::cWrkFolderLast ) )
+         IF ! Empty( cTable := hbdbu_saveAFile( ::oWidget, "Save Table", "Database File (*.dbf)", ::cWrkFolderLast ) )
             hb_fNameSplit( cTable, @cPath, @cName, @cExt )
             ::cWrkFolderLast := cPath
             IF Lower( cExt ) == ".dbf"
@@ -3991,7 +3998,7 @@ STATIC FUNCTION hbide_array2string( a_, cDlm )
    RETURN s
 
 
-STATIC FUNCTION hbide_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lAllowMulti )
+FUNCTION hbdbu_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lAllowMulti )
    LOCAL i, oDlg, nRes, oList, aFiles := {}
 
    DEFAULT cTitle      TO "Please Select a File"
@@ -4021,7 +4028,7 @@ STATIC FUNCTION hbide_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lA
    RETURN iif( nRes == 0, NIL, iif( lAllowMulti, aFiles, aFiles[ 1 ] ) )
 
 
-STATIC FUNCTION hbide_saveAFile( oWnd, cTitle, cFilter, cDftDir )
+FUNCTION hbdbu_saveAFile( oWnd, cTitle, cFilter, cDftDir )
    LOCAL oDlg, xRes
 
    DEFAULT cTitle   TO "Save File"
@@ -4034,12 +4041,13 @@ STATIC FUNCTION hbide_saveAFile( oWnd, cTitle, cFilter, cDftDir )
       :setDirectory( cDftDir )
       :setFilter( QDir_AllDirs + QDir_Files + QDir_NoDotAndDotDot )
       :setFileMode( QFileDialog_AnyFile )
-      :setFileMode( QFileDialog_AnyFile )
       :setAcceptMode( QFileDialog_AcceptSave )
       :setConfirmOverwrite( .T. )
    ENDWITH
 
-   xRes := oDlg:getSaveFileName( oWnd, cTitle, "" )
+   xRes := oDlg:getSaveFileName( oWnd, cTitle, "", cFilter )
+
+   oDlg:setParent( QWidget() )
 
    RETURN xRes
 
