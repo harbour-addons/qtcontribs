@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="dbu">
+    <file>resources/hbdbu.htm</file>
     <file>resources/cube.png</file>
     <file>resources/exit.png</file>
     <file>resources/dashboard.png</file>
@@ -15,5 +16,6 @@
     <file>resources/n-9.png</file>
     <file>resources/save-env.png</file>
     <file>resources/rest-env.png</file>
+    <file>resources/help.png</file>
   </qresource>
 </RCC>

@@ -1,4 +1,4 @@
-/*
+         /*
  * $Id$
  */
 
@@ -104,7 +104,7 @@ FUNCTION Main( ... )
 
 
 CREATE CLASS DbuMGR
-   DATA   oWidget
+   DATA   oUI
    DATA   oToolbar
    DATA   oDbu
 
@@ -119,6 +119,9 @@ CREATE CLASS DbuMGR
    DATA   oInfoAct
    DATA   oSaveAct
    DATA   oRestAct
+   DATA   oHelpAct
+
+   DATA   oContextMenu
 
    DATA   lCache                                  INIT .F.
    DATA   lAds                                    INIT .F.
@@ -136,6 +139,7 @@ CREATE CLASS DbuMGR
    METHOD new( aParams )
    METHOD create()
    METHOD exit( lAsk, oEvent )
+   METHOD help()
    METHOD openConnections( aConxns )
    METHOD populateProdTables()
    METHOD setMyConnections( cDriver )
@@ -161,6 +165,7 @@ CREATE CLASS DbuMGR
    METHOD updateDashboard()
    METHOD showStats( oMdiBrowse )
    METHOD saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
+   METHOD manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu )
 
    ENDCLASS
 
@@ -191,6 +196,8 @@ METHOD DbuMGR:new( aParams )
 METHOD DbuMGR:create()
    LOCAL aRdds := {}
    LOCAL cTitle, cParam, s
+   LOCAL lDbf := .F.
+   LOCAL lDbu := .F.
 
 #if defined(__CACHE__)
    AAdd( aRdds, "CACHERDD" )
@@ -205,7 +212,7 @@ METHOD DbuMGR:create()
    cTitle := "HbDBU"
 #endif
 
-   WITH OBJECT ::oWidget := hbqtui_dbu()
+   WITH OBJECT ::oUI := hbqtui_dbu()
       :dockCache:hide()
       :dockAdvantage:hide()
       :setWindowIcon( QIcon( __hbqtImage( "cube-2" ) ) )
@@ -214,33 +221,38 @@ METHOD DbuMGR:create()
       :connect( QEvent_Close, {|oEvent| ::exit( .T., oEvent ) } )
    ENDWITH
 
-   WITH OBJECT ::oExitAct := QAction( ::oWidget:oWidget )
+   WITH OBJECT ::oExitAct := QAction( ::oUI:oWidget )
       :setIcon( ::getImage( "exit" ) )
       :setTooltip( "Exit DbuMGR" )
       :connect( "triggered()", {|| ::exit( .F. ) } )
    ENDWITH
-   WITH OBJECT ::oDashAct := QAction( ::oWidget:oWidget )
+   WITH OBJECT ::oDashAct := QAction( ::oUI:oWidget )
       :setIcon( ::getImage( "dashboard" ) )
       :setTooltip( "Cache Servers Dashboard" )
       :connect( "triggered()", {|| ::execDashboard() } )
    ENDWITH
-   WITH OBJECT ::oSaveAct := QAction( ::oWidget:oWidget )
+   WITH OBJECT ::oSaveAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( ::getImage( "save-env" ) ) )
       :setTooltip( "Save Environment As..." )
       :connect( "triggered()", {|| ::saveEnvAs() } )
    ENDWITH
-   WITH OBJECT ::oRestAct := QAction( ::oWidget:oWidget )
+   WITH OBJECT ::oRestAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( ::getImage( "rest-env" ) ) )
       :setTooltip( "Merge Environment From..." )
       :connect( "triggered()", {|| ::restEnvFrom() } )
    ENDWITH
-   WITH OBJECT ::oInfoAct := QAction( ::oWidget:oWidget )
+   WITH OBJECT ::oInfoAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "info" ) ) )
       :setTooltip( "About HbDBU" )
       :connect( "triggered()", {|| dbu_help( 1 ) } )
    ENDWITH
+   WITH OBJECT ::oHelpAct := QAction( ::oUI:oWidget )
+      :setIcon( QIcon( ::getImage( "help" ) ) )
+      :setTooltip( "HbDBU Help" )
+      :connect( "triggered()", {|| ::help() } )
+   ENDWITH
 
-   WITH OBJECT ::oToolbar := QToolBar( ::oWidget:oWidget )
+   WITH OBJECT ::oToolbar := QToolBar( ::oUI:oWidget )
       :setObjectName( "MainToolBar" )
       :setIconSize( QSize( 24,24 ) )
       :addAction( ::oExitAct )
@@ -249,11 +261,12 @@ METHOD DbuMGR:create()
       :addAction( ::oSaveAct )
       :addAction( ::oRestAct )
       :addSeparator()
+      :addAction( ::oHelpAct )
       :addAction( ::oInfoAct )
    ENDWITH
-   ::oWidget:addToolbar( Qt_TopToolBarArea, ::oToolbar )
+   ::oUI:oWidget:addToolbar( Qt_TopToolBarArea, ::oToolbar )
 
-   WITH OBJECT ::oDbu := HbQtDBU():new():create( ::oWidget:stackedWidget )
+   WITH OBJECT ::oDbu := HbQtDBU():new():create( ::oUI:stackedWidget )
       :connectionsBlock     := {|cDriver                     | ::setMyConnections( cDriver )                   }
       :selectTableBlock     := {|cDriver,xConxn,oDbu         | ::selectMyTable( cDriver, xConxn, oDbu )        }
       :openTableBlock       := {|cTable,cAlias,cDriver,cConxn| ::openMyTable( cTable,cAlias,cDriver,cConxn )   }
@@ -263,19 +276,23 @@ METHOD DbuMGR:create()
       :rddsBlock            := {|| aRdds }
       :saveTableBlock       := {|cDriver,xConxn,aStruct,aIndex,oDbu| ::saveMyTable( cDriver,xConxn,aStruct,aIndex,oDbu ) }
    ENDWITH
-   ::oWidget:stackedWidget:addWidget( ::oDbu:oWidget )
-   ::oWidget:stackedWidget:setCurrentIndex( 1 )
+   ::oUI:stackedWidget:addWidget( ::oDbu:oWidget )
+   ::oUI:stackedWidget:setCurrentIndex( 2 )
+
+   ::oUI:helpBrowser:setSource( QUrl( "qrc:///dbu/resources/hbdbu.htm" ) )
 
    /* Process command line params */
    FOR EACH cParam IN ::aParams
       IF ".dbu" $ Lower( cParam )
          ::getPath( cParam )
+         lDbu := .T.
 
       ELSEIF ".dbf" $ Lower( cParam )
          // Parse to pull-out RDD
          s := ::getPath( cParam )
          IF ! Empty( s )
             ::oDBU:openATable( s )
+            lDbf := .T.
          ENDIF
 
       ELSEIF Upper( cParam ) $ "DBFCDX,DBFNTX,DBFNSX" + iif( ::lAds, ",ADS", "" ) + iif( ::lCache, ",CACHERDD", "" )
@@ -288,12 +305,39 @@ METHOD DbuMGR:create()
    ::oDbu:clearTablesTree()
    ::populateProdTables()
 
-   ::oWidget:dockCache:hide()
-   ::restEnvironment()
-   ::oWidget:show()
+   ::oUI:dockCache:hide()
+   IF ! lDbf
+      ::restEnvironment()
+   ENDIF
+   IF lDbf .AND. ! lDbu   /* We are not to save environment */
+      ::cSettingsPath := ""
+      ::cSettingsFile := ""
+   ENDIF
+
+   ::oUI:oWidget:show()
 
    RETURN Self
 
+
+METHOD DbuMGR:help()
+
+   WITH OBJECT ::oHelpAct
+      IF :toolTip() == "HbDBU DBU"
+         :setIcon( QIcon( ::getImage( "help" ) ) )
+         :setTooltip( "HbDBU Help" )
+         ::oUI:stackedWidget:setCurrentIndex( 2 )
+         ::oSaveAct:setEnabled( .T. )
+         ::oRestAct:setEnabled( .T. )
+      ELSE
+         :setIcon( QIcon( __hbqtImage( "cube-2" ) ) )
+         :setTooltip( "HbDBU DBU" )
+         ::oUI:stackedWidget:setCurrentIndex( 1 )
+         ::oSaveAct:setEnabled( .F. )
+         ::oRestAct:setEnabled( .F. )
+      ENDIF
+   ENDWITH
+
+   RETURN Self
 
 METHOD DbuMGR:exit( lAsk, oEvent )
    LOCAL lExit := .T.
@@ -605,6 +649,7 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
       :searchBlock         := {|xValue,nMode,oBrw| ::manageSearch( xValue, nMode, oBrw, oMdiBrowse ) }
       :navigationBlock     := {|nKey,xData,oBrw  | ::handleOptions( nKey, xData, oBrw, oMdiBrowse, oDbu )  }
       :helpBlock           := {|                 | { ::helpInfo(), 0 } }
+      :contextMenuBlock    := {|aPos             | ::manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu ) }
 #ifdef __CACHE__                                  /* CacheRDD does not support OrdKey*() functions */
       :firstPosBlock       := {| | 1                    }
       :lastPosBlock        := {| | oMdiBrowse:lastRec() }
@@ -834,6 +879,43 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    RETURN lHandelled
 
 
+METHOD DbuMGR:manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu )
+   LOCAL oContextMenu
+
+   HB_SYMBOL_UNUSED( oDbu )
+
+   WITH OBJECT oContextMenu := HbQtMenu():new():create()
+      :addItem( { "Seek"           , {||
+                                        LOCAL xValue
+                                        IF ::getSearchValue( oMdiBrowse, @xValue )
+                                           oMdiBrowse:search( xValue, .F., .F. )
+                                           oMdiBrowse:dispInfo()
+                                        ENDIF
+                                        RETURN NIL
+                                     } } )
+      :addItem( { "Search in Field", {|| oHbQtBrowse:search( NIL, NIL, HBQTBRW_SEARCH_BYFIELD ) } } )
+      :addItem( { "Scroll"         , {|| oHbQtBrowse:Scroll() } } )
+      :addItem( { "Show Stat"      , {|| ::showStats( oMdiBrowse ) } } )
+      :addItem( { "Natural Order " , {|| oMdiBrowse:setOrder( 0 ), oMdiBrowse:dispInfo() } } )
+      :addItem( { "Index Order"    , {|| oHbQtBrowse:activateIndexMenu() } } )
+      :addItem( {} )
+      :addItem( { "Set Scope"      , {|| iif( oMdiBrowse:indexOrd() > 0, oMdiBrowse:setScope(), Alert( "Please set an index on current table !" ) ) } } )
+      :addItem( { "Clear Scope"    , {|| iif( oMdiBrowse:indexOrd() > 0, oMdiBrowse:clearScope(), NIL ) } } )
+      :addItem( { "Set Filter"     , {|| oMdiBrowse:setFilter() } } )
+      :addItem( { "Clear Filter"   , {|| oMdiBrowse:clearFilter() } } )
+      :addItem( {} )
+      :addItem( { "Lock Record"    , {|| iif( oMdiBrowse:lock(), NIL, Alert( "Could not lock record!" ) ) } } )
+      :addItem( { "UnLock Record"  , {|| iif( oMdiBrowse:unLock(), NIL, Alert( "Could not unlock record!" ) ) } } )
+      :addItem( {} )
+      :addItem( { "Add Record"     , {|| oMdiBrowse:append() } } )
+      :addItem( { "Delete Record"  , {|| oMdiBrowse:delete( .T. ) } } )
+   ENDWITH
+
+   oContextMenu:popUp( aPos )
+
+   RETURN Self
+
+
 METHOD DbuMGR:showStats( oMdiBrowse )
    LOCAL aStats := {}
 
@@ -873,7 +955,7 @@ METHOD DbuMGR:getSearchValue( oMdiBrowse, xValue )
 METHOD DbuMGR:saveEnvAs()
    LOCAL cFile
 
-   cFile := hbdbu_saveAFile( ::oWidget:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   cFile := hbdbu_saveAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
    IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
       ::getPath( cFile )
    ENDIF
@@ -882,7 +964,7 @@ METHOD DbuMGR:saveEnvAs()
 
 METHOD DbuMGR:saveEnvironment()
    LOCAL oSettings
-   LOCAL oWgt := ::oWidget:oWidget
+   LOCAL oWgt := ::oUI:oWidget
    LOCAL cFile := ::getPath()
 
    WITH OBJECT oSettings := QSettings( cFile, QSettings_IniFormat )
@@ -904,7 +986,7 @@ METHOD DbuMGR:saveEnvironment()
 METHOD DbuMGR:restEnvFrom()
    LOCAL cFile
 
-   cFile := hbdbu_fetchAFile( ::oWidget:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   cFile := hbdbu_fetchAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
    IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
       ::getPath( cFile )
 
@@ -917,7 +999,7 @@ METHOD DbuMGR:restEnvFrom()
    RETURN Self
 
 METHOD DbuMGR:restEnvironment()
-   LOCAL oSettings, oWgt := ::oWidget:oWidget
+   LOCAL oSettings, oWgt := ::oUI:oWidget
    LOCAL cFile := ::getPath()
    LOCAL oRect, lVal, cInfo
 
@@ -1011,7 +1093,7 @@ METHOD DbuMGR:getPath( cFile )
       ::cSettingsPath := cPath
       ::cSettingsFile := cName + cExt
 
-      ::oWidget:oWidget:setWindowTitle( "HbDBU [" + ::cSettingsPath + ::cSettingsFile + "]" )
+      ::oUI:oWidget:setWindowTitle( "HbDBU [" + ::cSettingsPath + ::cSettingsFile + "]" )
    ELSE
       IF Empty( cPath )
          cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
@@ -1076,7 +1158,7 @@ STATIC FUNCTION __arrayToString( aStrings, cDlm )
 
 
 METHOD DbuMGR:execDashboard()
-   LOCAL oDock := ::oWidget:dockCache
+   LOCAL oDock := ::oUI:dockCache
    LOCAL cConxn, oDash
 
    IF Empty( ::oDashBoard )
@@ -1112,11 +1194,11 @@ METHOD DbuMGR:execDashboard()
       oDock:setWidget( ::oDashBoard )
    ENDIF
 
-   IF ::oWidget:dockCache:isVisible()
-      ::oWidget:dockCache:hide()
+   IF ::oUI:dockCache:isVisible()
+      ::oUI:dockCache:hide()
       ::oTimerDash:stop()
    ELSE
-      ::oWidget:dockCache:show()
+      ::oUI:dockCache:show()
       ::updateDashboard()
       ::oTimerDash:start()
    ENDIF

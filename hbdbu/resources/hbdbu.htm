@@ -1,0 +1,53 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<!-- saved from url=(0029)http://www.helpandmanual.com/ -->
+<head>
+   <title>HbDBU</title>
+   <meta name="generator" content="Help &amp; Manual" />
+   <meta name="keywords" content="" />
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta http-equiv="Content-Style-Type" content="text/css" />
+   <link type="text/css" href="default.css" rel="stylesheet" />
+<script type="text/javascript" src="helpman_topicinit.js"></script>
+<!-- Redirect browser to frame page if page is not in the content frame. -->
+<script type="text/javascript">
+<!--
+if (location.search.lastIndexOf("toc=0")<=0) {
+  if (parent.frames.length==0) { parent.location.href="index.html?hbdbu.htm"; }
+  else { parent.quicksync('a2'); }
+}
+//-->
+</script>
+<script type="text/javascript" src="highlight.js"></script></head>
+<body style="margin: 0px 0px 0px 0px; background: #FFFFFF;" onload="highlight();">
+<table width="100%" border="0" cellspacing="0" cellpadding="5"><tr valign="top"><td align="left">
+<p><u><b><font size="5" color="#008000">HbDBU</font><font size="5"> - 
+<font color="#0000FF">Harbour's Database Utility</font></font></b></u></p>
+<p><font color="#008000">HbDBU</font> is an application which can be used to mange tables created with DBFCDX, DBFNTX and DBFNSX database drivers as default and any other drivers linked to the applications. </p>
+<p><font color="#008000">HbDBU</font> is based on COM like component HbQtDBU. HbQtDBU exposes the methods and event handlers to configure 
+<font color="#008000">HbDBU</font> to any level. HbQtDBU can be embedded in any application. It just needs a parent widget to expose itself. It has a expanded set of methods which application can exploit to manipulate its interface and execution behavior.</p>
+<p><font color="#008000">HbDBU</font> code contains code to use ADS ( Advantage Database Server ) and CACHERDD ( <a href="http://cacherdd.vouch.info" target="_blank" class="weblink">http://cacherdd.vouch.info</a> ) drivers in addition to default drivers. The relevant code is guarded with #define constants so that a plain default HbDBU can be compiled and linked. The other drivers code is retained here is 
+to let the developers could grasp the idea and tune up <font color="#008000">HbDBU</font> to configure with 
+their own drivers.</p>
+<p><font color="#008000">HbDBU</font> can be made the default program to execute 
+.dbu and .dbf files in the Windows explorer. QtContrib intsllation setup does 
+not do it automatically.</p>
+<p>&nbsp;</p>
+<p><u><font size="5">How to Invoke</font></u></p>
+<p>C:/&gt;<font color="#008000">HbDBU </font>&nbsp;[.dbu]&nbsp; [ [cDriver] .dbf1 
+[.dbf2 [.dbfN ] ] ]&nbsp; [ [cDriver2] .dbf1 [.dbf2 [.dbfN ] ] ]</p>
+<p>If one or more .dbf(s) is/are supplied on the command line and .dbu is not 
+supplied, then no environment file will be read and written.</p>
+<p>If no &lt;cDriver&gt; is supplied on the command line then last assigned driver on 
+the interface will be used. If no .dbu is restrored, then DBFCDX driver becomes 
+the default driver.</p>
+<p>If more then one .dbu(s) are supplied on the command line then the last 
+encountered .dbu will be restored.</p>
+<p>If no .dbu is supplied and no .dbf is supplied on the command line, then &quot;settings.dbu&quot; 
+at OS specific user-data location will be made default environment file.</p>
+<p>&nbsp;</p>
+
+</td></tr></table>
+
+</body>
+</html>

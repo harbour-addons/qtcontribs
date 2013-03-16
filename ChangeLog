@@ -16,6 +16,41 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-15 18:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r189)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: a wrong type checking which was preveting user defined 
+       context-menu block.
+
+  + hbdbu/resources/hbdbu.htm
+    + Added: HbDBU documentation in .html format. 
+       This documentation is made available by clicking on <Help> icon 
+       on the toolbar.
+
+  + hbdbu/resources/help.png
+    + New image for <Help> action on the HbDBU's toolbar.
+  * hbdbu/dbu.qrc
+    + Added help.png and hbdbu.htm.
+
+  * hbdbu/dbu.ui
+    + Added: one more page to stacked widget for a futuristic feature.
+
+  * hbdbu/dbu.prg
+    + Implemented: help documentation via an icon <Help> on the HbDBU's toolbar.
+       The documentation content is a work-in-progress as I am really poor
+       in explaining an application. Anyway I will try my level best.
+       If possible, you can send some text explaining any part of the HbDBU.
+
+    % Changed: context menu options on a browser instance.
+       It is now rationale will all important actions a user is ought to 
+       perform frequently. Speak-out if more actions should go there.
+
+       It was a pending feature till now, but Massimo just pushed it up.
+
+    % Changed a little the behavior of invoking HbDBU.
+       If a .dbf is supplied on the command-line and no .dbu is supplied,
+       then no environment will be read and saved by default. Anyhow,  
+       environment can be saved via <Save Environment> icon.
+
 2013-03-14 16:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r188)
   * hbqtwidgets/hbqtdbu.prg
     + Made some methods and functions public.

@@ -1925,7 +1925,7 @@ METHOD HbQtBrowse:pressHeaderBlock( bBlock )
 
 
 METHOD HbQtBrowse:contextMenuBlock( bBlock )
-   IF HB_ISOBJECT( bBlock )
+   IF HB_ISBLOCK( bBlock )
      ::bContextMenuBlock := __eInstVar53( Self, "CONTEXTMENUBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bContextMenuBlock
@@ -2893,21 +2893,23 @@ METHOD HbQtBrowse:manageContextMenu( oPos )
    LOCAL oPoint := ::oTableView:mapToGlobal( QPoint( oPos ) )
    LOCAL oMenu
 
-   IF HB_ISBLOCK( ::bContextMenuBlock )
-      Eval( ::bContextMenuBlock, oPoint, NIL, Self )
+   IF HB_ISBLOCK( ::contextMenuBlock() )
+      Eval( ::contextMenuBlock(), oPoint, NIL, Self )
    ELSE
-      oMenu := QMenu( ::oWidget )
-      oMenu:addAction( ::oActSearch )
-      oMenu:addSeparator()
-      oMenu:addAction( ::oActGoTop )
-      oMenu:addAction( ::oActGoBottom )
-      oMenu:addAction( ::oActPanHome )
-      oMenu:addAction( ::oActPanEnd )
-      oMenu:addSeparator()
-      oMenu:addAction( ::oActCopySel )
+      WITH OBJECT oMenu := QMenu( ::oWidget )
+         :addAction( ::oActSearch )
+         :addSeparator()
+         :addAction( ::oActGoTop )
+         :addAction( ::oActGoBottom )
+         :addAction( ::oActPanHome )
+         :addAction( ::oActPanEnd )
+         :addSeparator()
+         :addAction( ::oActCopySel )
 
-      oMenu:exec( oPoint )
-      oMenu:setParent( QWidget() )
+         oMenu:exec( oPoint )
+
+         :setParent( QWidget() )
+      ENDWITH
    ENDIF
 
    RETURN NIL
