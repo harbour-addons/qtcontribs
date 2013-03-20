@@ -1,4 +1,4 @@
-                        /*
+/*
  * $Id$
  */
 
@@ -253,8 +253,6 @@ CLASS IdeEdit INHERIT IdeObject
    METHOD highlightPage()
    METHOD reformatLine( nPos, nDeleted, nAdded )
    METHOD handleTab( key )
-   METHOD matchPair( x, y )
-   METHOD unmatchPair()
    METHOD alignAt( cAt )
    METHOD stringify()
    METHOD execContextMenu( p )
@@ -299,13 +297,15 @@ METHOD IdeEdit:create( oIde, oEditor, nMode )
 
    ::qEdit   := HBQPlainTextEdit()
    //
-   ::qEdit:setLineWrapMode( QTextEdit_NoWrap )
-   ::qEdit:ensureCursorVisible()
-   ::qEdit:setContextMenuPolicy( Qt_CustomContextMenu )
-   ::qEdit:setTabChangesFocus( .f. )
-   ::qEdit:setFocusPolicy( Qt_StrongFocus )
-   ::qEdit:setObjectName( hbide_getNextIDasString( "HBQPlainTextEdit" ) )
-   ::qEdit:setMouseTracking( .T. )
+   WITH OBJECT ::qEdit
+      :setLineWrapMode( QTextEdit_NoWrap )
+      :ensureCursorVisible()
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setTabChangesFocus( .f. )
+      :setFocusPolicy( Qt_StrongFocus )
+      :setObjectName( hbide_getNextIDasString( "HBQPlainTextEdit" ) )
+      :setMouseTracking( .T. )
+   ENDWITH
 
    oPalette := ::qEdit:palette()
    oPalette:setColor( QPalette_Inactive, QPalette_Highlight, QColor( Qt_yellow ) )
@@ -327,14 +327,16 @@ METHOD IdeEdit:create( oIde, oEditor, nMode )
 
    ::connectEditSignals()
 
-   ::qEdit:connect( QEvent_KeyPress           , {|p| ::execKeyEvent( 101, QEvent_KeyPress           , p ) } )
-   ::qEdit:connect( QEvent_Wheel              , {|p| ::execKeyEvent( 102, QEvent_Wheel              , p ) } )
-   ::qEdit:connect( QEvent_FocusIn            , {| | ::execKeyEvent( 104, QEvent_FocusIn                ) } )
-   ::qEdit:connect( QEvent_Resize             , {| | ::execKeyEvent( 106, QEvent_Resize                 ) } )
-   ::qEdit:connect( QEvent_FocusOut           , {| | ::execKeyEvent( 105, QEvent_FocusOut               ) } )
-   ::qEdit:connect( QEvent_MouseButtonPress   , {| | ::execKeyEvent( 106, QEvent_MouseButtonPress       ) } )
+   WITH OBJECT ::qEdit
+      :connect( QEvent_KeyPress           , {|p| ::execKeyEvent( 101, QEvent_KeyPress           , p ) } )
+      :connect( QEvent_Wheel              , {|p| ::execKeyEvent( 102, QEvent_Wheel              , p ) } )
+      :connect( QEvent_FocusIn            , {| | ::execKeyEvent( 104, QEvent_FocusIn                ) } )
+      :connect( QEvent_Resize             , {| | ::execKeyEvent( 106, QEvent_Resize                 ) } )
+      :connect( QEvent_FocusOut           , {| | ::execKeyEvent( 105, QEvent_FocusOut               ) } )
+      :connect( QEvent_MouseButtonPress   , {| | ::execKeyEvent( 106, QEvent_MouseButtonPress       ) } )
 
-   ::qEdit:hbSetEventBlock( {|p,p1,p2| ::execKeyEvent( 115, 1001, p, p1, p2 ) } )
+      :hbSetEventBlock( {|p,p1,p2| ::execKeyEvent( 115, 1001, p, p1, p2 ) } )
+   ENDWITH
 
    ::qTimer := QTimer()
    ::qTimer:setInterval( 2000 )
@@ -358,19 +360,20 @@ METHOD IdeEdit:destroy()
    ENDIF
    ::qTimer := NIL
 
-   ::qEdit:disconnect( QEvent_KeyPress            )
-   ::qEdit:disconnect( QEvent_Wheel               )
-   ::qEdit:disconnect( QEvent_FocusIn             )
-   ::qEdit:disconnect( QEvent_FocusOut            )
-   ::qEdit:disconnect( QEvent_Resize              )
-   ::qEdit:disconnect( QEvent_MouseButtonDblClick )
-   ::qEdit:disconnect( QEvent_MouseMove           )
+   WITH OBJECT ::qEdit
+      :disconnect( QEvent_KeyPress            )
+      :disconnect( QEvent_Wheel               )
+      :disconnect( QEvent_FocusIn             )
+      :disconnect( QEvent_FocusOut            )
+      :disconnect( QEvent_Resize              )
+      :disconnect( QEvent_MouseButtonDblClick )
+      :disconnect( QEvent_MouseMove           )
+   ENDWITH
 
    ::disconnectEditSignals()
 
-   //::qEdit  := NIL
-   ::qEdit:setParent( QWidget() )  /* Works, but GPF on exit */
-   ::qFont  := NIL
+   ::qEdit:setParent( QWidget() )
+   ::qFont := NIL
 
    RETURN NIL
 
@@ -589,12 +592,11 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
 
    HB_SYMBOL_UNUSED( nMode )
    HB_SYMBOL_UNUSED( p1 )
+   HB_SYMBOL_UNUSED( p2 )
 
    SWITCH nEvent
 
    CASE QEvent_KeyPress     /* The key is sent here prior to applying to editor */
-      ::unmatchPair()
-
       key    := p:key()
       kbm    := p:modifiers()
 
@@ -700,9 +702,6 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
       CASE QEvent_MouseButtonDblClick
       // ::lCopyWhenDblClicked := .t.
          ::clickFuncHelp()
-         EXIT
-      CASE QEvent_MouseButtonPress
-         ::matchPair( p1, p2 )
          EXIT
       CASE 21000                            /* Sends Block Info { t,l,b,r,mode,state } hbGetBlockInfo() */
          ::aSelectionInfo := p1
@@ -1870,190 +1869,6 @@ METHOD IdeEdit:findEx( cText, nFlags, nStart )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION hbide_matchForward( qCursor, cStartingW, cEndingW, qPairFormat )
-   LOCAL cFWord, cSWord, nCol, cOpnWord
-   LOCAL nInner := 0
-
-   DO WHILE qCursor:movePosition( QTextCursor_Down )
-      nCol := hbide_getFrontSpacesAndWord( qCursor:block():text(), @cFWord, @cSWord )
-      cFWord := Lower( cFWord )
-      cSWord := Lower( AllTrim( cSWord ) )
-      IF " " $ cStartingW
-         cOpnWord := cFWord + " " + cSWord
-      ELSE
-         cOpnWord := cFWord
-      ENDIF
-      IF cFWord == cEndingW .AND. nInner == 0
-         qCursor:movePosition( QTextCursor_StartOfBlock )
-         qCursor:movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, nCol )
-         qCursor:movePosition( QTextCursor_Right, QTextCursor_KeepAnchor, Len( cEndingW ) )
-         qCursor:mergeCharFormat( qPairFormat )
-         EXIT
-      ELSEIF cFWord == cEndingW .AND. nInner > 0
-         nInner--
-      ELSEIF cOpnWord == cStartingW
-         nInner++
-      ENDIF
-   ENDDO
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION hbide_matchBackward( qCursor, cStartingW, cEndingW, qPairFormat )
-   LOCAL cFWord, cSWord, nCol, cOpnWord, n
-   LOCAL nInner := 0
-   LOCAL aStartingW := hb_ATokens( cStartingW, "|" )
-
-   DO WHILE qCursor:movePosition( QTextCursor_Up )
-      nCol := hbide_getFrontSpacesAndWord( qCursor:block():text(), @cFWord, @cSWord )
-      cFWord := Lower( cFWord )
-      cSWord := Lower( AllTrim( cSWord ) )
-      IF " " $ cStartingW
-         cOpnWord := cFWord + " " + cSWord
-      ELSE
-         cOpnWord := cFWord
-      ENDIF
-
-      n := AScan( aStartingW, {|e| e == cOpnWord .OR. e == cSWord } )
-      IF n > 0 .AND. nInner == 0
-         qCursor:movePosition( QTextCursor_StartOfBlock )
-         qCursor:movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, nCol )
-         qCursor:movePosition( QTextCursor_Right, QTextCursor_KeepAnchor, Len( aStartingW[ n ] ) )
-         qCursor:mergeCharFormat( qPairFormat )
-         EXIT
-      ELSEIF n > 0 .AND. nInner > 0
-         nInner--
-      ELSEIF cFWord == cEndingW
-         nInner++
-      ENDIF
-   ENDDO
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD IdeEdit:unmatchPair()
-   LOCAL lModified
-
-   IF ::isMatchingPair
-      ::isMatchingPair := .F.
-      lModified := ::qEdit:document():isModified()
-      ::qEdit:undo()
-      IF ! lModified
-         ::qEdit:document():setModified( .F. )
-      ENDIF
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD IdeEdit:matchPair( x, y )
-   LOCAL qCursor, cWord, qFormat, lModified, nPostn
-
-   ::unmatchPair()
-
-   qCursor := ::qEdit:cursorForPosition( ::qEdit:viewport():mapFromGlobal( QPoint( x,y ) ) )
-   IF ! qCursor:isNull()
-      qCursor:select( QTextCursor_WordUnderCursor )
-      cWord := Lower( qCursor:selectedText() )
-
-      IF AScan( { "if","endif","for","next","switch","endswitch","do","enddo","endcase","return","function","procedure","method","class","endclass" }, {|e| e == cWord } ) > 0
-         ::isMatchingPair := .T.
-
-         qFormat := QTextCharFormat()
-         qFormat:setBackground( QBrush( QColor( Qt_yellow ) ) )
-
-         lModified := ::qEdit:document():isModified()
-
-         qCursor:beginEditBlock()
-         nPostn := qCursor:position()
-
-         SWITCH cWord
-         CASE "if"    /* Forward search */
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "if", "endif", qFormat )
-            EXIT
-         CASE "endif"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "if", "endif", qFormat )
-            EXIT
-         CASE "for"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "for", "next", qFormat )
-            EXIT
-         CASE "next"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "for", "next", qFormat )
-            EXIT
-         CASE "switch"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "switch", "endswitch", qFormat )
-            EXIT
-         CASE "endswitch"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "switch", "endswitch", qFormat )
-            EXIT
-         CASE "do"
-            qCursor:mergeCharFormat( qFormat )
-            qCursor:movePosition( QTextCursor_NextWord, QTextCursor_MoveAnchor )
-            qCursor:select( QTextCursor_WordUnderCursor )
-            cWord := Lower( qCursor:selectedText() )
-            qCursor:clearSelection()
-            IF cWord == "case"
-               hbide_matchForward( qCursor, "do case", "endcase", qFormat )
-            ELSEIF cWord == "while"
-               hbide_matchForward( qCursor, "do while", "enddo", qFormat )
-            ENDIF
-            EXIT
-         CASE "endcase"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "do case", "endcase", qFormat )
-            EXIT
-         CASE "enddo"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "do while", "enddo", qFormat )
-            EXIT
-         CASE "return"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "function|procedure|method", "return", qFormat )
-            EXIT
-         CASE "endclass"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchBackward( qCursor, "class", "endclass", qFormat )
-            EXIT
-         CASE "function"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "function", "return", qFormat )
-            EXIT
-         CASE "procedure"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "procedure", "return", qFormat )
-            EXIT
-         CASE "method"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "method", "return", qFormat )
-            EXIT
-         CASE "class"
-            qCursor:mergeCharFormat( qFormat )
-            hbide_matchForward( qCursor, "class", "endclass", qFormat )
-            EXIT
-         ENDSWITCH
-
-         qCursor:setPosition( nPostn )
-         ::qEdit:setTextCursor( qCursor )
-         qCursor:endEditBlock()
-         IF ! lModified
-            ::qEdit:document():setModified( .f. )
-         ENDIF
-      ENDIF
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
 METHOD IdeEdit:unHighlight()
    LOCAL qCursor, nPos, lModified
 
@@ -2235,7 +2050,8 @@ METHOD IdeEdit:paintRequested( qPrinter )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeEdit:upperCaseKeywords()
-   LOCAL qDoc, cText, cRegEx, aMatches, aMatch, b_
+   LOCAL qDoc, cText, cRegEx, aMatches, aMatch
+   STATIC b_
 
    qDoc := ::qEdit:document()
 
@@ -2244,18 +2060,20 @@ METHOD IdeEdit:upperCaseKeywords()
 
       cText := qDoc:toPlainText()
 
-      b_:= { 'function','procedure','thread','return','static','local','default', ;
-             'if','else','elseif','endif','end', ;
-             'docase','case','endcase','otherwise', ;
-             'switch','endswitch', ;
-             'do','while','exit','enddo','loop',;
-             'for','each','next','step','to','in',;
-             'with','replace','object','endwith','request',;
-             'nil','and','or','in','not','self',;
-             'class','endclass','method','data','var','destructor','inline','assign','access',;
-             'inherit','init','create','virtual','message', 'from', 'setget',;
-             'begin','sequence','try','catch','always','recover','hb_symbol_unused', ;
-             'error','handler','private','public' }
+      IF Empty( b_ )
+         b_:= { 'function','procedure','thread','return','static','local','default', ;
+                'if','else','elseif','endif','end', ;
+                'docase','case','endcase','otherwise', ;
+                'switch','endswitch', ;
+                'do','while','exit','enddo','loop',;
+                'for','each','next','step','to','in',;
+                'with','replace','object','endwith','request',;
+                'nil','and','or','in','not','self',;
+                'class','endclass','method','data','var','destructor','inline','assign','access',;
+                'inherit','init','create','virtual','message', 'from', 'setget',;
+                'begin','sequence','try','catch','always','recover','hb_symbol_unused', ;
+                'error','handler','private','public' }
+      ENDIF
       cRegEx := ""
       aeval( b_, {|e| cRegEx += iif( empty( cRegEx ), "", "|" ) + "\b" + e + "\b" } )
 
@@ -2487,15 +2305,16 @@ METHOD IdeEdit:insertSeparator( cSep )
    IF empty( cSep )
       cSep := ::cSeparator
    ENDIF
-   qCursor:beginEditBlock()
-   qCursor:movePosition( QTextCursor_StartOfBlock )
-   qCursor:insertBlock()
-   qCursor:movePosition( QTextCursor_PreviousBlock )
-   qCursor:insertText( cSep )
-   qCursor:movePosition( QTextCursor_NextBlock )
-   qCursor:movePosition( QTextCursor_StartOfBlock )
-   qCursor:endEditBlock()
-
+   WITH OBJECT qCursor
+      :beginEditBlock()
+      :movePosition( QTextCursor_StartOfBlock )
+      :insertBlock()
+      :movePosition( QTextCursor_PreviousBlock )
+      :insertText( cSep )
+      :movePosition( QTextCursor_NextBlock )
+      :movePosition( QTextCursor_StartOfBlock )
+      :endEditBlock()
+   ENDWITH
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -2509,11 +2328,13 @@ METHOD IdeEdit:insertText( cText )
       nL := Len( cText )
       nB := qCursor:position() + nL
 
-      qCursor:beginEditBlock()
-      qCursor:removeSelectedText()
-      qCursor:insertText( cText )
-      qCursor:setPosition( nB )
-      qCursor:endEditBlock()
+      WITH OBJECT qCursor
+         :beginEditBlock()
+         :removeSelectedText()
+         :insertText( cText )
+         :setPosition( nB )
+         :endEditBlock()
+      ENDWITH
    ENDIF
    RETURN Self
 
@@ -2700,6 +2521,9 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
             ELSEIF cWord == "next"
                hbide_alignToPrevWord( qCursor, "for", "next", Len( cWord ), nPostn )
 
+            ELSEIF cWord == "endwith"
+               hbide_alignToPrevWord( qCursor, "with", "endwith", Len( cWord ), nPostn )
+
             ELSEIF Lower( cPPWord ) == "static" .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
                hbide_removeStartingSpaces( qCursor, nCPrevPrev )
                IF ::oINI:lISFunction
@@ -2790,10 +2614,12 @@ STATIC FUNCTION hbide_removeStartingSpaces( qCursor, nCPrevPrev )
 
    IF nCPrevPrev > 0
       nPostn := qCursor:position()
-      qCursor:movePosition( QTextCursor_StartOfBlock )
-      qCursor:movePosition( QTextCursor_NextWord, QTextCursor_KeepAnchor )
-      qCursor:removeSelectedText()
-      qCursor:setPosition( nPostn - nCPrevPrev )
+      WITH OBJECT qCursor
+         :movePosition( QTextCursor_StartOfBlock )
+         :movePosition( QTextCursor_NextWord, QTextCursor_KeepAnchor )
+         :removeSelectedText()
+         :setPosition( nPostn - nCPrevPrev )
+      ENDWITH
    ENDIF
 
    RETURN NIL
@@ -2821,11 +2647,13 @@ STATIC FUNCTION hbide_alignToPrevWord( qCursor, cWord, cEWord, nLenCWord, nPostn
    ENDDO
    qCursor:setPosition( nPostn )
    IF lFound
-      qCursor:movePosition( QTextCursor_StartOfBlock, QTextCursor_MoveAnchor )
-      qCursor:movePosition( QTextCursor_NextWord, QTextCursor_KeepAnchor )
-      qCursor:removeSelectedText()
-      qCursor:insertText( Space( nCol ) )
-      qCursor:movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, nLenCWord + 1 )
+      WITH OBJECT qCursor
+         :movePosition( QTextCursor_StartOfBlock, QTextCursor_MoveAnchor )
+         :movePosition( QTextCursor_NextWord, QTextCursor_KeepAnchor )
+         :removeSelectedText()
+         :insertText( Space( nCol ) )
+         :movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, nLenCWord + 1 )
+      ENDWITH
    ENDIF
 
    RETURN NIL
@@ -2834,11 +2662,13 @@ STATIC FUNCTION hbide_alignToPrevWord( qCursor, cWord, cEWord, nLenCWord, nPostn
 
 STATIC FUNCTION hbide_replaceWord( qCursor, nWord, cWord, nPostn )
 
-   qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, nWord )
-   qCursor:select( QTextCursor_WordUnderCursor )
-   qCursor:removeSelectedText()
-   qCursor:insertText( cWord )
-   qCursor:setPosition( nPostn )
+   WITH OBJECT qCursor
+      :movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, nWord )
+      :select( QTextCursor_WordUnderCursor )
+      :removeSelectedText()
+      :insertText( cWord )
+      :setPosition( nPostn )
+   ENDWITH
 
    RETURN NIL
 
@@ -2850,32 +2680,34 @@ STATIC FUNCTION hbide_appendClass( qCursor, nTabSpaces, oINI, cClassName )
    LOCAL nPostn := qCursor:position()
    LOCAL nClosingIndent := iif( oINI:lReturnAsBeginKeyword, 0, nTabSpaces )
 
-   qCursor:movePosition( QTextCursor_EndOfBlock )
-   qCursor:insertBlock()
-   qCursor:insertText( Space( nTabSpaces ) + PadR( oINI:cISData, 7 ) + "xDummy" + Space( 34 ) + "INIT NIL" )
-   qCursor:insertBlock()
-   FOR EACH cMethod IN aMethods
-      qCursor:insertBlock()
-      qCursor:insertText( Space( nTabSpaces ) + "METHOD " + cMethod + "()" )
-   NEXT
-   qCursor:insertBlock()
-   qCursor:insertBlock()
-   qCursor:insertText( Space( nClosingIndent ) + "ENDCLASS " )
-   qCursor:insertBlock()
-   FOR EACH cMethod IN aMethods
-      qCursor:insertBlock()
-      IF oINI:cISFormat == "class:method"
-         qCursor:insertText( "METHOD " + cClassName + ":" + cMethod + "()" )
-      ELSE
-         qCursor:insertText( "METHOD " + cMethod + "() CLASS " + cClassName )
-      ENDIF
-      qCursor:insertBlock()
-      qCursor:insertBlock()
-      qCursor:insertText( Space( nClosingIndent ) + "RETURN Self " )
-      qCursor:insertBlock()
-   NEXT
-   qCursor:insertBlock()
-   qCursor:setPosition( nPostn )
+   WITH OBJECT qCursor
+      :movePosition( QTextCursor_EndOfBlock )
+      :insertBlock()
+      :insertText( Space( nTabSpaces ) + PadR( oINI:cISData, 7 ) + "xDummy" + Space( 34 ) + "INIT NIL" )
+      :insertBlock()
+      FOR EACH cMethod IN aMethods
+         :insertBlock()
+         :insertText( Space( nTabSpaces ) + "METHOD " + cMethod + "()" )
+      NEXT
+      :insertBlock()
+      :insertBlock()
+      :insertText( Space( nClosingIndent ) + "ENDCLASS " )
+      :insertBlock()
+      FOR EACH cMethod IN aMethods
+         :insertBlock()
+         IF oINI:cISFormat == "class:method"
+            :insertText( "METHOD " + cClassName + ":" + cMethod + "()" )
+         ELSE
+            :insertText( "METHOD " + cMethod + "() CLASS " + cClassName )
+         ENDIF
+         :insertBlock()
+         :insertBlock()
+         :insertText( Space( nClosingIndent ) + "RETURN Self " )
+         :insertBlock()
+      NEXT
+      :insertBlock()
+      :setPosition( nPostn )
+   ENDWITH
 
    RETURN NIL
 
@@ -2884,24 +2716,26 @@ STATIC FUNCTION hbide_appendClass( qCursor, nTabSpaces, oINI, cClassName )
 STATIC FUNCTION hbide_appendFunction( qCursor, nTabSpaces, lLocal, lReturn, lSeparator, lReturnAsBeginKeyword, cSeparator  )
    LOCAL nPostn := qCursor:position()
 
-   qCursor:movePosition( QTextCursor_EndOfBlock )
-   IF lLocal
-      qCursor:insertBlock()
-      qCursor:insertText( Space( nTabSpaces ) + "LOCAL " )
-      qCursor:insertBlock()
-   ENDIF
-   IF lReturn
-      qCursor:insertBlock()
-      qCursor:insertText( Space( iif( lReturnAsBeginKeyword, 0, nTabSpaces ) ) + "RETURN " )
-      qCursor:insertBlock()
-      IF lSeparator
-         qCursor:insertBlock()
-         qCursor:insertText( cSeparator )
-         qCursor:insertBlock()
+   WITH OBJECT qCursor
+      :movePosition( QTextCursor_EndOfBlock )
+      IF lLocal
+         :insertBlock()
+         :insertText( Space( nTabSpaces ) + "LOCAL " )
+         :insertBlock()
       ENDIF
-   ENDIF
-   qCursor:insertBlock()
-   qCursor:setPosition( nPostn )
+      IF lReturn
+         :insertBlock()
+         :insertText( Space( iif( lReturnAsBeginKeyword, 0, nTabSpaces ) ) + "RETURN " )
+         :insertBlock()
+         IF lSeparator
+            :insertBlock()
+            :insertText( cSeparator )
+            :insertBlock()
+         ENDIF
+      ENDIF
+      :insertBlock()
+      :setPosition( nPostn )
+   ENDWITH
 
    RETURN NIL
 
@@ -2910,20 +2744,22 @@ STATIC FUNCTION hbide_appendFunction( qCursor, nTabSpaces, lLocal, lReturn, lSep
 STATIC FUNCTION hbide_appendCase( qCursor, nIndent, nCurPos, nCases, lOWise )
    LOCAL i
 
-   qCursor:movePosition( QTextCursor_EndOfBlock )
-   FOR i := 1 TO nCases
-      qCursor:insertBlock()
-      qCursor:insertText( Space( nIndent ) + "CASE " )
-   NEXT
-   IF lOWise
-      qCursor:insertBlock()
-      qCursor:insertText( Space( nIndent ) + "OTHERWISE" )
-   ENDIF
-   qCursor:insertBlock()
-   qCursor:insertText( Space( nIndent ) + "ENDCASE" )
-   qCursor:setPosition( nCurPos )
-   qCursor:movePosition( QTextCursor_NextBlock )
-   qCursor:movePosition( QTextCursor_EndOfLine )
+   WITH OBJECT qCursor
+      :movePosition( QTextCursor_EndOfBlock )
+      FOR i := 1 TO nCases
+         :insertBlock()
+         :insertText( Space( nIndent ) + "CASE " )
+      NEXT
+      IF lOWise
+         :insertBlock()
+         :insertText( Space( nIndent ) + "OTHERWISE" )
+      ENDIF
+      :insertBlock()
+      :insertText( Space( nIndent ) + "ENDCASE" )
+      :setPosition( nCurPos )
+      :movePosition( QTextCursor_NextBlock )
+      :movePosition( QTextCursor_EndOfLine )
+   ENDWITH
 
    RETURN NIL
 
@@ -3442,154 +3278,194 @@ STATIC FUNCTION hbide_normalizeRect( aCord, nT, nL, nB, nR )
 
 /*----------------------------------------------------------------------*/
 
+FUNCTION hbide_isMatchingWord( cWord )
+
+   STATIC hMatches
+
+   IF Empty( hMatches )
+      hMatches := {=>}
+      hb_HCaseMatch( hMatches, .F. )
+      hMatches[ "if"        ] := NIL
+      hMatches[ "endif"     ] := NIL
+      hMatches[ "for"       ] := NIL
+      hMatches[ "next"      ] := NIL
+      hMatches[ "switch"    ] := NIL
+      hMatches[ "endswitch" ] := NIL
+      hMatches[ "do"        ] := NIL
+      hMatches[ "enddo"     ] := NIL
+      hMatches[ "endcase"   ] := NIL
+      hMatches[ "return"    ] := NIL
+      hMatches[ "function"  ] := NIL
+      hMatches[ "procedure" ] := NIL
+      hMatches[ "method"    ] := NIL
+      hMatches[ "class"     ] := NIL
+      hMatches[ "endclass"  ] := NIL
+      hMatches[ "with"      ] := NIL
+      hMatches[ "endwith"   ] := NIL
+   ENDIF
+
+   RETURN cWord $ hMatches
+
 FUNCTION hbide_isStartingKeyword( cWord, oIde )
    LOCAL s_b_
 
-   IF empty( s_b_ )
+   IF Empty( s_b_ )
+      s_b_:= {=>}
+      hb_HCaseMatch( s_b_, .F. )
+
       IF ! oIde:oINI:lReturnAsBeginKeyword
-         s_b_ := { ;
-                    'function'  => NIL,;
-                    'procedure' => NIL,;
-                    'class'     => NIL,;
-                    'method'    => NIL }
+         s_b_[ 'function'  ] := NIL
+         s_b_[ 'procedure' ] := NIL
+         s_b_[ 'class'     ] := NIL
+         s_b_[ 'method'    ] := NIL
+         s_b_[ 'static'    ] := NIL
       ELSE
-         s_b_ := { ;
-                    'function'  => NIL,;
-                    'procedure' => NIL,;
-                    'class'     => NIL,;
-                    'method'    => NIL,;
-                    'return'    => NIL }
+         s_b_[ 'function'  ] := NIL
+         s_b_[ 'procedure' ] := NIL
+         s_b_[ 'class'     ] := NIL
+         s_b_[ 'method'    ] := NIL
+         s_b_[ 'static'    ] := NIL
+         s_b_[ 'return'    ] := NIL
       ENDIF
    ENDIF
 
-   RETURN Lower( cWord ) $ s_b_
+   RETURN cWord $ s_b_
 
 /*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isMinimumIndentableKeyword( cWord, oIde )
    LOCAL s_b_
 
-   IF empty( s_b_ )
+   IF Empty( s_b_ )
+      s_b_:= {=>}
+      hb_HCaseMatch( s_b_, .F. )
+
       IF ! oIde:oINI:lReturnAsBeginKeyword
-         s_b_ := { ;
-                    'local'    => NIL,;
-                    'private'  => NIL,;
-                    'public'   => NIL,;
-                    'static'   => NIL,;
-                    'endclass' => NIL,;
-                    'default'  => NIL,;
-                    'return'   => NIL }
+         s_b_[ 'local'    ] := NIL
+         s_b_[ 'private'  ] := NIL
+         s_b_[ 'public'   ] := NIL
+         s_b_[ 'endclass' ] := NIL
+         s_b_[ 'default'  ] := NIL
+         s_b_[ 'return'   ] := NIL
       ELSE
-         s_b_ := { ;
-                    'local'    => NIL,;
-                    'private'  => NIL,;
-                    'public'   => NIL,;
-                    'static'   => NIL,;
-                    'endclass' => NIL,;
-                    'default'  => NIL }
+         s_b_[ 'local'    ] := NIL
+         s_b_[ 'private'  ] := NIL
+         s_b_[ 'public'   ] := NIL
+         s_b_[ 'endclass' ] := NIL
+         s_b_[ 'default'  ] := NIL
       ENDIF
    ENDIF
 
-   RETURN Lower( cWord ) $ s_b_
+   RETURN cWord $ s_b_
 
 /*----------------------------------------------------------------------*/
 
-FUNCTION hbide_isIndentableKeyword( cWord, oIde )
-   STATIC s_b_ := { ;
-                    'if'        => NIL,;
-                    'else'      => NIL,;
-                    'elseif'    => NIL,;
-                    'docase'    => NIL,;
-                    'case'      => NIL,;
-                    'otherwise' => NIL,;
-                    'do'        => NIL,;
-                    'while'     => NIL,;
-                    'switch'    => NIL,;
-                    'for'       => NIL,;
-                    'begin'     => NIL,;
-                    'sequence'  => NIL,;
-                    'try'       => NIL,;
-                    'catch'     => NIL,;
-                    'always'    => NIL,;
-                    'recover'   => NIL,;
-                    'finally'   => NIL }
+FUNCTION hbide_isIndentableKeyword( cWord )
+   STATIC s_b_
 
-   HB_SYMBOL_UNUSED( oIde )
+   IF Empty( s_b_ )
+      s_b_:= {=>}
+      hb_HCaseMatch( s_b_, .F. )
 
-   RETURN Lower( cWord ) $ s_b_
+      s_b_[ 'if'        ] := NIL
+      s_b_[ 'else'      ] := NIL
+      s_b_[ 'elseif'    ] := NIL
+      s_b_[ 'docase'    ] := NIL
+      s_b_[ 'case'      ] := NIL
+      s_b_[ 'otherwise' ] := NIL
+      s_b_[ 'do'        ] := NIL
+      s_b_[ 'while'     ] := NIL
+      s_b_[ 'switch'    ] := NIL
+      s_b_[ 'for'       ] := NIL
+      s_b_[ 'begin'     ] := NIL
+      s_b_[ 'sequence'  ] := NIL
+      s_b_[ 'try'       ] := NIL
+      s_b_[ 'catch'     ] := NIL
+      s_b_[ 'always'    ] := NIL
+      s_b_[ 'recover'   ] := NIL
+      s_b_[ 'finally'   ] := NIL
+      s_b_[ 'with'      ] := NIL
+   ENDIF
+
+   RETURN cWord $ s_b_
 
 /*----------------------------------------------------------------------*/
 
 FUNCTION hbide_harbourKeywords()
-   STATIC s_b_ := { ;
-                    'function'         => NIL,;
-                    'procedure'        => NIL,;
-                    'thread'           => NIL,;
-                    'return'           => NIL,;
-                    'request'          => NIL,;
-                    'static'           => NIL,;
-                    'local'            => NIL,;
-                    'default'          => NIL,;
-                    'if'               => NIL,;
-                    'else'             => NIL,;
-                    'elseif'           => NIL,;
-                    'endif'            => NIL,;
-                    'end'              => NIL,;
-                    'docase'           => NIL,;
-                    'case'             => NIL,;
-                    'endcase'          => NIL,;
-                    'otherwise'        => NIL,;
-                    'switch'           => NIL,;
-                    'endswitch'        => NIL,;
-                    'do'               => NIL,;
-                    'while'            => NIL,;
-                    'enddo'            => NIL,;
-                    'exit'             => NIL,;
-                    'for'              => NIL,;
-                    'each'             => NIL,;
-                    'next'             => NIL,;
-                    'step'             => NIL,;
-                    'to'               => NIL,;
-                    'class'            => NIL,;
-                    'endclass'         => NIL,;
-                    'method'           => NIL,;
-                    'data'             => NIL,;
-                    'var'              => NIL,;
-                    'destructor'       => NIL,;
-                    'inline'           => NIL,;
-                    'setget'           => NIL,;
-                    'assign'           => NIL,;
-                    'access'           => NIL,;
-                    'inherit'          => NIL,;
-                    'init'             => NIL,;
-                    'create'           => NIL,;
-                    'virtual'          => NIL,;
-                    'message'          => NIL,;
-                    'begin'            => NIL,;
-                    'sequence'         => NIL,;
-                    'try'              => NIL,;
-                    'catch'            => NIL,;
-                    'always'           => NIL,;
-                    'recover'          => NIL,;
-                    'with'             => NIL,;
-                    'replace'          => NIL,;
-                    'hb_symbol_unused' => NIL,;
-                    'error'            => NIL,;
-                    'handler'          => NIL,;
-                    'loop'             => NIL,;
-                    'in'               => NIL,;
-                    'object'           => NIL,;
-                    'endwith'          => NIL,;
-                    'nil'              => NIL }
+   STATIC s_b_
+
+   IF Empty( s_b_ )
+      s_b_:= {=>}
+      hb_HCaseMatch( s_b_, .F. )
+
+      s_b_[ 'function'         ] := NIL
+      s_b_[ 'procedure'        ] := NIL
+      s_b_[ 'thread'           ] := NIL
+      s_b_[ 'return'           ] := NIL
+      s_b_[ 'request'          ] := NIL
+      s_b_[ 'static'           ] := NIL
+      s_b_[ 'local'            ] := NIL
+      s_b_[ 'default'          ] := NIL
+      s_b_[ 'if'               ] := NIL
+      s_b_[ 'else'             ] := NIL
+      s_b_[ 'elseif'           ] := NIL
+      s_b_[ 'endif'            ] := NIL
+      s_b_[ 'end'              ] := NIL
+      s_b_[ 'docase'           ] := NIL
+      s_b_[ 'case'             ] := NIL
+      s_b_[ 'endcase'          ] := NIL
+      s_b_[ 'otherwise'        ] := NIL
+      s_b_[ 'switch'           ] := NIL
+      s_b_[ 'endswitch'        ] := NIL
+      s_b_[ 'do'               ] := NIL
+      s_b_[ 'while'            ] := NIL
+      s_b_[ 'enddo'            ] := NIL
+      s_b_[ 'exit'             ] := NIL
+      s_b_[ 'for'              ] := NIL
+      s_b_[ 'each'             ] := NIL
+      s_b_[ 'next'             ] := NIL
+      s_b_[ 'step'             ] := NIL
+      s_b_[ 'to'               ] := NIL
+      s_b_[ 'class'            ] := NIL
+      s_b_[ 'endclass'         ] := NIL
+      s_b_[ 'method'           ] := NIL
+      s_b_[ 'data'             ] := NIL
+      s_b_[ 'var'              ] := NIL
+      s_b_[ 'destructor'       ] := NIL
+      s_b_[ 'inline'           ] := NIL
+      s_b_[ 'setget'           ] := NIL
+      s_b_[ 'assign'           ] := NIL
+      s_b_[ 'access'           ] := NIL
+      s_b_[ 'inherit'          ] := NIL
+      s_b_[ 'init'             ] := NIL
+      s_b_[ 'create'           ] := NIL
+      s_b_[ 'virtual'          ] := NIL
+      s_b_[ 'message'          ] := NIL
+      s_b_[ 'begin'            ] := NIL
+      s_b_[ 'sequence'         ] := NIL
+      s_b_[ 'try'              ] := NIL
+      s_b_[ 'catch'            ] := NIL
+      s_b_[ 'always'           ] := NIL
+      s_b_[ 'recover'          ] := NIL
+      s_b_[ 'with'             ] := NIL
+      s_b_[ 'replace'          ] := NIL
+      s_b_[ 'hb_symbol_unused' ] := NIL
+      s_b_[ 'error'            ] := NIL
+      s_b_[ 'handler'          ] := NIL
+      s_b_[ 'loop'             ] := NIL
+      s_b_[ 'in'               ] := NIL
+      s_b_[ 'object'           ] := NIL
+      s_b_[ 'endwith'          ] := NIL
+      s_b_[ 'nil'              ] := NIL
+   ENDIF
+
    RETURN s_b_
 
 /*----------------------------------------------------------------------*/
 
-FUNCTION hbide_isHarbourKeyword( cWord, oIde )
+FUNCTION hbide_isHarbourKeyword( cWord )
 
-   HB_SYMBOL_UNUSED( oIde )
-
-   RETURN Lower( cWord ) $ hbide_harbourKeywords()
+   RETURN cWord $ hbide_harbourKeywords()
 
 /*----------------------------------------------------------------------*/
 
@@ -3612,7 +3488,7 @@ FUNCTION hbide_isHarbourFunction( cWord, cCased )
    STATIC s_b_
    IF empty( s_b_ )
       s_b_:= {=>}
-      hb_hCaseMatch( s_b_, .f. )
+      hb_hCaseMatch( s_b_, .F. )
       hbide_addInList( s_b_, hbide_getHarbourFunctions( hbide_getHarbourHbx() ) )
    ENDIF
    IF cWord $ s_b_
@@ -3629,7 +3505,7 @@ STATIC FUNCTION hbide_isQtFunction( cWord, cCased )
    STATIC s_b_
    IF empty( s_b_ )
       s_b_:= {=>}
-      hb_hCaseMatch( s_b_, .f. )
+      hb_hCaseMatch( s_b_, .F. )
       hbide_addInList( s_b_, hbide_getQtFunctions( hbide_getQtCoreFilelist() ) )
       hbide_addInList( s_b_, hbide_getQtFunctions( hbide_getQtGuiFilelist() ) )
       hbide_addInList( s_b_, hbide_getQtFunctions( hbide_getQtNetworkFilelist() ) )

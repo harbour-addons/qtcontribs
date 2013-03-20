@@ -239,6 +239,7 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD updateHbp( iIndex )
    METHOD addSources()
 
+   METHOD selectAProject()
    METHOD setCurrentProject( cProjectName )
    METHOD selectCurrentProject()
 
@@ -1163,12 +1164,12 @@ METHOD IdeProjManager:getCurrentProject( lAlert )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeProjManager:selectCurrentProject()
-   LOCAL oDlg, p, t
+METHOD IdeProjManager:selectAProject()
+   LOCAL cProjectTitle := ""
+   LOCAL oDlg, nRes, p, t
 
    IF Empty( ::aProjects )
-      MsgBox( "No Projects Available" )
-      RETURN ::cWrkProject
+      RETURN ""
    ENDIF
 
    oDlg := hbide_getUI( "selectproject", ::oDlg:oWidget )
@@ -1179,15 +1180,28 @@ METHOD IdeProjManager:selectCurrentProject()
       ENDIF
    NEXT
 
-   oDlg:btnCancel:connect( "clicked()", {|| oDlg:oWidget:done( 1 ) } )
-   oDlg:btnOk    :connect( "clicked()", {|| ::setCurrentProject( oDlg:cbProjects:currentText() ), ;
-                                                                                             oDlg:done( 1 ) } )
-   oDlg:exec()
+   oDlg:btnCancel:connect( "clicked()", {|| oDlg:oWidget:done( 0 ) } )
+   oDlg:btnOk    :connect( "clicked()", {|| oDlg:done( 1 ) } )
 
-   oDlg:btnCancel:disconnect( "clicked()" )
-   oDlg:btnOk    :disconnect( "clicked()" )
-   oDlg:destroy()
-   oDlg := NIL
+   nRes := oDlg:exec()
+   IF nRes == 1
+      cProjectTitle := oDlg:cbProjects:currentText()
+   ENDIF
+
+   oDlg:oWidget:setParent( QWidget() )
+   RETURN cProjectTitle
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeProjManager:selectCurrentProject()
+   LOCAL cProjectTitle
+
+   IF Empty( cProjectTitle := ::selectAProject() )
+      MsgBox( "No Projects Available or Selected" )
+      RETURN ::cWrkProject
+   ENDIF
+
+   ::setCurrentProject( cProjectTitle )
 
    RETURN ::cWrkProject
 
@@ -1285,9 +1299,14 @@ METHOD IdeProjManager:getProjectByTitle( cProjectTitle )
 METHOD IdeProjManager:removeProject( cProjectTitle )
    LOCAL cProjFileName, nPos
 
+   IF Empty( cProjectTitle )
+      IF Empty( cProjectTitle := ::selectAProject() )
+         MsgBox( "No Projects Available or Selected" )
+         RETURN Self
+      ENDIF
+   ENDIF
    IF !empty( cProjFileName := ::getProjectFileNameFromTitle( cProjectTitle ) )
       ::closeProject( cProjectTitle )
-
       nPos := ascan( ::aProjects, {|e_| e_[ 2 ] == cProjFileName } )
       IF nPos > 0
          hb_adel( ::aProjects, nPos, .T. )

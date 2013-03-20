@@ -596,21 +596,23 @@ METHOD IdeINI:save( cHbideIni )
       FOR n := 1 TO nTabs
          pTab  := ::oIde:qTabWidget:widget( n - 1 )
          nTab  := ascan( ::oIde:aTabs, {|e_| hbqt_IsEqual( e_[ 1 ]:oWidget, pTab ) } )
-         oEdit := ::oIde:aTabs[ nTab, TAB_OEDITOR ]
+         IF nTab > 0
+            oEdit := ::oIde:aTabs[ nTab, TAB_OEDITOR ]
 
-         IF !Empty( oEdit:sourceFile ) .AND. !( ".ppo" == lower( oEdit:cExt ) )
-            IF oEdit:lLoaded
-               aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_getEditInfoAsString( oEdit ) )
+            IF !Empty( oEdit:sourceFile ) .AND. !( ".ppo" == lower( oEdit:cExt ) )
+               IF oEdit:lLoaded
+                  aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_getEditInfoAsString( oEdit ) )
 
-            ELSE
-               aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_pathNormalized( oEdit:sourceFile, .f. ) + "," + ;
-                           hb_ntos( oEdit:nPos  ) +  ","  + ;
-                           hb_ntos( oEdit:nHPos ) +  ","  + ;
-                           hb_ntos( oEdit:nVPos ) +  ","  + ;
-                           oEdit:cTheme           +  ","  + ;
-                           oEdit:cView            +  ","  + ;
-                           hbide_nArray2string( oEdit:oEdit:aBookMarks ) +  "," + ;
-                           oEdit:cCodePage )
+               ELSE
+                  aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_pathNormalized( oEdit:sourceFile, .f. ) + "," + ;
+                              hb_ntos( oEdit:nPos  ) +  ","  + ;
+                              hb_ntos( oEdit:nHPos ) +  ","  + ;
+                              hb_ntos( oEdit:nVPos ) +  ","  + ;
+                              oEdit:cTheme           +  ","  + ;
+                              oEdit:cView            +  ","  + ;
+                              hbide_nArray2string( oEdit:oEdit:aBookMarks ) +  "," + ;
+                              oEdit:cCodePage )
+               ENDIF
             ENDIF
          ENDIF
       NEXT

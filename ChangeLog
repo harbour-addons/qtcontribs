@@ -16,6 +16,31 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-19 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r190)
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+    + Added: WITH OBJECT/ENDWITH pair highlighting.
+
+  * hbide/actions.prg
+  * hbide/main.prg
+  * hbide/projmanager.prg
+    % Reorganized: <Projects> option on <Main Menu>. All prompts are 
+       fully functional. It adds those prompts also which were available 
+       with right-click context menuu on <Projects> node of projects tree.
+
+  * hbide/edit.prg
+  * hbide/editor.prg
+    % Rationalized: many artifacts.
+    % Speed-up many operations by building static hash of keywords and 
+       applying hb_hCaseMatch( , .f. ).
+    - Deleted: transfered to C++ code residuals, was creating confusion.
+
+  * hbide/saveload.prg
+    ! Fixed: a nastry bug where RTE was generated when <Remove Project> 
+       option was activated after <Close All Files> option and HbIDE 
+       was containing more then one panel. Reported by Francesco S. Giudice.
+
+  ; NEXT: rationalization of project creation.
+
 2013-03-15 18:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r189)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: a wrong type checking which was preveting user defined 

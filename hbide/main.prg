@@ -1102,7 +1102,7 @@ METHOD HbIde:execProjectAction( cKey )
       ::oPM:selectCurrentProject()
       EXIT
    CASE "CloseProject"
-      ::oPM:closeProject()
+      ::oPM:removeProject()
       EXIT
    ENDSWITCH
    RETURN Self
@@ -1314,15 +1314,15 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
    CASE n ==  0  // Source File - nothing to do
    CASE n == -2  // "Files"
    CASE n == -1  // Project Root
-      aadd( aPops, { "New Project"                       , {|| ::oPM:loadProperties( NIL, .t., .t., .t. ) } } )
+      aadd( aPops, { ::oAC:getAction( "CreateProject" )  , {|| ::oPM:loadProperties( NIL, .t., .t., .t. ) } } )
       aadd( aPops, { "" } )
-      aadd( aPops, { "Open Project..."                   , {|| ::oPM:loadProperties( NIL, .f., .f., .t. ) } } )
+      aadd( aPops, { ::oAC:getAction( "OpenProject" )    , {|| ::oPM:loadProperties( NIL, .f., .f., .t. ) } } )
       aadd( aPops, { "" } )
       //
       IF !empty( ::oEV:getNames() )
          aadd( aPops, { "" } )
          FOR EACH s IN ::oEV:getNames()
-            aadd( aSub, { s                              , {|x| ::cWrkEnvironment := x, ::oDK:dispEnvironment( x ) } } )
+            aadd( aSub, { s, {|x| ::cWrkEnvironment := x, ::oDK:dispEnvironment( x ) } } )
          NEXT
          aadd( aPops, { aSub, "Environment..." } )
       ENDIF

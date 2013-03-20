@@ -1495,7 +1495,7 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
 
    cFileTemp := hbide_pathToOSPath( ::cPath + ::cFile + ::cExt + ".tmp" )
    IF hb_fileExists( cFileTemp )
-      IF hbide_getYesNo( "An auto saved version already exists, restore ?", cSourceFile, "Last run crash detected" )
+      IF hbide_getYesNo( "An auto saved version already exists, restore ?", cSourceFile, "Last run crash detected!" )
          hb_memowrit( hbide_pathToOSPath( cSourceFile ), hb_memoread( cFileTemp ) )
       ELSE
          ferase( cFileTemp )
@@ -1871,15 +1871,16 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:updateComponents()
-   LOCAL qCoEdit := ::qCoEdit
 
    ::setDocumentProperties()
-   qCoEdit:relayMarkButtons()
-   qCoEdit:updateTitleBar()
-   qCoEdit:toggleLineNumbers()
-   qCoEdit:toggleHorzRuler()
-   qCoEdit:toggleCurrentLineHighlightMode()
-   qCoEdit:dispStatusInfo()
+   WITH OBJECT ::qCoEdit
+      :relayMarkButtons()
+      :updateTitleBar()
+      :toggleLineNumbers()
+      :toggleHorzRuler()
+      :toggleCurrentLineHighlightMode()
+      :dispStatusInfo()
+   ENDWITH
    ::oUpDn:show()
    ::oDK:showSelectedTextToolbar()
    ::oIde:setCodePage( ::cCodePage )
@@ -1939,13 +1940,15 @@ METHOD IdeEditor:dispEditInfo( qEdit )
    s := "<b>Line "+ hb_ntos( qCursor:blockNumber() + 1 ) + " of " + ;
                     hb_ntos( qDocument:blockCount() ) + "</b>"
 
-   ::oIde:oSBar:getItem( SB_PNL_MAIN     ):caption := "Success"
-   ::oIde:oSBar:getItem( SB_PNL_READY    ):caption := "Ready"
-   ::oIde:oSBar:getItem( SB_PNL_LINE     ):caption := s
-   ::oIde:oSBar:getItem( SB_PNL_COLUMN   ):caption := "Col " + hb_ntos( qCursor:columnNumber() + 1 )
-   ::oIde:oSBar:getItem( SB_PNL_INS      ):caption := iif( qEdit:overwriteMode() , " ", "Ins" )
-   ::oIde:oSBar:getItem( SB_PNL_MODIFIED ):caption := iif( qDocument:isModified(), "Modified", iif( qEdit:isReadOnly(), "ReadOnly", " " ) )
-   ::oIde:oSBar:getItem( SB_PNL_EDIT     ):caption := "Edit"
+   WITH OBJECT ::oIde:oSBar
+      :getItem( SB_PNL_MAIN     ):caption := "Success"
+      :getItem( SB_PNL_READY    ):caption := "Ready"
+      :getItem( SB_PNL_LINE     ):caption := s
+      :getItem( SB_PNL_COLUMN   ):caption := "Col " + hb_ntos( qCursor:columnNumber() + 1 )
+      :getItem( SB_PNL_INS      ):caption := iif( qEdit:overwriteMode() , " ", "Ins" )
+      :getItem( SB_PNL_MODIFIED ):caption := iif( qDocument:isModified(), "Modified", iif( qEdit:isReadOnly(), "ReadOnly", " " ) )
+      :getItem( SB_PNL_EDIT     ):caption := "Edit"
+   ENDWITH
 
    RETURN Self
 

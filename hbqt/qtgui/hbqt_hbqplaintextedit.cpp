@@ -2778,6 +2778,7 @@ void HBQPlainTextEdit::hbBraceHighlight()
       QString brace = cursor.selectedText().toUpper();
 
       if( brace == "IF"       || brace == "ENDIF"     || brace == "IFDEF"  ||
+          brace == "WITH"     || brace == "ENDWITH"   ||
           brace == "FOR"      || brace == "NEXT"      ||
           brace == "SWITCH"   || brace == "ENDSWITCH" ||
           brace == "DO"       || brace == "ENDCASE"   || brace == "ENDDO"  ||
@@ -2903,6 +2904,25 @@ void HBQPlainTextEdit::hbBraceHighlight()
          {
             openBrace  = "CLASS";
             closeBrace = "ENDCLASS";
+         }
+         else if( ( brace == "WITH" ) || ( brace == "ENDWITH" ) )
+         {
+            if( brace == "WITH" )
+            {
+               cursor.movePosition( QTextCursor::NextWord, QTextCursor::KeepAnchor );
+               cursor.movePosition( QTextCursor::EndOfWord, QTextCursor::KeepAnchor );
+               brace = cursor.selectedText();
+               if( brace == "WITH OBJECT" )
+               {
+                  openBrace = "WITH OBJECT";
+                  closeBrace = "ENDWITH";
+               }
+            }
+            else if( brace == "ENDWITH" )
+            {
+               openBrace  = "WITH OBJECT";
+               closeBrace = "ENDWITH";
+            }
          }
          matchPair( cursor, brace, openBrace, closeBrace, true, QTextDocument::FindWholeWords );
       }
