@@ -50,6 +50,8 @@
  *
  */
 
+#include "hbtoqt.ch"
+
 #include "hbclass.ch"
 #include "hblang.ch"
 
@@ -314,21 +316,22 @@ METHOD HbQtGet:connect()
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T.                                         } )
+      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T.                                         } )
       EXIT
    CASE "QPLAINTEXTEDIT"
       EXIT
    CASE "QLISTWIDGET"
       EXIT
    CASE "QCOMBOBOX"
+      ::oEdit:connect( "currentIndexChanged(QString)", {|p|  ::cBuffer := p, ::assign()                      } )
       EXIT
    CASE "QPUSHBUTTON"
-      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )                } )
-      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )              } )
+      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )             } )
+      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )           } )
       EXIT
    CASE "QCHECKBOX"
-      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )                } )
-      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )              } )
+      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )             } )
+      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )           } )
       EXIT
    ENDSWITCH
 
