@@ -1,4 +1,4 @@
-/*
+      /*
  * $Id$
  */
 
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,18 +59,16 @@
  *                               03Jan2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
 #include "hbide.ch"
 #include "hbqtgui.ch"
 #include "common.ch"
 #include "hbclass.ch"
 
 /*----------------------------------------------------------------------*/
-//
 //                             Class IdeSource
-//
 /*----------------------------------------------------------------------*/
 
 CLASS IdeSource
@@ -110,9 +106,7 @@ METHOD IdeSource:new( cSource )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-//
 //                             Class IdeProject
-//
 /*----------------------------------------------------------------------*/
 
 CLASS IdeProject
@@ -225,6 +219,7 @@ CLASS IdeProjManager INHERIT IdeObject
    DATA   lUpdateTree                             INIT .F.
 
    DATA   cIfError                                INIT NIL
+   DATA   oSelSrc
 
    METHOD new( oIDE )
    METHOD create( oIDE )
@@ -274,6 +269,8 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD insertHeader( aHdr, aHbp )
    METHOD stripHeader( aHbp )
    METHOD moveLine( nDirection )
+   METHOD loadSelectedSources()
+   METHOD addSourceToArray( aSrc, aTgt, cExt )
 
    ENDCLASS
 
@@ -309,7 +306,7 @@ METHOD IdeProjManager:destroy()
    // ::oUI:buttonSort        :disconnect( "clicked()" )
    // ::oUI:buttonSortZA      :disconnect( "clicked()" )
    // ::oUI:buttonSortOrg     :disconnect( "clicked()" )
-      ::oUI:tabWidget         :disconnect( "currentChanged(int)" )
+//.      ::oUI:tabWidget         :disconnect( "currentChanged(int)" )
       ::oUI:buttonChoosePrjLoc:disconnect( "clicked()" )
       ::oUI:buttonChooseWd    :disconnect( "clicked()" )
       ::oUI:buttonChooseDest  :disconnect( "clicked()" )
@@ -366,6 +363,7 @@ METHOD IdeProjManager:getProperties()
 
 METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
    LOCAL nAlready, cProjPath
+   LOCAL cPath, cName, cExt
 
    DEFAULT cProjFileName TO ""
    DEFAULT lNew          TO .F.
@@ -406,25 +404,47 @@ METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
       ::aPrjProps  := ::pullHbpData( hbide_pathToOSPath( cProjFileName ) )
    ENDIF
 
+   ::oSelSrc := NIL
+
    IF lFetch
-      IF lNew
-         IF empty( cProjPath := hbide_fetchADir( ::oDlg, "Project Path", hbide_SetWrkFolderLast() ) )
-            RETURN Self
-         ENDIF
-         cProjPath := hbide_pathAppendLastSlash( cProjPath )
-         hbide_SetWrkFolderLast( cProjPath )
-      ENDIF
+      ::oPropertiesDock:hide()
+      QApplication():processEvents()
+
       /* Access/Assign via this object */
       ::oProject := IdeProject():new( ::oIDE, ::aPrjProps )
-      IF !empty( cProjPath )
+
+      IF lNew
+         IF Empty( cProjPath := hbide_fetchAFile( ::oDlg, "Create a Harbour Project", { { "Project File", ".hbp" } }, hbide_SetWrkFolderLast(), "hbp" ) )
+            RETURN Self
+         ENDIF
+         hb_FNameSplit( cProjPath, @cPath, @cName, @cExt )
+         IF Empty( cExt )
+            cExt := ".hbp"
+         ENDIF
+         IF hb_FileExists( cPath + cName + cExt )
+            Alert( cPath + cName + cExt + " already exists, provide new name." )
+            RETURN Self
+         ENDIF
+         cPath                 := hbide_pathAppendLastSlash( cPath )
+         cProjPath             := cPath
+
+         ::oProject:title      := Upper( SubStr( cName,1,1 ) ) + SubStr( cName, 2 )
+         ::oProject:outputName := cName
+
+         ::oSelSrc := IdeSelectSource():new( cPath ):create()
+
+         cProjFileName := cPath + cName + cExt
+         hbide_SetWrkFolderLast( cProjPath )
+      ENDIF
+
+      IF ! Empty( cProjPath )
          ::oProject:location := hbide_pathNormalized( cProjPath, .f. )
          ::oProject:projPath := ::oProject:location
       ENDIF
-      //
-      ::oPropertiesDock:hide()
+
       ::oPropertiesDock:show()
    ELSE
-      IF !empty( ::aPrjProps )
+      IF ! Empty( ::aPrjProps )
          IF nAlready == 0
             aadd( ::oIDE:aProjects, { hbide_pathNormalized( cProjFileName ), cProjFileName, aclone( ::aPrjProps ) } )
             IF lUpdateTree
@@ -441,6 +461,8 @@ METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
 
       ::oHM:refresh()  /* Rearrange Projects Data */
    ENDIF
+
+   ::oIde:oPropertiesDock:setWindowTitle( cProjFileName )
 
    RETURN Self
 
@@ -758,21 +780,25 @@ METHOD IdeProjManager:fetchProperties()
    IF empty( ::aPrjProps )
       ::oUI:comboPrjType:setCurrentIndex( 0 )
 
-      ::oUI:editPrjTitle :setText( "" )
+      ::oUI:editPrjTitle :setText( ::oProject:title )
       ::oUI:editPrjLoctn :setText( hbide_pathNormalized( ::oProject:location, .F. ) )
       ::oUI:editDstFolder:setText( "" )
       ::oUI:editBackup   :setText( "" )
-      ::oUI:editOutName  :setText( "" )
-
-      ::oUI:editFlags    :setPlainText( "" )
-      ::oUI:editSources  :setPlainText( "" )
+      ::oUI:editOutName  :setText( ::oProject:outputName )
 
       ::oUI:editLaunchParams:setText( "" )
       ::oUI:editLaunchExe:setText( "" )
       ::oUI:editWrkFolder:setText( "" )
       ::oUI:editHbp:setPlainText( "" )
 
-      ::oUI:oWidget:setWindowTitle( 'New Project...' )
+      ::oUI:oWidget:setWindowTitle( iif( Empty( ::oProject:title ), 'New Project...', 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' ) )
+
+      ::oUI:editSources  :setPlainText( "" )
+      IF HB_ISOBJECT( ::oSelSrc ) .AND. ! Empty( ::oSelSrc:aSrcSelected )
+         ::loadSelectedSources()
+         // Save the project file, no ?
+         // ::oUI:buttonSave:click()
+      ENDIF
 
    ELSE
       DO CASE
@@ -806,6 +832,110 @@ METHOD IdeProjManager:fetchProperties()
       ::oUI:editHbp:setPlainText( "" )
 
       ::oUI:oWidget:setWindowTitle( 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' )
+   ENDIF
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeProjManager:loadSelectedSources()
+   LOCAL aMemo := {}, cMemo := ""
+   LOCAL oSel := ::oSelSrc
+   LOCAL aHbc := {}
+
+   AAdd( aMemo, "#    hbmk2 Flags" )
+   AAdd( aMemo, "#" )
+   AAdd( aMemo, iif( oSel:cType == "Dll", "-hbdyn", iif( oSel:cType == "Library", "-hblib", "-hbexe" ) ) )
+   AAdd( aMemo, "" )
+   IF oSel:lShared     ; AAdd( aMemo, "-shared"        ) ; ENDIF
+   IF oSel:lFullStatic ; AAdd( aMemo, "-fullstatic"    ) ; ENDIF
+   IF oSel:lTrace      ; AAdd( aMemo, "-trace"         ) ; ENDIF
+   IF oSel:lInfo       ; AAdd( aMemo, "-info"          ) ; ENDIF
+   IF oSel:lInc        ; AAdd( aMemo, "-inc"           ) ; ENDIF
+   IF oSel:lGui        ; AAdd( aMemo, "-gui"           ) ; ENDIF
+   IF oSel:lMt         ; AAdd( aMemo, "-mt"            ) ; ENDIF
+   AAdd( aMemo, "" )
+   IF oSel:lA          ; AAdd( aMemo, "-a"             ) ; ENDIF
+   IF oSel:lB          ; AAdd( aMemo, "-b"             ) ; ENDIF
+   IF oSel:lEs         ; AAdd( aMemo, "-es" + oSel:cES ) ; ENDIF
+   IF oSel:lG          ; AAdd( aMemo, "-g"  + oSel:cG  ) ; ENDIF
+   IF oSel:lM          ; AAdd( aMemo, "-m"  + oSel:cM  ) ; ENDIF
+   IF oSel:lN          ; AAdd( aMemo, "-n"             ) ; ENDIF
+   IF oSel:lV          ; AAdd( aMemo, "-v"             ) ; ENDIF
+   IF oSel:lW          ; AAdd( aMemo, "-w"  + oSel:cW  ) ; ENDIF
+
+   AAdd( aMemo, "" )
+   AAdd( aMemo, "" )
+   AAdd( aMemo, "#    GT Requested " )
+   AAdd( aMemo, "#" )
+   AAdd( aMemo, "-" + Lower( oSel:cGT ) )
+
+   AAdd( aHbc, "" )
+   AAdd( aHbc, "" )
+   AAdd( aHbc, "#    Detected .hbc Components " )
+   AAdd( aHbc, "#" )
+   IF oSel:lHbQt
+      AAdd( aHbc, "hbqt.hbc" )
+      AAdd( aHbc, "hbqtwidgets.hbc" )
+   ENDIF
+   IF oSel:cGT == "gtWVG"
+      AAdd( aHbc, "gtwvg.hbc" )
+   ENDIF
+   IF Len( aHbc ) > 4
+      AEval( aHbc, {|e| AAdd( aMemo, e ) } )
+   ENDIF
+
+   AAdd( aMemo, "" )
+   AAdd( aMemo, "" )
+   AAdd( aMemo, "#    Compilable Sources " )
+   AAdd( aMemo, "#" )
+
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".hbc" )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".hbp" )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".hbm" )
+
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".obj" )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".o"   )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".c"   )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".cpp" )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".prg" )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".rc"  )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".res" )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".ui"  )
+   ::addSourceToArray( oSel:aSrcSelected, @aMemo, ".qrc" )
+
+   AAdd( aMemo, "" )
+   AAdd( aMemo, "" )
+   AAdd( aMemo, "#    Other Files " )
+   AAdd( aMemo, "#" )
+   AEval( oSel:aSrc3rd, {|e| AAdd( aMemo, e ) } )
+   AAdd( aMemo, "" )
+
+   AEval( aMemo, {|e| cMemo += e + hb_eol() } )
+
+   // Populate the interface
+   //
+   WITH OBJECT ::oUI
+      :comboPrjType:setCurrentIndex( iif( oSel:cType == "Dll", 2, iif( oSel:cType == "Library", 1, 0 ) ) )
+      :editSources:setPlainText( cMemo )
+   ENDWITH
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeProjManager:addSourceToArray( aSrc, aTgt, cExt )
+   LOCAL cSrc
+
+   IF AScan( aSrc, {|e| Lower( hb_FNameExt( e ) ) == cExt } ) > 0
+      AAdd( aTgt, "#" )
+      AAdd( aTgt, "#    " + cExt )
+      AAdd( aTgt, "#" )
+      FOR EACH cSrc IN aSrc
+         IF Lower( hb_FNameExt( cSrc ) ) == cExt
+            AAdd( aTgt, cSrc )
+         ENDIF
+      NEXT
    ENDIF
 
    RETURN Self
@@ -848,10 +978,6 @@ METHOD IdeProjManager:buildInterface()
    ::oUI:buttonSelect      :connect( "clicked()", {|| ::addSources()         } )
    ::oUI:buttonUp          :connect( "clicked()", {|| ::moveLine( -1 )       } )
    ::oUI:buttonDown        :connect( "clicked()", {|| ::moveLine( +1 )       } )
-// ::oUI:buttonSort        :connect( "clicked()", {|| ::sortSources( "az"  ) } )
-// ::oUI:buttonSortZA      :connect( "clicked()", {|| ::sortSources( "za"  ) } )
-// ::oUI:buttonSortOrg     :connect( "clicked()", {|| ::sortSources( "org" ) } )
-   ::oUI:tabWidget         :connect( "currentChanged(int)", {|p| ::updateHbp( p ) } )
    ::oUI:buttonChoosePrjLoc:connect( "clicked()", {|| ::PromptForPath( ::oUI:editPrjLoctn , 'Choose Project Location...'   ) } )
    ::oUI:buttonChooseWd    :connect( "clicked()", {|| ::PromptForPath( ::oUI:editWrkFolder, 'Choose Working Folder...'     ) } )
    ::oUI:buttonChooseDest  :connect( "clicked()", {|| ::PromptForPath( ::oUI:editDstFolder, 'Choose Destination Folder...' ) } )
@@ -885,22 +1011,8 @@ METHOD IdeProjManager:buildInterface()
    ::oUI:setTabOrder( ::oUI:editBackup      , ::oUI:editLaunchParams )
    ::oUI:setTabOrder( ::oUI:editLaunchParams, ::oUI:editLaunchExe    )
    ::oUI:setTabOrder( ::oUI:editLaunchExe   , ::oUI:editWrkFolder    )
-   ::oUI:setTabOrder( ::oUI:editWrkFolder   , ::oUI:tabFiles         )
-   //
-   ::oUI:setTabOrder( ::oUI:tabFiles        , ::oUI:editSources      )
-   ::oUI:setTabOrder( ::oUI:editSources     , ::oUI:tabFlags         )
-   //
-   ::oUI:setTabOrder( ::oUI:tabFlags        , ::oUI:editFlags        )
-   ::oUI:setTabOrder( ::oUI:editFlags       , ::oUI:tabHbp           )
-   //
-   ::oUI:setTabOrder( ::oUI:tabHbp          , ::oUI:editHbp          )
-   //
-   ::oUI:setTabOrder( ::oUI:editHbp         , ::oUI:buttonSaveExit   )
    ::oUI:setTabOrder( ::oUI:buttonSaveExit  , ::oUI:buttonSave       )
    ::oUI:setTabOrder( ::oUI:buttonSave      , ::oUI:buttonCn         )
-
-   ::oUI:tabHbp:hide()
-   ::oUI:tabFlags:hide()
 
    RETURN Self
 
@@ -1795,3 +1907,243 @@ METHOD IdeProjManager:outputText( cText )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
+//                         CLASS IdeSelectSource
+/*----------------------------------------------------------------------*/
+
+CLASS IdeSelectSource
+
+   DATA   oUI
+   DATA   cPath
+   DATA   aSrcSelected                            INIT {}
+   DATA   aSrc3rd                                 INIT {}
+   DATA   aExt                                    INIT {}
+
+   DATA   cType                                   INIT "Executable"
+
+   DATA   cGT                                     INIT ""
+
+   DATA   lShared                                 INIT .F.
+   DATA   lFullStatic                             INIT .F.
+   DATA   lHbQt                                   INIT .F.
+   DATA   lTrace                                  INIT .F.
+   DATA   lInfo                                   INIT .F.
+   DATA   lInc                                    INIT .F.
+   DATA   lGui                                    INIT .F.
+   DATA   lMt                                     INIT .F.
+   DATA   lA                                      INIT .F.
+   DATA   lB                                      INIT .F.
+   DATA   lEs                                     INIT .F.
+   DATA   lG                                      INIT .F.
+   DATA   lM                                      INIT .F.
+   DATA   lN                                      INIT .F.
+   DATA   lV                                      INIT .F.
+   DATA   lW                                      INIT .F.
+   DATA   cES                                     INIT ""
+   DATA   cG                                      INIT ""
+   DATA   cM                                      INIT ""
+   DATA   cW                                      INIT ""
+
+   METHOD new( cPath )
+   METHOD create( cPath )
+   METHOD buildUI()
+   METHOD toggleSelection( lSelect )
+   METHOD selectSources( cExt )
+   METHOD unSelectSources( cExt )
+   METHOD pullData()
+
+   ENDCLASS
+
+
+METHOD IdeSelectSource:new( cPath )
+
+   DEFAULT cPath TO ::cPath
+   ::cPath := cPath
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:create( cPath )
+   LOCAL aDir, a_, cSrc, oItm, nRes, cExt
+   LOCAL aSrc := {}
+
+   DEFAULT cPath TO ::cPath
+   ::cPath := cPath
+
+   aDir := Directory( ::cPath + "*.*" )
+   IF ! Empty( aDir )
+      FOR EACH a_ IN aDir
+         IF a_[ 1 ] == "." .OR. a_[ 1 ] == ".."
+            // Nothing TO do
+         ELSEIF a_[ 5 ] == "D"
+            // later
+         ELSE
+            cExt := Lower( hb_FNameExt( a_[ 1 ] ) )
+            IF ! Empty( cExt ) .AND. cExt $ ".h,.c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp,.ch"
+               AAdd( aSrc, a_[ 1 ] )
+               IF AScan( ::aExt, {|e| e == cExt } ) == 0
+                  AAdd( ::aExt, cExt )
+               ENDIF
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
+
+   IF Empty( aSrc )
+      RETURN Self
+   ENDIF
+   ASort( aSrc, , , {|e, f| Lower( hb_FNameExt( e ) ) + Lower( hb_FNameName( e ) ) <  Lower( hb_FNameExt( f ) ) + Lower( hb_FNameName( f ) ) } )
+
+   ::buildUI()
+   WITH OBJECT ::oUI
+      FOR EACH cSrc IN aSrc
+         cExt := Lower( hb_FNameExt( cSrc ) )
+         WITH OBJECT oItm := QTreeWidgetItem()
+            :setFlags( Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsUserCheckable )
+            :setText( 0, cSrc )
+            :setToolTip( 0, hbide_pathNormalized( ::cPath + cSrc ) )
+            ::oUI:treeSources:addTopLevelItem( oItm )
+            :setCheckState( 0, Qt_Checked )
+            IF  ! ( cExt == ".h" ) .AND. ( cExt $ ".hbc,.hbp,.hbm" )
+               :setCheckState( 0, Qt_Unchecked )
+            ENDIF
+         ENDWITH
+      NEXT
+
+      nRes := :oWidget:exec()                     /* Display on the Screen */
+
+      IF nRes == 1                                /* Only IF OK is clicked */
+         ::pullData()
+      ENDIF
+
+      :oWidget:setParent( QWidget() )
+   ENDWITH
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:pullData()
+   LOCAL i, cSrc
+
+   ::cType := ::oUI:comboType:currentText()
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      IF ::oUI:treeSources:topLevelItem( i ):checkState( 0 ) == Qt_Checked
+         cSrc := hbide_prepareSourceForHbp( ::oUI:treeSources:topLevelItem( i ):text( 0 ) )
+         IF Left( cSrc, 2 ) == "-3"
+            AAdd( ::aSrc3rd, cSrc )
+         ELSE
+            AAdd( ::aSrcSelected, cSrc )
+         ENDIF
+
+      ENDIF
+   NEXT
+
+   ::cGT            := ::oUI:comboGT      :currentText()
+   ::lShared        := ::oUI:chkShared    :isChecked()
+   ::lFullStatic    := ::oUI:chkFullStatic:isChecked()
+   ::lHbQt          := ::oUI:chkHbQt      :isChecked()
+   ::lTrace         := ::oUI:chkTrace     :isChecked()
+   ::lInfo          := ::oUI:chkInfo      :isChecked()
+   ::lInc           := ::oUI:chkInc       :isChecked()
+   ::lGui           := ::oUI:chkGui       :isChecked()
+   ::lMt            := ::oUI:chkMt        :isChecked()
+   ::lA             := ::oUI:chkA         :isChecked()
+   ::lB             := ::oUI:chkB         :isChecked()
+   ::lEs            := ::oUI:chkEs        :isChecked()
+   ::lG             := ::oUI:chkG         :isChecked()
+   ::lM             := ::oUI:chkM         :isChecked()
+   ::lN             := ::oUI:chkN         :isChecked()
+   ::lV             := ::oUI:chkV         :isChecked()
+   ::lW             := ::oUI:chkW         :isChecked()
+   ::cES            := ::oUI:editES       :text()
+   ::cG             := ::oUI:editG        :text()
+   ::cM             := ::oUI:editM        :text()
+   ::cW             := ::oUI:editW        :text()
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:toggleSelection( lSelect )
+   LOCAL i, oItm
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      oItm := ::oUI:treeSources:topLevelItem( i )
+      oItm:setCheckState( 0, iif( lSelect, Qt_Checked, Qt_Unchecked ) )
+   NEXT
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:selectSources( cExt )
+   LOCAL i, oItm
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      oItm := ::oUI:treeSources:topLevelItem( i )
+      IF Lower( hb_FNameExt( oItm:text( 0 ) ) ) == cExt
+         oItm:setCheckState( 0, Qt_Checked )
+      ENDIF
+   NEXT
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:unSelectSources( cExt )
+   LOCAL i, oItm
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      oItm := ::oUI:treeSources:topLevelItem( i )
+      IF Lower( hb_FNameExt( oItm:text( 0 ) ) ) == cExt
+         oItm:setCheckState( 0, Qt_Unchecked )
+      ENDIF
+   NEXT
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:buildUI()
+   LOCAL cExt
+
+
+   WITH OBJECT ::oUI := hbide_getUI( "SelectSources" )
+      :treeSources:headerItem():setText( 0, ::cPath )
+      :checkSelect:setChecked( .T. )
+
+      :comboType:addItem( "Executable" )
+      :comboType:addItem( "Library" )
+      :comboType:addItem( "Dll" )
+      :comboType:setCurrentIndex( 0 )
+
+      FOR EACH cExt IN ::aExt
+         :comboSelect:addItem( cExt )
+         :comboUnSelect:addItem( cExt )
+      NEXT
+
+      :comboSelect  :connect( "currentIndexChanged(QString)", {|cExt| ::selectSources( cExt ) } )
+      :comboUnSelect:connect( "currentIndexChanged(QString)", {|cExt| ::unSelectSources( cExt ) } )
+
+      :btnOK    :connect( "clicked()", {|| ::oUI:oWidget:done( 1 ) } )
+      :btnCancel:connect( "clicked()", {|| ::oUI:oWidget:done( 0 ) } )
+
+      :checkSelect:connect( "stateChanged(int)", {|iState|  ::toggleSelection( iState == 2 ) } )
+
+      WITH OBJECT :comboGT
+         : addItem( "gtWIN" )
+         : addItem( "gtWVT" )
+         : addItem( "gtWVG" )
+         : addItem( "gtCGI" )
+         : addItem( "gtCRS" )
+         : addItem( "gtDOS" )
+         : addItem( "gtGUI" )
+         : addItem( "gtOS2" )
+         : addItem( "gtPCA" )
+         : addItem( "gtSLN" )
+         : addItem( "gtSTD" )
+         : addItem( "gtTRM" )
+         : addItem( "gtXWC" )
+
+         : setCurrentIndex( 0 )
+      ENDWITH
+   ENDWITH
+
+   RETURN Self
+

@@ -16,6 +16,59 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-22 18:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r191)
+  * hbide/projectpropertiesex.ui
+  + hbide/selectsources.ui
+  * hbide/hbide.hbp
+    + Added: selectsources.ui
+
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+    + Implemented: restructured and re-thought of Project builder.
+
+       1. The <Project Properties> dialog now contain only single view,
+           all contained inside there and works as before except for 
+           interface.
+
+       2. <Create a Project> action opens a file save dialog where you 
+           need to provide a .hbp name, which is tested for duplicacy 
+           and disregarded if exists a project with same name.
+           Before this step was asking for the folder location only.
+
+       3. A modal dialog is opened containing all the sources contained 
+           in the folder where above project resides. Sources are ordered 
+           first by extention and next by name. By default all sources 
+           are shown as checked, exception being .hbp, .hbc, .hbm.
+
+       4. Interface provides to <Select/Unselect All>, <Select By Ext>, 
+           and <UnSelect by Ext> where you can manage which sources 
+           should makeup to the project.
+
+       5. Interface also contain elements to provide few hbmk2 specifc 
+           switches plus compiler specific switches. I have not gone 
+           to unnecessary details, only switches which are frequently 
+           used are vailable on the interface. This interface is only 
+           available for a NEW project. Once saved, and re-called 
+           for changes, the old dialog with changes told in #1 above 
+           will be effective.
+
+       6. Once satisfied with the selections and switches, click <OK>.
+           The <Projects Properties> Dialog will show up displaying 
+           actual .hbp contents. Still project is not saved. It may 
+           be modified as per your additional requirements as you 
+           would do in a .hbp just like in a text-editor, i.e., adding 
+           more switches and/or sources from other folders, etc.
+         
+       7. Click <Save & Exit> or <Save> to save the project on disk.
+           Such saved project can directly be submitted to hbmk2 from 
+           comman-line as well. The files and switches are organized 
+           in meaningful sections.
+
+    ; NOTE: This implementation has made <Project> setup and link 
+            process a breeze. Give it a try, you will not be disappointed.
+
+    ; NEXT: drag-drop support of sources in <Project Properties> dialog.
+
 2013-03-21 13:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r191)
   * hbqtwidgets/getsys.prg
     + Implemented: @ ... QGET ... COMBOBOX ... to ::assign() the selected 

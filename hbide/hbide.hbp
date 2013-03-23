@@ -23,6 +23,7 @@
 
 hbxbp.hbc
 hbqt.hbc
+hbqtwidgets.hbc
 hbformat.hbc
 
 -env:HB_DYNLOAD_RDDADS=yes
@@ -94,6 +95,7 @@ changelog.ui
 projectwizard.ui
 panels.ui
 functionsmap.ui
+selectsources.ui
 
 hbide.qrc
 settings.qrc

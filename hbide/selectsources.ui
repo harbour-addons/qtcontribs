@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>337</width>
+    <height>526</height>
+   </rect>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>337</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Select Sources</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QTreeWidget" name="treeSources">
+     <attribute name="headerVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="headerVisible">
+      <bool>false</bool>
+     </attribute>
+     <column>
+      <property name="text">
+       <string/>
+      </property>
+     </column>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnOK">
+       <property name="text">
+        <string>OK</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="text">
+        <string>Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>120</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>120</height>
+      </size>
+     </property>
+     <widget class="QFrame" name="frame_6">
+      <property name="geometry">
+       <rect>
+        <x>4</x>
+        <y>8</y>
+        <width>65</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="whatsThis">
+       <string>hbmk2 specific switches.</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QCheckBox" name="chkShared">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>4</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>shared</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkFullstatic">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>24</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>fullstatic</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkHbQt">
+       <property name="geometry">
+        <rect>
+         <x>4</x>
+         <y>84</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>HbQt</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frame_2">
+      <property name="geometry">
+       <rect>
+        <x>76</x>
+        <y>8</y>
+        <width>69</width>
+        <height>105</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QCheckBox" name="chkTrace">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>4</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>trace</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkInfo">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>24</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>info</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkGui">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>64</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>gui</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkMt">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>84</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>mt</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkInc">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>44</y>
+         <width>53</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>inc</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QFrame" name="frame_5">
+      <property name="geometry">
+       <rect>
+        <x>156</x>
+        <y>28</y>
+        <width>157</width>
+        <height>85</height>
+       </rect>
+      </property>
+      <property name="whatsThis">
+       <string>Harbour specif comman-line switches.</string>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QCheckBox" name="chkA">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>4</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ a</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkB">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>24</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ b</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkES">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>44</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ es</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkG">
+       <property name="geometry">
+        <rect>
+         <x>8</x>
+         <y>64</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ g</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="editES">
+       <property name="geometry">
+        <rect>
+         <x>48</x>
+         <y>44</y>
+         <width>29</width>
+         <height>17</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkM">
+       <property name="geometry">
+        <rect>
+         <x>84</x>
+         <y>4</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ m</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="editM">
+       <property name="geometry">
+        <rect>
+         <x>124</x>
+         <y>4</y>
+         <width>29</width>
+         <height>17</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="editG">
+       <property name="geometry">
+        <rect>
+         <x>48</x>
+         <y>64</y>
+         <width>29</width>
+         <height>17</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkN">
+       <property name="geometry">
+        <rect>
+         <x>84</x>
+         <y>24</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ n</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkV">
+       <property name="geometry">
+        <rect>
+         <x>84</x>
+         <y>44</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ v</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="chkW">
+       <property name="geometry">
+        <rect>
+         <x>84</x>
+         <y>64</y>
+         <width>41</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>/ w</string>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="editW">
+       <property name="geometry">
+        <rect>
+         <x>124</x>
+         <y>64</y>
+         <width>29</width>
+         <height>17</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QLineEdit" name="editQ">
+       <property name="geometry">
+        <rect>
+         <x>124</x>
+         <y>108</y>
+         <width>29</width>
+         <height>17</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QComboBox" name="comboGT">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>8</y>
+        <width>149</width>
+        <height>17</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QComboBox" name="comboType"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkSelect">
+       <property name="text">
+        <string>Select All</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboSelect">
+       <property name="toolTip">
+        <string>Select of Type...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboUnSelect">
+       <property name="toolTip">
+        <string>UnSelect of Type...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

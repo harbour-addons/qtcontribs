@@ -1936,6 +1936,7 @@ FUNCTION hbide_getUI( cUI, qParent )
       CASE "format"              ; RETURN hbqtui_Format( qParent )
       CASE "changelog"           ; RETURN hbqtui_Changelog( qParent )
       CASE "functionsmap"        ; RETURN hbqtui_FunctionsMap( qParent )
+      CASE "selectsources"       ; RETURN hbqtui_SelectSources( qParent )
       ENDSWITCH
    ENDIF
 
@@ -1951,7 +1952,7 @@ FUNCTION app_image( cName )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION hbide_isCompilerSource( cSource, cIncList )
+FUNCTION hbide_isCompilerSource( cSource, cIncList )
    LOCAL cExt, aExt
 
    DEFAULT cIncList TO ".c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp"
