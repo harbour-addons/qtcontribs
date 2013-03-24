@@ -238,13 +238,15 @@ METHOD XbpFileDialog:open( cDefaultFile, lCenter, lAllowMultiple, lCreateNewFile
    ENDIF
 
    IF HB_ISSTRING( cDefaultFile )
-      hb_fNameSplit( cDefaultFile, @cPath, @cFile, @cExt )
-      //::oWidget:setDirectory( cFile )
       ::oWidget:setDirectory( cDefaultFile )
+      hb_fNameSplit( cDefaultFile, @cPath, @cFile, @cExt )
+      IF ! Empty( cFile )
+         ::oWidget:selectFile( cFile + cExt )
+      ENDIF
    ENDIF
 
    IF empty( ::fileFilters )
-      ::oWidget:setNameFilter( "All File (*.*)" )
+      ::oWidget:setNameFilter( "All Files (*)" )
    ELSE
       IF len( ::fileFilters ) == 1
          ::oWidget:setNameFilter( Xbp_ArrayToFileFilter( ::fileFilters[ 1 ] ) )
@@ -284,7 +286,7 @@ METHOD XbpFileDialog:open( cDefaultFile, lCenter, lAllowMultiple, lCreateNewFile
 /*----------------------------------------------------------------------*/
 
 METHOD XbpFileDialog:saveAs( cDefaultFile, lFileList, lCenter )
-   LOCAL i, oList, qFocus, xRes
+   LOCAL i, oList, qFocus, xRes, cPath, cFile, cExt
 
    DEFAULT lFileList TO .T.
 
@@ -304,10 +306,14 @@ METHOD XbpFileDialog:saveAs( cDefaultFile, lFileList, lCenter )
 
    IF HB_ISSTRING( cDefaultFile )
       ::oWidget:setDirectory( cDefaultFile )
+      hb_fNameSplit( cDefaultFile, @cPath, @cFile, @cExt )
+      IF ! Empty( cFile )
+         ::oWidget:selectFile( cFile + cExt )
+      ENDIF
    ENDIF
 
    IF empty( ::fileFilters )
-      ::oWidget:setNameFilter( "All File (*.*)" )
+      ::oWidget:setNameFilter( "All Files (*)" )
    ELSE
       IF len( ::fileFilters ) == 1
          ::oWidget:setNameFilter( Xbp_ArrayToFileFilter( ::fileFilters[ 1 ] ) )

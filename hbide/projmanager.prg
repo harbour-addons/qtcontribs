@@ -1,4 +1,4 @@
-      /*
+                        /*
  * $Id$
  */
 
@@ -414,26 +414,19 @@ METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
       ::oProject := IdeProject():new( ::oIDE, ::aPrjProps )
 
       IF lNew
-         IF Empty( cProjPath := hbide_fetchAFile( ::oDlg, "Create a Harbour Project", { { "Project File", ".hbp" } }, hbide_SetWrkFolderLast(), "hbp" ) )
+         ::oSelSrc := IdeSelectSource():new():create()
+         IF ! ::oSelSrc:lOk
             RETURN Self
          ENDIF
-         hb_FNameSplit( cProjPath, @cPath, @cName, @cExt )
-         IF Empty( cExt )
-            cExt := ".hbp"
-         ENDIF
-         IF hb_FileExists( cPath + cName + cExt )
-            Alert( cPath + cName + cExt + " already exists, provide new name." )
-            RETURN Self
-         ENDIF
+
+         hb_FNameSplit( ::oSelSrc:cHbp, @cPath, @cName, @cExt )
+
+         cProjFileName         := cPath + cName + cExt
          cPath                 := hbide_pathAppendLastSlash( cPath )
          cProjPath             := cPath
-
          ::oProject:title      := Upper( SubStr( cName,1,1 ) ) + SubStr( cName, 2 )
          ::oProject:outputName := cName
 
-         ::oSelSrc := IdeSelectSource():new( cPath ):create()
-
-         cProjFileName := cPath + cName + cExt
          hbide_SetWrkFolderLast( cProjPath )
       ENDIF
 
@@ -778,60 +771,64 @@ METHOD IdeProjManager:fetchProperties()
    ENDIF
 
    IF empty( ::aPrjProps )
-      ::oUI:comboPrjType:setCurrentIndex( 0 )
+      WITH OBJECT ::oUI
+         :comboPrjType    :setCurrentIndex( 0 )
 
-      ::oUI:editPrjTitle :setText( ::oProject:title )
-      ::oUI:editPrjLoctn :setText( hbide_pathNormalized( ::oProject:location, .F. ) )
-      ::oUI:editDstFolder:setText( "" )
-      ::oUI:editBackup   :setText( "" )
-      ::oUI:editOutName  :setText( ::oProject:outputName )
+         :editPrjTitle    :setText( ::oProject:title )
+         :editPrjLoctn    :setText( hbide_pathNormalized( ::oProject:location, .F. ) )
+         :editDstFolder   :setText( "" )
+         :editBackup      :setText( "" )
+         :editOutName     :setText( ::oProject:outputName )
 
-      ::oUI:editLaunchParams:setText( "" )
-      ::oUI:editLaunchExe:setText( "" )
-      ::oUI:editWrkFolder:setText( "" )
-      ::oUI:editHbp:setPlainText( "" )
+         :editLaunchParams:setText( "" )
+         :editLaunchExe   :setText( "" )
+         :editWrkFolder   :setText( "" )
+         :editHbp         :setPlainText( "" )
 
-      ::oUI:oWidget:setWindowTitle( iif( Empty( ::oProject:title ), 'New Project...', 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' ) )
+         :oWidget         :setWindowTitle( iif( Empty( ::oProject:title ), 'New Project...', 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' ) )
 
-      ::oUI:editSources  :setPlainText( "" )
-      IF HB_ISOBJECT( ::oSelSrc ) .AND. ! Empty( ::oSelSrc:aSrcSelected )
+         :editSources     :setPlainText( "" )
+      ENDWITH
+      IF HB_ISOBJECT( ::oSelSrc )
          ::loadSelectedSources()
          // Save the project file, no ?
          // ::oUI:buttonSave:click()
       ENDIF
 
    ELSE
-      DO CASE
-      CASE empty( ::aPrjProps )
-         ::oUI:comboPrjType:setCurrentIndex( 0 )
-      CASE ::aPrjProps[ PRJ_PRP_PROPERTIES, 2, E_qPrjType ] == "Lib"
-         ::oUI:comboPrjType:setCurrentIndex( 1 )
-      CASE ::aPrjProps[ PRJ_PRP_PROPERTIES, 2, E_qPrjType ] == "Dll"
-         ::oUI:comboPrjType:setCurrentIndex( 2 )
-      OTHERWISE
-         ::oUI:comboPrjType:setCurrentIndex( 0 )
-      ENDCASE
+      WITH OBJECT ::oUI
+         DO CASE
+         CASE empty( ::aPrjProps )
+            :comboPrjType:setCurrentIndex( 0 )
+         CASE ::aPrjProps[ PRJ_PRP_PROPERTIES, 2, E_qPrjType ] == "Lib"
+            :comboPrjType:setCurrentIndex( 1 )
+         CASE ::aPrjProps[ PRJ_PRP_PROPERTIES, 2, E_qPrjType ] == "Dll"
+            :comboPrjType:setCurrentIndex( 2 )
+         OTHERWISE
+            :comboPrjType:setCurrentIndex( 0 )
+         ENDCASE
 
-      ::oUI:editPrjTitle :setText( ::oProject:title        )
-      ::oUI:editPrjLoctn :setText( ::oProject:location     )
-      ::oUI:editDstFolder:setText( ::oProject:destination  )
-      ::oUI:editOutName  :setText( ::oProject:outputName   )
-      ::oUI:editBackup   :setText( ::oProject:backup       )
+         :editPrjTitle    :setText( ::oProject:title        )
+         :editPrjLoctn    :setText( ::oProject:location     )
+         :editDstFolder   :setText( ::oProject:destination  )
+         :editOutName     :setText( ::oProject:outputName   )
+         :editBackup      :setText( ::oProject:backup       )
 
-      ::oUI:checkXhb     :setChecked( ::oProject:isXhb )
-      ::oUI:checkXpp     :setChecked( ::oProject:isXpp )
-      ::oUI:checkClp     :setChecked( ::oProject:isClp )
+         :checkXhb        :setChecked( ::oProject:isXhb )
+         :checkXpp        :setChecked( ::oProject:isXpp )
+         :checkClp        :setChecked( ::oProject:isClp )
 
-      ::oUI:editFlags    :setPlainText( hbide_arrayToMemo( ::aPrjProps[ PRJ_PRP_FLAGS   , 1 ] ) )
-      ::oUI:editSources  :setPlainText( hbide_arrayToMemo( ::stripHeader( ::aPrjProps[ 5 ] ) ) )
+         :editFlags       :setPlainText( hbide_arrayToMemo( ::aPrjProps[ PRJ_PRP_FLAGS   , 1 ] ) )
+         :editSources     :setPlainText( hbide_arrayToMemo( ::stripHeader( ::aPrjProps[ 5 ] ) ) )
 
-      ::oUI:editLaunchParams:setText( ::oProject:launchParams )
-      ::oUI:editLaunchExe:setText( ::oProject:launchProgram )
-      ::oUI:editWrkFolder:setText( ::oProject:wrkDirectory )
+         :editLaunchParams:setText( ::oProject:launchParams )
+         :editLaunchExe   :setText( ::oProject:launchProgram )
+         :editWrkFolder   :setText( ::oProject:wrkDirectory )
 
-      ::oUI:editHbp:setPlainText( "" )
+         :editHbp         :setPlainText( "" )
 
-      ::oUI:oWidget:setWindowTitle( 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' )
+         :oWidget         :setWindowTitle( 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' )
+      ENDWITH
    ENDIF
 
    RETURN Self
@@ -1918,6 +1915,9 @@ CLASS IdeSelectSource
    DATA   aSrc3rd                                 INIT {}
    DATA   aExt                                    INIT {}
 
+   DATA   lOK                                     INIT .F.
+
+   DATA   cHbp                                    INIT ""
    DATA   cType                                   INIT "Executable"
 
    DATA   cGT                                     INIT ""
@@ -1943,9 +1943,10 @@ CLASS IdeSelectSource
    DATA   cM                                      INIT ""
    DATA   cW                                      INIT ""
 
-   METHOD new( cPath )
-   METHOD create( cPath )
+   METHOD new()
+   METHOD create()
    METHOD buildUI()
+   METHOD loadSources( cPathFile )
    METHOD toggleSelection( lSelect )
    METHOD selectSources( cExt )
    METHOD unSelectSources( cExt )
@@ -1954,65 +1955,21 @@ CLASS IdeSelectSource
    ENDCLASS
 
 
-METHOD IdeSelectSource:new( cPath )
-
-   DEFAULT cPath TO ::cPath
-   ::cPath := cPath
-
+METHOD IdeSelectSource:new()
    RETURN Self
 
 
-METHOD IdeSelectSource:create( cPath )
-   LOCAL aDir, a_, cSrc, oItm, nRes, cExt
-   LOCAL aSrc := {}
-
-   DEFAULT cPath TO ::cPath
-   ::cPath := cPath
-
-   aDir := Directory( ::cPath + "*.*" )
-   IF ! Empty( aDir )
-      FOR EACH a_ IN aDir
-         IF a_[ 1 ] == "." .OR. a_[ 1 ] == ".."
-            // Nothing TO do
-         ELSEIF a_[ 5 ] == "D"
-            // later
-         ELSE
-            cExt := Lower( hb_FNameExt( a_[ 1 ] ) )
-            IF ! Empty( cExt ) .AND. cExt $ ".h,.c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp,.ch"
-               AAdd( aSrc, a_[ 1 ] )
-               IF AScan( ::aExt, {|e| e == cExt } ) == 0
-                  AAdd( ::aExt, cExt )
-               ENDIF
-            ENDIF
-         ENDIF
-      NEXT
-   ENDIF
-
-   IF Empty( aSrc )
-      RETURN Self
-   ENDIF
-   ASort( aSrc, , , {|e, f| Lower( hb_FNameExt( e ) ) + Lower( hb_FNameName( e ) ) <  Lower( hb_FNameExt( f ) ) + Lower( hb_FNameName( f ) ) } )
+METHOD IdeSelectSource:create()
+   LOCAL nRes
 
    ::buildUI()
-   WITH OBJECT ::oUI
-      FOR EACH cSrc IN aSrc
-         cExt := Lower( hb_FNameExt( cSrc ) )
-         WITH OBJECT oItm := QTreeWidgetItem()
-            :setFlags( Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsUserCheckable )
-            :setText( 0, cSrc )
-            :setToolTip( 0, hbide_pathNormalized( ::cPath + cSrc ) )
-            ::oUI:treeSources:addTopLevelItem( oItm )
-            :setCheckState( 0, Qt_Checked )
-            IF  ! ( cExt == ".h" ) .AND. ( cExt $ ".hbc,.hbp,.hbm" )
-               :setCheckState( 0, Qt_Unchecked )
-            ENDIF
-         ENDWITH
-      NEXT
 
+   WITH OBJECT ::oUI
       nRes := :oWidget:exec()                     /* Display on the Screen */
 
       IF nRes == 1                                /* Only IF OK is clicked */
          ::pullData()
+         ::lOk := .T.
       ENDIF
 
       :oWidget:setParent( QWidget() )
@@ -2024,6 +1981,7 @@ METHOD IdeSelectSource:create( cPath )
 METHOD IdeSelectSource:pullData()
    LOCAL i, cSrc
 
+   ::cHbp  := ::oUI:editHbp:text()
    ::cType := ::oUI:comboType:currentText()
 
    FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
@@ -2100,23 +2058,83 @@ METHOD IdeSelectSource:unSelectSources( cExt )
    RETURN Self
 
 
-METHOD IdeSelectSource:buildUI()
-   LOCAL cExt
+METHOD IdeSelectSource:loadSources( cPathFile )
+   LOCAL lOk, aDir, aSrc, cSrc, cExt, oItm, a_, cPath
 
+   ::oUI:treeSources:clear()
+   ::oUI:comboSelect:clear()
+   ::oUI:comboUnSelect:clear()
+
+   ::oUI:treeSources:headerItem():setText( 0, "..." )
+
+   ::aExt := {}
+
+   hb_FNameSplit( cPathFile, @cPath )
+
+   lOk := !( " " $ cPathFile ) .AND. Lower( hb_FNameExt( cPathFile ) ) == ".hbp" .AND. ! hb_FileExists( cPathFile ) .AND. hb_DirExists( cPath )
+   ::oUI:btnOK:setEnabled( lOk )
+   IF ! lOk
+      RETURN Self
+   ENDIF
+
+   aSrc := {}
+   aDir := Directory( cPath + "*.*" )
+   IF ! Empty( aDir )
+      FOR EACH a_ IN aDir
+         IF a_[ 1 ] == "." .OR. a_[ 1 ] == ".."
+            // Nothing TO do
+         ELSEIF a_[ 5 ] == "D"
+            // later
+         ELSE
+            cExt := Lower( hb_FNameExt( a_[ 1 ] ) )
+            IF ! Empty( cExt ) .AND. cExt $ ".h,.c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp,.ch"
+               AAdd( aSrc, a_[ 1 ] )
+               IF AScan( ::aExt, {|e| e == cExt } ) == 0
+                  AAdd( ::aExt, cExt )
+               ENDIF
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
+
+   IF Empty( aSrc )
+      RETURN Self
+   ENDIF
+   ASort( aSrc, , , {|e, f| Lower( hb_FNameExt( e ) ) + Lower( hb_FNameName( e ) ) <  Lower( hb_FNameExt( f ) ) + Lower( hb_FNameName( f ) ) } )
+
+   FOR EACH cExt IN ::aExt
+      ::oUI:comboSelect:addItem( cExt )
+      ::oUI:comboUnSelect:addItem( cExt )
+   NEXT
+
+   FOR EACH cSrc IN aSrc
+      cExt := Lower( hb_FNameExt( cSrc ) )
+      WITH OBJECT oItm := QTreeWidgetItem()
+         :setFlags( Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsUserCheckable )
+         :setText( 0, cSrc )
+         :setToolTip( 0, hbide_pathNormalized( cPath + cSrc ) )
+         ::oUI:treeSources:addTopLevelItem( oItm )
+         :setCheckState( 0, Qt_Checked )
+         IF  ! ( cExt == ".h" ) .AND. ( cExt $ ".hbc,.hbp,.hbm" )
+            :setCheckState( 0, Qt_Unchecked )
+         ENDIF
+      ENDWITH
+   NEXT
+
+   ::oUI:treeSources:headerItem():setText( 0, cPath )
+   ::oUI:treeSources:headerItem():setForeGround( 0, QBrush( QColor( 0,0,255 ) ) )
+   ::cPath := cPath
+
+   RETURN Self
+
+
+METHOD IdeSelectSource:buildUI()
 
    WITH OBJECT ::oUI := hbide_getUI( "SelectSources" )
-      :treeSources:headerItem():setText( 0, ::cPath )
-      :checkSelect:setChecked( .T. )
-
       :comboType:addItem( "Executable" )
       :comboType:addItem( "Library" )
       :comboType:addItem( "Dll" )
       :comboType:setCurrentIndex( 0 )
-
-      FOR EACH cExt IN ::aExt
-         :comboSelect:addItem( cExt )
-         :comboUnSelect:addItem( cExt )
-      NEXT
 
       :comboSelect  :connect( "currentIndexChanged(QString)", {|cExt| ::selectSources( cExt ) } )
       :comboUnSelect:connect( "currentIndexChanged(QString)", {|cExt| ::unSelectSources( cExt ) } )
@@ -2143,7 +2161,61 @@ METHOD IdeSelectSource:buildUI()
 
          : setCurrentIndex( 0 )
       ENDWITH
+
+      :btnHbp:setIcon( QIcon( hbide_image( "folder" ) ) )
+
+      :btnHbp:connect( "clicked()", {|| hbide_fetchProject( :editHbp ) } )
+      :editHbp:connect( "textChanged(QString)", {|cPath| ::loadSources( cPath ) } )
+      :editHbp:setText( hbide_getNextProject( hbide_setWorkingProjectFolder() ) )
    ENDWITH
 
    RETURN Self
+
+
+STATIC FUNCTION hbide_getNextProject( cFolder )
+   LOCAL aDir, aPrj
+   LOCAL nNext := 0
+
+   aDir := Directory( cFolder + "prj0*.hbp" )
+   FOR EACH aPrj IN aDir
+       nNext := Max( nNext, Val( SubStr( aPrj[ 1 ], 4, At( ".", aPrj[ 1 ] ) - 4 ) ) )
+   NEXT
+
+   RETURN cFolder + "prj" + StrZero( nNext+1, 5 ) + ".hbp"
+
+
+STATIC FUNCTION hbide_fetchProject( oEditHbp )
+   LOCAL cProjPath, cPath, cName, cExt
+
+   IF ! Empty( cProjPath := hbide_fetchAFile( hbide_setIde():oDlg, "Create a Harbour Project", { { "Project File", ".hbp" } }, oEditHbp:text(), "hbp" ) )
+      hb_FNameSplit( cProjPath, @cPath, @cName, @cExt )
+      hbide_setWorkingProjectFolder( cPath )
+      IF Empty( cExt )
+         cExt := ".hbp"
+      ENDIF
+      cProjPath := cPath + cName + cExt
+      oEditHbp:setText( cProjPath )
+      IF hb_FileExists( cProjPath )
+         Alert( cProjPath + " already exists, provide unique name !" )
+         RETURN NIL
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+STATIC FUNCTION hbide_setWorkingProjectFolder( cFolder )
+   LOCAL l_cFolder
+   STATIC s_cFolder
+
+   IF Empty( s_cFolder )
+      s_cFolder := hb_DirBase() + "projects" + hb_ps()
+   ENDIF
+   l_cFolder := s_cFolder
+   IF HB_ISSTRING( cFolder )
+      s_cFolder := cFolder
+   ENDIF
+
+   RETURN l_cFolder
+
+
 

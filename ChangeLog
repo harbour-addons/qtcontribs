@@ -16,7 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2013-03-22 18:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r191)
+2013-03-23 18:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r193)
+  * hbxbp/filedialog.prg
+    ! A small omission corrected. Now default filename is shown in the 
+       <File:> editi control as selected.
+
+  * hbide/selectsources.ui
+    + Added: few more controls.
+
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+    + Refined: the Project Builder concept. Now no file dialog is opened 
+       to fetch the .hbp filename. Instead, <Select Sources> dialog 
+       shows up <.hbp> edit control and an icon next to it to select 
+       a folder. A default project file name starting with "prj" and 
+       ending with next number of "prjnnnnn.hbp" is shown in last 
+       explored working folder, like, <c:\myprojects\prj00001.hbp>.
+       Next time if a project is created in same folder, 
+       <c:\myprojects\prj00002.hbp> will show up if prj00001.hbp is 
+       still lying there.
+
+       The above feature was pointed out by Massimo.
+
+2013-03-22 18:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r192)
   * hbide/projectpropertiesex.ui
   + hbide/selectsources.ui
   * hbide/hbide.hbp

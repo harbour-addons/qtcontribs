@@ -306,6 +306,7 @@ FUNCTION hbide_fetchAFile( oWnd, cTitle, aFlt, cDftDir, cDftSuffix, lAllowMulti 
    IF HB_ISSTRING( cDftSuffix )
       oDlg:oWidget:setDefaultSuffix( cDftSuffix )
    ENDIF
+   oDlg:oWidget:setOption( QFileDialog_DontUseNativeDialog, .T. )
 
    RETURN oDlg:open( cDftDir, , lAllowMulti )
 
@@ -324,6 +325,7 @@ FUNCTION hbide_saveAFile( oWnd, cTitle, aFlt, cDftFile, cDftSuffix )
    IF HB_ISSTRING( cDftSuffix )
       oDlg:oWidget:setDefaultSuffix( cDftSuffix )
    ENDIF
+   oDlg:oWidget:setOption( QFileDialog_DontUseNativeDialog, .T. )
 
    RETURN oDlg:saveAs( cDftFile, .f., .t. )
 
