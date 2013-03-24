@@ -233,6 +233,7 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD save( lCanClose )
    METHOD updateHbp( iIndex )
    METHOD addSources()
+   METHOD addSourcesToProject( aFiles )
 
    METHOD selectAProject()
    METHOD setCurrentProject( cProjectName )
@@ -940,7 +941,7 @@ METHOD IdeProjManager:addSourceToArray( aSrc, aTgt, cExt )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:buildInterface()
-   LOCAL cLukupPng
+   LOCAL cLukupPng, qDrop
 
    ::oUI := hbide_getUI( "projectpropertiesex" )
 
@@ -986,30 +987,31 @@ METHOD IdeProjManager:buildInterface()
    ::oUI:editSources     :setFont( ::oFont:oWidget )
    ::oUI:editHbp         :setFont( ::oFont:oWidget )
 
-   #if 0
-   ::oUI:editPrjTitle    :setFont( ::oFont:oWidget )
-   ::oUI:editPrjLoctn    :setFont( ::oFont:oWidget )
-   ::oUI:editWrkFolder   :setFont( ::oFont:oWidget )
-   ::oUI:editDstFolder   :setFont( ::oFont:oWidget )
-   ::oUI:editOutName     :setFont( ::oFont:oWidget )
-   ::oUI:editBackup      :setFont( ::oFont:oWidget )
-   ::oUI:editLaunchParams:setFont( ::oFont:oWidget )
-   ::oUI:editLaunchExe   :setFont( ::oFont:oWidget )
-   #endif
+   qDrop := ::oUI:oWidget
 
-   ::oUI:setTabOrder( ::oUI:comboPrjType    , ::oUI:editPrjTitle     )
-   ::oUI:setTabOrder( ::oUI:editPrjTitle    , ::oUI:editPrjLoctn     )
-   ::oUI:setTabOrder( ::oUI:editPrjLoctn    , ::oUI:editOutName      )
-   ::oUI:setTabOrder( ::oUI:editOutName     , ::oUI:checkXhb         )
-   ::oUI:setTabOrder( ::oUI:checkXhb        , ::oUI:checkXpp         )
-   ::oUI:setTabOrder( ::oUI:checkXpp        , ::oUI:checkClp         )
-   ::oUI:setTabOrder( ::oUI:checkClp        , ::oUI:editDstFolder    )
-   ::oUI:setTabOrder( ::oUI:editDstFolder   , ::oUI:editBackup       )
-   ::oUI:setTabOrder( ::oUI:editBackup      , ::oUI:editLaunchParams )
-   ::oUI:setTabOrder( ::oUI:editLaunchParams, ::oUI:editLaunchExe    )
-   ::oUI:setTabOrder( ::oUI:editLaunchExe   , ::oUI:editWrkFolder    )
-   ::oUI:setTabOrder( ::oUI:buttonSaveExit  , ::oUI:buttonSave       )
-   ::oUI:setTabOrder( ::oUI:buttonSave      , ::oUI:buttonCn         )
+   qDrop:setAcceptDrops( .t. )
+   qDrop:connect( QEvent_DragEnter, {|p| p:acceptProposedAction(), .F. } )
+   qDrop:connect( QEvent_DragMove , {|p| p:acceptProposedAction(), .F. } )
+   qDrop:connect( QEvent_Drop     , {|p|
+                                          LOCAL qList, i, qUrl
+                                          LOCAL qMime := p:mimeData()
+                                          LOCAL aFiles := {}
+                                          IF qMime:hasUrls()
+                                             qList := qMime:urls()
+                                             FOR i := 0 TO qList:size() - 1
+                                                qUrl := qList:at( i )
+                                                IF hbide_isCompilerSource( qUrl:toLocalFile() )
+                                                   AAdd( aFiles, qUrl:toLocalFile() )
+                                                ENDIF
+                                             NEXT
+                                             IF ! Empty( aFiles )
+                                                ::addSourcesToProject( aFiles )
+                                             ENDIF
+                                             p:setDropAction( Qt_CopyAction )
+                                             p:accept()
+                                          ENDIF
+                                          RETURN .F.
+                                     } )
 
    RETURN Self
 
@@ -1161,27 +1163,34 @@ METHOD IdeProjManager:moveLine( nDirection )
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeProjManager:addSourcesToProject( aFiles )
+   LOCAL a_, cFile, cHome
+
+   a_:= hbide_memoToArray( ::oUI:editSources:toPlainText() )
+
+   cHome := ::oUI:editPrjLoctn:text()
+   FOR EACH cFile IN aFiles
+      cFile := hbide_prepareSourceForHbp( hbide_stripRoot( cHome, cFile ) )
+      IF ascan( a_, cFile ) == 0
+         aadd( a_, cFile )
+      ENDIF
+   NEXT
+
+   ::oUI:editSources:setPlainText( hbide_arrayToMemo( a_ ) )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeProjManager:addSources()
-   LOCAL aFiles, a_, b_, s, cHome
+   LOCAL aFiles
 
    IF ::isValidProjectLocation( .t. )
-      IF !empty( aFiles := ::oSM:selectSource( "openmany", , , ::oUI:editPrjLoctn:text() ) )
-         a_:= hbide_memoToArray( ::oUI:editSources:toPlainText() )
-
-         b_:={}
-         aeval( aFiles, {|e| aadd( b_, e ) } )
-
-         cHome := ::oUI:editPrjLoctn:text()
-         FOR EACH s IN b_
-            s := hbide_prepareSourceForHbp( hbide_stripRoot( cHome, s ) )
-            IF ascan( a_, s ) == 0
-               aadd( a_, s )
-            ENDIF
-         NEXT
-
-         ::oUI:editSources:setPlainText( hbide_arrayToMemo( a_ ) )
+      IF ! empty( aFiles := ::oSM:selectSource( "openmany", , , ::oUI:editPrjLoctn:text() ) )
+         ::addSourcesToProject( aFiles )
       ENDIF
    ENDIF
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/

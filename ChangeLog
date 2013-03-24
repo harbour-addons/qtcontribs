@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-23 19:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r194)
+  * hbide/projmanager.prg
+    + Implemented: support for drag-and-drop of source files onto 
+       <Project Properties> dialog.
+
 2013-03-23 18:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r193)
   * hbxbp/filedialog.prg
     ! A small omission corrected. Now default filename is shown in the 
