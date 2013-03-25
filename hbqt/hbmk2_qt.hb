@@ -684,12 +684,18 @@ STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
             n := At( "->", cText )
             cNam := AllTrim( SubStr( cText, 1, n - 1 ) )
             cCmd := hbqtui_formatCommand( SubStr( cText, n + 2 ), .T., aWidgets )
+
+            cCmd := hbqtui_setObjects( cCmd, aWidgets )  /*---*/
+
             AAdd( aCommands, { cNam, hbqtui_pullTranslate( cCmd ) } )
 
          ELSEIF ! Empty( cText := hbqtui_pullText( aLines, s:__enumIndex() ) )
             n := At( "->", cText )
             cNam := AllTrim( SubStr( cText, 1, n - 1 ) )
             cCmd := hbqtui_formatCommand( SubStr( cText, n + 2 ), .T., aWidgets )
+
+            cCmd := hbqtui_setObjects( cCmd, aWidgets )  /*---*/
+
             AAdd( aCommands, { cNam, hbqtui_pullTranslate( cCmd ) } )
 
          ELSEIF hbqtui_isValidCmdLine( s ) .AND. !( "->" $ s ) .AND. ( ( n := At( ".", s ) ) > 0  )  /* Assignment to objects on stack */
@@ -834,16 +840,19 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
          cCmd := "setShortcut(QKeySequence(" + SubStr( cCmd, 13, Len( cCmd ) - 12 ) + ")"
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + cCmd )
 
-      ELSEIF "header()->" $ cCmd
-         /* TODO: how to handle : __qtreeviewitem->header()->setVisible( .F. ) */
       ELSEIF cCmd == "pPtr"
          /* Nothing TO DO */
+
       ELSE
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_hashToObj( cCmd ) )
+         cCmd := hbqtui_hashToObj( hbqtui_setObjects( cCmd, aWidgets ) )
+         cCmd := StrTran( cCmd, "->", ":" )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + cCmd )
 
       ENDIF
    NEXT
    AAdd( aLinesPRG, "" )
+   // One more pass, needed FOR 5.0.1
+   AEval( aLinesPRG, {|e,i| aLinesPRG[ i ] := StrTran( e, "->", ":" ) }  )
 
    FOR EACH item IN aWidgets
       IF item[ 1 ] == "QAction"
@@ -987,20 +996,6 @@ STATIC FUNCTION hbqtui_pullTranslate( cCmd )
          cEnd := SubStr( cArgs, n4 )    /* "QApplication_CodecForTr" */
       ELSE    /* > 5.0.0 */
          cEnd := "NIL"
-#if 0
-      ELSE
-         oError := ErrorNew()
-         oError:severity    := ES_ERROR
-         oError:genCode     := EG_ARG
-         oError:subSystem   := "HBMK2_PLUGIN_HBQT"
-         oError:subCode     := 1001
-         oError:canRetry    := .F.
-         oError:canDefault  := .F.
-         oError:Args        := cCmd
-         oError:operation   := ProcName()
-         oError:Description := "Unsupported QT-encoding in QApplication:translate() call"
-         Eval( ErrorBlock(), oError )
-#endif
       ENDIF
 
       IF cEnd != "NIL" // ! Empty( cEnd )

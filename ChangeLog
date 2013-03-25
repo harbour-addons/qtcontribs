@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-25 13:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r195)
+  * hbqt/hbmk2_qt.hb
+    ! Fixed: to honor a newly introduced construct in .ui to .cpp conversion.
+    % Optimized: the other code, a by-process of above fix.
+
 2013-03-23 19:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r194)
   * hbide/projmanager.prg
     + Implemented: support for drag-and-drop of source files onto 
