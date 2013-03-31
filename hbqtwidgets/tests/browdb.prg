@@ -127,6 +127,7 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:statusMessage       := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
    oBrowse:editBlock           := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }
    oBrowse:searchBlock         := {|xValue,nMode,oBrw| LookMySearch( xValue,nMode,oBrw ) }
+   oBrowse:searchExBlock       := {|xValue,nMode,oBrw| LookMyExSearch( xValue,nMode,oBrw ) }
    oBrowse:helpBlock           := {|| { { "Hi","This is HbQtBrowse!" }, 0 } }
    oBrowse:navigationBlock     := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
 
@@ -142,7 +143,7 @@ STATIC FUNCTION BrowseMe( oWnd )
 
 
 STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
-   LOCAL xResult, i, nRec
+   LOCAL xResult, i, nRec, oCol
    LOCAL lHandelled := .T.
 
    HB_SYMBOL_UNUSED( xData )
@@ -215,19 +216,27 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
          oBrowse:refreshAll()
       ENDIF
 
-   CASE nKey > 32 .AND. nKey <= 127
-      IF oBrowse:getColumn( oBrowse:colPos ):heading == "Last Name"
-         xResult := oBrowse:editCell( "@K ", , , , nKey )
-      ELSE
-         xResult := oBrowse:editCell( , , , , nKey )
-      ENDIF
+   CASE nKey >= 32 .AND. nKey <= 127
+      oCol := oBrowse:getColumn( oBrowse:colPos )
+      IF oCol:heading == "Last Name"
+         oBrowse:searchEx( Chr( nKey ) )
 
-      IF xResult != NIL
-         IF dbRLock()
-            ReplaceField( oBrowse, oBrowse:colPos, xResult )
-            dbCommit()
-            dbRUnlock()
-            oBrowse:Right()
+      ELSE
+         oBrowse:searchEx()   /* Deactivate previous search */
+
+         IF oCol:heading != "Last Name"
+            xResult := oBrowse:editCell( "@K ", , , , nKey )
+         ELSE
+            xResult := oBrowse:editCell( , , , , nKey )
+         ENDIF
+
+         IF xResult != NIL
+            IF dbRLock()
+               ReplaceField( oBrowse, oBrowse:colPos, xResult )
+               dbCommit()
+               dbRUnlock()
+               oBrowse:Right()
+            ENDIF
          ENDIF
       ENDIF
 
@@ -281,6 +290,24 @@ STATIC FUNCTION SaveMyRecord( aMod,aData,oBrw )
    ENDIF
 
    RETURN .T.
+
+
+/* Will be called by HbQtBrowse if it has been assigned and initiated */
+STATIC FUNCTION LookMyExSearch( xValue,nMode,oBrw )
+   LOCAL nRec
+
+   HB_SYMBOL_UNUSED( nMode )
+
+   IF IndexOrd() == 1
+      nRec := RecNo()
+      IF ! dbSeek( xValue )
+         dbGoto( nRec )
+      ELSE
+         oBrw:refreshAll()
+      ENDIF
+   ENDIF
+
+   RETURN NIL
 
 
 STATIC FUNCTION LookMySearch( xValue,nMode,oBrw )

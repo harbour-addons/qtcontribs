@@ -193,6 +193,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD print( cPrinter, lOpenPrintDialog )
    METHOD help( xInfo, nTimeout )
    METHOD searchBlock( bBlock )                   SETGET
+   METHOD searchExBlock( bBlock )                 SETGET
+   METHOD searchEx( xValue )
    METHOD contextMenuBlock( bBlock )              SETGET
    ACCESS toolbar                                 INLINE ::oToolBar:isVisible()
    ASSIGN toolbar                                 METHOD manageToolbar
@@ -345,6 +347,7 @@ PROTECTED:
    DATA   bGotoBlock                              INIT NIL
    DATA   bNavigationBlock                        INIT NIL
    DATA   bSearchBlock                            INIT NIL
+   DATA   bSearchExBlock                          INIT NIL
    DATA   bEditBlock                              INIT NIL
    DATA   bFirstPosBlock                          INIT NIL
    DATA   bLastPosBlock                           INIT NIL
@@ -573,13 +576,14 @@ METHOD HbQtBrowse:create()
 
    WITH OBJECT ::oSearchLabel := QLabel()
       :setText( "" )
+      :setAlignment( Qt_AlignHCenter )
       :setFont( ::oFont )
-      :setStyleSheet( "margin-left: 5px; margin-right: 5px; color: red;" )
+      :setStyleSheet( "background-color: blue; color: white;" )
+      :hide()
    ENDWITH
    WITH OBJECT ::oStatusBar := QStatusBar( ::oWidget )
       :setFont( ::oFont )
       :setSizeGripEnabled( .F. )
-      :addPermanentWidget( ::oSearchLabel )
       :hide()
    ENDWITH
    WITH OBJECT ::oIndicator := QLabel( ::oWidget )
@@ -609,6 +613,7 @@ METHOD HbQtBrowse:create()
 
       :addWidget( ::oVScrollBar     , 2, 3, 2, 1 )
       :addWidget( ::oStatusBar      , 5, 0, 1, 4 )
+      :addWidget( ::oSearchLabel    , 6, 0, 1, 4 )
    ENDWITH
 
    ::connect()
@@ -1235,11 +1240,28 @@ METHOD HbQtBrowse:manageMouseRelease( oMouseEvent )
 METHOD HbQtBrowse:manageKeyPress( oEvent )
 
    LOCAL lHandelled := .F.
-   LOCAL nKey
+   LOCAL nKey, cText
 
    ::stopAllTimers()
 
    nKey := hbqt_qtEventToHbEvent( oEvent )
+
+   IF ::oSearchLabel:isVisible() .AND. ( ( nKey >= 32 .AND. nKey <= 127 ) .OR. nKey == K_BS .OR. nKey == K_ENTER )
+      IF nKey == K_ENTER
+         ::oSearchLabel:hide()
+      ELSE
+         IF nKey == K_BS
+            cText := SubStr( ::oSearchLabel:text(), 1, Len( ::oSearchLabel:text() ) - 1 )
+         ELSE
+            cText := ::oSearchLabel:text() + Chr( nKey )
+         ENDIF
+         ::oSearchLabel:setText( cText )
+         IF HB_ISBLOCK( ::searchExBlock )
+            Eval( ::searchExBlock, cText, NIL, Self )
+         ENDIF
+         RETURN .T.
+      ENDIF
+   ENDIF
 
    IF nKey == K_CTRL_C                            /* Copy Selection */
       ::copySelectionToClipboard()
@@ -1904,6 +1926,12 @@ METHOD HbQtBrowse:searchBlock( bBlock )
       ::bSearchBlock := __eInstVar53( Self, "SEARCHBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bSearchBlock
+
+METHOD HbQtBrowse:searchExBlock( bBlock )
+   IF HB_ISBLOCK( bBlock )
+      ::bSearchExBlock := __eInstVar53( Self, "SEARCHEXBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bSearchExBlock
 
 METHOD HbQtBrowse:helpBlock( bBlock )
    IF bBlock != NIL
@@ -2763,6 +2791,19 @@ METHOD HbQtBrowse:mangageEditorKeyPress( oKeyEvent )
    RETURN .F.
 
 
+METHOD HbQtBrowse:searchEx( xValue )
+
+   IF xValue == NIL                        /* Deactivate */
+      ::oSearchLabel:setText( "" )
+      ::oSearchLabel:hide()
+   ELSEIF HB_ISCHAR( xValue ) .AND. HB_ISBLOCK( ::bSearchExBlock )
+      ::oSearchLabel:setText( iif( HB_ISCHAR( xValue ), xValue, iif( HB_ISNUMERIC( xValue ), Chr( xValue ), "" ) ) )
+      ::oSearchLabel:show()
+      Eval( ::bSearchExBlock, ::oSearchLabel:text(), NIL, Self )
+   ENDIF
+
+   RETURN Self
+
 METHOD HbQtBrowse:search( xValue, cPicture, nMode )
    LOCAL oCol := ::getColumn( ::colPos )
    LOCAL GetList := {} , SayList := {}, oDlg
@@ -3075,6 +3116,7 @@ METHOD HbQtBrowse:buildActions()
       :setIcon( QIcon( __hbqtImage( "select-column" ) ) )
       :setPopupMode( QToolButton_MenuButtonPopup )
       :setMenu( ::oColumnsMenu )
+      :setFocusPolicy( Qt_NoFocus )
    ENDWITH
    WITH OBJECT ::oActToColumn := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oColumnsButton )
@@ -3097,6 +3139,7 @@ METHOD HbQtBrowse:buildActions()
       :setIcon( QIcon( __hbqtImage( "sort" ) ) )
       :setPopupMode( QToolButton_MenuButtonPopup )
       :setMenu( ::oIndexMenu )
+      :setFocusPolicy( Qt_NoFocus )
    ENDWITH
    WITH OBJECT ::oActIndexes := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oIndexButton )
@@ -3263,6 +3306,7 @@ METHOD HbQtBrowse:buildActions()
       :setPopupMode( QToolButton_MenuButtonPopup )
       :setMenu( ::oAddColumnsMenu )
       :connect( "clicked()", {|| ::addAColumn() } )
+      :setFocusPolicy( Qt_NoFocus )
    ENDWITH
    WITH OBJECT ::oActAddColumn := QWidgetAction( ::oWidget )
       :setDefaultWidget( ::oAddColumnsButton )

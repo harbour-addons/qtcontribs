@@ -260,6 +260,7 @@ CLASS HbQtDBU
    METHOD ordName( cAlias, nOrder )
    METHOD indexKey( cAlias, nOrder )
    METHOD indexKeyValue( cAlias, nOrder )
+   METHOD indexKeyType( cAlias, nOrder )
    METHOD refreshAll( cAlias )
    METHOD getIndexInfo( cAlias )
    METHOD setIndex( cAlias, cIndex )
@@ -2209,6 +2210,13 @@ METHOD HbQtDBU:indexKeyValue( cAlias, nOrder )
    ENDIF
    RETURN NIL
 
+METHOD HbQtDBU:indexKeyType( cAlias, nOrder )
+   LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
+   IF ! Empty( oMdiBrowse )
+      RETURN oMdiBrowse:indexKeyType( nOrder )
+   ENDIF
+   RETURN NIL
+
 METHOD HbQtDBU:refreshAll( cAlias )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
@@ -2706,6 +2714,7 @@ CLASS HbQtMdiBrowser
    METHOD ordName( nOrder )
    METHOD indexKey( nOrder )
    METHOD indexKeyValue( nOrder )
+   METHOD indexKeyType( nOrder )
    METHOD refreshAll()
    METHOD getIndexInfo()
    METHOD setIndex( cIndex )
@@ -3764,6 +3773,16 @@ METHOD HbQtMdiBrowser:indexKeyValue( nOrder )
    ENDIF
 
    RETURN xValue
+
+
+METHOD HbQtMdiBrowser:indexKeyType( nOrder )
+   LOCAL xValue
+
+   IF ::nType == BRW_TYPE_DBF
+      xValue := ( ::cAlias )->( &( ::indexKey( nOrder ) ) )
+   ENDIF
+
+   RETURN ValType( xValue )
 
 
 METHOD HbQtMdiBrowser:indexKey( nOrder )

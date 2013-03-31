@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-03-31 03:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r196)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: METHOD searchExBlock( bBlock )
+                   METHOD searchEx( cValue )
+       When activated, a blue colored label will show up at the bottom 
+       of the browser displaying search string in white.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Added: METHOD indexKeyType() -> cType
+
+  * hbqtwidgets/tests/browdb.prg
+    + Added code to demoonstrate how oHbQtBrowse:searchExBlock() works.
+
+  * hbdbu/dbu.prg
+    + Implemented: searching feature in HbDBU as per above implementation.
+       Now, if an index is active on the browser, then pressing any printable
+       key will start an incremental search, pressing ENTER will terminate 
+       search, pressing K_BS will allow to alter the search string. 
+
+       This implementation is a non-blocking operation, means, all other 
+       features of the browser are still active while search is being 
+       performed. This facilitates to develop look-up browsers without which 
+       we cannot imagine to port our Clipper code.
+
+    NEXT: HbQtBrowse to be encapsulated in a title-bar less modal dialog 
+          to present a truely look-up browsers taking use of the above 
+          search implementation, stay tuned.
+
 2013-03-25 13:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r195)
   * hbqt/hbmk2_qt.hb
     ! Fixed: to honor a newly introduced construct in .ui to .cpp conversion.

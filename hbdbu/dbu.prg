@@ -153,6 +153,7 @@ CREATE CLASS DbuMGR
    METHOD fetchDbuData()
    METHOD saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
    METHOD manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
+   METHOD manageExSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
    METHOD handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    METHOD getSearchValue( oMdiBrowse, xValue )
    METHOD helpInfo()
@@ -490,7 +491,7 @@ METHOD DbuMGR:saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
       IF ! Empty( cTable )
          nConxn := CacheSetConnection( ::hConxns[ cConxn + "_Connection" ] )
          IF CacheExistTable( cTable )
-            IF Alert( { cTable + ", already exists!", "DO you want to overwrite it ?" }, { "No", "Yes" }, , , "WARNING : Table could be Overwritten" ) == 2
+            IF Alert( { cTable + ", already exists!", "Do you want to overwrite it ?" }, { "No", "Yes" }, , , "WARNING : Table could be Overwritten" ) == 2
                IF GetCreateTablePass()
                   CacheDropTable( cTable )
                   lCreate := .T.
@@ -647,6 +648,7 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
       :statusbar           := .F.
       :editBlock           := {|aMod,aData,oBrw  | ::saveRecord( aMod, aData, oBrw, oMdiBrowse )     }
       :searchBlock         := {|xValue,nMode,oBrw| ::manageSearch( xValue, nMode, oBrw, oMdiBrowse ) }
+      :searchExBlock       := {|xValue,nMode,oBrw| ::manageExSearch( xValue, nMode, oBrw, oMdiBrowse ) }
       :navigationBlock     := {|nKey,xData,oBrw  | ::handleOptions( nKey, xData, oBrw, oMdiBrowse, oDbu )  }
       :helpBlock           := {|                 | { ::helpInfo(), 0 } }
       :contextMenuBlock    := {|aPos             | ::manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu ) }
@@ -688,6 +690,31 @@ METHOD DbuMGR:saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
    ENDIF
 
    RETURN .T.
+
+
+METHOD DbuMGR:manageExSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
+   LOCAL nRec
+
+   HB_SYMBOL_UNUSED( nMode )
+
+   IF oMdiBrowse:indexOrd() > 0
+      nRec := ( oMdiBrowse:alias() )->( RecNo() )
+
+      SWITCH oMdiBrowse:indexKeyType()
+      CASE "C" ; xValue := xValue                 ; EXIT
+      CASE "N" ; xValue := Val( xValue )          ; EXIT
+      CASE "D" ; xValue := CToD( xValue )         ; EXIT
+      CASE "L" ; xValue := Lower( xValue ) $ "ty" ; EXIT
+      ENDSWITCH
+
+      IF ! ( oMdiBrowse:alias() )->( dbSeek( xValue ) )
+         ( oMdiBrowse:alias() )->( dbGoto( nRec ) )
+      ELSE
+         oHbQtBrowse:refreshAll()
+      ENDIF
+   ENDIF
+
+   RETURN NIL
 
 METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
@@ -870,6 +897,9 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
 
    CASE nKey == K_CTRL_F1
       oHbQtBrowse:search( NIL, NIL, HBQTBRW_SEARCH_BYFIELD )
+
+   CASE nKey >= 32 .AND. nKey <= 127 .AND. oMdiBrowse:indexOrd() > 0
+      oHbQtBrowse:searchEx( Chr( nKey ) )
 
    OTHERWISE
       lHandelled := .F.
