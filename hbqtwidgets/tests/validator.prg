@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2013 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  */
 
@@ -85,8 +85,13 @@ STATIC FUNCTION Clipper( oMain )
 
 STATIC FUNCTION NoParentPureClipper( oMain )
    LOCAL GetList, SayList
+   LOCAL aAttrbs := {}
 
    HB_SYMBOL_UNUSED( oMain )
+
+   /* Set some of the attributes of GETs window */
+   AAdd( aAttrbs, { _QGET_ATTRB_SETMODE  , { 21,73 } } )
+   AAdd( aAttrbs, { _QGET_ATTRB_RESIZABLE, .F.       } )
 
    /* Harbour Standard Settings */
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
@@ -94,7 +99,7 @@ STATIC FUNCTION NoParentPureClipper( oMain )
    /* Actually Initiate the READ */
    FetchGets( @GetList, @SayList )
 
-   READ PROPERTIES {|oWnd, oGetList| SetFormProperties( oWnd, oGetList ) }
+   READ PROPERTIES {|oWnd, oGetList| SetFormProperties( oWnd, oGetList ) } ATTRIBUTES aAttrbs
 
    RETURN NIL
 
@@ -393,10 +398,10 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    @  3, 60 GET val[3]
 
    @  5, 52 SAY "Deptt:"
-   @  5, 60, 5, 69 GET cDeptt COMBOBOX aDeptt VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:varGet() ), .T. }
+   @  5, 60, 5, 69 GET cDeptt COMBOBOX aDeptt VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, cDeptt, oGet:varGet() ), .T. }
 
    @  7, 52 SAY "Salary:"
-   @  7, 60 GET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+   @  7, 60 GET nSlry PICTURE "@E 99,999" WHEN {|| HB_TRACE( HB_TR_ALWAYS, cDeptt ), .T. } VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
    @  9, 48 SAY "Done:"
    @  9, 54 GET lDone CHECKBOX

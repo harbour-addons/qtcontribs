@@ -16,6 +16,97 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-03 16:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r197)
+  * hbqtwidgets/hbqtstd.ch
+    + QREAD ... ATTRIBUTES <aAttrbs>
+    + #define _QSET_EDITSPADDING
+    + #command QSET EDITSPADDING [TO] <nPadds>
+    
+  * hbqtwidgets/getlist.prg
+    + Added: ATTRIBUTES clause to QREAD : QREAD ... ATTRIBUTES <aAttrbs>
+       <aAttrbs> is a two dimentional array. First element will be one 
+       of the following constants and the second its value:
+
+          _QGET_ATTRB_SETMODE    { 25, 80 }  Defaults to NIL
+          _QGET_ATTRB_RESIZABLE  .T. | .F.   Defaults to .T.
+
+       _QGET_ATTRB_SETMODE will instruct the GET engine to resize the 
+       window per rows and columns as would a normal GT window does.
+
+       _QGET_ATTRB_RESIZABLE will allow you to fine tune user behavior,
+       as to if he/she can resize the form window.
+
+       These two attributes are applied only in case if QREAD is  
+       called __WITHOUT__ <GetParent>, i.e., like Clipper GT.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: a title-bar-less modal dialog to host a HbQtBrowse()
+       object mainly usable for lookup browsers. This has been achieved for 
+       Clipper like data-entry windows respecting 
+       <nTop>,<nLeft>,<nBottom>,<nRight> coordinates of TBrowse(). 
+       
+       You only need to pass <lOnTop> == TRUE to activate it as below:
+
+          oBrowse := HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )
+            =>
+          oBrowse := HbQtBrowseNew( 10, 10, 20, 70, oDataEntryWindow, NIL, .T. )
+          // Configure the browse, add columns, define various blocks, etc.
+          oBrowse:execute()
+
+       Terminating the browser will be initiated from oBrowse:navigationBlock() 
+       depending upon the application's needs as: 
+          IF nKey == K_ESC
+             oBrowse:terminate()
+          ELSEIF nKey == K_ENTER
+             // Retieve the current record's info to be used elsewhere.
+             oBrowse:terminate()
+          ELSE ...
+
+       In real-time scenario, like in Clipper, the complete sequence will be like:
+
+          FUNCTION Main()
+
+             SetKey( K_F2, {|| MySelectionBrowser() } )
+             @ 12, 10 SAY "This" GET cText
+             @ 13, 10 SAY "That" GET cOtherText
+
+             READ
+             SetKey( K_F2, NIL )
+
+             RETURN NIL 
+
+          FUNCTION MySelectionBrowser()
+             LOCAL oBrowse
+
+             oBrowse := HbQtBrowseNew( 10, 10, 20, 70, GetActive():parent(), NIL, .T. )
+             WITH OBJECT oBrowse
+                // other blocks
+                :navigationBlock := {|...| NavigateMe( ... ) }
+             ENDWITH 
+
+             oBrowse:execute()
+
+             RETURN NIL
+
+          FUNCTION NavigateMe( nKey, , oBrowse )
+            
+             SWITCH nKey
+             CASE K_ESC   ; oBrowse:terminate() ; RETURN .T.
+             CASE K_ENTER ; // Pull Record Info */ ; oBrowse:terminate() ; RETURN .T.
+             CASE ...
+             ENDSWITCH
+
+             RETURN .F.
+ 
+  * hbqtwidgets/tests/pureclip.prg
+    + Added: code to demonstrate how a lookup browser can be implemented and used.
+       Press F2 to activate lookup browser. If you will be inside first get, 
+       pressing ENTER on the lookup browser will put the value of second field 
+       of browser in the GET.
+
+  * hbqtwidgets/tests/validator.prg
+    + Added: code to demonstrate the use of QREAD ... ATTRIBUTES
+
 2013-03-31 03:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r196)
   * hbqtwidgets/hbqtbrowse.prg
     + Implemented: METHOD searchExBlock( bBlock )

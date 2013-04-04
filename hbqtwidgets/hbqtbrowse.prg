@@ -116,8 +116,41 @@ STATIC FUNCTION _SKIP_RESULT( xResult )
    RETURN iif( HB_ISNUMERIC( xResult ), Int( xResult ), 0 )
 
 
-FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont )
-   RETURN HbQtBrowse():new( nTop, nLeft, nBottom, nRight, oParent, oFont )
+FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )
+   LOCAL oDlg, oLay, oBrw, nX, nY, nW, nH, oFM, nOH, oPos
+
+   __defaultNIL( @lOnTop, .F. )
+
+   IF lOnTop
+      oFM  := QFontMetrics( oParent:font() )
+      nX   := ( oFM:averageCharWidth() * nLeft ) + 6
+      nOH  := oFM:height() + HbQtSet( _QSET_LINESPACING ) + HbQtSet( _QSET_EDITSPADDING )
+      nY   := nOH * nTop
+      nW   := ( nRight - nLeft + 1 ) * oFM:averageCharWidth()
+      nH   := ( nBottom - nTop + 1 ) * nOH
+
+      oPos := oParent:mapToGlobal( QPoint( nX, nY ) )
+      nX   := oPos:x()
+      nY   := oPos:y()
+
+      WITH OBJECT oDlg := QDialog( oParent )
+         :setWindowFlags( Qt_Dialog + Qt_CustomizeWindowHint )
+         :move( nX, nY )
+         :resize( nW, nH )
+         :connect( QEvent_Close, {|| oDlg:setParent( QWidget() ) } )
+         :connect( QEvent_Show , {|| oDlg:move( nX - ( ( oDlg:frameGeometry():width() - oDlg:geometry():width()   ) / 2 ), ;
+                                                nY - ( ( oDlg:frameGeometry():height() - oDlg:geometry():height() ) / 2 ) ) } )
+      ENDWITH
+
+      oLay := QVBoxLayout( oDlg )
+      oLay:setContentsMargins( 0,0,0,0 )
+      oBrw := HbQtBrowse():new( nTop, nLeft, nBottom, nRight, oDlg, oFont )
+      oLay:addWidget( oBrw:oWidget )
+   ELSE
+      oBrw := HbQtBrowse():new( nTop, nLeft, nBottom, nRight, oParent, oFont )
+   ENDIF
+
+   RETURN oBrw
 
 
 CLASS HbQtBrowse INHERIT TBrowse
@@ -233,6 +266,10 @@ CLASS HbQtBrowse INHERIT TBrowse
 
    METHOD dispFrames()                            // display TBrowse border, columns' headings, footings and separators
    METHOD dispRow( nRow )                         // display TBrowse data
+
+   METHOD execute()                               INLINE iif( __objGetClsName( ::oParent ) == "QDIALOG", ::oParent:exec(), NIL )
+   METHOD terminate()                             INLINE ::oParent:close()
+   METHOD getParent()                             INLINE ::oParent
 
 PROTECTED:
 

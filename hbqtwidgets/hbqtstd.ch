@@ -79,6 +79,9 @@
    #define _QGET_PROPERTIES                       16
    #define _QGET_SAYPROPERTIES                    17
 
+   /* Additiona parameters for GETs window - QREAD ... ATTRIBUTES <aAttribs> */
+   #define _QGET_ATTRB_SETMODE                    1        /* SetMode() Equivalent Array - { nRows, nColumns } */
+   #define _QGET_ATTRB_RESIZABLE                  2        /* Logical to flag if window is resizable . Default is TRUE */
 
    /* Constants for _QGET_DATA array elements */
    #define _QDATA_LISTBOX_ITEMS                   1
@@ -94,11 +97,13 @@
    #define _QSET_GETSFONT                         1
    #define _QSET_LINESPACING                      2
    #define _QSET_NOMOUSABLE                       3
+   #define _QSET_EDITSPADDING                     4
 
 
-   #command QSET GETSFONT [TO] <oFont>            =>   HbQtSet( _QSET_GETSFONT   , <oFont>   )
-   #command QSET LINESPACING [TO] <nPixels>       =>   HbQtSet( _QSET_LINESPACING, <nPixels> )
-   #command QSET NOMOUSABLE [TO] <lMouse>         =>   HbQtSet( _QSET_NOMOUSABLE , <lMouse>  )
+   #command QSET GETSFONT [TO] <oFont>            =>   HbQtSet( _QSET_GETSFONT    , <oFont>   )
+   #command QSET LINESPACING [TO] <nPixels>       =>   HbQtSet( _QSET_LINESPACING , <nPixels> )
+   #command QSET NOMOUSABLE [TO] <lMouse>         =>   HbQtSet( _QSET_NOMOUSABLE  , <lMouse>  )
+   #command QSET EDITSPADDING [TO] <nPadds>       =>   HbQtSet( _QSET_EDITSPADDING, <nPadds>  )
 
 
    #command @ <row>, <col> QSAY <exp> [PICTURE <pic>] [COLOR <clr>] [ PROPERTIES <props> ] => ;
@@ -217,8 +222,9 @@
                   [ PROPERTIES <prop>      ] ;
                   [ LASTGETBLOCK <bLast>   ] ;
                   [ <nofous:NOFOCUSFRAME>  ] ;
+                  [ ATTRIBUTES <aAttrbs>   ] ;
                         => ;
-         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}>, <.nofous.> )
+         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}>, <.nofous.>, <aAttrbs> )
 
 
 #endif

@@ -12,6 +12,8 @@
 
 #include "set.ch"
 #include "hbqtstd.ch"
+#include "inkey.ch"
+
 #include "hbtrace.ch"
 
 
@@ -98,6 +100,8 @@ FUNCTION Main()
    @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
                                                         iif( v == 1, GetActive():parent():close(), NIL ) }
 
+   SetKey( K_F2, {|| BrowseArray( GetActive():parent() ) } )
+
    READ PROPERTIES {|oWnd,oGetList| SetFormProperties( oWnd, oGetList ) }
 
    QApplication():exec()
@@ -153,6 +157,248 @@ STATIC FUNCTION SetControlProp( oGet, oControl, cProp, xValue )
       oControl:setToolTip( xValue )
       EXIT
    ENDSWITCH
+
+   RETURN NIL
+
+
+STATIC FUNCTION BrowseArray( oMain )
+
+   LOCAL oBrowse
+   LOCAL aTest0  := { "This", "is", "a", "browse", "on", "an", "array", "test", "with", "a", "long", "data" }
+   LOCAL aTest1  := { 1, 2, 3, 4, 5, 6, 7, 8, 10000, - 1000, 54, 456342 }
+   LOCAL aTest2  := { Date(), Date() + 4, Date() + 56, Date() + 14, Date() + 5, Date() + 6, Date() + 7, Date() + 8, Date() + 10000, Date() - 1000, Date() - 54, Date() + 456342 }
+   LOCAL aTest3  := { .T., .F., .T., .T., .F., .F., .T., .F., .T., .T., .F., .F. }
+   LOCAL n       := 1
+
+   oBrowse := HbQtBrowseNew( 10, 25, 17, 70, oMain, QFont( "Courier New", 10 ), .T. )
+   oBrowse:colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
+
+   oBrowse:GoTopBlock    := {|| n := 1 }
+   oBrowse:GoBottomBlock := {|| n := Len( aTest0 ) }
+   oBrowse:SkipBlock     := {| nSkip, nPos | nPos := n, ;
+                                 n := iif( nSkip > 0, Min( Len( aTest0 ), n + nSkip ), ;
+                                    Max( 1, n + nSkip ) ), n - nPos }
+
+   oBrowse:AddColumn( HbQtColumnNew( "First",  {|| n } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Second", {|x| iif( x == NIL, aTest0[ n ], aTest0[ n ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Third",  {|x| iif( x == NIL, aTest1[ n ], aTest1[ n ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Forth",  {|x| iif( x == NIL, aTest2[ n ], aTest2[ n ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Fifth",  {|x| iif( x == NIL, aTest3[ n ], aTest3[ n ] := x ) } ) )
+
+   oBrowse:GetColumn( 2 ):Picture    := "@!"
+
+   oBrowse:GetColumn( 3 ):Picture    := "999,999.99"
+   oBrowse:GetColumn( 3 ):postBlock  := {|| GetActive():varGet() > 700 }
+   oBrowse:GetColumn( 3 ):colorBlock := {|nVal| iif( nVal < 0, {3,2}, iif( nVal > 500, {4,2}, {1,2} ) ) }
+
+   /* TBrowse will call this METHOD when ready TO save edited row. Block must receive 4 parameters and must RETURN true/false */
+   oBrowse:editBlock   := {|aModified, aData, oBrw| SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTest3, n ) }
+   oBrowse:searchBlock := {|xSearch, nColPos, oBrw| SearchMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3, @n ) }
+   oBrowse:searchExBlock := {|xSearch, nColPos, oBrw| SearchExMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3, @n ) }
+
+   /* needed since I've changed some columns _after_ I've added them to TBrowse object */
+   oBrowse:Configure()
+   oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw )  }
+
+   /* Freeze first column TO the left */
+   oBrowse:freeze := 1
+
+   oBrowse:editEnabled   := .F.                       /* User must not be able to edit via edit button */
+
+   oBrowse:execute()
+
+   RETURN NIL
+
+
+STATIC FUNCTION navigate( nKey, xData, oBrowse )
+   LOCAL lHandelled := .T.
+   LOCAL i, xResult
+
+   HB_SYMBOL_UNUSED( xData )
+
+   oBrowse:statusMessage := DToC( Date() ) + " | " + Time() + " | " + hb_ntos( oBrowse:colPos )
+
+   IF nKey == K_RIGHT .OR. nKey == K_LEFT .OR. nKey == K_END .OR. nKey == K_HOME
+      oBrowse:searchEx()
+   ENDIF
+
+   DO CASE
+   CASE nKey == K_ENTER
+      IF ! Empty( GetActive() ) .AND. Upper( GetActive():name() ) == "CTEXT"
+         GetActive():varPut( Eval( oBrowse:getColumn( 2 ):block ) )
+         GetActive():display()
+      ENDIF
+      oBrowse:terminate()             /* Here we need TO inform which record is selected and appln acts accordingly */
+
+   CASE nKey == K_ESC
+      oBrowse:terminate()             /* Here appln should act OTHERWISE */
+
+   CASE nKey == K_CTRL_F
+      oBrowse:search()
+
+   CASE nKey == K_F4
+      oBrowse:rFreeze++
+   CASE nKey == K_F5
+      oBrowse:rFreeze--
+
+   CASE nKey == K_F6
+      oBrowse:freeze++
+   CASE nKey == K_F7
+      oBrowse:freeze--
+
+   CASE nKey == K_F8
+      oBrowse:moveLeft()               /* HbQt Entention */
+
+   CASE nKey == K_F9
+      oBrowse:moveRight()              /* HbQt Entention */
+
+   CASE nKey == K_F10
+      oBrowse:moveHome()               /* HbQt Entention */
+
+   CASE nKey == K_F11
+      oBrowse:moveEnd()                /* HbQt Entention */
+
+   CASE nKey == K_F12
+      oBrowse:edit( "Update Info", .T., .T. )  /* Even IF :editable is OFF, still application code can initiate it */
+
+   CASE nKey == K_SH_F12
+      oBrowse:panHome()
+      FOR i := 1 TO oBrowse:colCount
+         xResult := oBrowse:editCell()  /* HbQt Entention */
+         IF xResult == NIL
+            EXIT                        /* Sure ESCape is pressed */
+         ENDIF
+         IF i < oBrowse:colCount
+            oBrowse:Right()
+         ENDIF
+      NEXT
+
+   CASE nKey >= 32 .AND. nKey <= 127
+      oBrowse:searchEx( Chr( nKey ) )
+
+   OTHERWISE
+      lHandelled := .F.
+
+   ENDCASE
+
+   RETURN lHandelled
+
+
+STATIC FUNCTION SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+   LOCAL i, aCaptions := aData[ 2 ]
+
+   HB_SYMBOL_UNUSED( oBrw )
+
+   FOR i := 1 TO Len( aModified )
+      SWITCH aCaptions[ i ]
+      CASE "Second"
+         aTest0[ n ] := aModified[ i ]            /* You can compare original and modified values */
+         EXIT
+      CASE "Third"
+         aTest1[ n ] := aModified[ i ]
+         EXIT
+      CASE "Forth"
+         aTest2[ n ] := aModified[ i ]
+         EXIT
+      CASE "Fifth"
+         aTest3[ n ] := aModified[ i ]
+         EXIT
+      ENDSWITCH
+   NEXT
+
+   RETURN .T.
+
+
+STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+   LOCAL nn
+
+   HB_SYMBOL_UNUSED( nMode )
+
+   IF ! Empty( xSearch )
+      SWITCH oBrw:colPos
+      CASE 1
+         IF xSearch > 0 .AND. xSearch <= Len( aTest0 )
+            n := xSearch
+         ENDIF
+         EXIT
+      CASE 2
+         xSearch := Lower( Trim( xSearch ) )
+         IF ( nn := AScan( aTest0, {|e| Lower( e ) = xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      CASE 3
+         IF ( nn := AScan( aTest1, {|e|  e == xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      CASE 4
+         IF ( nn := AScan( aTest2, {|e|  e == xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      CASE 5
+         IF ( nn := AScan( aTest3, {|e|  e == xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      ENDSWITCH
+
+      IF ! Empty( nn )
+         oBrw:refreshAll()
+      ELSE
+         Alert( "Sorry, not found!" )
+      ENDIF
+   ENDIF
+
+   RETURN NIL
+
+
+STATIC FUNCTION SearchExMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+   LOCAL nn
+
+   HB_SYMBOL_UNUSED( nMode )
+
+   IF ! Empty( xSearch )
+      SWITCH oBrw:colPos
+      CASE 1
+         xSearch := Val( xSearch )
+         IF xSearch > 0 .AND. xSearch <= Len( aTest0 )
+            n := xSearch
+         ENDIF
+         EXIT
+      CASE 2
+         xSearch := Lower( Trim( xSearch ) )
+         IF ( nn := AScan( aTest0, {|e| Lower( e ) = xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      CASE 3
+         xSearch := Val( xSearch )
+         IF ( nn := AScan( aTest1, {|e|  e == xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      CASE 4
+         xSearch := CToD( xSearch )
+         IF ( nn := AScan( aTest2, {|e|  e == xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      CASE 5
+         xSearch := Lower( xSearch ) $ "y,t"
+         IF ( nn := AScan( aTest3, {|e|  e == xSearch } ) ) > 0
+            n := nn
+         ENDIF
+         EXIT
+      ENDSWITCH
+
+      IF ! Empty( nn )
+         oBrw:refreshAll()
+      ELSE
+         Alert( "Sorry, not found!" )
+      ENDIF
+   ENDIF
 
    RETURN NIL
 

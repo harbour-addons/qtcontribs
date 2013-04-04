@@ -69,9 +69,10 @@ THREAD STATIC t_sets := {=>}
 INIT PROCEDURE __initHbQtSets()
    QResource():registerResource_1( hbqtres_hbqtwidgets() )
 
-   t_sets[ _QSET_GETSFONT    ] := QFont( "Courier New", 10 )
-   t_sets[ _QSET_LINESPACING ] := 6
-   t_sets[ _QSET_NOMOUSABLE  ] := .F.
+   t_sets[ _QSET_GETSFONT     ] := QFont( "Courier New", 10 )
+   t_sets[ _QSET_LINESPACING  ] := 6
+   t_sets[ _QSET_NOMOUSABLE   ] := .F.
+   t_sets[ _QSET_EDITSPADDING ] := 4
    RETURN
 
 
@@ -112,6 +113,11 @@ FUNCTION HbQtSet( nSet, xValue )
    LOCAL xOldValue := t_sets[ nSet ]
 
    SWITCH nSet
+   CASE _QSET_EDITSPADDING
+      IF HB_ISNUMERIC( xValue ) .AND. xValue >= 0
+         t_sets[ _QSET_EDITSPADDING ] := xValue
+      ENDIF
+      EXIT
    CASE _QSET_GETSFONT
       IF __objGetClsName( xValue ) == "QFONT"
          t_sets[ _QSET_GETSFONT    ] := xValue
@@ -169,12 +175,11 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
    RETURN oGetList
 
 
-FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet, lNoFocusFrame )
+FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet, lNoFocusFrame, aAttrbs )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout, cCaption, oGetList, oWnd
-   LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic
-   LOCAL nEditPadding := 4
+   LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic, nAttrb
    LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0, nMLabW := 0, nMObjW := 0, nCumObjH := 0
-   LOCAL nX, nY, nW, nH
+   LOCAL nX, nY, nW, nH, nWidth, nHeight
    LOCAL aGetList := {}
    LOCAL lFit := .T.
 
@@ -183,15 +188,40 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    hb_default( @cTitle      , "Please Fill-up Info!" )
    hb_default( @lNoModal    , .F. )
 
+   IF .T.                                         /* Compute row height and formulae to have text width */
+      oEdit      := QLineEdit( oWnd )
+      oEdit      :  setFont( oFont )
+      oFontM     := QFontMetrics( oEdit:font() )
+      nObjHeight := oFontM:height() + HbQtSet( _QSET_EDITSPADDING )
+      nLHeight   := nObjHeight + nLineSpacing
+      nAvgWid    := oFontM:averageCharWidth()
+      oEdit      :  setParent( QWidget() )        /* We no longer need it, destroy */
+   ENDIF
+
    IF HB_ISOBJECT( oParent )
       oWnd := oParent
    ELSE
       oWnd := QDialog()
+      oWnd:setFont( oFont )
       oWnd:setWindowTitle( cTitle )
       IF HB_ISOBJECT( xIcon ) .AND. __objGetClsName( xIcon ) == "QICON"
          oWnd:setWindowIcon( xIcon )
       ELSEIF HB_ISCHAR( xIcon )
          oWnd:setWindowIcon( QIcon( xIcon ) )
+      ENDIF
+      IF HB_ISARRAY( aAttrbs ) .AND. ( nAttrb := AScan( aAttrbs, {|e_| e_[ 1 ] == _QGET_ATTRB_SETMODE } ) ) > 0
+         nWidth  := nAvgWid  * aAttrbs[ nAttrb, 2, 2 ] + 6 + 6
+         nHeight := nLHeight * aAttrbs[ nAttrb, 2, 1 ]
+         oWnd:connect( QEvent_Show, {|| oWnd:resize( nWidth, nHeight ) } )
+         lFit := .F.
+      ENDIF
+      IF HB_ISARRAY( aAttrbs ) .AND. ( nAttrb := AScan( aAttrbs, {|e_| e_[ 1 ] == _QGET_ATTRB_RESIZABLE } ) ) > 0
+         IF HB_ISLOGICAL( aAttrbs[ nAttrb, 2 ] ) .AND. ! aAttrbs[ nAttrb, 2 ]
+            oWnd:setMaximumHeight( nHeight )
+            oWnd:setMaximumWidth( nWidth )
+            oWnd:setMinimumHeight( nHeight )
+            oWnd:setMinimumWidth( nWidth )
+         ENDIF
       ENDIF
    ENDIF
 
@@ -203,16 +233,6 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       oFLayout := oWnd:layout()
    ENDIF
    lFLayout := ! Empty( oFLayout )
-
-   IF .T.                                         /* Compute row height and formulae to have text width */
-      oEdit      := QLineEdit( oWnd )
-      oEdit      :  setFont( oFont )
-      oFontM     := QFontMetrics( oEdit:font() )
-      nObjHeight := oFontM:height() + nEditPadding
-      nAvgWid    := oFontM:averageCharWidth()
-      nLHeight   := nObjHeight + nLineSpacing
-      oEdit      :  setParent( QWidget() )        /* We no longer need it, destroy */
-   ENDIF
 
    IF Len( GetList ) >= 1
       FOR EACH aEdit IN GetList
