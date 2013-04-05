@@ -16,7 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2013-04-04 17:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r198)
+2013-04-05 12:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r200)
+  * hbqtwidgets/hbqtbrowse.prg
+    - Removed: evaluation of column's block with edited value in METHOD editCell(...). 
+       When I had implemented it like that, was double-minded since begining.
+       I could not assert the real time use case scenario how it should 
+       behave. But recent clarification by Zoran has made my mind clear 
+       about it. In fact, it should be the responsibility of appln what 
+       it wants to do with ediited value, not that of library.
+
+2013-04-04 17:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r199)
   * hbqtwidgets/getlist.prg
   * hbqtwidgets/getsys.prg
     + Implemented: GET PICTURE FUNCTION contain "K".

@@ -2556,7 +2556,7 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
                      WHEN    {|oGet| iif( HB_ISBLOCK( bWhen ) , Eval( bWhen, oGet ) , iif( HB_ISBLOCK( oCol:preBlock ) , Eval( oCol:preBlock , oGet ), .T. ) ) } ;
                      VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) }
 
-   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ), Eval( oCol:block, xValue ) } NOFOCUSFRAME
+   QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) } NOFOCUSFRAME
 
    oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
    oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
