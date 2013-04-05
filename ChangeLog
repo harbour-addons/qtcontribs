@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-04 17:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r198)
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+    + Implemented: GET PICTURE FUNCTION contain "K".
+       Q 10,10 GET cText PICTURE "@!K"
+       Now only those GETs will be presented having all text selected 
+       which will contain "K" in its picture function.
+
+       The feature was missing since begining which get nailed today.
+
+  * hbqtwidgets/tests/pureclip.prg
+    + Added: code to demonstrate "@K" usage.
+
 2013-04-03 17:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r198)
   * hbide/hbide_v.ch
     * Version bump.

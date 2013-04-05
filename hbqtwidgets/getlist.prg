@@ -406,7 +406,7 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    METHOD nextGet( oGet )
    METHOD previousGet( oGet )
    METHOD getIndex( oGet )
-   METHOD setFocus( cGet )
+   METHOD setFocus( xGet, nReason )
 
    DATA   bOnLastGet
    METHOD lastGetBlock( bBlock )                  SETGET
@@ -446,10 +446,10 @@ METHOD HbQtGetList:goNext( oGet )
 
    IF n > 0
       IF n < Len( ::aGetList )
-         ::aGetList[ n + 1 ]:setFocus( Qt_TabFocusReason )
+         ::setFocus( ::aGetList[ n + 1 ], Qt_TabFocusReason )
          RETURN ::aGetList[ n + 1 ]
       ELSE
-         ::aGetList[ 1 ]:setFocus( Qt_TabFocusReason )
+         ::setFocus( ::aGetList[ 1 ], Qt_TabFocusReason )
          RETURN ::aGetList[ 1 ]
       ENDIF
    ENDIF
@@ -463,10 +463,10 @@ METHOD HbQtGetList:goPrevious( oGet )
 
    IF n > 0
       IF n > 1
-         ::aGetList[ n - 1 ]:setFocus( Qt_BacktabFocusReason )
+         ::setFocus( ::aGetList[ n - 1 ], Qt_BacktabFocusReason )
          RETURN ::aGetList[ n - 1 ]
       ELSE
-         ATail( ::aGetList ):setFocus( Qt_BacktabFocusReason )
+         ::setFocus( ATail( ::aGetList ), Qt_BacktabFocusReason )
          RETURN ATail( ::aGetList )
       ENDIF
    ENDIF
@@ -480,7 +480,7 @@ METHOD HbQtGetList:goTop( oGet )
 
    IF n > 0
       IF n > 1
-         ::aGetList[ 1 ]:setFocus( Qt_TabFocusReason )
+         ::setFocus( ::aGetList[ 1 ], Qt_TabFocusReason )
          RETURN ::aGetList[ 1 ]
       ENDIF
    ENDIF
@@ -494,7 +494,7 @@ METHOD HbQtGetList:goBottom( oGet )
 
    IF n > 0
       IF n < Len( ::aGetList )
-         ::aGetList[ Len( ::aGetList ) ]:setFocus( Qt_BacktabFocusReason )
+         ::setFocus( ATail( ::aGetList ), Qt_BacktabFocusReason )
          RETURN ::aGetList[ Len( ::aGetList ) ]
       ENDIF
    ENDIF
@@ -540,15 +540,30 @@ METHOD HbQtGetList:previousGet( oGet )
    RETURN oGet
 
 
-METHOD HbQtGetList:setFocus( cGet )
+METHOD HbQtGetList:setFocus( xGet, nReason )
 
-   LOCAL n, oGet
+   LOCAL n, oGet, cGet
 
-   IF HB_ISCHAR( cGet )
-      cGet := Upper( cGet )
+   __defaultNIL( @nReason, Qt_TabFocusReason )
+
+   IF HB_ISCHAR( xGet )
+      cGet := Upper( xGet )
       IF ( n := AScan( ::aGetList, {|oGet| Upper( oGet:name() ) == cGet } ) ) > 0
          oGet := ::aGetList[ n ]
-         oGet:setFocus( Qt_TabFocusReason )
+      ENDIF
+   ELSEIF HB_ISOBJECT( xGet )
+      oGet := xGet
+   ENDIF
+   IF HB_ISOBJECT( oGet )
+      IF oGet:cClassName == "QLINEEDIT"
+         IF ! ( "K" $ oGet:cPicFunc )
+            oGet:setFocus( Qt_OtherFocusReason )
+            oGet:edit():home( .F. )
+         ELSE
+            oGet:setFocus( nReason )
+         ENDIF
+      ELSE
+         oGet:setFocus( nReason )
       ENDIF
    ENDIF
 

@@ -212,6 +212,8 @@ CLASS HbQtGet INHERIT GET
    METHOD varPut( xValue )
    METHOD display()
 
+   FRIEND CLASS HbQtGetList
+
    ENDCLASS
 
 /*----------------------------------------------------------------------*/
@@ -1128,15 +1130,13 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       QApplication():sendEvent( ::oEdit, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
 
    ENDIF
-#if 0
+
    IF ::cClassName == "QLINEEDIT"
-      IF "K" $ ::cPicFunc
-         ::edit():home( .T. )
-      ELSE
-         ::edit():home( .F. )
+      IF ! ( "K" $ ::cPicFunc )
+         QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Home, Qt_NoModifier ) )
       ENDIF
    ENDIF
-#endif
+
    RETURN .F.
 
 /*----------------------------------------------------------------------*/

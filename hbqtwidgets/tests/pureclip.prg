@@ -53,7 +53,7 @@ FUNCTION Main()
    Set( _SET_DATEFORMAT, "yyyy-mm-dd" )
 
    /* Harbour standards SAYs and GETs */
-   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
+   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!KA"
 
    @  2, 02 SAY PadL( "Birthday:", nPdL )
    @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
