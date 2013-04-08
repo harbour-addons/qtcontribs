@@ -2352,203 +2352,206 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
       qCursor:joinPreviousEditBlock()
    // qCursor:beginEditBlock()   /* Why this misbehaves - stops TO undo previous stacks */
 
-      nPostn := qCursor:position()
-      nLine  := qCursor:blockNumber()
+      IF ! hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
 
-      IF nPos == -1
-         cCWord := " "
-      ELSE
-         IF ( nCol := nPostn - qCursor:block():position() ) > 0
-            cCWord := SubStr( qCursor:block():text(), nCol, 1 )
-         ENDIF
-      ENDIF
+         nPostn := qCursor:position()
+         nLine  := qCursor:blockNumber()
 
-      IF qCursor:movePosition( QTextCursor_EndOfLine, QTextCursor_KeepAnchor ) .AND. qCursor:position() > nPostn
-         cRest := qCursor:selectedText()
-      ENDIF
-      qCursor:clearSelection()
-      qCursor:setPosition( nPostn )
-
-      qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
-      nLPrev := qCursor:blockNumber()
-      IF nLPrev == nLine
-         nCPrev := qCursor:position() - qCursor:block():position()
-         qCursor:select( QTextCursor_WordUnderCursor )
-         cPWord := qCursor:selectedText()
-         qCursor:clearSelection()
-         qCursor:setPosition( nPostn )
-
-         qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
-         nLPrevPrev := qCursor:blockNumber()
-         IF nLPrevPrev == nLine
-            nCPrevPrev := qCursor:position() - qCursor:block():position()
-            qCursor:select( QTextCursor_WordUnderCursor )
-            cPPWord := qCursor:selectedText()
+         IF nPos == -1
+            cCWord := " "
          ELSE
-            nCPrevPrev := -1
-            cPPWord := ""
+            IF ( nCol := nPostn - qCursor:block():position() ) > 0
+               cCWord := SubStr( qCursor:block():text(), nCol, 1 )
+            ENDIF
+         ENDIF
+
+         IF qCursor:movePosition( QTextCursor_EndOfLine, QTextCursor_KeepAnchor ) .AND. qCursor:position() > nPostn
+            cRest := qCursor:selectedText()
          ENDIF
          qCursor:clearSelection()
          qCursor:setPosition( nPostn )
 
-         /* Group I operations */
-         IF cPWord == "." .AND. cPPWord $ ::hLogicals     /* ALWAYS */
-            IF ! ::oINI:lSupressHbKWordsToUpper
-               qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
-               qCursor:select( QTextCursor_WordUnderCursor )
-               qCursor:removeSelectedText()
-               qCursor:insertText( upper( cPPWord ) )
-               qCursor:setPosition( nPostn )
-            ENDIF
-
-         ELSEIF cPWord == ":=" .AND. cCWord == "=" .AND. nAdded == 1
-            IF ::oINI:lISOperator
-               qCursor:insertText( " " )
-            ENDIF
-            IF ::oINI:lISAlignAssign
-               // look for previous lines and IF 2nd keyword is assignment operator then align both TO same offset
-               hbide_alignAssignments( qCursor )
-            ENDIF
-
-         ELSEIF ::oINI:lISCodeBlock .AND. Right( cPWord, 2 ) == "{|" .AND. cCWord == "|" .AND. nAdded == 1 .AND. Empty( cRest )
-            qCursor:insertText( "|  }" )
+         qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
+         nLPrev := qCursor:blockNumber()
+         IF nLPrev == nLine
+            nCPrev := qCursor:position() - qCursor:block():position()
+            qCursor:select( QTextCursor_WordUnderCursor )
+            cPWord := qCursor:selectedText()
+            qCursor:clearSelection()
             qCursor:setPosition( nPostn )
 
-         ELSEIF cCWord == "(" .AND. ( hbide_isHarbourFunction( cPPWord, @cCased ) .OR. hbide_isQtFunction( cPPWord, @cCased ) .OR. hbide_isUserFunction( cPPWord, @cCased ) )
-            hbide_replaceWord( qCursor, 2, cCased, nPostn )
-            IF ::oINI:lISClosingP
-               IF cCWord == "(" .AND. nAdded == 1
-                  qCursor:insertText( ")" )
-                  IF ::oINI:lISSpaceP
-                     qCursor:setPosition( nPostn )
-                     qCursor:insertText( "  " )
-                     nPostn++
+            qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
+            nLPrevPrev := qCursor:blockNumber()
+            IF nLPrevPrev == nLine
+               nCPrevPrev := qCursor:position() - qCursor:block():position()
+               qCursor:select( QTextCursor_WordUnderCursor )
+               cPPWord := qCursor:selectedText()
+            ELSE
+               nCPrevPrev := -1
+               cPPWord := ""
+            ENDIF
+            qCursor:clearSelection()
+            qCursor:setPosition( nPostn )
+
+            /* Group I operations */
+            IF cPWord == "." .AND. cPPWord $ ::hLogicals     /* ALWAYS */
+               IF ! ::oINI:lSupressHbKWordsToUpper
+                  qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
+                  qCursor:select( QTextCursor_WordUnderCursor )
+                  qCursor:removeSelectedText()
+                  qCursor:insertText( upper( cPPWord ) )
+                  qCursor:setPosition( nPostn )
+               ENDIF
+
+            ELSEIF cPWord == ":=" .AND. cCWord == "=" .AND. nAdded == 1
+               IF ::oINI:lISOperator
+                  qCursor:insertText( " " )
+               ENDIF
+               IF ::oINI:lISAlignAssign
+                  // look for previous lines and IF 2nd keyword is assignment operator then align both TO same offset
+                  hbide_alignAssignments( qCursor )
+               ENDIF
+
+            ELSEIF ::oINI:lISCodeBlock .AND. Right( cPWord, 2 ) == "{|" .AND. cCWord == "|" .AND. nAdded == 1 .AND. Empty( cRest )
+               qCursor:insertText( "|  }" )
+               qCursor:setPosition( nPostn )
+
+            ELSEIF cCWord == "(" .AND. ( hbide_isHarbourFunction( cPPWord, @cCased ) .OR. hbide_isQtFunction( cPPWord, @cCased ) .OR. hbide_isUserFunction( cPPWord, @cCased ) )
+               hbide_replaceWord( qCursor, 2, cCased, nPostn )
+               IF ::oINI:lISClosingP
+                  IF cCWord == "(" .AND. nAdded == 1
+                     qCursor:insertText( ")" )
+                     IF ::oINI:lISSpaceP
+                        qCursor:setPosition( nPostn )
+                        qCursor:insertText( "  " )
+                        nPostn++
+                     ENDIF
+                  ENDIF
+               ENDIF
+               qCursor:setPosition( nPostn )
+
+            ELSEIF cCWord == " " .AND. hbide_isUserFunction( cPPWord, @cCased ) /* User dictionaries : only keywords */
+               hbide_replaceWord( qCursor, 2, cCased, nPostn )
+
+            ELSEIF cCWord == " " .AND. cPPWord != "#" .AND. hbide_isHarbourKeyword( cPWord )
+               IF ! ::oINI:lSupressHbKWordsToUpper// .AND. ! hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
+                  qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
+                  qCursor:select( QTextCursor_WordUnderCursor )
+                  qCursor:removeSelectedText()
+                  qCursor:insertText( upper( cPWord ) )
+                  qCursor:setPosition( nPostn )
+               ENDIF
+
+            ENDIF
+
+            IF cCWord == " " .AND. ! Empty( cPWord ) .AND. ! ( Left( cPWord, 1 ) $ "`~!@#$%^&*()+1234567890-=+[]{}|\':;?/>.<," )
+               IF Len( cPWord ) > 3
+                  IF ! cPWord $ ::oEM:hEditingWords
+                     ::oEM:hEditingWords[ cPWord ] := cPWord
+                     ::oEM:updateCompleter()
+                  ENDIF
+               ENDIF
+
+            ELSEIF cCWord $ ",:" .AND. ! Empty( cPPWord ) .AND. ! ( Left( cPPWord, 1 ) $ "`~!@#$%^&*()+1234567890-=+[]{}|\':;?/>.<," )
+               IF Len( cPPWord ) > 3
+                  IF ! cPPWord $ ::oEM:hEditingWords
+                     ::oEM:hEditingWords[ cPPWord ] := cPPWord
+                     ::oEM:updateCompleter()
+                  ENDIF
+               ENDIF
+
+            ENDIF
+
+            /* Group II operations */
+            IF empty( cPPWord ) .AND. cCWord == " "
+               IF hbide_isStartingKeyword( cPWord, ::oIde )                                        /* FUNCTION PROCEDURE CLASS */
+                  qCursor:movePosition( QTextCursor_StartOfBlock )
+                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
+                  qCursor:removeSelectedText()
+                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
+
+               ELSEIF hbide_isMinimumIndentableKeyword( cPWord, ::oIde ) .AND. ::oINI:lAutoIndent  /* LOCAL STATIC DEFAULT PRIVATE PUBLIC ENDCLASS RETURN */
+                  qCursor:movePosition( QTextCursor_StartOfBlock )
+                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
+                  qCursor:removeSelectedText()
+                  qCursor:insertText( space( ::nTabSpaces ) )
+                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
+
+               ELSEIF hbide_isIndentableKeyword( cPWord, ::oIde ) .AND. ::oINI:lAutoIndent         /* IF SWITCH FOR DO */
+                  IF nCPrev < ::nTabSpaces
+                     nOff := ::nTabSpaces - nCPrev
+                     qCursor:movePosition( QTextCursor_StartOfBlock )
+                     qCursor:insertText( space( nOff ) )
+                     qCursor:setPosition( nPostn + nOff )
+
+                  ELSEIF ( nOff := nCPrev % ::nTabSpaces ) > 0            /* We always go back to the previous indent */
+                     qCursor:movePosition( QTextCursor_StartOfBlock )
+                     qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nOff )
+                     qCursor:removeSelectedText()
+                     qCursor:setPosition( nPostn - nOff )
+
                   ENDIF
                ENDIF
             ENDIF
-            qCursor:setPosition( nPostn )
 
-         ELSEIF cCWord == " " .AND. hbide_isUserFunction( cPPWord, @cCased ) /* User dictionaries : only keywords */
-            hbide_replaceWord( qCursor, 2, cCased, nPostn )
+            /* Group III operations */
+            IF cCWord == " " .AND. nAdded == 1 .AND. Empty( cRest )   /* Only first time having only word on a line */
+               cWord := Lower( cPWord )
 
-         ELSEIF cCWord == " " .AND. cPPWord != "#" .AND. hbide_isHarbourKeyword( cPWord )
-            IF ! ::oINI:lSupressHbKWordsToUpper
-               qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
-               qCursor:select( QTextCursor_WordUnderCursor )
-               qCursor:removeSelectedText()
-               qCursor:insertText( upper( cPWord ) )
-               qCursor:setPosition( nPostn )
+               IF ::oINI:lISClosing
+                  IF     ::oINI:lISIf      .AND. cWord == "if" .AND. Empty( cPPWord ) /* Protected for #if */
+                     hbide_appendIf( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position(), ::nTabSpaces, ::oINI:lISElse, ::oINI:lISEmbrace )
+
+                  ELSEIF ::oINI:lISFor     .AND. cWord == "for"
+                     hbide_appendFor( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position() )
+
+                  ELSEIF ::oINI:lISSwitch  .AND. cWord == "switch"
+                     hbide_appendSwitch( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position(), ::nTabSpaces, ::oINI:nISSwitchCases, ::oINI:lISSwitchOWise, ::oINI:lISExitSameLine )
+
+                  ELSEIF ::oINI:lISDoCase  .AND. Lower( cPPWord ) == "do" .AND. cWord == "case"
+                     hbide_appendCase( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position(), ::oINI:nISCaseCases, ::oINI:lISCaseOWise  )
+
+                  ELSEIF ::oINI:lISDoWhile .AND. Lower( cPPWord ) == "do" .AND. cWord == "while"
+                     hbide_appendWhile( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position() )
+
+                  ENDIF
+               ENDIF
+
+               IF cWord == "elseif" .OR. cWord == "else" .OR. cWord == "endif"
+                  hbide_alignToPrevWord( qCursor, "if", "endif", Len( cWord ), nPostn )
+
+               ELSEIF cWord == "next"
+                  hbide_alignToPrevWord( qCursor, "for", "next", Len( cWord ), nPostn )
+
+               ELSEIF cWord == "endwith"
+                  hbide_alignToPrevWord( qCursor, "with", "endwith", Len( cWord ), nPostn )
+
+               ELSEIF Lower( cPPWord ) == "static" .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
+                  hbide_removeStartingSpaces( qCursor, nCPrevPrev )
+                  IF ::oINI:lISFunction
+                     hbide_appendFunction( qCursor, ::nTabSpaces, ::oINI:lISLocal, ::oINI:lISReturn, ::oINI:lISSeparator, ::oINI:lReturnAsBeginKeyword, ::cSeparator )
+                  ENDIF
+
+               ELSEIF Empty( cPPWord ) .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
+                  IF ::oINI:lISFunction
+                     hbide_appendFunction( qCursor, ::nTabSpaces, ::oINI:lISLocal, ::oINI:lISReturn, ::oINI:lISSeparator, ::oINI:lReturnAsBeginKeyword, ::cSeparator )
+                  ENDIF
+
+               ELSEIF Lower( cPPWord ) == "create" .AND. cPWord == "class"
+                  hbide_removeStartingSpaces( qCursor, nCPrevPrev )
+
+               ELSEIF cPPWord == "CLASS" .AND. ! Empty( cPWord )
+                  IF ::oINI:lISClass
+                     hbide_appendClass( qCursor, ::nTabSpaces, ::oINI, cPWord )
+                  ENDIF
+
+               ENDIF
             ENDIF
 
+            ::qEdit:setTextCursor( qCursor )
          ENDIF
 
-         IF cCWord == " " .AND. ! Empty( cPWord ) .AND. ! ( Left( cPWord, 1 ) $ "`~!@#$%^&*()+1234567890-=+[]{}|\':;?/>.<," )
-            IF Len( cPWord ) > 3
-               IF ! cPWord $ ::oEM:hEditingWords
-                  ::oEM:hEditingWords[ cPWord ] := cPWord
-                  ::oEM:updateCompleter()
-               ENDIF
-            ENDIF
-
-         ELSEIF cCWord $ ",:" .AND. ! Empty( cPPWord ) .AND. ! ( Left( cPPWord, 1 ) $ "`~!@#$%^&*()+1234567890-=+[]{}|\':;?/>.<," )
-            IF Len( cPPWord ) > 3
-               IF ! cPPWord $ ::oEM:hEditingWords
-                  ::oEM:hEditingWords[ cPPWord ] := cPPWord
-                  ::oEM:updateCompleter()
-               ENDIF
-            ENDIF
-
-         ENDIF
-
-         /* Group II operations */
-         IF empty( cPPWord ) .AND. cCWord == " "
-            IF hbide_isStartingKeyword( cPWord, ::oIde )                                        /* FUNCTION PROCEDURE CLASS */
-               qCursor:movePosition( QTextCursor_StartOfBlock )
-               qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
-               qCursor:removeSelectedText()
-               qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
-
-            ELSEIF hbide_isMinimumIndentableKeyword( cPWord, ::oIde ) .AND. ::oINI:lAutoIndent  /* LOCAL STATIC DEFAULT PRIVATE PUBLIC ENDCLASS RETURN */
-               qCursor:movePosition( QTextCursor_StartOfBlock )
-               qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
-               qCursor:removeSelectedText()
-               qCursor:insertText( space( ::nTabSpaces ) )
-               qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
-
-            ELSEIF hbide_isIndentableKeyword( cPWord, ::oIde ) .AND. ::oINI:lAutoIndent         /* IF SWITCH FOR DO */
-               IF nCPrev < ::nTabSpaces
-                  nOff := ::nTabSpaces - nCPrev
-                  qCursor:movePosition( QTextCursor_StartOfBlock )
-                  qCursor:insertText( space( nOff ) )
-                  qCursor:setPosition( nPostn + nOff )
-
-               ELSEIF ( nOff := nCPrev % ::nTabSpaces ) > 0            /* We always go back to the previous indent */
-                  qCursor:movePosition( QTextCursor_StartOfBlock )
-                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nOff )
-                  qCursor:removeSelectedText()
-                  qCursor:setPosition( nPostn - nOff )
-
-               ENDIF
-            ENDIF
-         ENDIF
-
-         /* Group III operations */
-         IF cCWord == " " .AND. nAdded == 1 .AND. Empty( cRest )   /* Only first time having only word on a line */
-            cWord := Lower( cPWord )
-
-            IF ::oINI:lISClosing
-               IF     ::oINI:lISIf      .AND. cWord == "if" .AND. Empty( cPPWord ) /* Protected for #if */
-                  hbide_appendIf( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position(), ::nTabSpaces, ::oINI:lISElse, ::oINI:lISEmbrace )
-
-               ELSEIF ::oINI:lISFor     .AND. cWord == "for"
-                  hbide_appendFor( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position() )
-
-               ELSEIF ::oINI:lISSwitch  .AND. cWord == "switch"
-                  hbide_appendSwitch( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position(), ::nTabSpaces, ::oINI:nISSwitchCases, ::oINI:lISSwitchOWise, ::oINI:lISExitSameLine )
-
-               ELSEIF ::oINI:lISDoCase  .AND. Lower( cPPWord ) == "do" .AND. cWord == "case"
-                  hbide_appendCase( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position(), ::oINI:nISCaseCases, ::oINI:lISCaseOWise  )
-
-               ELSEIF ::oINI:lISDoWhile .AND. Lower( cPPWord ) == "do" .AND. cWord == "while"
-                  hbide_appendWhile( qCursor, hbide_getFrontSpacesAndWord( qCursor:block():text() ), qCursor:position() )
-
-               ENDIF
-            ENDIF
-
-            IF cWord == "elseif" .OR. cWord == "else" .OR. cWord == "endif"
-               hbide_alignToPrevWord( qCursor, "if", "endif", Len( cWord ), nPostn )
-
-            ELSEIF cWord == "next"
-               hbide_alignToPrevWord( qCursor, "for", "next", Len( cWord ), nPostn )
-
-            ELSEIF cWord == "endwith"
-               hbide_alignToPrevWord( qCursor, "with", "endwith", Len( cWord ), nPostn )
-
-            ELSEIF Lower( cPPWord ) == "static" .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
-               hbide_removeStartingSpaces( qCursor, nCPrevPrev )
-               IF ::oINI:lISFunction
-                  hbide_appendFunction( qCursor, ::nTabSpaces, ::oINI:lISLocal, ::oINI:lISReturn, ::oINI:lISSeparator, ::oINI:lReturnAsBeginKeyword, ::cSeparator )
-               ENDIF
-
-            ELSEIF Empty( cPPWord ) .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
-               IF ::oINI:lISFunction
-                  hbide_appendFunction( qCursor, ::nTabSpaces, ::oINI:lISLocal, ::oINI:lISReturn, ::oINI:lISSeparator, ::oINI:lReturnAsBeginKeyword, ::cSeparator )
-               ENDIF
-
-            ELSEIF Lower( cPPWord ) == "create" .AND. cPWord == "class"
-               hbide_removeStartingSpaces( qCursor, nCPrevPrev )
-
-            ELSEIF cPPWord == "CLASS" .AND. ! Empty( cPWord )
-               IF ::oINI:lISClass
-                  hbide_appendClass( qCursor, ::nTabSpaces, ::oINI, cPWord )
-               ENDIF
-
-            ENDIF
-         ENDIF
-
-         ::qEdit:setTextCursor( qCursor )
-      ENDIF
-
+      ENDIF /* hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() ) */
       qCursor:endEditBlock()
    ENDIF
 

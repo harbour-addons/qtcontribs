@@ -16,10 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-08 15:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r202)
+  * ChangeLog.txt 
+    ! Rewote previous entry # 201.
+  
+  * hbide/edit.prg
+  * hbide/misc.prg
+    + Implemented: recognition of text in strings and comments and then 
+       deactivate code specific operations on keywords, etc., taking 
+       it as plain text.
+
+       Was a long-overdue feature but did not got attention until now
+       when Massimo pointed it out recently.
+
 2013-04-08 00:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r201)
   * hbqt/qtgui/qth/QAbstractItemView.qth
-    + Added: DragDropMode dragDropMode () const
-             void setDragDropMode ( DragDropMode behavior )
+    + Added: Qt::DropAction defaultDropAction () const
+             void setDefaultDropAction ( Qt::DropAction dropAction )
        For Qt 4.6 and above. Pointed out by Luigi.
 
 2013-04-05 12:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r200)

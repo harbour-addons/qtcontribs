@@ -2160,6 +2160,57 @@ STATIC FUNCTION selectionProc( nMode, p, cChoice, aList, oSL )
 
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
+FUNCTION hbide_IsInCommentOrString( cText, nPos )
+   LOCAL  nCmt
+
+   IF ( nCmt := At( "//", cText ) ) > 0
+      IF nPos > nCmt
+         RETURN .T.
+      ENDIF
+   ENDIF
+   IF ( nCmt := At( "/*", cText ) ) > 0
+      IF nPos > nCmt
+         DO WHILE .T.
+            nCmt := hb_At( "*/", cText, nCmt )
+            IF nCmt > 0 .AND. nPos < nCmt
+               RETURN .T.
+            ELSEIF nCmt > 0 .AND. nPos > nCmt
+               nCmt := hb_At( "/*", cText, nCmt )
+               IF nCmt == 0 .OR. nPos < nCmt
+                  RETURN .F.
+               ENDIF
+            ELSE
+               RETURN .F.
+            ENDIF
+         ENDDO
+      ENDIF
+   ENDIF
+
+   RETURN hbide_IsInString( cText, nPos, 1 )
+
+
+FUNCTION hbide_IsInString( cText, nPos, nStart, cQuote )
+   LOCAL j, cTkn
+   LOCAL lInString := .F.
+
+   STATIC cAnyQuote  := '"' + "'"
+
+   FOR j := nStart TO nPos-1          // check if string did not begin before it
+       cTkn := substr( cText, j, 1 )
+       IF cTkn $ cAnyQuote            // any quote characters present ?
+          IF lInstring                // if we are already in string
+             IF cTkn == cQuote        // is it a matching quote ?
+                lInstring := .F.      // yes, we are no in string any more
+             ENDIF
+          ELSE                        // we are not in string yet
+             cQuote    := cTkn        // this is the streing quote
+             lInstring := .T.         // now we are in string
+         ENDIF
+      ENDIF
+   NEXT
+
+   RETURN lInString
+
+/*----------------------------------------------------------------------*/
 
