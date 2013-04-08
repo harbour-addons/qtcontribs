@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-08 00:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r201)
+  * hbqt/qtgui/qth/QAbstractItemView.qth
+    + Added: DragDropMode dragDropMode () const
+             void setDragDropMode ( DragDropMode behavior )
+       For Qt 4.6 and above. Pointed out by Luigi.
+
 2013-04-05 12:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r200)
   * hbqtwidgets/hbqtbrowse.prg
     - Removed: evaluation of column's block with edited value in METHOD editCell(...). 

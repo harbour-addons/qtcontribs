@@ -47,6 +47,9 @@ bool alternatingRowColors () const
 int autoScrollMargin () const
 void closePersistentEditor ( const QModelIndex & index )
 QModelIndex currentIndex () const
+
+Qt::DropAction defaultDropAction () const                           [*V=0x040600*]
+
 DragDropMode dragDropMode () const
 bool dragDropOverwriteMode () const
 bool dragEnabled () const
@@ -71,6 +74,9 @@ QItemSelectionModel * selectionModel () const
 void setAlternatingRowColors ( bool enable )
 void setAutoScroll ( bool enable )
 void setAutoScrollMargin ( int margin )
+
+void setDefaultDropAction ( Qt::DropAction dropAction )             [*V=0x040600*]
+
 void setDragDropMode ( DragDropMode behavior )
 void setDragDropOverwriteMode ( bool overwrite )
 void setDragEnabled ( bool enable )
