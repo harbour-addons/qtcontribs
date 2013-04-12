@@ -205,6 +205,8 @@ CLASS HbQtGet INHERIT GET
    METHOD insert( cChar )                         VIRTUAL
    METHOD overStrike( cChar )                     VIRTUAL
 
+   ACCESS untransform                             METHOD getUntransformed()
+   ACCESS changed                                 INLINE ::lChanged
    ACCESS buffer                                  METHOD getBuffer()
    ASSIGN buffer                                  METHOD setBuffer( cBuffer )
 
@@ -968,7 +970,7 @@ METHOD HbQtGet:picture( cPicture )
       ::sl_qMask := qMask
    ENDIF
 
-   RETURN ::cPicFunc
+   RETURN ::cPicture //::cPicFunc
 
 /*----------------------------------------------------------------------*/
 
@@ -1024,6 +1026,39 @@ METHOD HbQtGet:setBuffer( cBuffer )
    ENDSWITCH
 
    ::lChanged := .T.
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbQtGet:getUntransformed()
+   LOCAL cText
+
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      cText := ::oEdit:text()
+      SWITCH ::cType
+      CASE "C"
+         RETURN cText
+      CASE "N"
+         RETURN ::untransformThis( cText )
+      CASE "D"
+         RETURN ::untransformThis( cText )
+      CASE "L"
+         RETURN ::buffer()
+      ENDSWITCH
+      RETURN cText
+   CASE "QPLAINTEXTEDIT"
+      RETURN ::oEdit:toPlainText()
+   CASE "QLISTWIDGET"
+      RETURN ::oEdit:currentItem():text()
+   CASE "QCOMBOBOX"
+      RETURN ::oEdit:currentText()
+   CASE "QPUSHBUTTON"
+      RETURN iif( ::oEdit:isDown(), "T", "F" )
+   CASE "QCHECKBOX"
+      RETURN iif( ::oEdit:isChecked(), "T", "F" )
+   ENDSWITCH
 
    RETURN NIL
 
@@ -1445,7 +1480,11 @@ METHOD HbQtGet:unTransformThis( cData )
 
    SWITCH ::cType
    CASE "C"
+      IF Empty( ::cPicMask )
+         RETURN cData
+      ENDIF
       RETURN cData
+
    CASE "N"
       FOR EACH cChr IN cData
          IF cChr $ "+-0123456789"
@@ -1456,8 +1495,15 @@ METHOD HbQtGet:unTransformThis( cData )
       NEXT
       EXIT
    CASE "L"
-   CASE "D"
       RETURN cData
+   CASE "D"
+      FOR EACH cChr IN cData
+         IF IsDigit( cChr )
+            cText += cChr
+         ENDIF
+      NEXT
+      cText := Pad( cText, Len( ::cPicMask ) )
+      EXIT
    ENDSWITCH
 
    RETURN cText

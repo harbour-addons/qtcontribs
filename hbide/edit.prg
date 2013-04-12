@@ -2434,7 +2434,7 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
                hbide_replaceWord( qCursor, 2, cCased, nPostn )
 
             ELSEIF cCWord == " " .AND. cPPWord != "#" .AND. hbide_isHarbourKeyword( cPWord )
-               IF ! ::oINI:lSupressHbKWordsToUpper// .AND. ! hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
+               IF ! ::oINI:lSupressHbKWordsToUpper
                   qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
                   qCursor:select( QTextCursor_WordUnderCursor )
                   qCursor:removeSelectedText()

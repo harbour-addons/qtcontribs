@@ -63,81 +63,6 @@
 #define GET_CLR_ACCEL                             3
 
 
-THREAD STATIC t_sets := {=>}
-
-
-INIT PROCEDURE __initHbQtSets()
-   QResource():registerResource_1( hbqtres_hbqtwidgets() )
-
-   t_sets[ _QSET_GETSFONT     ] := QFont( "Courier New", 10 )
-   t_sets[ _QSET_LINESPACING  ] := 6
-   t_sets[ _QSET_NOMOUSABLE   ] := .F.
-   t_sets[ _QSET_EDITSPADDING ] := 4
-   RETURN
-
-
-EXIT PROCEDURE __exitHbQtSets()
-   t_sets := NIL
-   RETURN
-
-
-FUNCTION __hbqtImage( cName )
-   RETURN ":/hbqt/resources" + "/" + cName + ".png"
-
-
-FUNCTION __hbqtGetNextIdAsString( cString )
-   STATIC hIDs := {=>}
-   IF Empty( hIDs )
-      hb_HCaseMatch( hIDs, .F. )
-   ENDIF
-   IF ! hb_hHasKey( hIDs, cString )
-      hIDs[ cString ] := 0
-   ELSE
-      cString += "_" + hb_ntos( ++hIDs[ cString ] )
-   ENDIF
-   RETURN cString
-
-
-FUNCTION __hbqtGetBlankValue( xValue )
-
-   SWITCH ValType( xValue )
-   CASE "C" ; RETURN Space( Len( xValue ) )
-   CASE "N" ; RETURN 0
-   CASE "D" ; RETURN CToD( "" )
-   CASE "L" ; RETURN .F.
-   ENDSWITCH
-
-   RETURN ""
-
-FUNCTION HbQtSet( nSet, xValue )
-   LOCAL xOldValue := t_sets[ nSet ]
-
-   SWITCH nSet
-   CASE _QSET_EDITSPADDING
-      IF HB_ISNUMERIC( xValue ) .AND. xValue >= 0
-         t_sets[ _QSET_EDITSPADDING ] := xValue
-      ENDIF
-      EXIT
-   CASE _QSET_GETSFONT
-      IF __objGetClsName( xValue ) == "QFONT"
-         t_sets[ _QSET_GETSFONT    ] := xValue
-      ENDIF
-      EXIT
-   CASE _QSET_LINESPACING
-      IF HB_ISNUMERIC( xValue ) .AND. xValue >= 0
-         t_sets[ _QSET_LINESPACING ] := xValue
-      ENDIF
-      EXIT
-   CASE _QSET_NOMOUSABLE
-      IF HB_ISLOGICAL( xValue )
-         t_sets[ _QSET_NOMOUSABLE ] := xValue
-      ENDIF
-      EXIT
-   ENDSWITCH
-
-   RETURN xOldValue
-
-
 FUNCTION HbQtClearGets( oWnd, ... )
    LOCAL oParent
 
@@ -177,11 +102,12 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
 
 FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet, lNoFocusFrame, aAttrbs )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout, cCaption, oGetList, oWnd
-   LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic, nAttrb
+   LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic, nAttrb, xAttrb, aInfo
    LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0, nMLabW := 0, nMObjW := 0, nCumObjH := 0
    LOCAL nX, nY, nW, nH, nWidth, nHeight
    LOCAL aGetList := {}
    LOCAL lFit := .T.
+   LOCAL lExec := .F.
 
    hb_default( @oFont       , HbQtSet( _QSET_GETSFONT    ) )
    hb_default( @nLineSpacing, HbQtSet( _QSET_LINESPACING ) )
@@ -221,6 +147,21 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             oWnd:setMaximumWidth( nWidth )
             oWnd:setMinimumHeight( nHeight )
             oWnd:setMinimumWidth( nWidth )
+         ENDIF
+      ENDIF
+      IF HB_ISARRAY( aAttrbs ) .AND. ( nAttrb := AScan( aAttrbs, {|e_| e_[ 1 ] == _QGET_ATTRB_ATROWCOLUMNONTOPOF } ) ) > 0
+         xAttrb := aAttrbs[ nAttrb, 2 ]
+         ASize( xAttrb, 4 )
+         IF HB_ISARRAY( xAttrb ) .AND. Len( xAttrb ) >= 3 .AND. HB_ISOBJECT( xAttrb[ 1 ] ) .AND. HB_ISNUMERIC( xAttrb[ 2 ] ) .AND. HB_ISNUMERIC( xAttrb[ 3 ] )
+            oWnd:setParent( xAttrb[ 1 ] )
+            aInfo := __hbqtGetXYFromRowColumn( xAttrb[ 1 ], xAttrb[ 2 ], xAttrb[ 3 ], oFont )
+            IF HB_ISLOGICAL( xAttrb[ 4 ] ) .AND. xAttrb[ 4 ]
+               oWnd:setWindowFlags( Qt_Dialog + Qt_CustomizeWindowHint + Qt_WindowTitleHint )
+            ELSE
+               oWnd:setWindowFlags( Qt_Dialog + Qt_CustomizeWindowHint )
+            ENDIF
+            oWnd:connect( QEvent_Show , {|| __hbqtPositionWindowClientXY( oWnd, aInfo[ 1 ], aInfo[ 2 ] ) } )
+            lExec := .T.
          ENDIF
       ENDIF
    ENDIF
@@ -382,10 +323,14 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    ENDIF
 
    IF ! HB_ISOBJECT( oParent )
-      IF ! lNoModal
-         oWnd:setModal( .T. )
+      IF lExec
+         oWnd:exec()
+      ELSE
+         IF ! lNoModal
+            oWnd:setModal( .T. )
+         ENDIF
+         oWnd:show()
       ENDIF
-      oWnd:show()
    ENDIF
 
    RETURN NIL
@@ -577,131 +522,4 @@ METHOD HbQtGetList:focusFrame( lFocusFrame )
    ENDIF
 
    RETURN ::lFocusFrame
-
-/*----------------------------------------------------------------------*/
-
-FUNCTION __hbqtRgbStringFromColorString( cToken, lExt )
-
-   IF Upper( Left( cToken, 3 ) ) == "RGB"    /* rgb notation : rgb(200,12,201)/rgb(104,56,19) */
-      RETURN cToken
-   ENDIF
-   IF Left( cToken, 1 ) == "#"               /* Hex notation : #fffccc/#da3f78 */
-      RETURN cToken
-   ENDIF
-
-   SWITCH Upper( cToken )                    /* Clipper notation : W+/BG* */
-   CASE "N"
-      RETURN iif( lExt, "rgb( 198,198,198 )", "rgb( 0 ,0 ,0  )"   )
-   CASE "B"
-      RETURN iif( lExt, "rgb( 0,0,255 )"    , "rgb( 0,0,133 )"    )
-   CASE "G"
-      RETURN iif( lExt, "rgb( 96,255,96 )"  , "rgb( 0 ,133,0  )"  )
-   CASE "BG"
-      RETURN iif( lExt, "rgb( 96,255,255 )" , "rgb( 0 ,133,133 )" )
-   CASE "R"
-      RETURN iif( lExt, "rgb( 248,0,38 )"   , "rgb( 133,0 ,0  )"  )
-   CASE "RB"
-      RETURN iif( lExt, "rgb( 255,96,255 )" , "rgb( 133,0 ,133  " )
-   CASE "GR"
-      RETURN iif( lExt, "rgb( 255,255,0 )"  , "rgb( 133,133,0 )"  )
-   CASE "W"
-      RETURN iif( lExt, "rgb( 255,255,255 )", "rgb( 96,96,96 )"   )
-   ENDSWITCH
-   RETURN ""
-
-
-FUNCTION __hbqtCSSFromColorString( cColor )
-   LOCAL cCSS := ""
-   LOCAL n, xFore, xBack, lExt, cCSSF, cCSSB
-
-      IF ( n := At( "/", cColor ) ) > 0
-         xFore := AllTrim( SubStr( cColor, 1, n-1 ) )
-         xBack := AllTrim( SubStr( cColor, n+1 ) )
-      ELSE
-         xFore := AllTrim( cColor )
-         xBack := ""
-      ENDIF
-
-      IF ! Empty( xFore )
-         lExt := At( "+", xFore ) > 0
-         xFore := StrTran( StrTran( xFore, "+" ), "*" )
-         cCSSF := __hbqtRgbStringFromColorString( xFore, lExt )
-      ENDIF
-      IF ! Empty( xBack )
-         lExt := "+" $ xBack .OR. "*" $ xBack
-         xBack := StrTran( StrTran( xBack, "+" ), "*" )
-         cCSSB := __hbqtRgbStringFromColorString( xBack, lExt )
-      ENDIF
-      IF ! Empty( cCSSF )
-         cCSS := "color: " + cCSSF
-      ENDIF
-      IF ! Empty( cCSSB )
-         cCSS += "; background-color: " + cCSSB
-      ENDIF
-
-      IF ! Empty( cCSS )
-         cCSS += ";"
-      ENDIF
-
-   RETURN cCSS
-
-
-FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
-
-   LOCAL lExt, cClr, n, xFore, xBack
-
-   IF Empty( cColor )
-      IF nRole == Qt_BackgroundRole
-         RETURN Qt_white
-      ELSE
-         RETURN Qt_black
-      ENDIF
-   ENDIF
-
-   cColor := Upper( cColor )
-
-   IF ( n := At( "/", cColor ) ) > 0
-      xFore := AllTrim( SubStr( cColor, 1, n-1 ) )
-      xBack := AllTrim( SubStr( cColor, n+1 ) )
-   ELSE
-      xFore := AllTrim( cColor )
-      xBack := ""
-   ENDIF
-
-   IF nRole == Qt_BackgroundRole
-      lExt := "+" $ xBack .OR. "*" $ xBack
-      cClr := StrTran( StrTran( xBack, "+" ), "*" )
-   ELSEIF nRole == Qt_ForegroundRole
-      lExt := "+" $ xFore .OR. "*" $ xFore
-      cClr := StrTran( StrTran( xFore, "+" ), "*" )
-   ENDIF
-
-   SWITCH cClr
-   CASE "N"
-      RETURN iif( lExt, Qt_darkGray, Qt_black       )
-   CASE "B"
-      RETURN iif( lExt, Qt_blue    , Qt_darkBlue    )
-   CASE "G"
-      RETURN iif( lExt, Qt_green   , Qt_darkGreen   )
-   CASE "BG"
-      RETURN iif( lExt, Qt_cyan    , Qt_darkCyan    )
-   CASE "R"
-      RETURN iif( lExt, Qt_red     , Qt_darkRed     )
-   CASE "RB"
-      RETURN iif( lExt, Qt_magenta , Qt_darkMagenta )
-   CASE "GR"
-      RETURN iif( lExt, Qt_yellow  , Qt_darkYellow  )
-   CASE "W"
-      RETURN iif( lExt, Qt_white   , Qt_lightGray   )
-
-   ENDSWITCH
-
-   RETURN 0
-
-
-FUNCTION __hbqtGetWindowFrameWidthHeight( oWnd )
-   LOCAL oRectFG := oWnd:frameGeometry()
-   LOCAL oRectG  := oWnd:geometry()
-
-   RETURN { oRectFG:width() - oRectG:width(), oRectFG:height() - oRectG:height() }
 

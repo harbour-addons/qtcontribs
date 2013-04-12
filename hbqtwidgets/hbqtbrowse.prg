@@ -117,29 +117,21 @@ STATIC FUNCTION _SKIP_RESULT( xResult )
 
 
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )
-   LOCAL oDlg, oLay, oBrw, nX, nY, nW, nH, oFM, nOH, oPos
+   LOCAL oDlg, oLay, oBrw, nX, nY, nW, nH, aInfo
 
+   __defaultNIL( @oFont , HbQtSet( _QSET_GETSFONT ) )
    __defaultNIL( @lOnTop, .F. )
 
    IF lOnTop
-      oFM  := QFontMetrics( oParent:font() )
-      nX   := ( oFM:averageCharWidth() * nLeft ) + 6
-      nOH  := oFM:height() + HbQtSet( _QSET_LINESPACING ) + HbQtSet( _QSET_EDITSPADDING )
-      nY   := nOH * nTop
-      nW   := ( nRight - nLeft + 1 ) * oFM:averageCharWidth()
-      nH   := ( nBottom - nTop + 1 ) * nOH
-
-      oPos := oParent:mapToGlobal( QPoint( nX, nY ) )
-      nX   := oPos:x()
-      nY   := oPos:y()
+      aInfo := __hbqtGetXYFromRowColumn( oParent, nTop, nLeft, oFont )
+      nX := aInfo[ 1 ]; nY := aInfo[ 2 ]; nW := aInfo[ 3 ] * ( nRight - nLeft + 1 ) ; nH := aInfo[ 4 ] * ( nBottom - nTop + 1 )
 
       WITH OBJECT oDlg := QDialog( oParent )
          :setWindowFlags( Qt_Dialog + Qt_CustomizeWindowHint )
          :move( nX, nY )
          :resize( nW, nH )
          :connect( QEvent_Close, {|| oDlg:setParent( QWidget() ) } )
-         :connect( QEvent_Show , {|| oDlg:move( nX - ( ( oDlg:frameGeometry():width() - oDlg:geometry():width()   ) / 2 ), ;
-                                                nY - ( ( oDlg:frameGeometry():height() - oDlg:geometry():height() ) / 2 ) ) } )
+         :connect( QEvent_Show , {|| __hbqtPositionWindowClientXY( oDlg, nX, nY ) } )
       ENDWITH
 
       oLay := QVBoxLayout( oDlg )

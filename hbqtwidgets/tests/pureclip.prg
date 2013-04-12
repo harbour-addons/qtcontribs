@@ -56,7 +56,8 @@ FUNCTION Main()
    @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!KA"
 
    @  2, 02 SAY PadL( "Birthday:", nPdL )
-   @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
+   @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" ;
+      VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:buffer(), oGet:varGet(), oGet:updateBuffer(), oGet:buffer(), oGet:unTransform() ), dDate >= 0d19560604 }
 
    @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL )
    @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
@@ -67,10 +68,10 @@ FUNCTION Main()
    @  5, nColGet GET cTele PICTURE "@! (999)999-9999"
 
    @  6, 02 SAY PadL( "Upper Lower Upper:", nPdL )
-   @  6, nColGet GET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) }
+   @  6, nColGet GET cJust PICTURE "@A" COLOR "W+/B*" VALIDATOR {|cText,nPos| UpperLowerUpper( @cText, @nPos ) } VALID {|| GetAsChild_1() }
 
    @  7, 02 SAY PadL( "Scrolling Catalog:", nPdL )
-   @  7, nColGet GET cCata PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
+   @  7, nColGet GET cCata PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"  VALID {|| GetAsChild() }
 
    @  1, 52 SAY "Val[1]"
    @  1, 60 GET val[1] PICTURE "@!"
@@ -107,6 +108,43 @@ FUNCTION Main()
    QApplication():exec()
 
    RETURN NIL
+
+
+STATIC FUNCTION GetAsChild_1()
+   LOCAL oWnd    := GetActive():parent()
+   LOCAL nYear   := 0, nMonth := 0
+   LOCAL SayList := {}, GetList := {}
+   LOCAL kf2     := SetKey( K_F2, {|| BrowseArray( oWnd ) } )
+
+   @ 1, 2 SAY "Year :" GET nYear  PICTURE "@Z 9999"
+   @ 2, 2 SAY "Month:" GET nMonth PICTURE "@Z 99"
+
+   READ ;
+      LASTGETBLOCK {|| GetActive():parent():close() } ;
+      ATTRIBUTES   { { _QGET_ATTRB_ATROWCOLUMNONTOPOF, { oWnd, GetActive():Row(), GetActive():Col() } } } ;
+
+   SetKey( K_F2, kf2 )
+
+   RETURN .T.
+
+STATIC FUNCTION GetAsChild()
+   LOCAL oWnd    := GetActive():parent()
+   LOCAL nYear   := 0, nMonth := 0
+   LOCAL SayList := {}, GetList := {}
+   LOCAL kf2     := SetKey( K_F2, {|| BrowseArray( oWnd ) } )
+
+   @ 0.2, 1 SAY "Year :" GET nYear  PICTURE "@Z 9999"
+   @ 1.2, 1 SAY "Month:" GET nMonth PICTURE "@Z 99"
+
+   READ ;
+      LASTGETBLOCK {|| GetActive():parent():close() } ;
+      ATTRIBUTES   { { _QGET_ATTRB_ATROWCOLUMNONTOPOF, { oWnd, GetActive():Row(), GetActive():Col(), .T. } } } ;
+      NOFOCUSFRAME ;
+      TITLE        "MonthYear"
+
+   SetKey( K_F2, kf2 )
+
+   RETURN .T.
 
 
 STATIC FUNCTION UpperLowerUpper( cText, nPos )

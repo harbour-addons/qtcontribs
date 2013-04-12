@@ -1,5 +1,5 @@
 /*
- * $$
+ * $Id$
  */
 
 /*
@@ -41,8 +41,7 @@ PROCEDURE Main( ... )
 
    ShowMainForm()
 
-   oQtApp:exit()
-   oQtApp:quit()
+   oQtApp:exec()
 
    RETURN
 
@@ -72,7 +71,6 @@ PROCEDURE ShowMainForm()
    END WITH
 
    oWnd:show()
-   oQtApp:exec()
 
    RETURN
 
@@ -116,6 +114,7 @@ STATIC PROCEDURE CopyAction( oParent )
          // to perform Drag&Drop
          :viewport:setAcceptDrops(.F.)                               // http://qt-project.org/doc/qt-4.8/qabstractscrollarea.html#viewport
                                                                      // http://qt-project.org/doc/qt-4.8/qwidget.html#acceptDrops-prop
+         :setAcceptDrops(.F.)
          :setDragEnabled( .T. )                                      // http://qt-project.org/doc/qt-4.8/qabstractitemview.html#dragEnabled-prop
          :setDropIndicatorShown(.T.)                                 // http://qt-project.org/doc/qt-4.8/qabstractitemview.html#showDropIndicator-prop
          :setDragDropMode( QAbstractItemView_DragOnly )              // http://qt-project.org/doc/qt-4.8/qabstractitemview.html#dragDropMode-prop
@@ -144,6 +143,7 @@ STATIC PROCEDURE CopyAction( oParent )
          :connect( "cellActivated(int,int)", {|nRow,nCol| QcellActivated( nRow, nCol ) } )   // trick to keep object alive
          // to perform Drag&Drop
          :viewport:setAcceptDrops(.T.)
+         :setAcceptDrops(.T.)
          :setDragEnabled( .T. )
          :setDropIndicatorShown(.T.)
          :setDragDropMode( QAbstractItemView_DropOnly )
@@ -216,6 +216,7 @@ STATIC PROCEDURE MoveAction( oParent )
          // to perform Drag&Drop
          :viewport:setAcceptDrops(.F.)                               // http://qt-project.org/doc/qt-4.8/qabstractscrollarea.html#viewport
                                                                      // http://qt-project.org/doc/qt-4.8/qwidget.html#acceptDrops-prop
+         :setAcceptDrops(.F.)
          :setDragEnabled( .T. )                                      // http://qt-project.org/doc/qt-4.8/qabstractitemview.html#dragEnabled-prop
          :setDropIndicatorShown(.T.)                                 // http://qt-project.org/doc/qt-4.8/qabstractitemview.html#showDropIndicator-prop
          :setDragDropMode( QAbstractItemView_DragOnly )              // http://qt-project.org/doc/qt-4.8/qabstractitemview.html#dragDropMode-prop
@@ -244,6 +245,7 @@ STATIC PROCEDURE MoveAction( oParent )
          :connect( "cellActivated(int,int)", {|nRow,nCol| QcellActivated( nRow, nCol ) } )   // trick to keep object alive
          // to perform Drag&Drop
          :viewport:setAcceptDrops(.T.)
+         :setAcceptDrops(.T.)
          :setDragEnabled( .T. )
          :setDropIndicatorShown(.T.)
          :setDragDropMode( QAbstractItemView_DropOnly )

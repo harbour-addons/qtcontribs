@@ -16,6 +16,62 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-11 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r204)
+  * hbide/edit.prg
+    % Minor.
+
+  * hbqt/tests/draganddrop.prg
+    % Changed: source with SVN Id and some more tweaks, forwarded by Luigi.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: misc.prg.
+   
+  + hbqtwidgets/misc.prg
+    % Separated: miscellaneous functions spread in HbQtWidgets sources.
+    + Added: few more utility functions in a hope that end-user will also 
+       be needing them at some point of development.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Simplified: code to take use of HbQtWidgets Public API.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed: ACCESS oGET:changed
+             ACCESS oGET:picture
+             ACCESS oGET:unTransform()
+                Loosely tested, please shout if not proper.
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: another ATTRIBUTE - _QGET_ATTRB_ATROWCOLUMNONTOPOF
+             An Array representing { oWnd, nRow, nCol, lMovable }.
+             Used to Fetch another GETs on top of a GETs window.
+             ( Read Below )
+
+  * hbqtwidgets/getlist.prg
+    + Implemented: To fetch another GETs on top of a GETs window passing
+       Window, Row, Column, IfMovable coordinates as part of the 
+       QREAD ... ATTRIBUTES clause. This attribute can be assigned to 
+       ATTRIBUTES array as 
+         aAttrbs := {}
+         AAdd( aAttrbs, { ... } )
+         AAdd( aAttrbs, { _QGET_ATTRB_ATROWCOLUMNONTOPOF, 
+                              { <oWnd>, <nRow>, <nCol>, [<lIfMOvable>] } } )
+       If passed this attribute, a modal dialog will be position on the 
+       XY position ascertained from <nRow>,<nCol> of <oWnd> based on 
+       the font set on <oWnd> if that is of type fixedPitch(), otherwise
+       via font of current GETs font. If <lIfMovable> is passed as TRUE,
+       then dialog will be decorated with a TitleBar but without any 
+       other buttons, just to facilitate appln user to move it around if 
+       there is a need, otherwise, dialog will be without a titlebar 
+       and hence will not be movable.
+
+       This implementation enables us to overcome yet another porting issue
+       where one has to write a lot of code to achieve similar functionality.
+
+  * hbqtwidgets/tests/pureclip.prg
+    + Added: code to demonstrate how another GET window can be initiated 
+        from within VALID/WHEN clauses forming extention to existing 
+        GETs.
+
 2013-04-09 02:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r203)
    + hbqt/tests/draganddrop.prg
      + Added: a demo appln which demonstrate how rows can be moved/copied

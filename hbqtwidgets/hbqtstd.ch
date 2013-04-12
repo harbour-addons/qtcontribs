@@ -82,6 +82,7 @@
    /* Additiona parameters for GETs window - QREAD ... ATTRIBUTES <aAttribs> */
    #define _QGET_ATTRB_SETMODE                    1        /* SetMode() Equivalent Array - { nRows, nColumns } */
    #define _QGET_ATTRB_RESIZABLE                  2        /* Logical to flag if window is resizable . Default is TRUE */
+   #define _QGET_ATTRB_ATROWCOLUMNONTOPOF         3        /* Array representing { oWnd, nRow, nCol, lMovable } */
 
    /* Constants for _QGET_DATA array elements */
    #define _QDATA_LISTBOX_ITEMS                   1

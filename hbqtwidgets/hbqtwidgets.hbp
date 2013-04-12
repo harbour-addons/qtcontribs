@@ -33,6 +33,8 @@ statusbar.prg
 menues.prg
 treeview.prg
 
+misc.prg
+
 hbqtwidgets.qrc
 
 scroll.ui
