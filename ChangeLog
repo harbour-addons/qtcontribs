@@ -16,6 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-14 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r205)
+  * hbqtwidgets/getsys.prg
+    ! Fixed: various instance variables of GET object, e.g., :buffer(), :updateBuffer(), etc.
+        Reported by Zoran Sibinovic with test code.
+       
+  + hbqtwidgets/tests/getsinfo.prg
+    + Added: test code to determine various attributes of GETs based on picture 
+        functions and templates. Test code is provided by Nenad ( as per Zoran's message ).
+        I have just refined it to be usable with pure Harbour.
+        For HbQt, compile it as : hbmk2 getsinfo -d__QT__ -run -inc.
+        For Clipper, compile it as ( and in placing it in harbour/tests ) : hbmk2 getsingo -run -inc.
+          
+    ; Please report back if any attribute is still misbehaving.
+
 2013-04-11 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r204)
   * hbide/edit.prg
     % Minor.
