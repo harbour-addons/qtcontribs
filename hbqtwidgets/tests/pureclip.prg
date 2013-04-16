@@ -76,7 +76,7 @@ FUNCTION Main()
    @  1, 52 SAY "Val[1]"
    @  1, 60 GET val[1] PICTURE "@!"
    @  2, 52 SAY "Val[2]"
-   @  2, 60 GET val[2] PICTURE "99"
+   @  2, 60 GET val[2] PICTURE "@K 99"
    @  3, 52 SAY "Val[3]"
    @  3, 60 GET val[3]
 
@@ -84,7 +84,7 @@ FUNCTION Main()
    @  5, 60, 5, 69 GET cDeptt COMBOBOX aDeptt VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:varGet() ), .T. }
 
    @  7, 52 SAY "Salary:"
-   @  7, 60 GET nSlry PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+   @  7, 60 GET nSlry PICTURE "@KE 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
 
    @  9, 48 SAY "Done:"
    @  9, 54 GET lDone CHECKBOX

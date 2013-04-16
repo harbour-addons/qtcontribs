@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-15 18:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r206)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: to honor PICTURE sent to :cellEdit( <cPicture>,... ) call.
+
+  * hbqtwidgets/getlist.prg
+    ! Fixed: many artifacts.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed: many buffer management artifacts.
+
+  * hbqtwidgets/tests/getsinfo.prg
+    + Added: more variable types and pictures to test differences with 
+       Clipper GET system.
+
+  * hbqtwidgets/tests/browdb.prg
+    ! Fixed: editing of a field was not reflecting in column.
+       :refreshCurrent() was missing.
+
+  * hbqtwidgets/tests/pureclip.prg
+  * hbqtwidgets/tests/validator.prg
+    % Added: PICTURE clauses with different parameters to demonstrate 
+       Clipper functionality.
+
 2013-04-14 15:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r205)
   * hbqtwidgets/getsys.prg
     ! Fixed: various instance variables of GET object, e.g., :buffer(), :updateBuffer(), etc.

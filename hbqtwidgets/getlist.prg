@@ -292,13 +292,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          IF HB_ISBLOCK( aEdit[ _QGET_PROPERTIES ] )
             Eval( aEdit[ _QGET_PROPERTIES ], oEdit, oEdit:edit() )
          ENDIF
-
-         IF __objGetClsName( oEdit:edit() ) == "QLINEEDIT"
-            oEdit:edit:selectAll()
-         ENDIF
       NEXT
-
-      aGetList[ 1 ]:edit:setFocus()
 
       IF lFit                                     /* Fit to the contents maintaining margins */
          IF lFLayout
@@ -323,6 +317,8 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    ENDIF
 
    IF ! HB_ISOBJECT( oParent )
+      oWnd:connect( QEvent_WindowActivate, {|| oGetList:setFocus( aGetList[ 1 ] ), oWnd:disconnect( QEvent_WindowActivate ), .F. } )
+
       IF lExec
          oWnd:exec()
       ELSE
@@ -501,12 +497,8 @@ METHOD HbQtGetList:setFocus( xGet, nReason )
    ENDIF
    IF HB_ISOBJECT( oGet )
       IF oGet:cClassName == "QLINEEDIT"
-         IF ! ( "K" $ oGet:cPicFunc )
-            oGet:setFocus( Qt_OtherFocusReason )
-            oGet:edit():home( .F. )
-         ELSE
-            oGet:setFocus( nReason )
-         ENDIF
+         oGet:setFocus( iif( "K" $ oGet:cPicFunc, nReason, Qt_OtherFocusReason ) )
+         oGet:positionCursor()
       ELSE
          oGet:setFocus( nReason )
       ENDIF

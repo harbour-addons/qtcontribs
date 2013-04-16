@@ -2550,15 +2550,21 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
 
    QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) } NOFOCUSFRAME
 
-   oDlg:setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
-   oDlg:setAttribute( Qt_WA_TranslucentBackground, .T. )
-   oDlg:move( oPos:x - 6, oPos:y() )
-   IF HB_ISNUMERIC( nKey )
-      IF ! ( "K" $ Upper( cPicture ) ) .AND. ValType( xValue ) == "C"
-         GetList[ 1 ]:edit():home( .F. )
-      ENDIF
-      GetList[ 1 ]:edit():insert( Chr( nKey ) )
-   ENDIF
+   WITH OBJECT oDlg
+      :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
+      :setAttribute( Qt_WA_TranslucentBackground, .T. )
+      :move( oPos:x - 6, oPos:y() )
+      :connect( QEvent_Show, {||
+                                 IF HB_ISNUMERIC( nKey )
+                                    GetList[ 1 ]:edit():insert( Chr( nKey ) )
+                                    IF "K" $ GetList[ 1 ]:picture()
+                                       GetList[ 1 ]:edit():end( .F. )
+                                    ENDIF
+                                 ENDIF
+                                 RETURN .F.
+                             } )
+   ENDWITH
+
    nRes := oDlg:exec()
    oDlg:setParent( QWidget() )
 

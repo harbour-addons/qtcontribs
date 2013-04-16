@@ -1,4 +1,4 @@
-      /*
+/*
  * $Id$
  */
 
@@ -193,7 +193,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
       ENDIF
       xResult := oBrowse:editCell( , , , , nKey )
       IF xResult != NIL .AND. dbRLock()
-         REPLACE TEST->Salary WITH xResult
+         REPLACE TEST->salary WITH xResult
          dbCommit()
          dbRUnlock()
          oBrowse:refreshCurrent()
@@ -224,7 +224,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
       ELSE
          oBrowse:searchEx()   /* Deactivate previous search */
 
-         IF oCol:heading != "Last Name"
+         IF oCol:heading != "First Name"
             xResult := oBrowse:editCell( "@K ", , , , nKey )
          ELSE
             xResult := oBrowse:editCell( , , , , nKey )
@@ -235,6 +235,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
                ReplaceField( oBrowse, oBrowse:colPos, xResult )
                dbCommit()
                dbRUnlock()
+               oBrowse:refreshCurrent()
                oBrowse:Right()
             ENDIF
          ENDIF

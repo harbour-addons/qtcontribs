@@ -180,7 +180,7 @@ STATIC FUNCTION UiGets( oMain )
    oWnd:setWindowTitle( "Qt Designer Integrated GETs" )
    oWnd:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( oWnd:oWidget, QCloseEvent() ), NIL ) } )
 
-   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText  CONTROL oWnd:editUpper  PICTURE "@!A" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
+   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText  CONTROL oWnd:editUpper  PICTURE "@!KA" VALID {|oGet| oGet:varGet() == "ABC" .OR. cText == "DEF" }
 
    @ 2, 02 SAY PadL( "Birthday:", nPdL )              GET dDate  CONTROL oWnd:editBDay   COLOR   "B/GR*" WHEN {|| cText == "ABC" }  VALID dDate >= 0d19560604
 
@@ -195,7 +195,7 @@ STATIC FUNCTION UiGets( oMain )
    @ 7, 02 SAY PadL( "Scrolling Catalog:", nPdL )     GET cCata  CONTROL oWnd:editCata   PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
 
    @ 1, 52 SAY "Val[1]"                               GET val[1] CONTROL oWnd:editVal1   PICTURE "@!"
-   @ 2, 52 SAY "Val[2]"                               GET val[2] CONTROL oWnd:editVal2   PICTURE "99"
+   @ 2, 52 SAY "Val[2]"                               GET val[2] CONTROL oWnd:editVal2   PICTURE "@K 99"
    @ 3, 52 SAY "Val[3]"                               GET val[3] CONTROL oWnd:editVal3
 
    @ 7, 52 SAY "Salary:"                              GET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
@@ -260,7 +260,7 @@ STATIC FUNCTION OOPLayout( oMain )
    oEdit1                := HbQtGet():new()
    oEdit1:parent         := oWnd
    oEdit1:postBlock      := {|oGet| oGet:varGet() == "ABC" .OR. oGet:varGet() == "DEF" }
-   oEdit1:picture        := "@!A"
+   oEdit1:picture        := "@!KA"
    oEdit1:block          := {|x| iif( x == NIL, cText, cText := x ) }
    oEdit1:create()
    oFLayout:addRow( "Alpha - Upper Cased Alphabets:", oEdit1:edit() )
@@ -371,7 +371,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    SayList       := {}
 
    /* Harbour standards SAYs and GETs */
-   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!A"
+   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!KA"
 
    @  2, 02 SAY PadL( "Birthday:", nPdL )
    @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
@@ -393,7 +393,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    @  1, 52 SAY "Val[1]"
    @  1, 60 GET val[1] PICTURE "@!"
    @  2, 52 SAY "Val[2]"
-   @  2, 60 GET val[2] PICTURE "99"
+   @  2, 60 GET val[2] PICTURE "@K 99"
    @  3, 52 SAY "Val[3]"
    @  3, 60 GET val[3]
 

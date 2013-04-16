@@ -17,8 +17,11 @@ FUNCTION Main()
 
    LOCAL cVar1   := Space(5)
    LOCAL cVar2   := space( 13 )
-   LOCAL cVar3   := CTOD("")
+   LOCAL cVar3   := CToD( "" )
+   LOCAL cVar4   := 200
+   LOCAL cVar5   := 10.15
    LOCAL GetList := {}
+   LOCAL nRow
 #ifdef __QT__
    LOCAL lOK     := .t.
    LOCAL lCancel := .f.
@@ -35,13 +38,17 @@ FUNCTION Main()
    hbqt_errorsys()
 #endif
 
-   @ 1,2 SAY "Var2:" GET cVar2 PICTURE "(999)999-9999" VALID vName()
-   @ 3,2 SAY "Var1:" GET cVar1 PICTURE "@R 99-99-9"    VALID vName()
-   @ 5,2 SAY "Var3:" GET cVar3                         VALID vName()
+   nRow := 1
+
+   @ nRow++,2 SAY "N:999.99       " GET cVar5 PICTURE "999.99"        VALID vName()
+   @ nRow++,2 SAY "C:(999)999-9999" GET cVar2 PICTURE "(999)999-9999" VALID vName()
+   @ nRow++,2 SAY "C:@R 99-99-9   " GET cVar1 PICTURE "@R 99-99-9"    VALID vName()
+   @ nRow++,2 SAY "D:             " GET cVar3                         VALID vName()
+   @ nRow++,2 SAY "N:@KZ 99999    " GET cVar4 PICTURE "@KZ 99999"     VALID vName()
 
 #ifdef __QT__
-   @ 4, 25, 4, 35 GET lOk     PUSHBUTTON "Ok"     ACTION {|| GetActive():parent():close() }
-   @ 4, 40, 4, 50 GET lCancel PUSHBUTTON "Cancel" ACTION {|| GetActive():parent():close() }
+   @ 1, 50, 1, 60 GET lCancel PUSHBUTTON "Cancel" ACTION {|| GetActive():parent():close() }
+   @ 3, 50, 3, 60 GET lOk     PUSHBUTTON "Ok"     ACTION {|| GetActive():parent():close() }
 #endif
 
    READ
@@ -50,7 +57,7 @@ FUNCTION Main()
    QApplication():exec()
 #endif
 
-   RETURN NIL
+   RETURN nRow
 
 
 STATIC FUNCTION VName()
@@ -63,6 +70,7 @@ STATIC FUNCTION VName()
    AADD( aMsg, { "untransform," , "", GetActive():untransform(), "" } )
    AADD( aMsg, { "varget     ," , "", GetActive():varget()     , "" } )
    AADD( aMsg, { "picture    ," , "", GetActive():picture()    , "" } )
+   AADD( aMsg, { "changed    ," , "", GetActive():changed()    , "" } )
 
    GetActive():updatebuffer()
 
@@ -71,9 +79,9 @@ STATIC FUNCTION VName()
    AADD( aMsg, { "untransform," , "", GetActive():untransform(), "" } )
    AADD( aMsg, { "varget     ," , "", GetActive():varget()     , "" } )
    AADD( aMsg, { "picture    ," , "", GetActive():picture()    , "" } )
+   AADD( aMsg, { "changed    ," , "", GetActive():changed()    , "" } )
 
    FOR i := 1 TO Len( aMsg )
-
        aMsg[ i,2 ] := ValType( aMsg[ i, 3 ] )
 
        DO CASE
@@ -83,7 +91,6 @@ STATIC FUNCTION VName()
        CASE aMsg[ i, 2 ] == "L" ; aMsg[ i, 4 ] := iif( aMsg[ i, 3 ], ".T." , ".F." )
        OTHERWISE ; aMsg[ 1, 4 ] := "undefined"
        ENDCASE
-
    NEXT
 
    Msgwnd( NIL, aMsg )
@@ -105,12 +112,14 @@ STATIC FUNCTION Msgwnd( oWnd, aMsg )
    SetLabel( oDlg, 5, 3, BuildMsg( aMsg[ 3 ] ) )
    SetLabel( oDlg, 5, 4, BuildMsg( aMsg[ 4 ] ) )
    SetLabel( oDlg, 5, 5, BuildMsg( aMsg[ 5 ] ) )
-   SetLabel( oDlg, 5, 7, "After GetActive():updatebuffer()" )
-   SetLabel( oDlg, 5, 9, BuildMsg( aMsg[ 6 ] ) )
+   SetLabel( oDlg, 5, 6, BuildMsg( aMsg[ 6 ] ) )
+   SetLabel( oDlg, 5, 8, "After GetActive():updatebuffer()" )
    SetLabel( oDlg, 5,10, BuildMsg( aMsg[ 7 ] ) )
    SetLabel( oDlg, 5,11, BuildMsg( aMsg[ 8 ] ) )
    SetLabel( oDlg, 5,12, BuildMsg( aMsg[ 9 ] ) )
    SetLabel( oDlg, 5,13, BuildMsg( aMsg[10 ] ) )
+   SetLabel( oDlg, 5,14, BuildMsg( aMsg[11 ] ) )
+   SetLabel( oDlg, 5,15, BuildMsg( aMsg[12 ] ) )
 
    oDlg:exec()
 
@@ -126,14 +135,16 @@ STATIC FUNCTION Msgwnd( oWnd, aMsg )
    AAdd( aMnu, BuildMsg( aMsg[ 3 ] ) )
    AAdd( aMnu, BuildMsg( aMsg[ 4 ] ) )
    AAdd( aMnu, BuildMsg( aMsg[ 5 ] ) )
+   AAdd( aMnu, BuildMsg( aMsg[ 6 ] ) )
    AAdd( aMnu, "   ;" )
    AAdd( aMnu, "After GetActive():updatebuffer();" )
    AAdd( aMnu, "   ;" )
-   AAdd( aMnu, BuildMsg( aMsg[ 6 ] ) )
    AAdd( aMnu, BuildMsg( aMsg[ 7 ] ) )
    AAdd( aMnu, BuildMsg( aMsg[ 8 ] ) )
    AAdd( aMnu, BuildMsg( aMsg[ 9 ] ) )
    AAdd( aMnu, BuildMsg( aMsg[10 ] ) )
+   AAdd( aMnu, BuildMsg( aMsg[11 ] ) )
+   AAdd( aMnu, BuildMsg( aMsg[12 ] ) )
 
    AEval( aMnu, {|e| s += e } )
    Alert( s )

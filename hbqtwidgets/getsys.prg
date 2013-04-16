@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id: hbqtgetsys.prg 175 2013-02-23 03:27:00Z bedipritpal $
  */
 
@@ -104,6 +104,7 @@ CLASS HbQtGet INHERIT GET
    METHOD toCol( nCol )                           SETGET
    METHOD data( xData )                           SETGET
    METHOD tooltip( cTip )                         SETGET
+   METHOD positionCursor()
 
 
    PROTECTED:
@@ -208,7 +209,6 @@ CLASS HbQtGet INHERIT GET
    METHOD overStrike( cChar )                     VIRTUAL
 
    METHOD untransform()
-   ACCESS changed                                 INLINE ::lChanged
    ACCESS buffer                                  METHOD getBuffer()
    ASSIGN buffer                                  METHOD setBuffer( cBuffer )
 
@@ -302,39 +302,41 @@ METHOD HbQtGet:create( oControl )
    ::setParams()
    ::setData( ::original )
 
-   IF ::cClassName == "QLINEEDIT"
-      ::oEdit:setCursorPosition( 0 )
-   ENDIF
-
    ::oEdit:setToolTip( ::tooltip )
+   ::lChanged := .F.
+
+   IF ::cClassName == "QLINEEDIT"
+      ::oEdit:home( .F. )
+      ::positionCursor()
+   ENDIF
 
    RETURN Self
 
 
 METHOD HbQtGet:connect()
 
-   ::oEdit:connect( QEvent_FocusOut          , {|oFocusEvent| ::execFocusOut( oFocusEvent )                  } )
-   ::oEdit:connect( QEvent_FocusIn           , {|oFocusEvent| ::execFocusIn( oFocusEvent )                   } )
-   ::oEdit:connect( QEvent_KeyPress          , {|oKeyEvent  | ::lChanged := .T., ::execKeyPress( oKeyEvent ) } )
+   ::oEdit:connect( QEvent_FocusOut, {|oFocusEvent| ::execFocusOut( oFocusEvent ) } )
+   ::oEdit:connect( QEvent_FocusIn , {|oFocusEvent| ::execFocusIn( oFocusEvent )  } )
+   ::oEdit:connect( QEvent_KeyPress, {|oKeyEvent  | ::execKeyPress( oKeyEvent )   } )
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T.                                         } )
+      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T. } )
       EXIT
    CASE "QPLAINTEXTEDIT"
       EXIT
    CASE "QLISTWIDGET"
       EXIT
    CASE "QCOMBOBOX"
-      ::oEdit:connect( "currentIndexChanged(QString)", {|p|  ::cBuffer := p, ::assign()                      } )
+      ::oEdit:connect( "currentIndexChanged(QString)", {|p|  ::cBuffer := p, ::assign()            } )
       EXIT
    CASE "QPUSHBUTTON"
-      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )             } )
-      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )           } )
+      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )   } )
+      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent ) } )
       EXIT
    CASE "QCHECKBOX"
-      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )             } )
-      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent )           } )
+      ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )   } )
+      ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent ) } )
       EXIT
    ENDSWITCH
 
@@ -875,63 +877,6 @@ METHOD HbQtGet:picture( cPicture )
    RETURN ::cPicture
 
 
-// ACCESS buffer
-METHOD HbQtGet:getBuffer()
-
-   SWITCH ::cClassName
-   CASE "QLINEEDIT"
-      ::cBuffer := Transform( ::unTransformProper( ::oEdit:text() ), ::cPicture )
-      EXIT
-   CASE "QPLAINTEXTEDIT"
-      ::cBuffer := ::oEdit:toPlainText()
-      EXIT
-   CASE "QLISTWIDGET"
-      ::cBuffer := ::oEdit:currentItem():text()
-      EXIT
-   CASE "QCOMBOBOX"
-      ::cBuffer := ::oEdit:currentText()
-      EXIT
-   CASE "QPUSHBUTTON"
-      ::cBuffer := ::oEdit:isDown()
-      EXIT
-   CASE "QCHECKBOX"
-      ::cBuffer := ::oEdit:isChecked()
-      EXIT
-   ENDSWITCH
-
-   RETURN ::cBuffer
-
-
-// ASSIGN buffer
-METHOD HbQtGet:setBuffer( cBuffer )
-
-   ::cBuffer := cBuffer
-
-   SWITCH ::cClassName
-   CASE "QLINEEDIT"
-      ::oEdit:setText( ::unTransformThis( ::cBuffer ) )
-      EXIT
-   CASE "QPLAINTEXTEDIT"
-      ::oEdit:setPlainText( ::cBuffer )
-      EXIT
-   CASE "QLISTWIDGET"
-      ::oEdit:setCurrentRow( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e|  e == cBuffer } ) - 1 )
-      EXIT
-   CASE "QCOMBOBOX"
-      ::oEdit:setCurrentIndex( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e|  e == cBuffer } ) - 1 )
-      EXIT
-   CASE "QPUSHBUTTON"
-      EXIT
-   CASE "QCHECKBOX"
-      ::oEdit:setChecked( cBuffer )
-      EXIT
-   ENDSWITCH
-
-   ::lChanged := .T.
-
-   RETURN NIL
-
-
 METHOD HbQtGet:setColor( cMode )
 
    IF HB_ISOBJECT( ::oEdit )
@@ -1031,13 +976,13 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       QApplication():sendEvent( ::oEdit, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
 
    ENDIF
-
+#if 0
    IF ::cClassName == "QLINEEDIT"
       IF ! ( "K" $ ::cPicFunc )
          QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Home, Qt_NoModifier ) )
       ENDIF
    ENDIF
-
+#endif
    RETURN .F.
 
 
@@ -1076,6 +1021,7 @@ METHOD HbQtGet:postValidate()
 
    IF lValid
       ::original := ::varGet()    /* Is it OK ? */
+      ::lChanged := .F.
 
       IF ! Empty( ::oGetList )
          IF ::oGetList:isLastGet( Self )
@@ -1123,7 +1069,12 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          oKeyEvent:accept() ; RETURN .T.
       ENDIF
    ENDIF
-
+#if 0
+   IF ::cClassName == "QLINEEDIT" .AND. nKey == K_CTRL_HOME
+      hbqtAlert( "HI" )
+      ::positionCursor()
+   ENDIF
+#endif
    SWITCH nKey
 
 #if 0
@@ -1373,7 +1324,6 @@ METHOD HbQtGet:assign()
 
    IF ::hasFocus
       ::varPut( ::getData() )
-      ::lChanged := .F.
    ENDIF
 
    RETURN Self
@@ -1488,26 +1438,6 @@ METHOD HbQtGet:inputValidator( bBlock )
    ENDIF
 
    RETURN ::sl_inputValidator
-
-
-METHOD HbQtGet:untransform()
-
-   SWITCH ::cClassName
-   CASE "QLINEEDIT"
-      RETURN ::unTransformProper( ::oEdit:text() )
-   CASE "QPLAINTEXTEDIT"
-      RETURN ::oEdit:toPlainText()
-   CASE "QLISTWIDGET"
-      RETURN ::oEdit:currentItem():text()
-   CASE "QCOMBOBOX"
-      RETURN ::oEdit:currentText()
-   CASE "QPUSHBUTTON"
-      RETURN iif( ::oEdit:isDown(), "T", "F" )
-   CASE "QCHECKBOX"
-      RETURN iif( ::oEdit:isChecked(), "T", "F" )
-   ENDSWITCH
-
-   RETURN ""
 
 
 METHOD HbQtGet:display()
@@ -1665,24 +1595,126 @@ METHOD HbQtGet:setData( xData )
    RETURN NIL
 
 
+// ACCESS buffer
+METHOD HbQtGet:getBuffer()
+
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      SWITCH ::cType
+      CASE "C"
+         ::cBuffer := Transform( ::unTransformProper( ::oEdit:text() ), ::cPicture )
+         EXIT
+      CASE "D"
+         ::cBuffer := Transform( ::oEdit:text(), ::cPicture )
+         EXIT
+      OTHERWISE
+         ::cBuffer := ::transformProper( ::unTransformProper( ::oEdit:text() ) )
+         EXIT
+      ENDSWITCH
+      EXIT
+   CASE "QPLAINTEXTEDIT"
+      ::cBuffer := ::oEdit:toPlainText()
+      EXIT
+   CASE "QLISTWIDGET"
+      ::cBuffer := ::oEdit:currentItem():text()
+      EXIT
+   CASE "QCOMBOBOX"
+      ::cBuffer := ::oEdit:currentText()
+      EXIT
+   CASE "QPUSHBUTTON"
+      ::cBuffer := ::oEdit:isDown()
+      EXIT
+   CASE "QCHECKBOX"
+      ::cBuffer := ::oEdit:isChecked()
+      EXIT
+   ENDSWITCH
+
+   RETURN ::cBuffer
+
+
+// ASSIGN buffer
+METHOD HbQtGet:setBuffer( cBuffer )
+
+   ::cBuffer := cBuffer
+
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      ::oEdit:setText( ::unTransformThis( ::cBuffer ) )
+      EXIT
+   CASE "QPLAINTEXTEDIT"
+      ::oEdit:setPlainText( ::cBuffer )
+      EXIT
+   CASE "QLISTWIDGET"
+      ::oEdit:setCurrentRow( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e|  e == cBuffer } ) - 1 )
+      EXIT
+   CASE "QCOMBOBOX"
+      ::oEdit:setCurrentIndex( AScan( ::sl_data[ _QDATA_LISTBOX_ITEMS ], {|e|  e == cBuffer } ) - 1 )
+      EXIT
+   CASE "QPUSHBUTTON"
+      EXIT
+   CASE "QCHECKBOX"
+      ::oEdit:setChecked( cBuffer )
+      EXIT
+   ENDSWITCH
+
+   RETURN NIL
+
+
 METHOD HbQtGet:transformProper( cBuffer )
    LOCAL cRet := ""
    LOCAL n, s, cChr
 
-   IF ! Empty( ::cPicMask )
-      n := 0
-      cRet := "" //Space( Len( ::cPicMask ) )
-      FOR EACH cChr IN ::cPicMask
-         IF cChr $ ::sl_maskChrs
-            cRet += cChr
-         ELSE
-            s := SubStr( cBuffer, ++n, 1 )
-            cRet += iif( s == "", " ", s )
-         ENDIF
-      NEXT
-   ELSE
+   SWITCH ::cType
+   CASE "C"
+      IF ! Empty( ::cPicMask )
+         n := 0
+         cRet := ""
+         FOR EACH cChr IN ::cPicMask
+            IF cChr $ ::sl_maskChrs
+               cRet += cChr
+            ELSE
+               s := SubStr( cBuffer, ++n, 1 )
+               cRet += iif( s == "", " ", s )
+            ENDIF
+         NEXT
+      ELSE
+         cRet := cBuffer
+      ENDIF
+      EXIT
+
+   CASE "N"
+#if 0
+      IF ! Empty( ::cPicMask )
+         n := 0
+         cRet := ""
+         FOR EACH cChr IN ::cPicMask
+            IF cChr $ "9"
+               cRet += cChr
+            ELSE
+               s := SubStr( cBuffer, ++n, 1 )
+               cRet += iif( s == "", " ", s )
+            ENDIF
+         NEXT
+      ELSE
+         cRet := cBuffer
+      ENDIF
+#endif
+      IF ! Empty( ::cPicMask )
+         cRet := PadL( cBuffer, Len( ::cPicMask ) )
+      ELSE
+         cRet := cBuffer
+      ENDIF
+      EXIT
+
+   CASE "D"
+      cRet :=  cBuffer
+      EXIT
+
+   OTHERWISE
       cRet := cBuffer
-   ENDIF
+      EXIT
+
+   ENDSWITCH
 
    RETURN cRet
 
@@ -1723,19 +1755,76 @@ METHOD HbQtGet:unTransformProper( cBuffer )
          cRet := Pad( cBuffer, ::sl_width )
       ENDIF
       EXIT
+
    CASE "N"
-      cRet := cBuffer
+      IF ! Empty( ::cPicMask )
+         cRet := ""
+         FOR EACH cChr IN cBuffer
+            IF cChr $ "+-0123456789"
+               cRet += cChr
+            ELSEIF cChr == ::sl_decProxy
+               cRet += "."
+            ENDIF
+         NEXT
+         cRet := ::transformProper( cRet )
+      ELSE
+         cRet := cBuffer
+      ENDIF
       EXIT
+
    CASE "D"
-      cRet := cBuffer
+      cRet := iif( Empty( CToD( cBuffer ) ), StrTran( ::sl_qMask, "9", " " ), Transform( cBuffer, ::sl_qMask ) )
       EXIT
+
    CASE "L"
       cRet := cBuffer
       EXIT
+
    OTHERWISE
       cRet := cBuffer
       EXIT
+
    ENDSWITCH
 
    RETURN cRet
+
+
+METHOD HbQtGet:untransform()
+
+   SWITCH ::cClassName
+   CASE "QLINEEDIT"
+      RETURN ::unTransformProper( ::oEdit:text() )
+   CASE "QPLAINTEXTEDIT"
+      RETURN ::oEdit:toPlainText()
+   CASE "QLISTWIDGET"
+      RETURN ::oEdit:currentItem():text()
+   CASE "QCOMBOBOX"
+      RETURN ::oEdit:currentText()
+   CASE "QPUSHBUTTON"
+      RETURN iif( ::oEdit:isDown(), "T", "F" )
+   CASE "QCHECKBOX"
+      RETURN iif( ::oEdit:isChecked(), "T", "F" )
+   ENDSWITCH
+
+   RETURN ""
+
+
+METHOD HbQtGet:positionCursor()
+   LOCAL cChr
+
+   IF ! ( "K" $ ::cPicFunc )
+      ::oEdit:home( .F. )
+      IF ! Empty( ::sl_qMask )
+         FOR EACH cChr IN ::sl_qMask
+            IF cChr $ "x9"
+               EXIT
+            ENDIF
+           ::oEdit:setCursorPosition( ::oEdit:cursorPosition() + 1 )
+         NEXT
+      ENDIF
+   ELSE
+      ::oEdit:selectAll()
+   ENDIF
+
+   RETURN NIL
 
