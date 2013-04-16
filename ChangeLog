@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-16 12:29 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r207)
+  * hbqtwidgets/misc.prg
+    % Changed: __hbqtGetXYFromRowColumn() => __hbqtGetGlobalXYFromRowColumn()
+
+  * hbqtwidgets/getlist.prg
+    % Function name change.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: positioning of browser column per horizontal slider movement.
+       Reported by Zoran.
+    ! Fixed: calling the :verticalMovementBlock() on vertical slider movement.
+        Again reported by Zoran.
+
 2013-04-15 18:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r206)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: to honor PICTURE sent to :cellEdit( <cPicture>,... ) call.

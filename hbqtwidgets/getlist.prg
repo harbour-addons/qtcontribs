@@ -154,7 +154,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          ASize( xAttrb, 4 )
          IF HB_ISARRAY( xAttrb ) .AND. Len( xAttrb ) >= 3 .AND. HB_ISOBJECT( xAttrb[ 1 ] ) .AND. HB_ISNUMERIC( xAttrb[ 2 ] ) .AND. HB_ISNUMERIC( xAttrb[ 3 ] )
             oWnd:setParent( xAttrb[ 1 ] )
-            aInfo := __hbqtGetXYFromRowColumn( xAttrb[ 1 ], xAttrb[ 2 ], xAttrb[ 3 ], oFont )
+            aInfo := __hbqtGetGlobalXYFromRowColumn( xAttrb[ 1 ], xAttrb[ 2 ], xAttrb[ 3 ], oFont )
             IF HB_ISLOGICAL( xAttrb[ 4 ] ) .AND. xAttrb[ 4 ]
                oWnd:setWindowFlags( Qt_Dialog + Qt_CustomizeWindowHint + Qt_WindowTitleHint )
             ELSE

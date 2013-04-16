@@ -259,7 +259,7 @@ FUNCTION __hbqtGetWindowFrameWidthHeight( oWnd )
    RETURN { oRectFG:width() - oRectG:width(), oRectFG:height() - oRectG:height() }
 
 
-FUNCTION __hbqtGetXYFromRowColumn( oWnd, nRow, nCol, oFont )  // => { nX, nY, nColWidth, nRowHeight }
+FUNCTION __hbqtGetGlobalXYFromRowColumn( oWnd, nRow, nCol, oFont )  // => { nX, nY, nColWidth, nRowHeight }
    LOCAL oFM, nX, nY, oPos, nOH
 
    IF oWnd:font():fixedPitch()

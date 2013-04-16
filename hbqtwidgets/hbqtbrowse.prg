@@ -123,7 +123,7 @@ FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )
    __defaultNIL( @lOnTop, .F. )
 
    IF lOnTop
-      aInfo := __hbqtGetXYFromRowColumn( oParent, nTop, nLeft, oFont )
+      aInfo := __hbqtGetGlobalXYFromRowColumn( oParent, nTop, nLeft, oFont )
       nX := aInfo[ 1 ]; nY := aInfo[ 2 ]; nW := aInfo[ 3 ] * ( nRight - nLeft + 1 ) ; nH := aInfo[ 4 ] * ( nBottom - nTop + 1 )
 
       WITH OBJECT oDlg := QDialog( oParent )
@@ -1704,6 +1704,10 @@ METHOD HbQtBrowse:updatePosition()
       ::refreshAll()
       ::forceStable()
       ::setCurrentIndex()
+
+      IF ::lVerticalMovementBlock
+         Eval( ::bVerticalMovementBlock, -999, NIL, Self )
+      ENDIF
    ENDIF
 
    RETURN Self
@@ -2029,6 +2033,7 @@ METHOD HbQtBrowse:skipCols( nCols )
          ::right()
       NEXT
    ENDIF
+   ::forceStable()
 
    RETURN Self
 
