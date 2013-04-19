@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-19 13:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r209)
+  * hbqt/tests/demoqt.prg
+    ! Fixed: <Exit> main menu option and ESCaping the main window.
+
 2013-04-18 19:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r208)
   * hbqtwidgets/hbqtbrowse.prg
   * hbqtwidgets/hbqtdbu.prg
@@ -35,7 +39,7 @@
        spread to its GetList Object.
     
     + Implemented: tying of SayList to GetList object in question.
-       It is used to 
+       It is used to reuse SAYs in DispOutAt() calls.
 
     + Added: __hbqtGetsActiveWindow() to retrieve the current window.
        This function is used to determine DispOutAt(), MaxRow(), MaxCol()

@@ -101,7 +101,7 @@ PROCEDURE ExecTheDialog()
    oDA    := QWidget( oWnd )
    oWnd:setCentralWidget( oDA )
 
-   aMenu  := Build_MenuBar( oWnd )
+   aMenu  := Build_MenuBar( oWnd, @lExit )
    aTool  := Build_ToolBar( oWnd )
 
    oWnd:statusBar():showMessage( "Harbour-QT Statusbar Ready!" )
@@ -116,8 +116,8 @@ PROCEDURE ExecTheDialog()
    oBtn := Build_PushButton( oDA, { 30,240 }, { 100,50 } )
    oBtn:setStyleSheet( "background: #a00fff;" )
 
-   oWnd:connect( QEvent_KeyPress, {|e| My_Events( oWnd, e ) } )
-   oWnd:connect( QEvent_Close   , {|| lExit := .t. } )
+   oWnd:connect( QEvent_KeyPress, {|e| My_Events( oWnd, e, @lExit ) } )
+   oWnd:connect( QEvent_Close   , {|| lExit := .T. } )
 
    oWnd:Show()
    oELoop := QEventLoop( oWnd )
@@ -139,8 +139,11 @@ PROCEDURE ExecTheDialog()
 
 /*----------------------------------------------------------------------*/
 
-FUNCTION My_Events( oWnd, e )
+FUNCTION My_Events( oWnd, e, lExit )
    MsgInfo( oWnd, "Pressed: " + hb_ntos( e:key() ) )
+   IF e:key() == Qt_Key_Escape
+      lExit := .T.
+   ENDIF
    RETURN nil
 
 /*----------------------------------------------------------------------*/
@@ -162,7 +165,7 @@ FUNCTION xReleaseMemory( aObj )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION Build_MenuBar( oWnd )
+STATIC FUNCTION Build_MenuBar( oWnd, lExit )
    LOCAL oMenuBar, oMenu1, oMenu2
    LOCAL oActNew, oActOpen, oActSave, oActExit
    LOCAL oActColors, oActFonts, oActPgSetup, oActPreview, oActWiz, oActWeb, oActOther
@@ -190,7 +193,7 @@ STATIC FUNCTION Build_MenuBar( oWnd )
    oMenu1:addSeparator()
 
    oActExit := oMenu1:addAction( "E&xit" )
-   oActExit:connect( "triggered(bool)", {|| QApplication():quit() } )
+   oActExit:connect( "triggered(bool)", {|| lExit := .T. } )
 
    oMenuBar:addMenu( oMenu1 )
 
