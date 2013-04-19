@@ -10,6 +10,7 @@
 -es2
 -inc
 
+-icon={allwin}hbdbu.ico
 
 -obin/${hb_plat}/${hb_comp}/${hb_name}
 -instpath=${HB_BIN}/

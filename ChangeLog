@@ -16,6 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-19 13:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r210)
+  * hbdbu/dbu.prg
+    * Version bump.
+    % Reverting back HbDBU icon to Harbour instead of Cube.
+
+  * hbdbu/hbdbu.hbp
+    + Added: switch to tie Harbour icon to the executable
+
+  * hbdbu/hbdbu.ico
+    + Harbour icon.
+
+  * hbide/hbide_v.ch
+    * Version bump.
+
 2013-04-19 13:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r209)
   * hbqt/tests/demoqt.prg
     ! Fixed: <Exit> main menu option and ESCaping the main window.
