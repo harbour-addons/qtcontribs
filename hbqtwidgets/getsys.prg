@@ -958,6 +958,7 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       __GetListSetActive( ::oGetList )
       __GetListLast( ::oGetList )
       ::oGetList:getActive( Self )
+      __hbqtGetsActiveWindow( ::oGetList:oWindow )
    ENDIF
 
    IF HB_ISOBJECT( ::oFocusFrame ) .AND. ::lFocusFrame

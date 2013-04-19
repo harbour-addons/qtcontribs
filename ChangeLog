@@ -16,6 +16,80 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-18 19:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r208)
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtdbu.prg
+    % Changed: the argument order of AChoice().
+
+  * hbqtwidgets/hbtoqt.ch
+    + Added: #xtranslate AChoice(     =>  HbQtAChoice(
+             #xtranslate DispOutAt(   =>  HbQtDispOutAt(
+             #xtranslate MaxRow(      =>  HbQtMaxRow(
+             #xtranslate MaxCol(      =>  HbQtMaxCol(
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: constants _QSAY_* to identify SayList array elements.
+
+  * hbqtwidgets/getlist.prg
+    + Implemented: tying the underlying window over which GETs are 
+       spread to its GetList Object.
+    
+    + Implemented: tying of SayList to GetList object in question.
+       It is used to 
+
+    + Added: __hbqtGetsActiveWindow() to retrieve the current window.
+       This function is used to determine DispOutAt(), MaxRow(), MaxCol()
+       calls return values.
+  
+  * hbqtwidgets/alert.prg
+    % Changed: order of additional arguments to HbQtAChoice().
+       HbQtAChoice( ..., [<cTitle>], [<oParent>] )
+         =>
+       HbQtAChoice( ..., [<oParent>], [<cTitle>] )
+
+    + Implemented: near to Clipper AChoice() respecting most of 
+       the arguments except "cUserFunc".
+
+    + Implemented: Clipper compatible DispOutAt() function as:
+       HbQtDispOutAt( <nRow>, <nCol>, <cExp>, [<cColor>], [<oWnd>] )
+       [<oWnd>] defaults to __hbqtGetsActiveWindow().
+
+    + Implemented: GT compatible MaxRow() function as:
+       HbQtMaxRow( [<oWnd>] )
+       [<oWnd>] defaults to __hbqtGetsActiveWindow()
+
+    + Implemented: GT compatible MaxCol() function as:
+       HbQtMaxCol( [<oWnd>] )
+       [<oWnd>] defaults to __hbqtGetsActiveWindow()
+
+    ; The above functions are only relevent if called from within 
+      WHEN or VALID clauses for the purpose of determining the 
+      affected window. This implementation nears the porting efforts.
+
+    ; DispOutAt( nRow, nCol, ... ) exploits existing SAY object if one 
+       exists at <nRow>,<nCol> created via @ nRow,nCol QSAY ... mechanism.
+       If not, then a new object is created at the specified coordinates,
+       which in turn is added to the SayList of respective GetList object.
+
+       For all practical purposes, you can reuse existing SAYs.
+
+  * hbqtwidgets/getsys.prg
+    + Added: code to publish current GETs window to __hbqtGetsActiveWindow()
+
+  * hbqtwidgets/misc.prg
+    + Added: __hbqtGetXYFromRowColumn( oWnd, nRow, nCol, oFont ) 
+               => { nX, nY, nColWidth, nRowHeight }
+       It is similar to __hbqtGetGlobalXYFromRowColumn() but returns 
+       the coordinates calculated from <oWnd>'s origins.
+
+    + Implemented: a handy function to obtain a dialog on top of existing 
+       window as:
+       __hbqtGetADialogOnTopOf( oParent, nTop, nLeft, nBottom, nRight, cTitle, oFont, lResizable )
+       The function in turn is used elsewhere in HbQtWidgets code.
+
+  * hbqtwidgets/tests/pureclip.prg
+    + Added: code to demonstrate above concepts.
+
 2013-04-16 12:29 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r207)
   * hbqtwidgets/misc.prg
     % Changed: __hbqtGetXYFromRowColumn() => __hbqtGetGlobalXYFromRowColumn()

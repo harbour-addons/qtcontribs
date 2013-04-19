@@ -277,9 +277,67 @@ FUNCTION __hbqtGetGlobalXYFromRowColumn( oWnd, nRow, nCol, oFont )  // => { nX, 
    RETURN { oPos:x(), oPos:y(), oFM:averageCharWidth(), nOH }
 
 
+FUNCTION __hbqtGetXYFromRowColumn( oWnd, nRow, nCol, oFont )  // => { nX, nY, nColWidth, nRowHeight }
+   LOCAL oFM, nX, nY, nOH
+
+   IF oWnd:font():fixedPitch()
+      oFM  := QFontMetrics( oWnd:font() )
+   ELSE
+      __defaultNIL( @oFont , HbQtSet( _QSET_GETSFONT ) )
+      oFM  := QFontMetrics( oFont )
+   ENDIF
+
+   nX   := ( oFM:averageCharWidth() * nCol ) + 6
+   nOH  := oFM:height() + HbQtSet( _QSET_LINESPACING ) + HbQtSet( _QSET_EDITSPADDING )
+   nY   := nOH * nRow
+
+   RETURN { nX, nY, oFM:averageCharWidth(), nOH }
+
+
 FUNCTION __hbqtPositionWindowClientXY( oWnd, nX, nY )
    LOCAL a_:= __hbqtGetWindowFrameWidthHeight( oWnd )
 
    oWnd:move( nX - ( a_[ 1 ] / 2 ), nY - ( a_[ 2 ] - ( a_[ 1 ] / 2 ) ) )
 
    RETURN NIL
+
+
+FUNCTION __hbqtGetADialogOnTopOf( oParent, nTop, nLeft, nBottom, nRight, cTitle, oFont, lResizable )
+   LOCAL oDlg, aInfo, nX, nY, nW, nH, nFlags
+
+   __defaultNIL( @lResizable, .T. )
+
+   aInfo := __hbqtGetGlobalXYFromRowColumn( oParent, nTop, nLeft, oFont )
+   nX := aInfo[ 1 ]; nY := aInfo[ 2 ]; nW := aInfo[ 3 ] * ( nRight - nLeft + 1 ) ; nH := aInfo[ 4 ] * ( nBottom - nTop + 1 )
+
+   WITH OBJECT oDlg := QDialog( oParent )
+      nFlags := Qt_Dialog + Qt_CustomizeWindowHint
+      IF HB_ISCHAR( cTitle ) .AND. ! Empty( cTitle )
+         nFlags += Qt_WindowTitleHint
+         :setWindowTitle( cTitle )
+      ENDIF
+      :setWindowFlags( nFlags )
+      IF HB_ISOBJECT( oFont )
+         :setFont( oFont )
+      ENDIF
+      //
+      // Initially, though not needed, but just in case
+      :move( nX, nY )
+      :resize( nW, nH )
+      //
+      :connect( QEvent_Close, {|| oDlg:setParent( QWidget() ) } )
+      :connect( QEvent_Show , {|| __hbqtPositionWindowClientXY( oDlg, nX, nY ), iif( lResizable, NIL, __hbqtSetWindowFixedSized( oDlg ) ), .F. } )
+   ENDWITH
+
+   RETURN oDlg
+
+
+FUNCTION __hbqtSetWindowFixedSized( oWnd )
+
+   oWnd:setMaximumHeight( oWnd:height() )
+   oWnd:setMaximumWidth( oWnd:width() )
+   oWnd:setMinimumHeight( oWnd:height() )
+   oWnd:setMinimumWidth( oWnd:width() )
+
+   RETURN NIL
+

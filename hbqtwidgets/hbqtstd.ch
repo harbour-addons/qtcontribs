@@ -79,6 +79,15 @@
    #define _QGET_PROPERTIES                       16
    #define _QGET_SAYPROPERTIES                    17
 
+   #define _QSAY_ROW                              1
+   #define _QSAY_COL                              2
+   #define _QSAY_EXP                              3
+   #define _QSAY_PICTURE                          4
+   #define _QSAY_COLOR                            5
+   #define _QSAY_PROPERTIESBLOCK                  6
+   #define _QSAY_OBJECT                           7
+
+
    /* Additiona parameters for GETs window - QREAD ... ATTRIBUTES <aAttribs> */
    #define _QGET_ATTRB_SETMODE                    1        /* SetMode() Equivalent Array - { nRows, nColumns } */
    #define _QGET_ATTRB_RESIZABLE                  2        /* Logical to flag if window is resizable . Default is TRUE */
@@ -108,7 +117,7 @@
 
 
    #command @ <row>, <col> QSAY <exp> [PICTURE <pic>] [COLOR <clr>] [ PROPERTIES <props> ] => ;
-         AAdd( SayList, { <row>, <col>, <exp>, <pic>, <clr>, <{props}> } )
+         AAdd( SayList, { <row>, <col>, <exp>, <pic>, <clr>, <{props}>, NIL } )
 
 
    #command @ <row>, <col> QGET <v> ;

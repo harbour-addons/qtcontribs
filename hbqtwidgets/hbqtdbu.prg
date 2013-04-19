@@ -1671,7 +1671,7 @@ METHOD HbQtDBU:selectAField( cAlias )
    aStruct := ::dbStruct( cAlias )
    AEval( aStruct, {|e_| AAdd( aMenu, e_[ 1 ] ) } )
 
-   nChoice := HbQtAChoice( , , , , aMenu, , , , , cAlias + " : Select a Field" )
+   nChoice := HbQtAChoice( , , , , aMenu, , , , , , cAlias + " : Select a Field" )
    IF nChoice > 0
       cVar := GetActive():buffer()
       nPos := GetActive():pos()
@@ -3981,7 +3981,7 @@ METHOD HbQtMdiBrowser:selectAField()
    aStruct := ::dbStruct
    AEval( aStruct, {|e_| AAdd( aMenu, e_[ 1 ] ) } )
 
-   nChoice := HbQtAChoice( , , , , aMenu, , , , , ::cAlias + " : Select a Field" )
+   nChoice := HbQtAChoice( , , , , aMenu, , , , , , ::cAlias + " : Select a Field" )
    IF nChoice > 0
       cVar := GetActive():buffer()
       nPos := GetActive():pos()

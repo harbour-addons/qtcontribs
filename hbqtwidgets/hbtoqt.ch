@@ -71,7 +71,11 @@
 
    #command READ [<exp,...>] => QREAD [<exp>]
 
-   #xtranslate Alert(   =>  HbQtAlert(
+   #xtranslate Alert(       =>  HbQtAlert(
+   #xtranslate AChoice(     =>  HbQtAChoice(
+   #xtranslate DispOutAt(   =>  HbQtDispOutAt(
+   #xtranslate MaxRow(      =>  HbQtMaxRow(
+   #xtranslate MaxCol(      =>  HbQtMaxCol(
 
 #endif
 

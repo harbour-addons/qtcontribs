@@ -57,10 +57,10 @@ FUNCTION Main()
 
    @  2, 02 SAY PadL( "Birthday:", nPdL )
    @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" ;
-      VALID {|oGet| HB_TRACE( HB_TR_ALWAYS, oGet:buffer(), oGet:varGet(), oGet:updateBuffer(), oGet:buffer(), oGet:unTransform() ), dDate >= 0d19560604 }
+      VALID {|| AChoice( 5, 5, 12, 20, { "Abc","Cde","Efg","Fgh","Ghi" } ), dDate >= 0d19560604 }
 
    @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL )
-   @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
+   @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" WHEN {|| DispOutAt( MaxRow(), 20, "Harbour" ) } VALID nNumb > 600 .AND. nNumb < 6000000
 
    @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  PICTURE "Y"
 
@@ -96,9 +96,9 @@ FUNCTION Main()
    @  9, 60 SAY "Select:"
    @ 10, 60, 17, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
 
-   @ 19, 25, 19, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| iif( HbQtAlert( "Save Data?", {"Yes","No"} ) == 1, "cText", "cNotes" ) } ;
+   @ 19, 25, 19, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| iif( Alert( "Save Data?", {"Yes","No"} ) == 1, "cText", "cNotes" ) } ;
                                                         WHEN nSlry > 700 .AND. nSlry < 17000
-   @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := HbQtAlert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
+   @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := Alert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
                                                         iif( v == 1, GetActive():parent():close(), NIL ) }
 
    SetKey( K_F2, {|| BrowseArray( GetActive():parent() ) } )

@@ -315,43 +315,62 @@ STATIC FUNCTION __getBlock( aBlocks, nIndex )
    RETURN aBlocks[ nIndex ]
 
 
-FUNCTION HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItems, cUserFunc, nInitItem, nWindowRow, cTitle, oParent )
-   LOCAL oDlg, oVLay, oBtnOK, oBtnCancel, oHLay, oList, nRes, nChoice, cItem
+FUNCTION HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItems, cUserFunc, nInitItem, nWindowRow, oParent, cTitle )
+   LOCAL oDlg, oVLay, oBtnOK, oBtnCancel, oHLay, oList, nRes, nChoice, cItem, oItem
+   LOCAL lDecorate := .T., lSelectable
 
-   HB_SYMBOL_UNUSED( nLeft            )
-   HB_SYMBOL_UNUSED( nRight           )
-   HB_SYMBOL_UNUSED( nTop             )
-   HB_SYMBOL_UNUSED( nBottom          )
-   HB_SYMBOL_UNUSED( xSelectableItems )
    HB_SYMBOL_UNUSED( cUserFunc        )
-   HB_SYMBOL_UNUSED( nInitItem        )
    HB_SYMBOL_UNUSED( nWindowRow       )
 
-// hb_default( @oParent, QApplication():focusWidget() )
    hb_default( @cTitle, "Select an Option" )
    hb_default( @nInitItem, 1 )
 
-   oDlg   := QDialog( oParent )
-   oVLay  := QVBoxLayout( oDlg )
-   oList  := QListWidget( oDlg )
-   oVLay  :  addWidget( oList )
-   oHLay  := QHBoxLayout()
-   oVLay  :  addLayout( oHLay )
-   oBtnOK := QPushButton( oDlg )
-   oBtnOK :  setText( "OK" )
-   oHLay  :  addWidget( oBtnOK )
+   IF HB_ISNUMERIC( nTop ) .AND. HB_ISNUMERIC( nLeft ) .AND. HB_ISNUMERIC( nBottom ) .AND. HB_ISNUMERIC( nRight )
+      IF ! HB_ISOBJECT( oParent )
+         oParent := __hbqtGetsActiveWindow()
+      ENDIF
+      lDecorate := .F.
+      oDlg := __hbqtGetADialogOnTopOf( oParent, nTop, nLeft, nBottom, nRight, NIL, NIL, .F. )
+   ELSE
+      oDlg := QDialog( oParent )
+   ENDIF
 
-   oBtnCancel := QPushButton( oDlg )
-   oBtnCancel :  setText( "Cancel" )
-   oHLay      :  addWidget( oBtnCancel )
+   oVLay := QVBoxLayout( oDlg )
+   WITH OBJECT oList := QListWidget( oDlg )
+      :setFont( QFont( "Courier New", 10 ) )
+//    :connect( "itemDoubleClicked(QListWidgetItem*)", {||  oDlg:done( 1 ) } )
+      :connect( "itemActivated(QListWidgetItem*)", {||  oDlg:done( 1 ) } )
+   ENDWITH
+   oVLay:addWidget( oList )
+   oVLay:setContentsMargins( 0,0,0,0 )
 
-   oBtnOK     :  connect( "clicked()", {|| oDlg:done( 1 ) } )
-   oBtnCancel :  connect( "clicked()", {|| oDlg:done( 0 ) } )
-   oList      :  setFont( QFont( "Courier New", 10 ) )
-   oList      :  connect( "itemDoubleClicked(QListWidgetItem*)", {||  oDlg:done( 1 ) } )
+   IF lDecorate
+      oHLay  := QHBoxLayout()
+      oVLay  :  addLayout( oHLay )
+      oBtnOK := QPushButton( oDlg )
+      oBtnOK :  setText( "OK" )
+      oHLay  :  addWidget( oBtnOK )
+
+      oBtnCancel := QPushButton( oDlg )
+      oBtnCancel :  setText( "Cancel" )
+      oHLay      :  addWidget( oBtnCancel )
+
+      oBtnOK     :  connect( "clicked()", {|| oDlg:done( 1 ) } )
+      oBtnCancel :  connect( "clicked()", {|| oDlg:done( 0 ) } )
+   ENDIF
 
    FOR EACH cItem IN acMenuItems
-      oList:addItem( cItem )
+      oItem := QListWidgetItem()
+      oItem:setText( cItem )
+      IF HB_ISARRAY( xSelectableItems )
+         lSelectable :=  xSelectableItems[ cItem:__enumIndex() ]
+      ELSEIF HB_ISLOGICAL( xSelectableItems )
+         lSelectable :=  xSelectableItems
+      ELSE
+         lSelectable := .T.
+      ENDIF
+      oItem:setFlags( iif( lSelectable, Qt_ItemIsEnabled + Qt_ItemIsSelectable, Qt_NoItemFlags ) )
+      oList:addItem( oItem )
    NEXT
 
    oDlg:setWindowTitle( cTitle )
@@ -409,4 +428,75 @@ FUNCTION HbQtGetAt( nGlobalX, nGlobalY, cVar, cPic, cColor, bValid )
 
    RETURN iif( nRes == 0, NIL, cVar )
 
+
+FUNCTION HbQtDispOutAt( nRow, nCol, cText, cColor, oWnd )
+   LOCAL oGetList, aSay, aXY, oLabel
+
+   IF GetActive() == NIL
+      RETURN NIL
+   ENDIF
+
+   hb_default( @cText, "" )
+
+   IF Empty( oWnd )
+      oWnd := __hbqtGetsActiveWindow()
+   ENDIF
+   IF ! HB_ISOBJECT( oWnd )
+      RETURN NIL
+   ENDIF
+   oGetList := GetActive():getList()
+
+   IF ! ( oGetList:oWindow == oWnd )
+      RETURN NIL
+   ENDIF
+
+   FOR EACH aSay IN oGetList:SayList
+      IF aSay[ _QSAY_ROW ] == nRow .AND. aSay[ _QSAY_COL ] == nCol
+         // Should we resize oLabel to new dimentions ?
+         aSay[ _QSAY_OBJECT ]:setText( cText )
+         RETURN NIL
+      ENDIF
+   NEXT
+
+   aXY := __hbqtGetXYFromRowColumn( oWnd, nRow, nCol )
+
+   WITH OBJECT oLabel := QLabel( oWnd )
+      :move( aXY[ 1 ], aXY[ 2 ] )
+      :resize( aXY[ 3 ] * Len( cText ), aXY[ 4 ] )
+      :show()
+   ENDWITH
+
+   AAdd( oGetList:SayList, { nRow, nCol, cText, NIL, cColor, NIL, oLabel } )
+
+   RETURN NIL
+
+
+FUNCTION HbQtMaxRow( oWnd )
+   LOCAL aInfo
+
+   IF Empty( oWnd )
+      oWnd := __hbqtGetsActiveWindow()
+   ENDIF
+   IF ! HB_ISOBJECT( oWnd )
+      RETURN -1
+   ENDIF
+
+   aInfo := __hbqtGetXYFromRowColumn( oWnd, 1, 1 )
+
+   RETURN Int( oWnd:height() / aInfo[ 4 ] ) - 1
+
+
+FUNCTION HbQtMaxCol( oWnd )
+   LOCAL aInfo
+
+   IF Empty( oWnd )
+      oWnd := __hbqtGetsActiveWindow()
+   ENDIF
+   IF ! HB_ISOBJECT( oWnd )
+      RETURN -1
+   ENDIF
+
+   aInfo := __hbqtGetXYFromRowColumn( oWnd, 0, 0 )
+
+   RETURN Int( oWnd:width() / aInfo[ 3 ] ) - 1
 

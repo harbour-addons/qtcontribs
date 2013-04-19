@@ -63,6 +63,16 @@
 #define GET_CLR_ACCEL                             3
 
 
+FUNCTION __hbqtGetsActiveWindow( oWindow )
+   LOCAL l_oWindow
+   STATIC s_oWindow
+   l_oWindow := s_oWindow
+   IF PCount() == 1
+      s_oWindow := oWindow
+   ENDIF
+   RETURN l_oWindow
+
+
 FUNCTION HbQtClearGets( oWnd, ... )
    LOCAL oParent
 
@@ -72,6 +82,7 @@ FUNCTION HbQtClearGets( oWnd, ... )
    IF HB_ISOBJECT( oWnd )
       oWnd:setParent( QWidget() )
    ENDIF
+   __hbqtGetsActiveWindow( NIL )
 
    RETURN NIL
 
@@ -130,11 +141,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       oWnd := QDialog()
       oWnd:setFont( oFont )
       oWnd:setWindowTitle( cTitle )
-      IF HB_ISOBJECT( xIcon ) .AND. __objGetClsName( xIcon ) == "QICON"
-         oWnd:setWindowIcon( xIcon )
-      ELSEIF HB_ISCHAR( xIcon )
-         oWnd:setWindowIcon( QIcon( xIcon ) )
-      ENDIF
+
       IF HB_ISARRAY( aAttrbs ) .AND. ( nAttrb := AScan( aAttrbs, {|e_| e_[ 1 ] == _QGET_ATTRB_SETMODE } ) ) > 0
          nWidth  := nAvgWid  * aAttrbs[ nAttrb, 2, 2 ] + 6 + 6
          nHeight := nLHeight * aAttrbs[ nAttrb, 2, 1 ]
@@ -164,6 +171,12 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             lExec := .T.
          ENDIF
       ENDIF
+
+      IF HB_ISOBJECT( xIcon ) .AND. __objGetClsName( xIcon ) == "QICON"
+         oWnd:setWindowIcon( xIcon )
+      ELSEIF HB_ISCHAR( xIcon )
+         oWnd:setWindowIcon( QIcon( xIcon ) )
+      ENDIF
    ENDIF
 
    cClsName := __objGetClsName( oWnd )
@@ -182,7 +195,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          oGet:col   := aEdit[ _QGET_COL ]
          IF Empty( aEdit[ _QGET_CONTROL ] )
             IF ! Empty( aEdit[ _QGET_SAY ] )
-               AAdd( SayList, { aEdit[ _QGET_ROW ], aEdit[ _QGET_COL ], aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ], aEdit[ _QGET_SAYPROPERTIES ] } )
+               AAdd( SayList, { aEdit[ _QGET_ROW ], aEdit[ _QGET_COL ], aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ], aEdit[ _QGET_SAYCOLOR ], aEdit[ _QGET_SAYPROPERTIES ], NIL } )
                oGet:col += Len( Transform( aEdit[ _QGET_SAY ], aEdit[ _QGET_SAYPICTURE ] ) ) + 1
             ENDIF
          ELSE
@@ -217,12 +230,17 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          IF HB_ISBLOCK( aPic[ 6 ] )
             Eval( aPic[ 6 ], oLabel, { nX, nY, nW, nH } )
          ENDIF
+
+         aPic[ 7 ] := oLabel
       NEXT
    ENDIF
 
-   oGetList := HbQtGetList():New( aGetList )
-   oGetList:lastGetBlock := bOnLastGet
-   oGetList:focusFrame := ! lNoFocusFrame
+   WITH OBJECT oGetList := HbQtGetList():New( aGetList )
+      :lastGetBlock := bOnLastGet
+      :focusFrame   := ! lNoFocusFrame
+      :oWindow      := oWnd
+      :SayList      := SayList
+   ENDWITH
 
    IF Len( GetList ) >= 1
       FOR EACH aEdit IN GetList
@@ -355,6 +373,9 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    DATA   oFocusFrame
    DATA   lFocusFrame                             INIT .T.
    METHOD focusFrame                              SETGET
+
+   DATA   oWindow
+   DATA   SayList                                 INIT {}
 
    ENDCLASS
 

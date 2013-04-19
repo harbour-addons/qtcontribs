@@ -117,22 +117,13 @@ STATIC FUNCTION _SKIP_RESULT( xResult )
 
 
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )
-   LOCAL oDlg, oLay, oBrw, nX, nY, nW, nH, aInfo
+   LOCAL oDlg, oLay, oBrw //, nX, nY, nW, nH, aInfo
 
    __defaultNIL( @oFont , HbQtSet( _QSET_GETSFONT ) )
    __defaultNIL( @lOnTop, .F. )
 
    IF lOnTop
-      aInfo := __hbqtGetGlobalXYFromRowColumn( oParent, nTop, nLeft, oFont )
-      nX := aInfo[ 1 ]; nY := aInfo[ 2 ]; nW := aInfo[ 3 ] * ( nRight - nLeft + 1 ) ; nH := aInfo[ 4 ] * ( nBottom - nTop + 1 )
-
-      WITH OBJECT oDlg := QDialog( oParent )
-         :setWindowFlags( Qt_Dialog + Qt_CustomizeWindowHint )
-         :move( nX, nY )
-         :resize( nW, nH )
-         :connect( QEvent_Close, {|| oDlg:setParent( QWidget() ) } )
-         :connect( QEvent_Show , {|| __hbqtPositionWindowClientXY( oDlg, nX, nY ) } )
-      ENDWITH
+      oDlg := __hbqtGetADialogOnTopOf( oParent, nTop, nLeft, nBottom, nRight, NIL, oFont, .F. )
 
       oLay := QVBoxLayout( oDlg )
       oLay:setContentsMargins( 0,0,0,0 )
