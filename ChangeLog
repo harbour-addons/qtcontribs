@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-22 17:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r211)
+  + hbqt/tests/demoqtc.prg
+    + Added: demonstration appln based on GTQTC having functionality of 
+       firing HbQt widget in modal dialog plus GT specific actions.
+       It was present in slightly diefferent form when inside Harbour 
+       SVN and was removed by Viktor.
+
 2013-04-19 13:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r210)
   * hbdbu/dbu.prg
     * Version bump.
