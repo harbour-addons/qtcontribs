@@ -167,10 +167,14 @@ METHOD IdeSourcesManager:saveNamedSource( cSource )
 
                   cBuffer := oEditor:prepareBufferToSave( oEditor:qEdit:toPlainText() )
 
+                  ::oFileWatcher:removePath( cSource )
+
                   IF ( lSaved := hb_memowrit( hbide_pathToOSPath( cSource ), cBuffer ) )
                      oEditor:qDocument:setModified( .f. )
                      oEditor:setTabImage()
                   ENDIF
+
+                  ::oFileWatcher:addPath( cSource )
                ENDIF
             ENDIF
          ENDIF

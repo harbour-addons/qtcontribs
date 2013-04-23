@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-23 15:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r212)
+  * hbide/sources.prg
+    ! Fixed: annoying alert "Source has been modified by some external..."
+       when, a project is built whole source has been modified and not 
+       saved before compilation process is started. 
+       Pushed up by Maurizio.
+
 2013-04-22 17:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r211)
   + hbqt/tests/demoqtc.prg
     + Added: demonstration appln based on GTQTC having functionality of 
