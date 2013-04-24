@@ -293,8 +293,8 @@ METHOD XbpCrt:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    /* Creates physical window */
    ? " "
 
-   ::oWidget := hb_gtInfo( HB_GTI_WIDGET )
-   ::drawingArea:oWidget := hb_gtInfo( HB_GTI_DRAWINGAREA )
+   ::oWidget := GtQTC_MainWindow()
+   ::drawingArea:oWidget := GtQTC_DrawingArea()
 
    ::oWidget:setWindowTitle( ::title )
 

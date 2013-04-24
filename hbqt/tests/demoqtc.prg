@@ -8,7 +8,7 @@
 //
 //                   Harbour Extended Features Demo
 //                                    .
-//                 Pritpal Bedi <pritpal@hotmail.com>
+//                 Pritpal Bedi <pritpal@bedipritpal.com>
 //
 //----------------------------------------------------------------------//
 //----------------------------------------------------------------------//
@@ -36,8 +36,6 @@ PROCEDURE Main()
    LOCAL nHeight := 20
    LOCAL nWidth  := Int( nHeight / 2 )
    LOCAL nMSec
-
-   hb_gtReload( "QTC" )                /* This is a Hack - Should not be Present */
 
    Hb_GtInfo( HB_GTI_FONTWIDTH, nWidth  )
    Hb_GtInfo( HB_GTI_FONTSIZE , nHeight )
@@ -92,10 +90,18 @@ PROCEDURE Main()
          hb_GTInfo( HB_GTI_RESIZEMODE, iif( hb_GTInfo( HB_GTI_RESIZEMODE ) == HB_GTI_RESIZEMODE_ROWS, HB_GTI_RESIZEMODE_FONT, HB_GTI_RESIZEMODE_ROWS ) )
 
       CASE nKey == K_F10
-         thFunc()
+         IF hb_MTVM()
+            hb_threadStart( @BrowseConsole() )
+         ELSE
+            Alert( "MT mode not available. Rebuild this program with -mt switch and try again." )
+         ENDIF
 
       CASE nKey == K_F12
-         ExecOneMore()
+         IF hb_MTVM()
+            hb_threadStart( {|| BuildADialog() } )
+         ELSE
+            Alert( "MT mode not available. Rebuild this program with -mt switch and try again." )
+         ENDIF
 
       CASE nKey == HB_K_RESIZE
          DispScreen()
@@ -164,7 +170,10 @@ STATIC PROCEDURE DispScreen()
 
 
 PROCEDURE HB_GTSYS()
-   REQUEST HB_GT_QTC                   /* This is a Hack - Should not be Present */
+   REQUEST HB_GT_QTC_DEFAULT
+   REQUEST HB_GT_WIN
+   REQUEST HB_GT_GUI
+   REQUEST HB_GT_WVT
    RETURN
 
 
@@ -197,21 +206,26 @@ FUNCTION SetPaletteIndex()
    RETURN NIL
 
 
-PROCEDURE thFunc()
-   LOCAL cTitle, oBrowse, lEnd, nKey, i, aStruct, aScr
+PROCEDURE BrowseConsole()
+   LOCAL cTitle, oBrowse, lEnd, nKey, i, aStruct
    LOCAL aColor := { 'W+/N', 'W+/B', 'W+/G', 'W+/BG', 'W+/N*', 'W+/RB', 'N/W*', 'N/GR*' }
 
+   STATIC nBrowser := 0
    STATIC nZx := 0
    STATIC nZy := 0
 
-   aScr := SaveScreen( 0,0,MaxRow(),MaxCol() )
-
+   nBrowser++
    nZx += 20
    nZy += 20
 
+   /* allocate own GT driver */
+   hb_gtReload( 'QTC' )
    Hb_GtInfo( HB_GTI_PALETTE, 8, RGB( 120, 200, 240 ) )
 
-   Hb_GtInfo( HB_GTI_WINTITLE, 'test.dbf' )
+   IF ( nBrowser % 2 ) != 0
+      Hb_GtInfo( HB_GTI_RESIZEMODE, HB_GTI_RESIZEMODE_ROWS )
+   ENDIF
+   Hb_GtInfo( HB_GTI_WINTITLE, 'test.dbf    [' + iif( ( nBrowser % 2 ) != 0, 'RESIZABLE_BY_ROWS', 'RESIZABLE_BY_FONT' ) + ']' )
 
    SetCursor( SC_NONE )
 
@@ -223,9 +237,12 @@ PROCEDURE thFunc()
    s_nRows++
    s_nCols += 2
 
+   SetMode( s_nRows, s_nCols )
    SetColor( aColor[ s_nColorIndex ] )
+   Hb_GtInfo( HB_GTI_WINTITLE, cTitle )
+   Hb_GtInfo( HB_GTI_SETPOS_XY, nZx, nZy )
 
-   cTitle := 'Window with '+ hb_ntos( MaxRow() ) +;
+   cTitle := 'New Window with '+ hb_ntos( MaxRow() ) +;
                           ' Rows and ' + hb_ntos( MaxCol() ) + ' Columns'
    DispOutAt( 0, 0, padc( cTitle, maxcol() + 1 ), 'N/GR*' )
 
@@ -269,8 +286,6 @@ PROCEDURE thFunc()
    ENDDO
 
    DbCloseArea()
-
-   RestScreen( 0, 0, MaxRow(), MaxCol(), aScr )
 
    RETURN
 
@@ -363,14 +378,18 @@ STATIC FUNCTION BrwHandleKey( oBrowse, nKey, lEnd )
    RETURN lRet
 
 
-STATIC PROCEDURE ExecOneMore()
+STATIC PROCEDURE BuildADialog()
    LOCAL tb1, mo1, lay1, lay2, bt1, bt2, bt3, hd1, i, oDgt, oSmdl
-   LOCAL oDA, aStru1, nCX1, nCY1
+   LOCAL oDA
+   LOCAL aStru1
+   LOCAL nCX1
+   LOCAL nCY1
+   LOCAL oEventLoop
 
    SET DATE ANSI
    SET CENTURY ON
 
-   oDA := QDialog()
+   oDA := QWidget()
    oDA:resize(640,460 )
    lay1 := QVBoxLayout( oDA )
 
@@ -408,11 +427,15 @@ STATIC PROCEDURE ExecOneMore()
    lay2:addWidget( bt2 )
    lay2:addWidget( bt3 )
 
-   oDA:exec()
+   oEventLoop := QEventLoop( oDA )
+   oDA:connect( QEvent_Close, {|| oEventLoop:exit( 0 ) } )
+   oDA:Show()
+   oEventLoop:exec()
 
    DbCloseAll()
 
    RETURN
+
 
 STATIC PROCEDURE my_save( qWidget, nArea, aStru, nCX, nCY )
    LOCAL cData := qWidget:property( "text" ):toString()
@@ -436,11 +459,13 @@ STATIC PROCEDURE my_save( qWidget, nArea, aStru, nCX, nCY )
    ENDSWITCH
    RETURN
 
+
 STATIC PROCEDURE my_select( qModelIndex, nCX, nCY  )
 
    nCX := qModelIndex:column()
    nCY := qModelIndex:row()
    RETURN
+
 
 STATIC FUNCTION my_browse( nArea, aStru, t, role, x, y )
    THREAD STATIC lInit := .f.

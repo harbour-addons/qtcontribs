@@ -26,10 +26,6 @@ hbqt/qtnetwork/hbqtnetwork.hbp
 #hbqt/qtsvg/hbqtsvg.hbp
 #hbqt/qtxml/hbqtxml.hbp
 
-#    Qt based GT
-#
-hbqt/gtqtc/gtqtc.hbp
-
 #    Qt Based Widgets
 hbqtwidgets/hbqtwidgets.hbp
 

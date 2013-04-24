@@ -16,6 +16,45 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-24 13:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r213)
+  * hbide/hbide_v.ch
+    * Version bump.
+
+  - hbqt/gtqtc/*
+    - Deleted: GTQTC from QtContribs.
+       An extremely powerful version has been committed by Przemek in 
+       Harbour GIT under contrib/gtqtc. Thank you Przemek for this 
+       all-the-useful contribution. This fills a wide-gap in using 
+       Harbour platform-independent without even changing the setup.
+       Plus it will provide a solid initiative for console mode 
+       programmers to turn to pure GUI and having a edge of mixing
+       GT and GUI screens. New GTQTC has the power to be run in MT 
+       mode flawlessly, a powerful offering.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added: Przemek supplied functions to retrieve GTQTC window 
+       and its drawingarea. These are useful to embed console inside 
+       a GUI form. Look into HbIDE code console.prg how it can be 
+       achieved.
+
+  * hbqt/tests/browqt.prg
+    % Minor.
+
+  * hbqt/tests/demoqtc.prg
+    % Modified to honor newly committed GTQTC. It has MT functionality
+       just like in GTWVT ot GTWVG.
+
+  - hbqt/tests/wvtqt.hbp
+  - hbqt/tests/wvtqt.prg
+    - Removed, no longer necessary GTWVT console based HbQt extention.
+       This is superceded by demoqtc.prg.
+
+  * hbxbp/crt.prg
+    * Changed to retrieve GtQtc console from functions provided by Przemek.
+
+  * qtcontribs.hbp
+    - Removed: GTQTC build call.
+
 2013-04-23 15:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r212)
   * hbide/sources.prg
     ! Fixed: annoying alert "Source has been modified by some external..."

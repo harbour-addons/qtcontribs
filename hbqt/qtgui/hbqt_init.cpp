@@ -54,6 +54,8 @@
  */
 /*----------------------------------------------------------------------*/
 
+#include "hbgtinfo.ch"
+
 #include "hbqt.h"
 #include "hbqtinit.h"
 
@@ -67,6 +69,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 
+#include <QtGui/QMainWindow>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextCharFormat>
 #include <QtGui/QTextBlock>
@@ -902,6 +905,38 @@ HB_FUNC( HBQT_FINDCHILD )
             hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, child, widget.toLatin1().data(), NULL, 1 ) );
          }
       }
+   }
+}
+
+/* hb_gtInfo( HB_GTI_WIDGET ) */
+HB_FUNC( GTQTC_MAINWINDOW )
+{
+   HB_GT_INFO gtInfo;
+
+   memset( &gtInfo, 0, sizeof( gtInfo ) );
+   hb_gtInfo( HB_GTI_WINHANDLE, &gtInfo );
+   if( gtInfo.pResult )
+   {
+      void * pqWnd = hb_itemGetPtr( gtInfo.pResult );
+      if( pqWnd )
+         hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, pqWnd, "HB_QMAINWINDOW", NULL, HBQT_BIT_QOBJECT ) );
+      hb_itemRelease( gtInfo.pResult );
+   }
+}
+
+/* hb_gtInfo( HB_GTI_DRAWINGAREA ) */
+HB_FUNC( GTQTC_DRAWINGAREA )
+{
+   HB_GT_INFO gtInfo;
+
+   memset( &gtInfo, 0, sizeof( gtInfo ) );
+   hb_gtInfo( HB_GTI_WINHANDLE, &gtInfo );
+   if( gtInfo.pResult )
+   {
+      QMainWindow * pqWnd = ( QMainWindow * ) hb_itemGetPtr( gtInfo.pResult );
+      if( pqWnd )
+         hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, pqWnd->centralWidget(), "HB_QWIDGET", NULL, HBQT_BIT_QOBJECT ) );
+      hb_itemRelease( gtInfo.pResult );
    }
 }
 
