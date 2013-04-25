@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-25 12:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r214)
+  * hbide/environ.prg
+    ! Fixed: building EnvVar $PATH on *nixes. It was breaking "Build Project"
+       process inside HbIDE in certain situations. Discovered and fixed 
+       by Alain, thanks.
+
 2013-04-24 13:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r213)
   * hbide/hbide_v.ch
     * Version bump.

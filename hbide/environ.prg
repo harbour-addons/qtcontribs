@@ -215,7 +215,7 @@ METHOD IdeEnvironments:prepareBatch( cEnvName )
 
       #if   defined( __PLATFORM__UNIX )
          IF ! empty( cPath )
-            aadd( aCmd, "export PATH=" + cPath + "bin" + ";$PATH" )
+            aadd( aCmd, "export PATH=" + cPath + "bin" + ":$PATH" )
          ELSE
             aadd( aCmd, "export PATH=$PATH" )
          ENDIF
