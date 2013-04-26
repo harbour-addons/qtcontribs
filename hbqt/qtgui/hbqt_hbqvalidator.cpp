@@ -123,7 +123,7 @@ QValidator::State HBQValidator::validate( QString & input, int & pos ) const
 
    if( block && hb_vmRequestReenter() )
    {
-      PHB_ITEM p0 = hb_itemPutStrUTF8( NULL, input.toLatin1().data() );
+      PHB_ITEM p0 = hb_itemPutStrUTF8( NULL, input.toUtf8().data() );
       PHB_ITEM p1 = hb_itemPutNI( NULL, pos );
 
       PHB_ITEM ret = hb_itemNew( hb_vmEvalBlockV( block, 2, p0, p1 ) );

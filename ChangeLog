@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-26 13:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r216)
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+    ! Fixed: codepage dependent GETs to present proper alphabets. 
+       This is achieved by replacing QString::toAscii() call with QString::toUtf8().
+
 2013-04-26 12:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r215)
   * hbqt/qtgui/hbqt_init.cpp
     ! Fixed: Qt version dependent QMainWindow's header location.
