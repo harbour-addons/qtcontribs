@@ -69,7 +69,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 
-#include <QtGui/QMainWindow>
 #include <QtGui/QTextCursor>
 #include <QtGui/QTextCharFormat>
 #include <QtGui/QTextBlock>
@@ -81,6 +80,7 @@
 #include <QtGui/QCloseEvent>
 
 #if QT_VERSION <= 0x040900
+#include <QtGui/QMainWindow>
 #include <QtGui/QPrinter>
 #include <QtGui/QAction>
 #include <QtGui/QItemSelection>
@@ -93,6 +93,7 @@
 #else
 #include <QtCore/QItemSelection>
 #include <QtPrintSupport/QPrinter>
+#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QListWidgetItem>
