@@ -385,6 +385,7 @@ STATIC PROCEDURE BuildADialog()
    LOCAL nCX1
    LOCAL nCY1
    LOCAL oEventLoop
+   LOCAL lExit := .F.
 
    SET DATE ANSI
    SET CENTURY ON
@@ -418,9 +419,11 @@ STATIC PROCEDURE BuildADialog()
    lay2 := QHBoxLayout()
    lay1:addlayout( lay2 )
 
-   ( bt1 := QPushButton() ):SetText( "Dummy 1" )
+   ( bt1 := QPushButton() ):SetText( "GtQct 1" )
    ( bt2 := QPushButton() ):SetText( "Dummy 2" )
    ( bt3 := QPushButton() ):SetText( "Dummy 3" )
+
+   bt1:connect( "clicked()", {|| hb_threadStart( @QtcGets() ) } )
 
    lay2:addWidget( bt1 )
    lay2:addStretch()
@@ -428,9 +431,12 @@ STATIC PROCEDURE BuildADialog()
    lay2:addWidget( bt3 )
 
    oEventLoop := QEventLoop( oDA )
-   oDA:connect( QEvent_Close, {|| oEventLoop:exit( 0 ) } )
+   oDA:connect( QEvent_Close, {|| lExit := .T. } )
    oDA:Show()
-   oEventLoop:exec()
+   DO WHILE ! lExit
+      QApplication():processEvents( QEventLoop_AllEvents )
+      oEventLoop:processEvents( QEventLoop_AllEvents )
+   ENDDO
 
    DbCloseAll()
 
@@ -578,3 +584,35 @@ STATIC FUNCTION my_browse( nArea, aStru, t, role, x, y )
 
    RETURN NIL
 
+
+STATIC FUNCTION QtcGets()
+   LOCAL cTitle
+   LOCAL GetList := {}
+   LOCAL cName := Space( 25 )
+   LOCAL nSalary := 0
+
+   STATIC nGets := 0
+   STATIC nZx := 0
+   STATIC nZy := 0
+
+   nZx += 20
+   nZy += 20
+
+   hb_gtReload( 'QTC' )
+
+   cTitle := "Qtc Gets # " + hb_ntos( ++nGets )
+   Hb_GtInfo( HB_GTI_WINTITLE, cTitle )
+   Hb_GtInfo( HB_GTI_SETPOS_XY, nZx, nZy )
+
+   SetMode( 20, 60 )
+   SetColor( "N/W" )
+   CLS
+
+   @ 10,10 SAY "Name:"
+   @ 10,25 GET cName COLOR "W+/B,W+/BG"
+   @ 13,10 SAY "Salary:"
+   @ 13,25 GET nSalary COLOR "W+/B,W+/BG" PICTURE "@Z 999999.99"
+
+   READ
+
+   RETURN NIL

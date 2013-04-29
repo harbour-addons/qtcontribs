@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-29 12:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r217)
+  * hbqt/tests/demoqtc.prg
+    + Added code to open a GtQtc window from withing a GUI dialog.
+       The concept can be encapsulated inside a menu option or any other action.
+       Requested by Massimo.
+
 2013-04-26 13:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r216)
   * hbqt/qtgui/hbqt_hbqvalidator.cpp
     ! Fixed: codepage dependent GETs to present proper alphabets. 
