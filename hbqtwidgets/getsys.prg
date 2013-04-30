@@ -77,6 +77,7 @@
 #define _QGET_NAV_PREVIOUS                        1
 #define _QGET_NAV_BOTTOM                          2
 #define _QGET_NAV_TOP                             3
+#define _QGET_NAV_SELF                            4
 
 
 CLASS HbQtGet INHERIT GET
@@ -936,12 +937,19 @@ METHOD HbQtGet:color( cnaColor )
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving */
+   HB_TRACE( HB_TR_DEBUG, "HbQtGet:execFocusOut( oFocusEvent )", ::name() )
 
    HB_SYMBOL_UNUSED( oFocusEvent )
 
    IF ::cClassName == "QPLAINTEXTEDIT"
       ::cBuffer := ::oEdit:toPlainText()
       ::assign()
+   ENDIF
+
+   IF ::cClassName == "QLINEEDIT" .AND. oFocusEvent:reason() == Qt_MouseFocusReason .AND. ! ::postValidate()
+      oFocusEvent:accept()
+      ::navigate( _QGET_NAV_SELF )
+      RETURN .T.
    ENDIF
 
    IF HB_ISOBJECT( ::oFocusFrame ) .AND. ::lFocusFrame
@@ -953,6 +961,7 @@ METHOD HbQtGet:execFocusOut( oFocusEvent )  /* Should we validate before leaving
 
 
 METHOD HbQtGet:execFocusIn( oFocusEvent )
+   HB_TRACE( HB_TR_DEBUG, "HbQtGet:execFocusIn( oFocusEvent )", ::name() )
 
    IF ! Empty( ::oGetList )
       __GetListSetActive( ::oGetList )
@@ -1249,6 +1258,8 @@ METHOD HbQtGet:navigate( nDirection )
          ::oGetList:goTop( Self )
       ELSEIF nDirection == _QGET_NAV_BOTTOM
          ::oGetList:goBottom( Self )
+      ELSEIF nDirection == _QGET_NAV_SELF
+         ::oGetList:setFocus( Self )
       ENDIF
    ELSE
       IF nDirection == _QGET_NAV_NEXT

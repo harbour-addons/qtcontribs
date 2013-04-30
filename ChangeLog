@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-04-30 12:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r218)
+  * hbqtwidgets/getsys.prg
+    + Implemented: validating a GET's VALID clause even if another GET is 
+       selected from mouse, just like Clipper's. If VALID fails then focus 
+       is retained in the same GET. Now you can build forms with almost 
+       like Clipper functionality.
+
 2013-04-29 12:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r217)
   * hbqt/tests/demoqtc.prg
     + Added code to open a GtQtc window from withing a GUI dialog.
