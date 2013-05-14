@@ -317,6 +317,8 @@ METHOD DbuMGR:create()
 
    ::oUI:oWidget:show()
 
+   ::oDbu:setCurrentDriver( ::cDefaultRDD )
+
    RETURN Self
 
 
@@ -1091,7 +1093,6 @@ METHOD DbuMGR:restEnvironment()
    ENDIF
    IF oSettings:contains( "dbuDriver" )
       ::cDefaultRDD := Upper( oSettings:value( "dbuDriver" ):toString() )
-      ::oDbu:setCurrentDriver( ::cDefaultRDD )
    ENDIF
 
    RETURN NIL

@@ -16,6 +16,31 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-05-13 18:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r219)
+  * hbdbu/dbu.prg
+    % Changed: the time-line when default rdd driver has to be activated.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Implemented: attaching a non-structural index to an open table.
+       A new "Attach an Index" icon is placed adjoining "Open Table" icon, 
+       which, when activated, will ask for a disk file in a select File dialog.
+       All types of files are offered to be selected, to be generic, so that 
+       applications generating non-standard extenstion could take use of 
+       this feature. Selected file is supplied with OrdListAdd() function, 
+       leaving RDD sub-system to determine the next course.
+
+    + Implemented: RDD specific following settings:
+       RDDI_STRUCTORD
+       RDDI_MULTITAG
+       RDDI_MEMOTYPE
+        Whenever a RDD Driver is selected from the combobox, a tiny dialog 
+        is opened to fetch above settings. If OKeyed, then RDDInfo()
+        function is called as per selections.
+       
+    ; I have never used any other RDD except DBFCDX, so am not 
+      familiar with exact behavior of other Rdds. So please shout if 
+      this implementation needs other tweaks.
+
 2013-04-30 12:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r218)
   * hbqtwidgets/getsys.prg
     + Implemented: validating a GET's VALID clause even if another GET is 

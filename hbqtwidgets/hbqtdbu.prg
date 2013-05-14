@@ -73,6 +73,7 @@ REQUEST DBFNSX
 #include "hbqtstd.ch"
 #include "hbqtgui.ch"
 #include "hbtrace.ch"
+#include "dbinfo.ch"
 
 /*----------------------------------------------------------------------*/
 
@@ -118,6 +119,7 @@ REQUEST DBFNSX
 #define __mdiSubWindow_buttonXclicked__           2050
 #define __dbu_treeTableDoubleClicked__            2051
 #define __buttonLink_clicked__                    2052
+#define __buttonOpenIndex_clicked__               2053
 
 /*----------------------------------------------------------------------*/
 
@@ -263,6 +265,7 @@ CLASS HbQtDBU
    METHOD indexKeyType( cAlias, nOrder )
    METHOD refreshAll( cAlias )
    METHOD getIndexInfo( cAlias )
+   METHOD setIndexInfo( cAlias )
    METHOD setIndex( cAlias, cIndex )
    METHOD setOrder( cAlias, nOrder )
    METHOD setScope( cAlias, cScopeTop, cScopeBottom )
@@ -419,6 +422,9 @@ PROTECTED:
    DATA   oRoot
 
    DATA   aLastClosePos                           INIT {}
+
+   METHOD fetchRddInfo( cDriver )
+   DATA   hRddInfo                                INIT {=>}
 
    ENDCLASS
 
@@ -1002,10 +1008,10 @@ METHOD HbQtDBU:setPanel( cPanel )
 
    IF ( n := ascan( ::aPanels, {|o| o:oWidget:objectName() == cPanel } ) ) > 0
       ::qStack:setCurrentWidget( ::aPanels[ n ]:oWidget )
+      ::qStack:setCurrentIndex( n-1 )
       ::oCurPanel := ::aPanels[ n ]
       ::oCurPanel:prepare()
       ::oCurPanel:activateBrowser()
-      ::qStack:setCurrentIndex( n-1 )
    ENDIF
 
    RETURN Self
@@ -1135,6 +1141,16 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
                ENDIF
             ENDIF
          NEXT
+      ENDIF
+      EXIT
+
+   CASE __buttonOpenIndex_clicked__
+      IF ! Empty( ::oCurBrw )
+         IF ! empty( cTable := hbdbu_fetchAFile( ::oWidget, "Select an Index", "All Files (*)", ::oCurBrw:path() ) )
+            ::oCurBrw:addIndexFile( cTable )
+            ::oCurBrw:setIndexInfo()
+            ::updateIndexMenu( ::oCurBrw )
+         ENDIF
       ENDIF
       EXIT
 
@@ -1858,6 +1874,7 @@ METHOD HbQtDBU:buildToolbar()
    ::buildRddsCombo()
    ::buildConxnCombo()
    qTBar:addItem( { "Open"     , "Open a Table"                   , QIcon( __hbqtImage( "open3"     ) ), {|| ::execEvent( __buttonOpen_clicked__     ) }, .F. } )
+   qTBar:addItem( { "OpenIndex", "Attach an Index"                , QIcon( __hbqtImage( "open3"     ) ), {|| ::execEvent( __buttonOpenIndex_clicked__) }, .F. } )
    qTBar:addItem( ::sp1 )
    ::buildIndexButton()
    qTBar:addItem( { "Search"   , "Search in Table"                , QIcon( __hbqtImage( "find"      ) ), {|| ::execEvent( __buttonFind_clicked__     ) }, .F. } )
@@ -1935,16 +1952,61 @@ METHOD HbQtDBU:buildPanelsButton()
    RETURN Self
 
 
+METHOD HbQtDBU:fetchRddInfo( cDriver )
+   LOCAL oDlg, oLay, oCheck1, oCheck2, oCheck3, oBtnOK, oLayH
+
+   IF ! hb_HHasKey( ::hRddInfo, cDriver )
+      IF ! Empty( cDriver ) .AND. ! ( cDriver $ "DBFCDX,CACHERDD,ADS" )
+         oDlg := QDialog( ::oWidget )
+         oDlg:setWindowTitle( cDriver + " : Info" )
+         oLay := QVBoxLayout()
+         oDlg:setLayout( oLay )
+
+         oCheck1 := QCheckBox()
+         oCheck1:setText( "Using Structured Indexes ?" )
+         oCheck2 := QCheckBox()
+         oCheck2:setText( "Using Multitagged Indexes ?" )
+         oCheck3 := QCheckBox()
+         oCheck3:setText( "Using FPT Memoes ?" )
+
+         oLay:addWidget( oCheck1 )
+         oLay:addWidget( oCheck2 )
+         oLay:addWidget( oCheck3 )
+         oLayH  := QHBoxLayout()
+         oLay:addLayout( oLayH )
+         oBtnOK := QPushButton()
+         oBtnOK:setText( "OK" )
+         oLayH:addStretch()
+         oLayH:addWidget( oBtnOK )
+         oBtnOK:connect( "clicked()", {|| oDlg:done( 1 ) } )
+         IF oDlg:exec() > 0
+            ::hRddInfo[ cDriver ] := { oCheck1:isChecked(), oCheck2:isChecked(), oCheck3:isChecked() }
+            IF oCheck1:isChecked()
+               RddInfo( RDDI_STRUCTORD, .T., cDriver )
+            ENDIF
+            IF oCheck2:isChecked()
+               RddInfo( RDDI_MULTITAG , .T., cDriver )
+            ENDIF
+            IF oCheck3:isChecked()
+               RddInfo( RDDI_MEMOTYPE , DB_MEMO_FPT, cDriver )
+            ENDIF
+         ENDIF
+         oDlg:setParent( QWidget() )
+      ENDIF
+   ENDIF
+
+   RETURN Self
+
 METHOD HbQtDBU:buildRddsCombo()
 
    WITH OBJECT ::qRddCombo := QComboBox()
       :setToolTip( "Rdd to open next table" )
-      :connect( "currentIndexChanged(QString)", {|p| ::loadConxnCombo( p, ::qConxnCombo ) } )
    ENDWITH
    ::qToolBar:addItem( ::qRddCombo )
    //
    ::loadRddsCombo( ::qRddCombo )
    ::qRddCombo:setCurrentIndex( 0 )
+   ::qRddCombo:connect( "currentIndexChanged(QString)", {|p| ::fetchRddInfo( p ), ::loadConxnCombo( p, ::qConxnCombo ) } )
 
    RETURN Self
 
@@ -2221,6 +2283,13 @@ METHOD HbQtDBU:refreshAll( cAlias )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
       RETURN oMdiBrowse:refreshAll()
+   ENDIF
+   RETURN NIL
+
+METHOD HbQtDBU:setIndexInfo( cAlias )
+   LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
+   IF ! Empty( oMdiBrowse )
+      RETURN oMdiBrowse:setIndexInfo()
    ENDIF
    RETURN NIL
 
@@ -2672,7 +2741,11 @@ METHOD HbQtPanelBrowse:addBrowser( aInfo )
 
 
 METHOD HbQtPanelBrowse:activateBrowser()
+   LOCAL aBrowse
    IF Len( ::aBrowsers ) > 0
+      FOR EACH aBrowse IN ::aBrowsers
+         ::oWidget:setActiveSubWindow( aBrowse[ SUB_WINDOW ] )
+      NEXT
       ::oWidget:setActiveSubWindow( ::aBrowsers[ 1, SUB_WINDOW ] )
    ENDIF
    RETURN Self
@@ -2692,6 +2765,7 @@ CLASS HbQtMdiBrowser
    METHOD destroy()
 
    ACCESS alias                                   INLINE ::cAlias
+   ACCESS path                                    INLINE ::cPath
    ACCESS driver                                  INLINE ::cDriver
    ACCESS connection                              INLINE ::cConxn
 
@@ -2717,6 +2791,7 @@ CLASS HbQtMdiBrowser
    METHOD indexKeyType( nOrder )
    METHOD refreshAll()
    METHOD getIndexInfo()
+   METHOD setIndexInfo()
    METHOD setIndex( cIndex )
    METHOD setOrder( nOrder )
    METHOD setScope( cScopeTop, cScopeBottom )
@@ -2729,6 +2804,7 @@ CLASS HbQtMdiBrowser
    METHOD fCount()
    METHOD indexExt()
    METHOD ordKey( ncOrder, cOrdBagName )
+   METHOD addIndexFile( cIndexFile )
 
    METHOD search( cSearch, lSoft, lLast, nMode )
    METHOD searchAsk( nMode )
@@ -2764,6 +2840,7 @@ PROTECTED:
    DATA   cAlias                                  INIT  ""
    DATA   cTable                                  INIT  ""
    DATA   cTableOnly                              INIT  ""
+   DATA   cPath                                   INIT  ""
    DATA   aData                                   INIT  {}
    DATA   aStruct                                 INIT  {}
    DATA   aAttr                                   INIT  {}
@@ -2843,7 +2920,7 @@ METHOD HbQtMdiBrowser:destroy()
 
 
 METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
-   LOCAL xVrb, cT, cName, a_
+   LOCAL xVrb, cT, cName, cPath
    LOCAL lMissing := .t.
 
    DEFAULT oManager TO ::oManager
@@ -2871,7 +2948,8 @@ METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
    DEFAULT ::aInfo[ TBL_NEXT     ] TO ""
 
    ::cTable := hbide_pathToOSPath( ::aInfo[ TBL_NAME ] )
-   hb_fNameSplit( ::cTable, , @cName )
+   hb_fNameSplit( ::cTable, @cPath, @cName )
+   ::cPath      := cPath
    ::cTableOnly := cName
    ::cAlias     := ::aInfo[ TBL_ALIAS  ]
    ::cDriver    := ::aInfo[ TBL_DRIVER ]
@@ -2937,17 +3015,7 @@ METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
    ::qTimer:setInterval( 5 )
    ::qTimer:connect( "timeout()",  {|| ::execEvent( __timer_timeout__ ) } )
 
-   ::getIndexInfo()
-   IF ! Empty( ::aIndex  )
-      a_:={}
-      FOR EACH cName IN ::aIndex
-         AAdd( a_, { cName, __setOrderBlock( Self, cName ) } )
-      NEXT
-      IF ! Empty( a_ )
-         ::oBrw:indexes := a_
-      ENDIF
-      ::dispInfo()
-   ENDIF
+   ::setIndexInfo()
 
    ::oBrw:addColumnsBlock := {|nMode, xData|  ::execAddAColumn( nMode, xData ) }
 
@@ -3002,6 +3070,7 @@ METHOD HbQtMdiBrowser:buildBrowser()
       :verticalMovementBlock := {|| ::dispInfo(),::oManager:updateLinks( ::cAlias ) }
 
 //    :hbContextMenu         := {|mp1| ::execEvent( __browser_contextMenu__, mp1 ) }
+      :oWidget:connect( QEvent_FocusIn, {|| ::oManager:oCurBrw := Self  } )
    ENDWITH
 
    WITH OBJECT ::qLayout := QHBoxLayout( ::oWnd )
@@ -3088,7 +3157,7 @@ METHOD HbQtMdiBrowser:buildMdiWindow()
    ENDIF
    ::dispInfo()
 
- * ::qMdi:connect( "aboutToActivate()", {|| ::execEvent( "mdiSubWindow_aboutToActivate" ) } )
+// ::qMdi:connect( "aboutToActivate()", {|| ::oManager:oCurBrw := Self } ) ///*::execEvent( "mdiSubWindow_aboutToActivate"*/ ) } )
    ::qMdi:connect( "windowStateChanged(Qt::WindowStates,Qt::WindowStates)", ;
                                  {|p,p1| ::execEvent( __mdiSubWindow_windowStateChanged__, p, p1 ) } )
    ::qMdi:connect( QEvent_Close, {|oEvent| oEvent:accept(), ::execEvent( __mdiSubWindow_buttonXclicked__ ) } )
@@ -3737,6 +3806,23 @@ METHOD HbQtMdiBrowser:setIndex( cIndex )
    RETURN Self
 
 
+METHOD HbQtMdiBrowser:setIndexInfo()
+   LOCAL a_, cName
+
+   ::getIndexInfo()
+   IF ! Empty( ::aIndex  )
+      a_:={}
+      FOR EACH cName IN ::aIndex
+         AAdd( a_, { cName, __setOrderBlock( Self, cName ) } )
+      NEXT
+      IF ! Empty( a_ )
+         ::oBrw:indexes := a_
+      ENDIF
+      ::dispInfo()
+   ENDIF
+
+   RETURN Self
+
 METHOD HbQtMdiBrowser:getIndexInfo()
    LOCAL a_:= {}, i, cKey
 
@@ -3973,6 +4059,13 @@ METHOD HbQtMdiBrowser:exists()
    ENDIF
 
    RETURN .F.
+
+
+METHOD HbQtMdiBrowser:addIndexFile( cIndexFile )
+
+   ( ::cAlias )->( ordListAdd( cIndexFile ) )
+
+   RETURN Self
 
 
 METHOD HbQtMdiBrowser:selectAField()
