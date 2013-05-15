@@ -336,6 +336,7 @@ METHOD HbQtGet:connect()
       ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent ) } )
       EXIT
    CASE "QCHECKBOX"
+      ::oEdit:connect( "stateChanged(int)"      , {|i| ::varPut( i == Qt_Checked ) } )
       ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )   } )
       ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent ) } )
       EXIT
@@ -1073,9 +1074,11 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    IF ::cClassName == "QCHECKBOX"
       IF nKey == Qt_Key_T .OR. nKey == Qt_Key_Y
          ::oEdit:setChecked( .T. )
+         ::varPut( .T. )
          oKeyEvent:accept() ; RETURN .T.
       ELSEIF nKey == Qt_Key_F .OR. nKey == Qt_Key_N
          ::oEdit:setChecked( .F. )
+         ::varPut( .F. )
          oKeyEvent:accept() ; RETURN .T.
       ENDIF
    ENDIF

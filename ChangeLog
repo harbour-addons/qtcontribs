@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-05-15 16:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r220)
+  * hbqtwidgets/getsys.prg
+    ! Fixed: @...QGET...CHECKBOX was not updating its variable on 
+       check/uncheck operations, pointed out by Zoran, thanks.
+
 2013-05-13 18:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r219)
   * hbdbu/dbu.prg
     % Changed: the time-line when default rdd driver has to be activated.
