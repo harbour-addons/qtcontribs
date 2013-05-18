@@ -523,7 +523,9 @@ METHOD HbQtBrowse:create()
    ::oWidget:setObjectName( __hbqtGetNextIdAsString( "TBROWSE" ) )
 
    /* Important here as other parts will be based on it*/
-   ::oWidget:resize( ::oParent:width(), ::oParent:height() )
+   IF HB_ISOBJECT( ::oParent )
+      ::oWidget:resize( ::oParent:width(), ::oParent:height() )
+   ENDIF
 
    /* Toolbar actions */
    ::buildActions()

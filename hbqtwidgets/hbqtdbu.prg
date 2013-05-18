@@ -170,16 +170,6 @@ REQUEST DBFNSX
 /*                             HbpMdiArea()                             */
 /*----------------------------------------------------------------------*/
 
-#define HBQTMDI_MODE_SUBWINDOWS                   0
-#define HBQTMDI_MODE_TABBED                       1
-
-#define HBQTMDI_STYLE_ORGANIZED                   0
-#define HBQTMDI_STYLE_CASCADED                    1
-#define HBQTMDI_STYLE_TILED                       2
-#define HBQTMDI_STYLE_MAXIMIZED                   3
-#define HBQTMDI_STYLE_TILEDVERT                   4
-#define HBQTMDI_STYLE_TILEDHORZ                   5
-
 #define HBQTTOOLBAR_BUTTON_DEFAULT                0
 #define HBQTTOOLBAR_BUTTON_SEPARATOR              1
 
@@ -222,17 +212,18 @@ CLASS HbQtDBU
    ACCESS rddsBlock                               METHOD getRddsBlock
    ASSIGN rddsBlock                               METHOD setRddsBlock
 
-   ACCESS populateTreeBlock                       METHOD getPopulateTreeBlock
-   ASSIGN populateTreeBlock                       METHOD setPopulateTreeBlock
-
    ACCESS tablesStructureEnabled                  METHOD getTablesStructureEnabled
    ASSIGN tablesStructureEnabled                  METHOD setTablesStructureEnabled
 
-   ACCESS tablesTreeEnabled                       METHOD getTablesTreeEnabled
-   ASSIGN tablesTreeEnabled                       METHOD setTablesTreeEnabled
-
    METHOD browseConfigureBlock( bBlock )          SETGET
    METHOD browseColumnsBlock( bBlock )            SETGET
+
+   /* Tables Tree Management */
+   ACCESS populateTreeBlock                       METHOD getPopulateTreeBlock
+   ASSIGN populateTreeBlock                       METHOD setPopulateTreeBlock
+
+   ACCESS tablesTreeEnabled                       METHOD getTablesTreeEnabled
+   ASSIGN tablesTreeEnabled                       METHOD setTablesTreeEnabled
 
    METHOD clearTablesTree()
    METHOD populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, cIcon )

@@ -2734,6 +2734,11 @@
 #define QSwipeGesture_Up                                     3       // The gesture involved an upward vertical motion.
 #define QSwipeGesture_Down                                   4       // The gesture involved a downward vertical motion.
 
+
+#define QLineF_NoIntersection                                0       // Indicates that the lines do not intersect; i.e. they are parallel.
+#define QLineF_UnboundedIntersection                         2       // The two lines intersect, but not within the range defined by their lengths. This will be the case if the lines are not parallel.
+#define QLineF_BoundedIntersection                           1       // The two lines intersect with each other within the start and end points of each line.
+
 /*----------------------------------------------------------------------*/
 //                        HBQT Defined Constants
 /*----------------------------------------------------------------------*/

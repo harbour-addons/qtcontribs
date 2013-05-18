@@ -142,6 +142,10 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       oWnd:setFont( oFont )
       oWnd:setWindowTitle( cTitle )
 
+      IF ! lNoModal
+         lExec := .T.
+      ENDIF
+
       IF HB_ISARRAY( aAttrbs ) .AND. ( nAttrb := AScan( aAttrbs, {|e_| e_[ 1 ] == _QGET_ATTRB_SETMODE } ) ) > 0
          nWidth  := nAvgWid  * aAttrbs[ nAttrb, 2, 2 ] + 6 + 6
          nHeight := nLHeight * aAttrbs[ nAttrb, 2, 1 ]

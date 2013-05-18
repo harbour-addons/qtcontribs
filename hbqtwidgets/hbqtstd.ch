@@ -53,6 +53,25 @@
 #ifndef HB_QSTD_CH_
    #define HB_QSTD_CH_
 
+   #define HBQT_CHART_BARS                        0
+   #define HBQT_CHART_BARS_M                      1
+   #define HBQT_CHART_PIE                         2
+   #define HBQT_CHART_PIE_3D                      3
+   #define HBQT_CHART_LINES                       4
+
+   #define HBQT_LEGEND_VERICAL                    0
+   #define HBQT_LEGEND_CIRCULAR                   1
+
+   #define HBQTMDI_MODE_SUBWINDOWS                0
+   #define HBQTMDI_MODE_TABBED                    1
+
+   #define HBQTMDI_STYLE_ORGANIZED                0
+   #define HBQTMDI_STYLE_CASCADED                 1
+   #define HBQTMDI_STYLE_TILED                    2
+   #define HBQTMDI_STYLE_MAXIMIZED                3
+   #define HBQTMDI_STYLE_TILEDVERT                4
+   #define HBQTMDI_STYLE_TILEDHORZ                5
+
    #define HBQTBRW_CURSOR_NONE                    1
    #define HBQTBRW_CURSOR_CELL                    2
    #define HBQTBRW_CURSOR_ROW                     3

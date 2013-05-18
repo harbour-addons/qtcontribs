@@ -16,6 +16,100 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-05-17 18:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r221)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: Constants : QLineF_* 
+
+  + hbqtwidgets/resources/balance.png
+  + hbqtwidgets/resources/chart_bar.png
+  + hbqtwidgets/resources/chart_line.png
+  + hbqtwidgets/resources/chart_pie.png
+  + hbqtwidgets/resources/chart_pie_3d.png
+  + hbqtwidgets/resources/dollar.png
+  + hbqtwidgets/resources/legend.png
+  + hbqtwidgets/resources/shading.png
+  + hbqtwidgets/resources/tag.png
+  + hbqtwidgets/resources/treeview.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: new images usable in HbQtCharts and HbQtDashBoard ( upcoming ).
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: constants : HBQT_CHART_*, HBQTMDI_*
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: charts.prg.
+    
+  * hbqtwidgets/getlist.prg
+    % Changed: if a GETLIST is QREAD without a parent and <NOMODAL> 
+       clause is not specified, then the the window hosting GETs 
+       will be executed in modal state.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: a bug where RTE was generated when ::oParent was not supplied.
+
+  * hbqtwidgets/hbqtdbu.prg
+    % Rearrangement of some code in logical sections.
+      Moved HBQTMDI_* constants to qtstd.ch.
+
+  + hbqtwidgets/charts.prg
+    + Implemented: HbQtCharts() class.
+       This class is inspired from:
+         https://github.com/0TheFox0/OpenChart/blob/master/
+           Thanks.
+
+       Charts class is responsible to display graphical representation of 
+       business data. Currently BAR and 2D PIE charts are available, but 
+       later many other types will be developed. For LINES and 3D PIE,
+       code is already there but needs some tweaks. So those chart types 
+       are not implemented yet.
+
+         #include "qtstd.ch"
+
+         oParent := QGroupBox( oMain )
+         oParent:resize( 300, 200 )
+
+         WITH OBJECT oChart := HbQtCharts():new( oParent )
+            :setType( HBQT_CHART_BARS )
+            :enableLegend( .F. )
+            :setTitle( "Monthly Sales: Jan-Jun 2013 ('000,000)" )
+
+            :addItem( "Jul" , 66, QColor( 210, 25, 125 ) )
+            :addItem( "Aug" , 32 )
+            :addItem( "Sep" ,  5 )
+            :addItem( "Oct" , 14 )
+            :addItem( "Nov" , 87 )
+            :addItem( "Dec" , 44 )
+
+            :create()
+
+            :enableToolbar( .T. )
+         ENDWITH 
+       
+       Charts window contains a left-side, toggleable, toolbar and 
+       chart display area. Toolbar contains these actions:
+         1. Action Display Bar-Chart
+         2. Action Display Pie-Chart
+         3. Action Toggle Legends
+         4. Action Toggle Shadows
+         5. Action Toggle Labels
+         6. Action Toggle Values
+         7. Action Print Preview
+
+       Besides above action-icons, interface offers two keyboard actions:
+         P  Action Print Preview
+         T  Action Toggle Toolbar
+
+       Charts class can be hosted on any container widget or layout.
+       It is also scheduled to be added to @...QGET...BARCHART... and variants.
+       For my projects it is used as a part of HbQtDashBoard() object.
+       HbQtDashBoard() will be committed next after finalization of 
+       its usability components.
+
+       Note: Charts class needs more work but it has already showed me 
+       a promise. Speak-out your ideas and hopefully those will get 
+       implemented. Also, if someone can write code for other type of 
+       charts, is welcome. Believe me, I am extremely poor in maths.   
+
 2013-05-15 16:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r220)
   * hbqtwidgets/getsys.prg
     ! Fixed: @...QGET...CHECKBOX was not updating its variable on 

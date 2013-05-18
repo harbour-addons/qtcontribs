@@ -132,5 +132,15 @@
     <file>resources/table-add.png</file>
     <file>resources/cube-2.png</file>
     <file>resources/copy.png</file>
+    <file>resources/treeview.png</file>
+    <file>resources/chart_bar.png</file>
+    <file>resources/chart_pie.png</file>
+    <file>resources/chart_pie_3d.png</file>
+    <file>resources/chart_line.png</file>
+    <file>resources/shading.png</file>
+    <file>resources/legend.png</file>
+    <file>resources/balance.png</file>
+    <file>resources/tag.png</file>
+    <file>resources/dollar.png</file>
   </qresource>
 </RCC>
