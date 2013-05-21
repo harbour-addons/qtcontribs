@@ -1604,12 +1604,7 @@ METHOD IdeEdit:toggleHorzRuler()
 /* Fired by icon */
 
 METHOD IdeEdit:toggleSelectionMode()
-   LOCAL qFocus
-
-   qFocus := QApplication():focusWidget()
    ::qEdit:hbSetSelectionMode( iif( ::oDK:setButtonState( "SelectionMode" ), 2, 1 ), .f. )
-   qFocus:setFocus( 0 )
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/

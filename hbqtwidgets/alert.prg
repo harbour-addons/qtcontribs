@@ -130,7 +130,7 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    oLabel:setAlignment( Qt_AlignHCenter )
    oLabel:setText( cMsg )
    oLabel:setOpenExternalLinks( .T. )
-   oLabel:setFont( QFont( "Courier new", 10 ) )
+   oLabel:setFont( QFont( "Courier", 10 ) )
    oLabel:setStyleSheet( "padding: 10px;" )
 
    FOR EACH cBtn IN aOptions
@@ -138,7 +138,8 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
       oBtn:setText( cBtn )
       oBtn:setFocusPolicy( Qt_StrongFocus )
       oBtn:setStyleSheet( "" )
-      oBtn:setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) + " font-name: Courier; font-size: 10pt;" )
+      oBtn:setFont( QFont( "Courier", 10 ) )
+      oBtn:setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) )
       oBtn:connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
       oBtn:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
       oHBLayout:addWidget( oBtn )
@@ -160,7 +161,6 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    ENDIF
 
    oDlg:setParent( QWidget() )  /* MUST DO - Releases the memory */
-   oFocus:setParent( QWidget() )
 
    RETURN nResult
 
