@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-05-22 12:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r223)
+  * hbqt/qtgui/qth/QSound.qth
+    ! Fixed: case sensitivity in #include section, pointed-out by Luigi, thanks.
+
 2013-05-21 11:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r222)
   * hbide/edit.prg
     ! Fixed: Qt 5.x introduced bug where "Toggle Selection Mode" button was 
