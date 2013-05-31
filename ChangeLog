@@ -16,6 +16,117 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-05-31 04:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r224)
+  + hbqtwidgets/resources/alarm-clock.png
+  + hbqtwidgets/resources/banner.png
+  + hbqtwidgets/resources/images.png
+  + hbqtwidgets/resources/layout_content.png
+  + hbqtwidgets/resources/numbers.png
+  + hbqtwidgets/resources/objects.png
+    + Added: few more images.
+
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: above images.
+
+  * hbide/hbide_v.ch
+  * hbdbu/dbu.prg
+    % Version Bump.
+
+  * hbqtwidgets/charts.prg
+    ! few more refinements and a bug fix.
+
+  * hbqtwidgets/misc.prg
+  * hbqtwidgets/treeview.prg
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: dashboard.prg 
+
+  + hbqtwidgets/dashboard.prg
+    + Implemented: an embeddable DashBoard component.
+       This all the important widget will liven your applications with 
+       manifold acceptance by your clients. It presents the business data 
+       in meaningful visual representation in real-time, a concept which 
+       is available in some very high end ERPs only.
+
+       OBJECTS      DashBoard exposes the following objects:
+       =======
+       1. Figure  : Any expression returning digits, i.e., 216765.52, Time().
+                    This object is useful where you want to display running 
+                    balances or summed figures. 
+
+       2. Banner  : A marquee where application can inform the user about 
+                    anything from simple announcements to new offers. 
+                    Application vendor also can offer a banner where info 
+                    is pulled from a web-server. This may enhance your 
+                    interaction with the end-user.
+
+       3. Graph   : A graphical representation of data. Currently only 
+                    Bar and Pie charts are available.
+
+       4. Browser : A HbQtBrowse object comsuming a two dimensional array 
+                    of data which gets updated in real-time.
+
+       5. Picture : A simple slide-show object where image source can be 
+                    changed as per application's flow. For example, the 
+                    images souce can be hooked to stock items if a stock 
+                    master module is activated. Imagination is the limit.
+
+       ANATOMY      The component has the following wings:
+       =======    
+       1. QWidget   Holding all other parts in a QGridlayout.
+       2. QTabbar   Exposing multiple stacks/panels hosting various objects.
+       3. QToolbar  Top toolbar containing various actions to manipulated 
+                    objects and other parts of the components.
+       4. QToolbar  Left toolbar holding actions to manipulate windows 
+                    hosting objects.
+       5. QStackedWidget Hosting multiple panels.
+       6. QMdiArea  Multiple - hosting various windows of objects.
+       7. QTreeWidget Hosting application-pushed object definitions invocable 
+                    by the appln user.
+       8. QStatusbar Exposing different parts to provide in-time statistics.
+
+       ACTIONS      Following are the actions available:
+       =======
+       1. Toolbar-T a) Create a New DashBoard
+                    b) Activate another DashBoard
+                    c) Create a New Browser Object
+                    d)              Figure
+                    e)              Graph
+                    f)              Banner
+                    g)              Picture
+                    h) Toggle Objects Tree's Visibility
+                    i) Toggle DashBoard/Panels Tabbar's Visibility.
+
+       2. Toolbar-L j) Toggle tabbar of objects visible on active dashboard.
+                    k) Position objects on active dashboard with original oordinates.
+                    l) Position Objects Cascaded.
+                    k) Position Objects Tiled.
+                    l) Position Objects Full Screen in Viewport.
+                    m) Stack objects Vertically.
+                    n) Stack Objects Horizontally.
+                    o) Zoom Out Objects.
+                    p) Zoom In Objects.
+
+       3. DashBoards/Panels Tabbar ( When toggled to visibility )
+                    q) Lock/Unlock Dashboard/Panel.
+                    r) Clear DashBoard Objects ( If it is Unlocked ).
+
+       ENVIRONMENT  Following points describe its eco system:
+       ===========
+       1.           Component passes all the user actions to the application and 
+                    waits for the appropriate reply which is then carried on.
+
+       2.           It does not save/restore anything at its own. Rather provides
+                    the methods to retrieve and push its environment.
+
+       3.           Component can hosted inside any container widget or layout
+                    application provides. Itf no parent is supplied then 
+                    it itself becomes the top-level widget.
+
+  + hbqtwidgets/tests/dashbrd.prg
+    + Added: a reasonably self contained application to demonstrate the 
+       usage of HbQtDashBoard() widget.
+
 2013-05-22 12:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r223)
   * hbqt/qtgui/qth/QSound.qth
     ! Fixed: case sensitivity in #include section, pointed-out by Luigi, thanks.

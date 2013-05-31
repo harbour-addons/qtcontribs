@@ -87,6 +87,9 @@ CLASS HbQtTreeView
 
    DATA     oItemSelected
 
+   METHOD   show()                                INLINE ::oWidget:show()
+   METHOD   hide()                                INLINE ::oWidget:hide()
+
    METHOD   itemCollapsed( ... )                  SETGET
    METHOD   itemExpanded( ... )                   SETGET
    METHOD   itemMarked( ... )                     SETGET

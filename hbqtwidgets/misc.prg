@@ -133,6 +133,34 @@ FUNCTION HbQtSet( nSet, xValue )
    RETURN xOldValue
 
 
+FUNCTION __hbqtRgbStringFromColors( aColors )
+   LOCAL cFore := "", cBack := ""
+
+   /* Clipper color string "W+/BG" */
+   IF HB_ISCHAR( aColors )
+      RETURN __hbqtCSSFromColorString( aColors )
+   ELSEIF HB_ISNUMERIC( aColors )
+      cFore := "#" + hb_ntos( aColors )
+   /* { {12,12,12},{13,13,13} } */
+   ELSEIF HB_ISARRAY( aColors ) .AND. Len( aColors ) == 2 .AND. HB_ISARRAY( aColors[ 1 ] ) .AND. HB_ISARRAY( aColors[ 2 ] )
+      cFore := __hbqtRgbStringFromRGB( aColors[ 1 ] )
+      cBack := __hbqtRgbStringFromRGB( aColors[ 2 ] )
+   /* { "rgb(12,12,12)","rgb(13,13,13)" } */
+   ELSEIF HB_ISARRAY( aColors ) .AND. Len( aColors ) == 2 .AND. HB_ISCHAR( aColors[ 1 ] ) .AND. HB_ISCHAR( aColors[ 2 ] )
+      cFore := aColors[ 1 ]
+      cBack := aColors[ 2 ]
+   /* {r, g, b }*/
+   ELSEIF HB_ISARRAY( aColors ) .AND. Len( aColors ) == 3
+      cFore := __hbqtRgbStringFromRGB( aColors )
+   ENDIF
+
+   RETURN iif( Empty( cFore ), "", "color: " + cFore + ";" ) + iif( Empty( cBack ), "", "background-color: " + cBack + ";" )
+
+
+FUNCTION __hbqtRgbStringFromRGB( aRgb )
+   RETURN "rgb(" + hb_ntos( aRgb[ 1 ] ) + "," + hb_ntos( aRgb[ 2 ] ) + "," + hb_ntos( aRgb[ 3 ] ) + ")"
+
+
 FUNCTION __hbqtRgbStringFromColorString( cToken, lExt )
 
    IF Upper( Left( cToken, 3 ) ) == "RGB"    /* rgb notation : rgb(200,12,201)/rgb(104,56,19) */

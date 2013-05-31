@@ -994,6 +994,7 @@ METHOD DbuMGR:saveEnvAs()
 
    RETURN Self
 
+
 METHOD DbuMGR:saveEnvironment()
    LOCAL oSettings
    LOCAL oWgt := ::oUI:oWidget
@@ -1014,21 +1015,6 @@ METHOD DbuMGR:saveEnvironment()
 
    RETURN oSettings
 
-
-METHOD DbuMGR:restEnvFrom()
-   LOCAL cFile
-
-   cFile := hbdbu_fetchAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
-   IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
-      ::getPath( cFile )
-
-      // Close existing panels and browsers or should we merge ?
-      // merging make sense as .dbu can be opened via "Open With" option of explorer.
-      //
-      ::restEnvironment()
-   ENDIF
-
-   RETURN Self
 
 METHOD DbuMGR:restEnvironment()
    LOCAL oSettings, oWgt := ::oUI:oWidget
@@ -1097,6 +1083,21 @@ METHOD DbuMGR:restEnvironment()
 
    RETURN NIL
 
+
+METHOD DbuMGR:restEnvFrom()
+   LOCAL cFile
+
+   cFile := hbdbu_fetchAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
+      ::getPath( cFile )
+
+      // Close existing panels and browsers or should we merge ?
+      // merging make sense as .dbu can be opened via "Open With" option of explorer.
+      //
+      ::restEnvironment()
+   ENDIF
+
+   RETURN Self
 
 METHOD DbuMGR:getPath( cFile )
    LOCAL cPath, cName, cExt
@@ -1393,7 +1394,7 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, "Curacao ( <a href='http://icuracao.com/'>http://icuracao.com )" )
       AAdd( txt_, "" )
       AAdd( txt_, "built with:" )
-      AAdd( txt_, "QtContribs " + " r" + "210" )
+      AAdd( txt_, "QtContribs " + " r" + "224" )
       AAdd( txt_, HB_COMPILER() )
       AAdd( txt_, "Qt " + QT_VERSION_STR() )
       AAdd( txt_, "" )

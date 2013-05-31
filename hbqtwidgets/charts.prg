@@ -71,9 +71,6 @@
 
 #define HHB_NTOS( n )                             LTrim( Str( n, 12, 0 ) )
 
-#define true                                      .T.
-#define false                                     .F.
-
 #define __toolbarButton_clicked__                 1001
 
 /*----------------------------------------------------------------------*/
@@ -87,6 +84,7 @@ CLASS HbQtCharts
    DATA   oLabel
    DATA   oScrollArea
    DATA   oImage
+   DATA   oPainter
 
    DATA   oActBars, oActPie, oActPie3D, oActLines, oActShadows, oActLegends, oActLabels, oActValues, oActPrint
    DATA   sp0, sp1, sp2, sp3
@@ -197,6 +195,8 @@ CLASS HbQtCharts
 
    DATA   nColorIndex                             INIT 1
 
+   DATA   aPallete                                INIT {}
+
    ENDCLASS
 
 
@@ -208,16 +208,16 @@ METHOD HbQtCharts:new( oParent )
    ::m_maxValue     := 0
    ::m_menor        := 0
    ::m_type         := HBQT_CHART_BARS
-   ::m_sombra       := true
-   ::m_useLegend   := true
-   ::m_tipoLegend  := HBQT_LEGEND_VERICAL
-   ::m_usingTitle   := true
-   ::m_title        := "Vouch"
-   ::m_valuesEnY    := true
-   ::m_animation    := true
+   ::m_sombra       := .T.
+   ::m_useLegend    := .T.
+   ::m_tipoLegend   := HBQT_LEGEND_VERICAL
+   ::m_usingTitle   := .T.
+   ::m_title        := ""
+   ::m_valuesEnY    := .T.
+   ::m_animation    := .T.
    ::m_aniDuration  := 700
 
-   ::m_letraLegend := QFont( "verdana" )
+   ::m_letraLegend  := QFont( "verdana" )
    ::m_letra        := QFont( "verdana" )
    ::m_letraLegend:setPixelSize( 8 )
    ::m_letra:setPixelSize( 12 )
@@ -229,6 +229,32 @@ METHOD HbQtCharts:new( oParent )
    ::m_labels       := .T.
    ::m_values       := .T.
    ::m_valuesEnY    := .F.
+
+   AAdd( ::aPallete, QColor( Qt_yellow    ) )
+   AAdd( ::aPallete, QColor( Qt_green     ) )
+   AAdd( ::aPallete, QColor( Qt_blue      ) )
+   AAdd( ::aPallete, QColor( Qt_cyan      ) )
+   AAdd( ::aPallete, QColor( Qt_magenta   ) )
+   AAdd( ::aPallete, QColor( Qt_red       ) )
+   AAdd( ::aPallete, QColor( Qt_lightGray ) )
+
+   AAdd( ::aPallete, QColor( 255,250,205  ) )    // LemonChiffon
+   AAdd( ::aPallete, QColor( 124,255,0    ) )    // ChartReuse
+   AAdd( ::aPallete, QColor( 0  ,191,255  ) )    // DeepSkyblue
+   AAdd( ::aPallete, QColor( 127,255,212  ) )    // Aquamarine
+   AAdd( ::aPallete, QColor( 238,130,238  ) )    // Violet
+   AAdd( ::aPallete, QColor( 220,20,60    ) )    // Crimson
+   AAdd( ::aPallete, QColor( 119,136,53   ) )    // LightSlateGray
+
+   AAdd( ::aPallete, QColor( 240,230,140  ) )    // Khaki
+   AAdd( ::aPallete, QColor( 60 ,179,113  ) )    // MediumGreen
+   AAdd( ::aPallete, QColor( 30 ,144,255  ) )    // DoggerBlue
+   AAdd( ::aPallete, QColor( 64 ,224,208  ) )    // Turquoise
+   AAdd( ::aPallete, QColor( 123,104,238  ) )    // MediumSlateBlue
+   AAdd( ::aPallete, QColor( 240,128,128  ) )    // LightCoral
+   AAdd( ::aPallete, QColor( 255,240,245  ) )    // LavendarBlush
+
+   ::oPainter := QPainter()
 
    RETURN Self
 
@@ -269,6 +295,8 @@ METHOD HbQtCharts:create()
 
    IF HB_ISOBJECT( ::oParent )
       ::oWidget:resize( ::oParent:width(), ::oParent:height() )
+   ELSE
+      ::oWidget:resize( 200, 150 )
    ENDIF
 
    RETURN Self
@@ -389,14 +417,22 @@ METHOD HbQtCharts:refresh()
 
 METHOD HbQtCharts:addItem( name, value, color )
    LOCAL p := HbQtChartsPiece():new()
-   LOCAL aColors := { Qt_yellow, Qt_green, Qt_blue, Qt_cyan, Qt_magenta, Qt_red, Qt_darkYellow,;
-                      Qt_darkMagenta, Qt_darkCyan, Qt_darkBlue, Qt_darkGreen, Qt_darkRed, Qt_darkGray, Qt_lightGray }
+
+   STATIC nColorIndex := 1
 
    IF ! HB_ISOBJECT( color )
-      color := QColor( aColors[ ::nColorIndex ] )
-      ::nColorIndex++
-      IF ::nColorIndex > Len( aColors )
-         ::nColorIndex := 1
+      IF HB_ISNUMERIC( color )
+         color := QColor( color )
+      ELSEIF HB_ISARRAY( color ) .AND. Len( color ) == 3
+         color := QColor( color[ 1 ], color[ 2 ], color[ 3 ] )
+      ELSEIF HB_ISCHAR( color )
+         color := QColor( __hbqtHbColorToQtValue( color, Qt_ForegroundRole ) )
+      ELSE
+         color := ::aPallete[ nColorIndex ]
+         nColorIndex++
+         IF nColorIndex > Len( ::aPallete )
+            nColorIndex := 1
+         ENDIF
       ENDIF
    ENDIF
 
@@ -411,6 +447,8 @@ METHOD HbQtCharts:addItem( name, value, color )
    ::m_maxValue := Max( ::m_mayor, -::m_menor )
 
 // ::startAnimation()
+   ::setPercent( 100 )
+   ::refresh()
 
    RETURN Self
 
@@ -429,14 +467,20 @@ METHOD HbQtCharts:addMulibarColor( name, color )
 METHOD HbQtCharts:draw( oSurface )
    LOCAL fontH, title, maxLength, cToken, range, p, pieceHeight, s, i, pPerc, fm
    LOCAL painter := QPainter( oSurface )
-
+//   LOCAL painter := ::oPainter
+#if 0
+   IF ! painter:begin( oSurface )
+      RETURN Self
+   ENDIF
+#endif
    painter:setRenderHint( QPainter_Antialiasing )
    painter:setFont( ::m_letra )
 
    IF ::pieces:isEmpty()
       ::m_xAxis := ::height() / 2
       ::m_left  := 5
-      ::m_right := ::width()
+      ::m_right := ::width() - 5
+      ::m_width := ::m_right - ::m_left
       ::drawAxis( painter )
       RETURN Self
    ENDIF
@@ -454,9 +498,9 @@ METHOD HbQtCharts:draw( oSurface )
          ::m_top += fontH
          ::m_top += 3
          WITH OBJECT title := QFont( ::m_letra )
-//          :setItalic( true )
-            :setBold( true )
-//          :setUnderline( true )
+//          :setItalic( .T. )
+            :setBold( .T. )
+//          :setUnderline( .T. )
          ENDWITH
          WITH OBJECT painter
             :save()
@@ -554,9 +598,9 @@ METHOD HbQtCharts:draw( oSurface )
          ::m_top += fontH
          ::m_top += 3
          WITH OBJECT title := QFont( ::m_letra )
-//          :setItalic( true )
-            :setBold( true )
-//          :setUnderline( true )
+//          :setItalic( .T. )
+            :setBold( .T. )
+//          :setUnderline( .T. )
          ENDWITH
          WITH OBJECT painter
             :save()
@@ -616,6 +660,8 @@ METHOD HbQtCharts:draw( oSurface )
       EXIT
 
    ENDSWITCH
+
+//   painter:end()
 
    RETURN Self
 
@@ -963,10 +1009,10 @@ METHOD HbQtCharts:drawLines( painter )
          painter:setPen( Qt_SolidLine )
          FOR a := 1 TO pointCount
             s := HHB_NTOS( ::pieces:at( i ):getValues():at( a ) )
-            above := true
+            above := .T.
             IF a != pointCount - 1
                IF ( points[ a ]:y() > points[ a + 1 ]:y() )
-                  above := false
+                  above := .F.
                ENDIF
             ENDIF
             IF above
@@ -1301,32 +1347,27 @@ METHOD HbQtCharts:printPreview()
    oDlg:resize( 400, 600 )
    oDlg:exec()
 
+   oDlg:setParent( QWidget() )
+
    RETURN NIL
 
 
 METHOD HbQtCharts:printChart( oPrinter )
-   LOCAL oPaper, oPage, nMY, nMX, nH, nW, oPainter
-
-   oPainter := QPainter()
-   IF ! oPainter:begin( oPrinter )
-      Alert( "Printing could not been started!" )
-      RETURN NIL
-   ENDIF
+   LOCAL oPaper, oPage, nMY, nMX, nH, nW, oImage
+   LOCAL oPainter := QPainter( oPrinter )
 
    oPaper := oPrinter:paperRect()
    oPage  := oPrinter:pageRect()
 
-   nMX   := oPaper:width()  - oPage:width()
-   nMY   := oPaper:height() - oPage:height()
+   nMX    := oPaper:width()  - oPage:width()
+   nMY    := oPaper:height() - oPage:height()
 
-   nW    := oPrinter:width()  - nMX
-   nH    := oPrinter:height() - nMY
+   nW     := oPrinter:width()  - nMX
+   nH     := oPrinter:height() - nMY
 
-//   oImage := QImage( nW, nH, QImage_Format_ARGB32 )
-//   ::draw( oImage )
-   oPainter:drawPixmap( QPoint( nMX, nMY ), QPixmap():fromImage( ::oImage ):scaled( nW, nH ) )
-
-   oPainter:end()
+   oImage := QImage( nW, nH, QImage_Format_ARGB32 )
+   ::draw( oImage )
+   oPainter:drawPixmap( QPoint( nMX, nMY ), QPixmap():fromImage( oImage ) )
 
    RETURN Self
 
