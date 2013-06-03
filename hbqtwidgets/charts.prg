@@ -120,8 +120,8 @@ CLASS HbQtCharts
    METHOD refresh()
    METHOD buildToolbar()
 
-   METHOD isToolbarEnabled()                      INLINE ::oToolbar:isVisible()
-   METHOD enableToolbar( lYes )                   INLINE iif( HB_ISLOGICAL( lYes ), ::oToolbar:setVisible( lYes ), NIL )
+   METHOD isToolbarEnabled()                      INLINE ::lToolbar
+   METHOD enableToolbar( lYes )                   INLINE iif( HB_ISLOGICAL( lYes ), ::lToolbar := lYes, NIL ), ::refresh()
 
    METHOD Type()                                  INLINE ::m_type
    METHOD SetType( nType )                        INLINE ::m_type := nType, ::refresh()
@@ -196,6 +196,10 @@ CLASS HbQtCharts
    DATA   nColorIndex                             INIT 1
 
    DATA   aPallete                                INIT {}
+   DATA   hPallete                                INIT {=>}
+   METHOD getPallete( cName )                     INLINE iif( hb_HHasKey( ::hPallete, cName ), ::hPallete[ cName ], NIL )
+   METHOD setPallete( cName, aPallete )           INLINE iif( HB_ISCHAR( cName ) .AND. HB_ISARRAY( aPallete ), ::hPallete[ cName ] := aPallete, NIL ), ::aPallete := ::hPallete[ cName ]
+   DATA   nStartIndex                             INIT -1
 
    ENDCLASS
 
@@ -230,6 +234,8 @@ METHOD HbQtCharts:new( oParent )
    ::m_values       := .T.
    ::m_valuesEnY    := .F.
 
+   hb_HCaseMatch( ::hPallete, .F. )
+
    AAdd( ::aPallete, QColor( Qt_yellow    ) )
    AAdd( ::aPallete, QColor( Qt_green     ) )
    AAdd( ::aPallete, QColor( Qt_blue      ) )
@@ -254,7 +260,11 @@ METHOD HbQtCharts:new( oParent )
    AAdd( ::aPallete, QColor( 240,128,128  ) )    // LightCoral
    AAdd( ::aPallete, QColor( 255,240,245  ) )    // LavendarBlush
 
+   ::hPallete[ "default" ] := ::aPallete
+
    ::oPainter := QPainter()
+
+   ::nStartIndex := Max( 1, hb_Random( 99999 ) % Len( ::aPallete ) )
 
    RETURN Self
 
@@ -404,6 +414,12 @@ METHOD HbQtCharts:buildToolbar()
 METHOD HbQtCharts:refresh()
 
    IF HB_ISOBJECT( ::oWidget )
+      IF ::lToolbar
+         ::oToolbar:show()
+      ELSE
+         ::oToolbar:hide()
+      ENDIF
+
       ::oLabel:setPixmap( QPixmap() )
       ::oLabel:resize( ::oScrollArea:width(), ::oScrollArea:height() )
       ::oImage := QImage( ::oScrollArea:width()-10, ::oScrollArea:height()-10, QImage_Format_ARGB32 )
@@ -418,7 +434,7 @@ METHOD HbQtCharts:refresh()
 METHOD HbQtCharts:addItem( name, value, color )
    LOCAL p := HbQtChartsPiece():new()
 
-   STATIC nColorIndex := 1
+   STATIC nColorIndex := 0
 
    IF ! HB_ISOBJECT( color )
       IF HB_ISNUMERIC( color )
@@ -428,11 +444,14 @@ METHOD HbQtCharts:addItem( name, value, color )
       ELSEIF HB_ISCHAR( color )
          color := QColor( __hbqtHbColorToQtValue( color, Qt_ForegroundRole ) )
       ELSE
-         color := ::aPallete[ nColorIndex ]
+         IF ::pieces:size() == 0
+            nColorIndex := ::nStartIndex
+         ENDIF
          nColorIndex++
          IF nColorIndex > Len( ::aPallete )
             nColorIndex := 1
          ENDIF
+         color := ::aPallete[ nColorIndex ]
       ENDIF
    ENDIF
 

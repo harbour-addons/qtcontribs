@@ -212,7 +212,7 @@ METHOD HbQtDashboard:create( oParent )
 
    WITH OBJECT ::oTabBar := QTabBar()
       :setShape( QTabBar_TriangularNorth )
-      :setMovable( .T. )
+//    :setMovable( .T. )
       :setTabsClosable( .T. )
       :setContextMenuPolicy( Qt_CustomContextMenu )
       :connect( "currentChanged(int)"               , {|i| ::oStackedWidget:setCurrentIndex( i ) } )
@@ -1456,7 +1456,7 @@ METHOD HbQtDashboardObject:buildFigure()
 
    ::oWidget := QLCDNumber( 15 )
    IF HB_ISARRAY( ::attributes() ) .AND. Len( ::attributes() ) >= 1
-      ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( ::attributes()[1] ) )
+      ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( ::attributes()[ 1 ] ) )
    ENDIF
 
    RETURN Self
@@ -1464,20 +1464,28 @@ METHOD HbQtDashboardObject:buildFigure()
 
 METHOD HbQtDashboardObject:buildBanner()
    LOCAL oFont, oTimer
+   LOCAL aAttrbs := ::attributes()
 
+   ASize( aAttrbs, 3 )
+   IF ! HB_ISNUMERIC( aAttrbs[ 2 ] )
+      aAttrbs[ 2 ] := 250
+   ENDIF
+   IF ! HB_ISNUMERIC( aAttrbs[ 3 ] )
+      aAttrbs[ 3 ] := 36
+   ENDIF
    WITH OBJECT ::oWidget := QLabel()
       :setAlignment( Qt_AlignVCenter + Qt_AlignRight )
-      oFont := QFont( "Courier New", 36 )
+      oFont := QFont( "Courier New", aAttrbs[ 3 ] )
       oFont:setBold( .T. )
       :setFont( oFont )
    ENDWITH
-   IF HB_ISARRAY( ::attributes() ) .AND. Len( ::attributes() ) >= 1
-      ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( ::attributes()[1] ) )
+   IF HB_ISARRAY( aAttrbs ) .AND. Len( aAttrbs ) >= 1
+      ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( aAttrbs[ 1 ] ) )
    ENDIF
 
    ::nHotPos := 1
    WITH OBJECT oTimer := QTimer( ::oWidget )
-      :setInterval( 250 )
+      :setInterval( aAttrbs[ 2 ] )
       :connect( "timeout()", {|| ::update() } )
    ENDWITH
    oTimer:start()

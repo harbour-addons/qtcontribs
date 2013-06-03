@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-03 01:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r226)
+  * hbide/hbide_v.ch
+    % Version bump.
+
+  * hbqtwidgets/charts.prg
+    + Implemented: the concept of providing pallete of colors to be 
+       used for undefined color attribute of a piece of data.
+        :setPallete( cName, aPalleteOfQColors )
+        :getPallete( cName )
+
+    % Changed: to keep the undefined colors to remain the same irrespective 
+       of data retrieval calls. Before it was changing arbitrarily.
+    
+  * hbqtwidgets/dashboard.prg
+    + Increased: the number of assignable attributes for object of type BANNER.
+       Now attributes can be sent as { cnaColor, nSpeedInMSeconds, nFontHeight }.
+       Before nSpeedInMSeconds was 250 and and nFontHeight was 36.
+
 2013-06-02 17:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r225)
   * hbqtwidgets/hbqtbrowse.prg
     % Refined: METHOD editCell() to honor pressed key being populated 
