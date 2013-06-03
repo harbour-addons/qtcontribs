@@ -184,7 +184,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
          ENDIF
          dbRUnlock()
       ENDIF
-
+#if 0
    CASE nKey >= 48 .AND. nKey <= 57 .AND. oBrowse:getColumn( oBrowse:colPos ):heading == "Salary"
       IF lSearchActive
          lSearchActive  := .F.
@@ -198,7 +198,7 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
          dbRUnlock()
          oBrowse:refreshCurrent()
       ENDIF
-
+#endif
    CASE ( IsAlpha( Chr( nKey ) ) .OR. nKey == K_BS ) .AND. oBrowse:getColumn( oBrowse:colPos ):heading == "Salary" .AND. IndexOrd() == 1
       IF ! lSearchActive
          lSearchActive := .T.
@@ -225,9 +225,9 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
          oBrowse:searchEx()   /* Deactivate previous search */
 
          IF oCol:heading != "First Name"
-            xResult := oBrowse:editCell( "@K ", , , , nKey )
+            xResult := oBrowse:editCell( AddKInPic( oCol:picture ), , , , nKey )
          ELSE
-            xResult := oBrowse:editCell( , , , , nKey )
+            xResult := oBrowse:editCell( oCol:picture, , , , nKey )
          ENDIF
 
          IF xResult != NIL
@@ -247,6 +247,25 @@ STATIC FUNCTION HandleMyOptions( nKey,xData,oBrowse )
    ENDCASE
 
    RETURN lHandelled
+
+
+STATIC FUNCTION AddKInPic( cPic )
+
+   IF Empty( cPic )
+      RETURN "@K"
+   ELSE
+      IF "K" $ Upper( cPic )
+         RETURN cPic
+      ELSE
+         IF "@" == Left( cPic, 1 )
+            RETURN "@K" + SubStr( cPic, 2 )
+         ELSE
+            RETURN "@K " + cPic
+         ENDIF
+      ENDIF
+   ENDIF
+
+   RETURN cPic
 
 
 STATIC FUNCTION ReplaceField( oBrowse, nColumn, xValue )

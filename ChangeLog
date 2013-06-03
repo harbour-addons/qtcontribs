@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-02 17:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r225)
+  * hbqtwidgets/hbqtbrowse.prg
+    % Refined: METHOD editCell() to honor pressed key being populated 
+       properly and with respect to PICTURE clause, both in Numeric 
+       and Date fields.
+
+  * hbqtwidgets/tests/browdb.prg
+    % Modified: code to demonstrate the above fixed effects.
+
 2013-05-31 04:49 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r224)
   + hbqtwidgets/resources/alarm-clock.png
   + hbqtwidgets/resources/banner.png

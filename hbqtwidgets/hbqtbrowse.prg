@@ -2539,7 +2539,9 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    oDlg:setWindowTitle( oCol:heading )
 
    cPicture := iif( Empty( cPicture ), oCol:Picture, cPicture )
-   hb_default( @cPicture, "" )
+   IF Empty( cPicture )
+      cPicture := ""
+   ENDIF
 
    @ 0,0 QGET xValue PICTURE cPicture ;
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
@@ -2553,12 +2555,50 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
       :setAttribute( Qt_WA_TranslucentBackground, .T. )
       :move( oPos:x - 6, oPos:y() )
       :connect( QEvent_Show, {||
+                                 LOCAL oEdit := GetList[ 1 ]:edit()
                                  IF HB_ISNUMERIC( nKey )
-                                    GetList[ 1 ]:edit():insert( Chr( nKey ) )
-                                    IF "K" $ GetList[ 1 ]:picture()
-                                       GetList[ 1 ]:edit():end( .F. )
+                                    IF "K" $ cPicture
+                                       oEdit:clear()
+                                       SWITCH ValType( xValue )
+                                       CASE "C"
+                                          oEdit:insert( Chr( nKey ) )
+                                          oEdit:end( .F. )
+                                          EXIT
+                                       CASE "L"
+                                          oEdit:insert( Chr( nKey ) )
+                                          oEdit:end( .F. )
+                                          EXIT
+                                       CASE "D"
+                                          oEdit:insert( Chr( nKey ) )
+                                          EXIT
+                                       CASE "N"
+                                          GetList[ 1 ]:varPut( Val( Chr( nKey ) ) )
+                                          GetList[ 1 ]:display()
+                                          oEdit:home( .F. )
+                                          oEdit:setCursorPosition( 1 )
+                                          EXIT
+                                       ENDSWITCH
+                                    ELSE
+                                       SWITCH ValType( xValue )
+                                       CASE "L"
+                                          oEdit:home( .F. )
+                                          oEdit:end( .T. )
+                                          oEdit:insert( Chr( nKey ) )
+                                          EXIT
+                                       CASE "D"
+                                          oEdit:home( .F. )
+                                          oEdit:del()
+                                          oEdit:home( .F. )
+                                          oEdit:insert( Chr( nKey ) )
+                                          EXIT
+                                       CASE "C"
+                                       CASE "N"
+                                          oEdit:insert( Chr( nKey ) )
+                                          EXIT
+                                       ENDSWITCH
                                     ENDIF
                                  ENDIF
+
                                  RETURN .F.
                              } )
    ENDWITH
@@ -2570,7 +2610,18 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
 
    RETURN iif( nRes == 0, NIL, xValue )
 
-/*----------------------------------------------------------------------*/
+#if 0
+STATIC FUNCTION GetNoOfDecimals( xValue )
+   LOCAL s, n
+
+   s := Str( xValue )
+   IF ( n := At( ".", s ) ) == 0
+      RETURN 0
+   ENDIF
+   n := Len( SubStr( s, n + 1 ) )
+
+   RETURN n
+#endif
 
 METHOD HbQtBrowse:getToColumnCombo()
    RETURN ::lToColumnCombo
