@@ -510,7 +510,9 @@ METHOD HbQtGetList:setFocus( xGet, nReason )
 
    LOCAL n, oGet, cGet
 
-   __defaultNIL( @nReason, Qt_TabFocusReason )
+   IF ! HB_ISNUMERIC( nReason )
+      nReason := Qt_TabFocusReason
+   ENDIF
 
    IF HB_ISCHAR( xGet )
       cGet := Upper( xGet )
@@ -522,7 +524,8 @@ METHOD HbQtGetList:setFocus( xGet, nReason )
    ENDIF
    IF HB_ISOBJECT( oGet )
       IF oGet:cClassName == "QLINEEDIT"
-         oGet:setFocus( iif( "K" $ oGet:cPicFunc, nReason, Qt_OtherFocusReason ) )
+//       oGet:setFocus( iif( "K" $ oGet:cPicFunc, nReason, Qt_OtherFocusReason ) )   /* What lead me to this code ??? */
+         oGet:setFocus( nReason )
          oGet:positionCursor()
       ELSE
          oGet:setFocus( nReason )
