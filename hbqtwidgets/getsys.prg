@@ -1,4 +1,4 @@
-   /*
+/*
  * $Id: hbqtgetsys.prg 175 2013-02-23 03:27:00Z bedipritpal $
  */
 
@@ -980,7 +980,7 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
 
    IF ! ::preValidate()
       oFocusEvent:accept()
-      ::navigate( iif( oFocusEvent:reason() == Qt_TabFocusReason, _QGET_NAV_NEXT, _QGET_NAV_PREVIOUS ) )
+      ::navigate( iif( oFocusEvent:reason() == Qt_BacktabFocusReason, _QGET_NAV_PREVIOUS, _QGET_NAV_NEXT  ) )
       RETURN .T.
 
    ELSEIF ::cClassName == "QCOMBOBOX"

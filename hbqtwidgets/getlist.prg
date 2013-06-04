@@ -339,7 +339,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    ENDIF
 
    IF ! HB_ISOBJECT( oParent )
-      oWnd:connect( QEvent_WindowActivate, {|| oGetList:setFocus( aGetList[ 1 ] ), oWnd:disconnect( QEvent_WindowActivate ), .F. } )
+      oWnd:connect( QEvent_WindowActivate, {|| oGetList:setFocus( aGetList[ 1 ], Qt_TabFocusReason ), oWnd:disconnect( QEvent_WindowActivate ), .F. } )
 
       IF lExec
          oWnd:exec()

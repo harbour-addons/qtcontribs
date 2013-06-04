@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-03 17:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r227)
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+    ! Fixed: default behavior of WHEN focus at startup of the GETLIST.
+       Reported and supported with demo code, by Nelson Pires.
+
 2013-06-03 01:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r226)
   * hbide/hbide_v.ch
     % Version bump.
