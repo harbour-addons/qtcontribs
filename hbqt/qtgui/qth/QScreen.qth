@@ -1,0 +1,89 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtGui/QScreen>
+#include <QtGui/QPixmap>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSCREEN )
+{
+   HB_FUNC_EXEC( HB_QSCREEN );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int     angleBetween(Qt::ScreenOrientation a, Qt::ScreenOrientation b) const
+QRect   availableGeometry() const
+QSize   availableSize() const
+QRect   availableVirtualGeometry() const
+QSize   availableVirtualSize() const
+int     depth() const
+qreal   devicePixelRatio() const
+QRect   geometry() const
+QPixmap   grabWindow(WId window, int x = 0, int y = 0, int width = -1, int height = -1)
+//QPlatformScreen *   handle() const
+bool    isLandscape(Qt::ScreenOrientation o) const
+bool    isPortrait(Qt::ScreenOrientation o) const
+qreal   logicalDotsPerInch() const
+qreal   logicalDotsPerInchX() const
+qreal   logicalDotsPerInchY() const
+QRect   mapBetween(Qt::ScreenOrientation a, Qt::ScreenOrientation b, const QRect & rect) const
+QString   name() const
+Qt::ScreenOrientation   orientation() const
+Qt::ScreenOrientations   orientationUpdateMask() const
+qreal   physicalDotsPerInch() const
+qreal   physicalDotsPerInchX() const
+qreal   physicalDotsPerInchY() const
+QSizeF  physicalSize() const
+Qt::ScreenOrientation   primaryOrientation() const
+qreal   refreshRate() const
+void    setOrientationUpdateMask(Qt::ScreenOrientations mask)
+QSize   size() const
+QTransform   transformBetween(Qt::ScreenOrientation a, Qt::ScreenOrientation b, const QRect & target) const
+QRect   virtualGeometry() const
+QList<QScreen *>   virtualSiblings() const
+QSize   virtualSize() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   geometryChanged(const QRect & geometry)
+void   logicalDotsPerInchChanged(qreal dpi)
+void   orientationChanged(Qt::ScreenOrientation orientation)
+void   physicalDotsPerInchChanged(qreal dpi)
+void   physicalSizeChanged(const QSizeF & size)
+void   primaryOrientationChanged(Qt::ScreenOrientation orientation)
+void   refreshRateChanged(qreal refreshRate)
+void   virtualGeometryChanged(const QRect & rect)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

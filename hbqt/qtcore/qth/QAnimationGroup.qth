@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QAbstractAnimation
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtCore/QAnimationGroup>
+
+
+/*
+ * QAnimationGroup(QObject * parent = 0)
+ * ~QAnimationGroup()
+ */
+HB_FUNC( QT_QANIMATIONGROUP )
+{
+   HB_FUNC_EXEC( HB_QANIMATIONGROUP );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void  addAnimation(QAbstractAnimation * animation)
+QAbstractAnimation *   animationAt(int index) const
+int   animationCount() const
+void  clear()
+int   indexOfAnimation(QAbstractAnimation * animation) const
+void  insertAnimation(int index, QAbstractAnimation * animation)
+void  removeAnimation(QAbstractAnimation * animation)
+QAbstractAnimation *   takeAnimation(int index)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

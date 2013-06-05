@@ -71,3 +71,13 @@ QTimer.qth
 QTranslator.qth
 QUrl.qth
 QVariant.qth
+
+QMargins.qth
+QPropertyAnimation.qth
+QVariantAnimation.qth
+QAbstractAnimation.qth
+QEasingCurve.qth
+QAnimationGroup.qth
+
+
+

@@ -1,0 +1,74 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtCore/QAbstractAnimation>
+
+
+/*
+ * QAbstractAnimation(QObject * parent = 0)
+ * virtual   ~QAbstractAnimation()
+ */
+HB_FUNC( QT_QABSTRACTANIMATION )
+{
+   HB_FUNC_EXEC( HB_QABSTRACTANIMATION );
+}
+</CODE>
+
+<ENUMS>
+enum   DeletionPolicy { KeepWhenStopped, DeleteWhenStopped }
+enum   Direction { Forward, Backward }
+enum   State { Stopped, Paused, Running }
+</ENUMS>
+
+<PROTOS>
+int   currentLoop() const
+int   currentLoopTime() const
+int   currentTime() const
+Direction   direction() const
+virtual int   duration() const = 0
+QAnimationGroup *   group() const
+int   loopCount() const
+void   setDirection(QAbstractAnimation::Direction direction)
+void   setLoopCount(int loopCount)
+State   state() const
+int   totalDuration() const
+</PROTOS>
+
+<SLOTS>
+void   pause()
+void   resume()
+void   setCurrentTime(int msecs)
+void   setPaused(bool paused)
+void   start(QAbstractAnimation::DeletionPolicy policy = KeepWhenStopped)
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   currentLoopChanged(int currentLoop)
+void   directionChanged(QAbstractAnimation::Direction newDirection)
+void   finished()
+void   stateChanged(QAbstractAnimation::State newState, QAbstractAnimation::State oldState)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

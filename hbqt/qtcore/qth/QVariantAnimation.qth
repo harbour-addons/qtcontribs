@@ -1,0 +1,74 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QAbstractAnimation
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtCore/QVariantAnimation>
+
+
+/*
+ * QVariantAnimation(QObject * parent = 0)
+ * ~QVariantAnimation()
+ */
+HB_FUNC( QT_QVARIANTANIMATION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QVariantAnimation( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVariantAnimation() );
+   }
+}
+</CODE>
+
+<ENUMS>
+typedef KeyValue
+typedef KeyValues
+</ENUMS>
+
+<PROTOS>
+QVariant   currentValue() const
+QEasingCurve   easingCurve() const
+QVariant   endValue() const
+QVariant   keyValueAt(qreal step) const
+//KeyValues   keyValues() const
+void   setDuration(int msecs)
+void   setEasingCurve(const QEasingCurve & easing)
+void   setEndValue(const QVariant & value)
+void   setKeyValueAt(qreal step, const QVariant & value)
+//void   setKeyValues(const KeyValues & keyValues)
+void   setStartValue(const QVariant & value)
+QVariant   startValue() const
+
+virtual int   duration() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   valueChanged(const QVariant & value)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

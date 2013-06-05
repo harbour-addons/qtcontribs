@@ -1,0 +1,55 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtGui/QSurface>
+
+
+/*
+ * virtual ~QSurface()
+ */
+HB_FUNC( QT_QSURFACE )
+{
+}
+</CODE>
+
+<ENUMS>
+enum SurfaceClass { Window, Offscreen }
+enum SurfaceType { RasterSurface, OpenGLSurface }
+</ENUMS>
+
+<PROTOS>
+virtual QSurfaceFormat format() const = 0
+virtual QSize size() const = 0
+SurfaceClass surfaceClass() const
+//virtual QPlatformSurface * surfaceHandle() const = 0
+virtual SurfaceType surfaceType() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

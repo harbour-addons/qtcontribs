@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-05 14:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r229)
+  * hbqt/qtcore/qth/filelist.hbm
+  + hbqt/qtcore/qth/QAbstractAnimation.qth
+  + hbqt/qtcore/qth/QAnimationGroup.qth
+  + hbqt/qtcore/qth/QEasingCurve.qth
+  + hbqt/qtcore/qth/QMargins.qth
+  + hbqt/qtcore/qth/QPropertyAnimation.qth
+  + hbqt/qtcore/qth/QVariantAnimation.qth
+    + Added: Qt 4.6 introduced classes, requested by Luigi.
+
+  * hbqt/qtgui/qth/filelist.hbm
+  + hbqt/qtgui/qth/QScreen.qth
+  + hbqt/qtgui/qth/QSurface.qth
+  + hbqt/qtgui/qth/QSurfaceFormat.qth
+  + hbqt/qtgui/qth/QWindow.qth
+    + Added: Qt 5.x introduced classes.
+       QWindow() class can be interesting, specialy QWindow():fromWinID( nHWND ).
+   
+  * hbqt/qtgui/hbqtgui.ch
+    + Added constants exposed for above classes.
+
+  ; Please speak which other classes you need for your ongoing development.
+
 2013-06-04 09:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r228)
   * hbide/hbide_v.ch
   * hbqtwidgets/getlist.prg

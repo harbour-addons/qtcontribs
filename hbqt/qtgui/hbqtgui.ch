@@ -2739,6 +2739,40 @@
 #define QLineF_UnboundedIntersection                         2       // The two lines intersect, but not within the range defined by their lengths. This will be the case if the lines are not parallel.
 #define QLineF_BoundedIntersection                           1       // The two lines intersect with each other within the start and end points of each line.
 
+#define QSurface_Window                                      0       // The surface is an instance of QWindow.
+#define QSurface_Offscreen                                   1       // The surface is an instance of QOffscreenSurface.
+
+#define QSurface_RasterSurface                               0       // The surface is is composed of pixels and can be rendered to using a software rasterizer like Qt's raster paint engine.
+#define QSurface_OpenGLSurface                               1       // The surface is an OpenGL compatible surface and can be used in conjunction with QOpenGLContext.
+
+#define QSurfaceFormat_StereoBuffers                         0x0001  // Used to request stereo buffers in the surface format.
+#define QSurfaceFormat_DebugContext                          0x0002  // Used to request a debug context with extra debugging information.
+#define QSurfaceFormat_DeprecatedFunctions                   0x0004  // Used to request that deprecated functions be included in the OpenGL context profile. If not specified, you should get a forward compatible context without support functionality marked as deprecated. This requires OpenGL version 3.0 or higher.
+
+#define QSurfaceFormat_NoProfile                             0       // OpenGL version is lower than 3.2.
+#define QSurfaceFormat_CoreProfile                           1       // Functionality deprecated in OpenGL version 3.0 is not available.
+#define QSurfaceFormat_CompatibilityProfile                  2       // Functionality from earlier OpenGL versions is available.
+
+#define QSurfaceFormat_DefaultRenderableType                 0x0     // The default, unspecified rendering method
+#define QSurfaceFormat_OpenGL                                0x1     // Desktop OpenGL rendering
+#define QSurfaceFormat_OpenGLES                              0x2     // OpenGL ES 2.0 rendering
+#define QSurfaceFormat_OpenVG                                0x4     // Open Vector Graphics rendering
+
+#define QSurfaceFormat_DefaultSwapBehavior                   0       // The default, unspecified swap behaviour of the platform.
+#define QSurfaceFormat_SingleBuffer                          1       // Used to request single buffering, which might result in flickering when OpenGL rendering is done directly to screen without an intermediate offscreen buffer.
+#define QSurfaceFormat_DoubleBuffer                          2       // This is typically the default swap behaviour on desktop platforms, consisting of one back buffer and one front buffer. Rendering is done to the back buffer, and then the back buffer and front buffer are swapped, or the contents of the back buffer are copied to the front buffer, depending on the implementation.
+#define QSurfaceFormat_TripleBuffer                          3       // This swap behaviour is sometimes used in order to decrease the risk of skipping a frame when the rendering rate is just barely keeping up with the screen refresh rate. Depending on the platform it might also lead to slightly more efficient use of the GPU due to improved pipelining behaviour. Triple buffering comes at the cost of an extra frame of memory usage and latency, and might not be supported depending on the underlying platform.
+
+#define QWindow_ExcludeTransients                            0       // Transient parents are not considered ancestors.
+#define QWindow_IncludeTransients                            1       // Transient parents are considered ancestors.
+
+#define QWindow_Windowed                                     2       // The window occupies part of the screen, but not necessarily the entire screen. This state will occur only on windowing systems which support showing multiple windows simultaneously. In this state it is possible for the user to move and resize the window manually, if WindowFlags permit it and if it is supported by the windowing system.
+#define QWindow_Minimized                                    3       // The window is reduced to an entry or icon on the task bar, dock, task list or desktop, depending on how the windowing system handles minimized windows.
+#define QWindow_Maximized                                    4       // The window occupies one entire screen, and the titlebar is still visible. On most windowing systems this is the state achieved by clicking the maximize button on the toolbar.
+#define QWindow_FullScreen                                   5       // The window occupies one entire screen, is not resizable, and there is no titlebar. On some platforms which do not support showing multiple simultaneous windows, this can be the usual visibility when the window is not hidden.
+#define QWindow_AutomaticVisibility                          1       // This means to give the window a default visible state, which might be fullscreen or windowed depending on the platform. It can be given as a parameter to setVisibility but will never be read back from the visibility accessor.
+#define QWindow_Hidden                                       0       // The window is not visible in any way, however it may remember a latent visibility which can be restored by setting AutomaticVisibility.
+
 /*----------------------------------------------------------------------*/
 //                        HBQT Defined Constants
 /*----------------------------------------------------------------------*/

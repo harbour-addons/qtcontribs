@@ -1,0 +1,79 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtCore/QEasingCurve>
+
+
+/*
+ * QEasingCurve(Type type = Linear)
+ * QEasingCurve(const QEasingCurve & other)
+ * ~QEasingCurve()
+ */
+HB_FUNC( QT_QEASINGCURVE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QEASINGCURVE" ) )
+   {
+      __HB_RETPTRGC__( new QEasingCurve( *hbqt_par_QEasingCurve( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QEasingCurve( ( QEasingCurve::Type ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QEasingCurve() );
+   }
+}
+</CODE>
+
+<ENUMS>
+typedef   EasingFunction
+enum   Type { Linear, InQuad, OutQuad, InOutQuad, ..., Custom }
+</ENUMS>
+
+<PROTOS>
+void   addCubicBezierSegment(const QPointF & c1, const QPointF & c2, const QPointF & endPoint)
+void   addTCBSegment(const QPointF & nextPoint, qreal t, qreal c, qreal b)
+qreal  amplitude() const
+//EasingFunction   customType() const
+qreal  overshoot() const
+qreal  period() const
+void   setAmplitude(qreal amplitude)
+//void   setCustomType(EasingFunction func)
+void   setOvershoot(qreal overshoot)
+void   setPeriod(qreal period)
+void   setType(QEasingCurve::Type type)
+void   swap(QEasingCurve & other)
+//QVector<QPointF>   toCubicSpline() const
+Type   type() const
+qreal  valueForProgress(qreal progress) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

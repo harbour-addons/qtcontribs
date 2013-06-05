@@ -292,3 +292,7 @@ QWindowStateChangeEvent.qth
 QWizard.qth
 QWizardPage.qth
 
+QSurface.qth
+QWindow.qth
+QScreen.qth
+QSurfaceFormat.qth

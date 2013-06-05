@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtCore/QMargins>
+
+
+/*
+ * QMargins()
+ * QMargins(int left, int top, int right, int bottom)
+ */
+HB_FUNC( QT_QMARGINS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMARGINS" ) )
+   {
+      __HB_RETPTRGC__( new QMargins( *hbqt_par_QMargins( 1 ) ) );
+   }
+   else if( hb_pcount() == 4 && HB_ISNUM( 1 ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) && HB_ISNUM( 4 ) )
+   {
+      __HB_RETPTRGC__( new QMargins( hb_parni( 1 ), hb_parni( 2 ), hb_parni( 3 ), hb_parni( 4 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMargins() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   bottom() const
+bool   isNull() const
+int   left() const
+int   right() const
+void   setBottom(int bottom)
+void   setLeft(int left)
+void   setRight(int right)
+void   setTop(int Top)
+int   top() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

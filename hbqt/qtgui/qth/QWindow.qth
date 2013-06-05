@@ -1,0 +1,183 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QObject, QSurface
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtGui/QWindow>
+
+
+/*
+ * QWindow(QScreen * targetScreen = 0)
+ * QWindow(QWindow * parent)
+ * virtual ~QWindow()
+ */
+HB_FUNC( QT_QWINDOW )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWINDOW" ) )
+   {
+      __HB_RETPTRGC__( new QWindow( hbqt_par_QWindow( 1 ) ) );
+   }
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSCREEN" ) )
+   {
+      __HB_RETPTRGC__( new QWindow( hbqt_par_QScreen( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QWindow() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum AncestorMode { ExcludeTransients, IncludeTransients }
+enum Visibility { Windowed, Minimized, Maximized, FullScreen, AutomaticVisibility, Hidden }
+
+enum SurfaceClass { Window, Offscreen }
+enum SurfaceType { RasterSurface, OpenGLSurface }
+</ENUMS>
+
+<PROTOS>
+QSize baseSize() const
+Qt::ScreenOrientation contentOrientation() const
+void create()
+QCursor cursor() const
+void destroy()
+qreal devicePixelRatio() const
+QString filePath() const
+Qt::WindowFlags flags() const
+virtual QObject * focusObject() const
+QRect frameGeometry() const
+QMargins frameMargins() const
+QPoint framePosition() const
+QRect geometry() const
+int height() const
+QIcon icon() const
+bool isActive() const
+bool isAncestorOf(const QWindow * child, AncestorMode mode = IncludeTransients) const
+bool isExposed() const
+bool isModal() const
+bool isTopLevel() const
+bool isVisible() const
+QPoint mapFromGlobal(const QPoint & pos) const
+QPoint mapToGlobal(const QPoint & pos) const
+QRegion mask() const
+int maximumHeight() const
+QSize maximumSize() const
+int maximumWidth() const
+int minimumHeight() const
+QSize minimumSize() const
+int minimumWidth() const
+Qt::WindowModality modality() const
+qreal opacity() const
+QWindow * parent() const
+QPoint position() const
+void reportContentOrientationChange(Qt::ScreenOrientation orientation)
+QSurfaceFormat requestedFormat() const
+void resize(const QSize & newSize)
+void resize(int w, int h)
+QScreen * screen() const
+void setBaseSize(const QSize & size)
+void setCursor(const QCursor & cursor)
+void setFilePath(const QString & filePath)
+void setFlags(Qt::WindowFlags flags)
+void setFormat(const QSurfaceFormat & format)
+void setFramePosition(const QPoint & point)
+void setGeometry(int posx, int posy, int w, int h)
+void setGeometry(const QRect & rect)
+void setIcon(const QIcon & icon)
+bool setKeyboardGrabEnabled(bool grab)
+void setMask(const QRegion & region)
+void setMaximumSize(const QSize & size)
+void setMinimumSize(const QSize & size)
+void setModality(Qt::WindowModality modality)
+bool setMouseGrabEnabled(bool grab)
+void setOpacity(qreal level)
+void setParent(QWindow * parent)
+void setPosition(const QPoint & pt)
+void setPosition(int posx, int posy)
+void setScreen(QScreen * newScreen)
+void setSizeIncrement(const QSize & size)
+void setSurfaceType(SurfaceType surfaceType)
+void setTransientParent(QWindow * parent)
+void setVisibility(Visibility v)
+void setWindowState(Qt::WindowState state)
+QSize sizeIncrement() const
+QString title() const
+QWindow * transientParent() const
+Qt::WindowType type() const
+void unsetCursor()
+Visibility visibility() const
+int width() const
+WId winId() const
+Qt::WindowState windowState() const
+int x() const
+int y() const
+
+QWindow * fromWinId(WId id)
+</PROTOS>
+
+<SLOTS>
+void alert(int msec)
+bool close()
+void hide()
+void lower()
+void raise()
+void requestActivate()
+void setHeight(int arg)
+void setMaximumHeight(int h)
+void setMaximumWidth(int w)
+void setMinimumHeight(int h)
+void setMinimumWidth(int w)
+void setTitle(const QString &)
+void setVisible(bool visible)
+void setWidth(int arg)
+void setX(int arg)
+void setY(int arg)
+void show()
+void showFullScreen()
+void showMaximized()
+void showMinimized()
+void showNormal()
+</SLOTS>
+
+<SIGNALS>
+void activeChanged()
+void contentOrientationChanged(Qt::ScreenOrientation orientation)
+void focusObjectChanged(QObject * object)
+void heightChanged(int arg)
+void maximumHeightChanged(int arg)
+void maximumWidthChanged(int arg)
+void minimumHeightChanged(int arg)
+void minimumWidthChanged(int arg)
+void modalityChanged(Qt::WindowModality modality)
+void opacityChanged(qreal opacity)
+void screenChanged(QScreen * screen)
+void visibilityChanged(QWindow::Visibility visibility)
+void visibleChanged(bool arg)
+void widthChanged(int arg)
+void windowStateChanged(Qt::WindowState windowState)
+void xChanged(int arg)
+void yChanged(int arg)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+
+
