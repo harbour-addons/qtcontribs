@@ -22,13 +22,13 @@ Version     = 0x040600
 <CODE>
 #include <QtCore/QVariantAnimation>
 
-
 /*
  * QVariantAnimation(QObject * parent = 0)
  * ~QVariantAnimation()
  */
 HB_FUNC( QT_QVARIANTANIMATION )
 {
+#if 0
    if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
    {
       __HB_RETPTRGC__( new QVariantAnimation( hbqt_par_QObject( 1 ) ) );
@@ -37,6 +37,7 @@ HB_FUNC( QT_QVARIANTANIMATION )
    {
       __HB_RETPTRGC__( new QVariantAnimation() );
    }
+#endif
 }
 </CODE>
 

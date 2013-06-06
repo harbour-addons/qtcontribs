@@ -21,6 +21,7 @@ Version     = 0x040600
 
 <CODE>
 #include <QtCore/QEasingCurve>
+#include <QtCore/QPointF>
 
 
 /*
@@ -51,8 +52,8 @@ enum   Type { Linear, InQuad, OutQuad, InOutQuad, ..., Custom }
 </ENUMS>
 
 <PROTOS>
-void   addCubicBezierSegment(const QPointF & c1, const QPointF & c2, const QPointF & endPoint)
-void   addTCBSegment(const QPointF & nextPoint, qreal t, qreal c, qreal b)
+void   addCubicBezierSegment(const QPointF & c1, const QPointF & c2, const QPointF & endPoint) [*V=0x050000*]
+void   addTCBSegment(const QPointF & nextPoint, qreal t, qreal c, qreal b)                     [*V=0x050000*]
 qreal  amplitude() const
 //EasingFunction   customType() const
 qreal  overshoot() const
@@ -62,7 +63,7 @@ void   setAmplitude(qreal amplitude)
 void   setOvershoot(qreal overshoot)
 void   setPeriod(qreal period)
 void   setType(QEasingCurve::Type type)
-void   swap(QEasingCurve & other)
+void   swap(QEasingCurve & other)                                                              [*V=0x050000*]
 //QVector<QPointF>   toCubicSpline() const
 Type   type() const
 qreal  valueForProgress(qreal progress) const
