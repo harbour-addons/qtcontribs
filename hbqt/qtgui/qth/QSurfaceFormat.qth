@@ -80,7 +80,7 @@ void   setSamples(int numSamples)
 void   setStencilBufferSize(int size)
 void   setStereo(bool enable)
 void   setSwapBehavior(QSurfaceFormat::SwapBehavior behavior)
-void   setVersion(int major, int minor)
+void   setVersion(int major, int minor)           [*V=0x051000*]
 int    stencilBufferSize() const
 bool   stereo() const
 SwapBehavior   swapBehavior() const

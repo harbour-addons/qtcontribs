@@ -77,7 +77,7 @@ bool isTopLevel() const
 bool isVisible() const
 QPoint mapFromGlobal(const QPoint & pos) const
 QPoint mapToGlobal(const QPoint & pos) const
-QRegion mask() const
+QRegion mask() const                              [*V=0x051000*]
 int maximumHeight() const
 QSize maximumSize() const
 int maximumWidth() const
@@ -85,7 +85,7 @@ int minimumHeight() const
 QSize minimumSize() const
 int minimumWidth() const
 Qt::WindowModality modality() const
-qreal opacity() const
+qreal opacity() const                             [*V=0x051000*]
 QWindow * parent() const
 QPoint position() const
 void reportContentOrientationChange(Qt::ScreenOrientation orientation)
@@ -103,12 +103,12 @@ void setGeometry(int posx, int posy, int w, int h)
 void setGeometry(const QRect & rect)
 void setIcon(const QIcon & icon)
 bool setKeyboardGrabEnabled(bool grab)
-void setMask(const QRegion & region)
+void setMask(const QRegion & region)              [*V=0x051000*]
 void setMaximumSize(const QSize & size)
 void setMinimumSize(const QSize & size)
 void setModality(Qt::WindowModality modality)
 bool setMouseGrabEnabled(bool grab)
-void setOpacity(qreal level)
+void setOpacity(qreal level)                      [*V=0x051000*]
 void setParent(QWindow * parent)
 void setPosition(const QPoint & pt)
 void setPosition(int posx, int posy)
@@ -116,25 +116,25 @@ void setScreen(QScreen * newScreen)
 void setSizeIncrement(const QSize & size)
 void setSurfaceType(SurfaceType surfaceType)
 void setTransientParent(QWindow * parent)
-void setVisibility(Visibility v)
+void setVisibility(Visibility v)                  [*V=0x051000*]
 void setWindowState(Qt::WindowState state)
 QSize sizeIncrement() const
 QString title() const
 QWindow * transientParent() const
 Qt::WindowType type() const
 void unsetCursor()
-Visibility visibility() const
+Visibility visibility() const                     [*V=0x051000*]
 int width() const
 WId winId() const
 Qt::WindowState windowState() const
 int x() const
 int y() const
 
-QWindow * fromWinId(WId id)
+QWindow * fromWinId(WId id)                       [*V=0x051000*]
 </PROTOS>
 
 <SLOTS>
-void alert(int msec)
+void alert(int msec)                              [*V=0x051000*]
 bool close()
 void hide()
 void lower()
