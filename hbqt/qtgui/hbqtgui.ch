@@ -2773,6 +2773,13 @@
 #define QWindow_AutomaticVisibility                          1       // This means to give the window a default visible state, which might be fullscreen or windowed depending on the platform. It can be given as a parameter to setVisibility but will never be read back from the visibility accessor.
 #define QWindow_Hidden                                       0       // The window is not visible in any way, however it may remember a latent visibility which can be restored by setting AutomaticVisibility.
 
+#define QFontDialog_NoButtons                                0x00000001  // Don't display OK and Cancel buttons. (Useful for "live dialogs".)
+#define QFontDialog_DontUseNativeDialog                      0x00000002  // Use Qt's standard font dialog on the Mac instead of Apple's native font panel. (Currently, the native dialog is never used, but this is likely to change in future Qt releases.)
+
+#define QColorDialog_ShowAlphaChannel                        0x00000001  // Allow the user to select the alpha component of a color.
+#define QColorDialog_NoButtons                               0x00000002  // Don't display OK and Cancel buttons. (Useful for "live dialogs".)
+#define QColorDialog_DontUseNativeDialog                     0x00000004  // Use Qt's standard color dialog on the Mac instead of Apple's native color panel.
+
 /*----------------------------------------------------------------------*/
 //                        HBQT Defined Constants
 /*----------------------------------------------------------------------*/

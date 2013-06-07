@@ -130,7 +130,7 @@ Qt::WindowState windowState() const
 int x() const
 int y() const
 
-QWindow * fromWinId(WId id)                       [*V=0x051000*]
+QWindow * fromWinId(WId id)                       [*V=0x050100*]
 </PROTOS>
 
 <SLOTS>

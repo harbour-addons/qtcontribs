@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-07 12:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r232)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: constants QColorDialog_* and QFontDialog_*.
+
+  * hbqt/qtgui/qth/QWindow.qth
+    ! Changed: :fromWinId() version info. It is 0x050100 instead of 0x051000.
+
 2013-06-06 13:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r231)
   * hbqt/qtgui/qth/QSurfaceFormat.qth
   * hbqt/qtgui/qth/QWindow.qth
