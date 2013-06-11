@@ -169,7 +169,7 @@ STATIC FUNCTION UiGets( oMain )
    LOCAL SayList := {}
 
    val[ 1 ] := Space( 10 )
-   val[ 2 ] := 0
+   val[ 2 ] := 0.00
    val[ 3 ] := ctod( "" )
 
    /* Harbour Standard Settings */
@@ -195,7 +195,7 @@ STATIC FUNCTION UiGets( oMain )
    @ 7, 02 SAY PadL( "Scrolling Catalog:", nPdL )     GET cCata  CONTROL oWnd:editCata   PICTURE "@S15 !!!-!!!-!!!!!!!!!!!!"
 
    @ 1, 52 SAY "Val[1]"                               GET val[1] CONTROL oWnd:editVal1   PICTURE "@!"
-   @ 2, 52 SAY "Val[2]"                               GET val[2] CONTROL oWnd:editVal2   PICTURE "@K 99"
+   @ 2, 52 SAY "Val[2]"                               GET val[2] CONTROL oWnd:editVal2   PICTURE "999.99"
    @ 3, 52 SAY "Val[3]"                               GET val[3] CONTROL oWnd:editVal3
 
    @ 7, 52 SAY "Salary:"                              GET nSlry  CONTROL oWnd:editSalary PICTURE "@E 99,999" VALID {|| nSlry > 600 .AND. nSlry < 17000 }
@@ -364,7 +364,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    LOCAL val     := Array( 3 )
 
    val[ 1 ]      := Space( 10 )
-   val[ 2 ]      := 0
+   val[ 2 ]      := 0.00
    val[ 3 ]      := ctod( "" )
 
    GetList       := {}
@@ -393,7 +393,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    @  1, 52 SAY "Val[1]"
    @  1, 60 GET val[1] PICTURE "@!"
    @  2, 52 SAY "Val[2]"
-   @  2, 60 GET val[2] PICTURE "@K 99"
+   @  2, 60 GET val[2] PICTURE "@K 99,999.99"
    @  3, 52 SAY "Val[3]"
    @  3, 60 GET val[3]
 

@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id: hbqtgetsys.prg 175 2013-02-23 03:27:00Z bedipritpal $
  */
 
@@ -218,6 +218,10 @@ CLASS HbQtGet INHERIT GET
    METHOD display()
 
    FRIEND CLASS HbQtGetList
+
+   DATA   nKeyPressed
+   DATA   cPastBuffer
+   DATA   nPastPosition
 
    ENDCLASS
 
@@ -462,7 +466,7 @@ METHOD HbQtGet:mousable( lEnable )
 
 
 METHOD HbQtGet:fixup( cText )
-
+   HB_TRACE( HB_TR_DEBUG, "HbQtGet:fixup( " + cText + " )" )
    ::sl_fixupCalled := .T.
 
    IF Len( cText ) == 0
@@ -597,47 +601,83 @@ METHOD HbQtGet:getCharacter( cText, nPos )
 
 METHOD HbQtGet:getNumber( cText, nPos )
 
-   LOCAL cChr, lRet, nDecAt, lInDec, nTmp, cImage
+   LOCAL cChr, lRet, nDecAt, lInDec, nTmp, cImage, cDel
+   LOCAL lMinus := .F.
 
    IF ::sl_fixupCalled
       ::sl_fixupCalled := .F.
       RETURN .T.
    ENDIF
+   IF cText == ::cPastBuffer   // Seems to be Fixup Call by HBQValidator() ?
+      RETURN .T.
+   ENDIF
    cImage := cText
+
 
    cChr := SubStr( cText, nPos, 1 )
 
+   HB_TRACE( HB_TR_DEBUG, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
+
+   IF ::nKeyPressed == K_BS
+      cDel := SubStr( ::cPastBuffer, ::nPastPosition, 1 )
+      HB_TRACE( HB_TR_DEBUG, "BS - Deleted character:", cDel )
+      IF cDel $ ".,"
+         RETURN { ::cPastBuffer, --::nPastPosition, .T. }
+      ENDIF
+      IF nPos == 0
+         RETURN { cText, nPos, .T. }
+      ENDIF
+   ELSEIF ::nKeyPressed == K_DEL
+      cDel := SubStr( ::cPastBuffer, ::nPastPosition + 1, 1 )
+      HB_TRACE( HB_TR_DEBUG, "DEL - Deleted character:", cDel )
+      IF cDel $ ".,"
+         RETURN { ::cPastBuffer, nPos + 1, .T. }
+      ENDIF
+   ENDIF
+
+   IF cChr == "-"
+      lMinus := .T.
+   ENDIF
    IF cChr == "-" .AND. Len( cText ) == 1
       RETURN .T.
    ENDIF
-   IF ! ( cChr $ ",.+-1234567890" )   /* It must be a number character */
+   /* Non-Numeric Characters Handelled */
+   IF ! ( cChr $ ",.+-1234567890" )
       cText := ::transformThis( ::unTransformThis( cText ), ::cPicture )
       RETURN { cText, nPos, .T. }
    ENDIF
-   IF cChr $ "+-" .AND. nPos > 1
-      RETURN .F.
+   /* Plus Minus Signs Handelled */
+   IF cChr $ "+-"
+      IF nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
+         RETURN .F.
+      ELSEIF nPos == 2
+         IF SubStr( cText, 1, 1 ) $ "-+"
+            RETURN .F.
+         ENDIF
+         RETURN { cChr + Left( cText, 1 ) + SubStr( cText, 3 ), nPos, .T. }
+      ELSEIF nPos > 2
+         RETURN .F.
+      ENDIF
    ENDIF
-   IF cChr $ "+-" .AND. nPos == 1 .AND. SubStr( cText, 2, 1 ) $ "+-"
-      RETURN .F.
-   ENDIF
-   IF cChr $ ",." .AND. ::sl_dec == 0  /* Variable does not hold decimal places */
-      RETURN .F.
-   ENDIF
-
+   /* Decimal Point Handelled */
    IF cChr $ ",."
-      cText := SubStr( cText, 1, nPos - 1 ) + ::sl_decProxy + SubStr( cText, nPos + 1 )
-   ENDIF
+      IF ::sl_dec == 0  /* Variable does not hold decimal places */
+         RETURN .F.
+      ENDIF
 
-   IF cChr $ ",." .AND. ::timesOccurs( ::sl_decProxy, cText ) > 1 /* Jump to decimal if present */
-      cText  := SubStr( cText, 1, nPos - 1 ) + SubStr( cText, nPos + 1 )
-      nDecAt := At( ::sl_decProxy, cText )
-      nPos   := nDecAt
-      cText  := SubStr( cText, 1, nDecAt ) + Left( SubStr( cText, nDecAt + 1 ), ::sl_dec )
-      RETURN { cText, nPos, .T. }
-   ELSEIF cChr $ ",."
+      cText := SubStr( cText, 1, nPos - 1 ) + ::sl_decProxy + SubStr( cText, nPos + 1 )
+      IF ::timesOccurs( ::sl_decProxy, cText ) > 1      /* Jump to decimal if present */
+         cText  := SubStr( cText, 1, nPos - 1 ) + SubStr( cText, nPos + 1 )
+         nDecAt := At( ::sl_decProxy, cText )
+         nPos   := nDecAt
+         cText  := SubStr( cText, 1, nDecAt ) + Left( SubStr( cText, nDecAt + 1 ), ::sl_dec )
+         RETURN { cText, nPos, .T. }
+      ENDIF
       cText := ::transformThis( ::unTransformThis( cText ), ::cPicture )
       RETURN { cText, nPos, .T. }
-   ELSEIF Len( cText ) <= 1              /* when selectall is active and a key is pressed */
+   ENDIF
+
+   IF Len( cText ) <= 1              /* when selectall is active and a key is pressed */
       cText := ::transformThis( ::unTransformThis( cText ), ::cPicture )
       RETURN { cText, nPos, .T. }
    ENDIF
@@ -693,6 +733,11 @@ METHOD HbQtGet:getNumber( cText, nPos )
       ENDIF
    ELSEIF Len( cImage ) > Len( cText )
       // Some formatting character is deleted
+   ENDIF
+
+   IF lMinus .AND. Left( cText,1 ) != "-"
+      cText := "-" + cText
+      nPos++
    ENDIF
 
    RETURN { cText, nPos, lRet }
@@ -1066,6 +1111,13 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
    LOCAL nKey := oKeyEvent:key()
    LOCAL nHbKey := HbQt_QtEventToHbEvent( oKeyEvent )
 
+   ::nKeyPressed := nHbKey
+   IF ::cClassName == "QLINEEDIT"
+      ::cPastBuffer := ::oEdit:text()
+      ::nPastPosition := ::oEdit:cursorPosition()
+      HB_TRACE( HB_TR_DEBUG, "... ", nHbKey, ::nPastPosition, ::cPastBuffer )
+   ENDIF
+
    IF HB_ISBLOCK( SetKey( nHbKey ) )
       Eval( SetKey( nHbKey ) )
       RETURN .T.
@@ -1082,14 +1134,8 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          oKeyEvent:accept() ; RETURN .T.
       ENDIF
    ENDIF
-#if 0
-   IF ::cClassName == "QLINEEDIT" .AND. nKey == K_CTRL_HOME
-      hbqtAlert( "HI" )
-      ::positionCursor()
-   ENDIF
-#endif
-   SWITCH nKey
 
+   SWITCH nKey
 #if 0
    CASE Qt_Key_Escape
       ::varPut( ::original )
@@ -1290,12 +1336,20 @@ METHOD HbQtGet:timesOccurs( cToken, cText )
 
 
 METHOD HbQtGet:transformThis( xData, cMask )
+   LOCAL cTmp, nTmp
 
    IF ValType( xData ) == "C"
-      xData := Val( AllTrim( xData ) )
+      nTmp := Val( AllTrim( xData ) )
+   ELSEIF ValType( xData ) == "N"
+      nTmp := xData
    ENDIF
-
-   RETURN AllTrim( Transform( xData, cMask ) )
+   cTmp := AllTrim( Transform( nTmp, cMask ) )
+   IF Left( cTmp, 2 ) == "0."
+      cTmp := SubStr( cTmp, 2 )
+   ELSEIF Left( cTmp, 1 ) == "0"
+      cTmp := ""
+   ENDIF
+   RETURN cTmp
 
 
 METHOD HbQtGet:unTransformThis( cData )

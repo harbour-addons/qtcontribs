@@ -115,7 +115,6 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
 
    oDlg := QDialog( oParent )
    oDlg:setWindowTitle( cTitle )
-   //oDlg:setStyleSheet( 'font-name: "Courier New"; font-size: 10pt;' + __hbqtCSSFromColorString( cColorNorm ) )
    oDlg:setStyleSheet( __hbqtCSSFromColorString( cColorNorm ) )
    oDlg:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
 

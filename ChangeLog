@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-11 15:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r233)
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+    % Minor: added debug trace.
+
+  * hbqtwidgets/alert.prg
+    % Minor: removed unused lines.
+
+  * hbqtwidgets/getsys.prg
+    % Restructured: some internals to have greater control over numeric GETS.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: to take use of current changes in numeric GETs handelling.
+
+  * hbqtwidgets/tests/validator.prg
+    % Changed: code to demonstrate numeric GET - "Val2".
+
+  ; NOTE: these changes facilitate beeter experience with numeric GETs.
+          I have better control to implement missing PICTURE functionality.
+          Please test extensively with all PICTUREs used by you in your 
+          application and report where does it faulters.
+
 2013-06-07 12:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r232)
   * hbqt/qtgui/hbqtgui.ch
     + Added: constants QColorDialog_* and QFontDialog_*.

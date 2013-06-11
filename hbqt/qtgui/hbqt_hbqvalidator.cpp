@@ -120,6 +120,7 @@ void HBQValidator::fixup( QString & input ) const
 QValidator::State HBQValidator::validate( QString & input, int & pos ) const
 {
    QValidator::State state = QValidator::Acceptable;
+   HB_TRACE( HB_TR_DEBUG, ( "0   pos = %i, text = %s", pos, input.toUtf8().data() ) );
 
    if( block && hb_vmRequestReenter() )
    {
