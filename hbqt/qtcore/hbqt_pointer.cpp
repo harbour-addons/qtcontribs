@@ -241,6 +241,21 @@ HB_BOOL hbqt_par_isDerivedFrom( int iParam, const char * pszClsName )
    return HB_FALSE;
 }
 
+HB_FUNC( HBQT_QT_VERSION )
+{
+   hb_retni( QT_VERSION );
+}
+
+HB_FUNC( HBQT_QT_VERSION_STR )
+{
+   hb_retstr_utf8( QT_VERSION_STR );
+}
+
+HB_FUNC( HBQT_QT_VERSION_RUN )
+{
+   hb_retstr_utf8( qVersion() );
+}
+
 /*----------------------------------------------------------------------*/
 
 #endif

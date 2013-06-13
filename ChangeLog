@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-12 18:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r234)
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Added: Functions to pull Qt version information:
+
+       HbQt_Qt_Version()     -> nVersion             -> 327318
+       HbQt_Qt_Version_Str() -> cVersionStrCompiled  -> "5.0.1"
+       HbQt_Qt_Version_Run() -> cVersionStrExecuting -> "5.1.0"
+
+         ? HbQt_Qt_Version() < 0x050100
+
 2013-06-11 15:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r233)
   * hbqt/qtgui/hbqt_hbqvalidator.cpp
     % Minor: added debug trace.
