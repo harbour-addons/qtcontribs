@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-13 00:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r235)
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+    ! Tuned for Qt 4 and Qt 5 versions.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: Editing window's width of a browser cell was not at par with 
+       cell width in some situations, causing a disturbing editing 
+       experience. Now it is accurate.
+
 2013-06-12 18:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r234)
   * hbqt/qtcore/hbqt_pointer.cpp
     + Added: Functions to pull Qt version information:

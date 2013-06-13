@@ -2528,8 +2528,8 @@ METHOD HbQtBrowse:moveEnd()
 
 
 METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
-   LOCAL oDlg, nRes
-   LOCAL oRect   := ::oTableView:visualrect( ::getCurrentIndex() )
+   LOCAL oDlg, nRes, oSz
+   LOCAL oRect   := ::oTableView:visualRect( ::getCurrentIndex() )
    LOCAL oPos    := ::oTableView:viewport():mapToGlobal( oRect:topLeft() )
    LOCAL oCol    := ::getColumn( ::colPos )
    LOCAL xValue  := Eval( oCol:block )
@@ -2546,7 +2546,8 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    @ 0,0 QGET xValue PICTURE cPicture ;
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
                      WHEN    {|oGet| iif( HB_ISBLOCK( bWhen ) , Eval( bWhen, oGet ) , iif( HB_ISBLOCK( oCol:preBlock ) , Eval( oCol:preBlock , oGet ), .T. ) ) } ;
-                     VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) }
+                     VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) } ;
+                     PROPERTIES {|oGET,oEdit| HB_SYMBOL_UNUSED( oGET ), oSz := oEdit:size(), oEdit:resize( oRect:width(), oRect:height() ) }
 
    QREAD PARENT oDlg LASTGETBLOCK {|| oDlg:done( 1 ) } NOFOCUSFRAME
 
@@ -2602,7 +2603,7 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
                                        ENDSWITCH
                                     ENDIF
                                  ENDIF
-
+                                 oDlg:resize( oDlg:width() + oRect:width() - oSz:width(), oDlg:height() )
                                  RETURN .F.
                              } )
    ENDWITH
