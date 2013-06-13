@@ -52,6 +52,8 @@
 #ifndef _HBQTGUI_CH
 #define _HBQTGUI_CH
 
+#include "hbqt_version.ch"
+
 #define QEvent_None                               0        // Not an event.
 #define QEvent_Timer                              1        // Regular timer events (QTimerEvent).
 #define QEvent_MouseButtonPress                   2        // Mouse press (QMouseEvent).
@@ -2779,6 +2781,38 @@
 #define QColorDialog_ShowAlphaChannel                        0x00000001  // Allow the user to select the alpha component of a color.
 #define QColorDialog_NoButtons                               0x00000002  // Don't display OK and Cancel buttons. (Useful for "live dialogs".)
 #define QColorDialog_DontUseNativeDialog                     0x00000004  // Use Qt's standard color dialog on the Mac instead of Apple's native color panel.
+
+#ifdef __HB_QT_MAJOR_VERSION_5__
+   #define QLibraryInfo_PrefixPath                           0       // The default prefix for all paths.
+   #define QLibraryInfo_DocumentationPath                    1       // The location for documentation upon install.
+   #define QLibraryInfo_HeadersPath                          2       // The location for all headers.
+   #define QLibraryInfo_LibrariesPath                        3       // The location of installed libraries.
+   #define QLibraryInfo_LibraryExecutablesPath               4       // The location of installed executables required by libraries at runtime.
+   #define QLibraryInfo_BinariesPath                         5       // The location of installed Qt binaries (tools and applications).
+   #define QLibraryInfo_PluginsPath                          6       // The location of installed Qt plugins.
+   #define QLibraryInfo_ImportsPath                          7       // The location of installed QML extensions to import (QML 1.x).
+   #define QLibraryInfo_Qml2ImportsPath                      8       // The location of installed QML extensions to import (QML 2.x).
+   #define QLibraryInfo_ArchDataPath                         9       // The location of general architecture-dependent Qt data.
+   #define QLibraryInfo_DataPath                             10      // The location of general architecture-independent Qt data.
+   #define QLibraryInfo_TranslationsPath                     11      // The location of translation information for Qt strings.
+   #define QLibraryInfo_ExamplesPath                         12      // The location for examples upon install.
+   #define QLibraryInfo_TestsPath                            13      // The location of installed Qt testcases.
+   #define QLibraryInfo_SettingsPath                         100     // The location for Qt settings. Not applicable on Windows.
+#else
+   #define QLibraryInfo_PrefixPath                           0       // The default prefix for all paths.
+   #define QLibraryInfo_DocumentationPath                    1       // The location for documentation upon install.
+   #define QLibraryInfo_HeadersPath                          2       // The location for all headers.
+   #define QLibraryInfo_LibrariesPath                        3       // The location of installed libraries.
+   #define QLibraryInfo_BinariesPath                         4       // The location of installed Qt binaries (tools and applications).
+   #define QLibraryInfo_PluginsPath                          5       // The location of installed Qt plugins.
+   #define QLibraryInfo_ImportsPath                          11      // The location of installed QML extensions to import.
+   #define QLibraryInfo_DataPath                             6       // The location of general Qt data.
+   #define QLibraryInfo_TranslationsPath                     7       // The location of translation information for Qt strings.
+   #define QLibraryInfo_SettingsPath                         8       // The location for Qt settings.
+   #define QLibraryInfo_ExamplesPath                         10      //  The location for examples upon install.
+   #define QLibraryInfo_DemosPath                            9       // The location for demos upon install.
+#endif
+
 
 /*----------------------------------------------------------------------*/
 //                        HBQT Defined Constants

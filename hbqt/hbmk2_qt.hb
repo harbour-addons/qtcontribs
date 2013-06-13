@@ -49,8 +49,9 @@ FUNCTION hbmk_plugin_qt( hbmk )
    LOCAL cDstCPP, cDstDOC
    LOCAL tDstCPP
 
-   LOCAL cTmp
+   LOCAL cTmp, cTmp1
    LOCAL cPRG
+   LOCAL cVer
 
    LOCAL cCommand
    LOCAL nError
@@ -65,14 +66,41 @@ FUNCTION hbmk_plugin_qt( hbmk )
       hbmk_Register_Input_File_Extension( hbmk, ".h" )
       hbmk_Register_Input_File_Extension( hbmk, ".qth" )
 
+      cVer := qt_version_detect( hbmk, "uic", "UIC_BIN" )
+      cVer := StrTran( cVer, hb_eol() )
       IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )              /* To honor Qt 5.0.1 */
-         cTmp := qt_version_detect( hbmk, "uic", "UIC_BIN" )
-         hbmk_OutStd( hbmk, ".............................." + cTmp )
-         IF " 5." $ cTmp
+         hbmk_OutStd( hbmk, ".............................." + cVer )
+         IF " 5." $ cVer
             hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
          ELSE
             hb_SetEnv( "HB_QT_MAJOR_VER", "4" )
          ENDIF
+      ENDIF
+
+
+      IF hbmk[ "lREBUILD" ]
+         cTmp1 := MemoRead( "ChangeLog" )
+         IF ( cTmp := At( " * $Id: ChangeLog ", cTmp1 ) ) > 0
+            cTmp1 := SubStr( cTmp1, cTmp + Len( " * $Id: ChangeLog " ) )
+            cTmp := At( " ", cTmp1 )
+            cTmp1 := Left( cTmp1, cTmp - 1 )
+         ENDIF
+
+         cTmp := "/* ------------------ Auto Generated Header, Do Not Edit --------------------- */" + hb_eol()
+         cTmp += " " + hb_eol()
+         cTmp += "#ifndef __HBQT_VERSION_CH" + hb_eol()
+         cTmp += "   #define __HBQT_VERSION_CH" + hb_eol()
+         cTmp += " " + hb_eol()
+         IF GetEnv( "HB_QT_MAJOR_VER" ) == "5"
+            cTmp += "#define __HB_QT_MAJOR_VERSION_5__        " + '"' + cVer + '"' + hb_eol()
+         ELSE
+            cTmp += "#define __HB_QT_MAJOR_VERSION_4__        " + '"' + cVer + '"' + hb_eol()
+         ENDIF
+         cTmp += "#define __HBQT_REVISION__                " + '"' + cTmp1 + '"' + hb_eol()
+         cTmp += " " + hb_eol()
+         cTmp += "#endif" + hb_eol()
+
+         hb_MemoWrit( "hbqt" + hb_ps() + "qtgui" + hb_ps() + "hbqt_version.ch", cTmp )
       ENDIF
 
       EXIT

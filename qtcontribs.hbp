@@ -4,10 +4,6 @@
 
 -hbcontainer
 
-#    Generate SVN Revision Info
-#
--vcshead=hbide/hbide_v.ch
-
 #    Qt Modules
 #
 hbqt/qtcore/hbqtcore.hbp

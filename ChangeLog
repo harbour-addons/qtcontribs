@@ -16,6 +16,38 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-13 02:19 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r236)
+  - hbide/hbide_v.ch
+    - Removed: no longer needed.
+  * qtcontribs.hbp
+    - Removed: -VCS header creation.
+
+  * hbdbu/dbu.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+    + Implemented: build-time auto created version control proto 
+       instead of local implementations.
+
+  * hbqt/hbmk2_qt.hb
+    + Added: code to build qtgui/hbqt_version.ch.
+
+  * hbqt/qtcore/hbqtcore.ch
+    - Disabled: QLibraryInfo_* constants.
+      Now available through hbqtgui.ch, and Qt version dependent.
+
+  + hbqt/qtgui/hbqt_version.ch
+    + Auto generated header by hbqt/hbmk2_hb containing build Qt version 
+       based constants which then can be used to distinguish Qt versions 
+       in header files. This header will be generated if -rebuild flag 
+       will be passed when building QtContribs. 
+ 
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: #include "hbqt_version.ch"
+
+  ; NOTE: Please rebuild QtContribs.
+          never commit hbqt_version.ch, it will be changed at build time.
+          This solves a lot of issues with version stats.
+
 2013-06-13 00:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r235)
   * hbqt/qtmultimedia/hbqtmultimedia.hbc
     ! Tuned for Qt 4 and Qt 5 versions.

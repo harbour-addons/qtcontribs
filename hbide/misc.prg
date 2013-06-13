@@ -72,8 +72,6 @@
 
 #include "hbide.ch"
 
-#include "hbide_v.ch"
-
 STATIC aRegList
 
 /*----------------------------------------------------------------------*/
@@ -970,7 +968,7 @@ FUNCTION hbide_help( nOption )
       AAdd( txt_, "Pritpal Bedi ( bedipritpal@hotmail.com )" )
       AAdd( txt_, "" )
       AAdd( txt_, "built with:" )
-      AAdd( txt_, "QtContribs " + Upper( _HBMK_VCS_TYPE_  ) + " r " + _HBMK_VCS_ID_ )
+      AAdd( txt_, "QtContribs " + " r " + __HBQT_REVISION__ )
       AAdd( txt_, HB_COMPILER() )
       AAdd( txt_, "Qt " + QT_VERSION_STR() )
       AAdd( txt_, "" )
