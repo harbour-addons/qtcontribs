@@ -656,6 +656,14 @@ METHOD HbQtGet:getNumber( cText, nPos )
    ENDIF
 
    IF cChr == "-"
+      IF ::timesOccurs( "-", cText ) > 1      /* Jump to minus if present */
+         IF ::cPastBuffer == NIL
+            cText := SubStr( cText, 1, nPos - 1 ) + SubStr( cText, nPos + 1 )
+            RETURN { cText, 1, .T. }
+         ELSE
+            RETURN { ::cPastBuffer, 1, .T. }
+         ENDIF
+      ENDIF
       lMinus := .T.
    ENDIF
    /* Plus Minus Signs Handelled */
