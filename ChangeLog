@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-13 18:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r237)
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+    ! Fixed: A numeric GET was not rebuilding the PICTURE's TEMPLATE 
+       part if only FUNCTION part was supplied, like, "@K" or "@ZK", etc.
+       It was causing GETs to behave erratically in some circumstances.
+
+    ! Fixed: wrong behavior of numeric GETs as reported by Zoran with 
+       a useful example code.
+
+    + Implemented: Insert/Overstrike mode in character GETs. It follows 
+       standard Clipper protocol via ReadInsert() call. So,
+         SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+       toggles between overstrike/insert modes. Just place at 
+       the top of GETs code.
+
+       NOTE: Above behavior is true for GETs without TEMPLATE part of 
+             PICTURE clause. If a template is provided, ReadInsert() has 
+             no effect. Examples:
+               @...GET...PICTURE "@KA!"       => SUPPORTED
+               @...GET...PICTURE "@K !!AX!!"  => NOT SUPPORTED
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Refined: :cellEdit() code to pass pressed key in proper context.
+
+  * hbqtwidgets/tests/validator.prg
+    % Amended to demonstrate above changes.
+
 2013-06-13 02:19 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r236)
   - hbide/hbide_v.ch
     - Removed: no longer needed.

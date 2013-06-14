@@ -2576,11 +2576,13 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
                                           IF nKey >= 48 .AND. nKey <= 57
                                              GetList[ 1 ]:varPut( Val( Chr( nKey ) ) )
                                              GetList[ 1 ]:display()
-                                          ELSE
-                                             oEdit:insert( Chr( nKey ) )
+                                             oEdit:home( .F. )
+                                             oEdit:setCursorPosition( 1 )
+                                          ELSEIF nKey == 45
+                                             oEdit:insert( "-" )
+                                          ELSEIF nKey == 46
+                                             oEdit:insert( "." )
                                           ENDIF
-                                          oEdit:home( .F. )
-                                          oEdit:setCursorPosition( 1 )
                                           EXIT
                                        ENDSWITCH
                                     ELSE

@@ -10,6 +10,7 @@
 #include "hbtoqt.ch"
 #include "hbqtgui.ch"
 #include "set.ch"
+#include "inkey.ch"
 #include "hbqtstd.ch"
 
 #include "hbtrace.ch"
@@ -84,10 +85,12 @@ STATIC FUNCTION Clipper( oMain )
 
 
 STATIC FUNCTION NoParentPureClipper( oMain )
-   LOCAL GetList, SayList
+   LOCAL GetList, SayList, bKey
    LOCAL aAttrbs := {}
 
    HB_SYMBOL_UNUSED( oMain )
+
+   bKey := SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
 
    /* Set some of the attributes of GETs window */
    AAdd( aAttrbs, { _QGET_ATTRB_SETMODE  , { 21,73 } } )
@@ -101,6 +104,7 @@ STATIC FUNCTION NoParentPureClipper( oMain )
 
    READ PROPERTIES {|oWnd, oGetList| SetFormProperties( oWnd, oGetList ) } ATTRIBUTES aAttrbs
 
+   SetKey( K_INS, bKey )
    RETURN NIL
 
 

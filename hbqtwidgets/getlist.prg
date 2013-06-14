@@ -80,6 +80,7 @@ FUNCTION HbQtClearGets( oWnd, ... )
       __hbqtBindGetList( oParent, NIL )
    NEXT
    IF HB_ISOBJECT( oWnd )
+//HB_TRACE( HB_TR_ALWAYS, Len( hb_AParams() ) )
       oWnd:setParent( QWidget() )
    ENDIF
    __hbqtGetsActiveWindow( NIL )
@@ -332,7 +333,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    __GetListLast( oGetList )
 
    /* Probably will be fired only when oWnd is a top level window - needs to be investigated further */
-   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ), .F. } )
+   oWnd:connect( QEvent_Close, {|oEvent| HbQtClearGets( oWnd ), oEvent:accept(), .F. } )
 
    IF HB_ISBLOCK( bProperties )
       Eval( bProperties, oWnd, oGetList )
@@ -340,9 +341,12 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
 
    IF ! HB_ISOBJECT( oParent )
       oWnd:connect( QEvent_WindowActivate, {|| oGetList:setFocus( aGetList[ 1 ], Qt_TabFocusReason ), oWnd:disconnect( QEvent_WindowActivate ), .F. } )
+      oWnd:connect( QEvent_KeyPress,       {|oKey| iif( oKey:key() == 27, oWnd:done( 0 ), NIL ), .T. } )
 
       IF lExec
+//HB_TRACE( HB_TR_ALWAYS,  "executing...", oWnd:testAttribute( Qt_WA_DeleteOnClose ), oWnd:setAttribute( Qt_WA_DeleteOnClose, .T. ), oWnd:testAttribute( Qt_WA_DeleteOnClose ) )
          oWnd:exec()
+//HB_TRACE( HB_TR_ALWAYS,  "executed.........." )
       ELSE
          IF ! lNoModal
             oWnd:setModal( .T. )
@@ -524,7 +528,6 @@ METHOD HbQtGetList:setFocus( xGet, nReason )
    ENDIF
    IF HB_ISOBJECT( oGet )
       IF oGet:cClassName == "QLINEEDIT"
-//       oGet:setFocus( iif( "K" $ oGet:cPicFunc, nReason, Qt_OtherFocusReason ) )   /* What lead me to this code ??? */
          oGet:setFocus( nReason )
          oGet:positionCursor()
       ELSE

@@ -547,6 +547,11 @@ METHOD HbQtGet:getCharacter( cText, nPos )
    ENDIF
    cChr := SubStr( cText, nPos, 1 )
 
+   HB_TRACE( HB_TR_DEBUG, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
+
+   IF ::nKeyPressed != K_DEL .AND. ::nKeyPressed != K_BS
+   ENDIF
+
    IF "A" $ ::cPicFunc .AND. ! IsAlpha( cChr )
       RETURN .F.
    ENDIF
@@ -613,7 +618,6 @@ METHOD HbQtGet:getNumber( cText, nPos )
    ENDIF
    cImage := cText
 
-
    cChr := SubStr( cText, nPos, 1 )
 
    HB_TRACE( HB_TR_DEBUG, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
@@ -635,16 +639,24 @@ METHOD HbQtGet:getNumber( cText, nPos )
       ENDIF
    ENDIF
 
-   IF cChr == "-"
-      lMinus := .T.
-   ENDIF
-   IF cChr == "-" .AND. Len( cText ) == 1
-      RETURN .T.
-   ENDIF
    /* Non-Numeric Characters Handelled */
    IF ! ( cChr $ ",.+-1234567890" )
-      cText := ::transformThis( ::unTransformThis( cText ), ::cPicture )
-      RETURN { cText, nPos, .T. }
+      RETURN .F.
+   ENDIF
+
+   IF cChr == cText      /* when Editing starts with programatic insertion of chracters, like oHbQtBrowse:editCell() */
+      IF cChr == "."
+         IF "Z" $ ::cPicFunc
+            RETURN { "." + ::transformThis( ::unTransformThis( "0" ), ::cPicture ), nPos, .T. }
+         ENDIF
+         RETURN { ::transformThis( ::unTransformThis( "0" ), ::cPicture ), nPos, .T. }
+      ELSEIF cChr == "-"
+         RETURN { "-" + ::transformThis( ::unTransformThis( "0" ), ::cPicture ), nPos, .T. }
+      ENDIF
+   ENDIF
+
+   IF cChr == "-"
+      lMinus := .T.
    ENDIF
    /* Plus Minus Signs Handelled */
    IF cChr $ "+-"
@@ -822,6 +834,8 @@ METHOD HbQtGet:setParams()
             ::sl_width := Len( cTmp )
             n          := At( ::sl_decSep, cTmp )
             ::sl_dec   := iif( n > 0, Len( SubStr( cTmp, n+1 ) ), 0 )
+            ::cPicMask := iif( ::sl_dec == 0, Replicate( "9", ::sl_width ), Replicate( "9", ::sl_width - ::sl_dec - 1 ) + "." + Replicate( "9", ::sl_dec ) )
+            ::cPicture := iif( Empty( ::cPicFunc ), "", "@" + ::cPicFunc ) + iif( Empty( ::cPicMask ), "", " " + ::cPicMask )
             ::sl_prime := iif( n == 0, ::sl_width, ::sl_width - 1 - ::sl_dec )
          ENDIF
          ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
@@ -887,7 +901,7 @@ METHOD HbQtGet:picture( cPicture )
    hb_default( @cPicture, "" )
    ::cPicture := cPicture
    cPicture := Upper( AllTrim( cPicture ) )
-   IF ( n := At( " " , cPicture ) ) > 0
+   IF "@" $ cPicture .AND. ( n := At( " " , cPicture ) ) > 0
       ::cPicMask := AllTrim( SubStr( cPicture, n+1 ) )
       ::cPicFunc := AllTrim( SubStr( cPicture, 1, n-1 ) )
    ELSE
@@ -1032,13 +1046,6 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       QApplication():sendEvent( ::oEdit, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
 
    ENDIF
-#if 0
-   IF ::cClassName == "QLINEEDIT"
-      IF ! ( "K" $ ::cPicFunc )
-         QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Home, Qt_NoModifier ) )
-      ENDIF
-   ENDIF
-#endif
    RETURN .F.
 
 
@@ -1108,19 +1115,33 @@ METHOD HbQtGet:isDateBad()
 
 
 METHOD HbQtGet:execKeyPress( oKeyEvent )
+   LOCAL cTmp
    LOCAL nKey := oKeyEvent:key()
    LOCAL nHbKey := HbQt_QtEventToHbEvent( oKeyEvent )
+
+   IF HB_ISBLOCK( SetKey( nHbKey ) )
+      Eval( SetKey( nHbKey ) )
+       oKeyEvent:accept()
+      RETURN .T.
+   ENDIF
 
    ::nKeyPressed := nHbKey
    IF ::cClassName == "QLINEEDIT"
       ::cPastBuffer := ::oEdit:text()
       ::nPastPosition := ::oEdit:cursorPosition()
-      HB_TRACE( HB_TR_DEBUG, "... ", nHbKey, ::nPastPosition, ::cPastBuffer )
-   ENDIF
+      HB_TRACE( HB_TR_DEBUG, nHbKey, ::nPastPosition, ::cPastBuffer, ReadInsert() )
 
-   IF HB_ISBLOCK( SetKey( nHbKey ) )
-      Eval( SetKey( nHbKey ) )
-      RETURN .T.
+      IF ::nKeyPressed >= 32 .AND. ::nKeyPressed < 127
+         IF ::Type() == "C" .AND. Len( ::cPastBuffer ) == ::sl_width .AND. Empty( ::cPicMask ) .AND. ! ::oEdit:hasSelectedText()
+            IF ReadInsert()
+               cTmp := Trim( PadC( SubStr( ::cPastBuffer, 1, ::nPastPosition ) + Chr( ::nKeyPressed ) + SubStr( ::cPastBuffer, ::nPastPosition + 1 ), ::sl_width ) )
+            ELSE
+               cTmp := Trim( PadC( SubStr( ::cPastBuffer, 1, ::nPastPosition ) + Chr( ::nKeyPressed ) + SubStr( ::cPastBuffer, ::nPastPosition + 2 ), ::sl_width ) )
+            ENDIF
+            ::oEdit:setText( cTmp )
+            ::oEdit:setCursorPosition( ::nPastPosition + 1 )
+         ENDIF
+      ENDIF
    ENDIF
 
    IF ::cClassName == "QCHECKBOX"
