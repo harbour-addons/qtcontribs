@@ -1,0 +1,60 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QCommonStyle
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#include <QtGui/QProxyStyle>
+
+
+/*
+ * QProxyStyle(QStyle * style = 0)
+ * QProxyStyle(const QString & key)
+ * ~QProxyStyle()
+ */
+HB_FUNC( QT_QPROXYSTYLE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QStyle" ) )
+   {
+      __HB_RETPTRGC__( new QProxyStyle( hbqt_par_QStyle( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QProxyStyle() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+QStyle * baseStyle() const
+void setBaseStyle(QStyle * style)
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+
