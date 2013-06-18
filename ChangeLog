@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-18 14:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r241)
+  * hbqt/tests/dbfbrowser.prg
+  * hbqt/tests/dbfbrowserclass.prg
+    ! Fixed: to be executable with current Harbour.
+       It was broken due to class inheritance mechanism where 
+       :super() has to be called in :init() method.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: length of the cell was not respecting dynamic changes in 
+       oColumn:picture. The values were being calculated only once.
+
+    + Added: oBrowse:horizontalMovementBlock().
+       If assigned, will be called as :
+        Eval( ::horizontalMovementBlock(), nMovementCode, NIL, Self )
+       [ Requested by Zoran ]
+
+  + hbqtwidgets/tests/browgets.prg
+    + Added: a browse-cum-gets-with-pictures demonstration application.
+       Supplied by Zoran with small changes.
+
 2013-06-17 21:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r240)
   + hbqt/qtgui/qth/QProxyStyle.qth
     + Added: missed file from prev commit.

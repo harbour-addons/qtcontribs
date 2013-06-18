@@ -17,12 +17,13 @@
 
 
 FUNCTION QDBFBrowser( ... )
-RETURN B2_QDBFBrowser():new( ... ):init()
+RETURN B2QDBFBrowser():new( ... )
 
-CREATE CLASS B2QDBFBrowser INHERIT HB_QTableView FUNCTION B2_QDBFBrowser
+
+CREATE CLASS B2QDBFBrowser INHERIT HB_QTableView
    METHOD init()
-   METHOD attach() // Activate the browser and attach to current active area
-   METHOD detach() // Deactivate the browser
+   METHOD attach()                  /* Activate the browser and attach to current active area */
+   METHOD detach()                  /* Deactivate the browser */
 
    VAR oModel
    VAR nArea  INIT 0
@@ -32,8 +33,8 @@ CREATE CLASS B2QDBFBrowser INHERIT HB_QTableView FUNCTION B2_QDBFBrowser
    ENDCLASS
 
 
-
-METHOD init()
+METHOD init( ... )
+   ::super:init( ... )               /* Always Initialize Super with :init() instead of :new() */
    ::oModel := HBQAbstractItemModel( {| t, r, x, y| B2_QDBFBrowse( Self, t, r, x, y ) } )
    ::setModel( ::oModel )
    RETURN Self

@@ -185,6 +185,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD hitTopBlock( bBlock )                   SETGET
    METHOD stableBlock( bBlock )                   SETGET
    METHOD verticalMovementBlock( bBlock )         SETGET
+   METHOD horizontalMovementBlock( bBlock )       SETGET
 
    METHOD helpBlock( bBlock )                     SETGET
    METHOD addColumnsBlock( bBlock )               SETGET
@@ -378,11 +379,13 @@ PROTECTED:
    DATA   bHitTopBlock                            INIT NIL
    DATA   bStableBlock                            INIT NIL
    DATA   bVerticalMovementBlock                  INIT NIL
+   DATA   bHorizontalMovementBlock                INIT NIL
    DATA   bHelpBlock                              INIT NIL
    DATA   bAddColumnsBlock                        INIT NIL
    DATA   bPressHeaderBlock                       INIT NIL
 
    DATA   lVerticalMovementBlock                  INIT .F.
+   DATA   lHorizontalMovementBlock                INIT .F.
 
    /* Editor specific calls */
    METHOD loadRow()
@@ -772,10 +775,6 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    ENDIF
 
    FOR i := 1 TO len( ::columns )
-      IF ::columns[ i ]:nColWidth != NIL
-         ::oHeaderView:resizeSection( i-1, ::columns[ i ]:nColWidth )
-         ::oFooterView:resizeSection( i-1, ::columns[ i ]:nColWidth )
-      ELSE
          xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
 
          nwVal := oFontMetrics:width( xVal, -1 )
@@ -872,6 +871,9 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       oAct:connect( "triggered(bool)", __toColumnBlock( Self, cMenu ) )
    NEXT
 
+   IF HB_ISBLOCK( ::horizontalMovementBlock )
+      Eval( ::horizontalMovementBlock, 0, NIL, Self )
+   ENDIF
    IF HB_ISBLOCK( ::verticalMovementBlock )
       Eval( ::verticalMovementBlock, 0, NIL, Self )
    ENDIF
@@ -1934,6 +1936,13 @@ METHOD HbQtBrowse:stableBlock( bBlock )
    ENDIF
    RETURN ::bStableBlock
 
+METHOD HbQtBrowse:horizontalMovementBlock( bBlock )
+   IF bBlock != NIL
+      ::bHorizontalMovementBlock := __eInstVar53( Self, "HORIZONTALMOVEMENTBLOCK", bBlock, "B", 1001 )
+      ::lHorizontalMovementBlock := .T.
+   ENDIF
+   RETURN ::bHorizontalMovementBlock
+
 METHOD HbQtBrowse:verticalMovementBlock( bBlock )
    IF bBlock != NIL
       ::bVerticalMovementBlock := __eInstVar53( Self, "VERTICALMOVEMENTBLOCK", bBlock, "B", 1001 )
@@ -2142,7 +2151,6 @@ METHOD HbQtBrowse:rowCount()  /* Overloaded */
 METHOD HbQtBrowse:refreshAll()
 
    ::TBrowse:refreshAll()
-//   ::forceStable()
    ::setCurrentIndex( .T. )
 
    RETURN Self
@@ -2151,7 +2159,6 @@ METHOD HbQtBrowse:refreshAll()
 METHOD HbQtBrowse:refreshCurrent()
 
    ::TBrowse:refreshCurrent()
-//   ::forceStable()
    ::setCurrentIndex( .T. )
 
    RETURN Self
@@ -2283,6 +2290,11 @@ METHOD HbQtBrowse:left()
       ENDIF
 
       ::oHScrollBar:setValue( ::colPos - 1 )
+
+      IF ::lHorizontalMovementBlock
+         Eval( ::bHorizontalMovementBlock, 1, NIL, Self )
+      ENDIF
+
    ENDIF
 
    RETURN Self
@@ -2326,6 +2338,10 @@ METHOD HbQtBrowse:right()
          ENDIF
 
          ::oHScrollBar:setValue( ::colPos - 1 )
+
+         IF ::lHorizontalMovementBlock
+            Eval( ::bHorizontalMovementBlock, 2, NIL, Self )
+         ENDIF
       ENDIF
    ENDIF
 
@@ -2358,6 +2374,10 @@ METHOD HbQtBrowse:firstCol()
          ::setCurrentIndex( .f. )
       ENDIF
       ::oHScrollBar:setValue( 0 )
+      IF ::lHorizontalMovementBlock
+         Eval( ::bHorizontalMovementBlock, 3, NIL, Self )
+      ENDIF
+
    ENDIF
    RETURN Self
 
@@ -2395,6 +2415,11 @@ METHOD HbQtBrowse:lastCol()
          ::setCurrentIndex( .f. )
       ENDIF
       ::oHScrollBar:setValue( ::colCount - 1 )
+
+      IF ::lHorizontalMovementBlock
+         Eval( ::bHorizontalMovementBlock, 4, NIL, Self )
+      ENDIF
+
    ENDIF
 
    RETURN Self
@@ -2404,6 +2429,10 @@ METHOD HbQtBrowse:home()
 
    ::colPos := max( 1, ::oHeaderView:visualIndexAt( 1 ) + 1 )
    ::setCurrentIndex( .t. )
+   ::oHScrollBar:setValue( ::colPos - 1 )
+   IF ::lHorizontalMovementBlock
+      Eval( ::bHorizontalMovementBlock, 5, NIL, Self )
+   ENDIF
 
    RETURN Self
 
@@ -2416,6 +2445,10 @@ METHOD HbQtBrowse:end()
    ENDIF
    ::colPos := ::nRightVisible
    ::setCurrentIndex( .t. )
+   ::oHScrollBar:setValue( ::colPos - 1 )
+   IF ::lHorizontalMovementBlock
+      Eval( ::bHorizontalMovementBlock, 6, NIL, Self )
+   ENDIF
 
    RETURN Self
 

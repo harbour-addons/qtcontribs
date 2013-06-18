@@ -12,6 +12,7 @@
 
 #include "hbqtgui.ch"
 
+
 PROCEDURE Main()
    LOCAL oWid
    LOCAL oLabel1
@@ -21,6 +22,8 @@ PROCEDURE Main()
    LOCAL oLay1
    LOCAL oLay2
 
+   hbqt_errorSys()
+
    Set( _SET_EXACT, .T. )
 
    oWid := QWidget()
@@ -29,12 +32,7 @@ PROCEDURE Main()
    oLabel1 := QLabel()
    oLabel1:setText( 'Click in "Open DBF" to start' )
 
-   oTable1 := QDBFBrowser() // QDBFBrowser inherits QTableView, so we can use the methods below.
-   oTable1:setAlternatingRowColors( .T. )
-   oTable1:setShowGrid( .F. )
-   oTable1:setTabKeyNavigation( .F. )
-   oTable1:verticalHeader():setSelectionBehavior( QAbstractItemView_SelectRows )
-   oTable1:verticalHeader():setSelectionMode( QAbstractItemView_SingleSelection )
+   oTable1 := QDBFBrowser()              /* QDBFBrowser inherits QTableView, so we can use the methods below. */
 
    oButton1 := QPushButton()
    oButton1:setText( "Open DBF" )
@@ -44,6 +42,13 @@ PROCEDURE Main()
    oButton2:setText( "Close DBF" )
    oButton2:connect( "clicked()", {|| CloseDBF( oTable1, oLabel1 ) } )
 
+
+   oTable1:setAlternatingRowColors( .T. )
+   oTable1:setShowGrid( .F. )
+   oTable1:setTabKeyNavigation( .F. )
+   oTable1:verticalHeader():setSelectionBehavior( QAbstractItemView_SelectRows )
+   oTable1:verticalHeader():setSelectionMode( QAbstractItemView_SingleSelection )
+
    oLay1 := QVBoxLayout( oWid )
    oLay1:addWidget( oLabel1 )
    oLay1:addWidget( oTable1 )
@@ -52,9 +57,11 @@ PROCEDURE Main()
    oLay2:addWidget( oButton2 )
 
    oWid:Show()
+
    QApplication():exec()
 
    RETURN
+
 
 PROCEDURE OpenDBF( oWid, oTable, oLabel )
    STATIC cDir := "."
@@ -66,7 +73,7 @@ PROCEDURE OpenDBF( oWid, oTable, oLabel )
       RETURN
    ENDIF
 
-   cDir := hb_FNameDir( cFile ) // To remember last used dir
+   cDir := hb_FNameDir( cFile )          /* To remember last used dir */
    cName := hb_FNameNameExt( cFile )
 
    CloseDBF( oTable, oLabel )
@@ -81,6 +88,7 @@ PROCEDURE OpenDBF( oWid, oTable, oLabel )
       oLabel:setText( "Could not open " + cName )
    ENDIF
    RETURN
+
 
 PROCEDURE CloseDBF( oTable , oLabel )
    oTable:detach()
