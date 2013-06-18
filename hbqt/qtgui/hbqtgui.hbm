@@ -17,6 +17,7 @@ hbqt_hbqtableview.cpp
 hbqt_init.cpp
 hbqt_utils.cpp
 hbqt_hbqvalidator.cpp
+hbqt_hbqproxystyle.cpp
 
 hbqt_hbqabstractitemmodel.h
 hbqt_hbqgraphicsscene.h

@@ -222,6 +222,9 @@ CLASS HbQtGet INHERIT GET
    DATA   nKeyPressed
    DATA   cPastBuffer
    DATA   nPastPosition
+   DATA   oStyle
+   DATA   nCharWidth
+   METHOD manageCursor()
 
    ENDCLASS
 
@@ -304,6 +307,8 @@ METHOD HbQtGet:create( oControl )
       EXIT
    ENDSWITCH
 
+   ::nCharWidth := QFontMetrics( ::sl_font ):averageCharWidth()
+
    ::setParams()
    ::setData( ::original )
 
@@ -311,6 +316,8 @@ METHOD HbQtGet:create( oControl )
    ::lChanged := .F.
 
    IF ::cClassName == "QLINEEDIT"
+      ::oStyle := HBQProxyStyle()
+      ::oEdit:setStyle( ::oStyle )
       ::oEdit:home( .F. )
       ::positionCursor()
    ENDIF
@@ -404,7 +411,6 @@ METHOD HbQtGet:data( xData )
 
 
 METHOD HbQtGet:getList( oGetList )
-
    IF HB_ISOBJECT( oGetList )
       ::oGetList := oGetList
       ::lFocusFrame := oGetList:focusFrame()
@@ -412,12 +418,10 @@ METHOD HbQtGet:getList( oGetList )
       ::oFocusFrame:setStyleSheet( "border: 2px solid red" )
       ::oFocusFrame:hide()
    ENDIF
-
    RETURN ::oGetList
 
 
 METHOD HbQtGet:setFocus( nFocusReason )
-
    IF HB_ISOBJECT( ::oEdit )
       IF ! Empty( nFocusReason )
          ::oEdit:setFocus( nFocusReason )
@@ -425,16 +429,20 @@ METHOD HbQtGet:setFocus( nFocusReason )
          ::oEdit:setFocus()
       ENDIF
    ENDIF
+   RETURN Self
 
+
+METHOD HbQtGet:manageCursor()
+   IF ! Empty( ::oStyle )
+      ::oStyle:hb_setPixelMetric( QStyle_PM_TextCursorWidth, iif( ReadInsert(), 1, ::nCharWidth ) )
+   ENDIF
    RETURN Self
 
 
 METHOD HbQtGet:font( oFont )
-
    IF HB_ISOBJECT( oFont )
       ::sl_font := oFont
    ENDIF
-
    RETURN ::sl_font
 
 
@@ -1042,6 +1050,7 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
       ::oFocusFrame:setWidget( ::oEdit )
       ::oFocusFrame:show()
    ENDIF
+   ::manageCursor()
 
    ::hasFocus := .T.
 
@@ -1129,7 +1138,8 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    IF HB_ISBLOCK( SetKey( nHbKey ) )
       Eval( SetKey( nHbKey ) )
-       oKeyEvent:accept()
+      oKeyEvent:accept()
+      ::manageCursor()
       RETURN .T.
    ENDIF
 

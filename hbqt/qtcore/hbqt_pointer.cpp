@@ -221,7 +221,9 @@ void hbqt_defineClassEnd( PHB_ITEM s_oClass, PHB_ITEM oClass )
 
 HB_BOOL hbqt_obj_isDerivedFrom( PHB_ITEM pItem, const char * pszClsName )
 {
-   return hb_clsIsParent( hb_objGetClass( pItem ), pszClsName );
+   QByteArray clsname( pszClsName );
+
+   return hb_clsIsParent( hb_objGetClass( pItem ), clsname.toUpper().data() );
 }
 
 /* Checks that the param iParam is an object and a subclass of pszClsName */

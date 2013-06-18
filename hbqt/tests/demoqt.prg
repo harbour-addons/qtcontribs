@@ -85,7 +85,7 @@ PROCEDURE Main()
 /*----------------------------------------------------------------------*/
 
 PROCEDURE ExecTheDialog()
-   LOCAL oBtn, oDA, oWnd, aMenu, aTool, aTabs, oELoop, lExit := .f.
+   LOCAL oBtn, oDA, oWnd, aMenu, aTool, aTabs, oELoop, oStyle, lExit := .f.
 
    hbqt_errorsys()
 
@@ -113,8 +113,10 @@ PROCEDURE ExecTheDialog()
 
    aTabs := Build_Tabs( oDA, { 510, 5 }, { 360, 400 } )
 
+   oStyle := HBQProxyStyle()
+   oStyle:hb_setDrawBlock( {|...| DrawButton( ... ) } )
    oBtn := Build_PushButton( oDA, { 30,240 }, { 100,50 } )
-   oBtn:setStyleSheet( "background: #a00fff;" )
+   oBtn:setStyle( oStyle )
 
    oWnd:connect( QEvent_KeyPress, {|e| My_Events( oWnd, e, @lExit ) } )
    oWnd:connect( QEvent_Close   , {|| lExit := .T. } )
@@ -337,9 +339,9 @@ STATIC FUNCTION Build_Tabs( oWnd, aPos, aSize )
    oTab2 := QWidget( oTabWidget )
    oTab3 := QWidget( oTabWidget )
 
-   oTabWidget:addTab( oTab1, "Folders"  )
    oTabWidget:addTab( oTab2, "Controls" )
    oTabWidget:addTab( oTab3, "TextBox"  )
+   oTabWidget:addTab( oTab1, "Folders"  )
 
    oTabWidget:Move( aPos[ 1 ], aPos[ 2 ] )
    oTabWidget:ReSize( aSize[ 1 ], aSize[ 2 ] )
@@ -354,6 +356,9 @@ STATIC FUNCTION Build_Tabs( oWnd, aPos, aSize )
 /*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Build_TreeView( oWnd )
+#if .T. // defined( __HB_QT_MAJOR_VERSION_5__ )
+   HB_SYMBOL_UNUSED( oWnd )
+#else
    LOCAL oDirModel
    LOCAL oTV
 
@@ -366,7 +371,7 @@ STATIC FUNCTION Build_TreeView( oWnd )
    oTV:move( 5, 7 )
    oTV:resize( 345, 365 )
    OTV:show()
-
+#endif
    RETURN NIL
 
 /*----------------------------------------------------------------------*/
@@ -583,63 +588,40 @@ FUNCTION ShowInSystemTray( oWnd )
 
 /*----------------------------------------------------------------------*/
 
-STATIC FUNCTION MenuRePaint( oPaintEvent, oPainter )
-   LOCAL qRect := oPaintEvent:rect()
+STATIC FUNCTION DrawButton( ... )
+   LOCAL oColor, oPainter, oRect, oOptions
+   LOCAL aP := hb_AParams()
 
-   oPainter:fillRect( qRect, SetButtonColor() )
-   oPainter:drawText( 3, 3, "File" )
-   oPainter:setPen( QColor( 255,255,255 ) )
-   oPainter:drawRect( qRect:adjusted( 0,0,-1,-1 ) )
+   SWITCH aP[ 1 ]
+   CASE HBQT_DRAW_CONTROL
+      IF aP[ 2 ] == QStyle_CE_PushButton
+         oOptions := aP[ 3 ]
+         oPainter := aP[ 4 ]
+         oRect    := QRect( 0, 0, aP[ 5 ]:width(), aP[ 5 ]:height() )
+         IF hb_bitAnd( oOptions:state(), QStyle_State_MouseOver ) == QStyle_State_MouseOver
+            oColor   := QColor( 120,12,200 )
+         ELSE
+            oColor   := QColor( 0, 255, 255 )
+         ENDIF
 
-   RETURN .T.
+         oPainter:fillRect( oRect, oColor )
+         oPainter:drawRect( oRect:adjusted( 0,0,-1,-1 ) )
+         oPainter:drawText( 31, 31, "Harbour" )
 
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION RePaint( oPaintEvent, oPainter, oBtn )
-   LOCAL qColor
-   LOCAL qRect := oPaintEvent:rect()
-
-   IF oBtn:isDown()
-      qColor := QColor( 120,12,200 )
-      oPainter:fillRect( qRect, qColor )
-      oPainter:drawRect( qRect:adjusted( 0,0,-1,-1 ) )
-      oPainter:drawText( 31, 31, "Harbour" )
-   ELSE
-      oPainter:fillRect( qRect, SetButtonColor() )
-      oPainter:drawText( 30, 30, "Harbour" )
-      oPainter:setPen( QColor( 255,255,255 ) )
-      oPainter:drawRect( qRect:adjusted( 0,0,-1,-1 ) )
-   ENDIF
-
-   RETURN .F.
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION RePaintHover( oEvent, oBtn, nEvent )
-
-   HB_SYMBOL_UNUSED( oEvent )
-
-   IF nEvent == QEvent_Leave
-      SetButtonColor( QColor( 220,100,12 ) )
-   ELSEIF nEvent == QEvent_Enter
-      SetButtonColor( QColor( 0,255,0 ) )
-   ENDIF
-   oBtn:repaint()
-
+         HB_TRACE( HB_TR_ALWAYS, "HBQT_DRAW_CONTROL:element", aP[ 2 ], oOptions:state() )
+         RETURN .T.  /* Tell that you have drawn the control */
+      ENDIF
+      EXIT
+   CASE HBQT_DRAW_ITEMTEXT
+      HB_TRACE( HB_TR_ALWAYS, "HBQT_DRAW_ITEMTEXT:element", aP[ 7 ] )
+      IF .T.
+         RETURN .T.
+      ENDIF
+      EXIT
+   CASE HBQT_DRAW_PRIMITIVE
+      HB_TRACE( HB_TR_ALWAYS, "HBQT_DRAW_PRIMITIVE:element", aP[ 2 ] )
+      EXIT
+   ENDSWITCH
    RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION SetButtonColor( qClr )
-   LOCAL l_clr
-   STATIC s_clr
-   IF s_clr == NIL
-      s_clr := QColor( 220,100,12 )
-   ENDIF
-   l_clr := s_clr
-   IF HB_ISOBJECT( qClr )
-      s_clr := qClr
-   ENDIF
-   RETURN l_clr
 
 /*----------------------------------------------------------------------*/

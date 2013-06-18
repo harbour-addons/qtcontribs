@@ -1,0 +1,77 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QProxyStyle
+Type        =
+New         =
+Version     = 0x040600
+</CLASS>
+
+<CODE>
+#if QT_VERSION >= 0x050000
+#  include <QtWidgets/QProxyStyle>
+#else
+#  include <QtGui/QProxyStyle>
+#endif
+#include "hbqt_hbqproxystyle.h"
+
+
+/*
+ * HBQProxyStyle(QStyle * style = 0)
+ * HBQProxyStyle(const QString & key)
+ * ~HBQProxyStyle()
+ */
+HB_FUNC( QT_HBQPROXYSTYLE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QStyle" ) )
+   {
+      __HB_RETPTRGC__( new HBQProxyStyle( hbqt_par_QStyle( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new HBQProxyStyle() );
+   }
+}
+</CODE>
+
+<ENUMS>
+flags State
+flags SubControls
+enum ComplexControl { CC_SpinBox, CC_ComboBox, CC_ScrollBar, CC_Slider, ..., CC_CustomBase }
+enum ContentsType { CT_CheckBox, CT_ComboBox, CT_Q3DockWindow, CT_HeaderSection, ..., CT_MdiControls }
+enum ControlElement { CE_PushButton, CE_PushButtonBevel, CE_PushButtonLabel, CE_DockWidgetTitle, ..., CE_ShapedFrame }
+enum PixelMetric { PM_ButtonMargin, PM_DockWidgetTitleBarButtonMargin, PM_ButtonDefaultIndicator, PM_MenuButtonIndicator, ..., PM_SubMenuOverlap }
+enum PrimitiveElement { PE_FrameStatusBar, PE_PanelButtonCommand, PE_FrameDefaultButton, PE_PanelButtonBevel, ..., PE_PanelMenu }
+enum StandardPixmap { SP_TitleBarMinButton, SP_TitleBarMenuButton, SP_TitleBarMaxButton, SP_TitleBarCloseButton, ..., SP_CustomBase }
+enum StateFlag { State_None, State_Active, State_AutoRaise, State_Children, ..., State_Small }
+enum StyleHint { SH_EtchDisabledText, SH_DitherDisabledText, SH_GUIStyle, SH_ScrollBar_ContextMenu, ..., SH_DockWidget_ButtonsHaveFrame }
+enum SubControl { SC_None, SC_ScrollBarAddLine, SC_ScrollBarSubLine, SC_ScrollBarAddPage, ..., SC_All }
+enum SubElement { SE_PushButtonContents, SE_PushButtonFocusRect, SE_PushButtonLayoutItem, SE_CheckBoxIndicator, ..., SE_TabBarTabText }
+</ENUMS>
+
+<PROTOS>
+int hb_setPixelMetric( QStyle::PixelMetric metric, int pixels )
+void hb_setDrawBlock( PHB_ITEM block );
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -16,6 +16,56 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-17 18:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r239)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QStyle_* constants.
+       This time it was a tedius job as Qt's documentation was 
+       specifying "?" for many constants which, I had to resort from 
+       qstyle.h header.
+
+  * hbqt/qtcore/hbqt_pointer.cpp
+    % Changed: hbqt_obj_isDerivedFrom() converts pszClassname to upper.
+       It greatly simplifies to create .qth(s).
+
+  * hbqt/qtgui/hbqtgui.hbm
+  + hbqt/qtgui/hbqt_hbqproxystyle.cpp
+  + hbqt/qtgui/hbqt_hbqproxystyle.h
+    + Added: basis for implementation of class QProxyModel() via HBQProxyModel().
+
+  * hbqt/qtgui/qth/filelist.hbm
+  + hbqt/qtgui/qth/HBQProxyStyle.qth
+    + Added: new class HBQProxyStyle() inheriting virtual class QProxyStyle().
+       This class brings to PRG layer extremely required feature to owner-draw
+       elements and controls. Style Sheets mechanism, though easy to implement,
+       but has been inadequate at times to get the desired effects. This 
+       class offers a robust mechanism to alter all aspects of a window/control.
+
+    NOTE: how to sense the importance of this class: 
+          Until now painting a widget could only be done via QEvent_Paint event
+          which never supplies relevant QPainter which renders it useless to 
+          intercept and use the way a programmer wants. This class act as a 
+          proxy to paint event and supplies all needed components to re-draw 
+          any part of the control.
+
+          This class also covers an irritating behavior ( at times ) of Qt where
+          Style Sheet is applied on every child of the widget. QProxyStyle()
+          is said to be applied locally for only for the widget it is set. 
+
+          This also eliminates the need to sub-class every class of Qt just 
+          for one reason - how to redraw on a widget.
+
+  * hbqt/tests/demoqt.prg
+    + Added: code to demonstrate the usefulness of above class. To explore 
+       just hover the mouse over "Harbour" push-button. 
+
+  * hbqtwidgets/getsys.prg
+    + Added: code to exploit ReadInsert() to change the text cursor shape 
+       from Beam to Block for insert/overstrike mode. This again is the 
+       result of HBQProxyStyle().
+
+  ;NOTE: This class is evolving, so I would request you to experiment 
+         and return here your feedback.
+
 2013-06-14 12:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r238)
   * hbqtwidgets/getsys.prg
     % Refined: one more instance of misbehavior in numeric GET, where 

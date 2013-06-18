@@ -54,6 +54,79 @@
 
 #include "hbqt_version.ch"
 
+/*----------------------------------------------------------------------*/
+//                        HBQT Defined Constants
+/*----------------------------------------------------------------------*/
+/*
+ *   DEFINES HBQt CODEBLOCKs
+ *
+ *   Format:
+ *   HBQT_(Qt class initials)_(Qt overloaded member)
+ */
+#define HBQT_QAIM_data                            1001
+#define HBQT_QAIM_flags                           1003
+#define HBQT_QAIM_headerData                      2001
+#define HBQT_QAIM_rowCount                        3001
+#define HBQT_QAIM_columnCount                     3002
+
+/*----------------------------------------------------------------------*/
+
+#define HBQT_GRAPHICSITEM_NONE                    0
+#define HBQT_GRAPHICSITEM_RECT                    1
+#define HBQT_GRAPHICSITEM_LINE                    2
+#define HBQT_GRAPHICSITEM_ELLIPSE                 3
+#define HBQT_GRAPHICSITEM_ARC                     4
+#define HBQT_GRAPHICSITEM_CHORD                   5
+#define HBQT_GRAPHICSITEM_POLYGON                 6
+#define HBQT_GRAPHICSITEM_PIE                     7
+#define HBQT_GRAPHICSITEM_PATH                    8
+#define HBQT_GRAPHICSITEM_CHART                   9
+#define HBQT_GRAPHICSITEM_GRADIENT                10
+#define HBQT_GRAPHICSITEM_PICTURE                 11
+#define HBQT_GRAPHICSITEM_BARCODE                 12
+#define HBQT_GRAPHICSITEM_TEXT                    13
+#define HBQT_GRAPHICSITEM_SIMPLETEXT              14
+#define HBQT_GRAPHICSITEM_ROUNDRECT               15
+
+#define HBQT_GRAPHICSITEM_LINE_HORIZONTAL         0
+#define HBQT_GRAPHICSITEM_LINE_VERTICAL           1
+#define HBQT_GRAPHICSITEM_LINE_BACKWARDDIAGONAL   2
+#define HBQT_GRAPHICSITEM_LINE_FORWARDDIAGONAL    3
+
+#define HBQT_GRAPHICSITEM_TEXT_DRAW_NONE          0
+#define HBQT_GRAPHICSITEM_TEXT_DRAW_TOP           1
+#define HBQT_GRAPHICSITEM_TEXT_DRAW_BOTTOM        2
+#define HBQT_GRAPHICSITEM_TEXT_DRAW_ABOVE         3
+#define HBQT_GRAPHICSITEM_TEXT_DRAW_BELOW         4
+
+#define HBQT_GRAPHICSITEM_TEXT_SIZEPOLICY_NONE    0
+#define HBQT_GRAPHICSITEM_TEXT_SIZEPOLICY_AUTO    1
+#define HBQT_GRAPHICSITEM_TEXT_SIZEPOLICY_STRETCH 2
+
+#define HBQT_GRAPHICSITEM_IMAGE_NO_FRAME          0
+#define HBQT_GRAPHICSITEM_IMAGE_PICTURE_BIND      1
+#define HBQT_GRAPHICSITEM_IMAGE_PICTURE_BOX       2
+
+#define HBQT_GRAPHICSITEM_RESIZE_ITEM_TO_PICTURE  1
+#define HBQT_GRAPHICSITEM_CENTER_PICTURE_TO_ITEM  2
+#define HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO     3
+#define HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_IGNORE_ASPECT_RATIO   4
+
+//              HBQTableView:hbSetBlock() fired constants
+#define HBQT_HBQTABLEVIEW_scrollContentsBy        1
+
+
+//       HBQProxyStyle Drawing Constants
+#define HBQT_DRAW_PRIMITIVE                       0
+#define HBQT_DRAW_CONTROL                         1
+#define HBQT_DRAW_COMPLEXCONTROL                  2
+#define HBQT_DRAW_ITEMPIXMAP                      3
+#define HBQT_DRAW_ITEMTEXT                        4
+
+/*----------------------------------------------------------------------*/
+//                         Qt Defined Constants
+/*----------------------------------------------------------------------*/
+
 #define QEvent_None                               0        // Not an event.
 #define QEvent_Timer                              1        // Regular timer events (QTimerEvent).
 #define QEvent_MouseButtonPress                   2        // Mouse press (QMouseEvent).
@@ -1449,78 +1522,6 @@
 #define QFrame_Shape_Mask                         0x000f   // The Shape part of frameStyle()
 
 
-#define QStyle_SP_TitleBarMinButton               1    // Minimize button on title bars (e.g., in QWorkspace).
-#define QStyle_SP_TitleBarMenuButton              0    // Menu button on a title bar.
-#define QStyle_SP_TitleBarMaxButton               2    // Maximize button on title bars.
-#define QStyle_SP_TitleBarCloseButton             3    // Close button on title bars.
-#define QStyle_SP_TitleBarNormalButton            4    // Normal (restore) button on title bars.
-#define QStyle_SP_TitleBarShadeButton             5    // Shade button on title bars.
-#define QStyle_SP_TitleBarUnshadeButton           6    // Unshade button on title bars.
-#define QStyle_SP_TitleBarContextHelpButton       7    // The Context help button on title bars.
-#define QStyle_SP_MessageBoxInformation           9    // The "information" icon.
-#define QStyle_SP_MessageBoxWarning               10   // The "warning" icon.
-#define QStyle_SP_MessageBoxCritical              11   // The "critical" icon.
-#define QStyle_SP_MessageBoxQuestion              12   // The "question" icon.
-#define QStyle_SP_DesktopIcon                     13   // The "desktop" icon.
-#define QStyle_SP_TrashIcon                       14   // The "trash" icon.
-#define QStyle_SP_ComputerIcon                    15   // The "My computer" icon.
-#define QStyle_SP_DriveFDIcon                     16   // The floppy icon.
-#define QStyle_SP_DriveHDIcon                     17   // The harddrive icon.
-#define QStyle_SP_DriveCDIcon                     18   // The CD icon.
-#define QStyle_SP_DriveDVDIcon                    19   // The DVD icon.
-#define QStyle_SP_DriveNetIcon                    20   // The network icon.
-#define QStyle_SP_DirHomeIcon                     55   // The home directory icon.
-#define QStyle_SP_DirOpenIcon                     21   // The open directory icon.
-#define QStyle_SP_DirClosedIcon                   22   // The closed directory icon.
-#define QStyle_SP_DirIcon                         37   // The directory icon.
-#define QStyle_SP_DirLinkIcon                     23   // The link to directory icon.
-#define QStyle_SP_FileIcon                        24   // The file icon.
-#define QStyle_SP_FileLinkIcon                    25   // The link to file icon.
-#define QStyle_SP_FileDialogStart                 28   // The "start" icon in a file dialog.
-#define QStyle_SP_FileDialogEnd                   29   // The "end" icon in a file dialog.
-#define QStyle_SP_FileDialogToParent              30   // The "parent directory" icon in a file dialog.
-#define QStyle_SP_FileDialogNewFolder             31   // The "create new folder" icon in a file dialog.
-#define QStyle_SP_FileDialogDetailedView          32   // The detailed view icon in a file dialog.
-#define QStyle_SP_FileDialogInfoView              33   // The file info icon in a file dialog.
-#define QStyle_SP_FileDialogContentsView          34   // The contents view icon in a file dialog.
-#define QStyle_SP_FileDialogListView              35   // The list view icon in a file dialog.
-#define QStyle_SP_FileDialogBack                  36   // The back arrow in a file dialog.
-#define QStyle_SP_DockWidgetCloseButton           8    // Close button on dock windows (see also QDockWidget).
-#define QStyle_SP_ToolBarHorizontalExtensionButton  26 // Extension button for horizontal toolbars.
-#define QStyle_SP_ToolBarVerticalExtensionButton  27   // Extension button for vertical toolbars.
-#define QStyle_SP_DialogOkButton                  38   // Icon for a standard OK button in a QDialogButtonBox.
-#define QStyle_SP_DialogCancelButton              39   // Icon for a standard Cancel button in a QDialogButtonBox.
-#define QStyle_SP_DialogHelpButton                40   // Icon for a standard Help button in a QDialogButtonBox.
-#define QStyle_SP_DialogOpenButton                41   // Icon for a standard Open button in a QDialogButtonBox.
-#define QStyle_SP_DialogSaveButton                42   // Icon for a standard Save button in a QDialogButtonBox.
-#define QStyle_SP_DialogCloseButton               43   // Icon for a standard Close button in a QDialogButtonBox.
-#define QStyle_SP_DialogApplyButton               44   // Icon for a standard Apply button in a QDialogButtonBox.
-#define QStyle_SP_DialogResetButton               45   // Icon for a standard Reset button in a QDialogButtonBox.
-#define QStyle_SP_DialogDiscardButton             46   // Icon for a standard Discard button in a QDialogButtonBox.
-#define QStyle_SP_DialogYesButton                 47   // Icon for a standard Yes button in a QDialogButtonBox.
-#define QStyle_SP_DialogNoButton                  48   // Icon for a standard No button in a QDialogButtonBox.
-#define QStyle_SP_ArrowUp                         49   // Icon arrow pointing up.
-#define QStyle_SP_ArrowDown                       50   // Icon arrow pointing down.
-#define QStyle_SP_ArrowLeft                       51   // Icon arrow pointing left.
-#define QStyle_SP_ArrowRight                      52   // Icon arrow pointing right.
-#define QStyle_SP_ArrowBack                       53   // Equivalent to SP_ArrowLeft when the current layout direction is Qt::LeftToRight, otherwise SP_ArrowRight.
-#define QStyle_SP_ArrowForward                    54   // Equivalent to SP_ArrowRight when the current layout direction is Qt::LeftToRight, otherwise SP_ArrowLeft.
-#define QStyle_SP_CommandLink                     56   // Icon used to indicate a Vista style command link glyph.
-#define QStyle_SP_VistaShield                     57   // Icon used to indicate UAC prompts on Windows Vista. This will return a null pixmap or icon on all other platforms.
-#define QStyle_SP_BrowserReload                   58   // Icon indicating that the current page should be reloaded.
-#define QStyle_SP_BrowserStop                     59   // Icon indicating that the page loading should stop.
-#define QStyle_SP_MediaPlay                       60   // Icon indicating that media should begin playback.
-#define QStyle_SP_MediaStop                       61   // Icon indicating that media should stop playback.
-#define QStyle_SP_MediaPause                      62   // Icon indicating that media should pause playback.
-#define QStyle_SP_MediaSkipForward                63   // Icon indicating that media should skip forward.
-#define QStyle_SP_MediaSkipBackward               64   // Icon indicating that media should skip backward.
-#define QStyle_SP_MediaSeekForward                65   // Icon indicating that media should seek forward.
-#define QStyle_SP_MediaSeekBackward               66   // Icon indicating that media should seek backward.
-#define QStyle_SP_MediaVolume                     67   // Icon indicating a volume control.
-#define QStyle_SP_MediaVolumeMuted                68   // Icon indicating a muted volume control.
-#define QStyle_SP_CustomBase                      0xf0000000   // Base value for custom standard pixmaps; custom values must be greater than this value.
-
-
 #define QIcon_Normal                              0    // Display the pixmap when the user is not interacting with the icon, but the functionality represented by the icon is available.
 #define QIcon_Disabled                            1    // Display the pixmap when the functionality represented by the icon is not available.
 #define QIcon_Active                              2    // Display the pixmap when the functionality represented by the icon is available and the user is interacting with the icon, for example, moving the mouse over it or clicking it.
@@ -2814,69 +2815,575 @@
 #endif
 
 
-/*----------------------------------------------------------------------*/
-//                        HBQT Defined Constants
-/*----------------------------------------------------------------------*/
-/*
- *   DEFINES HBQt CODEBLOCKs
- *
- *   Format:
- *   HBQT_(Qt class initials)_(Qt overloaded member)
- */
-#define HBQT_QAIM_data                            1001
-#define HBQT_QAIM_flags                           1003
-#define HBQT_QAIM_headerData                      2001
-#define HBQT_QAIM_rowCount                        3001
-#define HBQT_QAIM_columnCount                     3002
+//enum QStyle::ComplexControl
+//This enum describes the available complex controls. Complex controls have different behavior depending upon where the user clicks on them or which keys are pressed.
+#define QStyle_CC_SpinBox                                    0       // A spinbox, like QSpinBox.
+#define QStyle_CC_ComboBox                                   1       // A combobox, like QComboBox.
+#define QStyle_CC_ScrollBar                                  2       // A scroll bar, like QScrollBar.
+#define QStyle_CC_Slider                                     3       // A slider, like QSlider.
+#define QStyle_CC_ToolButton                                 4       // A tool button, like QToolButton.
+#define QStyle_CC_TitleBar                                   5       // A Title bar, like those used in QMdiSubWindow.
+#define QStyle_CC_GroupBox                                   7       // A group box, like QGroupBox.
+#define QStyle_CC_Dial                                       6       // A dial, like QDial.
+#define QStyle_CC_MdiControls                                8       // The minimize, close, and normal button in the menu bar for a maximized MDI subwindow.
+#define QStyle_CC_CustomBase                                 0xf0000000   // Base value for custom complex controls. Custom values must be greater than this value.
 
-/*----------------------------------------------------------------------*/
 
-#define HBQT_GRAPHICSITEM_NONE                    0
-#define HBQT_GRAPHICSITEM_RECT                    1
-#define HBQT_GRAPHICSITEM_LINE                    2
-#define HBQT_GRAPHICSITEM_ELLIPSE                 3
-#define HBQT_GRAPHICSITEM_ARC                     4
-#define HBQT_GRAPHICSITEM_CHORD                   5
-#define HBQT_GRAPHICSITEM_POLYGON                 6
-#define HBQT_GRAPHICSITEM_PIE                     7
-#define HBQT_GRAPHICSITEM_PATH                    8
-#define HBQT_GRAPHICSITEM_CHART                   9
-#define HBQT_GRAPHICSITEM_GRADIENT                10
-#define HBQT_GRAPHICSITEM_PICTURE                 11
-#define HBQT_GRAPHICSITEM_BARCODE                 12
-#define HBQT_GRAPHICSITEM_TEXT                    13
-#define HBQT_GRAPHICSITEM_SIMPLETEXT              14
-#define HBQT_GRAPHICSITEM_ROUNDRECT               15
+//enum #define QStyle_ContentsType
+//This enum describes the available contents types. These are used to calculate sizes for the contents of various widgets.
+#define QStyle_CT_CheckBox                                   1       // A check box, like QCheckBox.
+#define QStyle_CT_ComboBox                                   4       // A combo box, like QComboBox.
+#define QStyle_CT_HeaderSection                              19      // A header section, like QHeader.
+#define QStyle_CT_LineEdit                                   14      // A line edit, like QLineEdit.
+#define QStyle_CT_Menu                                       10      // A menu, like QMenu.
+#define QStyle_CT_MenuBar                                    9       // A menu bar, like QMenuBar.
+#define QStyle_CT_MenuBarItem                                8       // A menu bar item, like the buttons in a QMenuBar.
+#define QStyle_CT_MenuItem                                   7       // A menu item, like QMenuItem.
+#define QStyle_CT_ProgressBar                                6       // A progress bar, like QProgressBar.
+#define QStyle_CT_PushButton                                 0       // A push button, like QPushButton.
+#define QStyle_CT_RadioButton                                2       // A radio button, like QRadioButton.
+#define QStyle_CT_SizeGrip                                   16      // A size grip, like QSizeGrip.
+#define QStyle_CT_Slider                                     12      // A slider, like QSlider.
+#define QStyle_CT_ScrollBar                                  13      // A scroll bar, like QScrollBar.
+#define QStyle_CT_SpinBox                                    15      // A spin box, like QSpinBox.
+#define QStyle_CT_Splitter                                   5       // A splitter, like QSplitter.
+#define QStyle_CT_TabBarTab                                  11      // A tab on a tab bar, like QTabBar.
+#define QStyle_CT_TabWidget                                  17      // A tab widget, like QTabWidget.
+#define QStyle_CT_ToolButton                                 3       // A tool button, like QToolButton.
+#define QStyle_CT_GroupBox                                   20      // A group box, like QGroupBox.
+#define QStyle_CT_ItemViewItem                               22      // An item inside an item view.
+#define QStyle_CT_MdiControls                                21      // The minimize, normal, and close button in the menu bar for a maximized MDI subwindow.
+#define QStyle_CT_CustomBase                                 0xf0000000   // Base value for custom contents types. Custom values must be greater than this value.
 
-#define HBQT_GRAPHICSITEM_LINE_HORIZONTAL         0
-#define HBQT_GRAPHICSITEM_LINE_VERTICAL           1
-#define HBQT_GRAPHICSITEM_LINE_BACKWARDDIAGONAL   2
-#define HBQT_GRAPHICSITEM_LINE_FORWARDDIAGONAL    3
+//enum #define QStyle_ControlElement
+//This enum represents a control element. A control element is a part of a widget that performs some action or displays information to the user.
+#define QStyle_CE_PushButton                                 0       // A QPushButton, draws CE_PushButtonBevel, CE_PushButtonLabel and PE_FrameFocusRect.
+#define QStyle_CE_PushButtonBevel                            1       // The bevel and default indicator of a QPushButton.
+#define QStyle_CE_PushButtonLabel                            2       // The label (an icon with text or pixmap) of a QPushButton.
+#define QStyle_CE_DockWidgetTitle                            30      // Dock window title.
+#define QStyle_CE_Splitter                                   28      // Splitter handle; see also QSplitter.
+#define QStyle_CE_CheckBox                                   3       // A QCheckBox, draws a PE_IndicatorCheckBox, a CE_CheckBoxLabel and a PE_FrameFocusRect.
+#define QStyle_CE_CheckBoxLabel                              4       // The label (text or pixmap) of a QCheckBox.
+#define QStyle_CE_RadioButton                                5       // A QRadioButton, draws a PE_IndicatorRadioButton, a CE_RadioButtonLabel and a PE_FrameFocusRect.
+#define QStyle_CE_RadioButtonLabel                           6       // The label (text or pixmap) of a QRadioButton.
+#define QStyle_CE_TabBarTab                                  7       // The tab and label within a QTabBar.
+#define QStyle_CE_TabBarTabShape                             8       // The tab shape within a tab bar.
+#define QStyle_CE_TabBarTabLabel                             9       // The label within a tab.
+#define QStyle_CE_ProgressBar                                10      // A QProgressBar, draws CE_ProgressBarGroove, CE_ProgressBarContents and CE_ProgressBarLabel.
+#define QStyle_CE_ProgressBarGroove                          11      // The groove where the progress indicator is drawn in a QProgressBar.
+#define QStyle_CE_ProgressBarContents                        12      // The progress indicator of a QProgressBar.
+#define QStyle_CE_ProgressBarLabel                           13      // The text label of a QProgressBar.
+#define QStyle_CE_ToolButtonLabel                            22      // A tool button's label.
+#define QStyle_CE_MenuBarItem                                20      // A menu item in a QMenuBar.
+#define QStyle_CE_MenuBarEmptyArea                           21      // The empty area of a QMenuBar.
+#define QStyle_CE_MenuItem                                   14      // A menu item in a QMenu.
+#define QStyle_CE_MenuScroller                               15      // Scrolling areas in a QMenu when the style supports scrolling.
+#define QStyle_CE_MenuTearoff                                18      // A menu item representing the tear off section of a QMenu.
+#define QStyle_CE_MenuEmptyArea                              19      // The area in a menu without menu items.
+#define QStyle_CE_MenuHMargin                                17      // The horizontal extra space on the left/right of a menu.
+#define QStyle_CE_MenuVMargin                                16      // The vertical extra space on the top/bottom of a menu.
+#define QStyle_CE_ToolBoxTab                                 26      // The toolbox's tab and label within a QToolBox.
+#define QStyle_CE_SizeGrip                                   27      // Window resize handle; see also QSizeGrip.
+#define QStyle_CE_Header                                     23      // A header.
+#define QStyle_CE_HeaderSection                              24      // A header section.
+#define QStyle_CE_HeaderLabel                                25      // The header's label.
+#define QStyle_CE_ScrollBarAddLine                           31      // Scroll bar line increase indicator. (i.e., scroll down); see also QScrollBar.
+#define QStyle_CE_ScrollBarSubLine                           32      // Scroll bar line decrease indicator (i.e., scroll up).
+#define QStyle_CE_ScrollBarAddPage                           33      // Scolllbar page increase indicator (i.e., page down).
+#define QStyle_CE_ScrollBarSubPage                           34      // Scroll bar page decrease indicator (i.e., page up).
+#define QStyle_CE_ScrollBarSlider                            35      // Scroll bar slider.
+#define QStyle_CE_ScrollBarFirst                             36      // Scroll bar first line indicator (i.e., home).
+#define QStyle_CE_ScrollBarLast                              37      // Scroll bar last line indicator (i.e., end).
+#define QStyle_CE_RubberBand                                 29      // Rubber band used in for example an icon view.
+#define QStyle_CE_FocusFrame                                 38      // Focus frame that is style controlled.
+#define QStyle_CE_ItemViewItem                               45      // An item inside an item view.
+#define QStyle_CE_ComboBoxLabel                              39      // The label of a non-editable QComboBox.
+#define QStyle_CE_ToolBar                                    40      // A toolbar like QToolBar.
+#define QStyle_CE_ToolBoxTabShape                            41      // The toolbox's tab shape.
+#define QStyle_CE_ToolBoxTabLabel                            42      // The toolbox's tab label.
+#define QStyle_CE_HeaderEmptyArea                            43      // The area of a header view where there are no header sections.
+#define QStyle_CE_ShapedFrame                                46      // The frame with the shape specified in the QStyleOptionFrameV3; see QFrame.
+#define QStyle_CE_CustomBase                                 0xf0000000   // Base value for custom control elements; custom values must be greater than this value.
 
-#define HBQT_GRAPHICSITEM_TEXT_DRAW_NONE          0
-#define HBQT_GRAPHICSITEM_TEXT_DRAW_TOP           1
-#define HBQT_GRAPHICSITEM_TEXT_DRAW_BOTTOM        2
-#define HBQT_GRAPHICSITEM_TEXT_DRAW_ABOVE         3
-#define HBQT_GRAPHICSITEM_TEXT_DRAW_BELOW         4
 
-#define HBQT_GRAPHICSITEM_TEXT_SIZEPOLICY_NONE    0
-#define HBQT_GRAPHICSITEM_TEXT_SIZEPOLICY_AUTO    1
-#define HBQT_GRAPHICSITEM_TEXT_SIZEPOLICY_STRETCH 2
+//enum #define QStyle_PixelMetric
+//This enum describes the various available pixel metrics. A pixel metric is a style dependent size represented by a single pixel value.
+#define QStyle_PM_ButtonMargin                               0
+#define QStyle_PM_ButtonDefaultIndicator                     1
+#define QStyle_PM_MenuButtonIndicator                        2
+#define QStyle_PM_ButtonShiftHorizontal                      3
+#define QStyle_PM_ButtonShiftVertical                        4
+#define QStyle_PM_DefaultFrameWidth                          5
+#define QStyle_PM_SpinBoxFrameWidth                          6
+#define QStyle_PM_ComboBoxFrameWidth                         7
+#define QStyle_PM_MaximumDragDistance                        8
+#define QStyle_PM_ScrollBarExtent                            9
+#define QStyle_PM_ScrollBarSliderMin                         10
+#define QStyle_PM_SliderThickness                            11
+#define QStyle_PM_SliderControlThickness                     12
+#define QStyle_PM_SliderLength                               13
+#define QStyle_PM_SliderTickmarkOffset                       14
+#define QStyle_PM_SliderSpaceAvailable                       15
+#define QStyle_PM_DockWidgetSeparatorExtent                  16
+#define QStyle_PM_DockWidgetHandleExtent                     17
+#define QStyle_PM_DockWidgetFrameWidth                       18
+#define QStyle_PM_TabBarTabOverlap                           19
+#define QStyle_PM_TabBarTabHSpace                            20
+#define QStyle_PM_TabBarTabVSpace                            21
+#define QStyle_PM_TabBarBaseHeight                           22
+#define QStyle_PM_TabBarBaseOverlap                          23
+#define QStyle_PM_ProgressBarChunkWidth                      24
+#define QStyle_PM_SplitterWidth                              25
+#define QStyle_PM_TitleBarHeight                             26
+#define QStyle_PM_MenuScrollerHeight                         27
+#define QStyle_PM_MenuHMargin                                28
+#define QStyle_PM_MenuVMargin                                29
+#define QStyle_PM_MenuPanelWidth                             30
+#define QStyle_PM_MenuTearoffHeight                          31
+#define QStyle_PM_MenuDesktopFrameWidth                      32
+#define QStyle_PM_MenuBarPanelWidth                          33
+#define QStyle_PM_MenuBarItemSpacing                         34
+#define QStyle_PM_MenuBarVMargin                             35
+#define QStyle_PM_MenuBarHMargin                             36
+#define QStyle_PM_IndicatorWidth                             37
+#define QStyle_PM_IndicatorHeight                            38
+#define QStyle_PM_ExclusiveIndicatorWidth                    39
+#define QStyle_PM_ExclusiveIndicatorHeight                   40
+#define QStyle_PM_DialogButtonsSeparator                     41
+#define QStyle_PM_DialogButtonsButtonWidth                   42
+#define QStyle_PM_DialogButtonsButtonHeight                  43
+#define QStyle_PM_MdiSubWindowFrameWidth                     44
+#define QStyle_PM_MDIFrameWidth                              QStyle_PM_MdiSubWindowFrameWidth
+#define QStyle_PM_MdiSubWindowMinimizedWidth                 45
+#define QStyle_PM_MDIMinimizedWidth                          QStyle_PM_MdiSubWindowMinimizedWidth
+#define QStyle_PM_HeaderMargin                               46
+#define QStyle_PM_HeaderMarkSize                             47
+#define QStyle_PM_HeaderGripMargin                           48
+#define QStyle_PM_TabBarTabShiftHorizontal                   49
+#define QStyle_PM_TabBarTabShiftVertical                     50
+#define QStyle_PM_TabBarScrollButtonWidth                    51
+#define QStyle_PM_ToolBarFrameWidth                          52
+#define QStyle_PM_ToolBarHandleExtent                        53
+#define QStyle_PM_ToolBarItemSpacing                         54
+#define QStyle_PM_ToolBarItemMargin                          55
+#define QStyle_PM_ToolBarSeparatorExtent                     56
+#define QStyle_PM_ToolBarExtensionExtent                     57
+#define QStyle_PM_SpinBoxSliderHeight                        58
+#define QStyle_PM_DefaultTopLevelMargin                      59
+#define QStyle_PM_DefaultChildMargin                         60
+#define QStyle_PM_DefaultLayoutSpacing                       61
+#define QStyle_PM_ToolBarIconSize                            62
+#define QStyle_PM_ListViewIconSize                           63
+#define QStyle_PM_IconViewIconSize                           64
+#define QStyle_PM_SmallIconSize                              65
+#define QStyle_PM_LargeIconSize                              66
+#define QStyle_PM_FocusFrameVMargin                          67
+#define QStyle_PM_FocusFrameHMargin                          68
+#define QStyle_PM_ToolTipLabelFrameWidth                     69
+#define QStyle_PM_CheckBoxLabelSpacing                       70
+#define QStyle_PM_TabBarIconSize                             71
+#define QStyle_PM_SizeGripSize                               72
+#define QStyle_PM_DockWidgetTitleMargin                      73
+#define QStyle_PM_MessageBoxIconSize                         74
+#define QStyle_PM_ButtonIconSize                             75
+#define QStyle_PM_DockWidgetTitleBarButtonMargin             76
+#define QStyle_PM_RadioButtonLabelSpacing                    77
+#define QStyle_PM_LayoutLeftMargin                           78
+#define QStyle_PM_LayoutTopMargin                            79
+#define QStyle_PM_LayoutRightMargin                          80
+#define QStyle_PM_LayoutBottomMargin                         81
+#define QStyle_PM_LayoutHorizontalSpacing                    82
+#define QStyle_PM_LayoutVerticalSpacing                      83
+#define QStyle_PM_TabBar_ScrollButtonOverlap                 84
+#define QStyle_PM_TextCursorWidth                            85
+#define QStyle_PM_TabCloseIndicatorWidth                     86
+#define QStyle_PM_TabCloseIndicatorHeight                    87
+#define QStyle_PM_ScrollView_ScrollBarSpacing                88
+#define QStyle_PM_ScrollView_ScrollBarOverlap                89
+#define QStyle_PM_SubMenuOverlap                             90
+#define QStyle_PM_CustomBase                                 0xf0000000
 
-#define HBQT_GRAPHICSITEM_IMAGE_NO_FRAME          0
-#define HBQT_GRAPHICSITEM_IMAGE_PICTURE_BIND      1
-#define HBQT_GRAPHICSITEM_IMAGE_PICTURE_BOX       2
 
-#define HBQT_GRAPHICSITEM_RESIZE_ITEM_TO_PICTURE  1
-#define HBQT_GRAPHICSITEM_CENTER_PICTURE_TO_ITEM  2
-#define HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO     3
-#define HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_IGNORE_ASPECT_RATIO   4
+//enum #define QStyle_PrimitiveElement
+//This enum describes the various primitive elements. A primitive element is a common GUI element, such as a checkbox indicator or button bevel.
+#define QStyle_PE_Frame                                      0
+#define QStyle_PE_FrameDefaultButton                         1
+#define QStyle_PE_FrameDockWidget                            2
+#define QStyle_PE_FrameFocusRect                             3
+#define QStyle_PE_FrameGroupBox                              4
+#define QStyle_PE_FrameLineEdit                              5
+#define QStyle_PE_FrameMenu                                  6
+#define QStyle_PE_FrameStatusBar                             7
+#define QStyle_PE_FrameStatusBarItem                         QStyle_PE_FrameStatusBar
+#define QStyle_PE_FrameTabWidget                             8
+#define QStyle_PE_FrameWindow                                9
+#define QStyle_PE_FrameButtonBevel                           10
+#define QStyle_PE_FrameButtonTool                            11
+#define QStyle_PE_FrameTabBarBase                            12
+#define QStyle_PE_PanelButtonCommand                         13
+#define QStyle_PE_PanelButtonBevel                           14
+#define QStyle_PE_PanelButtonTool                            15
+#define QStyle_PE_PanelMenuBar                               16
+#define QStyle_PE_PanelToolBar                               17
+#define QStyle_PE_PanelLineEdit                              18
+#define QStyle_PE_IndicatorArrowDown                         19
+#define QStyle_PE_IndicatorArrowLeft                         20
+#define QStyle_PE_IndicatorArrowRight                        21
+#define QStyle_PE_IndicatorArrowUp                           22
+#define QStyle_PE_IndicatorBranch                            23
+#define QStyle_PE_IndicatorButtonDropDown                    24
+#define QStyle_PE_IndicatorViewItemCheck                     25
+#define QStyle_PE_IndicatorItemViewItemCheck                 QStyle_PE_IndicatorViewItemCheck
+#define QStyle_PE_IndicatorCheckBox                          26
+#define QStyle_PE_IndicatorDockWidgetResizeHandle            27
+#define QStyle_PE_IndicatorHeaderArrow                       28
+#define QStyle_PE_IndicatorMenuCheckMark                     29
+#define QStyle_PE_IndicatorProgressChunk                     30
+#define QStyle_PE_IndicatorRadioButton                       31
+#define QStyle_PE_IndicatorSpinDown                          32
+#define QStyle_PE_IndicatorSpinMinus                         33
+#define QStyle_PE_IndicatorSpinPlus                          34
+#define QStyle_PE_IndicatorSpinUp                            35
+#define QStyle_PE_IndicatorToolBarHandle                     36
+#define QStyle_PE_IndicatorToolBarSeparator                  37
+#define QStyle_PE_PanelTipLabel                              38
+#define QStyle_PE_IndicatorTabTear                           39
+#define QStyle_PE_PanelScrollAreaCorner                      40
+#define QStyle_PE_Widget                                     41
+#define QStyle_PE_IndicatorColumnViewArrow                   42
+#define QStyle_PE_IndicatorItemViewItemDrop                  43
+#define QStyle_PE_PanelItemViewItem                          44
+#define QStyle_PE_PanelItemViewRow                           45
+#define QStyle_PE_PanelStatusBar                             46
+#define QStyle_PE_IndicatorTabClose                          47
+#define QStyle_PE_PanelMenu                                  48
+#define QStyle_PE_CustomBase                                 0xf000000
 
-/*----------------------------------------------------------------------*/
-//              HBQTableView:hbSetBlock() fired constants
 
-#define HBQT_HBQTABLEVIEW_scrollContentsBy        1
+//enum #define QStyle_RequestSoftwareInputPanel
+//This enum describes under what circumstances a software input panel will be requested by input capable widgets.
+#define QStyle_RSIP_OnMouseClickAndAlreadyFocused            0       // Requests an input panel if the user clicks on the widget, but only if it is already focused.
+#define QStyle_RSIP_OnMouseClick                             1       // Requests an input panel if the user clicks on the widget.
 
-/*----------------------------------------------------------------------*/
+
+//enum #define QStyle_StandardPixmap
+//This enum describes the available standard pixmaps. A standard pixmap is a pixmap that can follow some existing GUI style or guideline.
+#define QStyle_SP_TitleBarMinButton                          1       // Minimize button on title bars (e.g., in QMdiSubWindow).
+#define QStyle_SP_TitleBarMenuButton                         0       // Menu button on a title bar.
+#define QStyle_SP_TitleBarMaxButton                          2       // Maximize button on title bars.
+#define QStyle_SP_TitleBarCloseButton                        3       // Close button on title bars.
+#define QStyle_SP_TitleBarNormalButton                       4       // Normal (restore) button on title bars.
+#define QStyle_SP_TitleBarShadeButton                        5       // Shade button on title bars.
+#define QStyle_SP_TitleBarUnshadeButton                      6       // Unshade button on title bars.
+#define QStyle_SP_TitleBarContextHelpButton                  7       // The Context help button on title bars.
+#define QStyle_SP_MessageBoxInformation                      9       // The "information" icon.
+#define QStyle_SP_MessageBoxWarning                          10      // The "warning" icon.
+#define QStyle_SP_MessageBoxCritical                         11      // The "critical" icon.
+#define QStyle_SP_MessageBoxQuestion                         12      // The "question" icon.
+#define QStyle_SP_DesktopIcon                                13      // The "desktop" icon.
+#define QStyle_SP_TrashIcon                                  14      // The "trash" icon.
+#define QStyle_SP_ComputerIcon                               15      // The "My computer" icon.
+#define QStyle_SP_DriveFDIcon                                16      // The floppy icon.
+#define QStyle_SP_DriveHDIcon                                17      // The harddrive icon.
+#define QStyle_SP_DriveCDIcon                                18      // The CD icon.
+#define QStyle_SP_DriveDVDIcon                               19      // The DVD icon.
+#define QStyle_SP_DriveNetIcon                               20      // The network icon.
+#define QStyle_SP_DirHomeIcon                                56      // The home directory icon.
+#define QStyle_SP_DirOpenIcon                                21      // The open directory icon.
+#define QStyle_SP_DirClosedIcon                              22      // The closed directory icon.
+#define QStyle_SP_DirIcon                                    38      // The directory icon.
+#define QStyle_SP_DirLinkIcon                                23      // The link to directory icon.
+#define QStyle_SP_DirLinkOpenIcon                            24      // The link to open directory icon.
+#define QStyle_SP_FileIcon                                   25      // The file icon.
+#define QStyle_SP_FileLinkIcon                               26      // The link to file icon.
+#define QStyle_SP_FileDialogStart                            29      // The "start" icon in a file dialog.
+#define QStyle_SP_FileDialogEnd                              30      // The "end" icon in a file dialog.
+#define QStyle_SP_FileDialogToParent                         31      // The "parent directory" icon in a file dialog.
+#define QStyle_SP_FileDialogNewFolder                        32      // The "create new folder" icon in a file dialog.
+#define QStyle_SP_FileDialogDetailedView                     33      // The detailed view icon in a file dialog.
+#define QStyle_SP_FileDialogInfoView                         34      // The file info icon in a file dialog.
+#define QStyle_SP_FileDialogContentsView                     35      // The contents view icon in a file dialog.
+#define QStyle_SP_FileDialogListView                         36      // The list view icon in a file dialog.
+#define QStyle_SP_FileDialogBack                             37      // The back arrow in a file dialog.
+#define QStyle_SP_DockWidgetCloseButton                      8       // Close button on dock windows (see also QDockWidget).
+#define QStyle_SP_ToolBarHorizontalExtensionButton           27      // Extension button for horizontal toolbars.
+#define QStyle_SP_ToolBarVerticalExtensionButton             28      // Extension button for vertical toolbars.
+#define QStyle_SP_DialogOkButton                             39      // Icon for a standard OK button in a QDialogButtonBox.
+#define QStyle_SP_DialogCancelButton                         40      // Icon for a standard Cancel button in a QDialogButtonBox.
+#define QStyle_SP_DialogHelpButton                           41      // Icon for a standard Help button in a QDialogButtonBox.
+#define QStyle_SP_DialogOpenButton                           42      // Icon for a standard Open button in a QDialogButtonBox.
+#define QStyle_SP_DialogSaveButton                           43      // Icon for a standard Save button in a QDialogButtonBox.
+#define QStyle_SP_DialogCloseButton                          44      // Icon for a standard Close button in a QDialogButtonBox.
+#define QStyle_SP_DialogApplyButton                          45      // Icon for a standard Apply button in a QDialogButtonBox.
+#define QStyle_SP_DialogResetButton                          46      // Icon for a standard Reset button in a QDialogButtonBox.
+#define QStyle_SP_DialogDiscardButton                        47      // Icon for a standard Discard button in a QDialogButtonBox.
+#define QStyle_SP_DialogYesButton                            48      // Icon for a standard Yes button in a QDialogButtonBox.
+#define QStyle_SP_DialogNoButton                             49      // Icon for a standard No button in a QDialogButtonBox.
+#define QStyle_SP_ArrowUp                                    50      // Icon arrow pointing up.
+#define QStyle_SP_ArrowDown                                  51      // Icon arrow pointing down.
+#define QStyle_SP_ArrowLeft                                  52      // Icon arrow pointing left.
+#define QStyle_SP_ArrowRight                                 53      // Icon arrow pointing right.
+#define QStyle_SP_ArrowBack                                  54      // Equivalent to SP_ArrowLeft when the current layout direction is Qt::LeftToRight, otherwise SP_ArrowRight.
+#define QStyle_SP_ArrowForward                               55      // Equivalent to SP_ArrowRight when the current layout direction is Qt::LeftToRight, otherwise SP_ArrowLeft.
+#define QStyle_SP_CommandLink                                57      // Icon used to indicate a Vista style command link glyph.
+#define QStyle_SP_VistaShield                                58      // Icon used to indicate UAC prompts on Windows Vista. This will return a null pixmap or icon on all other platforms.
+#define QStyle_SP_BrowserReload                              59      // Icon indicating that the current page should be reloaded.
+#define QStyle_SP_BrowserStop                                60      // Icon indicating that the page loading should stop.
+#define QStyle_SP_MediaPlay                                  61      // Icon indicating that media should begin playback.
+#define QStyle_SP_MediaStop                                  62      // Icon indicating that media should stop playback.
+#define QStyle_SP_MediaPause                                 63      // Icon indicating that media should pause playback.
+#define QStyle_SP_MediaSkipForward                           64      // Icon indicating that media should skip forward.
+#define QStyle_SP_MediaSkipBackward                          65      // Icon indicating that media should skip backward.
+#define QStyle_SP_MediaSeekForward                           66      // Icon indicating that media should seek forward.
+#define QStyle_SP_MediaSeekBackward                          67      // Icon indicating that media should seek backward.
+#define QStyle_SP_MediaVolume                                68      // Icon indicating a volume control.
+#define QStyle_SP_MediaVolumeMuted                           69      // Icon indicating a muted volume control.
+#define QStyle_SP_CustomBase                                 0xf0000000   //Base value for custom standard pixmaps; custom values must be greater than this value.
+
+
+//enum #define QStyle_StateFlag
+//flags #define QStyle_State
+//This enum describes flags that are used when drawing primitive elements.
+//Note that not all primitives use all of these flags, and that the flags may mean different things to different items.
+#define QStyle_State_None                                    0x00000000   // Indicates that the widget does not have a state.
+#define QStyle_State_Active                                  0x00010000   // Indicates that the widget is active.
+#define QStyle_State_AutoRaise                               0x00001000   // Used to indicate if auto-raise appearance should be usd on a tool button.
+#define QStyle_State_Children                                0x00080000   // Used to indicate if an item view branch has children.
+#define QStyle_State_DownArrow                               0x00000040   // Used to indicate if a down arrow should be visible on the widget.
+#define QStyle_State_Editing                                 0x00400000   // Used to indicate if an editor is opened on the widget.
+#define QStyle_State_Enabled                                 0x00000001   // Used to indicate if the widget is enabled.
+#define QStyle_State_HasEditFocus                            0x01000000   // Used to indicate if the widget currently has edit focus.
+#define QStyle_State_HasFocus                                0x00000100   // Used to indicate if the widget has focus.
+#define QStyle_State_Horizontal                              0x00000080   // Used to indicate if the widget is laid out horizontally, for example. a tool bar.
+#define QStyle_State_KeyboardFocusChange                     0x00800000   // Used to indicate if the focus was changed with the keyboard, e.g., tab, backtab or shortcut.
+#define QStyle_State_MouseOver                               0x00002000   // Used to indicate if the widget is under the mouse.
+#define QStyle_State_NoChange                                0x00000010   // Used to indicate a tri-state checkbox.
+#define QStyle_State_Off                                     0x00000008   // Used to indicate if the widget is not checked.
+#define QStyle_State_On                                      0x00000020   // Used to indicate if the widget is checked.
+#define QStyle_State_Raised                                  0x00000002   // Used to indicate if a button is raised.
+#define QStyle_State_ReadOnly                                0x02000000   // Used to indicate if a widget is read-only.
+#define QStyle_State_Selected                                0x00008000   // Used to indicate if a widget is selected.
+#define QStyle_State_Item                                    0x00100000   // Used by item views to indicate if a horizontal branch should be drawn.
+#define QStyle_State_Open                                    0x00040000   // Used by item views to indicate if the tree branch is open.
+#define QStyle_State_Sibling                                 0x00200000   // Used by item views to indicate if a vertical line needs to be drawn (for siblings).
+#define QStyle_State_Sunken                                  0x00000004   // Used to indicate if the widget is sunken or pressed.
+#define QStyle_State_UpArrow                                 0x00004000   // Used to indicate if an up arrow should be visible on the widget.
+#define QStyle_State_Mini                                    0x08000000   // Used to indicate a mini style Mac widget or button.
+#define QStyle_State_Small                                   0x04000000   // Used to indicate a small style Mac widget or button.
+
+
+//enum #define QStyle_StyleHint
+//This enum describes the available style hints. A style hint is a general look and/or feel hint.
+#define QStyle_SH_EtchDisabledText                               0
+#define QStyle_SH_DitherDisabledText                             1
+#define QStyle_SH_ScrollBar_MiddleClickAbsolutePosition          2
+#define QStyle_SH_ScrollBar_ScrollWhenPointerLeavesControl       3
+#define QStyle_SH_TabBar_SelectMouseType                         4
+#define QStyle_SH_TabBar_Alignment                               5
+#define QStyle_SH_Header_ArrowAlignment                          6
+#define QStyle_SH_Slider_SnapToValue                             7
+#define QStyle_SH_Slider_SloppyKeyEvents                         8
+#define QStyle_SH_ProgressDialog_CenterCancelButton              9
+#define QStyle_SH_ProgressDialog_TextLabelAlignment              10
+#define QStyle_SH_PrintDialog_RightAlignButtons                  11
+#define QStyle_SH_MainWindow_SpaceBelowMenuBar                   12
+#define QStyle_SH_FontDialog_SelectAssociatedText                13
+#define QStyle_SH_Menu_AllowActiveAndDisabled                    14
+#define QStyle_SH_Menu_SpaceActivatesItem                        15
+#define QStyle_SH_Menu_SubMenuPopupDelay                         16
+#define QStyle_SH_ScrollView_FrameOnlyAroundContents             17
+#define QStyle_SH_MenuBar_AltKeyNavigation                       18
+#define QStyle_SH_ComboBox_ListMouseTracking                     19
+#define QStyle_SH_Menu_MouseTracking                             20
+#define QStyle_SH_MenuBar_MouseTracking                          21
+#define QStyle_SH_ItemView_ChangeHighlightOnFocus                22
+#define QStyle_SH_Widget_ShareActivation                         23
+#define QStyle_SH_Workspace_FillSpaceOnMaximize                  24
+#define QStyle_SH_ComboBox_Popup                                 25
+#define QStyle_SH_TitleBar_NoBorder                              26
+#define QStyle_SH_Slider_StopMouseOverSlider                     27
+#define QStyle_SH_ScrollBar_StopMouseOverSlider                  QStyle_SH_Slider_StopMouseOverSlider
+#define QStyle_SH_BlinkCursorWhenTextSelected                    28
+#define QStyle_SH_RichText_FullWidthSelection                    29
+#define QStyle_SH_Menu_Scrollable                                30
+#define QStyle_SH_GroupBox_TextLabelVerticalAlignment            31
+#define QStyle_SH_GroupBox_TextLabelColor                        32
+#define QStyle_SH_Menu_SloppySubMenus                            33
+#define QStyle_SH_Table_GridLineColor                            34
+#define QStyle_SH_LineEdit_PasswordCharacter                     35
+#define QStyle_SH_DialogButtons_DefaultButton                    36
+#define QStyle_SH_ToolBox_SelectedPageTitleBold                  37
+#define QStyle_SH_TabBar_PreferNoArrows                          38
+#define QStyle_SH_ScrollBar_LeftClickAbsolutePosition            39
+#define QStyle_SH_ListViewExpand_SelectMouseType                 40
+#define QStyle_SH_UnderlineShortcut                              41
+#define QStyle_SH_SpinBox_AnimateButton                          42
+#define QStyle_SH_SpinBox_KeyPressAutoRepeatRate                 43
+#define QStyle_SH_SpinBox_ClickAutoRepeatRate                    44
+#define QStyle_SH_Menu_FillScreenWithScroll                      45
+#define QStyle_SH_ToolTipLabel_Opacity                           46
+#define QStyle_SH_DrawMenuBarSeparator                           47
+#define QStyle_SH_TitleBar_ModifyNotification                    48
+#define QStyle_SH_Button_FocusPolicy                             49
+#define QStyle_SH_MessageBox_UseBorderForButtonSpacing           50
+#define QStyle_SH_TitleBar_AutoRaise                             51
+#define QStyle_SH_ToolButton_PopupDelay                          52
+#define QStyle_SH_FocusFrame_Mask                                53
+#define QStyle_SH_RubberBand_Mask                                54
+#define QStyle_SH_WindowFrame_Mask                               55
+#define QStyle_SH_SpinControls_DisableOnBounds                   56
+#define QStyle_SH_Dial_BackgroundRole                            57
+#define QStyle_SH_ComboBox_LayoutDirection                       58
+#define QStyle_SH_ItemView_EllipsisLocation                      59
+#define QStyle_SH_ItemView_ShowDecorationSelected                60
+#define QStyle_SH_ItemView_ActivateItemOnSingleClick             61
+#define QStyle_SH_ScrollBar_ContextMenu                          62
+#define QStyle_SH_ScrollBar_RollBetweenButtons                   63
+#define QStyle_SH_Slider_AbsoluteSetButtons                      64
+#define QStyle_SH_Slider_PageSetButtons                          65
+#define QStyle_SH_Menu_KeyboardSearch                            66
+#define QStyle_SH_TabBar_ElideMode                               67
+#define QStyle_SH_DialogButtonLayout                             68
+#define QStyle_SH_ComboBox_PopupFrameStyle                       69
+#define QStyle_SH_MessageBox_TextInteractionFlags                70
+#define QStyle_SH_DialogButtonBox_ButtonsHaveIcons               71
+#define QStyle_SH_SpellCheckUnderlineStyle                       72
+#define QStyle_SH_MessageBox_CenterButtons                       73
+#define QStyle_SH_Menu_SelectionWrap                             74
+#define QStyle_SH_ItemView_MovementWithoutUpdatingSelection      75
+#define QStyle_SH_ToolTip_Mask                                   76
+#define QStyle_SH_FocusFrame_AboveWidget                         77
+#define QStyle_SH_TextControl_FocusIndicatorTextCharFormat       78
+#define QStyle_SH_WizardStyle                                    79
+#define QStyle_SH_ItemView_ArrowKeysNavigateIntoChildren         80
+#define QStyle_SH_Menu_Mask                                      81
+#define QStyle_SH_Menu_FlashTriggeredItem                        82
+#define QStyle_SH_Menu_FadeOutOnHide                             83
+#define QStyle_SH_SpinBox_ClickAutoRepeatThreshold               84
+#define QStyle_SH_ItemView_PaintAlternatingRowColorsForEmptyArea 85
+#define QStyle_SH_FormLayoutWrapPolicy                           86
+#define QStyle_SH_TabWidget_DefaultTabPosition                   87
+#define QStyle_SH_ToolBar_Movable                                88
+#define QStyle_SH_FormLayoutFieldGrowthPolicy                    89
+#define QStyle_SH_FormLayoutFormAlignment                        90
+#define QStyle_SH_FormLayoutLabelAlignment                       91
+#define QStyle_SH_ItemView_DrawDelegateFrame                     92
+#define QStyle_SH_TabBar_CloseButtonPosition                     93
+#define QStyle_SH_DockWidget_ButtonsHaveFrame                    94
+#define QStyle_SH_ToolButtonStyle                                95
+#define QStyle_SH_RequestSoftwareInputPanel                      96
+#define QStyle_SH_ScrollBar_Transient                            97
+#define QStyle_SH_Menu_SupportsSections                          98
+#define QStyle_SH_CustomBase                                     0xf0000000
+
+
+//enum #define QStyle_SubControl
+//flags #define QStyle_SubControls
+//This enum describes the available sub controls. A subcontrol is a control element within a complex control (ComplexControl).
+#define QStyle_SC_None                                       0x00000000   // Special value that matches no other sub control.
+#define QStyle_SC_ScrollBarAddLine                           0x00000001   // Scroll bar add line (i.e., down/right arrow); see also QScrollBar.
+#define QStyle_SC_ScrollBarSubLine                           0x00000002   // Scroll bar sub line (i.e., up/left arrow).
+#define QStyle_SC_ScrollBarAddPage                           0x00000004   // Scroll bar add page (i.e., page down).
+#define QStyle_SC_ScrollBarSubPage                           0x00000008   // Scroll bar sub page (i.e., page up).
+#define QStyle_SC_ScrollBarFirst                             0x00000010   // Scroll bar first line (i.e., home).
+#define QStyle_SC_ScrollBarLast                              0x00000020   // Scroll bar last line (i.e., end).
+#define QStyle_SC_ScrollBarSlider                            0x00000040   // Scroll bar slider handle.
+#define QStyle_SC_ScrollBarGroove                            0x00000080   // Special sub-control which contains the area in which the slider handle may move.
+#define QStyle_SC_SpinBoxUp                                  0x00000001   // Spin widget up/increase; see also QSpinBox.
+#define QStyle_SC_SpinBoxDown                                0x00000002   // Spin widget down/decrease.
+#define QStyle_SC_SpinBoxFrame                               0x00000004   // Spin widget frame.
+#define QStyle_SC_SpinBoxEditField                           0x00000008   // Spin widget edit field.
+#define QStyle_SC_ComboBoxEditField                          0x00000002   // Combobox edit field; see also QComboBox.
+#define QStyle_SC_ComboBoxArrow                              0x00000004   // Combobox arrow button.
+#define QStyle_SC_ComboBoxFrame                              0x00000001   // Combobox frame.
+#define QStyle_SC_ComboBoxListBoxPopup                       0x00000008   // The reference rectangle for the combobox popup. Used to calculate the position of the popup.
+#define QStyle_SC_SliderGroove                               0x00000001   // Special sub-control which contains the area in which the slider handle may move.
+#define QStyle_SC_SliderHandle                               0x00000002   // Slider handle.
+#define QStyle_SC_SliderTickmarks                            0x00000004   // Slider tickmarks.
+#define QStyle_SC_ToolButton                                 0x00000001   // Tool button (see also QToolButton).
+#define QStyle_SC_ToolButtonMenu                             0x00000002   // Sub-control for opening a popup menu in a tool button.
+#define QStyle_SC_TitleBarSysMenu                            0x00000001   // System menu button (i.e., restore, close, etc.).
+#define QStyle_SC_TitleBarMinButton                          0x00000002   // Minimize button.
+#define QStyle_SC_TitleBarMaxButton                          0x00000004   // Maximize button.
+#define QStyle_SC_TitleBarCloseButton                        0x00000008   // Close button.
+#define QStyle_SC_TitleBarLabel                              0x00000100   // Window title label.
+#define QStyle_SC_TitleBarNormalButton                       0x00000010   // Normal (restore) button.
+#define QStyle_SC_TitleBarShadeButton                        0x00000020   // Shade button.
+#define QStyle_SC_TitleBarUnshadeButton                      0x00000040   // Unshade button.
+#define QStyle_SC_TitleBarContextHelpButton                  0x00000080   // Context Help button.
+#define QStyle_SC_DialHandle                                 0x00000002   // The handle of the dial (i.e. what you use to control the dial).
+#define QStyle_SC_DialGroove                                 0x00000001   // The groove for the dial.
+#define QStyle_SC_DialTickmarks                              0x00000004   // The tickmarks for the dial.
+#define QStyle_SC_GroupBoxFrame                              0x00000008   // The frame of a group box.
+#define QStyle_SC_GroupBoxLabel                              0x00000002   // The title of a group box.
+#define QStyle_SC_GroupBoxCheckBox                           0x00000001   // The optional check box of a group box.
+#define QStyle_SC_GroupBoxContents                           0x00000004   // The group box contents.
+#define QStyle_SC_MdiNormalButton                            0x00000002   // The normal button for a MDI subwindow in the menu bar.
+#define QStyle_SC_MdiMinButton                               0x00000001   // The minimize button for a MDI subwindow in the menu bar.
+#define QStyle_SC_MdiCloseButton                             0x00000004   // The close button for a MDI subwindow in the menu bar.
+#define QStyle_SC_All                                        0xffffffff   // Special value that matches all sub-controls.
+
+
+//enum #define QStyle_SubElement
+//This enum represents a sub-area of a widget. Style implementations use these areas to draw the different parts of a widget.
+#define QStyle_SE_PushButtonContents                         0
+#define QStyle_SE_PushButtonFocusRect                        1
+#define QStyle_SE_CheckBoxIndicator                          2
+#define QStyle_SE_CheckBoxContents                           3
+#define QStyle_SE_CheckBoxFocusRect                          4
+#define QStyle_SE_CheckBoxClickRect                          5
+#define QStyle_SE_RadioButtonIndicator                       6
+#define QStyle_SE_RadioButtonContents                        7
+#define QStyle_SE_RadioButtonFocusRect                       8
+#define QStyle_SE_RadioButtonClickRect                       9
+#define QStyle_SE_ComboBoxFocusRect                          10
+#define QStyle_SE_SliderFocusRect                            11
+#define QStyle_SE_ProgressBarGroove                          12
+#define QStyle_SE_ProgressBarContents                        13
+#define QStyle_SE_ProgressBarLabel                           14
+#define QStyle_SE_ToolBoxTabContents                         15
+#define QStyle_SE_HeaderLabel                                16
+#define QStyle_SE_HeaderArrow                                17
+#define QStyle_SE_TabWidgetTabBar                            18
+#define QStyle_SE_TabWidgetTabPane                           19
+#define QStyle_SE_TabWidgetTabContents                       20
+#define QStyle_SE_TabWidgetLeftCorner                        21
+#define QStyle_SE_TabWidgetRightCorner                       22
+#define QStyle_SE_ViewItemCheckIndicator                     23
+#define QStyle_SE_ItemViewItemCheckIndicator                 QStyle_SE_ViewItemCheckIndicator
+#define QStyle_SE_TabBarTearIndicator                        24
+#define QStyle_SE_TreeViewDisclosureItem                     25
+#define QStyle_SE_LineEditContents                           26
+#define QStyle_SE_FrameContents                              27
+#define QStyle_SE_DockWidgetCloseButton                      28
+#define QStyle_SE_DockWidgetFloatButton                      29
+#define QStyle_SE_DockWidgetTitleBarText                     30
+#define QStyle_SE_DockWidgetIcon                             31
+#define QStyle_SE_CheckBoxLayoutItem                         32
+#define QStyle_SE_ComboBoxLayoutItem                         33
+#define QStyle_SE_DateTimeEditLayoutItem                     34
+#define QStyle_SE_DialogButtonBoxLayoutItem                  35     // ### Qt 6: remove   ????
+#define QStyle_SE_LabelLayoutItem                            36
+#define QStyle_SE_ProgressBarLayoutItem                      37
+#define QStyle_SE_PushButtonLayoutItem                       38
+#define QStyle_SE_RadioButtonLayoutItem                      39
+#define QStyle_SE_SliderLayoutItem                           40
+#define QStyle_SE_SpinBoxLayoutItem                          41
+#define QStyle_SE_ToolButtonLayoutItem                       42
+#define QStyle_SE_FrameLayoutItem                            43
+#define QStyle_SE_GroupBoxLayoutItem                         44
+#define QStyle_SE_TabWidgetLayoutItem                        45
+#define QStyle_SE_ItemViewItemDecoration                     46
+#define QStyle_SE_ItemViewItemText                           47
+#define QStyle_SE_ItemViewItemFocusRect                      48
+#define QStyle_SE_TabBarTabLeftButton                        49
+#define QStyle_SE_TabBarTabRightButton                       50
+#define QStyle_SE_TabBarTabText                              51
+#define QStyle_SE_ShapedFrameContents                        52
+#define QStyle_SE_ToolBarHandle                              53
+#define QStyle_SE_CustomBase                                 0xf0000000
+
 
 #endif
+
+

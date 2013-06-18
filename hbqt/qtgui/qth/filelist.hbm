@@ -14,6 +14,7 @@ HBQSyntaxHighlighter.qth
 HBQTableView.qth
 HBQTextBlockUserData.qth
 HBQValidator.qth
+HBQProxyStyle.qth
 
 QAbstractButton.qth
 QAbstractGraphicsShapeItem.qth
@@ -296,3 +297,5 @@ QSurface.qth
 QWindow.qth
 QScreen.qth
 QSurfaceFormat.qth
+
+QProxyStyle.qth
