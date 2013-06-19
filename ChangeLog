@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-18 17:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r242)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: residual last minute deletion of control structure, after 
+       testing with IF .F., then deleting before committing.
+
+  * hbide/edit.prg
+    + Implemented: 
+        Column-Selection
+          Only Vertical Thin Line
+            Tools Menu - Align At...
+              [ESC]nn == \25
+                Text from Column Selected onwards shifted to 25th position.
+         
+       It is achievable otherwise as; selecting the rows by column and then
+       pressing spaces/backspace until desired column was reached.
+       This is handy to align text to a certain column.
+
 2013-06-18 14:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r241)
   * hbqt/tests/dbfbrowser.prg
   * hbqt/tests/dbfbrowserclass.prg

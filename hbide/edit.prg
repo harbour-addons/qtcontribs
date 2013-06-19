@@ -1365,9 +1365,19 @@ METHOD IdeEdit:stringify()
 
 METHOD IdeEdit:alignAt( cAt )
    LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, a_, nMax, n, c1st, c2nd
+   LOCAL  nCol, nMode := 1
 
    IF ::lReadOnly
       RETURN Self
+   ENDIF
+
+   IF Left( cAt, 1 ) == "\"
+      nMode := 2
+      cAt := SubStr( cAt, 2 )
+      nCol  := Val( cAt )
+      IF nCol <= 0
+         RETURN Self
+      ENDIF
    ENDIF
 
    nMax := 0
@@ -1375,26 +1385,41 @@ METHOD IdeEdit:alignAt( cAt )
    hbide_normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nW := nR - nL
    a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
-   IF nW >= 0
-      FOR i := nT TO nB
-         cLine := ::getLine( i + 1 )
-         IF ( n := At( cAt, SubStr( cLine, nL, nR - nL + 1 ) ) ) > 0
-            nMax := Max( nMax, n )
-         ENDIF
-      NEXT
-   ENDIF
-   IF nMax > 0
-      nMax += nL - 2
-      FOR i := nT TO nB
-         cLine := ::getLine( i + 1 )
-         IF ( n := At( cAt, SubStr( cLine, nL, nR - nL + 1 ) ) ) > 0
-            c1st := SubStr( cLine, 1, nL + n - 2 )
-            c2nd := SubStr( cLine, nL + n - 1 )
-            cLine := PadR( c1st, nMax ) + c2nd
-         ENDIF
-         hbide_qReplaceLine( qCursor, i, cLine )
-      NEXT
-   ENDIF
+
+   SWITCH nMode
+   CASE 1
+      IF nW >= 0
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            IF ( n := At( cAt, SubStr( cLine, nL, nR - nL + 1 ) ) ) > 0
+               nMax := Max( nMax, n )
+            ENDIF
+         NEXT
+      ENDIF
+      IF nMax > 0
+         nMax += nL - 2
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            IF ( n := At( cAt, SubStr( cLine, nL, nR - nL + 1 ) ) ) > 0
+               c1st := SubStr( cLine, 1, nL + n - 2 )
+               c2nd := SubStr( cLine, nL + n - 1 )
+               cLine := PadR( c1st, nMax ) + c2nd
+            ENDIF
+            hbide_qReplaceLine( qCursor, i, cLine )
+         NEXT
+      ENDIF
+      EXIT
+   CASE 2
+      IF nW == 0 .AND. nL != nCol  /* Only when a thin vertical line is visible */
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            c1st  := PadR( SubStr( cLine, 1, nL ), nCol - 1 ) + SubStr( cLine, nL + 1 )
+            hbide_qReplaceLine( qCursor, i, c1st )
+         NEXT
+      ENDIF
+      EXIT
+   ENDSWITCH
+
    hbide_setQCursor( ::qEdit, a_ )
 
    RETURN Self

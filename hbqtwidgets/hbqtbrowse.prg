@@ -775,16 +775,15 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    ENDIF
 
    FOR i := 1 TO len( ::columns )
-         xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
+      xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
 
-         nwVal := oFontMetrics:width( xVal, -1 )
-         nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
+      nwVal := oFontMetrics:width( xVal, -1 )
+      nwHead := oFontMetrics:width( ::columns[ i ]:heading(), -1 )
 
-         ::columns[ i ]:nColWidth := max( nwVal, nwHead ) + 8
+      ::columns[ i ]:nColWidth := max( nwVal, nwHead ) + 8
 
-         ::oHeaderView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
-         ::oFooterView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
-      ENDIF
+      ::oHeaderView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
+      ::oFooterView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
    NEXT
 
    nLeftWidth := 0
