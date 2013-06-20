@@ -69,6 +69,8 @@
 #include "hbqtgui.ch"
 #include "hbide.ch"
 #include "xbp.ch"
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
 
 /*----------------------------------------------------------------------*/
 
@@ -1365,33 +1367,36 @@ METHOD IdeEdit:stringify()
 
 METHOD IdeEdit:alignAt( cAt )
    LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, a_, nMax, n, c1st, c2nd
-   LOCAL  nCol, nMode := 1
+   LOCAL  nCol, nMode, aAt, cREdgt, aReg
 
    IF ::lReadOnly
       RETURN Self
    ENDIF
 
    IF Left( cAt, 1 ) == "\"
-      nMode := 2
       cAt := SubStr( cAt, 2 )
-      nCol  := Val( cAt )
-      IF nCol <= 0
-         RETURN Self
+      IF IsDigit( Left( cAt,1 ) )
+         nMode := 2
+         nCol  := Val( cAt )
+      ELSEIF ! Empty( cAt )
+         nMode := 3
       ENDIF
+   ELSE
+      nMode := 1
    ENDIF
 
    nMax := 0
    aCord := ::aSelectionInfo
    hbide_normalizeRect( aCord, @nT, @nL, @nB, @nR )
-   nW := nR - nL
+   nW := nR - nL + 1
    a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
 
    SWITCH nMode
    CASE 1
-      IF nW >= 0
+      IF nR - nL >= 0
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
-            IF ( n := At( cAt, SubStr( cLine, nL, nR - nL + 1 ) ) ) > 0
+            IF ( n := At( cAt, SubStr( cLine, nL, nW ) ) ) > 0
                nMax := Max( nMax, n )
             ENDIF
          NEXT
@@ -1400,7 +1405,7 @@ METHOD IdeEdit:alignAt( cAt )
          nMax += nL - 2
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
-            IF ( n := At( cAt, SubStr( cLine, nL, nR - nL + 1 ) ) ) > 0
+            IF ( n := At( cAt, SubStr( cLine, nL, nW ) ) ) > 0
                c1st := SubStr( cLine, 1, nL + n - 2 )
                c2nd := SubStr( cLine, nL + n - 1 )
                cLine := PadR( c1st, nMax ) + c2nd
@@ -1410,12 +1415,62 @@ METHOD IdeEdit:alignAt( cAt )
       ENDIF
       EXIT
    CASE 2
-      IF nW == 0 .AND. nL != nCol  /* Only when a thin vertical line is visible */
+      IF nR - nL == 0 .AND. nL != nCol  /* Only when a thin vertical line is visible */
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
             c1st  := PadR( SubStr( cLine, 1, nL ), nCol - 1 ) + SubStr( cLine, nL + 1 )
             hbide_qReplaceLine( qCursor, i, c1st )
          NEXT
+      ENDIF
+      EXIT
+   CASE 3
+      cREdgt := hb_regexComp( cAt )
+      IF ! hb_IsRegEx( cREdgt )
+         Alert( "Not a valid RegEx" )
+         RETURN Self
+      ENDIF
+      aAt := {}
+      IF nR - nL == 0
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            //                exp, string, lMatchCase, lNewLine, nMaxMatch, nMatchWhich, lMatchOnly
+            IF ! Empty( aReg := hb_regExAll( cREdgt, SubStr( cLine, nL + 1 ), .F., .F., 0, 1, .F.  ) )
+               AAdd( aAt, nL + aReg[ 1, 2 ] )
+            ELSE
+               AAdd( aAt, 0 )
+            ENDIF
+         NEXT
+         AEval( aAt, {|e| nMax := Max( nMax, e ) } )
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            c1st  := PadR( SubStr( cLine, 1, nL ), nMax - 1 ) + LTrim( SubStr( cLine, nL + 1 ) )
+            hbide_qReplaceLine( qCursor, i, c1st )
+         NEXT
+      ELSE
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            //                exp, string, lMatchCase, lNewLine, nMaxMatch, nMatchWhich, lMatchOnly
+            IF ! Empty( aReg := hb_regExAll( cREdgt, SubStr( cLine, nL, nW ), .F., .F., 0, 1, .F.  ) )
+               AAdd( aAt, nL + aReg[ 1, 2 ] - 1 )
+            ELSE
+               AAdd( aAt, 0 )
+            ENDIF
+         NEXT
+         AEval( aAt, {|e| nMax := Max( nMax, e ) } )
+         IF nMax > 0
+            n := 0
+            FOR i := nT TO nB
+               n++
+               IF aAt[ n ] > 0
+                  cLine := ::getLine( i + 1 )
+                  c1st  := SubStr( cLine, 1, aAt[ n ] - 1 )
+                  c2nd  := SubStr( cLine, aAt[ n ] )
+                  cLine := PadR( c1st, nMax - 1 ) + c2nd
+                  hbide_qReplaceLine( qCursor, i, cLine )
+               ENDIF
+            NEXT
+         ENDIF
+
       ENDIF
       EXIT
    ENDSWITCH

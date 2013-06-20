@@ -21,7 +21,7 @@ RETURN B2QDBFBrowser():new( ... )
 
 
 CREATE CLASS B2QDBFBrowser INHERIT HB_QTableView
-   METHOD init()
+   METHOD init( ... )
    METHOD attach()                  /* Activate the browser and attach to current active area */
    METHOD detach()                  /* Deactivate the browser */
 

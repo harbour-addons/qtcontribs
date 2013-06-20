@@ -16,6 +16,25 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-19 17:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r243)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Enabled: ocde to fire :pressHeaderBlock() for frozen columns.
+       Not tested. Please respond if behavior does not confirm to 
+       standards.
+
+  * hbqt/tests/dbfbrowserclass.prg
+    ! Changed: to be compilable with -w3.
+
+  * hbide/edit.prg
+    + Implemented: 
+        Column-Selection
+          Only Vertical Thin Line
+            Tools Menu - Align At...
+              [ESC]cRegEx == \[0-9]|\?
+                Text from column-selected text aligned at first occurance 
+                of a digit character or question-mark character.
+                Very handy to align header constants pulled from Qt docs.
+         
 2013-06-18 17:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r242)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: residual last minute deletion of control structure, after 
