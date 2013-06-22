@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-22 00:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r244)
+  * hbide/editor.prg
+    % Minor.
+
+  * hbqt/qtgui/hbqt_hbqproxystyle.cpp
+    % Minor.
+
+  * hbqtwidgets/tests/hbmk.hbm
+    + Added: -mt switch.
+
+  * hbqtwidgets/dashboard.prg
+    + Implemented: Threaded data-collection protocol, if app is compiled 
+       with -mt switch. This greatly enhances appln load-time and keep 
+       the GUI always responsive. Objects are created as soon as appn
+       starts, but data is only populated when data collection routine 
+       is finished at the background.
+
+  * hbqtwidgets/tests/dashbrd.prg
+    % Slight optimization, better control of icons.
+
 2013-06-19 17:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r243)
   * hbqtwidgets/hbqtbrowse.prg
     + Enabled: ocde to fire :pressHeaderBlock() for frozen columns.

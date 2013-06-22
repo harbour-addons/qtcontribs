@@ -965,7 +965,7 @@ METHOD IdeEditsManager:alignAt()
    LOCAL oEdit, cWord
    IF !empty( oEdit := ::getEditObjectCurrent() )
       IF oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__
-         IF ! Empty( cWord := hbide_fetchAString( ::oDlg:oWidget, "", "Align At ?", "Selected-Text Alignment Proto" ) )
+         IF Len( cWord := hbide_fetchAString( ::oDlg:oWidget, "", "Align At ?", "Selected-Text Alignment Proto" ) ) > 0
             oEdit:alignAt( cWord )
          ENDIF
       ENDIF

@@ -68,6 +68,7 @@
 #include "hbgtinfo.ch"
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
+#include "hbtrace.ch"
 
 
 #define HBQTTOOLBAR_BUTTON_DEFAULT                0
@@ -102,6 +103,14 @@
 #define STATUS_NOOFPANELS                         2
 #define STATUS_NOOFWINDOWS                        3
 #define STATUS_ACTIVEWINDOW                       5
+
+STATIC hMutex
+STATIC hData   := {=>}
+
+
+INIT PROCEDURE __dashboardCreatMutex()
+   hMutex := hb_mutexCreate()
+   RETURN
 
 
 CLASS HbQtDashboard
@@ -202,7 +211,7 @@ METHOD HbQtDashboard:create( oParent )
 
    WITH OBJECT ::oStackedWidget := QStackedWidget()
       :connect( "currentChanged(int)", {|i|
-                                             IF ! Empty( ::hMDIs )
+                                             IF i >= 0 .AND. ! Empty( ::hMDIs ) .AND. Len( ::hMDIs ) <= i + 1
                                                 ::oActivePanel := hb_HValueAt( ::hMDIs, i + 1 )
                                                 ::dispStatus()
                                              ENDIF
@@ -1189,8 +1198,8 @@ CLASS HbQtDashboardObject
    METHOD new( oParent, aObject )
    METHOD create()
    METHOD destroy()
-   METHOD update( xData, lDisp )
-   METHOD refresh( xData )                        INLINE ::update( xData, .T. )
+   METHOD update( xData )
+   METHOD refresh( xData )                        INLINE ::update( xData )
 
    METHOD buildSubWindow()
    METHOD buildBrowser()
@@ -1203,11 +1212,22 @@ CLASS HbQtDashboardObject
    DATA   nHotPos                                 INIT   0
    DATA   cDisp                                   INIT   ""
    DATA   nLastWidth                              INIT   0
+   DATA   nCharWidth
+   DATA   oTimerFetch, oTimerPull, oTimerSpeed
+
+   DATA   nID
+   ACCESS id                                      INLINE ::nID
+   ASSIGN id( nID )                               INLINE ::nID := nID
+
+   METHOD fetchData()
+   METHOD pullData()
 
    ENDCLASS
 
 
 METHOD HbQtDashboardObject:new( oParent, aObject )
+
+   ::id          := __getAnObjectID()
 
    ::oParent     := oParent
 
@@ -1219,52 +1239,81 @@ METHOD HbQtDashboardObject:new( oParent, aObject )
    ::cAttrbs     := aObject[ OBJ_CATTRBS  ]
    ::aPosAndSize := iif( Len( aObject ) >= OBJ_POSANDSIZE, aObject[ OBJ_POSANDSIZE ], {} )
 
+   ::fetchData()
+
    RETURN Self
 
 
 METHOD HbQtDashboardObject:create()
 
-   IF HB_ISBLOCK( ::dataBlock() )
-      ::xData := Eval( ::dataBlock() )
-   ENDIF
-   IF Empty( ::data() )
-      RETURN NIL
-   ENDIF
-
-   SWITCH ::type()
-   CASE "Banner"  ;  ::buildBanner()  ;  EXIT
-   CASE "Figure"  ;  ::buildFigure()  ;  EXIT
-   CASE "Graph"   ;  ::buildGraph()   ;  EXIT
-   CASE "Browser" ;  ::buildBrowser() ;  EXIT
-   CASE "Picture" ;  ::buildPicture() ;  EXIT
-   ENDSWITCH
-
    ::buildSubWindow()
 
-   IF ::type() != "Browser"  /* Has already been displayed at creation time */
-      ::update( ::xData, .F. )
+   RETURN Self
+
+
+METHOD HbQtDashboardObject:fetchData()
+
+   IF HB_ISBLOCK( ::dataBlock() )
+      IF hb_mtvm()
+         hb_threadStart( {|| __fetchObjectData( ::dataBlock(), ::nID ) } )
+      ELSE
+         __fetchObjectData( ::dataBlock(), ::nID )
+      ENDIF
    ENDIF
 
    RETURN Self
 
 
-METHOD HbQtDashboardObject:update( xData, lDisp )
-   LOCAL aData
+METHOD HbQtDashboardObject:pullData()
+   LOCAL xData
+
+   IF ::nID $ hData
+      hb_mutexLock( hMutex )
+         xData := hData[ ::nID ]
+      hb_mutexUnLock( hMutex )
+   ENDIF
+
+   IF xData != NIL
+      IF HB_ISARRAY( xData )
+         ::xData := AClone( xData )
+      ELSE
+         ::xData := xData
+      ENDIF
+
+      IF ! HB_ISOBJECT( ::oWidget )
+         SWITCH ::type()
+         CASE "Banner"  ;  ::buildBanner()  ;  EXIT
+         CASE "Figure"  ;  ::buildFigure()  ;  EXIT
+         CASE "Graph"   ;  ::buildGraph()   ;  EXIT
+         CASE "Browser" ;  ::buildBrowser() ;  EXIT
+         CASE "Picture" ;  ::buildPicture() ;  EXIT
+         ENDSWITCH
+
+         ::oSubWindow:setWidget( ::oWidget )
+      ENDIF
+
+      ::update( ::xData )
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtDashboardObject:update( xData )
+   LOCAL aData, xTmp
 
    SWITCH ::type()
 
+   CASE "Figure"
+      ::oWidget:display( xData )
+      EXIT
+
    CASE "Banner"
       IF xData != NIL
-         IF xData != ::xData
-            ::nHotPos := 0
-            ::xData := xData
-         ENDIF
-         IF ! lDisp
-            RETURN NIL
-         ENDIF
+         ::cDisp := ::xData + Space( ::oWidget:width() / ::nCharWidth - 1 )
+         RETURN NIL
       ENDIF
       IF ::nLastWidth != ::oWidget:width()
-         ::cDisp := ::xData + Space( ::oWidget:width() / ::oWidget:fontMetrics():averageCharWidth() - 1 )
+         ::cDisp := ::xData + Space( ::oWidget:width() / ::nCharWidth - 1 )
          ::nLastWidth := ::oWidget:width()
       ENDIF
       ::nHotPos++
@@ -1274,15 +1323,25 @@ METHOD HbQtDashboardObject:update( xData, lDisp )
       ::oWidget:setText( Left( ::cDisp, ::nHotPos ) )
       EXIT
 
-   CASE "Figure"
-      ::oWidget:display( xData )
-      EXIT
-
    CASE "Picture"
-      IF HB_ISOBJECT( xData )
-         ::oWidget:setPixmap( xData )
+      IF xData != NIL
+         RETURN NIL
+      ENDIF
+      IF HB_ISARRAY( ::xData )
+         ::nHotPos++
+         IF ::nHotPos > Len( ::xData )
+            ::nHotPos := 1
+         ENDIF
+         IF ::nHotPos <= Len( ::xData )
+            xTmp := ::xData[ ::nHotPos ]
+         ENDIF
       ELSE
-         ::oWidget:setPixmap( QPixmap( xData ) )
+         xTmp := ::xData
+      ENDIF
+      IF __objGetClsName( xTmp ) == "QPIXMAP"
+         ::oWidget:setPixmap( xTmp )
+      ELSE
+         ::oWidget:setPixmap( QPixmap( xTmp ) )
       ENDIF
       EXIT
 
@@ -1304,7 +1363,6 @@ METHOD HbQtDashboardObject:update( xData, lDisp )
       EXIT
 
    ENDSWITCH
-
    RETURN NIL
 
 
@@ -1320,36 +1378,7 @@ METHOD HbQtDashboardObject:destroy()
    RETURN NIL
 
 
-METHOD HbQtDashboardObject:collectAttributes()
-   LOCAL s
-   LOCAL cAttrbs := "{'"
-   LOCAL oWgt := ::oHbQtWidget
-
-   SWITCH ::type()
-   CASE "Graph"
-      cAttrbs += oWgt:title() + "','"
-      cAttrbs += iif( oWgt:Type() == HBQT_CHART_PIE, "typePie"    , "typeBar"   ) + ","
-      cAttrbs += iif( oWgt:isTitleEnabled()        , "showTitle"  , "noTitle"   ) + ","
-      cAttrbs += iif( oWgt:isToolbarEnabled()      , "showToolbar", "noToolbar" ) + ","
-      cAttrbs += iif( oWgt:isLegendEnabled()       , "showLegend" , "noLegend"  ) + ","
-      cAttrbs += iif( oWgt:isShadowsEnabled()      , "showShadows", "noShadows" ) + ","
-      cAttrbs += iif( oWgt:isLabelsEnabled()       , "showLabels" , "noLabels"  ) + ","
-      cAttrbs += iif( oWgt:isValuesEnabled()       , "showValues" , "noValues"  ) + ","
-      cAttrbs += iif( oWgt:isValuesOnYEnabled()    , "showYValues", "noYValues" ) + ","
-      cAttrbs += "'}"
-
-      s := SubStr( ::cAttrbs, 1, RAt( "~", ::cAttrbs ) - 1 )
-      s := SubStr( s, 1, RAt( "~", s ) )
-      cAttrbs := s + cAttrbs + "~"
-      ::cAttrbs := cAttrbs
-      EXIT
-   ENDSWITCH
-
-   RETURN Self
-
-
 METHOD HbQtDashboardObject:buildSubWindow()
-   LOCAL oTimer
 
    WITH OBJECT ::oSubWindow := QMdiSubWindow( ::oParent:widget() )
       :setObjectName( ::title() )
@@ -1364,11 +1393,9 @@ METHOD HbQtDashboardObject:buildSubWindow()
       CASE "Picture"; :setWindowIcon( QIcon( __hbqtImage( "images"  ) ) ); EXIT
       ENDSWITCH
 
-      :setWidget( ::oWidget )
-
       IF Empty( ::aPosAndSize )
          SWITCH ::type()
-         CASE "Banner" ; :resize( ::oParent:widget():viewport():width(), 80 ); EXIT
+         CASE "Banner" ; :setMaximumWidth( ::oParent:widget():viewport():width() ) ; :resize( ::oParent:widget():viewport():width(), 80 ); EXIT
          CASE "Figure" ; :resize( 400, 100 ); EXIT
          CASE "Graph"  ; :resize( 400, 200 ); EXIT
          CASE "Browser"; :resize( 400, 300 ); EXIT
@@ -1381,12 +1408,18 @@ METHOD HbQtDashboardObject:buildSubWindow()
    ENDWITH
 
    IF ::nDuration > 0
-      WITH OBJECT oTimer := QTimer( ::oSubWindow )
+      WITH OBJECT ::oTimerFetch := QTimer( ::oSubWindow )
          :setInterval( ::nDuration * 1000 )
-         :connect( "timeout()", {|| ::update( Eval( ::dataBlock() ), .F. ) } )
+         :connect( "timeout()", {|| ::fetchData(), .F. } )
       ENDWITH
-      oTimer:start()
+      ::oTimerFetch:start()
    ENDIF
+
+   WITH OBJECT ::oTimerPull := QTimer( ::oSubWindow )
+      :setInterval( 1000 )
+      :connect( "timeout()", {|| ::pullData(), .F. } )
+   ENDWITH
+   ::oTimerPull:start()
 
    ::oSubWindow:show()
 
@@ -1399,6 +1432,15 @@ METHOD HbQtDashboardObject:buildPicture()
       :setAlignment( Qt_AlignVCenter + Qt_AlignHCenter )
       :connect( QEvent_Resize, {|| ::oWidget:setPixmap( QPixmap() ) } )
    ENDWITH
+   WITH OBJECT ::oTimerSpeed := QTimer( ::oWidget )
+      IF HB_ISARRAY( ::attributes() ) .AND. Len( ::attributes() ) >= 1 .AND. HB_ISNUMERIC( ::attributes()[ 1 ] )
+         :setInterval( ::attributes()[ 1 ] )
+      ELSE
+         :setInterval( 5000 )
+      ENDIF
+      :connect( "timeout()", {|| ::update() } )
+   ENDWITH
+   ::oTimerSpeed:start()
 
    RETURN Self
 
@@ -1463,7 +1505,7 @@ METHOD HbQtDashboardObject:buildFigure()
 
 
 METHOD HbQtDashboardObject:buildBanner()
-   LOCAL oFont, oTimer
+   LOCAL oFont
    LOCAL aAttrbs := ::attributes()
 
    ASize( aAttrbs, 3 )
@@ -1483,13 +1525,16 @@ METHOD HbQtDashboardObject:buildBanner()
       ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( aAttrbs[ 1 ] ) )
    ENDIF
 
+   ::nCharWidth := ::oWidget:fontMetrics():averageCharWidth()
    ::nHotPos := 1
-   WITH OBJECT oTimer := QTimer( ::oWidget )
+   WITH OBJECT ::oTimerSpeed := QTimer( ::oWidget )
       :setInterval( aAttrbs[ 2 ] )
       :connect( "timeout()", {|| ::update() } )
    ENDWITH
-   oTimer:start()
-   ::oWidget:connect( QEvent_Resize, {|| ::oWidget:setText( "" ), .T. } )
+   ::oTimerSpeed:start()
+
+   ::oWidget:connect( QEvent_Resize, {|| ::oTimerSpeed:stop(), ::oWidget:setText( "" ), ::oTimerSpeed:start(), .T. } )
+   ::oWidget:connect( QEvent_Move  , {|| ::oTimerSpeed:stop(), ::oWidget:setText( "" ), ::oTimerSpeed:start(), .T. } )
 
    RETURN Self
 
@@ -1535,8 +1580,50 @@ METHOD HbQtDashboardObject:buildBrowser()
    RETURN Self
 
 
+METHOD HbQtDashboardObject:collectAttributes()
+   LOCAL s
+   LOCAL cAttrbs := "{'"
+   LOCAL oWgt := ::oHbQtWidget
+
+   SWITCH ::type()
+   CASE "Graph"
+      cAttrbs += oWgt:title() + "','"
+      cAttrbs += iif( oWgt:Type() == HBQT_CHART_PIE, "typePie"    , "typeBar"   ) + ","
+      cAttrbs += iif( oWgt:isTitleEnabled()        , "showTitle"  , "noTitle"   ) + ","
+      cAttrbs += iif( oWgt:isToolbarEnabled()      , "showToolbar", "noToolbar" ) + ","
+      cAttrbs += iif( oWgt:isLegendEnabled()       , "showLegend" , "noLegend"  ) + ","
+      cAttrbs += iif( oWgt:isShadowsEnabled()      , "showShadows", "noShadows" ) + ","
+      cAttrbs += iif( oWgt:isLabelsEnabled()       , "showLabels" , "noLabels"  ) + ","
+      cAttrbs += iif( oWgt:isValuesEnabled()       , "showValues" , "noValues"  ) + ","
+      cAttrbs += iif( oWgt:isValuesOnYEnabled()    , "showYValues", "noYValues" ) + ","
+      cAttrbs += "'}"
+
+      s := SubStr( ::cAttrbs, 1, RAt( "~", ::cAttrbs ) - 1 )
+      s := SubStr( s, 1, RAt( "~", s ) )
+      cAttrbs := s + cAttrbs + "~"
+      ::cAttrbs := cAttrbs
+      EXIT
+   ENDSWITCH
+
+   RETURN Self
+
+
 STATIC FUNCTION __getColumnNumber( nNumber )
    RETURN nNumber
 
 
+STATIC FUNCTION __getAnObjectID()
+   STATIC nId := 100000
+   hb_mutexLock( hMutex )
+   nID++
+   hb_mutexUnlock( hMutex )
+   RETURN nID
+
+
+STATIC FUNCTION __fetchObjectData( bBlock, nID )
+   LOCAL xData := Eval( bBlock )
+   hb_mutexLock( hMutex )
+      hData[ nID ] := iif( HB_ISARRAY( xData ), AClone( xData ), xData )
+   hb_mutexUnLock( hMutex )
+   RETURN xData
 

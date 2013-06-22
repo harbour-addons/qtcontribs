@@ -244,9 +244,9 @@ int HBQProxyStyle::styleHint( StyleHint hint, const QStyleOption * option, const
 
 int HBQProxyStyle::pixelMetric( PixelMetric metric, const QStyleOption * option, const QWidget * widget ) const
 {
-   if( pixelMetrics.contains( metric ) )
+   if( this->pixelMetrics.contains( metric ) )
    {
-      return pixelMetrics[ metric ];
+      return this->pixelMetrics[ metric ];
    }
    return QProxyStyle::pixelMetric( metric, option, widget );
 }
@@ -266,9 +266,9 @@ void HBQProxyStyle::hb_setDrawBlock( PHB_ITEM block )
 int HBQProxyStyle::hb_setPixelMetric( QStyle::PixelMetric metric, int pixels )
 {
    int value = -1;
-   if( pixelMetrics.contains( metric ) )
+   if( this->pixelMetrics.contains( metric ) )
    {
-      value = pixelMetrics[ metric ];
+      value = this->pixelMetrics[ metric ];
    }
    pixelMetrics[ metric ] = pixels;
 

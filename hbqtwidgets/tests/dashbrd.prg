@@ -149,22 +149,15 @@ STATIC FUNCTION manageObjects( ... )
 
 
 FUNCTION ServehbQtIcons()
-   LOCAL aDir
-   LOCAL cPath := hb_DirBase() + ".." + hb_ps() + "resources" + hb_ps()
+   LOCAL aDir, cPath
 
    STATIC aUrls := {}
-   STATIC nIndex := 0
 
    IF Empty( aUrls )
+      cPath := hb_DirBase() + ".." + hb_ps() + "resources" + hb_ps()
       aDir := Directory( cPath + "*.png" )
       AEval( aDir, {|e_| AAdd( aUrls, cPath + e_[ 1 ] ) } )
-   ENDIF
-   nIndex++
-   IF nIndex > Len( aUrls )
-      nIndex := 1
-   ENDIF
-   IF nIndex <= Len( aUrls )
-      RETURN aUrls[ nIndex ]
+      RETURN aUrls
    ENDIF
 
    RETURN NIL
