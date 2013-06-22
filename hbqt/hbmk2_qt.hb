@@ -78,7 +78,7 @@ FUNCTION hbmk_plugin_qt( hbmk )
       ENDIF
 
 
-      IF hbmk[ "lREBUILD" ]
+      IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )
          cTmp1 := MemoRead( "ChangeLog" )
          IF ( cTmp := At( " * $Id: ChangeLog ", cTmp1 ) ) > 0
             cTmp1 := SubStr( cTmp1, cTmp + Len( " * $Id: ChangeLog " ) )

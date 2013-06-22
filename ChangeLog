@@ -16,6 +16,21 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-22 01:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r245)
+  * hbqt/hbmk2_qt.hb
+    ! Fixed: population of version information based on env vriable instead 
+       of detecting REBUILD logic from hbmk2 variables, as hbmk2 do not 
+       pass all command line switches to plugins, and Viktor has not 
+       responded to my query on the devel-list.
+
+       When rebuilding qtcontribs, 
+         set QTCONTRIBS_REBUILD=yes 
+       prior to the build process. This you may need to do only 
+       once per version of Qt. 
+
+  * hbqt/qtgui/hbqt_version.ch
+    ! Defaulted to Qt 4.x.
+
 2013-06-22 00:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r244)
   * hbide/editor.prg
     % Minor.
