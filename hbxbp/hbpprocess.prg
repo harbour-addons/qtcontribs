@@ -203,7 +203,8 @@ METHOD HbpProcess:start( cShellCmd )
    ::cShellCmd := cShellCmd
 
    ::qProcess := QProcess()
-   ::qProcess:setReadChannel( 1 )
+   ::qProcess:setProcessChannelMode( 1 )
+   ::qProcess:setReadChannel( 0 )
 
    #if 0
       ::qProcess:connect( "readyRead()"              , {|i| ::read( CHN_REA, i ) } )

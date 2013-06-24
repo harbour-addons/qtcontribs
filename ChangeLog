@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-24 13:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r246)
+  * hbxbp/hbpprocess.prg
+    % Changed: process channel mode to merge process's stdour and stderr 
+       output to stdout. this should fix the reported missing (ocassionally) 
+       output dump in Output Console of HbIDE.
+
 2013-06-22 01:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r245)
   * hbqt/hbmk2_qt.hb
     ! Fixed: population of version information based on env vriable instead 
