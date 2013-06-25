@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-25 14:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r247)
+  * hbide/misc.prg
+    ! Fixed: to handle double-quoted lines properly. Pointed out by Maurizio.
+
 2013-06-24 13:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r246)
   * hbxbp/hbpprocess.prg
     % Changed: process channel mode to merge process's stdour and stderr 
