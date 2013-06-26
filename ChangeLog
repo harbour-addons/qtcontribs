@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-25 23:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r248)
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+    ! Fixed: handelling of hbmk2 parsed source files begining with "-" or 
+       "@" inside <Project Tree>.
+
 2013-06-25 14:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r247)
   * hbide/misc.prg
     ! Fixed: to handle double-quoted lines properly. Pointed out by Maurizio.

@@ -1447,8 +1447,12 @@ FUNCTION hbide_parseHbpFilter( s, cFilt, cPath )
       IF ( n1 := at( "}", s ) ) > 0
          cFilt := substr( s, n + 1, n1 - n + 1 )
          cPath := alltrim( substr( s, n1 + 1 ) )
-         RETURN .t.
+         RETURN .T.
       ENDIF
+   ELSEIF ( n := At( "@", s ) ) > 0
+      cFilt := "@"
+      cPath := SubStr( s, 1, n-1 ) + SubStr( s, n+1 )
+      RETURN .T.
    ENDIF
 
    RETURN .f.

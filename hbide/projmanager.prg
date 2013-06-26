@@ -95,7 +95,8 @@ METHOD IdeSource:new( cSource )
    hbide_parseHbpFilter( cSource, @cFilt, @cPathFile )
    hb_fNameSplit( cPathFile, @cPath, @cFile, @cExt )
 
-   ::original   := cSource
+   //::original   := cSource
+   ::original   := cPathFile
    ::normalized := hbide_pathNormalized( cSource, .t. )
    ::filter     := cFilt
    ::path       := hbide_pathNormalized( cPath, .t. )
@@ -181,12 +182,13 @@ METHOD IdeProject:new( oIDE, aProps )
       ::cPathHbMk2 := oIde:oINI:getHbmk2File()
 
       FOR EACH cSource IN ::sources
-         cSource := hbide_syncProjPath( ::projPath, cSource )
-
-         oSource := IdeSource():new( cSource )
-         oSource:projPath := ::projPath
-         ::hSources[ oSource:normalized ] := oSource
-         ::hPaths[ oSource:path ] := NIL
+         IF Left( cSource, 1 ) != "-"    /* A glich in .hbp parsing by hbmk2 which considers -cflags=.. as a source */
+            cSource := hbide_syncProjPath( ::projPath, cSource )
+            oSource := IdeSource():new( cSource )
+            oSource:projPath := ::projPath
+            ::hSources[ oSource:normalized ] := oSource
+            ::hPaths[ oSource:path ] := NIL
+         ENDIF
       NEXT
    ENDIF
 
