@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-25 23:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r249)
+  * hbide/projmanager.prg
+    ! Fixed: one more ocuurance of considering a build specific file as 
+       candidate for <Project Tree>, e.g., $hb_pkg_install.hbm.
+
 2013-06-25 23:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r248)
   * hbide/misc.prg
   * hbide/projmanager.prg

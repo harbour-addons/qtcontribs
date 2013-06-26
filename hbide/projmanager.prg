@@ -182,7 +182,7 @@ METHOD IdeProject:new( oIDE, aProps )
       ::cPathHbMk2 := oIde:oINI:getHbmk2File()
 
       FOR EACH cSource IN ::sources
-         IF Left( cSource, 1 ) != "-"    /* A glich in .hbp parsing by hbmk2 which considers -cflags=.. as a source */
+         IF ! ( Left( cSource, 1 ) $ "-$" )
             cSource := hbide_syncProjPath( ::projPath, cSource )
             oSource := IdeSource():new( cSource )
             oSource:projPath := ::projPath
