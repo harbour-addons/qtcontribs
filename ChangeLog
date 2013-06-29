@@ -16,6 +16,21 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-06-28 17:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r250)
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+  * hbqt/qtwebkit/hbqtwebkit.hbm
+  * hbqt/qtwebkit/qth/QWebFrame.qth
+  * hbqt/qtwebkit/qth/QWebHitTestResult.qth
+  * hbqt/qtwebkit/qth/QWebPage.qth
+  * hbqt/qtwebkit/qth/QWebView.qth
+    + Reworked: to be compilable with Qt 5.x also.
+
+  + hbqt/hbqtwidgets.hbc
+    + Added: .hbc to be recognized by hbmk2 for out of tree projects.
+       Now this is enough to add a line in {project}.hbp as 
+        hbqtwidgets.hbc
+       This may solve many support questions on the list.
+
 2013-06-25 23:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r249)
   * hbide/projmanager.prg
     ! Fixed: one more ocuurance of considering a build specific file as 

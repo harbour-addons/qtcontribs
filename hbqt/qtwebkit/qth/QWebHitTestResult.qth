@@ -22,8 +22,11 @@ folder   = qtwebkit
 <CODE>
 #include "hbqtgui.h"
 
-#include <QtWebKit/QWebHitTestResult>
-
+#if QT_VERSION >= 0x050000
+#   include <QtWebKitWidgets/QWebHitTestResult>
+#else
+#   include <QtWebKit/QWebHitTestResult>
+#endif
 
 /*
  * QWebHitTestResult ()
@@ -37,9 +40,9 @@ HB_FUNC( QT_QWEBHITTESTRESULT )
       __HB_RETPTRGC__( new QWebHitTestResult( *hbqt_par_QWebHitTestResult( 1 ) ) );
    }
    else
-   {   
+   {
       __HB_RETPTRGC__( new QWebHitTestResult() );
-   }   
+   }
 }
 </CODE>
 

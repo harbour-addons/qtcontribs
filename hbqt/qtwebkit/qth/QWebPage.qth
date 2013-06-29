@@ -20,7 +20,11 @@ folder   = qtwebkit
 <CODE>
 #include "hbqtgui.h"
 
-#include <QtWebKit/QWebPage>
+#if QT_VERSION >= 0x050000
+#   include <QtWebKitWidgets/QWebPage>
+#else
+#   include <QtWebKit/QWebPage>
+#endif
 #include <QtCore/QVariant>
 
 
@@ -33,11 +37,11 @@ HB_FUNC( QT_QWEBPAGE )
    if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
    {
       __HB_RETPTRGC__( new QWebPage( hbqt_par_QObject( 1 ) ) );
-   }   
+   }
    else
    {
       __HB_RETPTRGC__( new QWebPage() );
-   }   
+   }
 }
 </CODE>
 

@@ -21,8 +21,11 @@ folder   = qtwebkit
 <CODE>
 #include "hbqtgui.h"
 
-#include <QtWebKit/QWebView>
-
+#if QT_VERSION >= 0x050000
+#   include <QtWebKitWidgets/QWebView>
+#else
+#   include <QtWebKit/QWebView>
+#endif
 
 /*
  * QWebView ( QWidget * parent = 0 )
@@ -33,11 +36,11 @@ HB_FUNC( QT_QWEBVIEW )
    if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWIDGET" ) )
    {
       __HB_RETPTRGC__( new QWebView( hbqt_par_QWidget( 1 ) ) );
-   }   
+   }
    else
    {
       __HB_RETPTRGC__( new QWebView() );
-   }   
+   }
 }
 </CODE>
 

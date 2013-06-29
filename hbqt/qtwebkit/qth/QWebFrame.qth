@@ -23,7 +23,11 @@ folder   = qtwebkit
 <CODE>
 #include "hbqtgui.h"
 
-#include <QtWebKit/QWebFrame>
+#if QT_VERSION >= 0x050000
+#   include <QtWebKitWidgets/QWebFrame>
+#else
+#   include <QtWebKit/QWebFrame>
+#endif
 #include <QtWebKit/QWebSecurityOrigin>
 
 /*
@@ -40,7 +44,7 @@ HB_FUNC( QT_QWEBFRAME )
 
 <PROTOS>
 void addToJavaScriptWindowObject ( const QString & name, QObject * object )
-void addToJavaScriptWindowObject ( const QString & name, QObject * object, QScriptEngine::ValueOwnership own )
+//void addToJavaScriptWindowObject ( const QString & name, QObject * object, QScriptEngine::ValueOwnership own )
 QList<QWebFrame *> childFrames () const
 QSize contentsSize () const
 QString frameName () const
@@ -55,7 +59,7 @@ QWebFrame * parentFrame () const
 QPoint pos () const
 void render ( QPainter * painter, const QRegion & clip )
 void render ( QPainter * painter )
-QString renderTreeDump () const
+QString renderTreeDump () const                                         [*V=-0x050000*]
 void scroll ( int dx, int dy )
 int scrollBarMaximum ( Qt::Orientation orientation ) const
 int scrollBarMinimum ( Qt::Orientation orientation ) const
