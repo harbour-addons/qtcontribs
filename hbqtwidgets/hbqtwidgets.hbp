@@ -17,6 +17,8 @@ hbqt.hbc
 -instfile=inc:hbqtstd.ch
 -instfile=inc:hbqtwidgets.hbx
 
+hbqtwidgets.hbx
+
 getsys.prg
 getlist.prg
 

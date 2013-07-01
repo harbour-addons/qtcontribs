@@ -256,4 +256,15 @@
          HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}>, <.nofous.>, <aAttrbs> )
 
 
+   /* Dashboard Objects - Attributes Array Elements per Object Type */
+   #define DBRD_ATTRB_TEXT_FONTNAME                  1
+   #define DBRD_ATTRB_TEXT_FONTSIZE                  2
+   #define DBRD_ATTRB_TEXT_COLORS                    3
+   #define DBRD_ATTRB_TEXT_NOWRAP                    4
+   #define DBRD_ATTRB_TEXT_KEEPAPPENDING             5
+   #define DBRD_ATTRB_TEXT_CLEARAFTERMS              6
+
+   #define DBRD_ATTRB_TEXT_NOVRBLS                   6
+
+
 #endif

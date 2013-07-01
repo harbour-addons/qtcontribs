@@ -148,5 +148,6 @@
     <file>resources/layout_content.png</file>
     <file>resources/banner.png</file>
     <file>resources/images.png</file>
+    <file>resources/text-file.png</file>
   </qresource>
 </RCC>

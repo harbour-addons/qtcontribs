@@ -16,6 +16,42 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-07-01 00:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r251)
+  + hbqtwidgets/resources/text-file.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: another image.
+
+  * hbqtwidgets/alert.prg
+    + Added: <xIcon> in HbQtBulkGet( ..., <xIcon> ).
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added; DBRD_ATTRB_TEXT_* constants.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: hbqtwidgets.hbx
+
+  * hbqtwidgets/dashboard.prg
+    + Implemented: A QTextEdit based <Text> object.
+      ATTRIBUTES:
+        { cFontName, nFontHeight, cnColor, lNoWrap, lKeepAppending, nMSecsToClearBuffer }
+
+          cFontName           => "Courier New"
+          nFontHeight         => 18
+          cnColor             => "N/W+" OR  {{12,121,200},{212,24,157}}
+          lKeepAppending      => .F. => .T. if new text keeps on appended
+          nMSecsToClearBuffer => NIL => MilliSeconds if Buffer has to be cleared
+
+    ; NOTE: this object has proved to be the most valuable one in my applications
+            and has been much appreciated by my clients. There are many use cases
+            this can be applied for, for example, price-checker feature. On a 
+            separate system with 29 inches monitor, he keeps open the dash-board 
+            only. He uses <Banner> object to display in-time offers. At the lower 
+            portion he displays a <Text> object with a small module with just one 
+            HbQtGet accepting a hand-held scanner input. Based on barcode, VALID
+            block of that GET fetches the MRP and other info of the product and 
+            send the resulting text to this <Text> object. No need of any external 
+            tool to implement Price-Checker otherwise. Hope you will also be benefitted.
+
 2013-06-28 17:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r250)
   * hbqt/qtwebkit/hbqtwebkit.hbc
   * hbqt/qtwebkit/hbqtwebkit.hbm

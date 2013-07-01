@@ -150,6 +150,7 @@ CLASS HbQtDashboard
    METHOD buildStatusPanels()
    METHOD dispStatus()
    METHOD dispStatusMessage( nPanel, cMsg )
+   METHOD enableStatusBar( lEnable )              INLINE iif( HB_ISLOGICAL( lEnable ), iif( lEnable, ::oStatusBar:show(), ::oStatusBar:hide() ), NIL )
 
    METHOD addPanel( cName )
    METHOD removePanel( cPanel )
@@ -554,6 +555,7 @@ METHOD HbQtDashboard:buildToolbars()
    ::oToolbarT:addItem( "Graph"              , QIcon( __hbqtImage( "f_chart"  ) ) , , , , , "Graph"     )
    ::oToolbarT:addItem( "Banner"             , QIcon( __hbqtImage( "banner"   ) ) , , , , , "Banner"    )
    ::oToolbarT:addItem( "Pictures"           , QIcon( __hbqtImage( "images"   ) ) , , , , , "Picture"   )
+   ::oToolbarT:addItem( "Text"               , QIcon( __hbqtImage( "text-file") ) , , , , , "Text"      )
    ::oToolbarT:addItem( ::sp1 )
    ::oToolbarT:addItem( "Toggle Objects Tree", QIcon( __hbqtImage( "treeview" ) ) , , , , , "TreeView"  )
    ::oToolbarT:addItem( "Toggle Panels Tabs" , QIcon( __hbqtImage( "treeview" ) ) , , , , , "PanelTabs" )
@@ -663,6 +665,7 @@ METHOD HbQtDashboard:execEvent( nEvent, p, p1 )
       CASE "Browser"
       CASE "Figure"
       CASE "Picture"
+      CASE "Text"
          ::addObject( p:key ) ;  EXIT
       CASE "TreeView"
          IF ::oTree:isVisible()
@@ -1207,13 +1210,14 @@ CLASS HbQtDashboardObject
    METHOD buildGraph()
    METHOD buildFigure()
    METHOD buildPicture()
+   METHOD buildText()
 
    DATA   aPosAndSize                             INIT   {}
    DATA   nHotPos                                 INIT   0
    DATA   cDisp                                   INIT   ""
    DATA   nLastWidth                              INIT   0
    DATA   nCharWidth
-   DATA   oTimerFetch, oTimerPull, oTimerSpeed
+   DATA   oTimerFetch, oTimerPull, oTimerSpeed, oTimerClear
 
    DATA   nID
    ACCESS id                                      INLINE ::nID
@@ -1287,6 +1291,7 @@ METHOD HbQtDashboardObject:pullData()
          CASE "Graph"   ;  ::buildGraph()   ;  EXIT
          CASE "Browser" ;  ::buildBrowser() ;  EXIT
          CASE "Picture" ;  ::buildPicture() ;  EXIT
+         CASE "Text"    ;  ::buildText()    ;  EXIT
          ENDSWITCH
 
          ::oSubWindow:setWidget( ::oWidget )
@@ -1345,6 +1350,15 @@ METHOD HbQtDashboardObject:update( xData )
       ENDIF
       EXIT
 
+   CASE "Text"
+      IF ::attributes()[ DBRD_ATTRB_TEXT_KEEPAPPENDING ]
+         ::oWidget:append( iif( HB_ISCHAR( xData ), xData, iif( HB_ISCHAR( ::xData ), ::xData, "" ) ) )
+      ELSE
+         ::oWidget:clear()
+         ::oWidget:setText( iif( HB_ISCHAR( xData ), xData, iif( HB_ISCHAR( ::xData ), ::xData, "" ) ) )
+      ENDIF
+      EXIT
+
    CASE "Graph"
       ::oHbQtWidget:clear()
       FOR EACH aData IN xData
@@ -1386,11 +1400,12 @@ METHOD HbQtDashboardObject:buildSubWindow()
       :setAttribute( Qt_WA_DeleteOnClose, .F. )
 
       SWITCH ::type()
-      CASE "Banner" ; :setWindowIcon( QIcon( __hbqtImage( "banner"  ) ) ); EXIT
-      CASE "Figure" ; :setWindowIcon( QIcon( __hbqtImage( "numbers" ) ) ); EXIT
-      CASE "Graph"  ; :setWindowIcon( QIcon( __hbqtImage( "f_chart" ) ) ); EXIT
-      CASE "Browser"; :setWindowIcon( QIcon( __hbqtImage( "table"   ) ) ); EXIT
-      CASE "Picture"; :setWindowIcon( QIcon( __hbqtImage( "images"  ) ) ); EXIT
+      CASE "Banner" ; :setWindowIcon( QIcon( __hbqtImage( "banner"    ) ) ); EXIT
+      CASE "Figure" ; :setWindowIcon( QIcon( __hbqtImage( "numbers"   ) ) ); EXIT
+      CASE "Graph"  ; :setWindowIcon( QIcon( __hbqtImage( "f_chart"   ) ) ); EXIT
+      CASE "Browser"; :setWindowIcon( QIcon( __hbqtImage( "table"     ) ) ); EXIT
+      CASE "Picture"; :setWindowIcon( QIcon( __hbqtImage( "images"    ) ) ); EXIT
+      CASE "Text"   ; :setWindowIcon( QIcon( __hbqtImage( "text-file" ) ) ); EXIT
       ENDSWITCH
 
       IF Empty( ::aPosAndSize )
@@ -1400,6 +1415,7 @@ METHOD HbQtDashboardObject:buildSubWindow()
          CASE "Graph"  ; :resize( 400, 200 ); EXIT
          CASE "Browser"; :resize( 400, 300 ); EXIT
          CASE "Picture"; :resize( 400, 300 ); EXIT
+         CASE "Text"   ; :resize( 400, 300 ); EXIT
          ENDSWITCH
       ELSE
          :move( ::aPosAndSize[ 1 ], ::aPosAndSize[ 2 ] )
@@ -1422,6 +1438,44 @@ METHOD HbQtDashboardObject:buildSubWindow()
    ::oTimerPull:start()
 
    ::oSubWindow:show()
+
+   RETURN Self
+
+
+METHOD HbQtDashboardObject:buildText()
+   LOCAL oFont
+   LOCAL aAttrbs := ::attributes()
+
+   ASize( aAttrbs, DBRD_ATTRB_TEXT_NOVRBLS )
+   IF ! HB_ISCHAR( aAttrbs[ DBRD_ATTRB_TEXT_FONTNAME ] ) .OR. Empty( aAttrbs[ DBRD_ATTRB_TEXT_FONTNAME ] )
+      aAttrbs[ DBRD_ATTRB_TEXT_FONTNAME ] := "Courier New"
+   ENDIF
+   IF ! HB_ISNUMERIC( aAttrbs[ DBRD_ATTRB_TEXT_FONTSIZE ] )
+      aAttrbs[ DBRD_ATTRB_TEXT_FONTSIZE ] := 18
+   ENDIF
+   WITH OBJECT ::oWidget := QTextEdit()
+      :setAlignment( Qt_AlignVCenter + Qt_AlignHCenter )
+      oFont := QFont( aAttrbs[ DBRD_ATTRB_TEXT_FONTNAME ], aAttrbs[ DBRD_ATTRB_TEXT_FONTSIZE ] )
+      oFont:setBold( .T. )
+      :setFont( oFont )
+      :setReadOnly( .T. )
+   ENDWITH
+   IF aAttrbs[ DBRD_ATTRB_TEXT_COLORS ] != NIL
+      ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( aAttrbs[ DBRD_ATTRB_TEXT_COLORS ] ) )
+   ENDIF
+   IF HB_ISLOGICAL( aAttrbs[ DBRD_ATTRB_TEXT_NOWRAP ] ) .AND. aAttrbs[ DBRD_ATTRB_TEXT_NOWRAP ]
+      ::oWidget:setWrapMode( QTextEdit_NoWrap )
+   ENDIF
+   IF ! HB_ISLOGICAL( aAttrbs[ DBRD_ATTRB_TEXT_KEEPAPPENDING ] )
+      aAttrbs[ DBRD_ATTRB_TEXT_KEEPAPPENDING ] := .F.
+   ENDIF
+   IF HB_ISNUMERIC( aAttrbs[ DBRD_ATTRB_TEXT_CLEARAFTERMS ] )
+      WITH OBJECT ::oTimerClear := QTimer( ::oWidget )
+         :setInterval( aAttrbs[ DBRD_ATTRB_TEXT_CLEARAFTERMS ] )
+         :connect( "timeout()", {|| ::oWidget:clear(), __hbqtPushObjectData( ::nID, NIL ) } )
+         :start()
+      ENDWITH
+   ENDIF
 
    RETURN Self
 
@@ -1626,4 +1680,15 @@ STATIC FUNCTION __fetchObjectData( bBlock, nID )
       hData[ nID ] := iif( HB_ISARRAY( xData ), AClone( xData ), xData )
    hb_mutexUnLock( hMutex )
    RETURN xData
+
+
+FUNCTION __hbqtPushObjectData( nID, xData )
+
+   hb_mutexLock( hMutex )
+      hData[ nID ] := xData
+   hb_mutexUnLock( hMutex )
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
 

@@ -225,7 +225,7 @@ STATIC FUNCTION TerminateAlert( aButtons )
    RETURN .T.
 
 
-FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
+FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle, xIcon )
    LOCAL i, cType, oDlg, nVrbls, nRes, oLay, bWhen, bValid, aCombo
    LOCAL aVariables := {}
    LOCAL aCaptions  := {}
@@ -281,6 +281,11 @@ FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle )
    WITH OBJECT oDlg := QDialog( QApplication():focusWidget() )
       :setWindowTitle( cTitle )
       :setLayout( oLay )
+      IF HB_ISCHAR( xIcon ) .AND. ! Empty( xIcon )
+         :setWindowIcon( QIcon( xIcon ) )
+      ELSEIF HB_ISOBJECT( xIcon )
+         :setWindowIcon( xIcon )
+      ENDIF
    ENDWITH
 
    FOR i := 1 TO nVrbls
