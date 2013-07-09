@@ -1,5 +1,5 @@
-   /*
- * $Id: hbqtgetsys.prg 175 2013-02-23 03:27:00Z bedipritpal $
+/*
+ * $Id$
  */
 
 /*
@@ -555,7 +555,7 @@ METHOD HbQtGet:getCharacter( cText, nPos )
    ENDIF
    cChr := SubStr( cText, nPos, 1 )
 
-   HB_TRACE( HB_TR_ALWAYS, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
+   HB_TRACE( HB_TR_DEBUG, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
 
    IF ::nKeyPressed != K_DEL .AND. ::nKeyPressed != K_BS
    ENDIF

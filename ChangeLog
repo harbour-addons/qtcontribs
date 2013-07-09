@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-07-09 15:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r254)
+  * hbqtwidgets/getsys.prg
+    + Added: SVN flags.
+    - Deleted: left-over TRACE info.
+
 2013-07-09 15:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r253)
   * hbqtwidgets/getsys.prg
     ! Fixed: A character GET was not being assigned in some picture formats.
