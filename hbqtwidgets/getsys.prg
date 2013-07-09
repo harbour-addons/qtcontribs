@@ -555,7 +555,7 @@ METHOD HbQtGet:getCharacter( cText, nPos )
    ENDIF
    cChr := SubStr( cText, nPos, 1 )
 
-   HB_TRACE( HB_TR_DEBUG, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
+   HB_TRACE( HB_TR_ALWAYS, "nPos:", nPos, "::nPastPosition:", ::nPastPosition, "cChr:", cChr, "cText:", cText, "::cPastBuffer:", ::cPastBuffer )
 
    IF ::nKeyPressed != K_DEL .AND. ::nKeyPressed != K_BS
    ENDIF
@@ -1086,9 +1086,7 @@ METHOD HbQtGet:postValidate()
       RETURN .F.
    ENDIF
 
-   IF ::changed
-      ::assign()
-   ENDIF
+   ::assign()                                     /* Has to be assigned no matter what */
 
    IF HB_ISBLOCK( ::postBlock )
       lValid := Eval( ::postBlock, Self )
