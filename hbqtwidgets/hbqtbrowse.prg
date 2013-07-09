@@ -167,6 +167,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD stabilize()
    METHOD forceStable()
    METHOD setVisible()
+   ACCESS rightVisible()                          INLINE ::oHeaderView:visualIndexAt( ::oViewport:width()-2 ) + 1
+   ACCESS leftVisible()                           INLINE ::oHeaderView:visualIndexAt( 1 ) + 1
 
    ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
@@ -1385,10 +1387,12 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
       ::oHeaderView:resizeSection( p1, p3 )
       EXIT
    CASE __ev_columnheader_pressed__
-      ::colPos := p1 + 1
-      ::refreshCurrent()
-      IF HB_ISBLOCK( ::pressHeaderBlock )
-         Eval( ::pressHeaderBlock, p1 + 1, ::getColumn( p1 + 1 ):heading, Self )
+      IF p1 >= 0 .AND. p1 < ::colCount
+         ::colPos := p1 + 1
+         ::refreshCurrent()
+         IF HB_ISBLOCK( ::pressHeaderBlock )
+            Eval( ::pressHeaderBlock, p1 + 1, ::getColumn( p1 + 1 ):heading, Self )
+         ENDIF
       ENDIF
       EXIT
    ENDSWITCH
