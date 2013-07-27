@@ -862,6 +862,8 @@ METHOD HbIde:execAction( cKey )
    CASE "ZoomOut"
    CASE "UpperCaseKeywords"
    CASE "FormatBraces"
+   CASE "FormatOperators"
+   CASE "FormatCommas"
    CASE "RemoveTabs"
    CASE "Spaces2Tabs"
    CASE "RemoveTrailingSpaces"
@@ -895,128 +897,51 @@ METHOD HbIde:execAction( cKey )
 METHOD HbIde:execEditorAction( cKey )
 
    SWITCH cKey
-   CASE "Print"
-      ::oEM:printPreview()
-      EXIT
-   CASE "Undo"
-      ::oEM:undo()
-      EXIT
-   CASE "Redo"
-      ::oEM:redo()
-      EXIT
-   CASE "Cut"
-      ::oEM:cut()
-      EXIT
-   CASE "Copy"
-      ::oEM:copy()
-      EXIT
-   CASE "Paste"
-      ::oEM:paste()
-      EXIT
-   CASE "SelectAll"
-      ::oEM:selectAll()
-      EXIT
-   CASE "SelectionMode"
-      ::oEM:toggleSelectionMode()
-      EXIT
-   CASE "DuplicateLine"
-      ::oEM:duplicateLine()
-      EXIT
-   CASE "MoveLineUp"
-      ::oEM:moveLine( -1 )
-      EXIT
-   CASE "MoveLineDown"
-      ::oEM:moveLine( 1 )
-      EXIT
-   CASE "DeleteLine"
-      ::oEM:deleteLine()
-      EXIT
-   CASE "BlockComment"
-      ::oEM:blockComment()
-      EXIT
-   CASE "StreamComment"
-      ::oEM:streamComment()
-      EXIT
-   CASE "BlockIndentR"
-      ::oEM:indent( 1 )
-      EXIT
-   CASE "BlockIndentL"
-      ::oEM:indent( -1 )
-      EXIT
-   CASE "BlockSgl2Dbl"
-      ::oEM:convertDQuotes()
-      EXIT
-   CASE "BlockDbl2Sgl"
-      ::oEM:convertQuotes()
-      EXIT
-   CASE "switchReadOnly"
-      ::oEM:switchToReadOnly()
-      EXIT
-   CASE "Find"
-      ::oEM:find()
-      EXIT
-   CASE "FindEx"
-      IF !Empty( ::qCurEdit )
-         ::oSearchReplace:beginFind()
-      ENDIF
-      EXIT
-   CASE "SetMark"
-      ::oEM:setMark()
-      EXIT
-   CASE "GotoMark"
-      ::oEM:gotoMark()
-      EXIT
-   CASE "Goto"
-      ::oEM:goTo()
-      EXIT
-   CASE "ToUpper"
-      ::oEM:convertSelection( cKey )
-      EXIT
-   CASE "ToLower"
-      ::oEM:convertSelection( cKey )
-      EXIT
-   CASE "Invert"
-      ::oEM:convertSelection( cKey )
-      EXIT
-   CASE "MatchPairs"
-      EXIT
-   CASE "Tools"
-      ::oTM:show()
-      EXIT
-   CASE "InsertSeparator"
-      ::oEM:insertSeparator()
-      EXIT
-   CASE "InsertDateTime"
-      ::oEM:insertText( cKey )
-      EXIT
-   CASE "InsertRandomName"
-      ::oEM:insertText( cKey )
-      EXIT
-   CASE "InsertExternalFile"
-      ::oEM:insertText( cKey )
-      EXIT
-   CASE "ZoomIn"
-      ::oEM:zoom( +1 )
-      EXIT
-   CASE "ZoomOut"
-      ::oEM:zoom( -1 )
-      EXIT
-   CASE "UpperCaseKeywords"
-      ::oEM:upperCaseKeywords()
-      EXIT
-   CASE "FormatBraces"
-      ::oEM:formatBraces()
-      EXIT
-   CASE "RemoveTabs"
-      ::oEM:removeTabs()
-      EXIT
-   CASE "Spaces2Tabs"
-      ::oEM:spaces2tabs()
-      EXIT
-   CASE "RemoveTrailingSpaces"
-      ::oEM:removeTrailingSpaces()
-      EXIT
+
+   CASE "Print"                ;  ::oEM:printPreview()           ;  EXIT
+   CASE "Undo"                 ;  ::oEM:undo()                   ;  EXIT
+   CASE "Redo"                 ;  ::oEM:redo()                   ;  EXIT
+   CASE "Cut"                  ;  ::oEM:cut()                    ;  EXIT
+   CASE "Copy"                 ;  ::oEM:copy()                   ;  EXIT
+   CASE "Paste"                ;  ::oEM:paste()                  ;  EXIT
+   CASE "SelectAll"            ;  ::oEM:selectAll()              ;  EXIT
+   CASE "SelectionMode"        ;  ::oEM:toggleSelectionMode()    ;  EXIT
+   CASE "DuplicateLine"        ;  ::oEM:duplicateLine()          ;  EXIT
+   CASE "MoveLineUp"           ;  ::oEM:moveLine( -1 )           ;  EXIT
+   CASE "MoveLineDown"         ;  ::oEM:moveLine( 1 )            ;  EXIT
+   CASE "DeleteLine"           ;  ::oEM:deleteLine()             ;  EXIT
+   CASE "BlockComment"         ;  ::oEM:blockComment()           ;  EXIT
+   CASE "StreamComment"        ;  ::oEM:streamComment()          ;  EXIT
+   CASE "BlockIndentR"         ;  ::oEM:indent( 1 )              ;  EXIT
+   CASE "BlockIndentL"         ;  ::oEM:indent( -1 )             ;  EXIT
+   CASE "BlockSgl2Dbl"         ;  ::oEM:convertDQuotes()         ;  EXIT
+   CASE "BlockDbl2Sgl"         ;  ::oEM:convertQuotes()          ;  EXIT
+   CASE "switchReadOnly"       ;  ::oEM:switchToReadOnly()       ;  EXIT
+   CASE "Find"                 ;  ::oEM:find()                   ;  EXIT
+   CASE "SetMark"              ;  ::oEM:setMark()                ;  EXIT
+   CASE "GotoMark"             ;  ::oEM:gotoMark()               ;  EXIT
+   CASE "Goto"                 ;  ::oEM:goTo()                   ;  EXIT
+   CASE "ToUpper"              ;  ::oEM:convertSelection( cKey ) ;  EXIT
+   CASE "ToLower"              ;  ::oEM:convertSelection( cKey ) ;  EXIT
+   CASE "Invert"               ;  ::oEM:convertSelection( cKey ) ;  EXIT
+   CASE "Tools"                ;  ::oTM:show()                   ;  EXIT
+   CASE "InsertSeparator"      ;  ::oEM:insertSeparator()        ;  EXIT
+   CASE "InsertDateTime"       ;  ::oEM:insertText( cKey )       ;  EXIT
+   CASE "InsertRandomName"     ;  ::oEM:insertText( cKey )       ;  EXIT
+   CASE "InsertExternalFile"   ;  ::oEM:insertText( cKey )       ;  EXIT
+   CASE "ZoomIn"               ;  ::oEM:zoom( +1 )               ;  EXIT
+   CASE "ZoomOut"              ;  ::oEM:zoom( -1 )               ;  EXIT
+   CASE "UpperCaseKeywords"    ;  ::oEM:upperCaseKeywords()      ;  EXIT
+   CASE "FormatBraces"         ;  ::oEM:formatBraces( 0 )        ;  EXIT
+   CASE "FormatOperators"      ;  ::oEM:formatBraces( 1 )        ;  EXIT
+   CASE "FormatCommas"         ;  ::oEM:formatBraces( 2 )        ;  EXIT
+   CASE "RemoveTabs"           ;  ::oEM:removeTabs()             ;  EXIT
+   CASE "Spaces2Tabs"          ;  ::oEM:spaces2tabs()            ;  EXIT
+   CASE "RemoveTrailingSpaces" ;  ::oEM:removeTrailingSpaces()   ;  EXIT
+   CASE "FindEx"               ;  IF ! Empty( ::qCurEdit ) ; ::oSearchReplace:beginFind() ; ENDIF ; EXIT
+   CASE "MatchPairs"           ;  EXIT
    ENDSWITCH
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/

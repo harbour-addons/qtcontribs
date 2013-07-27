@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+
+2013-07-26 20:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r255)
+  * hbide/actions.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+    + Implemented: <Edit><Format><Format Braces>    {} and [] along ().
+                                 <Format Operators> := == >= <= != <> .AND. .OR. .NOT.
+                                 <Format Commas>    ,
+       These formatting options are available on the entire edit instance 
+       and is scheduled to be available for selected text as well.
+
 2013-07-09 15:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r254)
   * hbqtwidgets/getsys.prg
     + Added: SVN flags.

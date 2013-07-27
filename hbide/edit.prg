@@ -245,7 +245,7 @@ CLASS IdeEdit INHERIT IdeObject
    METHOD tabs2spaces()
    METHOD spaces2tabs()
    METHOD removeTrailingSpaces()
-   METHOD formatBraces()
+   METHOD formatBraces( nMode )
    METHOD upperCaseKeywords()
    METHOD findEx( cText, nFlags, nStart )
    METHOD highlightAll( cText )
@@ -2169,43 +2169,33 @@ METHOD IdeEdit:upperCaseKeywords()
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEdit:formatBraces()
+METHOD IdeEdit:formatBraces( nMode )
    LOCAL qDoc, cText
 
+   IF ! HB_ISNUMERIC( nMode )
+      nMode := 0
+   ENDIF
    qDoc := ::qEdit:document()
 
-   IF !( qDoc:isEmpty() )
+
+   IF ! qDoc:isEmpty()
       qDoc:setUndoRedoEnabled( .f. )
 
       cText := qDoc:toPlainText()
 
-      cText := strtran( cText, "( ", "(" )
-      cText := strtran( cText, "(  ", "(" )
-      cText := strtran( cText, "(   ", "(" )
-      cText := strtran( cText, "(    ", "(" )
-      cText := strtran( cText, "(     ", "(" )
-      cText := strtran( cText, "(      ", "(" )
-      cText := strtran( cText, " (", "(" )
-      cText := strtran( cText, "  (", "(" )
-      cText := strtran( cText, "   (", "(" )
-      cText := strtran( cText, "    (", "(" )
-      cText := strtran( cText, "     (", "(" )
-
-      cText := strtran( cText, "      )", ")" )
-      cText := strtran( cText, "     )", ")" )
-      cText := strtran( cText, "    )", ")" )
-      cText := strtran( cText, "   )", ")" )
-      cText := strtran( cText, "  )", ")" )
-      cText := strtran( cText, " )", ")" )
-
-      cText := strtran( cText, "(", "( " )
-      cText := strtran( cText, ")", " )" )
-
-      cText := strtran( cText, "(     )", "()" )
-      cText := strtran( cText, "(    )", "()" )
-      cText := strtran( cText, "(   )", "()" )
-      cText := strtran( cText, "(  )", "()" )
-      cText := strtran( cText, "( )", "()" )
+      SWITCH nMode
+      CASE 0
+         cText := hbide_formatBrace( cText, "(", ")", 6 )
+         cText := hbide_formatBrace( cText, "{", "}", 6 )
+         cText := hbide_formatBrace( cText, "[", "]", 6 )
+         EXIT
+      CASE 1
+         cText := hbide_formatOperators( cText, { ":=", "==", ">=", "<=", "!=", "<>", ".AND.", ".OR.", ".NOT." }, 1 )
+         EXIT
+      CASE 2
+         cText := hbide_formatCommas( cText, 1 )
+         EXIT
+      ENDSWITCH
 
       qDoc:clear()
       qDoc:setPlainText( cText )

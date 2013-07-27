@@ -143,7 +143,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD setTooltipMark( nIndex )
    METHOD gotoMark( nIndex )
    METHOD goto( nLine )
-   METHOD formatBraces()
+   METHOD formatBraces( nMode )
    METHOD upperCaseKeywords()
    METHOD removeTabs()
    METHOD RemoveTrailingSpaces()
@@ -1126,10 +1126,10 @@ METHOD IdeEditsManager:upperCaseKeywords()
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditsManager:formatBraces()
+METHOD IdeEditsManager:formatBraces( nMode )
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:formatBraces()
+      oEdit:formatBraces( nMode )
    ENDIF
    RETURN Self
 

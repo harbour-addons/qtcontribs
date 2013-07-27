@@ -2216,3 +2216,72 @@ FUNCTION hbide_IsInString( cText, nPos, nStart, cQuote )
 
 /*----------------------------------------------------------------------*/
 
+FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
+   LOCAL i
+
+   DEFAULT nSpaces TO 6
+   DEFAULT lOuter  TO .F.
+
+   IF .T.
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, cBraceO + Space( i ), cBraceO )
+      NEXT
+      IF lOuter
+         FOR i := nSpaces TO 2 STEP -1
+            cText := StrTran( cText, Space( i ) + cBraceO, cBraceO )
+         NEXT
+      ENDIF
+      cText := StrTran( cText, cBraceO, cBraceO + Space( 1 ) )
+
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, Space( i ) + cBraceC, cBraceC )
+      NEXT
+      IF lOuter
+         FOR i := nSpaces TO 2 STEP -1
+            cText := StrTran( cText, cBraceC + Space( i ), cBraceC )
+         NEXT
+      ENDIF
+      cText := StrTran( cText, cBraceC, Space( 1 ) + cBraceC )
+
+
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, cBraceO + Space( i ) + cBraceC, cBraceO + cBraceC )
+      NEXT
+   ENDIF
+
+   RETURN cText
+
+/*----------------------------------------------------------------------*/
+
+FUNCTION hbide_formatOperators( cText, aOprtrs, nSpaces )
+   LOCAL i, cOprtr
+
+   DEFAULT nSpaces TO 1
+
+   FOR EACH cOprtr IN aOprtrs
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, Space( i ) + cOprtr, cOprtr )
+         cText := StrTran( cText, cOprtr + Space( i ), cOprtr )
+      NEXT
+      cText := StrTran( cText, cOprtr, Space( 1 ) + cOprtr + Space( 1 ) )
+   NEXT
+
+   RETURN cText
+
+/*----------------------------------------------------------------------*/
+
+FUNCTION hbide_formatCommas( cText, nSpaces )
+   LOCAL i, cOprtr := ","
+
+   DEFAULT nSpaces TO 1
+
+   IF .T.
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, cOprtr + Space( i ), cOprtr )
+      NEXT
+      cText := StrTran( cText, cOprtr, cOprtr + Space( 1 ) )
+   ENDIF
+
+   RETURN cText
+
+/*----------------------------------------------------------------------*/
