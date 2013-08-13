@@ -571,4 +571,34 @@
 #define QLocale_KoyraboroSenni                           213
 #define QLocale_Shambala                                 214
 
+#define QLocale_CurrencyIsoCode                          0      // a ISO-4217 code of the currency.
+#define QLocale_CurrencySymbol                           1      // a currency symbol.
+#define QLocale_CurrencyDisplayName                      2      // a user readable name of the currency.
+                                                                //
+#define QLocale_LongFormat                               0      // The long version of day and month names; for example, returning "January" as a month name.
+#define QLocale_ShortFormat                              1      // The short version of day and month names; for example, returning "Jan" as a month name.
+#define QLocale_NarrowFormat                             2      // A special version of day and month names for use when space is limited; for example, returning "J" as a month name. Note that the narrow format might contain the same text for different months and days or it can even be an empty string if the locale doesn't support narrow names, so you should avoid using it for date formatting. Also, for the system locale this format is the same as ShortFormat.
+                                                                //
+#define QLocale_MetricSystem                             0      // This value indicates metric units, such as meters, centimeters and millimeters.
+#define QLocale_ImperialSystem                           1      // This value indicates imperial units, such as inches and miles. There are several distinct imperial systems in the world; this value stands for the official United States imperial units.
+                                                                //
+#define QLocale_OmitGroupSeparator                       0x01   // If this option is set, the number-to-string functions will not insert group separators in their return values. The default is to insert group separators.
+#define QLocale_RejectGroupSeparator                     0x02   // If this option is set, the string-to-number functions will fail if they encounter group separators in their input. The default is to accept numbers containing correctly placed group separators.
+                                                                //
+#define QLocale_StandardQuotation                        0      // If this option is set, the standard quotation marks will be used to quote strings.
+#define QLocale_AlternateQuotation                       1      // If this option is set, the alternate quotation marks will be used to quote strings.
+
+#define QLocale_AnyScript                                0
+#define QLocale_ArabicScript                             1
+#define QLocale_CyrillicScript                           2
+#define QLocale_DeseretScript                            3
+#define QLocale_GurmukhiScript                           4
+#define QLocale_SimplifiedHanScript                      5
+#define QLocale_SimplifiedChineseScript                  QLocale_SimplifiedHanScript
+#define QLocale_TraditionalHanScript                     6
+#define QLocale_TraditionalChineseScript                 QLocale_TraditionalHanScript
+#define QLocale_LatinScript                              7
+#define QLocale_MongolianScript                          8
+#define QLocale_TifinaghScript                           9
+
 #endif

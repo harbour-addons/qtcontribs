@@ -17,6 +17,13 @@
 */
 
 
+2013-08-13 12:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r256)
+  * hbqt/qtcore/hbqtcore.ch
+    + Added: QLocale_* constants introduced in Qt 4.7 onwards.
+
+  * hbqt/qtcore/qth/QLocale.qth
+    + Added: methods introduced in Qt 4.7 onwards.
+
 2013-07-26 20:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r255)
   * hbide/actions.prg
   * hbide/edit.prg
