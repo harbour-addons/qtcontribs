@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-08-30 11:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r257)
+  * hbqt/qtgui/qth/QWidget.qth
+    + QMargins contentsMargins () const 
+    + Added: void setContentsMargins ( const QMargins & margins )
+       The methods were introduced in Qt 4.6 but went un-noticed.
 
 2013-08-13 12:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r256)
   * hbqt/qtcore/hbqtcore.ch

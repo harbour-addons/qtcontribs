@@ -66,6 +66,7 @@ QRect childrenRect () const
 QRegion childrenRegion () const
 void clearFocus ()
 void clearMask ()
+QMargins contentsMargins () const                                [*V=0x040600*]
 QRect contentsRect () const
 Qt::ContextMenuPolicy contextMenuPolicy () const
 QCursor cursor () const
@@ -181,6 +182,7 @@ void setBaseSize ( const QSize & )
 void setBaseSize ( int basew, int baseh )
 
 void setContentsMargins ( int left, int top, int right, int bottom )
+void setContentsMargins ( const QMargins & margins )             [*V=0x040600*]
 void setContextMenuPolicy ( Qt::ContextMenuPolicy policy )
 void setCursor ( const QCursor & )
 // void setEditFocus ( bool enable )
