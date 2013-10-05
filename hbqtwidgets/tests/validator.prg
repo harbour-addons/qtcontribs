@@ -32,7 +32,12 @@ FUNCTION Main()
 
    oMain:show()
 
+   SetKey( K_F2, {|| HbQtCalculate( oMain:oWidget ) } )
+
    QApplication():exec()
+
+   QApplication():clipboard:clear( QClipboard_Clipboard )
+   QApplication():clipboard:clear( QClipboard_Selection )
 
    RETURN NIL
 

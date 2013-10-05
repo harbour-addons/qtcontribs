@@ -16,6 +16,18 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-10-04 19:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r258)
+  + hbqtwidgets/calculator.prg
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: HbQtCalculator() class developed by M.Ronaldo, many thanks.
+       I added these few improvements:
+         1. Formatted as per Harbour specs.
+         2. Opted for Qt_Sheet widget instead of QDialog.
+         2. Memo made visible by a toolbar button. It is not always desired.
+
+  * hbqtwidgets/tests/validator.prg
+    + Added: call about usage of HbQtCalculator().
+
 2013-08-30 11:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r257)
   * hbqt/qtgui/qth/QWidget.qth
     + QMargins contentsMargins () const 
