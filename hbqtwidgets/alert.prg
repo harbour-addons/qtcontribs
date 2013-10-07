@@ -310,6 +310,8 @@ FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle, xIco
       ELSE
          xVariable := aVariables
       ENDIF
+   ELSE
+      xVariable := NIL
    ENDIF
 
    RETURN xVariable

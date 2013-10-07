@@ -185,6 +185,9 @@ METHOD DbuMGR:new( aParams )
    ::lAds := .T.
 #endif
 
+   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+   ReadInsert( .T. )
+
    ::fetchDbuData()
    ::setDatabaseParams()
    IF hb_HHasKey( ::hDbuData, "CacheServer" )
@@ -852,18 +855,18 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
       ::showStats( oMdiBrowse )
 
    CASE nKey == K_ENTER
-      IF dbRLock()
+      IF oMdiBrowse:lock()
          xResult := oHbQtBrowse:editCell()
          IF xResult != NIL
             Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block, xResult )      /* Even this is not required, or DBU must not set the SETGET block, just the GET block */
             dbCommit()
             oHbQtBrowse:refreshCurrent()
          ENDIF
-         dbRUnlock()
+         oMdiBrowse:unLock()
       ENDIF
 
    CASE nKey == K_ALT_ENTER
-      IF dbRLock()
+      IF oMdiBrowse:lock()
          FOR i := oHbQtBrowse:colPos TO oHbQtBrowse:colCount()
             xResult := oHbQtBrowse:editCell()
             IF xResult == NIL
@@ -875,20 +878,20 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
                oHbQtBrowse:right()
             ENDIF
          NEXT
-         dbCommit()
-         dbRUnlock()
+         oMdiBrowse:dbCommit()
+         oMdiBrowse:unLock()
       ENDIF
 
    CASE nKey == K_CTRL_ENTER
       DO WHILE .T.
-         IF dbRLock()
+         IF oMdiBrowse:lock()
             xResult := oHbQtBrowse:editCell()
             IF xResult == NIL
                EXIT
             ENDIF
             Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block, xResult )
             dbCommit()
-            dbRUnlock()
+            oMdiBrowse:unlock()
             oHbQtBrowse:refreshCurrent()
             oHbQtBrowse:down()
             IF oHbQtBrowse:hitBottom

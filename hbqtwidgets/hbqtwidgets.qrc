@@ -149,5 +149,6 @@
     <file>resources/banner.png</file>
     <file>resources/images.png</file>
     <file>resources/text-file.png</file>
+    <file>resources/memo.png</file>
   </qresource>
 </RCC>

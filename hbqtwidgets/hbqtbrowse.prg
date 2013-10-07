@@ -256,6 +256,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD execute()                               INLINE iif( __objGetClsName( ::oParent ) == "QDIALOG", ::oParent:exec(), NIL )
    METHOD terminate()                             INLINE ::oParent:close()
    METHOD getParent()                             INLINE ::oParent
+   METHOD showCellContents()
 
 PROTECTED:
 
@@ -472,6 +473,7 @@ PROTECTED:
    DATA   oActStop
    //
    DATA   oActCopySel
+   DATA   oActCellMemo
    //
    DATA   oActAddColumn
    DATA   oActDelColumn
@@ -501,6 +503,8 @@ PROTECTED:
    FRIEND FUNCTION __addColumnBlock()
 
    METHOD copySelectionToClipboard()
+
+   DATA   oContentsDlg, oContentsEditor, oContentsRect
 
    ENDCLASS
 
@@ -1271,6 +1275,10 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
    ::stopAllTimers()
 
    nKey := hbqt_qtEventToHbEvent( oEvent )
+
+   IF nKey == K_ALT_F12
+      ::showCellContents()
+   ENDIF
 
    IF ::oSearchLabel:isVisible() .AND. ( ( nKey >= 32 .AND. nKey <= 127 ) .OR. nKey == K_BS .OR. nKey == K_ENTER )
       IF nKey == K_ENTER
@@ -2551,6 +2559,37 @@ METHOD HbQtBrowse:moveHome()
    RETURN col_to_move > 1
 
 
+METHOD HbQtBrowse:showCellContents()
+   LOCAL oLay
+   LOCAL xValue := Eval( ::getColumn( ::colPos ):block )
+
+   IF ! Empty( xValue ) .AND. HB_ISSTRING( xValue )
+      IF Empty( ::oContentsDlg )
+         ::oContentsDlg := QWidget( ::oWidget )
+         ::oContentsDlg:setWindowFlags( Qt_Sheet )
+         ::oContentsDlg:connect( QEvent_Close, {|| ::oContentsRect := QRect( ::oContentsDlg:x(), ::oContentsDlg:y(), ::oContentsDlg:width(), ::oContentsDlg:height() ) } )
+         WITH OBJECT oLay := QHBoxLayout()
+            :setContentsMargins( 0, 0, 0, 0 )
+            ::oContentsEditor := QPlainTextEdit()
+            oLay:addWidget( ::oContentsEditor )
+            ::oContentsDlg:setLayout( oLay )
+         ENDWITH
+      ENDIF
+
+      IF ! Empty( ::oContentsRect )
+         ::oContentsDlg:setGeometry( 0, 0, ::oContentsRect:width(), ::oContentsRect:height() )
+         ::oContentsDlg:move( ::oContentsRect:x(), ::oContentsRect:y() )
+      ENDIF
+
+      ::oContentsDlg:setWindowTitle( "Field Contents" )
+      ::oContentsDlg:show()
+      ::oContentsEditor:clear()
+      ::oContentsEditor:setPlainText( xValue )
+   ENDIF
+
+   RETURN Self
+
+
 METHOD HbQtBrowse:moveEnd()
    LOCAL save_col, col_to_move := ::colPos
 
@@ -3229,6 +3268,7 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActDelColumn )
       :addSeparator()
       :addAction( ::oActCopySel )
+      :addAction( ::oActCellMemo )
 
       :hide()
    ENDWITH
@@ -3454,6 +3494,12 @@ METHOD HbQtBrowse:buildActions()
       :connect( "triggered()", {|| ::copySelectionToClipboard() } )
    ENDWITH
 
+   WITH OBJECT ::oActCellMemo := QAction( ::oWidget )
+      :setText( "Cell Contents Memo" )
+      :setIcon( QIcon( __hbqtImage( "memo" ) ) )
+      :setTooltip( "Show Cell Contents as Memo" )
+      :connect( "triggered()", {|| ::showCellContents() } )
+   ENDWITH
    RETURN Self
 
 

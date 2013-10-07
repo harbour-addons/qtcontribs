@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-10-07 16:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r259)
+  * hbdbu/dbu.prg
+    + Added: SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+       for edits to behave in Clipper manner.
+
+  * hbqtwidgets/alert.prg
+    % Changed: returns NIL is HbQtBukGet() is terminated with ESC or X button.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: a toolbar button <Show cell contents in memo>.
+       Activating it will open a small sheet containing contents of active cell.
+       It is helpful to view fields with larger length than it is visible in the 
+       browser window. The memo has all standard operations.
+
+  * hbqtwidgets/resources/memo.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: another icon to invoke MemoEditor for active column content.
+
 2013-10-04 19:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r258)
   + hbqtwidgets/calculator.prg
   * hbqtwidgets/hbqtwidgets.hbp
