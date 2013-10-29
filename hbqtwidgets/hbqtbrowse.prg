@@ -2078,7 +2078,7 @@ METHOD HbQtBrowse:getFrozen()
    RETURN ::nLeftFrozen
 
 
-METHOD HbQtBrowse:freeze( nColumns )  /* Overloaded */
+METHOD HbQtBrowse:freeze( nColumns )              /* Overloaded */
    LOCAL i, n := ::nLeftFrozen
 
    nColumns := Max( 0, Int( nColumns ) )
@@ -2105,15 +2105,16 @@ METHOD HbQtBrowse:freeze( nColumns )  /* Overloaded */
          ::Right()
       ENDIF
    ENDIF
+#if 0                                             /* Not remembering why did this code made it up - Freeze only belongs to horozontal movement */
    ::down()
    IF ! ::hitBottom()
       ::up()
    ENDIF
-
+#endif
    RETURN ::nLeftFrozen
 
 
-METHOD HbQtBrowse:getRFrozen()         /* Not a TBrowse METHOD  */
+METHOD HbQtBrowse:getRFrozen()                    /* Not a TBrowse METHOD  */
 
    IF ::nConfigure != 0
       ::doConfigure()
@@ -2122,7 +2123,7 @@ METHOD HbQtBrowse:getRFrozen()         /* Not a TBrowse METHOD  */
    RETURN ::nRightFrozen
 
 
-METHOD HbQtBrowse:rFreeze( nColumns )  /* Not a TBrowse METHOD  */
+METHOD HbQtBrowse:rFreeze( nColumns )             /* Not a TBrowse METHOD  */
    LOCAL i, n := ::nRightFrozen
 
    ::nRightFrozen := Max( 0, Int( nColumns ) )
@@ -2145,15 +2146,16 @@ METHOD HbQtBrowse:rFreeze( nColumns )  /* Not a TBrowse METHOD  */
          ::Left()
       ENDIF
    ENDIF
+#if 0                                             /* Not remembering why did this code made it up - Freeze only belongs to horozontal movement */
    ::down()
    IF ! ::hitBottom()
       ::up()
    ENDIF
-
+#endif
    RETURN ::nRightFrozen
 
 
-METHOD HbQtBrowse:rowCount()  /* Overloaded */
+METHOD HbQtBrowse:rowCount()                      /* Overloaded */
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
@@ -3628,14 +3630,13 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
       oPrinter:setOutputFormat( QPrinter_PdfFormat )     /* Until issue WITH QPrintDialog() is resolved, Printing will CREATE a .PDF file on disk */
       oPrinter:setOrientation( QPrinter_Portrait )
       oPrinter:setPaperSize( QPrinter_A4 )
-//    oPrinter:setFullPage( .T. )
    ENDIF
 
    ::printPreview( oPrinter )
 
 #if 0
    IF HB_ISOBJECT( oDlg )
-//    oDlg:setParent( QWidget() )
+      oDlg:setParent( QWidget() )
    ENDIF
 #endif
 
@@ -3647,7 +3648,7 @@ METHOD HbQtBrowse:printPreview( oPrinter )
 
    ::oPenBlack := QPen( Qt_black, 1, Qt_SolidLine, Qt_SquareCap, Qt_BevelJoin )
 
-   oDlg := QPrintPreviewDialog( oPrinter )//, ::oWidget )
+   oDlg := QPrintPreviewDialog( oPrinter )
    oDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
 
    oDlg:setWindowTitle( "TBrowse Printed" )

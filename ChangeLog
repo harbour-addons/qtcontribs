@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-10-29 14:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r260)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: misbehaved record movement when calling :freeze method.
+       Reported by Zoran, thanks.
+
 2013-10-07 16:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r259)
   * hbdbu/dbu.prg
     + Added: SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
