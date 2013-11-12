@@ -267,6 +267,14 @@
 #define QEvent_CloseSoftwareInputPanel            200      // A widget wants to close the software input panel (SIP).
 #define QEvent_GestureOverride                    202      // A gesture override was triggered (QGestureEvent)
 #define QEvent_WinIdChange                        203      // The window system identifer for this native widget has changed
+#define QEvent_ScrollPrepare                      204      // The object needs to fill in its geometry information (QScrollPrepareEvent).
+#define QEvent_Scroll                             205      // The object needs to scroll to the supplied position (QScrollEvent).
+#define QEvent_Expose                             206      // Sent to a window when its on-screen contents are invalidated and need to be flushed from the backing store.
+#define QEvent_InputMethodQuery                   207      // A input method query event (QInputMethodQueryEvent)
+#define QEvent_OrientationChange                  208      // The screens orientation has changes (QScreenOrientationChangeEvent)
+#define QEvent_TouchCancel                        209      // Cancellation of touch-event sequence (QTouchEvent).
+#define QEvent_PlatformPanel                      212      // A platform specific panel has been requested.
+#define QEvent_ApplicationStateChange             214      // The state of the application has changed.
 
 #define QPalette_WindowText                       0        // A general foreground color.
 #define QPalette_Foreground                       0        // This value is obsolete. Use WindowText instead.
@@ -3383,6 +3391,9 @@
 #define QStyle_SE_ToolBarHandle                              53
 #define QStyle_SE_CustomBase                                 0xf0000000
 
+#define QDirIterator_NoIteratorFlags                         0x0     // The default value, representing no flags. The iterator will return entries for the assigned path.
+#define QDirIterator_Subdirectories                          0x2     // List entries inside all subdirectories as well.
+#define QDirIterator_FollowSymlinks                          0x1     // When combined with Subdirectories, this flag enables iterating through all subdirectories of the assigned path, following all symbolic links. Symbolic link loops (e.g., "link" => "." or "link" => "..") are automatically detected and ignored.
 
 #endif
 
