@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-11-12 13:32 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r261)
+  * hbqt/qtcore/qth/filelist.hbm
+  + hbqt/qtcore/qth/QDirIterator.qth
+    + Added: QDirIterator class. 
+       Requested by CarozoDe Quilmes.
+
 2013-10-29 14:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r260)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: misbehaved record movement when calling :freeze method.

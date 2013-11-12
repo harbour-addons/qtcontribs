@@ -22,6 +22,7 @@ QDataStream.qth
 QDate.qth
 QDateTime.qth
 QDir.qth
+QDirIterator.qth
 QEvent.qth
 QEventLoop.qth
 QFile.qth
