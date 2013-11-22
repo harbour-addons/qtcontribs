@@ -1162,6 +1162,9 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
             ::oEdit:setText( cTmp )
             ::oEdit:setCursorPosition( ::nPastPosition )
          ENDCASE
+      ELSEIF nHbKey == K_CTRL_Y .AND. ::Type() == "C" .AND. Empty( ::cPicMask ) .AND. ! ::oEdit:hasSelectedText()
+         cTmp := Trim( Pad( SubStr( ::cPastBuffer, 1, ::nPastPosition ), ::sl_width ) )
+         ::oEdit:setText( cTmp )
       ENDIF
    ENDIF
 
