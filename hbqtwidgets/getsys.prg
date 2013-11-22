@@ -1147,8 +1147,9 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       ::nPastPosition := ::oEdit:cursorPosition()
       HB_TRACE( HB_TR_DEBUG, nHbKey, ::nPastPosition, ::cPastBuffer, ReadInsert() )
 
-      IF ::nKeyPressed >= 32 .AND. ::nKeyPressed < 127
-         IF ::Type() == "C" .AND. Len( ::cPastBuffer ) == ::sl_width .AND. Empty( ::cPicMask ) .AND. ! ::oEdit:hasSelectedText()
+      IF ::nKeyPressed >= 32 .AND. ::nKeyPressed < 127 .AND. ::Type() == "C" .AND. Empty( ::cPicMask ) .AND. ! ::oEdit:hasSelectedText()
+         DO CASE
+         CASE Len( ::cPastBuffer ) == ::sl_width
             IF ReadInsert()
                cTmp := Trim( PadC( SubStr( ::cPastBuffer, 1, ::nPastPosition ) + Chr( ::nKeyPressed ) + SubStr( ::cPastBuffer, ::nPastPosition + 1 ), ::sl_width ) )
             ELSE
@@ -1156,7 +1157,11 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
             ENDIF
             ::oEdit:setText( cTmp )
             ::oEdit:setCursorPosition( ::nPastPosition + 1 )
-         ENDIF
+         CASE ! ReadInsert()
+            cTmp := SubStr( ::cPastBuffer, 1, ::nPastPosition ) + SubStr( ::cPastBuffer, ::nPastPosition + 2 )
+            ::oEdit:setText( cTmp )
+            ::oEdit:setCursorPosition( ::nPastPosition )
+         ENDCASE
       ENDIF
    ENDIF
 
@@ -1179,6 +1184,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       ::setData( ::original )
       oKeyEvent:accept() ; RETURN .T.
 #endif
+
    CASE Qt_Key_PageUp
       IF ! ( ::cClassName $ "QPLAINTEXTEDIT,QLISTWIDGET,QCOMBOBOX" )
          IF ::postValidate()

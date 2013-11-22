@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-11-21 16:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r263)
+  * hbqtwidgets/getsys.prg
+    ! Fixed: handling the insert mode returned by ReadInsert() to behave 
+       properly in non-masked character GETs. Patch provided by Zoran, thanks.
+
 2013-11-12 13:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r262)
   * hbqt/qtgui/hbqtgui.ch
     + Added: few more QEvent_* constants added recently by Qt.
