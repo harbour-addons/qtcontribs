@@ -1,0 +1,87 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QHostAddress>
+
+
+/*
+ * QHostAddress()
+ * QHostAddress(quint32 ip4Addr)
+ * QHostAddress(quint8 * ip6Addr)
+ * QHostAddress(const Q_IPV6ADDR & ip6Addr)
+ * QHostAddress(const sockaddr * sockaddr)
+ * QHostAddress(const QString & address)
+ * QHostAddress(const QHostAddress & address)
+ * QHostAddress(SpecialAddress address)
+ * ~QHostAddress()
+ */
+HB_FUNC( QT_QHOSTADDRESS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QHostAddress" ) )
+   {
+      __HB_RETPTRGC__( new QHostAddress( *hbqt_par_QHostAddress( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QHostAddress( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QHostAddress() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   SpecialAddress { Null, LocalHost, LocalHostIPv6, Broadcast, ..., Any }
+</ENUMS>
+
+<PROTOS>
+void   clear()
+bool   isInSubnet(const QHostAddress & subnet, int netmask) const
+bool   isInSubnet(const QPair<QHostAddress, int> & subnet) const
+bool   isLoopback() const                                            [*V=0x050000*]
+bool   isNull() const
+QAbstractSocket::NetworkLayerProtocol   protocol() const
+QString   scopeId() const
+void   setAddress(quint32 ip4Addr)
+//void   setAddress(quint8 * ip6Addr)
+//void   setAddress(const Q_IPV6ADDR & ip6Addr)
+bool   setAddress(const QString & address)
+//void   setAddress(const sockaddr * sockaddr)
+void   setScopeId(const QString & id)
+quint32   toIPv4Address() const
+//Q_IPV6ADDR   toIPv6Address() const
+QString   toString() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

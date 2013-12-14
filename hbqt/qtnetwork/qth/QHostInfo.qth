@@ -1,0 +1,75 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QHostInfo>
+
+
+/*
+ * QHostInfo(int id = -1)
+ * QHostInfo(const QHostInfo & other)
+ * ~QHostInfo()
+ */
+HB_FUNC( QT_QHOSTINFO )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QHostInfo" ) )
+   {
+      __HB_RETPTRGC__( new QHostInfo( *hbqt_par_QHostInfo( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QHostInfo() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   HostInfoError { NoError, HostNotFound, UnknownError }
+</ENUMS>
+
+<PROTOS>
+QList<QHostAddress>   addresses() const
+HostInfoError   error() const
+QString   errorString() const
+QString   hostName() const
+int   lookupId() const
+void   setAddresses(const QList<QHostAddress> & addresses)
+void   setError(QHostInfo::HostInfoError error)
+void   setErrorString(const QString & str)
+void   setHostName(const QString & hostName)
+void   setLookupId(int id)
+
+void   abortHostLookup(int id)
+QHostInfo   fromName(const QString & name)
+QString   localDomainName()
+QString   localHostName()
+int   lookupHost(const QString & name, QObject * receiver, const char * member)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

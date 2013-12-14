@@ -1,0 +1,76 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkCacheMetaData>
+#include <QtCore/QDateTime>
+
+
+/*
+ * QNetworkCacheMetaData()
+ * QNetworkCacheMetaData(const QNetworkCacheMetaData & other)
+ * ~QNetworkCacheMetaData()
+ */
+HB_FUNC( QT_QNETWORKCACHEMETADATA )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkCacheMetaData" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkCacheMetaData( *hbqt_par_QNetworkCacheMetaData( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkCacheMetaData() );
+   }
+}
+</CODE>
+
+<ENUMS>
+typedef   AttributesMap
+typedef   RawHeader
+typedef   RawHeaderList
+</ENUMS>
+
+<PROTOS>
+AttributesMap   attributes() const
+QDateTime   expirationDate() const
+bool   isValid() const
+QDateTime   lastModified() const
+RawHeaderList   rawHeaders() const
+bool   saveToDisk() const
+//void   setAttributes(const AttributesMap & attributes)
+void   setExpirationDate(const QDateTime & dateTime)
+void   setLastModified(const QDateTime & dateTime)
+//void   setRawHeaders(const RawHeaderList & list)
+void   setSaveToDisk(bool allow)
+void   setUrl(const QUrl & url)
+void   swap(QNetworkCacheMetaData & other)                            [*V=0x050000*]
+QUrl   url() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

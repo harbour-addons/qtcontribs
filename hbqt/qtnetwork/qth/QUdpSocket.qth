@@ -1,0 +1,69 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QAbstractSocket
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QUdpSocket>
+#include <QtNetwork/QNetworkInterface>
+
+
+/*
+ * QUdpSocket(QObject * parent = 0)
+ * virtual   ~QUdpSocket()
+ */
+HB_FUNC( QT_QUDPSOCKET )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QUdpSocket( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QUdpSocket() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   hasPendingDatagrams() const
+bool   joinMulticastGroup(const QHostAddress & groupAddress)
+bool   joinMulticastGroup(const QHostAddress & groupAddress, const QNetworkInterface & iface)
+bool   leaveMulticastGroup(const QHostAddress & groupAddress)
+bool   leaveMulticastGroup(const QHostAddress & groupAddress, const QNetworkInterface & iface)
+QNetworkInterface   multicastInterface() const
+qint64   pendingDatagramSize() const
+qint64   readDatagram(char * data, qint64 maxSize, QHostAddress * address = 0, quint16 * port = 0)
+void     setMulticastInterface(const QNetworkInterface & iface)
+qint64   writeDatagram(const char * data, qint64 size, const QHostAddress & address, quint16 port)
+qint64   writeDatagram(const QByteArray & datagram, const QHostAddress & host, quint16 port)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

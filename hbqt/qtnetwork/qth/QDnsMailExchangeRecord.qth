@@ -1,0 +1,63 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QDnsMailExchangeRecord>
+
+
+/*
+ * QDnsMailExchangeRecord()
+ * QDnsMailExchangeRecord(const QDnsMailExchangeRecord & other)
+ * ~QDnsMailExchangeRecord()
+ */
+HB_FUNC( QT_QDNSMAILEXCHANGERECORD )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QDnsMailExchangeRecord" ) )
+   {
+      __HB_RETPTRGC__( new QDnsMailExchangeRecord( *hbqt_par_QDnsMailExchangeRecord( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDnsMailExchangeRecord() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   exchange() const
+QString   name() const
+quint16   preference() const
+void      swap(QDnsMailExchangeRecord & other)
+quint32   timeToLive() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,63 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkCookieJar>
+#include <QtNetwork/QNetworkCookie>
+
+
+/*
+ * QNetworkCookieJar(QObject * parent = 0)
+ * virtual   ~QNetworkCookieJar()
+ */
+HB_FUNC( QT_QNETWORKCOOKIEJAR )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkCookieJar( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkCookieJar() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QList<QNetworkCookie>   cookiesForUrl(const QUrl & url) const
+virtual bool   deleteCookie(const QNetworkCookie & cookie)                     [*V=0x050000*]
+virtual bool   insertCookie(const QNetworkCookie & cookie)                     [*V=0x050000*]
+virtual bool   setCookiesFromUrl(const QList<QNetworkCookie> & cookieList, const QUrl & url)
+virtual bool   updateCookie(const QNetworkCookie & cookie)                     [*V=0x050000*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

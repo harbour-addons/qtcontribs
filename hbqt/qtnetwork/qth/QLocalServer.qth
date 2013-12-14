@@ -1,0 +1,77 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QLocalServer>
+
+
+/*
+ * QLocalServer(QObject * parent = 0)
+ * ~QLocalServer()
+ */
+HB_FUNC( QT_QLOCALSERVER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QLocalServer( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QLocalServer() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   SocketOption { NoOptions, UserAccessOption, GroupAccessOption, OtherAccessOption, WorldAccessOption }
+flags   SocketOptions
+</ENUMS>
+
+<PROTOS>
+void   close()
+QString   errorString() const
+QString   fullServerName() const
+virtual bool   hasPendingConnections() const
+bool   isListening() const
+bool   listen(const QString & name)
+//bool   listen(qintptr socketDescriptor)
+int   maxPendingConnections() const
+virtual QLocalSocket *   nextPendingConnection()
+QAbstractSocket::SocketError   serverError() const
+QString   serverName() const
+void   setMaxPendingConnections(int numConnections)
+void   setSocketOptions(QLocalServer::SocketOptions options)                   [*V=0x050000*]
+SocketOptions   socketOptions() const
+bool   waitForNewConnection(int msec = 0, bool * timedOut = 0)
+
+bool   removeServer(const QString & name)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   newConnection()
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

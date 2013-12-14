@@ -1,0 +1,80 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QIODevice
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QSslConfiguration>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QNETWORKREPLY )
+{
+}
+</CODE>
+
+<ENUMS>
+enum   NetworkError { NoError, ConnectionRefusedError, RemoteHostClosedError, HostNotFoundError, ..., ProtocolFailure }
+typedef   RawHeaderPair
+</ENUMS>
+
+<PROTOS>
+QVariant   attribute(QNetworkRequest::Attribute code) const
+NetworkError   error() const
+bool   hasRawHeader(const QByteArray & headerName) const
+QVariant   header(QNetworkRequest::KnownHeaders header) const
+void   ignoreSslErrors(const QList<QSslError> & errors)
+bool   isFinished() const
+bool   isRunning() const
+QNetworkAccessManager *   manager() const
+QNetworkAccessManager::Operation   operation() const
+QByteArray   rawHeader(const QByteArray & headerName) const
+QList<QByteArray>   rawHeaderList() const
+//const QList<RawHeaderPair> &   rawHeaderPairs() const
+qint64   readBufferSize() const
+QNetworkRequest   request() const
+virtual void   setReadBufferSize(qint64 size)
+void   setSslConfiguration(const QSslConfiguration & config)
+QSslConfiguration   sslConfiguration() const
+QUrl   url() const
+
+virtual void   close()
+</PROTOS>
+
+<SLOTS>
+virtual void   abort() = 0
+virtual void   ignoreSslErrors()
+</SLOTS>
+
+<SIGNALS>
+void   downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+void   encrypted()
+void   error(QNetworkReply::NetworkError code)
+void   finished()
+void   metaDataChanged()
+void   sslErrors(const QList<QSslError> & errors)
+void   uploadProgress(qint64 bytesSent, qint64 bytesTotal)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

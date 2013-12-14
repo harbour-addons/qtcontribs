@@ -1,0 +1,79 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QDnsLookup>
+
+
+/*
+ * QDnsLookup(QObject * parent = 0)
+ * QDnsLookup(Type type, const QString & name, QObject * parent = 0)
+ * ~QDnsLookup()
+ */
+HB_FUNC( QT_QDNSLOOKUP )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QDnsLookup( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDnsLookup() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, ResolverError, OperationCancelledError, InvalidRequestError, ..., NotFoundError }
+enum   Type { A, AAAA, ANY, CNAME, ..., TXT }
+</ENUMS>
+
+<PROTOS>
+QList<QDnsDomainNameRecord>   canonicalNameRecords() const
+Error   error() const
+QString   errorString() const
+QList<QDnsHostAddressRecord>   hostAddressRecords() const
+bool   isFinished() const
+QList<QDnsMailExchangeRecord>   mailExchangeRecords() const
+QString   name() const
+QList<QDnsDomainNameRecord>   nameServerRecords() const
+QList<QDnsDomainNameRecord>   pointerRecords() const
+QList<QDnsServiceRecord>   serviceRecords() const
+void   setName(const QString & name)
+void   setType(QDnsLookup::Type)
+QList<QDnsTextRecord>   textRecords() const
+Type   type() const
+</PROTOS>
+
+<SLOTS>
+void   abort()
+void   lookup()
+</SLOTS>
+
+<SIGNALS>
+void   finished()
+void   nameChanged(const QString & name)
+void   typeChanged(Type type)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -3395,6 +3395,74 @@
 #define QDirIterator_Subdirectories                          0x2     // List entries inside all subdirectories as well.
 #define QDirIterator_FollowSymlinks                          0x1     // When combined with Subdirectories, this flag enables iterating through all subdirectories of the assigned path, following all symbolic links. Symbolic link loops (e.g., "link" => "." or "link" => "..") are automatically detected and ignored.
 
+#define QHostAddress_Null                                    0       // The null address object. Equivalent to QHostAddress().
+#define QHostAddress_LocalHost                               2       // The IPv4 localhost address. Equivalent to QHostAddress("127.0.0.1").
+#define QHostAddress_LocalHostIPv6                           3       // The IPv6 localhost address. Equivalent to QHostAddress("_1").
+#define QHostAddress_Broadcast                               1       // The IPv4 broadcast address. Equivalent to QHostAddress("255.255.255.255").
+#define QHostAddress_AnyIPv4                                 6       // The IPv4 any-address. Equivalent to QHostAddress("0.0.0.0"). A socket bound with this address will listen only on IPv4 interaces.
+#define QHostAddress_AnyIPv6                                 5       // The IPv6 any-address. Equivalent to QHostAddress("_"). A socket bound with this address will listen only on IPv6 interaces.
+#define QHostAddress_Any                                     4       // The dual stack any-address. A socket bound with this address will listen on both IPv4 and IPv6 interfaces.
+
+#define QNetworkAccessManager_UnknownAccessibility           -1      // The network accessibility cannot be determined.
+#define QNetworkAccessManager_NotAccessible                  0       // The network is not currently accessible, either because there is currently no network coverage or network access has been explicitly disabled by a call to setNetworkAccessible().
+#define QNetworkAccessManager_Accessible                     1       // The network is accessible.
+
+#define QNetworkAccessManager_HeadOperation                  1       // retrieve headers operation (created with head())
+#define QNetworkAccessManager_GetOperation                   2       // retrieve headers and download contents (created with get())
+#define QNetworkAccessManager_PutOperation                   3       // upload contents operation (created with put())
+#define QNetworkAccessManager_PostOperation                  4       // send the contents of an HTML form for processing via HTTP POST (created with post())
+#define QNetworkAccessManager_DeleteOperation                5       // delete contents operation (created with deleteResource())
+#define QNetworkAccessManager_CustomOperation                6       // custom operation (created with sendCustomRequest())
+
+#define QNetworkInterface_IsUp                               0x1     // the network interface is active
+#define QNetworkInterface_IsRunning                          0x2     // the network interface has resources allocated
+#define QNetworkInterface_CanBroadcast                       0x4     // the network interface works in broadcast mode
+#define QNetworkInterface_IsLoopBack                         0x8     // the network interface is a loopback interface
+#define QNetworkInterface_IsPointToPoint                     0x10    // the network interface is a point-to-point interface: that is, there is one, single other address that can be directly reached by it.
+#define QNetworkInterface_CanMulticast                       0x20    // the network interface supports multicasting
+
+#define QNetworkProxyQuery_TcpSocket                         0       // a normal, outgoing TCP socket
+#define QNetworkProxyQuery_UdpSocket                         1       // a datagram-based UDP socket, which could send to multiple destinations
+#define QNetworkProxyQuery_TcpServer                         100     // a TCP server that listens for incoming connections from the network
+#define QNetworkProxyQuery_UrlRequest                        101     // a more complex request which involves loading of a URL
+
+#define QNetworkSession_UnknownSessionError                  0       // An unidentified error occurred.
+#define QNetworkSession_SessionAbortedError                  1       // The session was aborted by the user or system.
+#define QNetworkSession_RoamingError                         2       // The session cannot roam to a new configuration.
+#define QNetworkSession_OperationNotSupportedError           3       // The operation is not supported for current configuration.
+#define QNetworkSession_InvalidConfigurationError            4       // The operation cannot currently be performed for the current configuration.
+
+#define QNetworkSession_Invalid                              0       // The session is invalid due to an invalid configuration. This may happen due to a removed access point or a configuration that was invalid to begin with.
+#define QNetworkSession_NotAvailable                         1       // The session is based on a defined but not yet discovered QNetworkConfiguration (see QNetworkConfiguration_StateFlag).
+#define QNetworkSession_Connecting                           2       // The network session is being established.
+#define QNetworkSession_Connected                            3       // The network session is connected. If the current process wishes to use this session it has to register its interest by calling open(). A network session is considered to be ready for socket operations if it isOpen() and connected.
+#define QNetworkSession_Closing                              4       // The network session is in the process of being shut down.
+#define QNetworkSession_Disconnected                         5       // The network session is not connected. The associated QNetworkConfiguration has the state QNetworkConfiguration_Discovered.
+#define QNetworkSession_Roaming                              6       // The network session is roaming from one access point to another access point.
+
+#define QNetworkSession_NoPolicy                             0       // No policy in force, usage is unrestricted.
+#define QNetworkSession_NoBackgroundTrafficPolicy            1       // Background network traffic (not user initiated) should be avoided for example to save battery or data charges
+
+#define QSslCertificate_Organization                         0       // "O" The name of the organization.
+#define QSslCertificate_CommonName                           1       // "CN" The common name; most often this is used to store the host name.
+#define QSslCertificate_LocalityName                         2       // "L" The locality.
+#define QSslCertificate_OrganizationalUnitName               3       // "OU" The organizational unit name.
+#define QSslCertificate_CountryName                          4       // "C" The country.
+#define QSslCertificate_StateOrProvinceName                  5       // "ST" The state or province.
+#define QSslCertificate_DistinguishedNameQualifier           6       // The distinguished name qualifier
+#define QSslCertificate_SerialNumber                         7       // The certificate's serial number
+#define QSslCertificate_EmailAddress                         8       // The email address associated with the certificate
+
+#define QSslSocket_VerifyNone                                0       // QSslSocket will not request a certificate from the peer. You can set this mode if you are not interested in the identity of the other side of the connection. The connection will still be encrypted, and your socket will still send its local certificate to the peer if it's requested.
+#define QSslSocket_QueryPeer                                 1       // QSslSocket will request a certificate from the peer, but does not require this certificate to be valid. This is useful when you want to display peer certificate details to the user without affecting the actual SSL handshake. This mode is the default for servers.
+#define QSslSocket_VerifyPeer                                2       // QSslSocket will request a certificate from the peer during the SSL handshake phase
+#define QSslSocket_AutoVerifyPeer                            3       // QSslSocket will automatically use QueryPeer for server sockets and VerifyPeer for client sockets.
+
+#define QSslSocket_UnencryptedMode                           0       // The socket is unencrypted. Its behavior is identical to QTcpSocket.
+#define QSslSocket_SslClientMode                             1       // The socket is a client-side SSL socket. It is either alreayd encrypted, or it is in the SSL handshake phase (see QSslSocket_isEncrypted()).
+#define QSslSocket_SslServerMode                             2       // The socket is a server-side SSL socket. It is either already encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted()).
+
+
 #endif
 
 

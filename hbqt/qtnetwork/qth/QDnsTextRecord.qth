@@ -1,0 +1,60 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = no
+Inherit     =
+Type        =
+New         =
+Version     = 0x050000
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QDnsTextRecord>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QDNSTEXTRECORD )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QDnsTextRecord" ) )
+   {
+      __HB_RETPTRGC__( new QDnsTextRecord( *hbqt_par_QDnsTextRecord( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDnsTextRecord() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   name() const
+void      swap(QDnsTextRecord & other)
+quint32   timeToLive() const
+QList<QByteArray>   values() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

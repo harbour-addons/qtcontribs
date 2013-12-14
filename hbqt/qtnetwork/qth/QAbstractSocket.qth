@@ -1,0 +1,105 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QIODevice
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QAbstractSocket>
+#include <QtNetwork/QHostAddress>
+#include <QtNetwork/QNetworkProxy>
+
+/*
+ * QAbstractSocket(SocketType socketType, QObject * parent)
+ * virtual ~QAbstractSocket()
+ */
+HB_FUNC( QT_QABSTRACTSOCKET )
+{
+}
+</CODE>
+
+<ENUMS>
+flags OpenMode
+enum OpenModeFlag { NotOpen, ReadOnly, WriteOnly, ReadWrite, ..., Unbuffered }
+
+enum BindFlag { ShareAddress, DontShareAddress, ReuseAddressHint, DefaultForPlatform }
+flags BindMode
+enum NetworkLayerProtocol { IPv4Protocol, IPv6Protocol, AnyIPProtocol, UnknownNetworkLayerProtocol }
+enum PauseMode { PauseNever, PauseOnSslErrors }
+flags PauseModes
+enum SocketError { ConnectionRefusedError, RemoteHostClosedError, HostNotFoundError, SocketAccessError, ..., UnknownSocketError }
+enum SocketOption { LowDelayOption, KeepAliveOption, MulticastTtlOption, MulticastLoopbackOption, TypeOfServiceOption }
+enum SocketState { UnconnectedState, HostLookupState, ConnectingState, ConnectedState, ..., ListeningState }
+enum SocketType { TcpSocket, UdpSocket, UnknownSocketType }
+</ENUMS>
+
+<PROTOS>
+void abort()
+bool bind(const QHostAddress & address, quint16 port = 0, BindMode mode = DefaultForPlatform)         [*V=0x050000*]
+bool bind(quint16 port = 0, BindMode mode = DefaultForPlatform)                                       [*V=0x050000*]
+//virtual void   connectToHost(const QString & hostName, quint16 port, OpenMode openMode = ReadWrite, NetworkLayerProtocol protocol = AnyIPProtocol)
+virtual void   connectToHost(const QHostAddress & address, quint16 port, OpenMode openMode = ReadWrite)
+virtual void   disconnectFromHost()
+SocketError   error() const
+bool   flush()
+bool   isValid() const
+QHostAddress   localAddress() const
+quint16   localPort() const
+PauseModes   pauseMode() const                                                                         [*V=0x050000*]
+QHostAddress   peerAddress() const
+QString   peerName() const
+quint16   peerPort() const
+QNetworkProxy   proxy() const
+qint64   readBufferSize() const
+virtual void   resume()                                                                                [*V=0x050000*]
+void   setPauseMode(PauseModes pauseMode)                                                              [*V=0x050000*]
+void   setProxy(const QNetworkProxy & networkProxy)
+virtual void   setReadBufferSize(qint64 size)
+//virtual bool   setSocketDescriptor(qintptr socketDescriptor, SocketState socketState = ConnectedState, OpenMode openMode = ReadWrite)
+virtual void   setSocketOption(QAbstractSocket::SocketOption option, const QVariant & value)           [*V=0x040600*]
+virtual qintptr   socketDescriptor() const
+virtual QVariant   socketOption(QAbstractSocket::SocketOption option)                                  [*V=0x040600*]
+SocketType   socketType() const
+SocketState   state() const
+virtual bool   waitForConnected(int msecs = 30000)
+virtual bool   waitForDisconnected(int msecs = 30000)
+
+virtual bool   atEnd() const
+virtual qint64   bytesAvailable() const
+virtual qint64   bytesToWrite() const
+virtual bool   canReadLine() const
+virtual void   close()
+virtual bool   isSequential() const
+virtual bool   waitForBytesWritten(int msecs = 30000)
+virtual bool   waitForReadyRead(int msecs = 30000)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>void   connected()
+void   disconnected()
+void   error(QAbstractSocket::SocketError socketError)
+void   hostFound()
+void   proxyAuthenticationRequired(const QNetworkProxy & proxy, QAuthenticator * authenticator)
+void   stateChanged(QAbstractSocket::SocketState socketState)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

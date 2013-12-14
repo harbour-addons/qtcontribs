@@ -1,0 +1,89 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QIODevice
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QLocalSocket>
+
+
+/*
+ *   QLocalSocket(QObject * parent = 0)
+ * ~QLocalSocket()
+ */
+HB_FUNC( QT_QLOCALSOCKET )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QLocalSocket( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QLocalSocket() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   LocalSocketError { ConnectionRefusedError, PeerClosedError, ServerNotFoundError, SocketAccessError, ..., UnknownSocketError }
+enum   LocalSocketState { UnconnectedState, ConnectingState, ConnectedState, ClosingState }
+</ENUMS>
+
+<PROTOS>
+void   abort()
+void   connectToServer(QIODevice::OpenMode openMode = ReadWrite)               [*V=0x050100*]
+void   connectToServer(const QString & name, QIODevice::OpenMode openMode = ReadWrite)
+void   disconnectFromServer()
+LocalSocketError   error() const
+bool   flush()
+QString   fullServerName() const
+bool   isValid() const
+virtual bool   open(QIODevice::OpenMode openMode = ReadWrite)
+qint64   readBufferSize() const
+QString   serverName() const
+void   setReadBufferSize(qint64 size)
+void   setServerName(const QString & name)                                     [*V=0x050100*]
+//bool   setSocketDescriptor(qintptr socketDescriptor, QLocalSocket::LocalSocketState socketState = ConnectedState, QIODevice::OpenMode openMode = ReadWrite)
+qintptr   socketDescriptor() const
+LocalSocketState   state() const
+bool   waitForConnected(int msecs = 30000)
+bool   waitForDisconnected(int msecs = 30000)
+
+virtual qint64   bytesAvailable() const
+virtual qint64   bytesToWrite() const
+virtual bool   canReadLine() const
+virtual void   close()
+virtual bool   isSequential() const
+virtual bool   waitForBytesWritten(int msecs = 30000)
+virtual bool   waitForReadyRead(int msecs = 30000)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   connected()
+void   disconnected()
+void   error(QLocalSocket::LocalSocketError socketError)
+void   stateChanged(QLocalSocket::LocalSocketState socketState)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

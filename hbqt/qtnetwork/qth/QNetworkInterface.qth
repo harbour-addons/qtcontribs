@@ -1,0 +1,73 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkInterface>
+
+
+/*
+ * QNetworkInterface()
+ * QNetworkInterface(const QNetworkInterface & other)
+ * ~QNetworkInterface()
+ */
+HB_FUNC( QT_QNETWORKINTERFACE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkInterface" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkInterface( *hbqt_par_QNetworkInterface( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkInterface() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   InterfaceFlag { IsUp, IsRunning, CanBroadcast, IsLoopBack, IsPointToPoint, CanMulticast }
+flags   InterfaceFlags
+</ENUMS>
+
+<PROTOS>
+QList<QNetworkAddressEntry>   addressEntries() const
+InterfaceFlags   flags() const
+QString   hardwareAddress() const
+QString   humanReadableName() const
+int   index() const
+bool   isValid() const
+QString   name() const
+void   swap(QNetworkInterface & other)                                         [*V=0x050000*]
+
+QList<QHostAddress>   allAddresses()
+QList<QNetworkInterface>   allInterfaces()
+QNetworkInterface   interfaceFromIndex(int index)
+QNetworkInterface   interfaceFromName(const QString & name)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

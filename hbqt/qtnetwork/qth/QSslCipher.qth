@@ -1,0 +1,69 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QSslCipher>
+
+
+/*
+ * QSslCipher()
+ * QSslCipher(const QString & name, QSsl::SslProtocol protocol)
+ * QSslCipher(const QSslCipher & other)
+ * ~QSslCipher()
+ */
+HB_FUNC( QT_QSSLCIPHER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSslCipher" ) )
+   {
+      __HB_RETPTRGC__( new QSslCipher( *hbqt_par_QSslCipher( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSslCipher() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   authenticationMethod() const
+QString   encryptionMethod() const
+bool   isNull() const
+QString   keyExchangeMethod() const
+QString   name() const
+QSsl::SslProtocol   protocol() const
+QString   protocolString() const
+int   supportedBits() const
+void   swap(QSslCipher & other)                                                [*V=0x050000*]
+int   usedBits() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

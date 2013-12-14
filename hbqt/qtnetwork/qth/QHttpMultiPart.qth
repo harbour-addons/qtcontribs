@@ -1,0 +1,63 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x40800
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QHttpMultiPart>
+
+
+/*
+ * QHttpMultiPart(QObject * parent = 0)
+ * QHttpMultiPart(ContentType contentType, QObject * parent = 0)
+ * ~QHttpMultiPart()
+ */
+HB_FUNC( QT_QHTTPMULTIPART )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QHttpMultiPart( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QHttpMultiPart() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   ContentType { MixedType, RelatedType, FormDataType, AlternativeType }
+</ENUMS>
+
+<PROTOS>
+void   append(const QHttpPart & httpPart)
+QByteArray   boundary() const
+void   setBoundary(const QByteArray & boundary)
+void   setContentType(QHttpMultiPart::ContentType contentType)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

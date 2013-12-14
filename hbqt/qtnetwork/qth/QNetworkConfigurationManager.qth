@@ -1,0 +1,70 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x040700
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkConfigurationManager>
+
+
+/*
+ * QNetworkConfigurationManager(QObject * parent = 0)
+ * virtual   ~QNetworkConfigurationManager()
+ */
+HB_FUNC( QT_QNETWORKCONFIGURATIONMANAGER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkConfigurationManager( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkConfigurationManager() );
+   }
+}
+</CODE>
+
+<ENUMS>
+flags   Capabilities
+enum   Capability { CanStartAndStopInterfaces, DirectConnectionRouting, SystemSessionSupport, ApplicationLevelRoaming, ..., NetworkSessionRequired }
+</ENUMS>
+
+<PROTOS>
+QList<QNetworkConfiguration>   allConfigurations(QNetworkConfiguration::StateFlags filter = 0) const
+QNetworkConfigurationManager::Capabilities   capabilities() const
+QNetworkConfiguration   configurationFromIdentifier(const QString & identifier) const
+QNetworkConfiguration   defaultConfiguration() const
+bool   isOnline() const
+</PROTOS>
+
+<SLOTS>
+void   updateConfigurations()
+</SLOTS>
+
+<SIGNALS>
+void   configurationAdded(const QNetworkConfiguration & config)
+void   configurationChanged(const QNetworkConfiguration & config)
+void   configurationRemoved(const QNetworkConfiguration & config)
+void   onlineStateChanged(bool isOnline)
+void   updateCompleted()
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

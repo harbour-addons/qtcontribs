@@ -1,0 +1,81 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkCookie>
+#include <QtCore/QDateTime>
+
+
+/*
+ * QNetworkCookie(const QByteArray & name = QByteArray(), const QByteArray & value = QByteArray())
+ * QNetworkCookie(const QNetworkCookie & other)
+ * ~QNetworkCookie()
+ */
+HB_FUNC( QT_QNETWORKCOOKIE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkCookie" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkCookie( *hbqt_par_QNetworkCookie( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkCookie() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   RawForm { NameAndValueOnly, Full }
+</ENUMS>
+
+<PROTOS>
+QString   domain() const
+QDateTime   expirationDate() const
+bool   hasSameIdentifier(const QNetworkCookie & other) const   [*V=0x050000*]
+bool   isHttpOnly() const
+bool   isSecure() const
+bool   isSessionCookie() const
+QByteArray   name() const
+void   normalize(const QUrl & url)                             [*V=0x050000*]
+QString   path() const
+void   setDomain(const QString & domain)
+void   setExpirationDate(const QDateTime & date)
+void   setHttpOnly(bool enable)
+void   setName(const QByteArray & cookieName)
+void   setPath(const QString & path)
+void   setSecure(bool enable)
+void   setValue(const QByteArray & value)
+void   swap(QNetworkCookie & other)                            [*V=0x050000*]
+QByteArray   toRawForm(QNetworkCookie::RawForm form = Full) const
+QByteArray   value() const
+
+QList<QNetworkCookie>   parseCookies(const QByteArray & cookieString)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

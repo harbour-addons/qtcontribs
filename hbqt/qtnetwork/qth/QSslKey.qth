@@ -1,0 +1,70 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QSslKey>
+
+
+/*
+ * QSslKey()
+ * QSslKey(const QByteArray & encoded, QSsl::KeyAlgorithm algorithm, QSsl::EncodingFormat encoding = QSsl::Pem, QSsl::KeyType type = QSsl::PrivateKey, const QByteArray & passPhrase = QByteArray())
+ * QSslKey(QIODevice * device, QSsl::KeyAlgorithm algorithm, QSsl::EncodingFormat encoding = QSsl::Pem, QSsl::KeyType type = QSsl::PrivateKey, const QByteArray & passPhrase = QByteArray())
+ * QSslKey(Qt::HANDLE handle, QSsl::KeyType type = QSsl::PrivateKey)
+ * QSslKey(const QSslKey & other)
+ * ~QSslKey()
+ */
+HB_FUNC( QT_QSSLKEY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSslKey" ) )
+   {
+      __HB_RETPTRGC__( new QSslKey( *hbqt_par_QSslKey( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSslKey() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QSsl::KeyAlgorithm   algorithm() const
+void   clear()
+//Qt::HANDLE   handle() const
+bool   isNull() const
+int   length() const
+void   swap(QSslKey & other)                                                [*V=0x050000*]
+QByteArray   toDer(const QByteArray & passPhrase = QByteArray()) const
+QByteArray   toPem(const QByteArray & passPhrase = QByteArray()) const
+QSsl::KeyType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

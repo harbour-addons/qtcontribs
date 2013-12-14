@@ -1,0 +1,75 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x040700
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkConfiguration>
+
+
+/*
+ * QNetworkConfiguration()
+ * QNetworkConfiguration(const QNetworkConfiguration & other)
+ * ~QNetworkConfiguration()
+ */
+HB_FUNC( QT_QNETWORKCONFIGURATION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkConfiguration" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkConfiguration( *hbqt_par_QNetworkConfiguration( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkConfiguration() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   BearerType { BearerUnknown, BearerEthernet, BearerWLAN, Bearer2G, ..., BearerLTE }
+enum   Purpose { UnknownPurpose, PublicPurpose, PrivatePurpose, ServiceSpecificPurpose }
+enum   StateFlag { Undefined, Defined, Discovered, Active }
+flags   StateFlags
+enum   Type { InternetAccessPoint, ServiceNetwork, UserChoice, Invalid }
+</ENUMS>
+
+<PROTOS>
+BearerType   bearerType() const
+BearerType   bearerTypeFamily() const
+QString   bearerTypeName() const
+QList<QNetworkConfiguration>   children() const
+QString   identifier() const
+bool   isRoamingAvailable() const
+bool   isValid() const
+QString   name() const
+Purpose   purpose() const
+StateFlags   state() const
+void   swap(QNetworkConfiguration & other)                                     [*V=0x050000*]
+Type   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,81 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkProxyQuery>
+#include <QtNetwork/QNetworkConfiguration>
+#include <QtCore/QUrl>
+
+/*
+ * QNetworkProxyQuery()
+ * QNetworkProxyQuery(const QUrl & requestUrl, QueryType queryType = UrlRequest)
+ * QNetworkProxyQuery(const QString & hostname, int port, const QString & protocolTag = QString(), QueryType queryType = TcpSocket)
+ * QNetworkProxyQuery(quint16 bindPort, const QString & protocolTag = QString(), QueryType queryType = TcpServer)
+ * QNetworkProxyQuery(const QNetworkProxyQuery & other)
+ * QNetworkProxyQuery(const QNetworkConfiguration & networkConfiguration, const QUrl & requestUrl, QueryType queryType = UrlRequest)
+ * QNetworkProxyQuery(const QNetworkConfiguration & networkConfiguration, const QString & hostname, int port, const QString & protocolTag = QString(), QueryType queryType = TcpSocket)
+ * QNetworkProxyQuery(const QNetworkConfiguration & networkConfiguration, quint16 bindPort, const QString & protocolTag = QString(), QueryType queryType = TcpServer)
+ * ~QNetworkProxyQuery()
+ */
+HB_FUNC( QT_QNETWORKPROXYQUERY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkProxyQuery" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkProxyQuery( *hbqt_par_QNetworkProxyQuery( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkProxyQuery() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   QueryType { TcpSocket, UdpSocket, TcpServer, UrlRequest }
+</ENUMS>
+
+<PROTOS>
+int   localPort() const
+QNetworkConfiguration   networkConfiguration() const
+QString   peerHostName() const
+int   peerPort() const
+QString   protocolTag() const
+QNetworkProxyQuery::QueryType   queryType() const
+void   setLocalPort(int port)
+void   setNetworkConfiguration(const QNetworkConfiguration & networkConfiguration)
+void   setPeerHostName(const QString & hostname)
+void   setPeerPort(int port)
+void   setProtocolTag(const QString & protocolTag)
+void   setQueryType(QNetworkProxyQuery::QueryType type)
+void   setUrl(const QUrl & url)
+void   swap(QNetworkProxyQuery & other)                                        [*V=0x050000*]
+QUrl   url() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

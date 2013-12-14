@@ -1,0 +1,67 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkAddressEntry>
+
+
+/*
+ * QNetworkAddressEntry()
+ * QNetworkAddressEntry(const QNetworkAddressEntry & other)
+ * ~QNetworkAddressEntry()
+ */
+HB_FUNC( QT_QNETWORKADDRESSENTRY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkAddressEntry" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkAddressEntry( *hbqt_par_QNetworkAddressEntry( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkAddressEntry() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QHostAddress   broadcast() const
+QHostAddress   ip() const
+QHostAddress   netmask() const
+int   prefixLength() const
+void   setBroadcast(const QHostAddress & newBroadcast)
+void   setIp(const QHostAddress & newIp)
+void   setNetmask(const QHostAddress & newNetmask)
+void   setPrefixLength(int length)
+void   swap(QNetworkAddressEntry & other)                            [*V=0x050000*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,89 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QSslConfiguration>
+#include <QtNetwork/QSslCipher>
+#include <QtNetwork/QSslKey>
+
+
+/*
+ * QSslConfiguration()
+ * QSslConfiguration(const QSslConfiguration & other)
+ * ~QSslConfiguration()
+ */
+HB_FUNC( QT_QSSLCONFIGURATION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSslConfiguration" ) )
+   {
+      __HB_RETPTRGC__( new QSslConfiguration( *hbqt_par_QSslConfiguration( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSslConfiguration() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QList<QSslCertificate>   caCertificates() const
+QList<QSslCipher>   ciphers() const
+bool   isNull() const
+QSslCertificate   localCertificate() const
+QList<QSslCertificate>   localCertificateChain() const                         [*V=0x050100*]
+QSslCertificate   peerCertificate() const
+QList<QSslCertificate>   peerCertificateChain() const
+int   peerVerifyDepth() const
+QSslSocket::PeerVerifyMode   peerVerifyMode() const
+QSslKey   privateKey() const
+QSsl::SslProtocol   protocol() const
+QSslCipher   sessionCipher() const
+QByteArray   sessionTicket() const                                             [*V=0x050200*]
+int   sessionTicketLifeTimeHint() const                                        [*V=0x050200*]
+void   setCaCertificates(const QList<QSslCertificate> & certificates)
+void   setCiphers(const QList<QSslCipher> & ciphers)
+void   setLocalCertificate(const QSslCertificate & certificate)
+void   setLocalCertificateChain(const QList<QSslCertificate> & localChain)     [*V=0x050100*]
+void   setPeerVerifyDepth(int depth)
+void   setPeerVerifyMode(QSslSocket::PeerVerifyMode mode)
+void   setPrivateKey(const QSslKey & key)
+void   setProtocol(QSsl::SslProtocol protocol)
+void   setSessionTicket(const QByteArray & sessionTicket)                      [*V=0x050200*]
+void   setSslOption(QSsl::SslOption option, bool on)
+void   swap(QSslConfiguration & other)                                         [*V=0x050000*]
+bool   testSslOption(QSsl::SslOption option) const                             [*V=0x040800*]
+
+QSslConfiguration   defaultConfiguration()
+void   setDefaultConfiguration(const QSslConfiguration & configuration)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

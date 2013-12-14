@@ -1,0 +1,67 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QAuthenticator>
+
+
+/*
+ * QAuthenticator()
+ * QAuthenticator(const QAuthenticator & other)
+ * ~QAuthenticator()
+ */
+HB_FUNC( QT_QAUTHENTICATOR )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QAuthenticator" ) )
+   {
+      __HB_RETPTRGC__( new QAuthenticator( *hbqt_par_QAuthenticator( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAuthenticator() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   isNull() const
+QVariant   option(const QString & opt) const
+QVariantHash   options() const
+QString   password() const
+QString   realm() const
+void   setOption(const QString & opt, const QVariant & value)
+void   setPassword(const QString & password)
+void   setUser(const QString & user)
+QString   user() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

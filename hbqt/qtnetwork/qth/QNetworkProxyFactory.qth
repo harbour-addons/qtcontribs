@@ -1,0 +1,55 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkProxyFactory>
+
+
+/*
+ * QNetworkProxyFactory()
+ * virtual   ~QNetworkProxyFactory()
+ */
+HB_FUNC( QT_QNETWORKPROXYFACTORY )
+{
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QList<QNetworkProxy>   queryProxy(const QNetworkProxyQuery & query = QNetworkProxyQuery()) = 0
+
+QList<QNetworkProxy>   proxyForQuery(const QNetworkProxyQuery & query)
+void   setApplicationProxyFactory(QNetworkProxyFactory * factory)
+void   setUseSystemConfiguration(bool enable)
+QList<QNetworkProxy>   systemProxyForQuery(const QNetworkProxyQuery & query = QNetworkProxyQuery())
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

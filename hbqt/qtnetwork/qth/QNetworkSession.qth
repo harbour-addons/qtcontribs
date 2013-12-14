@@ -1,0 +1,93 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x040700
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkSession>
+
+
+/*
+ * QNetworkSession(const QNetworkConfiguration & connectionConfig, QObject * parent = 0)
+ * virtual   ~QNetworkSession()
+ */
+HB_FUNC( QT_QNETWORKSESSION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkConfiguration" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkSession( *hbqt_par_QNetworkConfiguration( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QNetworkConfiguration" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkSession( *hbqt_par_QNetworkConfiguration( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   SessionError { UnknownSessionError, SessionAbortedError, RoamingError, OperationNotSupportedError, InvalidConfigurationError }
+enum   State { Invalid, NotAvailable, Connecting, Connected, ..., Roaming }
+flags   UsagePolicies
+enum   UsagePolicy { NoPolicy, NoBackgroundTrafficPolicy }
+</ENUMS>
+
+<PROTOS>
+virtual   ~QNetworkSession()
+quint64   activeTime() const
+quint64   bytesReceived() const
+quint64   bytesWritten() const
+QNetworkConfiguration   configuration() const
+SessionError   error() const
+QString   errorString() const
+QNetworkInterface   interface() const
+bool   isOpen() const
+QVariant   sessionProperty(const QString & key) const
+void   setSessionProperty(const QString & key, const QVariant & value)
+State   state() const
+QNetworkSession::UsagePolicies   usagePolicies() const                         [*V=0x050000*]
+bool   waitForOpened(int msecs = 30000)
+</PROTOS>
+
+<SLOTS>
+void   accept()
+void   close()
+void   ignore()
+void   migrate()
+void   open()
+void   reject()
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   closed()
+void   error(QNetworkSession::SessionError error)
+void   newConfigurationActivated()
+void   opened()
+void   preferredConfigurationChanged(const QNetworkConfiguration & config, bool isSeamless)
+void   stateChanged(QNetworkSession::State state)
+void   usagePoliciesChanged(QNetworkSession::UsagePolicies usagePolicies)      [*V=0x050000*]
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

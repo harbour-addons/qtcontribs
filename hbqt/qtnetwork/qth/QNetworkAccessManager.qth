@@ -1,0 +1,94 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkConfiguration>
+#include <QtNetwork/QNetworkProxy>
+
+
+/*
+ * QNetworkAccessManager(QObject * parent = 0)
+ * ~QNetworkAccessManager()
+ */
+HB_FUNC( QT_QNETWORKACCESSMANAGER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QNetworkAccessManager( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QNetworkAccessManager() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   NetworkAccessibility { UnknownAccessibility, NotAccessible, Accessible }
+enum   Operation { HeadOperation, GetOperation, PutOperation, PostOperation, DeleteOperation, CustomOperation }
+</ENUMS>
+
+<PROTOS>
+QNetworkConfiguration   activeConfiguration() const                            [*V=0x040700*]
+QAbstractNetworkCache *   cache() const
+void   clearAccessCache()                                                      [*V=0x050000*]
+QNetworkConfiguration   configuration() const                                  [*V=0x040700*]
+void   connectToHost(const QString & hostName, quint16 port = 80)              [*V=0x050200*]
+void   connectToHostEncrypted(const QString & hostName, quint16 port = 443, const QSslConfiguration & sslConfiguration = QSslConfiguration::defaultConfiguration())  [*V=0x050200*]
+QNetworkCookieJar *   cookieJar() const
+QNetworkReply *   deleteResource(const QNetworkRequest & request)              [*V=0x040600*]
+QNetworkReply *   get(const QNetworkRequest & request)
+QNetworkReply *   head(const QNetworkRequest & request)
+NetworkAccessibility   networkAccessible() const
+QNetworkReply *   post(const QNetworkRequest & request, QIODevice * data)
+QNetworkReply *   post(const QNetworkRequest & request, const QByteArray & data)
+QNetworkReply *   post(const QNetworkRequest & request, QHttpMultiPart * multiPart) [*V=0x040800*]
+QNetworkProxy   proxy() const
+QNetworkProxyFactory *   proxyFactory() const
+QNetworkReply *   put(const QNetworkRequest & request, QIODevice * data)
+QNetworkReply *   put(const QNetworkRequest & request, QHttpMultiPart * multiPart)  [*V=0x040800*]
+QNetworkReply *   put(const QNetworkRequest & request, const QByteArray & data)
+QNetworkReply *   sendCustomRequest(const QNetworkRequest & request, const QByteArray & verb, QIODevice * data = 0)  [*V=0x040700*]
+void   setCache(QAbstractNetworkCache * cache)
+void   setConfiguration(const QNetworkConfiguration & config)                       [*V=0x040700*]
+void   setCookieJar(QNetworkCookieJar * cookieJar)
+void   setNetworkAccessible(QNetworkAccessManager::NetworkAccessibility accessible) [*V=0x040700*]
+void   setProxy(const QNetworkProxy & proxy)
+void   setProxyFactory(QNetworkProxyFactory * factory)
+QStringList   supportedSchemes() const                                              [*V=0x050200*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   authenticationRequired(QNetworkReply * reply, QAuthenticator * authenticator)
+void   encrypted(QNetworkReply * reply)                                        [*V=0x050100*]
+void   finished(QNetworkReply * reply)
+void   networkAccessibleChanged(QNetworkAccessManager::NetworkAccessibility accessible)
+void   proxyAuthenticationRequired(const QNetworkProxy & proxy, QAuthenticator * authenticator)
+void   sslErrors(QNetworkReply * reply, const QList<QSslError> & errors)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

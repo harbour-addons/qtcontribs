@@ -1,0 +1,92 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QSslCertificate>
+#include <QtNetwork/QSslKey>
+#include <QtCore/QStringList>
+#include <QtCore/QDateTime>
+#if QT_VERSION >= 0x050000
+#include <QtNetwork/QSslCertificateExtension>
+#endif
+
+/*
+ * QSslCertificate(QIODevice * device, QSsl::EncodingFormat format = QSsl::Pem)
+ * QSslCertificate(const QByteArray & data = QByteArray(), QSsl::EncodingFormat format = QSsl::Pem)
+ * QSslCertificate(const QSslCertificate & other)
+ * ~QSslCertificate()
+ */
+HB_FUNC( QT_QSSLCERTIFICATE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSslCertificate" ) )
+   {
+      __HB_RETPTRGC__( new QSslCertificate( *hbqt_par_QSslCertificate( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSslCertificate() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   SubjectInfo { Organization, CommonName, LocalityName, OrganizationalUnitName, ..., EmailAddress }
+</ENUMS>
+
+<PROTOS>
+void   clear()
+QByteArray   digest(QCryptographicHash::Algorithm algorithm = QCryptographicHash::Md5) const
+QDateTime   effectiveDate() const
+QDateTime   expiryDate() const
+QList<QSslCertificateExtension>   extensions() const                           [*V=0x050000*]
+//Qt::HANDLE   handle() const
+bool   isBlacklisted() const                                                   [*V=0x050000*]
+bool   isNull() const
+QStringList   issuerInfo(QSslCertificate::SubjectInfo subject) const
+QStringList   issuerInfo(const QByteArray & attribute) const
+QList<QByteArray>   issuerInfoAttributes() const                               [*V=0x050000*]
+QSslKey   publicKey() const
+QByteArray   serialNumber() const
+QMultiMap<QSsl::AlternativeNameEntryType, QString>   subjectAlternativeNames() const
+QStringList   subjectInfo(QSslCertificate::SubjectInfo subject) const
+QStringList   subjectInfo(const QByteArray & attribute) const
+QList<QByteArray>   subjectInfoAttributes() const                              [*V=0x050000*]
+void   swap(QSslCertificate & other)                                           [*V=0x050000*]
+QByteArray   toDer() const
+QByteArray   toPem() const
+QString   toText() const                                                       [*V=0x050000*]
+QByteArray   version() const
+
+QList<QSslCertificate>   fromData(const QByteArray & data, QSsl::EncodingFormat format = QSsl::Pem)
+QList<QSslCertificate>   fromDevice(QIODevice * device, QSsl::EncodingFormat format = QSsl::Pem)
+QList<QSslCertificate>   fromPath(const QString & path, QSsl::EncodingFormat format = QSsl::Pem, QRegExp::PatternSyntax syntax = QRegExp::FixedString)
+QList<QSslError>   verify(QList<QSslCertificate> certificateChain, const QString & hostName = QString())   [*V=0x050000*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

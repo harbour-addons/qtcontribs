@@ -1,0 +1,63 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x040800
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QHttpPart>
+
+
+/*
+ * QHttpPart()
+ * QHttpPart(const QHttpPart & other)
+ * ~QHttpPart()
+ */
+HB_FUNC( QT_QHTTPPART )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QHttpPart" ) )
+   {
+      __HB_RETPTRGC__( new QHttpPart( *hbqt_par_QHttpPart( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QHttpPart() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   setBody(const QByteArray & body)
+void   setBodyDevice(QIODevice * device)
+void   setHeader(QNetworkRequest::KnownHeaders header, const QVariant & value)
+void   setRawHeader(const QByteArray & headerName, const QByteArray & headerValue)
+void   swap(QHttpPart & other)                                            [*V=0x050000*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

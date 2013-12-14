@@ -1,0 +1,56 @@
+/*
+ * $Id: QGraphicsItemGroup.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     = QObject
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtNetwork/QAbstractNetworkCache>
+
+
+/*
+ * virtual ~QAbstractNetworkCache()
+ */
+HB_FUNC( QT_QABSTRACTNETWORKCACHE )
+{
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual qint64 cacheSize() const = 0
+virtual QIODevice * data(const QUrl & url) = 0
+virtual void insert(QIODevice * device) = 0
+virtual QNetworkCacheMetaData metaData(const QUrl & url) = 0
+virtual QIODevice * prepare(const QNetworkCacheMetaData & metaData) = 0
+virtual bool remove(const QUrl & url) = 0
+virtual void updateMetaData(const QNetworkCacheMetaData & metaData) = 0
+</PROTOS>
+
+<SLOTS>
+virtual void clear() = 0
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+
