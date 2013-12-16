@@ -16,6 +16,69 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+
+2013-12-15 21:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r266)
+  * hbqt/qtgui/hbqt_version.ch
+    + Version bump to r266.
+
+  * ChangeLog.txt 
+    ! Missed from prev commit.
+
+2013-12-14 13:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r265)
+  + hbqt/qtnetwork/qth/QAbstractNetworkCache.qth
+  + hbqt/qtnetwork/qth/QAbstractSocket.qth
+  + hbqt/qtnetwork/qth/QAuthenticator.qth
+  + hbqt/qtnetwork/qth/QDnsDomainNameRecord.qth
+  + hbqt/qtnetwork/qth/QDnsHostAddressRecord.qth
+  + hbqt/qtnetwork/qth/QDnsLookup.qth
+  + hbqt/qtnetwork/qth/QDnsMailExchangeRecord.qth
+  + hbqt/qtnetwork/qth/QDnsServiceRecord.qth
+  + hbqt/qtnetwork/qth/QDnsTextRecord.qth
+  + hbqt/qtnetwork/qth/QHostAddress.qth
+  + hbqt/qtnetwork/qth/QHostInfo.qth
+  + hbqt/qtnetwork/qth/QHttpMultiPart.qth
+  + hbqt/qtnetwork/qth/QHttpPart.qth
+  + hbqt/qtnetwork/qth/QLocalServer.qth
+  + hbqt/qtnetwork/qth/QLocalSocket.qth
+  + hbqt/qtnetwork/qth/QNetworkAccessManager.qth
+  + hbqt/qtnetwork/qth/QNetworkAddressEntry.qth
+  + hbqt/qtnetwork/qth/QNetworkCacheMetaData.qth
+  + hbqt/qtnetwork/qth/QNetworkConfiguration.qth
+  + hbqt/qtnetwork/qth/QNetworkConfigurationManager.qth
+  + hbqt/qtnetwork/qth/QNetworkCookie.qth
+  + hbqt/qtnetwork/qth/QNetworkCookieJar.qth
+  + hbqt/qtnetwork/qth/QNetworkDiskCache.qth
+  + hbqt/qtnetwork/qth/QNetworkInterface.qth
+  + hbqt/qtnetwork/qth/QNetworkProxyFactory.qth
+  + hbqt/qtnetwork/qth/QNetworkProxyQuery.qth
+  + hbqt/qtnetwork/qth/QNetworkReply.qth
+  + hbqt/qtnetwork/qth/QNetworkSession.qth
+  + hbqt/qtnetwork/qth/QSslCertificate.qth
+  + hbqt/qtnetwork/qth/QSslCertificateExtension.qth
+  + hbqt/qtnetwork/qth/QSslCipher.qth
+  + hbqt/qtnetwork/qth/QSslConfiguration.qth
+  + hbqt/qtnetwork/qth/QSslError.qth
+  + hbqt/qtnetwork/qth/QSslKey.qth
+  + hbqt/qtnetwork/qth/QSslSocket.qth
+  + hbqt/qtnetwork/qth/QTcpServer.qth
+  + hbqt/qtnetwork/qth/QTcpSocket.qth
+  + hbqt/qtnetwork/qth/QUdpSocket.qth
+
+  * hbqt/qtnetwork/qth/filelist.hbm
+    + Added: above new classes.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QtNetwork namespace specific constant usable with above classes.
+
+  ; NOTE: this completes the implementation of QtNetwork which offers really 
+          powerful classes to manage networks. This I realized after a 
+          project which I did on pure Qt. I am hoping that the same big 
+          project would materialize with HbQt also.
+
+          Above classes have been tested to be compilable with Qt 4.8.5 
+          and Qt 5.2. If you find any issues with another version of 
+          Qt please speak.
+
 2013-11-21 16:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r264)
   * hbqtwidgets/getsys.prg
     + Implemented: Clipper compatible CTRL+Y behavior in non-masked 
