@@ -1,0 +1,99 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+; Header File to Generate Sources
+;
+
+<CLASS>
+QObject     = no
+New         =
+Version     = 0x050000
+Destructor  = no
+</CLASS>
+
+<CODE>
+#include <QtCore/QStandardPaths>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSTANDARDPATHS )
+{
+   HB_FUNC_EXEC( HB_QSTANDARDPATHS );
+}
+</CODE>
+
+
+<ENUMS>
+enum  LocateOption { LocateFile, LocateDirectory }
+flags LocateOptions
+enum  StandardLocation { DesktopLocation, DocumentsLocation, FontsLocation, ApplicationsLocation, ..., DownloadLocation }
+</ENUMS>
+
+<PROTOS>
+QString displayName(StandardLocation type){
+   hb_retstr_utf8( QStandardPaths::displayName( ( QStandardPaths::StandardLocation ) hb_parni( 1 ) ).toUtf8().data() );
+}
+
+QString findExecutable(const QString & executableName, const QStringList & paths = QStringList()){
+   void * pText01 = NULL;
+   if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QStringList" ) )
+   {
+      hb_retstr_utf8( QStandardPaths::findExecutable( hb_parstr_utf8( 1, &pText01, NULL ), *hbqt_par_QStringList( 2 ) ).toUtf8().data() );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      hb_retstr_utf8( QStandardPaths::findExecutable( hb_parstr_utf8( 1, &pText01, NULL ) ).toUtf8().data() );
+   }
+   hb_strfree( pText01 );
+}
+
+QString locate(StandardLocation type, const QString & fileName, LocateOptions options = LocateFile){
+   void * pText01 = NULL;
+   if( hb_pcount() == 3 && HB_ISNUM( 1 ) && HB_ISCHAR( 2 ) && HB_ISNUM( 3 ) )
+   {
+      hb_retstr_utf8( QStandardPaths::locate( ( QStandardPaths::StandardLocation ) hb_parni( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), ( QStandardPaths::LocateOptions ) hb_parni( 3 ) ).toUtf8().data() );
+   }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && HB_ISCHAR( 2 ) )
+   {
+      hb_retstr_utf8( QStandardPaths::locate( ( QStandardPaths::StandardLocation ) hb_parni( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ).toUtf8().data() );
+   }
+   hb_strfree( pText01 );
+}
+
+QStringList locateAll(StandardLocation type, const QString & fileName, LocateOptions options = LocateFile){
+   void * pText01 = NULL;
+   if( hb_pcount() == 3 && HB_ISNUM( 1 ) && HB_ISCHAR( 2 ) && HB_ISNUM( 3 ) )
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QStringList( QStandardPaths::locate( ( QStandardPaths::StandardLocation ) hb_parni( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), ( QStandardPaths::LocateOptions ) hb_parni( 3 ) ) ), "HB_QSTRINGLIST", hbqt_del_QStringList, HBQT_BIT_NONE ) );
+   }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && HB_ISCHAR( 2 ) )
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QStringList( QStandardPaths::locate( ( QStandardPaths::StandardLocation ) hb_parni( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) ), "HB_QSTRINGLIST", hbqt_del_QStringList, HBQT_BIT_NONE ) );
+   }
+   hb_strfree( pText01 );
+}
+
+void setTestModeEnabled(bool testMode){
+   QStandardPaths::setTestModeEnabled( hb_parl( 1 ) );
+}
+
+QStringList standardLocations(StandardLocation type){
+   hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QStringList( QStandardPaths::standardLocations( ( QStandardPaths::StandardLocation ) hb_parni( 1 ) ) ), "HB_QSTRINGLIST", hbqt_del_QStringList, HBQT_BIT_NONE ) );
+}
+
+QString writableLocation(StandardLocation type){
+   hb_retstr_utf8( QStandardPaths::writableLocation( ( QStandardPaths::StandardLocation ) hb_parni( 1 ) ).toUtf8().data() );
+}
+</PROTOS>

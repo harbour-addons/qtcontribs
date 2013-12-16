@@ -17,6 +17,16 @@
 */
 
 
+2013-12-15 21:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r267)
+  * hbqt/qtgui/hbqt_version.ch
+    + Version bump to r267.
+
+  + hbqt/qtcore/qth/QStandardPaths.qth
+    + Added: class requested by CDQ.
+
+  * hbqt/qtcore/qth/filelist.hbm
+    + Added: QStandardPaths.qth
+
 2013-12-15 21:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r266)
   * hbqt/qtgui/hbqt_version.ch
     + Version bump to r266.

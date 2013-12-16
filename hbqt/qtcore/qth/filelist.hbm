@@ -58,6 +58,7 @@ QSettings.qth
 QSignalMapper.qth
 QSize.qth
 QSizeF.qth
+QStandardPaths.qth
 QStringList.qth
 QStringRef.qth
 QTextBoundaryFinder.qth
