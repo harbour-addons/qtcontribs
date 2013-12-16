@@ -17,7 +17,14 @@
 */
 
 
-2013-12-15 21:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r267)
+2013-12-16 13:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r269)
+  * hbqt/qtgui/hbqt_version.ch
+    + Version bump.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QStandardPath_* constants.
+
+2013-12-15 21:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r268)
   * hbqt/qtgui/hbqt_version.ch
     ! Missed from prev commit.
 

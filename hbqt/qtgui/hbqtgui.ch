@@ -3463,6 +3463,28 @@
 #define QSslSocket_SslServerMode                             2       // The socket is a server-side SSL socket. It is either already encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted()).
 
 
+// This enum describes the different flags that can be used for controlling the behavior of QStandardPaths::locate and QStandardPaths::locateAll.
+#define QStandardPaths_LocateFile                            0x0     // return only files
+#define QStandardPaths_LocateDirectory                       0x1     // return only directories
+
+// This enum describes the different locations that can be queried using methods such as QStandardPaths::writableLocation, QStandardPaths::standardLocations, and QStandardPaths::displayName.
+#define QStandardPaths_DesktopLocation                       0       // Returns the user's desktop directory.
+#define QStandardPaths_DocumentsLocation                     1       // Returns the user's document.
+#define QStandardPaths_FontsLocation                         2       // Returns the user's fonts.
+#define QStandardPaths_ApplicationsLocation                  3       // Returns the user's applications.
+#define QStandardPaths_MusicLocation                         4       // Returns the user's music.
+#define QStandardPaths_MoviesLocation                        5       // Returns the user's movies.
+#define QStandardPaths_PicturesLocation                      6       // Returns the user's pictures.
+#define QStandardPaths_TempLocation                          7       // Returns the system's temporary directory.
+#define QStandardPaths_HomeLocation                          8       // Returns the user's home directory.
+#define QStandardPaths_DataLocation                          9       // Returns a directory location where persistent application data can be stored. QCoreApplication::organizationName and QCoreApplication::applicationName are appended to the directory location returned for GenericDataLocation.
+#define QStandardPaths_CacheLocation                         10      // Returns a directory location where user-specific non-essential (cached) data should be written.
+#define QStandardPaths_GenericCacheLocation                  15      // Returns a directory location where user-specific non-essential (cached) data, shared across applications, should be written.
+#define QStandardPaths_GenericDataLocation                   11      // Returns a directory location where persistent data shared across applications can be stored.
+#define QStandardPaths_RuntimeLocation                       12      // Returns a directory location where runtime communication files should be written. For instance unix local sockets.
+#define QStandardPaths_ConfigLocation                        13      // Returns a directory location where user-specific configuration files should be written.
+#define QStandardPaths_DownloadLocation                      14      // Returns a directory for user's downloaded files.
+
 #endif
 
 
