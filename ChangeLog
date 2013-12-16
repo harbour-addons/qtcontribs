@@ -17,6 +17,10 @@
 */
 
 
+2013-12-15 21:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r267)
+  * hbqt/qtgui/hbqt_version.ch
+    ! Missed from prev commit.
+
 2013-12-15 21:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r267)
   * hbqt/qtgui/hbqt_version.ch
     + Version bump to r267.
