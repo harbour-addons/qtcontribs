@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-12-16 21:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r271)
+  * hbqt/qtgui/hbqt_version.ch
+    + Version Bump.
+  * hbqt/qtnetwork/qth/QLocalServer.qth
+    ! Fixed: to be compilable with Qt 4.8.3+.
+
 2013-12-16 19:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r270)
   * hbqt/qtnetwork/qth/QAbstractSocket.qth
   * hbqt/qtnetwork/qth/QLocalServer.qth

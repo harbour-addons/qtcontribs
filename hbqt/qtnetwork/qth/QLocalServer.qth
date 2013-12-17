@@ -51,8 +51,37 @@ QString   errorString() const
 QString   fullServerName() const
 virtual bool   hasPendingConnections() const
 bool   isListening() const
-bool   listen(const QString & name)
-bool   listen(qintptr socketDescriptor)
+
+//bool   listen(qintptr socketDescriptor)                                        [*V=0x050000*]
+bool   listen(const QString & name){
+   QLocalServer * p = ( QLocalServer * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+         case 1:
+         {
+            if( HB_ISCHAR( 1 ) )
+            {
+               void * pText01 = NULL;
+               hb_retl( p->listen( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ) ) );
+               hb_strfree( pText01 );
+               return;
+            }
+#if QT_VERSION >= 0x050000
+            else if( HB_ISNUM( 1 ) )
+            {
+               hb_retl( p->listen( hb_parnint( 1 ) ) );
+               return;
+            }
+#endif
+            break;
+         }
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+
 int   maxPendingConnections() const
 virtual QLocalSocket *   nextPendingConnection()
 QAbstractSocket::SocketError   serverError() const
