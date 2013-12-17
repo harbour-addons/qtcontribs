@@ -59,7 +59,7 @@ qint64   readBufferSize() const
 QString   serverName() const
 void   setReadBufferSize(qint64 size)
 void   setServerName(const QString & name)                                     [*V=0x050100*]
-//bool   setSocketDescriptor(qintptr socketDescriptor, QLocalSocket::LocalSocketState socketState = ConnectedState, QIODevice::OpenMode openMode = ReadWrite)
+bool   setSocketDescriptor(qintptr socketDescriptor, QLocalSocket::LocalSocketState socketState = ConnectedState, QIODevice::OpenMode openMode = ReadWrite)
 qintptr   socketDescriptor() const
 LocalSocketState   state() const
 bool   waitForConnected(int msecs = 30000)

@@ -1380,7 +1380,7 @@ CREATE CLASS HbQtSource
 
    VAR    cInt                                    INIT "int,qint16,quint16,short,ushort,unsigned,GLuint,GLenum,GLint,GLsizei,GLclampf"
    VAR    cIntLong                                INIT "qint32,quint32,QRgb,qgl_GLsizeiptr,qgl_GLintptr"
-   VAR    cIntLongLong                            INIT "qint64,quint64,qlonglong,qulonglong,ulong"
+   VAR    cIntLongLong                            INIT "qint64,quint64,qlonglong,qulonglong,ulong,qintptr,quintptr"
 
    VAR    lPaintEvent                             INIT .F.
    VAR    lBuildExtended                          INIT .F.

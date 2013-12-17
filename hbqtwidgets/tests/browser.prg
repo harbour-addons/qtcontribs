@@ -1,4 +1,4 @@
-/*
+﻿/*
  * $Id$
  */
 
@@ -33,15 +33,15 @@ FUNCTION Main()
    oBrowse := HbQtBrowseNew( 5, 5, 16, 30, oMain, QFont( "Courier New", 10 ) )
    oBrowse:colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
 
-   oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )             /* Does nothing, but no ERROR */
+   oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )           /* Does nothing, but no ERROR */
    oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )          /* Does nothing, but no ERROR */
    oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )          /* Does nothing, but no ERROR */
 
-   oBrowse:GoTopBlock    := {|| n := 1 }
-   oBrowse:GoBottomBlock := {|| n := Len( aTest0 ) }
+   oBrowse:GoTopBlock    := {|| n := 1, ArIndexNo( n ) }
+   oBrowse:GoBottomBlock := {|| n := Len( aTest0 ), ArIndexNo( n ) }
    oBrowse:SkipBlock     := {| nSkip, nPos | nPos := n, ;
                                  n := iif( nSkip > 0, Min( Len( aTest0 ), n + nSkip ), ;
-                                    Max( 1, n + nSkip ) ), n - nPos }
+                                    Max( 1, n + nSkip ) ), ArIndexNo( n ), n - nPos }
 
    oBrowse:AddColumn( HbQtColumnNew( "First",  {|| n } ) )
    oBrowse:AddColumn( HbQtColumnNew( "Second", {|x| iif( x == NIL, aTest0[ n ], aTest0[ n ] := x ) } ) )
@@ -71,7 +71,7 @@ FUNCTION Main()
 
    /* needed since I've changed some columns _after_ I've added them to TBrowse object */
    oBrowse:Configure()
-   oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw )  }
+   oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw, aTest0, aTest1, aTest2, aTest3 )  }
 
    /* Freeze first column TO the left */
    oBrowse:freeze := 1
@@ -83,6 +83,8 @@ FUNCTION Main()
    oBrowse:editEnabled   := .F.                       /* User must not be able to edit via edit button */
    oBrowse:statusMessage := "Ready !"
 
+   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+
    oMain:setCentralWidget( oBrowse:oWidget )
    oMain:resize( 360, 360 )
    oMain:show()
@@ -92,9 +94,10 @@ FUNCTION Main()
    RETURN NIL
 
 
-STATIC FUNCTION navigate( nKey, xData, oBrowse )
+STATIC FUNCTION navigate( nKey, xData, oBrowse, aTest0, aTest1, aTest2, aTest3 )
    LOCAL lHandelled := .T.
    LOCAL i, xResult
+   LOCAL lMore := .T.
 
    HB_SYMBOL_UNUSED( xData )
 
@@ -135,16 +138,35 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
       oBrowse:edit( "Update Info", .T., .T. )  /* Even IF :editable is OFF, still application code can initiate it */
 
    CASE nKey == K_SH_F12 // K_RETURN
-      oBrowse:panHome()
-      FOR i := 1 TO oBrowse:colCount
-         xResult := oBrowse:editCell()  /* HbQt Entention */
-         IF xResult == NIL
-            EXIT                        /* Sure ESCape is pressed */
-         ENDIF
-         IF i < oBrowse:colCount
-            oBrowse:Right()
-         ENDIF
-      NEXT
+      DO WHILE lMore
+         oBrowse:panHome()
+         FOR i := 2 TO oBrowse:colCount
+            IF oBrowse:colPos == 1
+               oBrowse:right()
+            ENDIF
+            xResult := oBrowse:editCell()  /* HbQt Extension */
+            IF xResult == NIL
+               lMore := .F.
+               EXIT                        /* Sure ESCape is pressed */
+            ENDIF
+            SWITCH oBrowse:colPos
+            CASE 2 ; aTest0[ ArIndexNo() ] := xResult ; EXIT
+            CASE 3 ; aTest1[ ArIndexNo() ] := xResult ; EXIT
+            CASE 4 ; aTest2[ ArIndexNo() ] := xResult ; EXIT
+            CASE 5 ; aTest3[ ArIndexNo() ] := xResult ; EXIT
+            ENDSWITCH
+            oBrowse:refreshCurrent()
+            IF i < oBrowse:colCount
+               oBrowse:Right()
+            ELSE
+               oBrowse:down()
+               IF oBrowse:hitBottom
+                  ArAddBlank( aTest0, aTest1, aTest2, aTest3 )
+                  oBrowse:down()
+               ENDIF
+            ENDIF
+         NEXT
+      ENDDO
 
    OTHERWISE
       oBrowse:applyKey( nKey )
@@ -225,3 +247,22 @@ STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTes
    RETURN NIL
 
 
+STATIC FUNCTION ArIndexNo( nIndex )
+   STATIC s_nIndex := 1 
+   LOCAL l_nIndex := s_nIndex 
+
+   IF HB_ISNUMERIC( nIndex )
+      s_nIndex := nIndex 
+   ENDIF
+
+   RETURN l_nIndex
+
+
+STATIC FUNCTION ArAddBlank( aTest0, aTest1, aTest2, aTest3 )
+
+   AAdd( aTest0, "      " )
+   AAdd( aTest1, 0 )
+   AAdd( aTest2, SToD( "" ) )
+   AAdd( aTest3, .F. )
+
+   RETURN NIL

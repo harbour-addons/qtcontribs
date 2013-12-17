@@ -70,7 +70,7 @@ virtual void   resume()                                                         
 void   setPauseMode(PauseModes pauseMode)                                                              [*V=0x050000*]
 void   setProxy(const QNetworkProxy & networkProxy)
 virtual void   setReadBufferSize(qint64 size)
-//virtual bool   setSocketDescriptor(qintptr socketDescriptor, SocketState socketState = ConnectedState, OpenMode openMode = ReadWrite)
+virtual bool   setSocketDescriptor(qintptr socketDescriptor, SocketState socketState = ConnectedState, OpenMode openMode = ReadWrite)
 virtual void   setSocketOption(QAbstractSocket::SocketOption option, const QVariant & value)           [*V=0x040600*]
 virtual qintptr   socketDescriptor() const
 virtual QVariant   socketOption(QAbstractSocket::SocketOption option)                                  [*V=0x040600*]

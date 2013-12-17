@@ -44,84 +44,84 @@ HB_FUNC( QT_QSSLSOCKET )
 </CODE>
 
 <ENUMS>
-enum   PeerVerifyMode { VerifyNone, QueryPeer, VerifyPeer, AutoVerifyPeer }
-enum   SslMode { UnencryptedMode, SslClientMode, SslServerMode }
+enum PeerVerifyMode { VerifyNone, QueryPeer, VerifyPeer, AutoVerifyPeer }
+enum SslMode { UnencryptedMode, SslClientMode, SslServerMode }
 </ENUMS>
 
 <PROTOS>
-void   abort()
-void   addCaCertificate(const QSslCertificate & certificate)
-bool   addCaCertificates(const QString & path, QSsl::EncodingFormat format = QSsl::Pem, QRegExp::PatternSyntax syntax = QRegExp::FixedString)
-void   addCaCertificates(const QList<QSslCertificate> & certificates)
-QList<QSslCertificate>   caCertificates() const
-QList<QSslCipher>   ciphers() const
+void abort()
+void addCaCertificate(const QSslCertificate & certificate)
+bool addCaCertificates(const QString & path, QSsl::EncodingFormat format = QSsl::Pem, QRegExp::PatternSyntax syntax = QRegExp::FixedString)
+void addCaCertificates(const QList<QSslCertificate> & certificates)
+QList<QSslCertificate> caCertificates() const
+QList<QSslCipher> ciphers() const
 
-void   connectToHostEncrypted(const QString & hostName, quint16 port, QIODevice::OpenMode mode = QIODevice::ReadWrite)  [*V=0x040600*]
-void   connectToHostEncrypted(const QString & hostName, quint16 port, const QString & sslPeerName, QIODevice::OpenMode mode = QIODevice::ReadWrite)  [*V=0x040600*]
-//void   connectToHostEncrypted(const QString & hostName, quint16 port, QIODevice::OpenMode mode = QIODevice::ReadWrite, QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::AnyIPProtocol)  [*V=0x050000*]
-//void   connectToHostEncrypted(const QString & hostName, quint16 port, const QString & sslPeerName, QIODevice::OpenMode mode = QIODevice::ReadWrite, QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::AnyIPProtocol)  [*V=0x050000*]
+void connectToHostEncrypted(const QString & hostName, quint16 port, QIODevice::OpenMode mode = QIODevice::ReadWrite)  [*V=0x040600*]
+void connectToHostEncrypted(const QString & hostName, quint16 port, const QString & sslPeerName, QIODevice::OpenMode mode = QIODevice::ReadWrite)  [*V=0x040600*]
+//void connectToHostEncrypted(const QString & hostName, quint16 port, QIODevice::OpenMode mode = QIODevice::ReadWrite, QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::AnyIPProtocol)  [*V=0x050000*]
+//void connectToHostEncrypted(const QString & hostName, quint16 port, const QString & sslPeerName, QIODevice::OpenMode mode = QIODevice::ReadWrite, QAbstractSocket::NetworkLayerProtocol protocol = QAbstractSocket::AnyIPProtocol)  [*V=0x050000*]
 
-qint64   encryptedBytesAvailable() const
-qint64   encryptedBytesToWrite() const
-bool   flush()
-void   ignoreSslErrors(const QList<QSslError> & errors)                        [*V=0x040600*]
-bool   isEncrypted() const
-QSslCertificate   localCertificate() const
-QList<QSslCertificate>   localCertificateChain() const                         [*V=0x050100*]
-SslMode   mode() const
-QSslCertificate   peerCertificate() const
-QList<QSslCertificate>   peerCertificateChain() const
-int   peerVerifyDepth() const
-QSslSocket::PeerVerifyMode   peerVerifyMode() const
-QString   peerVerifyName() const                                               [*V=0x040800*]
-QSslKey   privateKey() const
-QSsl::SslProtocol   protocol() const
-QSslCipher   sessionCipher() const
-void   setCaCertificates(const QList<QSslCertificate> & certificates)
-void   setCiphers(const QList<QSslCipher> & ciphers)
-void   setCiphers(const QString & ciphers)
-void   setLocalCertificate(const QSslCertificate & certificate)                [*V=0x050100*]
-void   setLocalCertificate(const QString & path, QSsl::EncodingFormat format = QSsl::Pem) [*V=0x050100*]
-void   setLocalCertificateChain(const QList<QSslCertificate> & localChain)
-void   setPeerVerifyDepth(int depth)
-void   setPeerVerifyMode(QSslSocket::PeerVerifyMode mode)
-void   setPeerVerifyName(const QString & hostName)                             [*V=0x040800*]
-void   setPrivateKey(const QSslKey & key)
-void   setPrivateKey(const QString & fileName, QSsl::KeyAlgorithm algorithm = QSsl::Rsa, QSsl::EncodingFormat format = QSsl::Pem, const QByteArray & passPhrase = QByteArray())
-void   setProtocol(QSsl::SslProtocol protocol)
-void   setSslConfiguration(const QSslConfiguration & configuration)
-QSslConfiguration   sslConfiguration() const
-QList<QSslError>   sslErrors() const
-bool   waitForEncrypted(int msecs = 30000)
+qint64 encryptedBytesAvailable() const
+qint64 encryptedBytesToWrite() const
+bool flush()
+void ignoreSslErrors(const QList<QSslError> & errors)                        [*V=0x040600*]
+bool isEncrypted() const
+QSslCertificate localCertificate() const
+QList<QSslCertificate> localCertificateChain() const                         [*V=0x050100*]
+SslMode mode() const
+QSslCertificate peerCertificate() const
+QList<QSslCertificate> peerCertificateChain() const
+int peerVerifyDepth() const
+QSslSocket::PeerVerifyMode peerVerifyMode() const
+QString peerVerifyName() const                                               [*V=0x040800*]
+QSslKey privateKey() const
+QSsl::SslProtocol protocol() const
+QSslCipher sessionCipher() const
+void setCaCertificates(const QList<QSslCertificate> & certificates)
+void setCiphers(const QList<QSslCipher> & ciphers)
+void setCiphers(const QString & ciphers)
+void setLocalCertificate(const QSslCertificate & certificate)                [*V=0x050100*]
+void setLocalCertificate(const QString & path, QSsl::EncodingFormat format = QSsl::Pem) [*V=0x050100*]
+void setLocalCertificateChain(const QList<QSslCertificate> & localChain)
+void setPeerVerifyDepth(int depth)
+void setPeerVerifyMode(QSslSocket::PeerVerifyMode mode)
+void setPeerVerifyName(const QString & hostName)                             [*V=0x040800*]
+void setPrivateKey(const QSslKey & key)
+void setPrivateKey(const QString & fileName, QSsl::KeyAlgorithm algorithm = QSsl::Rsa, QSsl::EncodingFormat format = QSsl::Pem, const QByteArray & passPhrase = QByteArray())
+void setProtocol(QSsl::SslProtocol protocol)
+void setSslConfiguration(const QSslConfiguration & configuration)
+QSslConfiguration sslConfiguration() const
+QList<QSslError> sslErrors() const
+bool waitForEncrypted(int msecs = 30000)
 
-virtual bool   atEnd() const
-virtual qint64   bytesAvailable() const
-virtual qint64   bytesToWrite() const
-virtual bool   canReadLine() const
-virtual void   close()
-virtual void   resume()                                                        [*V=0x050000*]
-virtual void   setReadBufferSize(qint64 size)
-//virtual bool   setSocketDescriptor(qintptr socketDescriptor, SocketState state = ConnectedState, QIODevice::OpenMode openMode = QIODevice::ReadWrite)
-virtual void   setSocketOption(QAbstractSocket::SocketOption option, const QVariant & value)  [*V=0x040600*]
-virtual QVariant   socketOption(QAbstractSocket::SocketOption option)                         [*V=0x040600*]
-virtual bool   waitForBytesWritten(int msecs = 30000)
-virtual bool   waitForConnected(int msecs = 30000)
-virtual bool   waitForDisconnected(int msecs = 30000)
-virtual bool   waitForReadyRead(int msecs = 30000)
+virtual bool atEnd() const
+virtual qint64 bytesAvailable() const
+virtual qint64 bytesToWrite() const
+virtual bool canReadLine() const
+virtual void close()
+virtual void resume()                                                        [*V=0x050000*]
+virtual void setReadBufferSize(qint64 size)
+virtual bool setSocketDescriptor( qintptr socketDescriptor, QAbstractSocket::SocketState state = ConnectedState, QIODevice::OpenMode openMode = QIODevice::ReadWrite)
+virtual void setSocketOption(QAbstractSocket::SocketOption option, const QVariant & value)  [*V=0x040600*]
+virtual QVariant socketOption(QAbstractSocket::SocketOption option)                         [*V=0x040600*]
+virtual bool waitForBytesWritten(int msecs = 30000)
+virtual bool waitForConnected(int msecs = 30000)
+virtual bool waitForDisconnected(int msecs = 30000)
+virtual bool waitForReadyRead(int msecs = 30000)
 </PROTOS>
 
 <SLOTS>
-void   ignoreSslErrors()
-void   startClientEncryption()
-void   startServerEncryption()
+void ignoreSslErrors()
+void startClientEncryption()
+void startServerEncryption()
 </SLOTS>
 
 <SIGNALS>
-void   encrypted()
-void   encryptedBytesWritten(qint64 written)
-void   modeChanged(QSslSocket::SslMode mode)
-void   peerVerifyError(const QSslError & error)
-void   sslErrors(const QList<QSslError> & errors)
+void encrypted()
+void encryptedBytesWritten(qint64 written)
+void modeChanged(QSslSocket::SslMode mode)
+void peerVerifyError(const QSslError & error)
+void sslErrors(const QList<QSslError> & errors)
 </SIGNALS>
 
 <VARIABLES>

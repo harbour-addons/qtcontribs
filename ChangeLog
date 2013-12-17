@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-12-16 19:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r270)
+  * hbqt/qtnetwork/qth/QAbstractSocket.qth
+  * hbqt/qtnetwork/qth/QLocalServer.qth
+  * hbqt/qtnetwork/qth/QLocalSocket.qth
+  * hbqt/qtnetwork/qth/QSslSocket.qth
+  * hbqt/qtnetwork/qth/QTcpServer.qth
+  * hbqtwidgets/tests/browser.prg
+    + Added: commented methods.
+
+  * hbqt/hbmk2_qt.hb
+    + Added: qintptr and quintptr casts introduced in latest Qt.
 
 2013-12-16 13:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r269)
   * hbqt/qtgui/hbqt_version.ch

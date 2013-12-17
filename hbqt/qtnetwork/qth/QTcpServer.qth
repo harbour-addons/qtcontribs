@@ -60,7 +60,7 @@ QAbstractSocket::SocketError   serverError() const
 quint16   serverPort() const
 void   setMaxPendingConnections(int numConnections)
 void   setProxy(const QNetworkProxy & networkProxy)
-//bool   setSocketDescriptor(qintptr socketDescriptor)
+bool   setSocketDescriptor(qintptr socketDescriptor)
 qintptr   socketDescriptor() const
 bool   waitForNewConnection(int msec = 0, bool * timedOut = 0)
 </PROTOS>
