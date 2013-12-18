@@ -86,7 +86,9 @@ QStringList locateAll(StandardLocation type, const QString & fileName, LocateOpt
 }
 
 void setTestModeEnabled(bool testMode){
+#if QT_VERSION >= 0x050200
    QStandardPaths::setTestModeEnabled( hb_parl( 1 ) );
+#endif
 }
 
 QStringList standardLocations(StandardLocation type){

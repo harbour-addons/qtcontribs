@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-12-18 07:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r273)
+  * hbqt/qtcore/qth/QStandardPaths.qth
+    ! Guarded: :setTestModeEnabled() under QT_VERSION 0x050200.
+       In Qt documentation it is not mentioned but compiling with Qt 5.1.1
+       failed on this member, so seems it has been introduced in Qt 5.2.
+
 2013-12-17 12:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r272)
   * hbdbu/dbu.prg
     + Added: REQUESTs for all string manipulation functions frequently 
