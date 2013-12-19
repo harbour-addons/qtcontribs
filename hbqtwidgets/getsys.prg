@@ -106,6 +106,8 @@ CLASS HbQtGet INHERIT GET
    METHOD data( xData )                           SETGET
    METHOD tooltip( cTip )                         SETGET
    METHOD positionCursor()
+   METHOD terminate()                             INLINE ::oGetList:terminate()
+   METHOD keyboard( nHbKey )                      INLINE __hbqtKeyBoard( nHbKey, ::oEdit )
 
 
    PROTECTED:
@@ -273,6 +275,12 @@ METHOD HbQtGet:create( oControl )
       CASE "QCheckBox"
          ::oEdit := QCheckBox( ::oParent )
          EXIT
+      CASE "HbQtBrowse"
+         ::oEdit := QFrame( ::oParent )
+         EXIT
+      CASE "QImage"
+         ::oEdit := QLabel( ::oParent )
+         EXIT
       ENDSWITCH
    ENDIF
    IF ! Empty( ::name )
@@ -304,6 +312,8 @@ METHOD HbQtGet:create( oControl )
       ENDIF
       EXIT
    CASE "QCHECKBOX"
+   CASE "QFRAME"
+   CASE "QLABEL"
       EXIT
    ENDSWITCH
 
@@ -350,6 +360,9 @@ METHOD HbQtGet:connect()
       ::oEdit:connect( "stateChanged(int)"      , {|i| ::varPut( i == Qt_Checked ) } )
       ::oEdit:connect( QEvent_MouseButtonPress  , {|oMouseEvent| ::execMousePress( oMouseEvent )   } )
       ::oEdit:connect( QEvent_MouseButtonRelease, {|oMouseEvent| ::execMouseRelease( oMouseEvent ) } )
+      EXIT
+   CASE "QFRAME"
+   CASE "QLABEL"
       EXIT
    ENDSWITCH
 
@@ -893,6 +906,11 @@ METHOD HbQtGet:setParams()
    CASE "QLISTWIDGET"
    CASE "QCOMBOBOX"
    CASE "QPUSHBUTTON"
+   CASE "QFRAME"
+      ::sl_dispWidth  := ::nToCol - iif( Empty( ::nCol ), 0, ::nCol ) + 1
+      ::sl_dispHeight := ::nToRow - iif( Empty( ::nRow ), 0, ::nRow ) + 1
+      EXIT
+   CASE "QLABEL"
       ::sl_dispWidth  := ::nToCol - iif( Empty( ::nCol ), 0, ::nCol ) + 1
       ::sl_dispHeight := ::nToRow - iif( Empty( ::nRow ), 0, ::nRow ) + 1
       EXIT
@@ -901,7 +919,6 @@ METHOD HbQtGet:setParams()
       ::sl_dispHeight := 1
       EXIT
    ENDSWITCH
-
 
    RETURN Self
 
@@ -1062,7 +1079,14 @@ METHOD HbQtGet:execFocusIn( oFocusEvent )
    ELSEIF ::cClassName == "QCOMBOBOX"
       QApplication():sendEvent( ::oEdit, QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
 
+   ELSEIF ::cClassName == "QFRAME"
+      ::data[ 1 ]:setFocus()
+
+   ELSEIF ::cClassName == "QLABEL"
+      ::keyBoard( K_ENTER )
+
    ENDIF
+
    RETURN .F.
 
 
@@ -1136,12 +1160,16 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    IF HB_ISBLOCK( SetKey( nHbKey ) )
       Eval( SetKey( nHbKey ) )
+#if 0
       oKeyEvent:accept()
       ::manageCursor()
       RETURN .T.
+#endif
    ENDIF
 
    ::nKeyPressed := nHbKey
+   __hbqtSetLastKey( nHbKey )
+
    IF ::cClassName == "QLINEEDIT"
       ::cPastBuffer := ::oEdit:text()
       ::nPastPosition := ::oEdit:cursorPosition()
@@ -1250,6 +1278,12 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
             ::navigate( _QGET_NAV_NEXT )
          ENDIF
          oKeyEvent:accept() ; RETURN .T.
+      ELSEIF ::cClassName == "QFRAME"
+         IF nHbKey == K_CTRL_ENTER
+            ::navigate( _QGET_NAV_NEXT )
+         ENDIF
+      ELSEIF ::cClassName == "QFRAME"
+         ::navigate( _QGET_NAV_NEXT )
       ENDIF
       EXIT
 
@@ -1576,7 +1610,7 @@ METHOD HbQtGet:varPut( xValue )
          aValue := Eval( ::bBlock )
          FOR i := 1 TO nLen - 1
             IF HB_ISNUMERIC( aSubs[ i ] ) .OR. ;
-               ( HB_ISHASH( aValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
+                  ( HB_ISHASH( aValue ) .AND. ValType( aSubs[ i ] ) $ "CDT" )
                aValue := aValue[ aSubs[ i ] ]
             ELSE
                EXIT
@@ -1654,13 +1688,17 @@ METHOD HbQtGet:getData( cBuffer )
       RETURN ::oEdit:isDown()
    CASE "QCHECKBOX"
       RETURN ::oEdit:isChecked()
+   CASE "QFRAME"
+      RETURN .T.
+   CASE "QLABEL"
+      RETURN ::varGet()
    ENDSWITCH
 
    RETURN ""
 
 
 METHOD HbQtGet:setData( xData )
-   LOCAL cTmp
+   LOCAL cTmp, oImage
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
@@ -1705,6 +1743,16 @@ METHOD HbQtGet:setData( xData )
    CASE "QCHECKBOX"
       ::oEdit:setChecked( xData )
       EXIT
+   CASE "QFRAME"
+      EXIT
+   CASE "QLABEL"
+      oImage := QImage()
+      IF oImage:load( xData )
+         cTmp := QPixmap():fromImage( oImage )
+         ::oEdit:setPixmap( cTmp:scaled( ::oEdit:width(), ::oEdit:height(), Qt_KeepAspectRatio ) )
+         ::oEdit:setPixmap( cTmp:scaled( ::oEdit:width(), ::oEdit:height(), Qt_KeepAspectRatio ) )
+      ENDIF
+      EXIT
    ENDSWITCH
 
    RETURN NIL
@@ -1742,6 +1790,12 @@ METHOD HbQtGet:getBuffer()
    CASE "QCHECKBOX"
       ::cBuffer := ::oEdit:isChecked()
       EXIT
+   CASE "QFRAME"
+      ::cBuffer := .T.
+      EXIT
+   CASE "QLABEL"
+      ::cBuffer := ::varGet()
+      EXIT
    ENDSWITCH
 
    RETURN ::cBuffer
@@ -1767,8 +1821,13 @@ METHOD HbQtGet:setBuffer( cBuffer )
       EXIT
    CASE "QPUSHBUTTON"
       EXIT
+   CASE "QFRAME"
+      EXIT
    CASE "QCHECKBOX"
       ::oEdit:setChecked( cBuffer )
+      EXIT
+   CASE "QLABEL"
+      ::oEdit:setPixmap( QPixmap():fromImage( QImage( cBuffer ) ):scaled( ::oEdit:width(), ::oEdit:height(), Qt_KeepAspectRatio ) )
       EXIT
    ENDSWITCH
 
@@ -1919,6 +1978,10 @@ METHOD HbQtGet:untransform()
       RETURN iif( ::oEdit:isDown(), "T", "F" )
    CASE "QCHECKBOX"
       RETURN iif( ::oEdit:isChecked(), "T", "F" )
+   CASE "QFRAME"
+      RETURN "T"
+   CASE "QLABEL"
+      RETURN ::varGet()
    ENDSWITCH
 
    RETURN ""

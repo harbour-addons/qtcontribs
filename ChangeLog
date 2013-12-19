@@ -16,6 +16,86 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-12-19 14:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r274)
+  * hbqt/qtgui/hbqt_version.ch
+    * Version bump.
+
+  * hbqtwidgets/hbtoqt.ch
+    + Mapped: LastKey() to __hbqtSetLastKey().
+       LastKey() will return the last key pressed within a QGET/QREAD session.
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added:  @ <top>, <left>, <bottom>, <right> QGET <v> HBQTBROWSE <oHbQtBrowse> ...
+              @ <top>, <left>, <bottom>, <right> QGET <v> IMAGE ...
+
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+    + Added: code to manipulate HbQtBrowse and Images via QGET/QREAD engine,
+       just like any other object. 
+
+       For @....QGET <lValue> HBQTBROWSE <oBrowse> ..., you will 
+       typically construct a browse object and will pass it as <oBrowse>. 
+       While within the browse object all your navigation instructions will 
+       work as ususal. K_CTRL_ENTER will exit the browser GET and focus will
+       be shifted to next GET in the GetList.
+
+       For @....QGET <cImageNameFromResourceOrDisk> IMAGE ..., you will pass 
+       the image name either from embedded resource or a name of disk file.
+       Later you can change the image via standard GET behaviour as:
+
+         LOCAL cImage := ":/myapp/myfav.png"  // OR "c:\myicons\myfav.png"
+         LOCAL cImageName := space( 40 )
+
+         @ 10,10,15,20 QGET cImage IMAGE WHEN {|| .F. }
+         @ 17, 10 QGET cImageName VALID {|v| v := GetActive():varGet(), iif( ! empty( v ), cImage := v, NIL ), .T. }
+         QREAD ...
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: click on a ghost (blank) row was posing ghost row as current row.
+       A long pending issue resolved.
+
+    + Added: some more methods ( experimental yet ).
+
+    + Added: METHOD initializationBlock( bBlock )           SETGET
+               This method is called right after HbQtBrowse become stable the
+               first time.
+
+    + Added: METHOD keyBoard( cnKey )                       INLINE __hbqtKeyboard( cnKey, ::oTableView )
+               A handy method to apply keys to an HbQtBrowse object.
+
+    + Added: DATA   oGetList
+             DATA   oGetObject
+             METHOD setGetObject( oGetObject )              SETGET
+               Internal methods and members to bind a HbQtBrowse object to 
+               a QGET/QREAD interface. Browser is entered for navigation 
+               if standard WHEN clause returns TRUE. The same is true with 
+               VALID clause. K_CTRL_ENTER will set set the focus to next 
+               GET in the current GETLIST.
+
+  * hbqtwidgets/hbqtevent.prg
+    ! Fixed: a nasty side-effect.
+
+  * hbqtwidgets/dashboard.prg
+    + Added: members
+             DATA   oGetEdit
+             DATA   oTextEdit
+             DATA   oGetEditTimer
+             DATA   oGetEditText                            INIT ""
+             DATA   nSeconds                                INIT Seconds()
+             METHOD manageUDF( cText )
+
+        This commits changes the way DashBoard objects are created. Now objects 
+        are created irrespective of if tey contain any data, and when data arrives
+        is populated therein. Also "Text" object has gone an overall change.
+
+  * hbqtwidgets/misc.prg
+    + Added: __hbqtSetLastKey().
+       A GET/SET function available to the PRG code via LastKey() console 
+       function during a QGET/QREAD session.
+
+  ; TODO: a descent demo program to demonstrate embedded browse and images 
+          inside QGET/QREAD mechanism.
+
 2013-12-18 07:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r273)
   * hbqt/qtcore/qth/QStandardPaths.qth
     ! Guarded: :setTestModeEnabled() under QT_VERSION 0x050200.

@@ -252,9 +252,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          oGet := aEdit[ _QGET_GET ]
 
          IF Empty( aEdit[ _QGET_CONTROL ] )
-            oEdit      := HbQtGet():new()
+            oEdit    := HbQtGet():new()
          ELSE
-            oEdit      := HbQtGet():new( aEdit[ _QGET_CONTROL ] )
+            oEdit    := HbQtGet():new( aEdit[ _QGET_CONTROL ] )
          ENDIF
          WITH OBJECT oEdit
             :widget  := aEdit[ _QGET_TYPE ]
@@ -278,6 +278,10 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             :mousable := ! aEdit[ _QGET_NOMOUSE ]
 
             :create()
+
+            IF :widget == "HbQtBrowse"
+               :data[ 1 ]:setGetObject( oEdit )
+            ENDIF
          ENDWITH
 
          IF Empty( aEdit[ _QGET_CONTROL ] )
@@ -353,6 +357,8 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
          ENDIF
          oWnd:show()
       ENDIF
+   ELSE
+      oGetList:setFocus( aGetList[ 1 ], Qt_TabFocusReason )
    ENDIF
 
    RETURN NIL
@@ -374,9 +380,11 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    METHOD previousGet( oGet )
    METHOD getIndex( oGet )
    METHOD setFocus( xGet, nReason )
+   METHOD getByIndex( nIndex )                    INLINE iif( nIndex > 0 .AND. nIndex <= Len( ::aGetList ), ::aGetList[ nIndex ], NIL )
 
    DATA   bOnLastGet
    METHOD lastGetBlock( bBlock )                  SETGET
+   METHOD terminate()                             INLINE iif( HB_ISBLOCK( ::bOnLastGet ), Eval( ::bOnLastGet ), NIL )
 
    DATA   oFocusFrame
    DATA   lFocusFrame                             INIT .T.

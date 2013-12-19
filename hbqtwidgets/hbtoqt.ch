@@ -76,6 +76,7 @@
    #xtranslate DispOutAt(   =>  HbQtDispOutAt(
    #xtranslate MaxRow(      =>  HbQtMaxRow(
    #xtranslate MaxCol(      =>  HbQtMaxCol(
+   #xtranslate LastKey(     =>  __hbqtSetLastKey(
 
 #endif
 

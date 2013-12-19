@@ -242,6 +242,34 @@
                                 { <label>, <{act}> }, <{prop}>, NIL } )
 
 
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> HBQTBROWSE <oHbQtBrowse> ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl>   ] ;
+                              [PROPERTIES <prop>    ] ;
+                        => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "HbQtBrowse", ;
+                                { <oHbQtBrowse> }, <{prop}>, NIL } )
+
+
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> IMAGE ;
+                              [VALID <valid>        ] ;
+                              [WHEN <when>          ] ;
+                              [COLOR <color>        ] ;
+                              [CAPTION <cap>        ] ;
+                              [<noMouse: NOMOUSABLE>] ;
+                              [CONTROL <oControl>   ] ;
+                              [PROPERTIES <prop>    ] ;
+                        => ;
+         AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
+                                <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QImage", ;
+                                NIL, <{prop}>, NIL } )
+
+
    #command QREAD [ [ PARENT ] <GetParent> ] ;
                   [ FONT <oFont>           ] ;
                   [ LINESPACING <nSpc>     ] ;

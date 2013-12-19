@@ -174,6 +174,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
 
    /* HbQt Extentions */
+   METHOD initializationBlock( bBlock )           SETGET
    METHOD navigationBlock( bBlock )               SETGET
 
    METHOD gotoBlock( bBlock )                     SETGET
@@ -204,6 +205,9 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD horizontalScrollbar                     SETGET
    METHOD verticalScrollbar                       SETGET
    METHOD cursorMode                              SETGET
+
+   METHOD editCellEx( cPicture, cColor, bWhen, bValid, nKey )
+   METHOD editFinishedBlock( bBlock )             SETGET
 
    METHOD editCell( cPicture, cColor, bWhen, bValid, nKey )
    METHOD edit( cTitle, lSaveOnLastGet, lDownAfterSave )
@@ -257,6 +261,12 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD terminate()                             INLINE ::oParent:close()
    METHOD getParent()                             INLINE ::oParent
    METHOD showCellContents()
+
+   METHOD keyBoard( cnKey )                       INLINE __hbqtKeyboard( cnKey, ::oTableView )
+
+   DATA   oGetList
+   DATA   oGetObject
+   METHOD setGetObject( oGetObject )              SETGET
 
 PROTECTED:
 
@@ -369,6 +379,7 @@ PROTECTED:
    DATA   aCellValuesA  AS ARRAY                  INIT {}   // cell values buffers for each record - actual
 
    DATA   bGotoBlock                              INIT NIL
+   DATA   bInitializationBlock                    INIT NIL
    DATA   bNavigationBlock                        INIT NIL
    DATA   bSearchBlock                            INIT NIL
    DATA   bSearchExBlock                          INIT NIL
@@ -389,6 +400,8 @@ PROTECTED:
 
    DATA   lVerticalMovementBlock                  INIT .F.
    DATA   lHorizontalMovementBlock                INIT .F.
+
+   DATA   bEditFinishedBlock                      INIT NIL
 
    /* Editor specific calls */
    METHOD loadRow()
@@ -504,6 +517,11 @@ PROTECTED:
 
    METHOD copySelectionToClipboard()
 
+   DATA   oCellEditor
+   DATA   oEditorDlg                              INIT QWidget()
+
+   DATA   lInitialized                            INIT .F.
+
    DATA   oContentsDlg, oContentsEditor, oContentsRect
 
    ENDCLASS
@@ -578,6 +596,10 @@ METHOD HbQtBrowse:create()
 
    ::oViewport := ::oTableView:viewport()
 
+   WITH OBJECT ::oCellEditor := QLineEdit( ::oViewport )
+      ::oCellEditor:hide()
+   ENDWITH
+
    /*  Horizontal Header Fine Tuning */
    WITH OBJECT ::oHeaderView := ::oTableView:horizontalHeader()
       :setHighlightSections( .F. )
@@ -594,6 +616,7 @@ METHOD HbQtBrowse:create()
       :setResizeMode( QHeaderView_Fixed )
       :setFocusPolicy( Qt_NoFocus )
       :setModel( ::oFooterModel )
+      :setFont( ::oFont )
       :hide()
    ENDWITH
 
@@ -881,6 +904,13 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    ENDIF
    IF HB_ISBLOCK( ::verticalMovementBlock )
       Eval( ::verticalMovementBlock, 0, NIL, Self )
+   ENDIF
+
+   IF ! ::lInitialized
+      ::lInitialized := .T.
+      IF HB_ISBLOCK( ::bInitializationBlock )
+         Eval( ::bInitializationBlock, NIL, NIL, Self )
+      ENDIF
    ENDIF
 
    RETURN Self
@@ -1275,7 +1305,6 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
    ::stopAllTimers()
 
    nKey := hbqt_qtEventToHbEvent( oEvent )
-
    IF nKey == K_ALT_F12
       ::showCellContents()
    ENDIF
@@ -1304,6 +1333,13 @@ METHOD HbQtBrowse:manageKeyPress( oEvent )
    IF HB_ISBLOCK( SetKey( nKey ) )
       Eval( SetKey( nKey ) )
       RETURN .T.                                  /* Stop Propegation to parent */
+   ENDIF
+
+   IF HB_ISOBJECT( ::oGetObject )                 /* Browse is a part of GETLIST */
+      IF nKey == K_CTRL_ENTER
+         __hbqtKeyBoard( K_CTRL_ENTER, ::oGetObject:edit() )
+         RETURN .T.
+      ENDIF
    ENDIF
 
    IF HB_ISBLOCK( ::bNavigationBlock )
@@ -1894,6 +1930,12 @@ METHOD HbQtBrowse:gotoBlock( bBlock )
    ENDIF
    RETURN ::bGotoBlock
 
+METHOD HbQtBrowse:initializationBlock( bBlock )
+   IF bBlock != NIL
+      ::bInitializationBlock := __eInstVar53( Self, "INITIALIZATIONBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bInitializationBlock
+
 METHOD HbQtBrowse:navigationBlock( bBlock )
    IF bBlock != NIL
       ::bNavigationBlock := __eInstVar53( Self, "NAVIGATIONBLOCK", bBlock, "B", 1001 )
@@ -1968,6 +2010,12 @@ METHOD HbQtBrowse:editBlock( bBlock )
    ENDIF
    RETURN ::bEditBlock
 
+METHOD HbQtBrowse:editFinishedBlock( bBlock )
+   IF bBlock != NIL
+      ::bEditFinishedBlock := __eInstVar53( Self, "EDITFINISHEDBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bEditFinishedBlock
+
 METHOD HbQtBrowse:searchBlock( bBlock )
    IF bBlock != NIL
       ::bSearchBlock := __eInstVar53( Self, "SEARCHBLOCK", bBlock, "B", 1001 )
@@ -2035,6 +2083,13 @@ METHOD HbQtBrowse:execIndex( cIndex )
    RETURN Self
 
 
+METHOD HbQtBrowse:setGetObject( oGetObject )
+   IF HB_ISOBJECT( oGetObject )
+      ::oGetObject := oGetObject
+   ENDIF
+   RETURN ::oGetObject
+
+
 METHOD HbQtBrowse:skipCols( nCols )
    LOCAL i
 
@@ -2058,10 +2113,18 @@ METHOD HbQtBrowse:skipRows( nRows )
    IF nRows < 0
       FOR i := 1 TO abs( nRows )
          ::up()
+         IF ::hitTop
+            ::keyboard( K_CTRL_PGUP )
+            EXIT
+         ENDIF
       NEXT
    ELSEIF nRows > 0
       FOR i := 1 TO nRows
          ::down()
+         IF ::hitBottom
+            ::keyboard( K_CTRL_PGDN )
+            EXIT
+         ENDIF
       NEXT
    ENDIF
 
@@ -2606,20 +2669,21 @@ METHOD HbQtBrowse:moveEnd()
 
 
 METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
-   LOCAL oDlg, nRes, oSz
+   LOCAL nRes, oSz
    LOCAL oRect   := ::oTableView:visualRect( ::getCurrentIndex() )
    LOCAL oPos    := ::oTableView:viewport():mapToGlobal( oRect:topLeft() )
    LOCAL oCol    := ::getColumn( ::colPos )
    LOCAL xValue  := Eval( oCol:block )
    LOCAL GetList := {}, SayList := {}
-
-   oDlg := QDialog( ::oTableView )
-   oDlg:setWindowTitle( oCol:heading )
+   LOCAL oDlg
 
    cPicture := iif( Empty( cPicture ), oCol:Picture, cPicture )
    IF Empty( cPicture )
       cPicture := ""
    ENDIF
+
+   oDlg := QDialog( ::oTableView )
+   oDlg:setWindowTitle( oCol:heading )
 
    @ 0,0 QGET xValue PICTURE cPicture ;
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
@@ -2694,6 +2758,37 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
    ::refreshCurrent()
 
    RETURN iif( nRes == 0, NIL, xValue )
+
+
+METHOD HbQtBrowse:editCellEx( cPicture, cColor, bWhen, bValid, nKey )
+   LOCAL nRes, oSz
+   LOCAL oRect   := ::oTableView:visualRect( ::getCurrentIndex() )
+   LOCAL oPos    := ::oTableView:viewport():mapToGlobal( oRect:topLeft() )
+   LOCAL oCol    := ::getColumn( ::colPos )
+   LOCAL xValue  := Eval( oCol:block )
+   LOCAL GetList := {}, SayList := {}
+
+   cPicture := iif( Empty( cPicture ), oCol:Picture, cPicture )
+   IF Empty( cPicture )
+      cPicture := ""
+   ENDIF
+
+   oSZ := NIL ; nRes := 0
+   HB_SYMBOL_UNUSED( nKey+osz+nRes+oPos )
+   WITH OBJECT ::oCellEditor
+      :move( oRect:x(), oRect:y() )
+      :resize( oRect:width(), oRect:height() )
+      :show()
+   ENDWITH
+
+   @ 0,0 QGET xValue CONTROL ::oCellEditor PICTURE cPicture ;
+                     COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
+                     WHEN    {|oGet| iif( HB_ISBLOCK( bWhen  ), Eval( bWhen , oGet ), iif( HB_ISBLOCK( oCol:preBlock  ), Eval( oCol:preBlock , oGet ), .T. ) ) } ;
+                     VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) }
+
+   QREAD PARENT ::oEditorDlg NOFOCUSFRAME LASTGETBLOCK {|| ::oCellEditor:hide(), Eval( ::editFinishedBlock, xValue, __hbqtSetLastKey(), Self ) }
+
+   RETURN NIL
 
 #if 0
 STATIC FUNCTION GetNoOfDecimals( xValue )

@@ -369,3 +369,13 @@ FUNCTION __hbqtSetWindowFixedSized( oWnd )
 
    RETURN NIL
 
+
+FUNCTION __hbqtSetLastKey( nKey )
+   LOCAL l_nKey
+   STATIC s_nKey := 0
+   l_nKey := s_nKey
+   IF HB_ISNUMERIC( nKey )
+      s_nKey := nKey
+   ENDIF
+   RETURN l_nKey
+

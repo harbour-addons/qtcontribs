@@ -834,7 +834,9 @@ FUNCTION hbqt_EventModifier( key )
 FUNCTION __hbqtKeyBoard( cnKey, oWidget )
    LOCAL nKey
 
-   hb_default( @oWidget, QApplication():focusWidget() )
+   IF Empty( oWidget )
+      oWidget := QApplication():focusWidget()
+   ENDIF
 
    IF HB_ISCHAR( cnKey )
       nKey := Asc( cnKey )

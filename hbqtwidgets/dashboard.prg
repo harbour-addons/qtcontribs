@@ -1226,6 +1226,13 @@ CLASS HbQtDashboardObject
    METHOD fetchData()
    METHOD pullData()
 
+   DATA   oGetEdit
+   DATA   oTextEdit
+   DATA   oGetEditTimer
+   DATA   oGetEditText                            INIT ""
+   DATA   nSeconds                                INIT Seconds()
+   METHOD manageUDF( cText )
+
    ENDCLASS
 
 
@@ -1243,7 +1250,9 @@ METHOD HbQtDashboardObject:new( oParent, aObject )
    ::cAttrbs     := aObject[ OBJ_CATTRBS  ]
    ::aPosAndSize := iif( Len( aObject ) >= OBJ_POSANDSIZE, aObject[ OBJ_POSANDSIZE ], {} )
 
-   ::fetchData()
+   IF ::Type() != "Text"
+      ::fetchData()
+   ENDIF
 
    RETURN Self
 
@@ -1251,6 +1260,19 @@ METHOD HbQtDashboardObject:new( oParent, aObject )
 METHOD HbQtDashboardObject:create()
 
    ::buildSubWindow()
+
+   SWITCH ::type()
+   CASE "Banner"  ;  ::buildBanner()  ;  EXIT
+   CASE "Figure"  ;  ::buildFigure()  ;  EXIT
+   CASE "Graph"   ;  ::buildGraph()   ;  EXIT
+   //CASE "Browser" ;  ::buildBrowser() ;  EXIT
+   CASE "Picture" ;  ::buildPicture() ;  EXIT
+   CASE "Text"    ;  ::buildText()    ;  EXIT
+   ENDSWITCH
+
+   IF HB_ISOBJECT( ::oWidget )
+      ::oSubWindow:setWidget( ::oWidget )
+   ENDIF
 
    RETURN Self
 
@@ -1304,7 +1326,7 @@ METHOD HbQtDashboardObject:pullData()
 
 
 METHOD HbQtDashboardObject:update( xData )
-   LOCAL aData, xTmp
+   LOCAL aData, xTmp, oRect, cData
 
    SWITCH ::type()
 
@@ -1317,15 +1339,17 @@ METHOD HbQtDashboardObject:update( xData )
          ::cDisp := ::xData + Space( ::oWidget:width() / ::nCharWidth - 1 )
          RETURN NIL
       ENDIF
-      IF ::nLastWidth != ::oWidget:width()
-         ::cDisp := ::xData + Space( ::oWidget:width() / ::nCharWidth - 1 )
-         ::nLastWidth := ::oWidget:width()
+      IF HB_ISSTRING( ::xData )
+         IF ::nLastWidth != ::oWidget:width()
+            ::cDisp := ::xData + Space( ::oWidget:width() / ::nCharWidth - 1 )
+            ::nLastWidth := ::oWidget:width()
+         ENDIF
+         ::nHotPos++
+         IF ::nHotPos > Len( ::cDisp )
+            ::nHotPos := 1
+         ENDIF
+         ::oWidget:setText( Left( ::cDisp, ::nHotPos ) )
       ENDIF
-      ::nHotPos++
-      IF ::nHotPos > Len( ::cDisp )
-         ::nHotPos := 1
-      ENDIF
-      ::oWidget:setText( Left( ::cDisp, ::nHotPos ) )
       EXIT
 
    CASE "Picture"
@@ -1343,19 +1367,26 @@ METHOD HbQtDashboardObject:update( xData )
       ELSE
          xTmp := ::xData
       ENDIF
-      IF __objGetClsName( xTmp ) == "QPIXMAP"
-         ::oWidget:setPixmap( xTmp )
-      ELSE
-         ::oWidget:setPixmap( QPixmap( xTmp ) )
+      IF __objGetClsName( xTmp ) != "QPIXMAP"
+         xTmp := QPixmap( xTmp )
       ENDIF
+         oRect := ::oSubWindow:geometry()
+         IF xTmp:width() > oRect:width() .OR. xTmp:height() > oRect:height()
+            ::oWidget:setPixmap( xTmp:scaled( oRect:width(), oRect:height(), Qt_KeepAspectRatio ) )
+         ELSE
+            ::oWidget:setPixmap( xTmp )
+         ENDIF
       EXIT
 
    CASE "Text"
-      IF ::attributes()[ DBRD_ATTRB_TEXT_KEEPAPPENDING ]
-         ::oWidget:append( iif( HB_ISCHAR( xData ), xData, iif( HB_ISCHAR( ::xData ), ::xData, "" ) ) )
-      ELSE
-         ::oWidget:clear()
-         ::oWidget:setText( iif( HB_ISCHAR( xData ), xData, iif( HB_ISCHAR( ::xData ), ::xData, "" ) ) )
+      cData := iif( HB_ISCHAR( xData ), xData, iif( HB_ISCHAR( ::xData ), ::xData, NIL ) )
+      IF cData != NIL
+         IF ::attributes()[ DBRD_ATTRB_TEXT_KEEPAPPENDING ]
+            ::oTextEdit:append( cData )
+         ELSE
+            ::oTextEdit:clear()
+            ::oTextEdit:setText( cData )
+         ENDIF
       ENDIF
       EXIT
 
@@ -1423,7 +1454,7 @@ METHOD HbQtDashboardObject:buildSubWindow()
       ENDIF
    ENDWITH
 
-   IF ::nDuration > 0
+   IF ::nDuration > 0 .AND. ::Type() != "Text"
       WITH OBJECT ::oTimerFetch := QTimer( ::oSubWindow )
          :setInterval( ::nDuration * 1000 )
          :connect( "timeout()", {|| ::fetchData(), .F. } )
@@ -1443,7 +1474,7 @@ METHOD HbQtDashboardObject:buildSubWindow()
 
 
 METHOD HbQtDashboardObject:buildText()
-   LOCAL oFont
+   LOCAL oFont, oLay
    LOCAL aAttrbs := ::attributes()
 
    ASize( aAttrbs, DBRD_ATTRB_TEXT_NOVRBLS )
@@ -1453,18 +1484,32 @@ METHOD HbQtDashboardObject:buildText()
    IF ! HB_ISNUMERIC( aAttrbs[ DBRD_ATTRB_TEXT_FONTSIZE ] )
       aAttrbs[ DBRD_ATTRB_TEXT_FONTSIZE ] := 18
    ENDIF
-   WITH OBJECT ::oWidget := QTextEdit()
+   ::oWidget := QWidget()
+   WITH OBJECT oLay := QVBoxLayout()
+      :setContentsMargins( 0,0,0,0 )
+   ENDWITH
+   WITH OBJECT ::oTextEdit := QTextEdit()
       :setAlignment( Qt_AlignVCenter + Qt_AlignHCenter )
       oFont := QFont( aAttrbs[ DBRD_ATTRB_TEXT_FONTNAME ], aAttrbs[ DBRD_ATTRB_TEXT_FONTSIZE ] )
       oFont:setBold( .T. )
       :setFont( oFont )
       :setReadOnly( .T. )
    ENDWITH
+   WITH OBJECT ::oGetEdit := QLineEdit()
+      :connect( "returnPressed()", {|| ::manageUDF() } )
+      :connect( "textChanged(QString)", {|cText| ::manageUDF( cText ) } )
+   ENDWITH
+   WITH OBJECT ::oWidget
+      :setLayout( oLay )
+   ENDWITH
+   oLay:addWidget( ::oTextEdit )
+   oLay:addWidget( ::oGetEdit )
+
    IF aAttrbs[ DBRD_ATTRB_TEXT_COLORS ] != NIL
-      ::oWidget:setStyleSheet( __hbqtRgbStringFromColors( aAttrbs[ DBRD_ATTRB_TEXT_COLORS ] ) )
+      ::oTextEdit:setStyleSheet( __hbqtRgbStringFromColors( aAttrbs[ DBRD_ATTRB_TEXT_COLORS ] ) )
    ENDIF
    IF HB_ISLOGICAL( aAttrbs[ DBRD_ATTRB_TEXT_NOWRAP ] ) .AND. aAttrbs[ DBRD_ATTRB_TEXT_NOWRAP ]
-      ::oWidget:setWrapMode( QTextEdit_NoWrap )
+      ::oTextEdit:setWrapMode( QTextEdit_NoWrap )
    ENDIF
    IF ! HB_ISLOGICAL( aAttrbs[ DBRD_ATTRB_TEXT_KEEPAPPENDING ] )
       aAttrbs[ DBRD_ATTRB_TEXT_KEEPAPPENDING ] := .F.
@@ -1472,12 +1517,40 @@ METHOD HbQtDashboardObject:buildText()
    IF HB_ISNUMERIC( aAttrbs[ DBRD_ATTRB_TEXT_CLEARAFTERMS ] )
       WITH OBJECT ::oTimerClear := QTimer( ::oWidget )
          :setInterval( aAttrbs[ DBRD_ATTRB_TEXT_CLEARAFTERMS ] )
-         :connect( "timeout()", {|| ::oWidget:clear(), __hbqtPushObjectData( ::nID, NIL ) } )
+         :connect( "timeout()", {|| ::oTextEdit:clear(), __hbqtPushObjectData( ::nID, NIL ) } )
          :start()
       ENDWITH
    ENDIF
+   WITH OBJECT ::oGetEditTimer := QTimer( ::oGetEdit )
+      :setInterval( 500 )
+      :connect( "timeout()", {|| ::manageUDF() } )
+      :start()
+   ENDWITH
 
    RETURN Self
+
+
+METHOD HbQtDashboardObject:manageUDF( cText )
+   HB_SYMBOL_UNUSED( cText )
+
+   IF ::oGetEdit:text() == ::oGetEditText
+      IF Seconds() - ::nSeconds > 5
+         ::oGetEdit:selectAll()
+         ::nSeconds := Seconds()
+      ENDIF
+   ELSE
+      ::oGetEditText := ::oGetEdit:text()
+      ::xData := Eval( ::dataBlock(), ::oGetEditText )
+      IF HB_ISSTRING( ::xData )
+         ::update( ::xData )
+         IF ! Empty( ::xData )           // Start Afresh
+            ::oGetEdit:selectAll()
+         ENDIF
+      ENDIF
+      ::nSeconds := Seconds()
+   ENDIF
+
+   RETURN .T.
 
 
 METHOD HbQtDashboardObject:buildPicture()
