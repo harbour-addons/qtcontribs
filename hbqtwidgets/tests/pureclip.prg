@@ -13,6 +13,7 @@
 #include "set.ch"
 #include "hbqtstd.ch"
 #include "inkey.ch"
+#include "hbqtgui.ch"
 
 #include "hbtrace.ch"
 
@@ -50,7 +51,7 @@ FUNCTION Main()
    LOCAL oBrowse
    LOCAL lBrowse := .T.
 
-   hbqt_errorsys()              /* ALWAYS place it as first function call; you will know your errors */
+   hbqt_errorsys()              /* ALWAYS place it as first FUNCTION call; you will know your errors */
 
    aTest2 := { Date(), Date() + 4, Date() + 56, Date() + 14, Date() + 5, Date() + 6, Date() + 7, Date() + 8, Date() + 10000, Date() - 1000, Date() - 54, Date() + 456342 }
 
@@ -116,12 +117,19 @@ FUNCTION Main()
 
    @ 26, 25, 26, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| iif( Alert( "Save Data?", {"Yes","No"} ) == 1, "cText", "cNotes" ) } ;
                                                         WHEN nSlry > 700 .AND. nSlry < 17000
-   @ 26, 50, 26, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := Alert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
+   @ 26, 50, 26, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := Alert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Yes","No" }, "W+/N", 5, "Really?", 2 ), ;
                                                         iif( v == 1, GetActive():parent():close(), NIL ) }
 
+   /* Bring on browser as a selection list */
    SetKey( K_F2, {|| BrowseArray( GetActive():parent(), .T. ) } )
 
+   /* Caclulator callable with F10 */
+   SetKey( K_F10, {|| HbQtCalculate( GetActive():parent() ) } )
+
    READ PROPERTIES {|oWnd,oGetList| SetFormProperties( oWnd, oGetList ) }
+
+   QApplication():clipboard:clear( QClipboard_Clipboard )
+   QApplication():clipboard:clear( QClipboard_Selection )
 
    RETURN NIL
 

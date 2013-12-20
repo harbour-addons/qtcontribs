@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-12-20 15:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r276)
+  * hbide/console.prg
+    - Guarded: unused function, creating problem when compiled with -w3.
+
+  * hbqtwidgets/tests/pureclip.prg
+    + Added: F10 - Calculator to popup HbQtCalculator.    
+
 2013-12-19 19:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r275)
   * hbqtwidgets/hbqtstd.ch
     + Added: [DONOTSCALE] member to @...IMAGE command.
