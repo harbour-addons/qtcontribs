@@ -306,6 +306,8 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
                   :setMaximumHeight( nH )
                ENDWITH
             ENDIF
+            //
+            oEdit:display()                        /* dimensions might have changed */
          ENDIF
 
          IF lFLayout

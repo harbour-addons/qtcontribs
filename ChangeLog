@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2013-12-19 19:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r275)
+  * hbqtwidgets/hbqtstd.ch
+    + Added: [DONOTSCALE] member to @...IMAGE command.
+       If Image GET is constructed with this clause, image will be 
+       the same as loaded. It may or may not occupy the rows/cols 
+       rectangle.
+ 
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+    + Added: code to manage {DONOTSCALE] clause of the @...IMAGE command.
+    + Added: code to populate HBQTBROWSE browser within ROWS/COLS rectangle.
+
+  * hbqtwidgets/tests/pureclip.prg
+    + Added: code to demonstrate HBQTBROWSE and IMAGE objects in the 
+       GET system. Navigate the GETS and when browser is entered, 
+       navigate withing the browser with arrow keys, watch the image 
+       area.
+
 2013-12-19 14:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r274)
   * hbqt/qtgui/hbqt_version.ch
     * Version bump.
@@ -93,7 +111,7 @@
        A GET/SET function available to the PRG code via LastKey() console 
        function during a QGET/QREAD session.
 
-  ; TODO: a descent demo program to demonstrate embedded browse and images 
+  ; DONE: a descent demo program to demonstrate embedded browse and images 
           inside QGET/QREAD mechanism.
 
 2013-12-18 07:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r273)

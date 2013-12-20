@@ -243,6 +243,7 @@ METHOD HbQtGet:new( oControl )
 
 
 METHOD HbQtGet:create( oControl )
+   LOCAL xTmp
 
    hb_default( @oControl, ::oControl )
 
@@ -277,9 +278,13 @@ METHOD HbQtGet:create( oControl )
          EXIT
       CASE "HbQtBrowse"
          ::oEdit := QFrame( ::oParent )
+         xTmp := QVBoxLayout( ::oEdit )
+         xTmp:setContentsMargins( 0, 0, 0, 0 )
+         xTmp:addWidget( ::data()[ 1 ]:oWidget )
          EXIT
       CASE "QImage"
          ::oEdit := QLabel( ::oParent )
+         ::oEdit:setAlignment( Qt_AlignVCenter + Qt_AlignHCenter )
          EXIT
       ENDSWITCH
    ENDIF
@@ -287,7 +292,7 @@ METHOD HbQtGet:create( oControl )
       ::oEdit:setObjectName( ::name() )
    ENDIF
 
-   ::cClassName := __objGetClsName( ::oEdit )
+   ::cClassName :=__objGetClsName( ::oEdit )
 
    ::connect()
 
@@ -1746,11 +1751,16 @@ METHOD HbQtGet:setData( xData )
    CASE "QFRAME"
       EXIT
    CASE "QLABEL"
-      oImage := QImage()
-      IF oImage:load( xData )
-         cTmp := QPixmap():fromImage( oImage )
+      oImage := QImage( ::oEdit:width(), ::oEdit:height() )
+      oImage:fill( Qt_darkGray )
+      IF ! oImage:load( xData )
+         oImage := QImage()
+      ENDIF
+      cTmp := QPixmap():fromImage( oImage )
+      IF Empty( ::data() )
          ::oEdit:setPixmap( cTmp:scaled( ::oEdit:width(), ::oEdit:height(), Qt_KeepAspectRatio ) )
-         ::oEdit:setPixmap( cTmp:scaled( ::oEdit:width(), ::oEdit:height(), Qt_KeepAspectRatio ) )
+      ELSE
+         ::oEdit:setPixmap( cTmp )
       ENDIF
       EXIT
    ENDSWITCH

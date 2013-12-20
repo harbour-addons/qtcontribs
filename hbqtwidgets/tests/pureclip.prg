@@ -16,6 +16,11 @@
 
 #include "hbtrace.ch"
 
+STATIC s_cImage
+STATIC aTest0  := { "This", "is", "a", "browse", "on", "an", "array", "test", "with", "a", "long", "data" }
+STATIC aTest1  := { 1, 2, 3, 4, 5, 6, 7, 8, 10000, - 1000, 54, 456342 }
+STATIC aTest2
+STATIC aTest3  := { .T., .F., .T., .T., .F., .F., .T., .F., .T., .T., .F., .F. }
 
 FUNCTION Main()
 
@@ -41,9 +46,15 @@ FUNCTION Main()
    LOCAL GetList := {}
    LOCAL SayList := {}
 
-   LOCAL val := Array( 3 )
+   LOCAL val     := Array( 3 )
+   LOCAL oBrowse
+   LOCAL lBrowse := .T.
 
-   hbqt_errorsys()              /* ALWAYS place it as first FUNCTION call; you will know your errors */
+   hbqt_errorsys()              /* ALWAYS place it as first function call; you will know your errors */
+
+   aTest2 := { Date(), Date() + 4, Date() + 56, Date() + 14, Date() + 5, Date() + 6, Date() + 7, Date() + 8, Date() + 10000, Date() - 1000, Date() - 54, Date() + 456342 }
+
+   s_cImage := __hbqtImage( "zoomout3" )
 
    val[ 1 ] := Space( 10 )
    val[ 2 ] := 0
@@ -90,22 +101,27 @@ FUNCTION Main()
    @  9, 54 GET lDone CHECKBOX
 
    @  9, 02 SAY "Notes:"
-   @ 10, 02, 17, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes ;
+   @ 10, 02, 16, 55 GET cNotes MEMOEDIT COLOR "N/rgb(255,255,230)" WHEN cText == "DEF" VALID "Harbour" $ cNotes ;
                                   PROPERTIES {|oGet,oControl| SetControlProp( oGet, oControl, "tooltip", "The notes must contain 'Harbour' somewhere" ) }
 
    @  9, 60 SAY "Select:"
-   @ 10, 60, 17, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
+   @ 10, 60, 16, 69 GET cList LISTBOX aList WHEN cText == "ABC" VALID {|| HB_TRACE( HB_TR_ALWAYS, cList ), .T. }
 
-   @ 19, 25, 19, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| iif( Alert( "Save Data?", {"Yes","No"} ) == 1, "cText", "cNotes" ) } ;
+   oBrowse := BrowseArray( NIL, .F. )
+   //
+   @ 18, 02, 24, 42 GET lBrowse HBQTBROWSE oBrowse
+
+   //@ 18, 44, 24, 69 GET s_cImage IMAGE DONOTSCALE WHEN {|| .F. }
+   @ 18, 44, 24, 69 GET s_cImage IMAGE WHEN {|| .F. }
+
+   @ 26, 25, 26, 44 GET lOk     PUSHBUTTON "OK"     ACTION {|| iif( Alert( "Save Data?", {"Yes","No"} ) == 1, "cText", "cNotes" ) } ;
                                                         WHEN nSlry > 700 .AND. nSlry < 17000
-   @ 19, 50, 19, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := Alert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
+   @ 26, 50, 26, 69 GET lCancel PUSHBUTTON "Cancel" ACTION {|v| v := Alert( { "Cancel Pressed!", "Should we terminate the Form ?" }, { "Ok","Cancel" }, "W+/N", 5, "Really?", 2 ), ;
                                                         iif( v == 1, GetActive():parent():close(), NIL ) }
 
-   SetKey( K_F2, {|| BrowseArray( GetActive():parent() ) } )
+   SetKey( K_F2, {|| BrowseArray( GetActive():parent(), .T. ) } )
 
    READ PROPERTIES {|oWnd,oGetList| SetFormProperties( oWnd, oGetList ) }
-
-   QApplication():exec()
 
    RETURN NIL
 
@@ -199,30 +215,26 @@ STATIC FUNCTION SetControlProp( oGet, oControl, cProp, xValue )
    RETURN NIL
 
 
-STATIC FUNCTION BrowseArray( oMain )
+STATIC FUNCTION BrowseArray( oMain, lExecute )
 
-   LOCAL oBrowse
-   LOCAL aTest0  := { "This", "is", "a", "browse", "on", "an", "array", "test", "with", "a", "long", "data" }
-   LOCAL aTest1  := { 1, 2, 3, 4, 5, 6, 7, 8, 10000, - 1000, 54, 456342 }
-   LOCAL aTest2  := { Date(), Date() + 4, Date() + 56, Date() + 14, Date() + 5, Date() + 6, Date() + 7, Date() + 8, Date() + 10000, Date() - 1000, Date() - 54, Date() + 456342 }
-   LOCAL aTest3  := { .T., .F., .T., .T., .F., .F., .T., .F., .T., .T., .F., .F. }
-   LOCAL n       := 1
+   LOCAL oBrowse, n
 
-   oBrowse := HbQtBrowseNew( 10, 25, 17, 70, oMain, QFont( "Courier New", 10 ), .T. )
+   oBrowse := HbQtBrowseNew( 10, 25, 17, 70, oMain, QFont( "Courier New", 10 ), lExecute )
    oBrowse:colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
 
-   oBrowse:GoTopBlock    := {|| n := 1 }
-   oBrowse:GoBottomBlock := {|| n := Len( aTest0 ) }
-   oBrowse:SkipBlock     := {| nSkip, nPos | nPos := n, ;
-                                 n := iif( nSkip > 0, Min( Len( aTest0 ), n + nSkip ), ;
-                                    Max( 1, n + nSkip ) ), n - nPos }
+   oBrowse:GoTopBlock    := {|| ArIndexNo( 1 ) }
+   oBrowse:GoBottomBlock := {|| ArIndexNo( Len( aTest0 ) ) }
+   oBrowse:SkipBlock     := {| nSkip, nPos | nPos := ArIndexNo(), ;
+                                 n := iif( nSkip > 0, Min( Len( aTest0 ), nPos + nSkip ), ;
+                                    Max( 1, nPos + nSkip ) ), ArIndexNo( n ), n - nPos }
 
-   oBrowse:AddColumn( HbQtColumnNew( "First",  {|| n } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Second", {|x| iif( x == NIL, aTest0[ n ], aTest0[ n ] := x ) } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Third",  {|x| iif( x == NIL, aTest1[ n ], aTest1[ n ] := x ) } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Forth",  {|x| iif( x == NIL, aTest2[ n ], aTest2[ n ] := x ) } ) )
-   oBrowse:AddColumn( HbQtColumnNew( "Fifth",  {|x| iif( x == NIL, aTest3[ n ], aTest3[ n ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "First",  {|| ArIndexNo() } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Second", {|x| iif( x == NIL, aTest0[ ArIndexNo() ], aTest0[ ArIndexNo() ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Third",  {|x| iif( x == NIL, aTest1[ ArIndexNo() ], aTest1[ ArIndexNo() ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Forth",  {|x| iif( x == NIL, aTest2[ ArIndexNo() ], aTest2[ ArIndexNo() ] := x ) } ) )
+   oBrowse:AddColumn( HbQtColumnNew( "Fifth",  {|x| iif( x == NIL, aTest3[ ArIndexNo() ], aTest3[ ArIndexNo() ] := x ) } ) )
 
+   oBrowse:GetColumn( 1 ):Picture    := "@Z 999"
    oBrowse:GetColumn( 2 ):Picture    := "@!"
 
    oBrowse:GetColumn( 3 ):Picture    := "999,999.99"
@@ -230,25 +242,27 @@ STATIC FUNCTION BrowseArray( oMain )
    oBrowse:GetColumn( 3 ):colorBlock := {|nVal| iif( nVal < 0, {3,2}, iif( nVal > 500, {4,2}, {1,2} ) ) }
 
    /* TBrowse will call this METHOD when ready TO save edited row. Block must receive 4 parameters and must RETURN true/false */
-   oBrowse:editBlock   := {|aModified, aData, oBrw| SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTest3, n ) }
-   oBrowse:searchBlock := {|xSearch, nColPos, oBrw| SearchMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3, @n ) }
-   oBrowse:searchExBlock := {|xSearch, nColPos, oBrw| SearchExMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3, @n ) }
+   oBrowse:editBlock     := {|aModified, aData, oBrw| SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTest3 ) }
+   oBrowse:searchBlock   := {|xSearch, nColPos, oBrw| SearchMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3 ) }
+   oBrowse:searchExBlock := {|xSearch, nColPos, oBrw| SearchExMyData( xSearch, nColPos, oBrw, aTest0, aTest1, aTest2, aTest3 ) }
 
    /* needed since I've changed some columns _after_ I've added them to TBrowse object */
    oBrowse:Configure()
-   oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw )  }
+   oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw, lExecute )  }
 
    /* Freeze first column TO the left */
    oBrowse:freeze := 1
 
    oBrowse:editEnabled   := .F.                       /* User must not be able to edit via edit button */
 
-   oBrowse:execute()
+   IF lExecute
+      oBrowse:execute()
+   ENDIF
 
-   RETURN NIL
+   RETURN oBrowse
 
 
-STATIC FUNCTION navigate( nKey, xData, oBrowse )
+STATIC FUNCTION navigate( nKey, xData, oBrowse, lExecute )
    LOCAL lHandelled := .T.
    LOCAL i, xResult
 
@@ -262,11 +276,13 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
 
    DO CASE
    CASE nKey == K_ENTER
-      IF ! Empty( GetActive() ) .AND. Upper( GetActive():name() ) == "CTEXT"
-         GetActive():varPut( Eval( oBrowse:getColumn( 2 ):block ) )
-         GetActive():display()
+      IF lExecute
+         IF ! Empty( GetActive() ) .AND. Upper( GetActive():name() ) == "CTEXT"
+            GetActive():varPut( Eval( oBrowse:getColumn( 2 ):block ) )
+            GetActive():display()
+         ENDIF
+         oBrowse:terminate()          /* Here we need to inform which record is selected and appln acts accordingly */
       ENDIF
-      oBrowse:terminate()             /* Here we need TO inform which record is selected and appln acts accordingly */
 
    CASE nKey == K_ESC
       oBrowse:terminate()             /* Here appln should act OTHERWISE */
@@ -314,6 +330,10 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    CASE nKey >= 32 .AND. nKey <= 127
       oBrowse:searchEx( Chr( nKey ) )
 
+   CASE nKey == K_UP .OR. nKey == K_DOWN
+      DisplayImage( aTest0[ ArIndexNo() ] )
+      lHandelled := .F.
+
    OTHERWISE
       lHandelled := .F.
 
@@ -322,7 +342,7 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse )
    RETURN lHandelled
 
 
-STATIC FUNCTION SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+STATIC FUNCTION SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTest3 )
    LOCAL i, aCaptions := aData[ 2 ]
 
    HB_SYMBOL_UNUSED( oBrw )
@@ -330,16 +350,16 @@ STATIC FUNCTION SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTes
    FOR i := 1 TO Len( aModified )
       SWITCH aCaptions[ i ]
       CASE "Second"
-         aTest0[ n ] := aModified[ i ]            /* You can compare original and modified values */
+         aTest0[ ArIndexNo() ] := aModified[ i ]            /* You can compare original and modified values */
          EXIT
       CASE "Third"
-         aTest1[ n ] := aModified[ i ]
+         aTest1[ ArIndexNo() ] := aModified[ i ]
          EXIT
       CASE "Forth"
-         aTest2[ n ] := aModified[ i ]
+         aTest2[ ArIndexNo() ] := aModified[ i ]
          EXIT
       CASE "Fifth"
-         aTest3[ n ] := aModified[ i ]
+         aTest3[ ArIndexNo() ] := aModified[ i ]
          EXIT
       ENDSWITCH
    NEXT
@@ -347,7 +367,7 @@ STATIC FUNCTION SaveMyData( aModified, aData, oBrw, aTest0, aTest1, aTest2, aTes
    RETURN .T.
 
 
-STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3 )
    LOCAL nn
 
    HB_SYMBOL_UNUSED( nMode )
@@ -356,28 +376,28 @@ STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTes
       SWITCH oBrw:colPos
       CASE 1
          IF xSearch > 0 .AND. xSearch <= Len( aTest0 )
-            n := xSearch
+            ArIndexNo( xSearch )
          ENDIF
          EXIT
       CASE 2
          xSearch := Lower( Trim( xSearch ) )
          IF ( nn := AScan( aTest0, {|e| Lower( e ) = xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       CASE 3
          IF ( nn := AScan( aTest1, {|e|  e == xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       CASE 4
          IF ( nn := AScan( aTest2, {|e|  e == xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       CASE 5
          IF ( nn := AScan( aTest3, {|e|  e == xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       ENDSWITCH
@@ -392,7 +412,7 @@ STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTes
    RETURN NIL
 
 
-STATIC FUNCTION SearchExMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3, n )
+STATIC FUNCTION SearchExMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTest3 )
    LOCAL nn
 
    HB_SYMBOL_UNUSED( nMode )
@@ -402,31 +422,31 @@ STATIC FUNCTION SearchExMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aT
       CASE 1
          xSearch := Val( xSearch )
          IF xSearch > 0 .AND. xSearch <= Len( aTest0 )
-            n := xSearch
+            ArIndexNo( xSearch )
          ENDIF
          EXIT
       CASE 2
          xSearch := Lower( Trim( xSearch ) )
          IF ( nn := AScan( aTest0, {|e| Lower( e ) = xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       CASE 3
          xSearch := Val( xSearch )
          IF ( nn := AScan( aTest1, {|e|  e == xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       CASE 4
          xSearch := CToD( xSearch )
          IF ( nn := AScan( aTest2, {|e|  e == xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       CASE 5
          xSearch := Lower( xSearch ) $ "y,t"
          IF ( nn := AScan( aTest3, {|e|  e == xSearch } ) ) > 0
-            n := nn
+            ArIndexNo( nn )
          ENDIF
          EXIT
       ENDSWITCH
@@ -441,4 +461,32 @@ STATIC FUNCTION SearchExMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aT
    RETURN NIL
 
 
+STATIC FUNCTION ArIndexNo( nIndex )
+   STATIC s_nIndex := 1
+   LOCAL l_nIndex := s_nIndex
+   IF HB_ISNUMERIC( nIndex )
+      s_nIndex := nIndex
+   ENDIF
+   RETURN l_nIndex
+
+
+STATIC FUNCTION DisplayImage( cToken )
+
+   SWITCH Trim( Lower( cToken ) )
+   CASE "this"   ; s_cImage := __hbqtImage( "view_cascaded" )   ; EXIT
+   CASE "is"     ; s_cImage := __hbqtImage( "view_organized" )  ; EXIT
+   CASE "a"      ; s_cImage := __hbqtImage( "database_accept" ) ; EXIT
+   CASE "browse" ; s_cImage := __hbqtImage( "database_down" )   ; EXIT
+   CASE "on"     ; s_cImage := __hbqtImage( "open3" )           ; EXIT
+   CASE "an"     ; s_cImage := __hbqtImage( "database_search" ) ; EXIT
+   CASE "array"  ; s_cImage := __hbqtImage( "print" )           ; EXIT
+   CASE "test"   ; s_cImage := __hbqtImage( "close3" )          ; EXIT
+   CASE "with"   ; s_cImage := __hbqtImage( "load_1" )          ; EXIT
+   CASE "long"   ; s_cImage := __hbqtImage( "zoomin3" )         ; EXIT
+   CASE "data"   ; s_cImage := __hbqtImage( "new" )             ; EXIT
+   ENDSWITCH
+
+   __GetListActive():getByIndex( 17 ):display()
+
+   RETURN NIL
 

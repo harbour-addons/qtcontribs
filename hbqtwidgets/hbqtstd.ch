@@ -256,7 +256,7 @@
                                 { <oHbQtBrowse> }, <{prop}>, NIL } )
 
 
-   #command @ <top>, <left>, <bottom>, <right> QGET <v> IMAGE ;
+   #command @ <top>, <left>, <bottom>, <right> QGET <v> IMAGE [<lDoNotScale: DONOTSCALE>];
                               [VALID <valid>        ] ;
                               [WHEN <when>          ] ;
                               [COLOR <color>        ] ;
@@ -267,7 +267,7 @@
                         => ;
          AAdd( GetList, { _GET_( <v>, <"v">, NIL, <{valid}>, <{when}> ),;
                                 <cap>, <color>, NIL, <.noMouse.>, <top>, <left>, <bottom>, <right>, NIL, NIL, NIL, <oControl>, "QImage", ;
-                                NIL, <{prop}>, NIL } )
+                                <.lDoNotScale.>, <{prop}>, NIL } )
 
 
    #command QREAD [ [ PARENT ] <GetParent> ] ;
