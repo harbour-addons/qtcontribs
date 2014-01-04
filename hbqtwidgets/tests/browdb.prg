@@ -67,6 +67,10 @@ STATIC FUNCTION BrowseMe( oWnd )
 
    oBrowse:colorSpec := "N/W*, N/W, W+/R*, W+/B*, N/GR*, B+/GR*, N/R*"
 
+   /* HbQtBrowse Extentions */
+   oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
+   oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
+
    /* Navigation Blocks */
    oBrowse:skipBlock           := {|n| DbSkipBlock( n ) }
    oBrowse:goTopBlock          := {| | DbGoTop()        }
@@ -118,9 +122,6 @@ STATIC FUNCTION BrowseMe( oWnd )
    oColumn            := HbQtColumnNew( "Notes"      , {|| TEST->notes    } )
    oBrowse:addColumn( oColumn )
 
-   /* HbQtBrowse Extentions */
-   oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
-   oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
 // oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
    oBrowse:toolbar             := .T.
    oBrowse:statusbar           := .T.

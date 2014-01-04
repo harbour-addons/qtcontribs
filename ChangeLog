@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-01-04 10:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r277)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: assigment to :horizontalScrollbar and :vertcalScrollbar before 
+       assigning the navigation blocks was causing side effects. The bug 
+       brought to light by Zoran, thanks.
+
+  * hbqtwidgets/tests/browdb.prg
+    % Changed: code to demonstrate above fix.
+
 2013-12-20 15:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r276)
   * hbide/console.prg
     - Guarded: unused function, creating problem when compiled with -w3.

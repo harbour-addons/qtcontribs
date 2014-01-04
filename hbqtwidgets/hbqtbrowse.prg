@@ -911,6 +911,8 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       IF HB_ISBLOCK( ::bInitializationBlock )
          Eval( ::bInitializationBlock, NIL, NIL, Self )
       ENDIF
+      ::horizontalScrollbar( ::lHScroll )
+      ::verticalScrollbar( ::lVScroll )
    ENDIF
 
    RETURN Self
