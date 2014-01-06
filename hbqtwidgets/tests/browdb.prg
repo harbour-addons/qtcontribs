@@ -50,6 +50,7 @@ STATIC FUNCTION BrowseMe( oWnd )
    LOCAL aIndexes := {}
 
    Set( _SET_DATEFORMAT, "yyyy.mm.dd" )
+   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
 
    USE ( cPath + "test.dbf" ) NEW SHARED VIA 'DBFCDX'
    IF NetErr()
@@ -66,10 +67,6 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse := HbQtBrowseNew( 0,0, 20, 80, oWnd, QFont( "Courier New", 10 ) )
 
    oBrowse:colorSpec := "N/W*, N/W, W+/R*, W+/B*, N/GR*, B+/GR*, N/R*"
-
-   /* HbQtBrowse Extentions */
-   oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
-   oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
 
    /* Navigation Blocks */
    oBrowse:skipBlock           := {|n| DbSkipBlock( n ) }
@@ -122,6 +119,9 @@ STATIC FUNCTION BrowseMe( oWnd )
    oColumn            := HbQtColumnNew( "Notes"      , {|| TEST->notes    } )
    oBrowse:addColumn( oColumn )
 
+   /* HbQtBrowse Extentions */
+   oBrowse:horizontalScrollbar := .T.                        /* Not a TBrowse METHOD */
+   oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
 // oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
    oBrowse:toolbar             := .T.
    oBrowse:statusbar           := .T.
@@ -131,6 +131,7 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:searchExBlock       := {|xValue,nMode,oBrw| LookMyExSearch( xValue,nMode,oBrw ) }
    oBrowse:helpBlock           := {|| { { "Hi","This is HbQtBrowse!" }, 0 } }
    oBrowse:navigationBlock     := {|nKey,xData,oBrw|  HandleMyOptions( nKey,xData,oBrw ) }
+   oBrowse:pressFrozenBlock    := {|aRowCol,cSide|  Alert( "Pressed: " + cSide + " : Row = " + LTrim( Str( aRowCol[ 1 ] ) ) + " Col = " + LTrim( Str( aRowCol[ 2 ] ) ) ) }
 
    AAdd( aIndexes, { "Natural Order", {|oBrw| dbSetOrder( 0 ), oBrw:refreshAll(), oBrw:forceStable() } } )
    AAdd( aIndexes, { "Last Name"    , {|oBrw| dbSetOrder( 1 ), oBrw:refreshAll(), oBrw:forceStable() } } )

@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-01-06 13:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r278)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: METHOD pressFrozenBlock( bBlock )              SETGET
+       Thought and code provided by Zoran with slight changes.
+       If defined, will execute the callback block as follows:
+         oBrowse:pressFrozenBlock := ;
+           { | aRowCol, cSide, oBrowse | DoSomething( aRowCol, cSide ) }
+       aRowCol == { nRow, nColumn } which is clicked.
+       cSide   == "left" or "right" indicating if left or right frozen 
+                   area is clicked.
+
+    + Added: invoking :navigationBlock corresponding horizontal slider 
+       movement. Spotted by Zoran, thanks.
+
+  * hbqtwidgets/tests/browdb.prg
+
+
 2014-01-04 10:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r277)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: assigment to :horizontalScrollbar and :vertcalScrollbar before 

@@ -62,6 +62,8 @@
 
 
 #define __ev_mousepress_on_frozen__               31               /* Mousepress on Frozen */
+#define __ev_mousepress_on_frozen_left__          32
+#define __ev_mousepress_on_frozen_right__         33
 #define __ev_mousepress__                         2                /* Mousepress */
 #define __ev_xbpBrw_itemSelected__                3                /* xbeBRW_ItemSelected */
 #define __ev_wheel__                              4                /* wheelEvent */
@@ -193,6 +195,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD helpBlock( bBlock )                     SETGET
    METHOD addColumnsBlock( bBlock )               SETGET
    METHOD pressHeaderBlock( bBlock )              SETGET
+   METHOD pressFrozenBlock( bBlock )              SETGET
 
    ACCESS rFreeze                                 METHOD getRFrozen           // get number of frozen columns
    ASSIGN rFreeze                                 METHOD rFreeze              // set number of columns to freeze at right side
@@ -397,6 +400,7 @@ PROTECTED:
    DATA   bHelpBlock                              INIT NIL
    DATA   bAddColumnsBlock                        INIT NIL
    DATA   bPressHeaderBlock                       INIT NIL
+   DATA   bPressFrozenBlock                       INIT NIL
 
    DATA   lVerticalMovementBlock                  INIT .F.
    DATA   lHorizontalMovementBlock                INIT .F.
@@ -1019,6 +1023,9 @@ METHOD HbQtBrowse:connect()
    ::oRightHeaderView : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oRightFooterView : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
 
+    ::oLeftView       : connect( "clicked(const QModelIndex&)"       , {|p      | ::execSlot( __ev_mousepress_on_frozen_left__, p    ) } )
+    ::oRightView      : connect( "clicked(const QModelIndex&)"       , {|p      | ::execSlot( __ev_mousepress_on_frozen_right__, p   ) } )
+
    ::oTableView       : connect( "customContextMenuRequested(QPoint)", {|p      | ::manageContextMenu( p )                             } )
 
    ::oHScrollBar      : connect( "actionTriggered(int)"              , {|i      | ::execSlot( __ev_horzscroll_slidermoved__   , i    ) } )
@@ -1380,6 +1387,16 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
          EXIT
       ENDSWITCH
       EXIT
+   CASE __ev_mousepress_on_frozen_left__
+      IF HB_ISBLOCK( ::bPressFrozenBlock )
+         Eval( ::bPressFrozenBlock, { p1:Row() + 1, p1:column() + 1 }, "left", Self )
+      ENDIF
+      EXIT
+   CASE __ev_mousepress_on_frozen_right__
+      IF HB_ISBLOCK( ::bPressFrozenBlock )
+         Eval( ::bPressFrozenBlock, { p1:Row() + 1, p1:column() + 1 }, "right", Self )
+      ENDIF
+      EXIT
    CASE __ev_mousepress_on_frozen__
       ::oTableView:setFocus( 0 )
       EXIT
@@ -1421,6 +1438,9 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
    CASE __ev_horzscroll_slidermoved__
       ::skipCols( ( ::oHScrollBar:value() + 1 ) - ::colPos )
       ::oTableView:setFocus()
+      IF HB_ISBLOCK( ::bNavigationBlock )	
+         Eval( ::bNavigationBlock, 0, NIL, Self )   	
+	   ENDIF	
       EXIT
    CASE __ev_horzscroll_sliderreleased__
       ::skipCols( ( ::oHScrollBar:value() + 1 ) - ::colPos )
@@ -2047,6 +2067,13 @@ METHOD HbQtBrowse:pressHeaderBlock( bBlock )
       ::bPressHeaderBlock := __eInstVar53( Self, "PRESSHEADERBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bPressHeaderBlock
+
+
+METHOD HbQtBrowse:pressFrozenBlock( bBlock )
+   IF bBlock != NIL
+      ::bPressFrozenBlock := __eInstVar53( Self, "PRESSFROZENBLOCK", bBlock, "B", 1001 )
+   ENDIF
+   RETURN ::bPressFrozenBlock
 
 
 METHOD HbQtBrowse:contextMenuBlock( bBlock )
