@@ -637,7 +637,7 @@ STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
    LOCAL cCmd
    LOCAL aReg
    LOCAL aLinesPRG
-   LOCAL aMethodCalls := { { "QObject_connect( ", {| s | hbqtui_qobject_connect( s ) } } }
+   LOCAL aMethodCalls := { { "QObject_connect(", {| s | hbqtui_qobject_connect( s ) } } }
 
    LOCAL regEx := hb_regexComp( "\bQ[A-Za-z_]+ \b" )
 
