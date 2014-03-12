@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-03-12 15:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r281)
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: synchronization of frozen columns with browser columns from 
+       visual point of view. Concept discoved by Dusan Majkic but implemented 
+       differently.
+
+    % Added: vertical movement management synchronizing well between frozen 
+       and regular rows. Also cursor at current row is visible on frozen 
+       columns also. Concept forwarded by Dusan but implemented differently.
+
+    % Added: clicking on any row on frozen columns positions the cursor 
+       of regular columns to same row.
+
 2014-03-12 12:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r280)
   * hbqt/hbmk2_qt.hb
     + Applied patch from Francek, not tested but must work.

@@ -374,6 +374,7 @@ PROTECTED:
    METHOD manageCommitData( qWidget )
    METHOD manageScrollContents( nX, nY )
    METHOD manageColumnMoved( nLogicalIndex, nOldVisualIndex, nNewVisualIndex )
+   METHOD manageVerticalMovement( nMode )
 
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
@@ -1023,8 +1024,8 @@ METHOD HbQtBrowse:connect()
    ::oRightHeaderView : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oRightFooterView : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
 
-    ::oLeftView       : connect( "clicked(const QModelIndex&)"       , {|p      | ::execSlot( __ev_mousepress_on_frozen_left__, p    ) } )
-    ::oRightView      : connect( "clicked(const QModelIndex&)"       , {|p      | ::execSlot( __ev_mousepress_on_frozen_right__, p   ) } )
+   ::oLeftView        : connect( "clicked(const QModelIndex&)"       , {|p      | ::execSlot( __ev_mousepress_on_frozen_left__, p    ) } )
+   ::oRightView       : connect( "clicked(const QModelIndex&)"       , {|p      | ::execSlot( __ev_mousepress_on_frozen_right__, p   ) } )
 
    ::oTableView       : connect( "customContextMenuRequested(QPoint)", {|p      | ::manageContextMenu( p )                             } )
 
@@ -1040,6 +1041,8 @@ METHOD HbQtBrowse:connect()
    ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )  /* Revisit Later */
 #endif
 
+   ::oTableView:verticalScrollbar():connect( "valueChanged(int)"     , {|y| iif( HB_ISOBJECT( ::oLeftView ), ::oLeftView:verticalScrollbar():setValue( y ), NIL ), ;
+                                                                            iif( HB_ISOBJECT( ::oRightView ), ::oRightView:verticalScrollbar():setValue( y ), NIL ) } )
    RETURN Self
 
 
@@ -1388,11 +1391,13 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
       ENDSWITCH
       EXIT
    CASE __ev_mousepress_on_frozen_left__
+      ::skipRows( ( p1:Row() + 1 ) - ::rowPos )
       IF HB_ISBLOCK( ::bPressFrozenBlock )
          Eval( ::bPressFrozenBlock, { p1:Row() + 1, p1:column() + 1 }, "left", Self )
       ENDIF
       EXIT
    CASE __ev_mousepress_on_frozen_right__
+      ::skipRows( ( p1:Row() + 1 ) - ::rowPos )
       IF HB_ISBLOCK( ::bPressFrozenBlock )
          Eval( ::bPressFrozenBlock, { p1:Row() + 1, p1:column() + 1 }, "right", Self )
       ENDIF
@@ -1438,9 +1443,9 @@ METHOD HbQtBrowse:execSlot( nEvent, p1, p2, p3 )
    CASE __ev_horzscroll_slidermoved__
       ::skipCols( ( ::oHScrollBar:value() + 1 ) - ::colPos )
       ::oTableView:setFocus()
-      IF HB_ISBLOCK( ::bNavigationBlock )	
-         Eval( ::bNavigationBlock, 0, NIL, Self )   	
-	   ENDIF	
+      IF HB_ISBLOCK( ::bNavigationBlock )
+         Eval( ::bNavigationBlock, 0, NIL, Self )
+      ENDIF
       EXIT
    CASE __ev_horzscroll_sliderreleased__
       ::skipCols( ( ::oHScrollBar:value() + 1 ) - ::colPos )
@@ -1769,10 +1774,7 @@ METHOD HbQtBrowse:updatePosition()
       ::refreshAll()
       ::forceStable()
       ::setCurrentIndex()
-
-      IF ::lVerticalMovementBlock
-         Eval( ::bVerticalMovementBlock, -999, NIL, Self )
-      ENDIF
+      ::manageVerticalMovement( -999 )
    ENDIF
 
    RETURN Self
@@ -2278,10 +2280,7 @@ METHOD HbQtBrowse:up()
    ::forceStable()
    ::setCurrentIndex( lReset )
    ::updateVertScrollBar()
-
-   IF ::lVerticalMovementBlock
-      Eval( ::bVerticalMovementBlock, K_UP, NIL, Self )
-   ENDIF
+   ::manageVerticalMovement( K_UP )
 
    RETURN Self
 
@@ -2293,10 +2292,7 @@ METHOD HbQtBrowse:down()
    ::forceStable()
    ::setCurrentIndex( lReset )
    ::updateVertScrollBar()
-
-   IF ::lVerticalMovementBlock
-      Eval( ::bVerticalMovementBlock, K_DOWN, NIL, Self )
-   ENDIF
+   ::manageVerticalMovement( K_DOWN )
 
    RETURN Self
 
@@ -2307,10 +2303,7 @@ METHOD HbQtBrowse:pageUp()
    ::forceStable()
    ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
-
-   IF ::lVerticalMovementBlock
-      Eval( ::bVerticalMovementBlock, K_PGUP, NIL, Self )
-   ENDIF
+   ::manageVerticalMovement( K_PGUP )
 
    RETURN Self
 
@@ -2321,10 +2314,7 @@ METHOD HbQtBrowse:pageDown()
    ::forceStable()
    ::setCurrentIndex( .t. )
    ::updateVertScrollBar()
-
-   IF ::lVerticalMovementBlock
-      Eval( ::bVerticalMovementBlock, K_PGDN, NIL, Self )
-   ENDIF
+   ::manageVerticalMovement( K_PGDN )
 
    RETURN Self
 
@@ -2334,10 +2324,7 @@ METHOD HbQtBrowse:goTop()
 
    ::refreshAll()
    ::updateVertScrollBar()
-
-   IF ::lVerticalMovementBlock
-      Eval( ::bVerticalMovementBlock, K_CTRL_PGUP, NIL, Self )
-   ENDIF
+   ::manageVerticalMovement( K_CTRL_PGUP )
 
    RETURN Self
 
@@ -2347,10 +2334,7 @@ METHOD HbQtBrowse:goBottom()
 
    ::refreshAll()
    ::updateVertScrollBar()
-
-   IF ::lVerticalMovementBlock
-      Eval( ::bVerticalMovementBlock, K_CTRL_PGDN, NIL, Self )
-   ENDIF
+   ::manageVerticalMovement( K_CTRL_PGDN )
 
    RETURN Self
 
@@ -2360,10 +2344,28 @@ METHOD HbQtBrowse:goTo()
       IF Eval( ::gotoBlock(), NIL, NIL, Self )
          ::refreshAll()
          ::updateVertScrollBar()
-         IF ::lVerticalMovementBlock
-            Eval( ::bVerticalMovementBlock, -1, NIL, Self )
-         ENDIF
+         ::manageVerticalMovement( -1 )
       ENDIF
+   ENDIF
+
+   RETURN Self
+
+
+METHOD HbQtBrowse:manageVerticalMovement( nMode )
+   LOCAL xTmp
+
+   IF HB_ISOBJECT( ::oLeftView )
+      xTmp := ::oTableView:currentIndex():Row()
+      ::oLeftView:setCurrentIndex( ::oLeftView:model():index( xTmp, 0 ) )
+   ENDIF
+   IF HB_ISOBJECT( ::oRightView )
+      IF Empty( xTmp )
+         xTmp := ::oTableView:currentIndex():Row()
+      ENDIF
+      ::oRightView:setCurrentIndex( ::oRightView:model():index( xTmp, 0 ) )
+   ENDIF
+   IF ::lVerticalMovementBlock
+      Eval( ::bVerticalMovementBlock, nMode, NIL, Self )
    ENDIF
 
    RETURN Self
@@ -2400,7 +2402,6 @@ METHOD HbQtBrowse:left()
       IF ::lHorizontalMovementBlock
          Eval( ::bHorizontalMovementBlock, 1, NIL, Self )
       ENDIF
-
    ENDIF
 
    RETURN Self
@@ -2483,7 +2484,6 @@ METHOD HbQtBrowse:firstCol()
       IF ::lHorizontalMovementBlock
          Eval( ::bHorizontalMovementBlock, 3, NIL, Self )
       ENDIF
-
    ENDIF
    RETURN Self
 
@@ -2525,7 +2525,6 @@ METHOD HbQtBrowse:lastCol()
       IF ::lHorizontalMovementBlock
          Eval( ::bHorizontalMovementBlock, 4, NIL, Self )
       ENDIF
-
    ENDIF
 
    RETURN Self
