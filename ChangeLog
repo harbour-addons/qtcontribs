@@ -16,7 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2014-01-20 08:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r278)
+2014-03-12 12:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r280)
+  * hbqt/hbmk2_qt.hb
+    + Applied patch from Francek, not tested but must work.
+       It sets the tab order of controls in a dialog.
+  
+  * hbqt/qtcore/qth/QLocate.qth
+    ! Fixed to not produce incorrect code for :toCurrencyString() method.
+
+2014-01-20 08:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r279)
   * hbqt/hbmk2_qt.hb
     ! Fixed: a rare and difficult to trace parsing string error which 
        was preventing SIGNAL SLOT manipulation on Qt Creator designed 

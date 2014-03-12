@@ -100,7 +100,7 @@ Qt::LayoutDirection textDirection () const                                      
 QString toCurrencyString ( double value, const QString & symbol = QString() ) const             [*V=-0x040800*]
 //QString toCurrencyString ( short value, const QString & symbol = QString() ) const
 //QString toCurrencyString ( ushort value, const QString & symbol = QString() ) const
-QString toCurrencyString ( int value, const QString & symbol = QString() ) const                [*V=-0x040800*]
+//QString toCurrencyString ( int value, const QString & symbol = QString() ) const              [*V=-0x040800*]
 //QString toCurrencyString ( uint value, const QString & symbol = QString() ) const
 //QString toCurrencyString ( float value, const QString & symbol = QString() ) const
 

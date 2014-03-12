@@ -637,8 +637,9 @@ STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
    LOCAL cCmd
    LOCAL aReg
    LOCAL aLinesPRG
-   LOCAL aMethodCalls := { { "QObject_connect(", {| s | hbqtui_qobject_connect( s ) } } }
-
+   LOCAL aMethodCalls := { ;
+           { "QObject_connect(", {| s | hbqtui_qobject_connect( s ) } } ,;
+           { "QWidget_setTabOrder(", {| s | hbqtui_qwidget_settaborder( s ) } } }
    LOCAL regEx := hb_regexComp( "\bQ[A-Za-z_]+ \b" )
 
    LOCAL aLines := hb_ATokens( StrTran( cFile, Chr( 13 ) ), Chr( 10 ) )
@@ -1123,6 +1124,7 @@ STATIC FUNCTION hbqtui_isSupportedMethodCall( cString, aMethodCalls )
 
    RETURN 0
 
+
 STATIC FUNCTION hbqtui_qobject_connect( cString )
    LOCAL cCall
    LOCAL n, n2, n4
@@ -1141,6 +1143,16 @@ STATIC FUNCTION hbqtui_qobject_connect( cString )
             '"'  + SubStr( aPar[ 4 ], n4 + 1, Len( aPar[ 4 ] ) - n4 - 1 ) + '" ) '
 
    RETURN cCall
+
+
+STATIC FUNCTION hbqtui_qwidget_settaborder( cString )
+   LOCAL aPar
+
+   /* QWidget_setTabOrder(radioButton_2, radioButton_3); */
+   cString := StrTran( cString, " ", "" )
+   aPar := hb_aTokens( SubStr( cString, 21, Len( cString ) - 21 ), "," )
+   RETURN hb_StrFormat( "::setTabOrder(::%s,::%s)", aPar[ 1 ], aPar[ 2 ] )
+
 
 STATIC FUNCTION hbqtui_pullColumn( cCmd, nCol )
 
