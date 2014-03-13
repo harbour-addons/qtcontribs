@@ -224,6 +224,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD contextMenuBlock( bBlock )              SETGET
    ACCESS toolbar                                 INLINE ::oToolBar:isVisible()
    ASSIGN toolbar                                 METHOD manageToolbar
+   ACCESS toolbarLeft                             INLINE ::oToolBarLeft:isVisible()
+   ASSIGN toolbarLeft                             METHOD manageToolbarLeft
    ACCESS statusbar                               INLINE ::oStatusBar:isVisible()
    ASSIGN statusbar                               METHOD manageStatusbar
    ASSIGN statusMessage( cMessage )               INLINE iif( Empty( cMessage ), ::oStatusBar:clearMessage(), ::oStatusBar:showMessage( cMessage ) )
@@ -290,7 +292,7 @@ PROTECTED:
    DATA   oParent
    DATA   oFont
 
-   DATA   oToolbar
+   DATA   oToolbar, oToolbarLeft
 
    DATA   oDbfModel
    DATA   oModelIndex                             INIT   QModelIndex()
@@ -655,7 +657,7 @@ METHOD HbQtBrowse:create()
       :setContentsMargins( 0,0,0,0 )
       :setHorizontalSpacing( 0 )
       :setVerticalSpacing( 0 )
-
+#if 0
       :addWidget( ::oIndicator      , 0, 0, 1, 4 )
       :addWidget( ::oToolbar        , 1, 0, 1, 4 )
 
@@ -673,6 +675,27 @@ METHOD HbQtBrowse:create()
       :addWidget( ::oVScrollBar     , 2, 3, 2, 1 )
       :addWidget( ::oStatusBar      , 5, 0, 1, 4 )
       :addWidget( ::oSearchLabel    , 6, 0, 1, 4 )
+#else
+      :addWidget( ::oIndicator      , 0, 0, 1, 5 )
+      :addWidget( ::oToolbar        , 1, 0, 1, 5 )
+      :addWidget( ::oToolbarLeft    , 2, 0, 2, 1 )
+
+      :addWidget( ::oLeftView       , 2, 1, 1, 1 )
+      :addWidget( ::oLeftFooterView , 3, 1, 1, 1 )
+
+      :addWidget( ::oTableView      , 2, 2, 1, 1 )
+      :addWidget( ::oFooterView     , 3, 2, 1, 1 )
+
+      :addWidget( ::oRightView      , 2, 3, 1, 1 )
+      :addWidget( ::oRightFooterView, 3, 3, 1, 1 )
+
+//      :addWidget( ::oHScrollBar     , 4, 1, 1, 3 )
+      :addWidget( ::oHScrollBar     , 4, 0, 1, 4 )
+
+      :addWidget( ::oVScrollBar     , 2, 3, 2, 1 )
+      :addWidget( ::oStatusBar      , 5, 0, 1, 5 )
+      :addWidget( ::oSearchLabel    , 6, 0, 1, 5 )
+#endif
    ENDWITH
 
    ::connect()
@@ -3364,21 +3387,6 @@ METHOD HbQtBrowse:buildToolbar()
       :addAction( ::oActSearch )
       :addSeparator()
       :addAction( ::oActToColumn )
-      :addAction( ::oActPanHome )
-      :addAction( ::oActLeft )
-      :addAction( ::oActRight )
-      :addAction( ::oActPanEnd )
-      :addSeparator()
-      :addAction( ::oActGoTop )
-      :addAction( ::oActGoUp )
-      :addAction( ::oActGoDown )
-      :addAction( ::oActGoBottom )
-      :addAction( ::oActGoTo )
-      :addSeparator()
-      :addAction( ::oActMoveToFirst )
-      :addAction( ::oActMoveToLeft )
-      :addAction( ::oActMoveToRight )
-      :addAction( ::oActMoveToLast )
       //
       :addSeparator()
       :addAction( ::oActFreezeLPlus )
@@ -3394,6 +3402,34 @@ METHOD HbQtBrowse:buildToolbar()
       :addSeparator()
       :addAction( ::oActCopySel )
       :addAction( ::oActCellMemo )
+      :addSeparator()
+
+      :hide()
+   ENDWITH
+
+   WITH OBJECT ::oToolbarLeft := QToolBar( ::oWidget )
+      :setOrientation( Qt_Vertical )
+      :setIconSize( QSize( 12,12 ) )
+      :setMovable( .F. )
+      :setFloatable( .F. )
+      :setFocusPolicy( Qt_NoFocus )
+      //
+      :addAction( ::oActPanHome )
+      :addAction( ::oActLeft )
+      :addAction( ::oActRight )
+      :addAction( ::oActPanEnd )
+      :addSeparator()
+      :addAction( ::oActGoTop )
+      :addAction( ::oActGoUp )
+      :addAction( ::oActGoDown )
+      :addAction( ::oActGoBottom )
+      :addAction( ::oActGoTo )
+      :addSeparator()
+      :addAction( ::oActMoveToFirst )
+      :addAction( ::oActMoveToLeft )
+      :addAction( ::oActMoveToRight )
+      :addAction( ::oActMoveToLast )
+      :addSeparator()
 
       :hide()
    ENDWITH
@@ -3705,6 +3741,16 @@ METHOD HbQtBrowse:manageToolbar( lShow )
       ENDIF
    ENDIF
    RETURN ::oToolbar:isVisible()
+
+METHOD HbQtBrowse:manageToolbarLeft( lShow )
+   IF HB_ISLOGICAL( lShow )
+      IF lShow
+         ::oToolbarLeft:show()
+      ELSE
+         ::oToolbarLeft:hide()
+      ENDIF
+   ENDIF
+   RETURN ::oToolbarLeft:isVisible()
 
 
 METHOD HbQtBrowse:getTitle()

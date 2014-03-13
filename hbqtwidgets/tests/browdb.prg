@@ -124,6 +124,7 @@ STATIC FUNCTION BrowseMe( oWnd )
    oBrowse:verticalScrollbar   := .F.                        /* Not a TBrowse METHOD */
 // oBrowse:cursorMode          := HBQTBRW_CURSOR_ROW         /* Not a TBrowse METHOD */
    oBrowse:toolbar             := .T.
+   oBrowse:toolbarLeft         := .T.
    oBrowse:statusbar           := .T.
    oBrowse:statusMessage       := "This is Harbour TBrowse's Complete Implementation in HbQt Widgets with many Additional Goodies!"
    oBrowse:editBlock           := {|aMod,aData,oBrw| SaveMyRecord( aMod,aData,oBrw ) }

@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-03-12 19:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r282)
+  * hbqtwidgets/hbqtbrowse.prg
+    + Implemented: Left toolbar which contain navigational icons 
+        which were contained in top toolbar originally. By default 
+        it is off. To switch it on, issue this message.
+           oBrowse:toolbarLeft := .t.
+    ; This is necessary as we never need navigational icon visible
+        all the times. It also shortens top toolbar's width which will 
+        facilitate to host more actions scheduled for next few days.
+
+  * hbqtwidgets/tests/browdb.prg
+    % Updated to show above change.
+        
 2014-03-12 15:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r281)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: synchronization of frozen columns with browser columns from 
