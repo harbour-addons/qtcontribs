@@ -78,7 +78,7 @@ extern void hbqt_del_QUrlInfo( void * pObj, int iFlags );
 
 HB_EXTERN_END
 
-/*----------------------------------------------------------------------*/
+
 
 static void hbqt_SlotsExecQHttpResponseHeader( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
@@ -91,6 +91,7 @@ static void hbqt_SlotsExecQHttpResponseHeader( PHB_ITEM * codeBlock, void ** arg
    hb_vmSend( 1 );
    hb_itemRelease( p0 );
 }
+
 
 static void hbqt_SlotsExecQNetworkProxyPointer( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
@@ -107,6 +108,7 @@ static void hbqt_SlotsExecQNetworkProxyPointer( PHB_ITEM * codeBlock, void ** ar
    hb_itemRelease( p1 );
 }
 
+
 static void hbqt_SlotsExecQNetworkRequest( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -118,6 +120,7 @@ static void hbqt_SlotsExecQNetworkRequest( PHB_ITEM * codeBlock, void ** argumen
    hb_vmSend( 1 );
    hb_itemRelease( p0 );
 }
+
 
 static void hbqt_SlotsExecQUrlInfo( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
@@ -131,7 +134,6 @@ static void hbqt_SlotsExecQUrlInfo( PHB_ITEM * codeBlock, void ** arguments, QSt
    hb_itemRelease( p0 );
 }
 
-/*----------------------------------------------------------------------*/
 
 static void hbqt_registerCallbacks( void )
 {
@@ -141,7 +143,15 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QUrlInfo"              , hbqt_SlotsExecQUrlInfo             );
 }
 
-/*----------------------------------------------------------------------*/
+
+#else 
+
+static void hbqt_registerCallbacks( void )
+{
+}
+
+#endif 
+
 
 HB_FUNC( __HBQTNETWORK ) {;}
 
@@ -169,4 +179,3 @@ HB_CALL_ON_STARTUP_END( _hbqtnetwork_init_ )
    #include "hbiniseg.h"
 #endif
 
-#endif
