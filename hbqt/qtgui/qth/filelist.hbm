@@ -15,6 +15,7 @@ HBQTableView.qth
 HBQTextBlockUserData.qth
 HBQValidator.qth
 HBQProxyStyle.qth
+HBQFlickCharm.qth
 
 QAbstractButton.qth
 QAbstractGraphicsShapeItem.qth

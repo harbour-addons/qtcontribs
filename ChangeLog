@@ -16,6 +16,25 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-01 00:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r284)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added some more constants.
+
+  + hbqt/qtgui/hbqt_flickcharm.cpp
+  + hbqt/qtgui/hbqt_flickcharm.h
+  * hbqt/qtgui/hbqtgui.hbm
+    + Added: Qt tools class which never made to the mainstream.
+       A must class needed for mobile devices. This class implements
+       the flick gesture on QAbstractScrollArea based objects.
+  + hbqt/qtgui/qth/HBQFlickCharm.qth
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added: corresponding .prg wrapper.
+
+  ; Calling Syntax:
+      oFlick := HBQFlickCharm()
+      oTextBrowser := QTextBrowser()
+      oFlick:activateOn( oTextBrowser )
+
 2014-03-26 16:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r283)
   * hbqt/qtnetwork/hbqt_init.cpp
     ! Fixed: to be usable with Qt5x.

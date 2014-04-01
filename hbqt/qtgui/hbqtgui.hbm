@@ -18,6 +18,7 @@ hbqt_init.cpp
 hbqt_utils.cpp
 hbqt_hbqvalidator.cpp
 hbqt_hbqproxystyle.cpp
+hbqt_flickcharm.cpp
 
 hbqt_hbqabstractitemmodel.h
 hbqt_hbqgraphicsscene.h
@@ -25,6 +26,7 @@ hbqt_hbqplaintextedit.h
 hbqt_hbqsyntaxhighlighter.h
 hbqt_hbqtableview.h
 hbqt_hbqvalidator.h
+hbqt_flickcharm.h
 
 hbqt_errorsys.prg
 

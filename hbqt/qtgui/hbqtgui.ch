@@ -661,14 +661,6 @@
 #define Qt_AvoidDither                            0x00000080   // (default when converting for the purpose of saving to file) - Dither 32-bit images only if the image has more than 256 colors and it is being converted to 8 bits.
 // The ImageConversionFlags type is a typedef for QFlags<ImageConversionFlag>. It stores an OR combination of ImageConversionFlag values.
 
-// enum #define Qt_InputMethodQuery
-//
-#define Qt_ImMicroFocus                           0     // The rectangle covering the area of the input cursor in widget coordinates.
-#define Qt_ImFont                                 1     // The currently used font for text input.
-#define Qt_ImCursorPosition                       2     // The logical position of the cursor within the text surrounding the input area (see ImSurroundingText). If any text is selected, the position returned will be at the logical end of the selection, even if the real cursor is located at the logical start.
-#define Qt_ImSurroundingText                      3     // The plain text around the input area, for example the current paragraph.
-#define Qt_ImCurrentSelection                     4     // The currently selected text.
-
 // enum #define Qt_ItemDataRole
 // Each item in the model has a set of data elements associated with it, each with its own role. The roles are used by the view to indicate to the model which type of data it needs.
 // The general purpose roles are:
@@ -1499,15 +1491,6 @@
 #define Qt_WStyle_NoBorderEx                      Qt_FramelessWindowHint      // Use Qt_FramelessWindowHint instead.
 #define Qt_WResizeNoErase                         0                   // No longer needed.
 #define Qt_WMacNoSheet                            0                   // No longer needed.
-
-
-//Input Methods Hints
-#define Qt_ImhHiddenText                          0x1      // Characters should be hidden, as is typically used when entering passwords. This is automatically set when setting QLineEdit::echoMode to Password.
-#define Qt_ImhNoAutoUppercase                     0x2      // The input method should not try to automatically switch to upper case when a sentence ends.
-#define Qt_ImhPreferNumbers                       0x4      // Numbers are preferred (but not required).
-#define Qt_ImhPreferUppercase                     0x8      // Upper case letters are preferred (but not required).
-#define Qt_ImhPreferLowercase                     0x10     // Lower case letters are preferred (but not required).
-#define Qt_ImhNoPredictiveText                    0x20     // Do not use predictive text (i.e. dictionary lookup) while typing.
 
 
 // Frame Shadow
@@ -3484,6 +3467,50 @@
 #define QStandardPaths_RuntimeLocation                       12      // Returns a directory location where runtime communication files should be written. For instance unix local sockets.
 #define QStandardPaths_ConfigLocation                        13      // Returns a directory location where user-specific configuration files should be written.
 #define QStandardPaths_DownloadLocation                      14      // Returns a directory for user's downloaded files.
+
+
+#define Qt_ImhNone                                           0x0          // No hints.
+#define Qt_ImhHiddenText                                     0x1          // Characters should be hidden, as is typically used when entering passwords. This is automatically set when setting QLineEdit::echoMode to Password.
+#define Qt_ImhSensitiveData                                  0x2          // Typed text should not be stored by the active input method in any persistent storage like predictive user dictionary.
+#define Qt_ImhNoAutoUppercase                                0x4          // The input method should not try to automatically switch to upper case when a sentence ends.
+#define Qt_ImhPreferNumbers                                  0x8          // Numbers are preferred (but not required).
+#define Qt_ImhPreferUppercase                                0x10         // Upper case letters are preferred (but not required).
+#define Qt_ImhPreferLowercase                                0x20         // Lower case letters are preferred (but not required).
+#define Qt_ImhNoPredictiveText                               0x40         // Do not use predictive text (i.e. dictionary lookup) while typing.
+#define Qt_ImhDate                                           0x80         // The text editor functions as a date field.
+#define Qt_ImhTime                                           0x100        // The text editor functions as a time field.
+#define Qt_ImhPreferLatin                                    0x200        // Latin characters are preferred (but not required).
+#define Qt_ImhMultiLine                                      0x400        // Multiple lines can be entered into the text field.
+#define Qt_ImhDigitsOnly                                     0x10000      // Only digits are allowed.
+#define Qt_ImhFormattedNumbersOnly                           0x20000      // Only number input is allowed. This includes decimal point and minus sign.
+#define Qt_ImhUppercaseOnly                                  0x40000      // Only upper case letter input is allowed.
+#define Qt_ImhLowercaseOnly                                  0x80000      // Only lower case letter input is allowed.
+#define Qt_ImhDialableCharactersOnly                         0x100000     // Only characters suitable for phone dialing are allowed.
+#define Qt_ImhEmailCharactersOnly                            0x200000     // Only characters suitable for email addresses are allowed.
+#define Qt_ImhUrlCharactersOnly                              0x400000     // Only characters suitable for URLs are allowed.
+#define Qt_ImhLatinOnly                                      0x800000     // Only latin based input is allowed.
+#define Qt_ImhExclusiveInputMask                             0xffff0000   // This mask yields nonzero if any of the exclusive flags are used.
+
+#define Qt_ImEnabled                                         0x1          // The widget accepts input method input.
+#define Qt_ImMicroFocus                                      0x2          // This query is obsolete. Use ImCursorRectangle instead.
+#define Qt_ImCursorRectangle                                 0x2          // The rectangle covering the area of the input cursor in widget coordinates.
+#define Qt_ImFont                                            0x4          // The currently used font for text input.
+#define Qt_ImCursorPosition                                  0x8          // The logical position of the cursor within the text surrounding the input area (see ImSurroundingText).
+#define Qt_ImSurroundingText                                 0x10         // The plain text around the input area, for example the current paragraph.
+#define Qt_ImCurrentSelection                                0x20         // The currently selected text.
+#define Qt_ImMaximumTextLength                               0x40         // The maximum number of characters that the widget can hold. If there is no limit, QVariant() is returned.
+#define Qt_ImAnchorPosition                                  0x80         // The position of the selection anchor. This may be less or greater than ImCursorPosition, depending on which side of selection the cursor is. If there is no selection, it returns the same as ImCursorPosition.
+#define Qt_ImHints                                           0x100        // The hints for input method on expected input. (See #define Qt_InputMethodHints)
+#define Qt_ImPreferredLanguage                               0x200        // The preferred input language.
+#define Qt_ImPlatformData                                    0x80000000   // Platform specific data for input method.
+#define Qt_ImAbsolutePosition                                0x400        // The logical position of the cursor within the entire document.
+#define Qt_ImTextBeforeCursor                                0x800        // The plain text before the cursor. The widget can decide how much text to return, but must not return an empty string unless the cursor is at the start of the document.
+#define Qt_ImTextAfterCursor                                 0x1000       // The plain text after the cursor. The widget can decide how much text to return, but must not return an empty string unless the cursor is at the end of the document.
+
+//#define Qt_ImQueryInput                                      ImCursorRectangle | ImCursorPosition | ImSurroundingText | ImCurrentSelection | ImAnchorPosition   Commonly changed properties on input.
+#define Qt_ImQueryAll                                        0xffffffff   //Query for all input method properties.
+
+
 
 #endif
 
