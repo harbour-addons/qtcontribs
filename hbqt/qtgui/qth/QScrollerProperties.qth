@@ -1,0 +1,69 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x0408000
+</CLASS>
+
+<CODE>
+#if QT_VERSION >= 0x050000
+#include <QtWidgets/QScrollerProperties>
+#else
+#include <QtGui/QScrollerProperties>
+#endif
+
+/*
+ * QScrollerProperties()
+ * QScrollerProperties(const QScrollerProperties & sp)
+ * virtual ~QScrollerProperties()
+ */
+HB_FUNC( QT_QSCROLLERPROPERTIES )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QScrollerProperties" ) )
+   {
+      __HB_RETPTRGC__( new QScrollerProperties( *hbqt_par_QScrollerProperties( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QScrollerProperties() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum	FrameRates { Fps60, Fps30, Fps20, Standard }
+enum	OvershootPolicy { OvershootWhenScrollable, OvershootAlwaysOff, OvershootAlwaysOn }
+enum	ScrollMetric { MousePressEventDelay, DragStartDistance, DragVelocitySmoothingFactor, AxisLockThreshold, MousePressEventDelay, DragStartDistance, DragVelocitySmoothingFactor, AxisLockThreshold, ScrollingCurve, DecelerationFactor, MinimumVelocity, MaximumVelocity, MaximumClickThroughVelocity, AcceleratingFlickMaximumTime, AcceleratingFlickSpeedupFactor, SnapPositionRatio, SnapTime, OvershootDragResistanceFactor, OvershootDragDistanceFactor, OvershootScrollDistanceFactor, OvershootScrollTime, HorizontalOvershootPolicy, VerticalOvershootPolicy, FrameRate, ScrollMetricCount }
+</ENUMS>
+
+<PROTOS>
+QVariant scrollMetric(ScrollMetric metric) const
+void setScrollMetric(ScrollMetric metric, const QVariant & value)
+
+void setDefaultScrollerProperties(const QScrollerProperties & sp)
+void unsetDefaultScrollerProperties()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

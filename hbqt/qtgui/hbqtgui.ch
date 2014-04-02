@@ -3511,6 +3511,63 @@
 #define Qt_ImQueryAll                                        0xffffffff   //Query for all input method properties.
 
 
+//enum #define QScroller::Input
+//This enum contains an input device agnostic view of input events that are relevant for QScroller.
+#define QScroller_InputPress                                 1   // The user pressed the input device (e.g. QEvent::MouseButtonPress, QEvent::GraphicsSceneMousePress, QEvent::TouchBegin)
+#define QScroller_InputMove                                  2   // The user moved the input device (e.g. QEvent::MouseMove, QEvent::GraphicsSceneMouseMove, QEvent::TouchUpdate)
+#define QScroller_InputRelease                               3   // The user released the input device (e.g. QEvent::MouseButtonRelease, QEvent::GraphicsSceneMouseRelease, QEvent::TouchEnd)
+
+//enum #define QScroller_ScrollerGestureType
+//This enum contains the different gesture types that are supported by the QScroller gesture recognizer.
+#define QScroller_TouchGesture                               0   // The gesture recognizer will only trigger on touch events. Specifically it will react on single touch points when using a touch screen and dual touch points when using a touchpad.
+#define QScroller_LeftMouseButtonGesture                     1   // The gesture recognizer will only trigger on left mouse button events.
+#define QScroller_MiddleMouseButtonGesture                   3   // The gesture recognizer will only trigger on middle mouse button events.
+#define QScroller_RightMouseButtonGesture                    2   // The gesture recognizer will only trigger on right mouse button events.
+
+//enum #define QScroller_State
+//This enum contains the different QScroller states.
+#define QScroller_Inactive                                   0   // The scroller is not scrolling and nothing is pressed.
+#define QScroller_Pressed                                    1   // A touch event was received or the mouse button was pressed but the scroll area is currently not dragged.
+#define QScroller_Dragging                                   2   // The scroll area is currently following the touch point or mouse.
+#define QScroller_Scrolling                                  3   // The scroll area is moving on it's own.
+
+//enum #define QScrollerProperties_FrameRates
+//This enum describes the available frame rates used while dragging or scrolling.
+
+#define QScrollerProperties_Fps60                            1   // 60 frames per second
+#define QScrollerProperties_Fps30                            2   // 30 frames per second
+#define QScrollerProperties_Fps20                            3   // 20 frames per second
+#define QScrollerProperties_Standard                         0   // the default value is 60 frames per second (which corresponds to QAbstractAnimation).
+
+//enum #define QScrollerProperties_OvershootPolicy
+//This enum describes the various modes of overshooting.
+#define QScrollerProperties_OvershootWhenScrollable          0   // Overshooting is possible when the content is scrollable. This is the default.
+#define QScrollerProperties_OvershootAlwaysOff               1   // Overshooting is never enabled, even when the content is scrollable.
+#define QScrollerProperties_OvershootAlwaysOn                2   // Overshooting is always enabled, even when the content is not scrollable.
+
+//enum #define QScrollerProperties_ScrollMetric
+//This enum contains the different scroll metric types. When not indicated otherwise the setScrollMetric function expects a QVariant of type qreal.
+#define QScrollerProperties_MousePressEventDelay             0   // This is the time a mouse press event is delayed when starting a flick gesture in [s]. If the gesture is triggered within that time, no mouse press or release is sent to the scrolled object. If it triggers after that delay the delayed mouse press plus a faked release event at global position QPoint(-QWIDGETSIZE_MAX, -QWIDGETSIZE_MAX) is sent. If the gesture is canceled, then both the delayed mouse press plus the real release event are delivered.
+#define QScrollerProperties_DragStartDistance                1   // This is the minimum distance the touch or mouse point needs to be moved before the flick gesture is triggered in m.
+#define QScrollerProperties_DragVelocitySmoothingFactor      2   // A value that describes to which extent new drag velocities are included in the final scrolling velocity. This value should be in the range between 0 and 1. The lower the value, the more smoothing is applied to the dragging velocity.
+#define QScrollerProperties_AxisLockThreshold                3   // Restricts the movement to one axis if the movement is inside an angle around the axis. The threshold must be in the range 0 to 1.
+#define QScrollerProperties_ScrollingCurve                   4   // The QEasingCurve used when decelerating the scrolling velocity after an user initiated flick. Please note that this is the easing curve for the positions, not the velocity: the default is QEasingCurve::OutQuad, which results in a linear decrease in velocity (1st derivative) and a constant deceleration (2nd derivative).
+#define QScrollerProperties_DecelerationFactor               5   // This factor influences how long it takes the scroller to decelerate to 0 velocity. The actual value depends on the chosen ScrollingCurve. For most types the value should be in the range from 0.1 to 2.0
+#define QScrollerProperties_MinimumVelocity                  6   // The minimum velocity that is needed after ending the touch or releasing the mouse to start scrolling in m/s.
+#define QScrollerProperties_MaximumVelocity                  7   // This is the maximum velocity that can be reached in m/s.
+#define QScrollerProperties_MaximumClickThroughVelocity      8   // This is the maximum allowed scroll speed for a click-through in m/s. This means that a click on a currently (slowly) scrolling object will not only stop the scrolling but the click event will also be delivered to the UI control. This is useful when using exponential-type scrolling curves.
+#define QScrollerProperties_AcceleratingFlickMaximumTime     9   // This is the maximum time in seconds that a flick gesture can take to be recognized as an accelerating flick. If set to zero no such gesture is detected. An "accelerating flick" is a flick gesture executed on an already scrolling object. In such cases the scrolling speed is multiplied by AcceleratingFlickSpeedupFactor in order to accelerate it.
+#define QScrollerProperties_AcceleratingFlickSpeedupFactor   10  // The current speed is multiplied by this number if an accelerating flick is detected. Should be >= 1.
+#define QScrollerProperties_SnapPositionRatio                11  // This is the distance that the user must drag the area beween two snap points in order to snap it to the next position. 0.33 means that the scroll must only reach one third of the distance between two snap points to snap to the next one. The ratio must be between 0 and 1.
+#define QScrollerProperties_SnapTime                         12  // This is the time factor for the scrolling curve. A lower value means that the scrolling will take longer. The scrolling distance is independet of this value.
+#define QScrollerProperties_OvershootDragResistanceFactor    13  // This value is the factor between the mouse dragging and the actual scroll area movement (during overshoot). The factor must be between 0 and 1.
+#define QScrollerProperties_OvershootDragDistanceFactor      14  // This is the maximum distance for overshoot movements while dragging. The actual overshoot distance is calculated by multiplying this value with the viewport size of the scrolled object. The factor must be between 0 and 1.
+#define QScrollerProperties_OvershootScrollDistanceFactor    15  // This is the maximum distance for overshoot movements while scrolling. The actual overshoot distance is calculated by multiplying this value with the viewport size of the scrolled object. The factor must be between 0 and 1.
+#define QScrollerProperties_OvershootScrollTime              16  // This is the time in seconds that is used to play the complete overshoot animation.
+#define QScrollerProperties_HorizontalOvershootPolicy        17  // This is the horizontal overshooting policy (see OvershootPolicy).
+#define QScrollerProperties_VerticalOvershootPolicy          18  // This is the horizontal overshooting policy (see OvershootPolicy).
+#define QScrollerProperties_FrameRate                        19  // This is the frame rate which should be used while dragging or scrolling. QScroller uses a QAbstractAnimation timer internally to sync all scrolling operations to other animations that might be active at the same time. If the standard value of 60 frames per second is too fast, it can be lowered with this setting, while still being in-sync with QAbstractAnimation. Please note that only the values of the FrameRates enum are allowed here.
+#define QScrollerProperties_ScrollMetricCount                20  // This is always the last entry.
 
 #endif
 

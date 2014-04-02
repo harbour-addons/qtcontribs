@@ -1,0 +1,85 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x050000
+Constructor = no
+Destructor  = No
+</CLASS>
+
+<CODE>
+#if QT_VERSION >= 0x050000
+#include <QtWidgets/QScroller>
+#else
+#include <QtGui/QScroller>
+#endif
+
+/*
+ *
+ */
+HB_FUNC( QT_QSCROLLER )
+{
+   HB_FUNC_EXEC( HB_QSCROLLER );
+}
+</CODE>
+
+<ENUMS>
+enum   Input { InputPress, InputMove, InputRelease }
+enum   ScrollerGestureType { TouchGesture, LeftMouseButtonGesture, MiddleMouseButtonGesture, RightMouseButtonGesture }
+enum   State { Inactive, Pressed, Dragging, Scrolling }
+</ENUMS>
+
+<PROTOS>
+QPointF   finalPosition() const
+bool   handleInput(QScroller::Input input, const QPointF & position, qint64 timestamp = 0)
+QPointF   pixelPerMeter() const
+QScrollerProperties   scrollerProperties() const
+void   setSnapPositionsX(const QList<qreal> & positions)
+void   setSnapPositionsX(qreal first, qreal interval)
+void   setSnapPositionsY(const QList<qreal> & positions)
+void   setSnapPositionsY(qreal first, qreal interval)
+State   state() const
+void   stop()
+QObject *   target() const
+QPointF   velocity() const
+
+QList<QScroller *>   activeScrollers()
+Qt::GestureType   grabGesture(QObject * target, QScroller::ScrollerGestureType scrollGestureType = TouchGesture)
+Qt::GestureType   grabbedGesture(QObject * target)
+bool   hasScroller(QObject * target)
+QScroller *   scroller(QObject * target)
+//const QScroller *   scroller(const QObject * target)
+void   ungrabGesture(QObject * target)
+</PROTOS>
+
+<SLOTS>
+void   ensureVisible(const QRectF & rect, qreal xmargin, qreal ymargin)
+void   ensureVisible(const QRectF & rect, qreal xmargin, qreal ymargin, int scrollTime)
+void   resendPrepareEvent()
+void   scrollTo(const QPointF & pos)
+void   scrollTo(const QPointF & pos, int scrollTime)
+void   setScrollerProperties(const QScrollerProperties & prop)
+</SLOTS>
+
+<SIGNALS>
+void   scrollerPropertiesChanged(const QScrollerProperties & newProperties)
+void   stateChanged(QScroller::State newState)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

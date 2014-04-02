@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-02 15:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r285)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QScroller_* and QScrollProperties_* constants.
+
+  + hbqt/qtgui/qth/QScroller.qth
+  + hbqt/qtgui/qth/QScrollerProperties.qth
+    + Added: two new classes.
+
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added: above two classes in dependancy list.
+
+  ; QScroller() provides even better control over kinetic scrolling
+     as it exposes a lot of properties to play with. The syntax is:
+       oSP := QScrollerProperties()
+       oSP:setScrollMetric( QScrollerProperties_MinimumVelocity, 0.0 )
+       ...
+       oScroller := QScroller( oScrollableWidget )
+       oScroller:grabGesture( oScrollableWidget, QScroller_LeftMouseButtonGesture )
+       oScroller:setScrollerProperties( oSP )
+
 2014-04-01 00:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r284)
   * hbqt/qtgui/hbqtgui.ch
     + Added some more constants.
