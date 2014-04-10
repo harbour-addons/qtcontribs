@@ -17,6 +17,33 @@
 */
 
 
+2014-04-10 12:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r287)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QWebSocket*_* constants.
+
+  + hbqt/qtwebsockets
+    + Added: Qt 5.3 introduced QtWebSockets module.
+
+  + hbqt/qtwebsockets/doc
+  + hbqt/qtwebsockets/doc/en
+  + hbqt/qtwebsockets/doc/en/class_qmaskgenerator.txt
+  + hbqt/qtwebsockets/doc/en/class_qwebsocket.txt
+  + hbqt/qtwebsockets/doc/en/class_qwebsocketcorsauthenticator.txt
+  + hbqt/qtwebsockets/doc/en/class_qwebsocketserver.txt
+  + hbqt/qtwebsockets/hbqt_init.cpp
+  + hbqt/qtwebsockets/hbqtwebsockets.ch
+  + hbqt/qtwebsockets/hbqtwebsockets.hbc
+  + hbqt/qtwebsockets/hbqtwebsockets.hbm
+  + hbqt/qtwebsockets/hbqtwebsockets.hbp
+  + hbqt/qtwebsockets/hbqtwebsockets.hbx
+  + hbqt/qtwebsockets/hbqtwebsocketss.hbp
+  + hbqt/qtwebsockets/qth
+  + hbqt/qtwebsockets/qth/filelist.hbm
+  + hbqt/qtwebsockets/qth/QMaskGenerator.qth
+  + hbqt/qtwebsockets/qth/QWebSocket.qth
+  + hbqt/qtwebsockets/qth/QWebSocketCorsAuthenticator.qth
+  + hbqt/qtwebsockets/qth/QWebSocketServer.qth
+
 2014-04-09 17:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r286)
   * hbqt/qtgui/hbqtgui.ch
     + Added: QGeo*_* constants.

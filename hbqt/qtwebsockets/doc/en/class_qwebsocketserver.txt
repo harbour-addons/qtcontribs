@@ -1,0 +1,65 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QWebSocketServer()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.3/qwebsocketserver.html
+   $ONELINER$
+      Creates a new QWebSocketServer object.
+   $INHERITS$
+
+   $SYNTAX$
+      QWebSocketServer( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QWebSocketServer
+   $METHODS$
+      :close()                                            -> NIL
+      :error()                                            -> nQWebSocketProtocol_CloseCode
+      :errorString()                                      -> cQString
+      :hasPendingConnections()                            -> lBool
+      :isListening()                                      -> lBool
+      :listen( oQHostAddress, nPort )                     -> lBool
+      :maxPendingConnections()                            -> nInt
+      :nextPendingConnection()                            -> oQWebSocket
+      :pauseAccepting()                                   -> NIL
+      :proxy()                                            -> oQNetworkProxy
+      :resumeAccepting()                                  -> NIL
+      :secureMode()                                       -> nQWebSocketServer_SslMode
+      :serverAddress()                                    -> oQHostAddress
+      :serverName()                                       -> cQString
+      :serverPort()                                       -> nQuint16
+      :setMaxPendingConnections( nNumConnections )        -> NIL
+      :setProxy( oQNetworkProxy )                         -> NIL
+      :setServerName( cServerName )                       -> NIL
+      :setSocketDescriptor( nSocketDescriptor )           -> lBool
+      :setSslConfiguration( oQSslConfiguration )          -> NIL
+      :socketDescriptor()                                 -> nInt
+      :sslConfiguration()                                 -> oQSslConfiguration
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.3 or upper
+   $FILES$
+      Library: hbqtwebsockets
+   $END$
+ */

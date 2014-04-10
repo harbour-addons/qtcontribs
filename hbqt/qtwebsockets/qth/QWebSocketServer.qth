@@ -1,0 +1,96 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050300
+</CLASS>
+
+<CODE>
+#include <QtWebSockets/QWebSocketServer>
+#include <QtNetwork/QNetworkProxy>
+
+/*
+ * QWebSocketServer(const QString & serverName, SslMode secureMode, QObject * parent = Q_NULLPTR)
+ * virtual   ~QWebSocketServer()
+ */
+HB_FUNC( QT_QWEBSOCKETSERVER )
+{
+   if( hb_pcount() == 3 && HB_ISCHAR( 1 ) && HB_ISNUM( 2 ) && hbqt_par_isDerivedFrom( 3, "QOBJECT" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QWebSocketServer( hb_parstr_utf8( 1, &pText01, NULL ), ( QWebSocketServer::SslMode ) hb_parni( 2 ), hbqt_par_QObject( 1 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && HB_ISNUM( 2 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QWebSocketServer( hb_parstr_utf8( 1, &pText01, NULL ), ( QWebSocketServer::SslMode ) hb_parni( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   SslMode { SecureMode, NonSecureMode }
+</ENUMS>
+
+<PROTOS>
+void   close()
+QWebSocketProtocol::CloseCode   error() const
+QString   errorString() const
+bool   hasPendingConnections() const
+bool   isListening() const
+bool   listen(const QHostAddress & address = QHostAddress::Any, quint16 port = 0)
+int   maxPendingConnections() const
+virtual QWebSocket *   nextPendingConnection()
+void   pauseAccepting()
+QNetworkProxy   proxy() const
+void   resumeAccepting()
+QWebSocketServer::SslMode   secureMode() const
+QHostAddress   serverAddress() const
+QString   serverName() const
+quint16   serverPort() const
+void   setMaxPendingConnections(int numConnections)
+void   setProxy(const QNetworkProxy & networkProxy)
+void   setServerName(const QString & serverName)
+bool   setSocketDescriptor(int socketDescriptor)
+void   setSslConfiguration(const QSslConfiguration & sslConfiguration)
+int   socketDescriptor() const
+QSslConfiguration   sslConfiguration() const
+QList<QWebSocketProtocol::Version>   supportedVersions() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   acceptError(QAbstractSocket::SocketError socketError)
+void   closed()
+void   newConnection()
+void   originAuthenticationRequired(QWebSocketCorsAuthenticator * authenticator)
+void   peerVerifyError(const QSslError & error)
+void   serverError(QWebSocketProtocol::CloseCode closeCode)
+void   sslErrors(const QList<QSslError> & errors)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

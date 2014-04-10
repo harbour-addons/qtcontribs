@@ -1,0 +1,14 @@
+#
+# $Id$
+#
+
+-cflag=-I${HB_WITH_QT}/QtCore
+
+../hbqt_common.hbm
+
+hbqtwebsockets.hbm
+
+-instfile=inc:hbqtwebsockets.ch
+-instfile=inc:hbqtwebsockets.hbx
+
+hbqtwebsocketss.hbp

@@ -1,0 +1,45 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QMaskGenerator()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.3/qmaskgenerator.html
+   $ONELINER$
+      Creates a new QMaskGenerator object.
+   $INHERITS$
+
+   $SYNTAX$
+      QMaskGenerator( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QMaskGenerator
+   $METHODS$
+      :nextMask()                                         -> nQuint32
+      :seed()                                             -> lBool
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.3 or upper
+   $FILES$
+      Library: hbqtwebsockets
+   $END$
+ */

@@ -1,0 +1,76 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QWebSocket()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.3/qwebsocket.html
+   $ONELINER$
+      Creates a new QWebSocket object.
+   $INHERITS$
+
+   $SYNTAX$
+      QWebSocket( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QWebSocket
+   $METHODS$
+      :abort()                                            -> NIL
+      :closeCode()                                        -> nQWebSocketProtocol_CloseCode
+      :closeReason()                                      -> cQString
+      :error()                                            -> nQAbstractSocket_SocketError
+      :errorString()                                      -> cQString
+      :flush()                                            -> lBool
+      :isValid()                                          -> lBool
+      :localAddress()                                     -> oQHostAddress
+      :localPort()                                        -> nQuint16
+      :origin()                                           -> cQString
+      :pauseMode()                                        -> nQAbstractSocket_PauseModes
+      :peerAddress()                                      -> oQHostAddress
+      :peerName()                                         -> cQString
+      :peerPort()                                         -> nQuint16
+      :proxy()                                            -> oQNetworkProxy
+      :readBufferSize()                                   -> nQint64
+      :requestUrl()                                       -> oQUrl
+      :resourceName()                                     -> cQString
+      :resume()                                           -> NIL
+      :sendBinaryMessage( oQByteArray )                   -> nQint64
+      :sendTextMessage( cMessage )                        -> nQint64
+      :setMaskGenerator( oQMaskGenerator )                -> NIL
+      :setPauseMode( nPauseMode )                         -> NIL
+      :setProxy( oQNetworkProxy )                         -> NIL
+      :setReadBufferSize( nSize )                         -> NIL
+      :setSslConfiguration( oQSslConfiguration )          -> NIL
+      :sslConfiguration()                                 -> oQSslConfiguration
+      :state()                                            -> nQAbstractSocket_SocketState
+      :version()                                          -> nQWebSocketProtocol_Version
+      :close( nCloseCode, cReason )                       -> NIL
+      :ignoreSslErrors()                                  -> NIL
+      :open( oQUrl )                                      -> NIL
+      :ping( oQByteArray )                                -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.3 or upper
+   $FILES$
+      Library: hbqtwebsockets
+   $END$
+ */

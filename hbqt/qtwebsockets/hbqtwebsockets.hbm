@@ -1,0 +1,15 @@
+#
+# $Id$
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtwebsockets.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc
+../qtnetwork/hbqtnetwork.hbc
+

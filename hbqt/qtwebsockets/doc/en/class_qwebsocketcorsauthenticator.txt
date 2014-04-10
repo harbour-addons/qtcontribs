@@ -1,0 +1,47 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QWebSocketCorsAuthenticator()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.3/qwebsocketcorsauthenticator.html
+   $ONELINER$
+      Creates a new QWebSocketCorsAuthenticator object.
+   $INHERITS$
+
+   $SYNTAX$
+      QWebSocketCorsAuthenticator( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QWebSocketCorsAuthenticator
+   $METHODS$
+      :allowed()                                          -> lBool
+      :origin()                                           -> cQString
+      :setAllowed( lAllowed )                             -> NIL
+      :swap( oQWebSocketCorsAuthenticator )               -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.3 or upper
+   $FILES$
+      Library: hbqtwebsockets
+   $END$
+ */

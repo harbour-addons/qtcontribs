@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050300
+</CLASS>
+
+<CODE>
+#include <QtWebSockets/QMaskGenerator>
+
+/*
+ * QMaskGenerator(QObject * parent = Q_NULLPTR)
+ * virtual ~QMaskGenerator()
+ */
+HB_FUNC( QT_QMASKGENERATOR )
+{
+   HB_FUNC_EXEC( HB_QMASKGENERATOR );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual quint32   nextMask() = 0
+virtual bool   seed() = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

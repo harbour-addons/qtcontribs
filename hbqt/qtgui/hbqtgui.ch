@@ -3650,6 +3650,38 @@
 #define QNmeaPositionInfoSource_RealTimeMode                 1      // Positional data is read and distributed from the data source as it becomes available. Use this mode if you are using a live source of positional data (for example, a GPS hardware device).
 #define QNmeaPositionInfoSource_SimulationMode               2      // The data and time information in the NMEA source data is used to provide positional updates at the rate at which the data was originally recorded. Use this mode if the data source contains previously recorded NMEA data and you want to replay the data for simulation purposes.
 
-#endif
+//enum QWebSocketServer::SslMode
+//Indicates whether the server operates over wss (SecureMode) or ws (NonSecureMode)
+#define QWebSocketServer_SecureMode                          0   // The server operates in secure mode (over wss)
+#define QWebSocketServer_NonSecureMode                       1   // The server operates in non-secure mode (over ws)
 
+//enum QWebSocketProtocol::CloseCode
+//The close codes supported by WebSockets V13
+#define QWebSocketProtocol_CloseCodeNormal                   1000   // Normal closure
+#define QWebSocketProtocol_CloseCodeGoingAway                1001   // Going away
+#define QWebSocketProtocol_CloseCodeProtocolError            1002   // Protocol error
+#define QWebSocketProtocol_CloseCodeDatatypeNotSupported     1003   // Unsupported data
+#define QWebSocketProtocol_CloseCodeReserved                 1004   // 1004   Reserved
+#define QWebSocketProtocol_CloseCodeMissingStatusCode        1005   // No status received
+#define QWebSocketProtocol_CloseCodeAbnormalDisconnection    1006   // Abnormal closure
+#define QWebSocketProtocol_CloseCodeWrongDatatype            1007   // Invalid frame payload data
+#define QWebSocketProtocol_CloseCodePolicyViolated           1008   // Policy violation
+#define QWebSocketProtocol_CloseCodeTooMuchData              1009   // Message too big
+#define QWebSocketProtocol_CloseCodeMissingExtension         1010   // Mandatory extension missing
+#define QWebSocketProtocol_CloseCodeBadOperation             1011   // Internal server error
+#define QWebSocketProtocol_CloseCodeTlsHandshakeFailed       1015   // TLS handshake failed
+
+//enum QWebSocketProtocol::Version
+//The different defined versions of the Websocket protocol.
+#define QWebSocketProtocol_VersionUnknown                    -1     // Unknown or unspecified version.
+#define QWebSocketProtocol_Version0                          0      // hixie76: http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76 & hybi-00: http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-00. Works with key1, key2 and a key in the payload. Attribute: Sec-WebSocket-Draft value 0. Not supported by QtWebSockets.
+#define QWebSocketProtocol_Version4                          4      // hybi-04: http://tools.ietf.org/id/draft-ietf-hybi-thewebsocketprotocol-04.txt. Changed handshake: key1, key2, key3 ==> Sec-WebSocket-Key, Sec-WebSocket-Nonce, Sec-WebSocket-Accept Sec-WebSocket-Draft renamed to Sec-WebSocket-Version Sec-WebSocket-Version = 4. Not supported by QtWebSockets.
+#define QWebSocketProtocol_Version5                          5      // hybi-05: http://tools.ietf.org/id/draft-ietf-hybi-thewebsocketprotocol-05.txt. Sec-WebSocket-Version = 5 Removed Sec-WebSocket-Nonce Added Sec-WebSocket-Accept. Not supported by QtWebSockets.
+#define QWebSocketProtocol_Version6                          6      // Sec-WebSocket-Version = 6. Not supported by QtWebSockets.
+#define QWebSocketProtocol_Version7                          7      // hybi-07: http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-07. Sec-WebSocket-Version = 7. Not supported by QtWebSockets.
+#define QWebSocketProtocol_Version8                          8      // hybi-8, hybi-9, hybi-10, hybi-11 and hybi-12. Status codes 1005 and 1006 are added and all codes are now unsigned Internal error results in 1006. Not supported by QtWebSockets.
+#define QWebSocketProtocol_Version13                         13     // hybi-13, hybi14, hybi-15, hybi-16, hybi-17 and RFC 6455. Sec-WebSocket-Version = 13 Status code 1004 is now reserved Added 1008, 1009 and 1010 Must support TLS Clarify multiple version support. Supported by QtWebSockets.
+#define QWebSocketProtocol_VersionLatest                     QWebSocketProtocol_Version13   //Refers to the latest known version to QtWebSockets.
+
+#endif
 

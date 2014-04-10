@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050300
+</CLASS>
+
+<CODE>
+#include <QtWebSockets/QWebSocketCorsAuthenticator>
+
+/*
+ *   QWebSocketCorsAuthenticator(const QString & origin)
+ * QWebSocketCorsAuthenticator(const QWebSocketCorsAuthenticator & other)
+ * QWebSocketCorsAuthenticator(QWebSocketCorsAuthenticator && other)
+ * ~QWebSocketCorsAuthenticator()
+ */
+HB_FUNC( QT_QWEBSOCKETCORSAUTHENTICATOR )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWebSocketCorsAuthenticator" ) )
+   {
+      __HB_RETPTRGC__( new QWebSocketCorsAuthenticator( * hbqt_par_QWebSocketCorsAuthenticator( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QWebSocketCorsAuthenticator( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   allowed() const
+QString   origin() const
+void   setAllowed(bool allowed)
+void   swap(QWebSocketCorsAuthenticator & other)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

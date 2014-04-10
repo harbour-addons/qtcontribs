@@ -1,0 +1,13 @@
+#
+# $Id$
+#
+
+-pflag=-qtver=0x050300
+-pflag=-qtmodule=qtwebsockets
+-pflag=-qthdocdir=../doc/
+
+QMaskGenerator.qth
+QWebSocket.qth
+QWebSocketCorsAuthenticator.qth
+QWebSocketServer.qth
+

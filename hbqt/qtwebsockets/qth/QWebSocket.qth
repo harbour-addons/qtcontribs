@@ -1,0 +1,114 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050300
+</CLASS>
+
+<CODE>
+#include <QtWebSockets/QWebSocket>
+#include <QtWebSockets/QMaskGenerator>
+
+/*
+ * QWebSocket(const QString & origin = QString(), QWebSocketProtocol::Version version = QWebSocketProtocol::VersionLatest, QObject * parent = Q_NULLPTR)
+ * virtual ~QWebSocket()
+ */
+HB_FUNC( QT_QWEBSOCKET )
+{
+   if( hb_pcount() == 3 && HB_ISCHAR( 1 ) && HB_ISNUM( 2 ) && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QWebSocket( hb_parstr_utf8( 1, &pText01, NULL ), ( QWebSocketProtocol::Version ) hb_parni( 2 ), hbqt_par_QObject( 3 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && HB_ISNUM( 2 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QWebSocket( hb_parstr_utf8( 1, &pText01, NULL ), ( QWebSocketProtocol::Version ) hb_parni( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QWebSocket() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   abort()
+QWebSocketProtocol::CloseCode   closeCode() const
+QString   closeReason() const
+QAbstractSocket::SocketError   error() const
+QString   errorString() const
+bool   flush()
+void   ignoreSslErrors(const QList<QSslError> & errors)
+bool   isValid() const
+QHostAddress   localAddress() const
+quint16   localPort() const
+//const QMaskGenerator *   maskGenerator() const
+QString   origin() const
+QAbstractSocket::PauseModes   pauseMode() const
+QHostAddress   peerAddress() const
+QString   peerName() const
+quint16   peerPort() const
+QNetworkProxy   proxy() const
+qint64   readBufferSize() const
+QUrl   requestUrl() const
+QString   resourceName() const
+void   resume()
+qint64   sendBinaryMessage(const QByteArray & data)
+qint64   sendTextMessage(const QString & message)
+void   setMaskGenerator(const QMaskGenerator * maskGenerator)
+void   setPauseMode(QAbstractSocket::PauseModes pauseMode)
+void   setProxy(const QNetworkProxy & networkProxy)
+void   setReadBufferSize(qint64 size)
+void   setSslConfiguration(const QSslConfiguration & sslConfiguration)
+QSslConfiguration   sslConfiguration() const
+QAbstractSocket::SocketState   state() const
+QWebSocketProtocol::Version   version() const
+</PROTOS>
+
+<SLOTS>
+void   close(QWebSocketProtocol::CloseCode closeCode = QWebSocketProtocol::CloseCodeNormal, const QString & reason = QString())
+void   ignoreSslErrors()
+void   open(const QUrl & url)
+void   ping(const QByteArray & payload = QByteArray())
+</SLOTS>
+
+<SIGNALS>
+void   aboutToClose()
+void   binaryFrameReceived(const QByteArray & frame, bool isLastFrame)
+void   binaryMessageReceived(const QByteArray & message)
+void   bytesWritten(qint64 bytes)
+void   connected()
+void   disconnected()
+void   error(QAbstractSocket::SocketError error)
+void   pong(quint64 elapsedTime, const QByteArray & payload)
+void   proxyAuthenticationRequired(const QNetworkProxy & proxy, QAuthenticator * authenticator)
+void   readChannelFinished()
+void   sslErrors(const QList<QSslError> & errors)
+void   stateChanged(QAbstractSocket::SocketState state)
+void   textFrameReceived(const QString & frame, bool isLastFrame)
+void   textMessageReceived(const QString & message)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+
