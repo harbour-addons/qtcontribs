@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoLocation>
+#include <QtPositioning/QGeoAddress>
+#include <QtPositioning/QGeoRectangle>
+#include <QtPositioning/QGeoCoordinate>
+
+/*
+ * QGeoLocation()
+ * QGeoLocation(const QGeoLocation & other)
+ * ~QGeoLocation()
+ */
+HB_FUNC( QT_QGEOLOCATION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoLocation" ) )
+   {
+      __HB_RETPTRGC__( new QGeoLocation( * hbqt_par_QGeoLocation( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoLocation() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QGeoAddress   address() const
+QGeoRectangle   boundingBox() const
+QGeoCoordinate   coordinate() const
+bool   isEmpty() const
+void   setAddress(const QGeoAddress & address)
+void   setBoundingBox(const QGeoRectangle & boundingBox)
+void   setCoordinate(const QGeoCoordinate & coordinate)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

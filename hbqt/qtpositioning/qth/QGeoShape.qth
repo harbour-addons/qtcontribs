@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QGeoCircle, QGeoRectangle
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoShape>
+
+/*
+ * QGeoShape()
+ * QGeoShape(const QGeoShape & other)
+ * ~QGeoShape()
+ */
+HB_FUNC( QT_QGEOSHAPE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoShape" ) )
+   {
+      __HB_RETPTRGC__( new QGeoShape( * hbqt_par_QGeoShape( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoShape() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   ShapeType { UnknownType, RectangleType, CircleType }
+</ENUMS>
+
+<PROTOS>
+bool   contains(const QGeoCoordinate & coordinate) const
+void   extendShape(const QGeoCoordinate & coordinate)
+bool   isEmpty() const
+bool   isValid() const
+QGeoShape::ShapeType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

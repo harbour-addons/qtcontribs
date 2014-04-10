@@ -1,0 +1,78 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoAddress>
+
+/*
+ * QGeoAddress()
+ * QGeoAddress(const QGeoAddress & other)
+ * ~QGeoAddress()
+ */
+HB_FUNC( QT_QGEOADDRESS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoAddress" ) )
+   {
+      __HB_RETPTRGC__( new QGeoAddress( *hbqt_par_QGeoAddress( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoAddress() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   city() const
+void   clear()
+QString   country() const
+QString   countryCode() const
+QString   county() const
+QString   district() const
+bool   isEmpty() const
+bool   isTextGenerated() const
+QString   postalCode() const
+void   setCity(const QString & city)
+void   setCountry(const QString & country)
+void   setCountryCode(const QString & countryCode)
+void   setCounty(const QString & county)
+void   setDistrict(const QString & district)
+void   setPostalCode(const QString & postalCode)
+void   setState(const QString & state)
+void   setStreet(const QString & street)
+void   setText(const QString & text)
+QString   state() const
+QString   street() const
+QString   text() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

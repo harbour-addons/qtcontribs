@@ -1,0 +1,76 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoAreaMonitorInfo>
+#include <QtCore/QDateTime>
+
+/*
+ * QGeoAreaMonitorInfo(const QString & name = QString())
+ * QGeoAreaMonitorInfo(const QGeoAreaMonitorInfo & other)
+ * ~QGeoAreaMonitorInfo()
+ */
+HB_FUNC( QT_QGEOAREAMONITORINFO )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoAreaMonitorInfo" ) )
+   {
+      __HB_RETPTRGC__( new QGeoAreaMonitorInfo( *hbqt_par_QGeoAreaMonitorInfo( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QGeoAreaMonitorInfo( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoAreaMonitorInfo() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QGeoShape   area() const
+QDateTime   expiration() const
+QString   identifier() const
+bool   isPersistent() const
+bool   isValid() const
+QString   name() const
+QVariantMap   notificationParameters() const
+void   setArea(const QGeoShape & newShape)
+void   setExpiration(const QDateTime & expiry)
+void   setName(const QString & name)
+void   setNotificationParameters(const QVariantMap & parameters)
+void   setPersistent(bool isPersistent)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

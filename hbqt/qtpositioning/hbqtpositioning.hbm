@@ -1,0 +1,13 @@
+#
+# $Id$
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtpositioning.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc

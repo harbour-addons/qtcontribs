@@ -1,0 +1,54 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoAreaMonitorSource()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeoareamonitorsource.html
+   $ONELINER$
+      Creates a new QGeoAreaMonitorSource object.
+   $INHERITS$
+
+   $SYNTAX$
+      QGeoAreaMonitorSource( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoAreaMonitorSource
+   $METHODS$
+      :activeMonitors()                                   -> oQList_QGeoAreaMonitorInfo>
+      :( oQGeoShape )                                     -> oQList_QGeoAreaMonitorInfo>
+      :positionInfoSource()                               -> oQGeoPositionInfoSource
+      :requestUpdate( oQGeoAreaMonitorInfo, cSignal )     -> lBool
+      :setPositionInfoSource( oQGeoPositionInfoSource )   -> NIL
+      :sourceName()                                       -> cQString
+      :startMonitoring( oQGeoAreaMonitorInfo )            -> lBool
+      :stopMonitoring( oQGeoAreaMonitorInfo )             -> lBool
+      :availableSources()                                 -> oQStringList
+      :createDefaultSource( oQObject )                    -> oQGeoAreaMonitorSource
+      :createSource( cSourceName, oQObject )              -> oQGeoAreaMonitorSource
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

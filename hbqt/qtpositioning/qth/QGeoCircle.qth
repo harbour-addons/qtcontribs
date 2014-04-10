@@ -1,0 +1,77 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QGeoShape
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoCircle>
+
+/*
+ * QGeoCircle()
+ * QGeoCircle(const QGeoCoordinate & center, qreal radius = -1.0)
+ * QGeoCircle(const QGeoCircle & other)
+ * QGeoCircle(const QGeoShape & other)
+ * ~QGeoCircle()
+ */
+HB_FUNC( QT_QGEOCIRCLE )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QGeoCoordinate" ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QGeoCircle( * hbqt_par_QGeoCoordinate( 1 ), hb_parnd( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoCoordinate" ) )
+   {
+      __HB_RETPTRGC__( new QGeoCircle( * hbqt_par_QGeoCoordinate( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoCircle" ) )
+   {
+      __HB_RETPTRGC__( new QGeoCircle( * hbqt_par_QGeoCircle( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoShape" ) )
+   {
+      __HB_RETPTRGC__( new QGeoCircle( * hbqt_par_QGeoShape( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoCircle() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QGeoCoordinate   center() const
+qreal   radius() const
+void   setCenter(const QGeoCoordinate & center)
+void   setRadius(qreal radius)
+void   translate(double degreesLatitude, double degreesLongitude)
+QGeoCircle   translated(double degreesLatitude, double degreesLongitude) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

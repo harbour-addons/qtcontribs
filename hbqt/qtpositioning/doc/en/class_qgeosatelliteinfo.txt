@@ -1,0 +1,52 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoSatelliteInfo()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeosatelliteinfo.html
+   $ONELINER$
+      Creates a new QGeoSatelliteInfo object.
+   $INHERITS$
+
+   $SYNTAX$
+      QGeoSatelliteInfo( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoSatelliteInfo
+   $METHODS$
+      :attribute( nAttribute )                            -> nQreal
+      :hasAttribute( nAttribute )                         -> lBool
+      :removeAttribute( nAttribute )                      -> NIL
+      :satelliteIdentifier()                              -> nInt
+      :setAttribute( nAttribute, nValue )                 -> NIL
+      :setSatelliteIdentifier( nSatId )                   -> NIL
+      :setSatelliteSystem( nSystem )                      -> NIL
+      :setSignalStrength( nSignalStrength )               -> NIL
+      :signalStrength()                                   -> nInt
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

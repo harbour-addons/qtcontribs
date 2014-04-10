@@ -1,0 +1,55 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoAreaMonitorInfo()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeoareamonitorinfo.html
+   $ONELINER$
+      Creates a new QGeoAreaMonitorInfo object.
+   $INHERITS$
+
+   $SYNTAX$
+      QGeoAreaMonitorInfo( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoAreaMonitorInfo
+   $METHODS$
+      :area()                                             -> oQGeoShape
+      :expiration()                                       -> oQDateTime
+      :identifier()                                       -> cQString
+      :isPersistent()                                     -> lBool
+      :isValid()                                          -> lBool
+      :name()                                             -> cQString
+      :notificationParameters()                           -> oQVariantMap
+      :setArea( oQGeoShape )                              -> NIL
+      :setExpiration( oQDateTime )                        -> NIL
+      :setName( cName )                                   -> NIL
+      :setNotificationParameters( oQVariantMap )          -> NIL
+      :setPersistent( lIsPersistent )                     -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

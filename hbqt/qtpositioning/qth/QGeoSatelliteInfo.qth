@@ -1,0 +1,69 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoSatelliteInfo>
+
+/*
+ * QGeoSatelliteInfo()
+ * QGeoSatelliteInfo(const QGeoSatelliteInfo & other)
+ * ~QGeoSatelliteInfo()
+ */
+HB_FUNC( QT_QGEOSATELLITEINFO )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoSatelliteInfo" ) )
+   {
+      __HB_RETPTRGC__( new QGeoSatelliteInfo( * hbqt_par_QGeoSatelliteInfo( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoSatelliteInfo() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Attribute { Elevation, Azimuth }
+enum   SatelliteSystem { Undefined, GPS, GLONASS }
+</ENUMS>
+
+<PROTOS>
+qreal   attribute(QGeoSatelliteInfo::Attribute attribute) const
+bool   hasAttribute(QGeoSatelliteInfo::Attribute attribute) const
+void   removeAttribute(QGeoSatelliteInfo::Attribute attribute)
+int   satelliteIdentifier() const
+SatelliteSystem   satelliteSystem() const
+void   setAttribute(QGeoSatelliteInfo::Attribute attribute, qreal value)
+void   setSatelliteIdentifier(int satId)
+void   setSatelliteSystem(QGeoSatelliteInfo::SatelliteSystem system)
+void   setSignalStrength(int signalStrength)
+int   signalStrength() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

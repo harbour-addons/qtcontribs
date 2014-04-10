@@ -1,0 +1,101 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =    QGeoShape
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoRectangle>
+#include <QtCore/QList>
+
+/*
+ * QGeoRectangle()
+ * QGeoRectangle(const QGeoCoordinate & center, double degreesWidth, double degreesHeight)
+ * QGeoRectangle(const QGeoCoordinate & topLeft, const QGeoCoordinate & bottomRight)
+ * QGeoRectangle(const QList<QGeoCoordinate> & coordinates)
+ * QGeoRectangle(const QGeoRectangle & other)
+ * QGeoRectangle(const QGeoShape & other)
+ * ~QGeoRectangle()
+ */
+HB_FUNC( QT_QGEORECTANGLE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoShape" ) )
+   {
+      __HB_RETPTRGC__( new QGeoRectangle( * hbqt_par_QGeoShape( 1 ) ) );
+   }
+#if 0
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QList" ) )
+   {
+      QList<QGeoCoordinate> * coordinates = hbqt_par_QList( 1 );
+      __HB_RETPTRGC__( new QGeoRectangle( &coordinates  ) );
+   }
+#endif
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoRectangle" ) )
+   {
+      __HB_RETPTRGC__( new QGeoRectangle( * hbqt_par_QGeoRectangle( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QGeoCoordinate" ) && hbqt_par_isDerivedFrom( 2, "QGeoCoordinate" ) )
+   {
+      __HB_RETPTRGC__( new QGeoRectangle( * hbqt_par_QGeoCoordinate( 1 ), * hbqt_par_QGeoCoordinate( 2 ) ) );
+   }
+   else if( hb_pcount() == 3 && hbqt_par_isDerivedFrom( 1, "QGeoCoordinate" ) && HB_ISNUM( 2 ) && HB_ISNUM( 3 ) )
+   {
+      __HB_RETPTRGC__( new QGeoRectangle( * hbqt_par_QGeoCoordinate( 1 ), hb_parnd( 2 ), hb_parnd( 3 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoRectangle() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QGeoCoordinate   bottomLeft() const
+QGeoCoordinate   bottomRight() const
+QGeoCoordinate   center() const
+bool   contains(const QGeoCoordinate & coordinate) const
+bool   contains(const QGeoRectangle & rectangle) const
+double   height() const
+bool   intersects(const QGeoRectangle & rectangle) const
+void   setBottomLeft(const QGeoCoordinate & bottomLeft)
+void   setBottomRight(const QGeoCoordinate & bottomRight)
+void   setCenter(const QGeoCoordinate & center)
+void   setHeight(double degreesHeight)
+void   setTopLeft(const QGeoCoordinate & topLeft)
+void   setTopRight(const QGeoCoordinate & topRight)
+void   setWidth(double degreesWidth)
+QGeoCoordinate   topLeft() const
+QGeoCoordinate   topRight() const
+void   translate(double degreesLatitude, double degreesLongitude)
+QGeoRectangle   translated(double degreesLatitude, double degreesLongitude) const
+QGeoRectangle   united(const QGeoRectangle & rectangle) const
+double   width() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

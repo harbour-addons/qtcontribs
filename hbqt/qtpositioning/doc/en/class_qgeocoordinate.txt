@@ -1,0 +1,54 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoCoordinate()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeocoordinate.html
+   $ONELINER$
+      Creates a new QGeoCoordinate object.
+   $INHERITS$
+
+   $SYNTAX$
+      QGeoCoordinate( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoCoordinate
+   $METHODS$
+      :altitude()                                         -> nDouble
+      :atDistanceAndAzimuth( nDistance, nAzimuth, nDistanceUp )  -> oQGeoCoordinate
+      :azimuthTo( oQGeoCoordinate )                       -> nQreal
+      :distanceTo( oQGeoCoordinate )                      -> nQreal
+      :isValid()                                          -> lBool
+      :latitude()                                         -> nDouble
+      :longitude()                                        -> nDouble
+      :setAltitude( nAltitude )                           -> NIL
+      :setLatitude( nLatitude )                           -> NIL
+      :setLongitude( nLongitude )                         -> NIL
+      :toString( nFormat )                                -> cQString
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

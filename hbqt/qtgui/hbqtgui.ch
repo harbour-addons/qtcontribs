@@ -3569,6 +3569,87 @@
 #define QScrollerProperties_FrameRate                        19  // This is the frame rate which should be used while dragging or scrolling. QScroller uses a QAbstractAnimation timer internally to sync all scrolling operations to other animations that might be active at the same time. If the standard value of 60 frames per second is too fast, it can be lowered with this setting, while still being in-sync with QAbstractAnimation. Please note that only the values of the FrameRates enum are allowed here.
 #define QScrollerProperties_ScrollMetricCount                20  // This is always the last entry.
 
+
+//enum #define QGeoAreaMonitorSource_AreaMonitorFeature
+//flags #define QGeoAreaMonitorSource_AreaMonitorFeatures
+#define QGeoAreaMonitorSource_PersistentAreaMonitorFeature   0x00000001   // QGeoAreaMonitorInfo instances can be made persistent. A persistent monitor continues to be active even when the application managing the monitor is not running.
+#define QGeoAreaMonitorSource_AnyAreaMonitorFeature          0xffffffff   // Matches all possible area monitoring features.
+
+//enum #define QGeoAreaMonitorSource_Error
+//Defines the types of positioning methods.
+#define QGeoAreaMonitorSource_AccessError                    0   // The connection setup to the remote area monitoring backend failed because the application lacked the required privileges.
+#define QGeoAreaMonitorSource_InsufficientPositionInfo       1   // The area monitoring source could not retrieve a location fix or the accuracy of the fix is not high enough to provide an effective area monitoring.
+#define QGeoAreaMonitorSource_NoError                        3   // No error has occurred.
+#define QGeoAreaMonitorSource_UnknownSourceError             2   // An unidentified error occurred.
+
+//enum QGeoPositionInfo::Attribute
+//Defines the attributes for positional information.
+#define QGeoPositionInfo_Direction                           0   // The bearing measured in degrees clockwise from true north to the direction of travel.
+#define QGeoPositionInfo_GroundSpeed                         1   // The ground speed, in meters/sec.
+#define QGeoPositionInfo_VerticalSpeed                       2   // The vertical speed, in meters/sec.
+#define QGeoPositionInfo_MagneticVariation                   3   // The angle between the horizontal component of the magnetic field and true north, in degrees. Also known as magnetic declination. A positive value indicates a clockwise direction from true north and a negative value indicates a counter-clockwise direction.
+#define QGeoPositionInfo_HorizontalAccuracy                  4   // The accuracy of the provided latitude-longitude value, in meters.
+#define QGeoPositionInfo_VerticalAccuracy                    5   // The accuracy of the provided altitude value, in meters.
+
+//enum QGeoCoordinate::CoordinateFormat
+//Defines the possible formatting options for toString().
+#define QGeoCoordinate_Degrees                               0   // Returns a string representation of the coordinates in decimal degrees format.
+#define QGeoCoordinate_DegreesWithHemisphere                 1   // Returns a string representation of the coordinates in decimal degrees format, using 'N', 'S', 'E' or 'W' to indicate the hemispheres of the coordinates.
+#define QGeoCoordinate_DegreesMinutes                        2   // Returns a string representation of the coordinates in degrees-minutes format.
+#define QGeoCoordinate_DegreesMinutesWithHemisphere          3   // Returns a string representation of the coordinates in degrees-minutes format, using 'N', 'S', 'E' or 'W' to indicate the hemispheres of the coordinates.
+#define QGeoCoordinate_DegreesMinutesSeconds                 4   // Returns a string representation of the coordinates in degrees-minutes-seconds format.
+#define QGeoCoordinate_DegreesMinutesSecondsWithHemisphere   5   // Returns a string representation of the coordinates in degrees-minutes-seconds format, using 'N', 'S', 'E' or 'W' to indicate the hemispheres of the coordinates.
+
+//enum QGeoCoordinate::CoordinateType
+//Defines the types of a coordinate.
+#define QGeoCoordinate_InvalidCoordinate                     0   // An invalid coordinate. A coordinate is invalid if its latitude or longitude values are invalid.
+#define QGeoCoordinate_Coordinate2D                          1   // A coordinate with valid latitude and longitude values.
+#define QGeoCoordinate_Coordinate3D                          2   // A coordinate with valid latitude and longitude values, and also an altitude value.
+
+//enum QGeoPositionInfoSource::Error
+//The Error enumeration represents the errors which can occur.
+#define QGeoPositionInfoSource_AccessError                   0   // The connection setup to the remote positioning backend failed because the application lacked the required privileges.
+#define QGeoPositionInfoSource_ClosedError                   1   // The remote positioning backend closed the connection, which happens for example in case the user is switching location services to off. As soon as the location service is re-enabled regular updates will resume.
+#define QGeoPositionInfoSource_NoError                       3   // No error has occurred.
+#define QGeoPositionInfoSource_UnknownSourceError            2   // An unidentified error occurred.
+
+//enum #define QGeoPositionInfoSource_PositioningMethod
+//flags #define QGeoPositionInfoSource_PositioningMethods
+//Defines the types of positioning methods.
+#define QGeoPositionInfoSource_NoPositioningMethods           0x00000000   // None of the positioning methods.
+#define QGeoPositionInfoSource_SatellitePositioningMethods    0x000000ff   // Satellite-based positioning methods such as GPS or GLONASS.
+#define QGeoPositionInfoSource_NonSatellitePositioningMethods 0xffffff00   // Other positioning methods such as 3GPP cell identifier or WiFi based positioning.
+#define QGeoPositionInfoSource_AllPositioningMethods          0xffffffff   // Satellite-based positioning methods as soon as available. Otherwise non-satellite based methods.
+
+//enum QGeoSatelliteInfo::Attribute
+//Defines the attributes for the satellite information.
+#define QGeoSatelliteInfo_Elevation                          0      // The elevation of the satellite, in degrees.
+#define QGeoSatelliteInfo_Azimuth                            1      // The azimuth to true north, in degrees.
+
+//enum #define QGeoSatelliteInfo_SatelliteSystem
+//Defines the GNSS system of the satellite.
+#define QGeoSatelliteInfo_Undefined                          0x00   // Not defined.
+#define QGeoSatelliteInfo_GPS                                0x01   // Global Positioning System (USA).
+#define QGeoSatelliteInfo_GLONASS                            0x02   // Global Positioning System (Russia).
+
+//enum QGeoSatelliteInfoSource::Error
+//The Error enumeration represents the errors which can occur.
+#define QGeoSatelliteInfoSource_AccessError                  0      // The connection setup to the satellite backend failed because the application lacked the required privileges.
+#define QGeoSatelliteInfoSource_ClosedError                  1      // The satellite backend closed the connection, which happens for example in case the user is switching location services to off. This object becomes invalid and should be deleted. A new satellite source can be created by calling createDefaultSource() later on.
+#define QGeoSatelliteInfoSource_NoError                      2      // No error has occurred.
+#define QGeoSatelliteInfoSource_UnknownSourceError           -1     // An unidentified error occurred.
+
+//enum QGeoShape::ShapeType
+//Describes the type of the shape.
+#define QGeoShape_UnknownType                                0      // A shape of unknown type.
+#define QGeoShape_RectangleType                              1      // A rectangular shape.
+#define QGeoShape_CircleType                                 2      // A circular shape.
+
+//enum QNmeaPositionInfoSource::UpdateMode
+//Defines the available update modes.
+#define QNmeaPositionInfoSource_RealTimeMode                 1      // Positional data is read and distributed from the data source as it becomes available. Use this mode if you are using a live source of positional data (for example, a GPS hardware device).
+#define QNmeaPositionInfoSource_SimulationMode               2      // The data and time information in the NMEA source data is used to provide positional updates at the rate at which the data was originally recorded. Use this mode if the data source contains previously recorded NMEA data and you want to replay the data for simulation purposes.
+
 #endif
 
 

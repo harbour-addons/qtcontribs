@@ -16,6 +16,54 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+
+2014-04-09 17:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r286)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QGeo*_* constants.
+
+  + hbqt/qtpositioning
+    + Added: Qt 5.2 introduced QtPositioning Module.
+
+  + hbqt/qtpositioning/doc
+  + hbqt/qtpositioning/doc/en
+  + hbqt/qtpositioning/doc/en/class_qgeoaddress.txt
+  + hbqt/qtpositioning/doc/en/class_qgeoareamonitorinfo.txt
+  + hbqt/qtpositioning/doc/en/class_qgeoareamonitorsource.txt
+  + hbqt/qtpositioning/doc/en/class_qgeocircle.txt
+  + hbqt/qtpositioning/doc/en/class_qgeocoordinate.txt
+  + hbqt/qtpositioning/doc/en/class_qgeolocation.txt
+  + hbqt/qtpositioning/doc/en/class_qgeopositioninfo.txt
+  + hbqt/qtpositioning/doc/en/class_qgeopositioninfosource.txt
+  + hbqt/qtpositioning/doc/en/class_qgeopositioninfosourcefactory.txt
+  + hbqt/qtpositioning/doc/en/class_qgeorectangle.txt
+  + hbqt/qtpositioning/doc/en/class_qgeosatelliteinfo.txt
+  + hbqt/qtpositioning/doc/en/class_qgeosatelliteinfosource.txt
+  + hbqt/qtpositioning/doc/en/class_qgeoshape.txt
+  + hbqt/qtpositioning/doc/en/class_qnmeapositioninfosource.txt
+  + hbqt/qtpositioning/hbqt_init.cpp
+  + hbqt/qtpositioning/hbqtpositioning.ch
+  + hbqt/qtpositioning/hbqtpositioning.hbc
+  + hbqt/qtpositioning/hbqtpositioning.hbm
+  + hbqt/qtpositioning/hbqtpositioning.hbp
+  + hbqt/qtpositioning/hbqtpositioning.hbx
+  + hbqt/qtpositioning/hbqtpositionings.hbp
+  + hbqt/qtpositioning/qth
+  + hbqt/qtpositioning/qth/filelist.hbm
+  + hbqt/qtpositioning/qth/QGeoAddress.qth
+  + hbqt/qtpositioning/qth/QGeoAreaMonitorInfo.qth
+  + hbqt/qtpositioning/qth/QGeoAreaMonitorSource.qth
+  + hbqt/qtpositioning/qth/QGeoCircle.qth
+  + hbqt/qtpositioning/qth/QGeoCoordinate.qth
+  + hbqt/qtpositioning/qth/QGeoLocation.qth
+  + hbqt/qtpositioning/qth/QGeoPositionInfo.qth
+  + hbqt/qtpositioning/qth/QGeoPositionInfoSource.qth
+  + hbqt/qtpositioning/qth/QGeoPositionInfoSourceFactory.qth
+  + hbqt/qtpositioning/qth/QGeoRectangle.qth
+  + hbqt/qtpositioning/qth/QGeoSatelliteInfo.qth
+  + hbqt/qtpositioning/qth/QGeoSatelliteInfoSource.qth
+  + hbqt/qtpositioning/qth/QGeoShape.qth
+  + hbqt/qtpositioning/qth/QNmeaPositionInfoSource.qth
+
 2014-04-02 15:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r285)
   * hbqt/qtgui/hbqtgui.ch
     + Added: QScroller_* and QScrollProperties_* constants.

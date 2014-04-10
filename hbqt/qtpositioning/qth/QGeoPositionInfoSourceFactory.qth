@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoPositionInfoSourceFactory>
+
+/*
+ * virtual ~QGeoPositionInfoSourceFactory()
+ */
+HB_FUNC( QT_QGEOPOSITIONINFOSOURCEFACTORY )
+{
+   HB_FUNC_EXEC( HB_QGEOPOSITIONINFOSOURCEFACTORY );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QGeoAreaMonitorSource *   areaMonitor(QObject * parent) = 0
+virtual QGeoPositionInfoSource *   positionInfoSource(QObject * parent) = 0
+virtual QGeoSatelliteInfoSource *   satelliteInfoSource(QObject * parent) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

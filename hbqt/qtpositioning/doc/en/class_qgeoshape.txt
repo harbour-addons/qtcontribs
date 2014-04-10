@@ -1,0 +1,48 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoShape()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeoshape.html
+   $ONELINER$
+      Creates a new QGeoShape object.
+   $INHERITS$
+      QGeoCircle, QGeoRectangle
+   $SYNTAX$
+      QGeoShape( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoShape
+   $METHODS$
+      :contains( oQGeoCoordinate )                        -> lBool
+      :extendShape( oQGeoCoordinate )                     -> NIL
+      :isEmpty()                                          -> lBool
+      :isValid()                                          -> lBool
+      :type()                                             -> nQGeoShape_ShapeType
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

@@ -1,0 +1,71 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoPositionInfoSource>
+
+/*
+ * QGeoPositionInfoSource(QObject * parent)
+ * virtual   ~QGeoPositionInfoSource()
+ */
+HB_FUNC( QT_QGEOPOSITIONINFOSOURCE )
+{
+   HB_FUNC_EXEC( HB_QGEOPOSITIONINFOSOURCE );
+}
+</CODE>
+
+<ENUMS>
+enum   Error { AccessError, ClosedError, NoError, UnknownSourceError }
+enum   PositioningMethod { NoPositioningMethods, SatellitePositioningMethods, NonSatellitePositioningMethods, AllPositioningMethods }
+flags   PositioningMethods
+</ENUMS>
+
+<PROTOS>
+virtual Error   error() const = 0
+virtual QGeoPositionInfo   lastKnownPosition(bool fromSatellitePositioningMethodsOnly = false) const = 0
+virtual int   minimumUpdateInterval() const = 0
+PositioningMethods   preferredPositioningMethods() const
+virtual void   setPreferredPositioningMethods(QGeoPositionInfoSource::PositioningMethods methods)
+virtual void   setUpdateInterval(int msec)
+QString   sourceName() const
+virtual QGeoPositionInfoSource::PositioningMethods   supportedPositioningMethods() const = 0
+int   updateInterval() const
+
+QStringList   availableSources()
+QGeoPositionInfoSource *   createDefaultSource(QObject * parent)
+QGeoPositionInfoSource *   createSource(const QString & sourceName, QObject * parent)
+</PROTOS>
+
+<SLOTS>
+virtual void   requestUpdate(int timeout = 0) = 0
+virtual void   startUpdates() = 0
+virtual void   stopUpdates() = 0
+</SLOTS>
+
+<SIGNALS>
+void   error(QGeoPositionInfoSource::Error positioningError)
+void   positionUpdated(const QGeoPositionInfo & update)
+void   updateTimeout()
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

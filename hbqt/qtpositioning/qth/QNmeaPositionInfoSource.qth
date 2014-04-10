@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QNmeaPositionInfoSource>
+#include <QtCore/QIODevice>
+
+/*
+ * QNmeaPositionInfoSource(UpdateMode updateMode, QObject * parent = 0)
+ * ~QNmeaPositionInfoSource()
+ */
+HB_FUNC( QT_QNMEAPOSITIONINFOSOURCE )
+{
+   HB_FUNC_EXEC( HB_QNMEAPOSITIONINFOSOURCE );
+}
+</CODE>
+
+<ENUMS>
+enum   UpdateMode { RealTimeMode, SimulationMode }
+</ENUMS>
+
+<PROTOS>
+QIODevice *   device() const
+void   setDevice(QIODevice * device)
+void   setUserEquivalentRangeError(double uere)
+QNmeaPositionInfoSource::UpdateMode   updateMode() const
+double   userEquivalentRangeError() const
+
+virtual Error   error() const
+virtual QGeoPositionInfo   lastKnownPosition(bool fromSatellitePositioningMethodsOnly = false) const
+virtual int   minimumUpdateInterval() const
+virtual void   setUpdateInterval(int msec)
+virtual PositioningMethods   supportedPositioningMethods() const
+</PROTOS>
+
+<SLOTS>
+virtual void   requestUpdate(int msec = 0)
+virtual void   startUpdates()
+virtual void   stopUpdates()
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

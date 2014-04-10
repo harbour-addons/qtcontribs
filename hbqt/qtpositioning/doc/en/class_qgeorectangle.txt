@@ -1,0 +1,63 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoRectangle()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeorectangle.html
+   $ONELINER$
+      Creates a new QGeoRectangle object.
+   $INHERITS$
+      QGeoShape
+   $SYNTAX$
+      QGeoRectangle( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoRectangle
+   $METHODS$
+      :bottomLeft()                                       -> oQGeoCoordinate
+      :bottomRight()                                      -> oQGeoCoordinate
+      :center()                                           -> oQGeoCoordinate
+      :contains( oQGeoCoordinate )                        -> lBool
+      :( oQGeoRectangle )                                 -> lBool
+      :height()                                           -> nDouble
+      :intersects( oQGeoRectangle )                       -> lBool
+      :setBottomLeft( oQGeoCoordinate )                   -> NIL
+      :setBottomRight( oQGeoCoordinate )                  -> NIL
+      :setCenter( oQGeoCoordinate )                       -> NIL
+      :setHeight( nDegreesHeight )                        -> NIL
+      :setTopLeft( oQGeoCoordinate )                      -> NIL
+      :setTopRight( oQGeoCoordinate )                     -> NIL
+      :setWidth( nDegreesWidth )                          -> NIL
+      :topLeft()                                          -> oQGeoCoordinate
+      :topRight()                                         -> oQGeoCoordinate
+      :translate( nDegreesLatitude, nDegreesLongitude )   -> NIL
+      :translated( nDegreesLatitude, nDegreesLongitude )  -> oQGeoRectangle
+      :united( oQGeoRectangle )                           -> oQGeoRectangle
+      :width()                                            -> nDouble
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

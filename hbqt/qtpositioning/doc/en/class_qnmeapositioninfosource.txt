@@ -1,0 +1,54 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QNmeaPositionInfoSource()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qnmeapositioninfosource.html
+   $ONELINER$
+      Creates a new QNmeaPositionInfoSource object.
+   $INHERITS$
+
+   $SYNTAX$
+      QNmeaPositionInfoSource( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QNmeaPositionInfoSource
+   $METHODS$
+      :device()                                           -> oQIODevice
+      :setDevice( oQIODevice )                            -> NIL
+      :setUserEquivalentRangeError( nUere )               -> NIL
+      :updateMode()                                       -> nQNmeaPositionInfoSource_UpdateMode
+      :userEquivalentRangeError()                         -> nDouble
+      :lastKnownPosition( lFromSatellitePositioningMethodsOnly )  -> oQGeoPositionInfo
+      :minimumUpdateInterval()                            -> nInt
+      :setUpdateInterval( nMsec )                         -> NIL
+      :requestUpdate( nMsec )                             -> NIL
+      :startUpdates()                                     -> NIL
+      :stopUpdates()                                      -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtPositioning/QGeoAreaMonitorSource>
+
+/*
+ * QGeoAreaMonitorSource(QObject * parent)
+ * virtual ~QGeoAreaMonitorSource()
+ */
+HB_FUNC( QT_QGEOAREAMONITORSOURCE )
+{
+   HB_FUNC_EXEC( HB_QGEOAREAMONITORSOURCE );
+}
+</CODE>
+
+<ENUMS>
+enum   AreaMonitorFeature { PersistentAreaMonitorFeature, AnyAreaMonitorFeature }
+flags   AreaMonitorFeatures
+enum   Error { AccessError, InsufficientPositionInfo, NoError, UnknownSourceError }
+</ENUMS>
+
+<PROTOS>
+virtual QList<QGeoAreaMonitorInfo>   activeMonitors() const = 0
+virtual QList<QGeoAreaMonitorInfo>   activeMonitors(const QGeoShape & lookupArea) const = 0
+virtual Error   error() const = 0
+virtual QGeoPositionInfoSource *   positionInfoSource() const
+virtual bool   requestUpdate(const QGeoAreaMonitorInfo & monitor, const char * signal) = 0
+virtual void   setPositionInfoSource(QGeoPositionInfoSource * newSource)
+QString   sourceName() const
+virtual bool   startMonitoring(const QGeoAreaMonitorInfo & monitor) = 0
+virtual bool   stopMonitoring(const QGeoAreaMonitorInfo & monitor) = 0
+virtual AreaMonitorFeatures   supportedAreaMonitorFeatures() const = 0
+
+QStringList   availableSources()
+QGeoAreaMonitorSource *   createDefaultSource(QObject * parent)
+QGeoAreaMonitorSource *   createSource(const QString & sourceName, QObject * parent)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   areaEntered(const QGeoAreaMonitorInfo & monitor, const QGeoPositionInfo & update)
+void   areaExited(const QGeoAreaMonitorInfo & monitor, const QGeoPositionInfo & update)
+void   error(QGeoAreaMonitorSource::Error areaMonitoringError)
+void   monitorExpired(const QGeoAreaMonitorInfo & monitor)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

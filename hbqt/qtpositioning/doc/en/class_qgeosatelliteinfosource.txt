@@ -1,0 +1,54 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoSatelliteInfoSource()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeosatelliteinfosource.html
+   $ONELINER$
+      Creates a new QGeoSatelliteInfoSource object.
+   $INHERITS$
+      QObject
+   $SYNTAX$
+      QGeoSatelliteInfoSource( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoSatelliteInfoSource
+   $METHODS$
+      :error()                                            -> nQGeoSatelliteInfoSource_Error
+      :minimumUpdateInterval()                            -> nInt
+      :setUpdateInterval( nMsec )                         -> NIL
+      :sourceName()                                       -> cQString
+      :updateInterval()                                   -> nInt
+      :availableSources()                                 -> oQStringList
+      :createDefaultSource( oQObject )                    -> oQGeoSatelliteInfoSource
+      :createSource( cSourceName, oQObject )              -> oQGeoSatelliteInfoSource
+      :requestUpdate( nTimeout )                          -> NIL
+      :startUpdates()                                     -> NIL
+      :stopUpdates()                                      -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

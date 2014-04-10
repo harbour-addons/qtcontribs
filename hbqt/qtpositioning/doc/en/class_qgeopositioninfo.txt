@@ -1,0 +1,52 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoPositionInfo()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeopositioninfo.html
+   $ONELINER$
+      Creates a new QGeoPositionInfo object.
+   $INHERITS$
+
+   $SYNTAX$
+      QGeoPositionInfo( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoPositionInfo
+   $METHODS$
+      :attribute( nAttribute )                            -> nQreal
+      :coordinate()                                       -> oQGeoCoordinate
+      :hasAttribute( nAttribute )                         -> lBool
+      :isValid()                                          -> lBool
+      :removeAttribute( nAttribute )                      -> NIL
+      :setAttribute( nAttribute, nValue )                 -> NIL
+      :setCoordinate( oQGeoCoordinate )                   -> NIL
+      :setTimestamp( oQDateTime )                         -> NIL
+      :timestamp()                                        -> oQDateTime
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */

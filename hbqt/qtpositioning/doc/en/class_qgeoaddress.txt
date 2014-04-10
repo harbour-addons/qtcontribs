@@ -1,0 +1,64 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QGeoAddress()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qgeoaddress.html
+   $ONELINER$
+      Creates a new QGeoAddress object.
+   $INHERITS$
+
+   $SYNTAX$
+      QGeoAddress( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QGeoAddress
+   $METHODS$
+      :city()                                             -> cQString
+      :clear()                                            -> NIL
+      :country()                                          -> cQString
+      :countryCode()                                      -> cQString
+      :county()                                           -> cQString
+      :district()                                         -> cQString
+      :isEmpty()                                          -> lBool
+      :isTextGenerated()                                  -> lBool
+      :postalCode()                                       -> cQString
+      :setCity( cCity )                                   -> NIL
+      :setCountry( cCountry )                             -> NIL
+      :setCountryCode( cCountryCode )                     -> NIL
+      :setCounty( cCounty )                               -> NIL
+      :setDistrict( cDistrict )                           -> NIL
+      :setPostalCode( cPostalCode )                       -> NIL
+      :setState( cState )                                 -> NIL
+      :setStreet( cStreet )                               -> NIL
+      :setText( cText )                                   -> NIL
+      :state()                                            -> cQString
+      :street()                                           -> cQString
+      :text()                                             -> cQString
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtpositioning
+   $END$
+ */
