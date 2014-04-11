@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothTransferManager>
+
+/*
+ * QBluetoothTransferManager(QObject * parent = 0)
+ * ~QBluetoothTransferManager()
+ */
+HB_FUNC( QT_QBLUETOOTHTRANSFERMANAGER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothTransferManager( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothTransferManager() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QBluetoothTransferReply *   put(const QBluetoothTransferRequest & request, QIODevice * data)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   finished(QBluetoothTransferReply * reply)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

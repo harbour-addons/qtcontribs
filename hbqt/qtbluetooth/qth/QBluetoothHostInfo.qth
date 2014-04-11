@@ -1,0 +1,61 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothHostInfo>
+
+/*
+ * QBluetoothHostInfo()
+ * QBluetoothHostInfo(const QBluetoothHostInfo & other)
+ * ~QBluetoothHostInfo()
+ */
+HB_FUNC( QT_QBLUETOOTHHOSTINFO )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothHostInfo" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothHostInfo( * hbqt_par_QBluetoothHostInfo( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothHostInfo() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QBluetoothAddress   address() const
+QString   name() const
+void   setAddress(const QBluetoothAddress & address)
+void   setName(const QString & name)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

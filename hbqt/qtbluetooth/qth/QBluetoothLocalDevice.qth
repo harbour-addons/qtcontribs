@@ -1,0 +1,87 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothLocalDevice>
+
+/*
+ * QBluetoothLocalDevice(QObject * parent = 0)
+ * QBluetoothLocalDevice(const QBluetoothAddress & address, QObject * parent = 0)
+ * virtual ~QBluetoothLocalDevice()
+ */
+HB_FUNC( QT_QBLUETOOTHLOCALDEVICE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothLocalDevice( hbqt_par_QObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothAddress" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothLocalDevice( * hbqt_par_QBluetoothAddress( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QBluetoothAddress" ) && hbqt_par_isDerivedFrom( 2, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothLocalDevice( * hbqt_par_QBluetoothAddress( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothLocalDevice() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, PairingError, UnknownError }
+enum   HostMode { HostPoweredOff, HostConnectable, HostDiscoverable, HostDiscoverableLimitedInquiry }
+enum   Pairing { Unpaired, Paired, AuthorizedPaired }
+</ENUMS>
+
+<PROTOS>
+QBluetoothAddress   address() const
+QList<QBluetoothAddress>   connectedDevices() const
+QBluetoothLocalDevice::HostMode   hostMode() const
+bool   isValid() const
+QString   name() const
+QBluetoothLocalDevice::Pairing   pairingStatus(const QBluetoothAddress & address) const
+void   powerOn()
+void   requestPairing(const QBluetoothAddress & address, QBluetoothLocalDevice::Pairing pairing)
+void   setHostMode(QBluetoothLocalDevice::HostMode mode)
+
+QList<QBluetoothHostInfo>   allDevices()
+</PROTOS>
+
+<SLOTS>
+void   pairingConfirmation(bool accept)
+</SLOTS>
+
+<SIGNALS>
+void   deviceConnected(const QBluetoothAddress & address)
+void   deviceDisconnected(const QBluetoothAddress & address)
+void   error(QBluetoothLocalDevice::Error error)
+void   hostModeStateChanged(QBluetoothLocalDevice::HostMode state)
+void   pairingDisplayConfirmation(const QBluetoothAddress & address, QString pin)
+void   pairingDisplayPinCode(const QBluetoothAddress & address, QString pin)
+void   pairingFinished(const QBluetoothAddress & address, QBluetoothLocalDevice::Pairing pairing)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

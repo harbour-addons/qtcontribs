@@ -1,0 +1,56 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothServer()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothserver.html
+   $ONELINER$
+      Creates a new QBluetoothServer object.
+   $INHERITS$
+
+   $SYNTAX$
+      QBluetoothServer( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothServer
+   $METHODS$
+      :close()                                            -> NIL
+      :hasPendingConnections()                            -> lBool
+      :isListening()                                      -> lBool
+      :listen( oQBluetoothAddress, nPort )                -> lBool
+      :( oQBluetoothUuid, cServiceName )                  -> oQBluetoothServiceInfo
+      :maxPendingConnections()                            -> nInt
+      :nextPendingConnection()                            -> oQBluetoothSocket
+      :securityFlags()                                    -> nQBluetooth_SecurityFlags
+      :serverAddress()                                    -> oQBluetoothAddress
+      :serverPort()                                       -> nQuint16
+      :serverType()                                       -> nQBluetoothServiceInfo_Protocol
+      :setMaxPendingConnections( nNumConnections )        -> NIL
+      :setSecurityFlags( nSecurity )                      -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

@@ -1,0 +1,46 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothUuid()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothuuid.html
+   $ONELINER$
+      Creates a new QBluetoothUuid object.
+   $INHERITS$
+      QUuid
+   $SYNTAX$
+      QBluetoothUuid( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothUuid
+   $METHODS$
+      :minimumSize()                                      -> nInt
+      :toUInt16( @lOk )                                   -> nQuint16
+      :toUInt32( @lOk )                                   -> nQuint32
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

@@ -1390,7 +1390,7 @@ CREATE CLASS HbQtSource
    VAR    cFunc
    VAR    cTrMode
 
-   VAR    cInt                                    INIT "int,qint16,quint16,short,ushort,unsigned,GLuint,GLenum,GLint,GLsizei,GLclampf"
+   VAR    cInt                                    INIT "int,qint8,quint8,qint16,quint16,short,ushort,unsigned,GLuint,GLenum,GLint,GLsizei,GLclampf"
    VAR    cIntLong                                INIT "qint32,quint32,QRgb,qgl_GLsizeiptr,qgl_GLintptr"
    VAR    cIntLongLong                            INIT "qint64,quint64,qlonglong,qulonglong,ulong,qintptr,quintptr"
 

@@ -3683,5 +3683,379 @@
 #define QWebSocketProtocol_Version13                         13     // hybi-13, hybi14, hybi-15, hybi-16, hybi-17 and RFC 6455. Sec-WebSocket-Version = 13 Status code 1004 is now reserved Added 1008, 1009 and 1010 Must support TLS Clarify multiple version support. Supported by QtWebSockets.
 #define QWebSocketProtocol_VersionLatest                     QWebSocketProtocol_Version13   //Refers to the latest known version to QtWebSockets.
 
+//enum QBluetooth::Security
+//flags QBluetooth::SecurityFlags
+#define QBluetooth_NoSecurity                                0x00   // The service does not require any security.
+#define QBluetooth_Authorization                             0x01   // The service requires authorization by the user, unless the device is Authorized-Paired.
+#define QBluetooth_Authentication                            0x02   // The service requires authentication. Device must be paired, and the user is prompted on connection unless the device is Authorized-Paired.
+#define QBluetooth_Encryption                                0x04   // The service requires the communication link to be encrypted. This requires the device to be paired.
+#define QBluetooth_Secure                                    0x08   // The service requires the communication link to be secure. Simple Pairing from Bluetooth 2.1 or greater is required. Legacy pairing is not permitted.
+
+//enum QBluetoothDeviceDiscoveryAgent::Error
+//Indicates all possible error conditions found during Bluetooth device discovery.
+#define QBluetoothDeviceDiscoveryAgent_NoError                      0   // No error has occurred.
+#define QBluetoothDeviceDiscoveryAgent_PoweredOffError              2   // The Bluetooth adaptor is powered off, power it on before doing discovery.
+#define QBluetoothDeviceDiscoveryAgent_InputOutputError             1   // Writing or reading from the device resulted in an error.
+#define QBluetoothDeviceDiscoveryAgent_InvalidBluetoothAdapterError 3   // The passed local adapter address does not match the physical adapter address of any local Bluetooth device.
+#define QBluetoothDeviceDiscoveryAgent_UnknownError                 100 // An unknown error has occurred.
+
+//enum QBluetoothDeviceDiscoveryAgent::InquiryType
+//This enum describes the inquiry type used while discovering Bluetooth devices.
+#define QBluetoothDeviceDiscoveryAgent_GeneralUnlimitedInquiry 0   // A general unlimited inquiry. Discovers all visible Bluetooth devices in the local vicinity.
+#define QBluetoothDeviceDiscoveryAgent_LimitedInquiry          1   // A limited inquiry discovers devices that are in limited inquiry mode.
+
+//enum QBluetoothDeviceInfo::DataCompleteness
+//This enum describes the completeness of the received data.
+#define QBluetoothDeviceInfo_DataComplete                    0   // The data is complete.
+#define QBluetoothDeviceInfo_DataIncomplete                  1   // The data is incomplete. Addition datum is available via other interfaces.
+#define QBluetoothDeviceInfo_DataUnavailable                 2   // No data is available.
+
+//enum #define QBluetoothDeviceInfo_MajorDeviceClass
+//This enum describes a Bluetooth device's major device class.
+#define QBluetoothDeviceInfo_MiscellaneousDevice             0    // A miscellaneous device.
+#define QBluetoothDeviceInfo_ComputerDevice                  1    // A computer device or PDA.
+#define QBluetoothDeviceInfo_PhoneDevice                     2    // A telephone device.
+#define QBluetoothDeviceInfo_LANAccessDevice                 3    // A device that provides access to a local area network.
+#define QBluetoothDeviceInfo_AudioVideoDevice                4    // A device capable of playback or capture of audio and/or video.
+#define QBluetoothDeviceInfo_PeripheralDevice                5    // A peripheral device such as a keyboard, mouse, and so on.
+#define QBluetoothDeviceInfo_ImagingDevice                   6    // An imaging device such as a display, printer, scanner or camera.
+#define QBluetoothDeviceInfo_WearableDevice                  7    // A wearable device such as a watch or pager.
+#define QBluetoothDeviceInfo_ToyDevice                       8    // A toy.
+#define QBluetoothDeviceInfo_HealthDevice                    9    // A health reated device such as heart rate or temperature monitor.
+#define QBluetoothDeviceInfo_UncategorizedDevice             31   // A device that does not fit into any of the other device classes.
+
+//enum #define QBluetoothDeviceInfo_MinorAudioVideoClass
+//This enum describes the minor device classes for audio/video devices.
+#define QBluetoothDeviceInfo_UncategorizedAudioVideoDevice   0    // An uncategorized audio/video device.
+#define QBluetoothDeviceInfo_WearableHeadsetDevice           1    // A wearable headset device.
+#define QBluetoothDeviceInfo_HandsFreeDevice                 2    // A handsfree device.
+#define QBluetoothDeviceInfo_Microphone                      4    // A microphone.
+#define QBluetoothDeviceInfo_Loudspeaker                     5    // A loudspeaker.
+#define QBluetoothDeviceInfo_Headphones                      6    // Headphones.
+#define QBluetoothDeviceInfo_PortableAudioDevice             7    // A portable audio device.
+#define QBluetoothDeviceInfo_CarAudio                        8    // A car audio device.
+#define QBluetoothDeviceInfo_SetTopBox                       9    // A settop box.
+#define QBluetoothDeviceInfo_HiFiAudioDevice                 10   // A HiFi audio device.
+#define QBluetoothDeviceInfo_Vcr                             11   // A video cassette recorder.
+#define QBluetoothDeviceInfo_VideoCamera                     12   // A video camera.
+#define QBluetoothDeviceInfo_Camcorder                       13   // A video camera.
+#define QBluetoothDeviceInfo_VideoMonitor                    14   // A video monitor.
+#define QBluetoothDeviceInfo_VideoDisplayAndLoudspeaker      15   // A video display with built-in loudspeaker.
+#define QBluetoothDeviceInfo_VideoConferencing               16   // A video conferencing device.
+#define QBluetoothDeviceInfo_GamingDevice                    18   // A gaming device.
+
+//enum #define QBluetoothDeviceInfo_MinorComputerClass
+//This enum describes the minor device classes for computer devices.
+#define QBluetoothDeviceInfo_UncategorizedComputer           0   // An uncategorized computer device.
+#define QBluetoothDeviceInfo_DesktopComputer                 1   // A desktop computer.
+#define QBluetoothDeviceInfo_ServerComputer                  2   // A server computer.
+#define QBluetoothDeviceInfo_LaptopComputer                  3   // A laptop computer.
+#define QBluetoothDeviceInfo_HandheldClamShellComputer       4   // A clamshell handheld computer or PDA.
+#define QBluetoothDeviceInfo_HandheldComputer                5   // A handheld computer or PDA.
+#define QBluetoothDeviceInfo_WearableComputer                6   // A wearable computer.
+
+//enum #define QBluetoothDeviceInfo_MinorHealthClass
+//This enum describes the minor device classes for health devices.
+#define QBluetoothDeviceInfo_UncategorizedHealthDevice       0     // An uncategorized health device.
+#define QBluetoothDeviceInfo_HealthBloodPressureMonitor      0x1   // A blood pressure monitor.
+#define QBluetoothDeviceInfo_HealthThermometer               0x2   // A Thermometer.
+#define QBluetoothDeviceInfo_HealthWeightScale               0x3   // A scale.
+#define QBluetoothDeviceInfo_HealthGlucoseMeter              0x4   // A glucose meter.
+#define QBluetoothDeviceInfo_HealthPulseOximeter             0x5   // A blood oxygen saturation meter.
+#define QBluetoothDeviceInfo_HealthDataDisplay               0x7   // A data display.
+#define QBluetoothDeviceInfo_HealthStepCounter               0x8   // A pedometer.
+
+//enum #define QBluetoothDeviceInfo_MinorImagingClass
+//This enum describes the minor device classes for imaging devices.
+#define QBluetoothDeviceInfo_UncategorizedImagingDevice      0      // An uncategorized imaging device.
+#define QBluetoothDeviceInfo_ImageDisplay                    0x04   // A device capable of displaying images.
+#define QBluetoothDeviceInfo_ImageCamera                     0x08   // A camera.
+#define QBluetoothDeviceInfo_ImageScanner                    0x10   // An image scanner.
+#define QBluetoothDeviceInfo_ImagePrinter                    0x20   // A printer.
+
+//enum #define QBluetoothDeviceInfo_MinorMiscellaneousClass
+//This enum describes the minor device classes for miscellaneous Bluetooth devices.
+#define QBluetoothDeviceInfo_UncategorizedMiscellaneous      0      // An uncategorized miscellaneous device.
+
+//enum #define QBluetoothDeviceInfo_MinorNetworkClass
+//This enum describes the minor device classes for local area network access devices. Local area network access devices use the minor device class to specify the current network utilization.
+#define QBluetoothDeviceInfo_NetworkFullService              0x00   // 100% of the total bandwidth is available.
+#define QBluetoothDeviceInfo_NetworkLoadFactorOne            0x08   // 0 - 17% of the total bandwidth is currently being used.
+#define QBluetoothDeviceInfo_NetworkLoadFactorTwo            0x10   // 17 - 33% of the total bandwidth is currently being used.
+#define QBluetoothDeviceInfo_NetworkLoadFactorThree          0x18   // 33 - 50% of the total bandwidth is currently being used.
+#define QBluetoothDeviceInfo_NetworkLoadFactorFour           0x20   // 50 - 67% of the total bandwidth is currently being used.
+#define QBluetoothDeviceInfo_NetworkLoadFactorFive           0x28   // 67 - 83% of the total bandwidth is currently being used.
+#define QBluetoothDeviceInfo_NetworkLoadFactorSix            0x30   // 83 - 99% of the total bandwidth is currently being used.
+#define QBluetoothDeviceInfo_NetworkNoService                0x38   // No network service available.
+
+//enum #define QBluetoothDeviceInfo_MinorPeripheralClass
+//This enum describes the minor device classes for peripheral devices.
+#define QBluetoothDeviceInfo_UncategorizedPeripheral              0   An uncategorized peripheral device.
+#define QBluetoothDeviceInfo_KeyboardPeripheral                   0x10   A keyboard.
+#define QBluetoothDeviceInfo_PointingDevicePeripheral             0x20   A pointing device, for example a mouse.
+#define QBluetoothDeviceInfo_KeyboardWithPointingDevicePeripheral 0x30   A keyboard with built-in pointing device.
+#define QBluetoothDeviceInfo_JoystickPeripheral                   0x01   A joystick.
+#define QBluetoothDeviceInfo_GamepadPeripheral                    0x02   A game pad.
+#define QBluetoothDeviceInfo_RemoteControlPeripheral              0x03   A remote control.
+#define QBluetoothDeviceInfo_SensingDevicePeripheral              0x04   A sensing device.
+#define QBluetoothDeviceInfo_DigitizerTabletPeripheral            0x05   A digitizer tablet peripheral.
+#define QBluetoothDeviceInfo_CardReaderPeripheral                 0x06   A card reader peripheral.
+
+//enum #define QBluetoothDeviceInfo_MinorPhoneClass
+//This enum describes the minor device classes for phone devices.
+#define QBluetoothDeviceInfo_UncategorizedPhone              0   // An uncategorized phone device.
+#define QBluetoothDeviceInfo_CellularPhone                   1   // A cellular phone.
+#define QBluetoothDeviceInfo_CordlessPhone                   2   // A cordless phone.
+#define QBluetoothDeviceInfo_SmartPhone                      3   // A smart phone.
+#define QBluetoothDeviceInfo_WiredModemOrVoiceGatewayPhone   4   // A wired modem or voice gateway.
+#define QBluetoothDeviceInfo_CommonIsdnAccessPhone           5   // A device that provides ISDN access.
+
+//enum #define QBluetoothDeviceInfo_MinorToyClass
+//This enum describes the minor device classes for toy devices.
+#define QBluetoothDeviceInfo_UncategorizedToy                0   // An uncategorized toy.
+#define QBluetoothDeviceInfo_ToyRobot                        1   // A toy robot.
+#define QBluetoothDeviceInfo_ToyVehicle                      2   // A toy vehicle.
+#define QBluetoothDeviceInfo_ToyDoll                         3   // A toy doll or action figure.
+#define QBluetoothDeviceInfo_ToyController                   4   // A controller.
+#define QBluetoothDeviceInfo_ToyGame                         5   // A game.
+
+//enum #define QBluetoothDeviceInfo_MinorWearableClass
+//This enum describes the minor device classes for wearable devices.
+#define QBluetoothDeviceInfo_UncategorizedWearableDevice     0   // An uncategorized wearable device.
+#define QBluetoothDeviceInfo_WearableWristWatch              1   // A wristwatch.
+#define QBluetoothDeviceInfo_WearablePager                   2   // A pager.
+#define QBluetoothDeviceInfo_WearableJacket                  3   // A jacket.
+#define QBluetoothDeviceInfo_WearableHelmet                  4   // A helmet.
+#define QBluetoothDeviceInfo_WearableGlasses                 5   // A pair of glasses.
+
+//enum #define QBluetoothDeviceInfo_ServiceClass
+//flags #define QBluetoothDeviceInfo_ServiceClasses
+#define QBluetoothDeviceInfo_NoService                       0x0000   // The device does not provide any services.
+#define QBluetoothDeviceInfo_PositioningService              0x0001   // The device provides positioning services.
+#define QBluetoothDeviceInfo_NetworkingService               0x0002   // The device provides networking services.
+#define QBluetoothDeviceInfo_RenderingService                0x0004   // The device provides rendering services.
+#define QBluetoothDeviceInfo_CapturingService                0x0008   // The device provides capturing services.
+#define QBluetoothDeviceInfo_ObjectTransferService           0x0010   // The device provides object transfer services.
+#define QBluetoothDeviceInfo_AudioService                    0x0020   // The device provides audio services.
+#define QBluetoothDeviceInfo_TelephonyService                0x0040   // The device provides telephony services.
+#define QBluetoothDeviceInfo_InformationService              0x0080   // The device provides information services.
+#define QBluetoothDeviceInfo_AllServices                     0x07ff   // The device provides services of all types.
+
+//enum #define QBluetoothLocalDevice_Error
+//This enum describes errors that maybe returned
+#define QBluetoothLocalDevice_NoError                        0     // No known error
+#define QBluetoothLocalDevice_PairingError                   1     // Error in pairing
+#define QBluetoothLocalDevice_UnknownError                   100   // Unknown error
+
+//enum #define QBluetoothLocalDevice_HostMode
+//This enum describes the most of the local Bluetooth device.
+#define QBluetoothLocalDevice_HostPoweredOff                 0   // Power off the device
+#define QBluetoothLocalDevice_HostConnectable                1   // Remote Bluetooth devices can connect to the local Bluetooth device if they have previously been paired with it or otherwise know its address. This powers up the device if it was powered off.
+#define QBluetoothLocalDevice_HostDiscoverable               2   // Remote Bluetooth devices can discover the presence of the local Bluetooth device. The device will also be connectable, and powered on. On Android, this mode can only be active for a maximum of 5 minutes.
+#define QBluetoothLocalDevice_HostDiscoverableLimitedInquiry 3   // Remote Bluetooth devices can discover the presence of the local Bluetooth device when performing a limited inquiry. This should be used for locating services that are only made discoverable for a limited period of time. This can speed up discovery between gaming devices, as service discovery can be skipped on devices not in LimitedInquiry mode. In this mode, the device will be connectable and powered on, if required. This mode is is not supported on Android.
+
+//enum #define QBluetoothLocalDevice_Pairing
+//This enum describes the pairing state between the two Bluetooth devices.
+#define QBluetoothLocalDevice_Unpaired                       0   // The Bluetooth devices are not paired.
+#define QBluetoothLocalDevice_Paired                         1   // The Bluetooth devices are paired. The system will prompt the user for authorization when the remote device initiates a connection to the local device.
+#define QBluetoothLocalDevice_AuthorizedPaired               2   // The Bluetooth devices are paired. The system will not prompt the user for authorization when the remote device initiates a connection to the local device.
+
+//enum #define QBluetoothServer_Error
+//This enum describes Bluetooth server error types.
+#define QBluetoothServer_NoError                             0   // No error.
+#define QBluetoothServer_UnknownError                        1   // An unknown error occurred.
+#define QBluetoothServer_PoweredOffError                     2   // The Bluetooth adapter is powered off.
+#define QBluetoothServer_InputOutputError                    3   // An input output error occurred.
+#define QBluetoothServer_ServiceAlreadyRegisteredError       4   // The service or port was already registered
+#define QBluetoothServer_UnsupportedProtocolError            5   // The Protocol is not supported on this platform.
+
+//enum #define QBluetoothServiceDiscoveryAgent_DiscoveryMode
+//This enum describes the service discovery mode.
+#define QBluetoothServiceDiscoveryAgent_MinimalDiscovery     0   // Performs a minimal service discovery. The QBluetoothServiceInfo objects returned may be incomplete and are only guaranteed to contain device and service UUID information.
+#define QBluetoothServiceDiscoveryAgent_FullDiscovery        1   // Performs a full service discovery.
+
+//enum #define QBluetoothServiceDiscoveryAgent_Error
+//This enum describes errors that can occur during service discovery.
+#define QBluetoothServiceDiscoveryAgent_NoError                      QBluetoothDeviceDiscoveryAgent_NoError                        // No error has occurred.
+#define QBluetoothServiceDiscoveryAgent_PoweredOffError              QBluetoothDeviceDiscoveryAgent_PoweredOffError                // The Bluetooth adaptor is powered off, power it on before doing discovery.
+#define QBluetoothServiceDiscoveryAgent_InputOutputError             QBluetoothDeviceDiscoveryAgent_InputOutputError               // Writing or reading from the device resulted in an error.
+#define QBluetoothServiceDiscoveryAgent_InvalidBluetoothAdapterError QBluetoothDeviceDiscoveryAgent_InvalidBluetoothAdapterError   // The passed local adapter address does not match the physical adapter address of any local Bluetooth device.
+#define QBluetoothServiceDiscoveryAgent_UnknownError                 QBluetoothDeviceDiscoveryAgent_UnknownError                   // An unknown error has occurred.
+
+//enum #define QBluetoothServiceInfo_AttributeId
+//Bluetooth service attributes. Please check the Bluetooth Core Specification for a more detailed description of these attributes.
+#define QBluetoothServiceInfo_ServiceRecordHandle              0x0000   // Specifies a service record from which attributes can be retrieved.
+#define QBluetoothServiceInfo_ServiceClassIds                  0x0001   // UUIDs of service classes that the service conforms to. The most common service classes are defined in (QBluetoothUuid::ServiceClassUuid)
+#define QBluetoothServiceInfo_ServiceRecordState               0x0002   // Attibute changes when any other service attribute is added, deleted or modified.
+#define QBluetoothServiceInfo_ServiceId                        0x0003   // UUID that uniquely identifies the service.
+#define QBluetoothServiceInfo_ProtocolDescriptorList           0x0004   // List of protocols used by the service. The most common protocol Uuids are defined in QBluetoothUuid::ProtocolUuid
+#define QBluetoothServiceInfo_BrowseGroupList                  0x0005   // List of browse groups the service is in.
+#define QBluetoothServiceInfo_LanguageBaseAttributeIdList      0x0006   // List of language base attribute IDs to support human-readable attributes.
+#define QBluetoothServiceInfo_ServiceInfoTimeToLive            0x0007   // Number of seconds for which the service record is expected to remain valid and unchanged.
+#define QBluetoothServiceInfo_ServiceAvailability              0x0008   // Value indicating the availability of the service.
+#define QBluetoothServiceInfo_BluetoothProfileDescriptorList   0x0009   // List of profiles to which the service conforms.
+#define QBluetoothServiceInfo_DocumentationUrl                 0x000A   // URL that points to the documentation on the service..
+#define QBluetoothServiceInfo_ClientExecutableUrl              0x000B   // URL that refers to the location of an application that can be used to utilize the service.
+#define QBluetoothServiceInfo_IconUrl                          0x000C   // URL to the location of the icon representing the service.
+#define QBluetoothServiceInfo_AdditionalProtocolDescriptorList 0x000D   // Additional protocols used by the service. This attribute extends ProtocolDescriptorList.
+#define QBluetoothServiceInfo_PrimaryLanguageBase              0x0100   // Base index for primary language text descriptors.
+#define QBluetoothServiceInfo_ServiceName                      QBluetoothServiceInfo_PrimaryLanguageBase + 0x0000   // Name of the Bluetooth service in the primary language.
+#define QBluetoothServiceInfo_ServiceDescription               QBluetoothServiceInfo_PrimaryLanguageBase + 0x0001   // Description of the Bluetooth service in the primary language.
+#define QBluetoothServiceInfo_ServiceProvider                  QBluetoothServiceInfo_PrimaryLanguageBase + 0x0002   // Name of the company / entity that provides the Bluetooth service primary language.
+
+//enum #define QBluetoothServiceInfo_Protocol
+//This enum describes the socket protocol used by the service.
+#define QBluetoothServiceInfo_UnknownProtocol                0   // The service uses an unknown socket protocol.
+#define QBluetoothServiceInfo_L2capProtocol                  1   // The service uses the L2CAP socket protocol. This protocol is not supported for direct socket connections on Android and BlackBerry.
+#define QBluetoothServiceInfo_RfcommProtocol                 2   // The service uses the RFCOMM socket protocol.
+
+//enum QBluetoothSocket::SocketError
+//This enum describes Bluetooth socket error types.
+#define QBluetoothSocket_UnknownSocketError                  QAbstractSocket_UnknownSocketError               // An unknown error has occurred.
+#define QBluetoothSocket_NoSocketError                       -2                                               // No error. Used for testing.
+#define QBluetoothSocket_HostNotFoundError                   QAbstractSocket_HostNotFoundError                // Could not find the remote host.
+#define QBluetoothSocket_ServiceNotFoundError                QAbstractSocket_SocketAddressNotAvailableError   // Could not find the service UUID on remote host.
+#define QBluetoothSocket_NetworkError                        QAbstractSocket_NetworkError                     // Attempt to read or write from socket returned an error
+#define QBluetoothSocket_UnsupportedProtocolError            8                                                // The Protocol is not supported on this platform.
+#define QBluetoothSocket_OperationError                      QAbstractSocket_OperationError                   // An operation was attempted while the socket was in a state that did not permit it.
+
+//enum #define QBluetoothSocket_SocketState
+//This enum describes the state of the Bluetooth socket.
+#define QBluetoothSocket_UnconnectedState                    QAbstractSocket_UnconnectedState  // Socket is not connected.
+#define QBluetoothSocket_ServiceLookupState                  QAbstractSocket_HostLookupState   // Socket is querying connection parameters.
+#define QBluetoothSocket_ConnectingState                     QAbstractSocket_ConnectingState   // Socket is attempting to connect to a device.
+#define QBluetoothSocket_ConnectedState                      QAbstractSocket_ConnectedState    // Socket is connected to a device.
+#define QBluetoothSocket_BoundState                          QAbstractSocket_BoundState        // Socket is bound to a local address and port.
+#define QBluetoothSocket_ClosingState                        QAbstractSocket_ClosingState      // Socket is connected and will be closed once all pending data is written to the socket.
+#define QBluetoothSocket_ListeningState                      QAbstractSocket_ListeningState    // Socket is listening for incoming connections.
+
+//enum QBluetoothTransferReply::TransferError
+//This enum describes the type of error that occurred
+#define QBluetoothTransferReply_NoError                      0   // No error.
+#define QBluetoothTransferReply_UnknownError                 1   // Unknown error, no better enum available
+#define QBluetoothTransferReply_FileNotFoundError            2   // Unable to open the file specified
+#define QBluetoothTransferReply_HostNotFoundError            3   // Unable to connect to the target host
+#define QBluetoothTransferReply_UserCanceledTransferError    4   // User terminated the transfer
+
+//enum QBluetoothTransferRequest::Attribute
+//Attribute codes for QBluetoothTransferRequest and QBluetoothTransferReply.
+#define QBluetoothTransferRequest_DescriptionAttribute       0   // A textual description of the object being transferred. May be displayed in the UI of the remote device.
+#define QBluetoothTransferRequest_TimeAttribute              1   // Time attribute of the object being transferred.
+#define QBluetoothTransferRequest_TypeAttribute              2   // MIME type of the object being transferred.
+#define QBluetoothTransferRequest_LengthAttribute            3   // Length in bytes of the object being transferred.
+#define QBluetoothTransferRequest_NameAttribute              4   // Name of the object being transferred. May be displayed in the UI of the remote device.
+
+//enum QBluetoothUuid::ProtocolUuid
+//This enum is a convienience type for Bluetooth protocol UUIDs. Values of this type will be implicitly converted into a QBluetoothUuid when necessary.
+#define QBluetoothUuid_Sdp                                   0x0001   // SDP protocol UUID
+#define QBluetoothUuid_Udp                                   0x0002   // UDP protocol UUID
+#define QBluetoothUuid_Rfcomm                                0x0003   // RFCOMM protocol UUID
+#define QBluetoothUuid_Tcp                                   0x0004   // TCP protocol UUID
+#define QBluetoothUuid_TcsBin                                0x0005   // Telephony Control Specification UUID
+#define QBluetoothUuid_TcsAt                                 0x0006   // Telephony Control Specification AT UUID
+#define QBluetoothUuid_Att                                   0x0007   // Attribute protocol UUID
+#define QBluetoothUuid_Obex                                  0x0008   // OBEX protocol UUID
+#define QBluetoothUuid_Ip                                    0x0009   // IP protocol UUID
+#define QBluetoothUuid_Ftp                                   0x000A   // FTP protocol UUID
+#define QBluetoothUuid_Http                                  0x000C   // HTTP protocol UUID
+#define QBluetoothUuid_Wsp                                   0x000E   // WSP UUID
+#define QBluetoothUuid_Bnep                                  0x000F   // Bluetooth Network Encapsulation Protocol UUID
+#define QBluetoothUuid_Upnp                                  0x0010   // Extended Service Discovery Profile UUID
+#define QBluetoothUuid_Hidp                                  0x0011   // Human Interface Device Profile UUID
+#define QBluetoothUuid_HardcopyControlChannel                0x0012   // Hardcopy Cable Replacement Profile UUID
+#define QBluetoothUuid_HardcopyDataChannel                   0x0014   // Hardcopy Cable Replacement Profile UUID
+#define QBluetoothUuid_HardcopyNotification                  0x0016   // Hardcopy Cable Replacement Profile UUID
+#define QBluetoothUuid_Avctp                                 0x0017   // Audio/Video Control Transport Protocol UUID
+#define QBluetoothUuid_Avdtp                                 0x0019   // Audio/Video Distribution Transport Protocol UUID
+#define QBluetoothUuid_Cmtp                                  0x001B   // Common ISDN Access Profile
+#define QBluetoothUuid_UdiCPlain                             0x001D   // UDI protocol UUID
+#define QBluetoothUuid_McapControlChannel                    0x001E   // Multi-Channel Adaptation Protocol UUID
+#define QBluetoothUuid_McapDataChannel                       0x001F   // Multi-Channel Adaptation Protocol UUID
+#define QBluetoothUuid_L2cap                                 0x0100   // L2CAP protocol UUID
+
+//enum #define QBluetoothUuid_ServiceClassUuid
+//This enum is a convienience type for Bluetooth service class and profile UUIDs. Values of this type will be implicitly converted into a QBluetoothUuid when necessary. Some UUIDs refer to service class ids, others to profile ids and some can be used as both. In general, profile UUIDs shall only be used in a QBluetoothServiceInfo::BluetoothProfileDescriptorList attribute and service class UUIDs shall only be used in a QBluetoothServiceInfo::ServiceClassIds attribute. If the UUID is marked as profile and service class UUID it can be used as a value for either of the above service attributes. Such a dual use has historical reasons but is no longer permissible for newer UUIDs.
+#define QBluetoothUuid_ServiceDiscoveryServer                0x1000   // Service discovery server UUID (service)
+#define QBluetoothUuid_BrowseGroupDescriptor                 0x1001   // Browser group descriptor (service)
+#define QBluetoothUuid_PublicBrowseGroup                     0x1002   // Public browse group service class. Services which have the public browse group in their browse group list are discoverable by the remote devices.
+#define QBluetoothUuid_SerialPort                            0x1101   // Serial Port Profile UUID (service & profile)
+#define QBluetoothUuid_LANAccessUsingPPP                     0x1102   // LAN Access Profile UUID (service & profile)
+#define QBluetoothUuid_DialupNetworking                      0x1103   // Dial-up Networking Profile UUID (service & profile)
+#define QBluetoothUuid_IrMCSync                              0x1104   // Synchronization Profile UUID (service & profile)
+#define QBluetoothUuid_ObexObjectPush                        0x1105   // OBEX object push service UUID (service & profile)
+#define QBluetoothUuid_OBEXFileTransfer                      0x1106   // File Transfer Profile (FTP) UUID (service & profile)
+#define QBluetoothUuid_IrMCSyncCommand                       0x1107   // Synchronization Profile UUID (profile)
+#define QBluetoothUuid_Headset                               0x1108   // Headset Profile (HSP) UUID (service & profile)
+#define QBluetoothUuid_AudioSource                           0x110a   // Advanced Audio Distribution Profile (A2DP) UUID (service)
+#define QBluetoothUuid_AudioSink                             0x110b   // Advanced Audio Distribution Profile (A2DP) UUID (service)
+#define QBluetoothUuid_AV_RemoteControlTarget                0x110c   // Audio/Video Remote Control Profile (AVRCP) UUID (service)
+#define QBluetoothUuid_AdvancedAudioDistribution             0x110d   // Advanced Audio Distribution Profile (A2DP) UUID (profile)
+#define QBluetoothUuid_AV_RemoteControl                      0x110e   // Audio/Video Remote Control Profile (AVRCP) UUID (service & profile)
+#define QBluetoothUuid_AV_RemoteControlController            0x110f   // Audio/Video Remote Control Profile UUID (service)
+#define QBluetoothUuid_HeadsetAG                             0x1112   // Headset Profile (HSP) UUID (service)
+#define QBluetoothUuid_PANU                                  0x1115   // Personal Area Networking Profile (PAN) UUID (service & profile)
+#define QBluetoothUuid_NAP                                   0x1116   // Personal Area Networking Profile (PAN) UUID (service & profile)
+#define QBluetoothUuid_GN                                    0x1117   // Personal Area Networking Profile (PAN) UUID (service & profile)
+#define QBluetoothUuid_DirectPrinting                        0x1118   // Basic Printing Profile (BPP) UUID (service)
+#define QBluetoothUuid_ReferencePrinting                     0x1119   // Related to Basic Printing Profile (BPP) UUID (service)
+#define QBluetoothUuid_BasicImage                            0x111a   // Basic Imaging Profile (BIP) UUID (profile)
+#define QBluetoothUuid_ImagingResponder                      0x111b   // Basic Imaging Profile (BIP) UUID (service)
+#define QBluetoothUuid_ImagingAutomaticArchive               0x111c   // Basic Imaging Profile (BIP) UUID (service)
+#define QBluetoothUuid_ImagingReferenceObjects               0x111d   // Basic Imaging Profile (BIP) UUID (service)
+#define QBluetoothUuid_Handsfree                             0x111e   // Hands-Free Profile (HFP) UUID (service & profile)
+#define QBluetoothUuid_HandsfreeAudioGateway                 0x111f   // Hands-Free Audio Gateway (HFP) UUID (service)
+#define QBluetoothUuid_DirectPrintingReferenceObjectsService 0x1120   // Basic Printing Profile (BPP) UUID (service)
+#define QBluetoothUuid_ReflectedUI                           0x1121   // Basic Printing Profile (BPP) UUID (service)
+#define QBluetoothUuid_BasicPrinting                         0x1122   // Basic Printing Profile (BPP) UUID (profile)
+#define QBluetoothUuid_PrintingStatus                        0x1123   // Basic Printing Profile (BPP) UUID (service)
+#define QBluetoothUuid_HumanInterfaceDeviceService           0x1124   // Human Interface Device (HID) UUID (service & profile)
+#define QBluetoothUuid_HardcopyCableReplacement              0x1125   // Hardcopy Cable Replacement Profile (HCRP) (profile)
+#define QBluetoothUuid_HCRPrint                              0x1126   // Hardcopy Cable Replacement Profile (HCRP) (service)
+#define QBluetoothUuid_HCRScan                               0x1127   // Hardcopy Cable Replacement Profile (HCRP) (service)
+#define QBluetoothUuid_SIMAccess                             0x112d   // SIM Access Profile (SAP) UUID (service and profile)
+#define QBluetoothUuid_PhonebookAccessPCE                    0x112e   // Phonebook Access Profile (PBAP) UUID (service)
+#define QBluetoothUuid_PhonebookAccessPSE                    0x112f   // Phonebook Access Profile (PBAP) UUID (service)
+#define QBluetoothUuid_PhonebookAccess                       0x1130   // Phonebook Access Profile (PBAP) (profile)
+#define QBluetoothUuid_HeadsetHS                             0x1131   // Headset Profile (HSP) UUID (service)
+#define QBluetoothUuid_MessageAccessServer                   0x1132   // Message Access Profile (MAP) UUID (service)
+#define QBluetoothUuid_MessageNotificationServer             0x1133   // Message Access Profile (MAP) UUID (service)
+#define QBluetoothUuid_MessageAccessProfile                  0x1134   // Message Access Profile (MAP) UUID (profile)
+#define QBluetoothUuid_GNSS                                  0x1135   // Global Navigation Satellite System UUID (profile)
+#define QBluetoothUuid_GNSSServer                            0x1136   // Global Navigation Satellite System Server (UUID) (service)
+#define QBluetoothUuid_Display3D                             0x1137   // 3D Synchronization Display UUID (service)
+#define QBluetoothUuid_Glasses3D                             0x1138   // 3D Synchronization Glasses UUID (service)
+#define QBluetoothUuid_Synchronization3D                     0x1139   // 3D Synchronization UUID (profile)
+#define QBluetoothUuid_MPSProfile                            0x113a   // Multi-Profile Specification UUID (profile)
+#define QBluetoothUuid_MPSService                            0x113b   // Multi-Profile Specification UUID (service)
+#define QBluetoothUuid_PnPInformation                        0x1200   // Device Identification (DID) UUID (service & profile)
+#define QBluetoothUuid_GenericNetworking                     0x1201   // Generic networking UUID (service)
+#define QBluetoothUuid_GenericFileTransfer                   0x1202   // Generic file transfer UUID (service)
+#define QBluetoothUuid_GenericAudio                          0x1203   // Generic audio UUID (service)
+#define QBluetoothUuid_GenericTelephony                      0x1204   // Generic telephone UUID (service)
+#define QBluetoothUuid_VideoSource                           0x1303   // Video Distribution Profile (VDP) UUID (service)
+#define QBluetoothUuid_VideoSink                             0x1304   // Video Distribution Profile (VDP) UUID (service)
+#define QBluetoothUuid_VideoDistribution                     0x1305   // Video Distribution Profile (VDP) UUID (profile)
+#define QBluetoothUuid_HDP                                   0x1400   // Health Device Profile (HDP) UUID (profile)
+#define QBluetoothUuid_HDPSource                             0x1401   // Health Device Profile Source (HDP) UUID (service)
+#define QBluetoothUuid_HDPSink                               0x1402   // Health Device Profile Sink (HDP) UUID (service)
+
+//enum QUuid::Variant
+//This enum defines the values used in the variant field of the UUID. The value in the variant field determines the layout of the 128-bit value.
+#define QUuid_VarUnknown                                     -1  // Variant is unknown
+#define QUuid_NCS                                            0   // Reserved for NCS (Network Computing System) backward compatibility
+#define QUuid_DCE                                            2   // Distributed Computing Environment, the scheme used by QUuid
+#define QUuid_Microsoft                                      6   // Reserved for Microsoft backward compatibility (GUID)
+#define QUuid_Reserved                                       7   // Reserved for future definition
+
+//enum #define QUuid_Version
+//This enum defines the values used in the version field of the UUID. The version field is meaningful only if the value in the variant field is #define QUuid_DCE.
+#define QUuid_VerUnknown                                     -1  // Version is unknown
+#define QUuid_Time                                           1   // Time-based, by using timestamp, clock sequence, and MAC network card address (if available) for the node sections
+#define QUuid_EmbeddedPOSIX                                  2   // DCE Security version, with embedded POSIX UUIDs
+#define QUuid_Name   Md                                      5   // Name-based, by using values from a name for all sections
+#define QUuid_Md                                             5   // 3   Alias for Name
+#define QUuid_Random                                         4   // Random-based, by using random numbers for all sections
+#define QUuid_Sha                                            1   // 5
+
 #endif
 

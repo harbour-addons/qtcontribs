@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothTransferRequest>
+
+/*
+ * QBluetoothTransferRequest(const QBluetoothAddress & address = QBluetoothAddress())
+ * QBluetoothTransferRequest(const QBluetoothTransferRequest & other)
+ * ~QBluetoothTransferRequest()
+ */
+HB_FUNC( QT_QBLUETOOTHTRANSFERREQUEST )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothAddress" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothTransferRequest( * hbqt_par_QBluetoothAddress( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothTransferRequest" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothTransferRequest( * hbqt_par_QBluetoothTransferRequest( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothTransferRequest() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Attribute { DescriptionAttribute, TimeAttribute, TypeAttribute, LengthAttribute, NameAttribute }
+</ENUMS>
+
+<PROTOS>
+QBluetoothAddress   address() const
+QVariant   attribute(QBluetoothTransferRequest::Attribute code, const QVariant & defaultValue = QVariant()) const
+void   setAttribute(QBluetoothTransferRequest::Attribute code, const QVariant & value)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

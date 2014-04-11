@@ -1,0 +1,86 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     = QUuid
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothUuid>
+
+/*
+ * QBluetoothUuid()
+ * QBluetoothUuid(ProtocolUuid uuid)
+ * QBluetoothUuid(ServiceClassUuid uuid)
+ * QBluetoothUuid(quint16 uuid)
+ * QBluetoothUuid(quint32 uuid)
+ * QBluetoothUuid(quint128 uuid)
+ * QBluetoothUuid(const QString & uuid)
+ * QBluetoothUuid(const QBluetoothUuid & uuid)
+ * QBluetoothUuid(const QUuid & uuid)
+ * ~QBluetoothUuid()
+ */
+HB_FUNC( QT_QBLUETOOTHUUID )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothUuid" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothUuid( * hbqt_par_QBluetoothUuid( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QUuid" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothUuid( * hbqt_par_QUuid( 1 ) ) );
+   }
+#if 0
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QBluetoothUuid( ( const ) hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothUuid( hb_parni( 1 ) ) );
+   }
+#endif
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothUuid() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   ProtocolUuid { Sdp, Udp, Rfcomm, Tcp, ..., L2cap }
+enum   ServiceClassUuid { ServiceDiscoveryServer, BrowseGroupDescriptor, PublicBrowseGroup, SerialPort, ..., HDPSink }
+</ENUMS>
+
+<PROTOS>
+int   minimumSize() const
+quint16   toUInt16(bool * ok = 0) const
+quint32   toUInt32(bool * ok = 0) const
+quint128   toUInt128() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,46 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothTransferRequest()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothtransferrequest.html
+   $ONELINER$
+      Creates a new QBluetoothTransferRequest object.
+   $INHERITS$
+
+   $SYNTAX$
+      QBluetoothTransferRequest( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothTransferRequest
+   $METHODS$
+      :address()                                          -> oQBluetoothAddress
+      :attribute( nCode, oQVariant )                      -> oQVariant
+      :setAttribute( nCode, oQVariant )                   -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

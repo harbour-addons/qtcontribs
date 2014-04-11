@@ -72,6 +72,7 @@ QTimeLine.qth
 QTimer.qth
 QTranslator.qth
 QUrl.qth
+QUuid.qth
 QVariant.qth
 
 QMargins.qth

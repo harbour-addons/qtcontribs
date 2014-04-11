@@ -1,0 +1,54 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothDeviceInfo()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothdeviceinfo.html
+   $ONELINER$
+      Creates a new QBluetoothDeviceInfo object.
+   $INHERITS$
+
+   $SYNTAX$
+      QBluetoothDeviceInfo( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothDeviceInfo
+   $METHODS$
+      :address()                                          -> oQBluetoothAddress
+      :isCached()                                         -> lBool
+      :isValid()                                          -> lBool
+      :majorDeviceClass()                                 -> nQBluetoothDeviceInfo_MajorDeviceClass
+      :minorDeviceClass()                                 -> nQuint8
+      :name()                                             -> cQString
+      :rssi()                                             -> nQint16
+      :serviceUuids( @nCompleteness )                     -> oQList_QBluetoothUuid>
+      :serviceUuidsCompleteness()                         -> nQBluetoothDeviceInfo_DataCompleteness
+      :setCached( lCached )                               -> NIL
+      :setRssi( nSignal )                                 -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

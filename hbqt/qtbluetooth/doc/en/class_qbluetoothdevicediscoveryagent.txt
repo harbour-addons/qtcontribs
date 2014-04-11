@@ -1,0 +1,50 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothDeviceDiscoveryAgent()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothdevicediscoveryagent.html
+   $ONELINER$
+      Creates a new QBluetoothDeviceDiscoveryAgent object.
+   $INHERITS$
+
+   $SYNTAX$
+      QBluetoothDeviceDiscoveryAgent( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothDeviceDiscoveryAgent
+   $METHODS$
+      :discoveredDevices()                                -> oQList_QBluetoothDeviceInfo>
+      :errorString()                                      -> cQString
+      :inquiryType()                                      -> nQBluetoothDeviceDiscoveryAgent_InquiryType
+      :isActive()                                         -> lBool
+      :setInquiryType( nType )                            -> NIL
+      :start()                                            -> NIL
+      :stop()                                             -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

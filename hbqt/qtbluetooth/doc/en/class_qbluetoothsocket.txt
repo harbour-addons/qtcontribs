@@ -1,0 +1,63 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothSocket()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothsocket.html
+   $ONELINER$
+      Creates a new QBluetoothSocket object.
+   $INHERITS$
+      QIODevice
+   $SYNTAX$
+      QBluetoothSocket( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothSocket
+   $METHODS$
+      :abort()                                            -> NIL
+      :connectToService( oQBluetoothServiceInfo, nOpenMode )  -> NIL
+      :( oQBluetoothAddress, oQBluetoothUuid, nOpenMode )  -> NIL
+      :( oQBluetoothAddress, nPort, nOpenMode )           -> NIL
+      :disconnectFromService()                            -> NIL
+      :errorString()                                      -> cQString
+      :localAddress()                                     -> oQBluetoothAddress
+      :localName()                                        -> cQString
+      :localPort()                                        -> nQuint16
+      :peerAddress()                                      -> oQBluetoothAddress
+      :peerName()                                         -> cQString
+      :peerPort()                                         -> nQuint16
+      :setSocketDescriptor( nSocketDescriptor, nSocketType, nSocketState, nOpenMode )  -> lBool
+      :socketDescriptor()                                 -> nInt
+      :socketType()                                       -> nQBluetoothServiceInfo_Protocol
+      :bytesAvailable()                                   -> nQint64
+      :bytesToWrite()                                     -> nQint64
+      :canReadLine()                                      -> lBool
+      :close()                                            -> NIL
+      :isSequential()                                     -> lBool
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

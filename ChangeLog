@@ -17,6 +17,58 @@
 */
 
 
+2014-04-10 18:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r288)
+  * hbqt/hbmk2_qt.hb
+    + Added: qint8 and quint8.
+
+  + hbqt/qtbluetooth
+    + Added: Qt 5.2 introduced QtBluetooth module.
+
+  + hbqt/qtbluetooth/doc
+  + hbqt/qtbluetooth/doc/en
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothaddress.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothdevicediscoveryagent.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothdeviceinfo.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothhostinfo.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothlocaldevice.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothserver.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothservicediscoveryagent.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothserviceinfo.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothsocket.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothtransfermanager.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothtransferreply.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothtransferrequest.txt
+  + hbqt/qtbluetooth/doc/en/class_qbluetoothuuid.txt
+  + hbqt/qtbluetooth/hbqt_init.cpp
+  + hbqt/qtbluetooth/hbqtbluetooth.ch
+  + hbqt/qtbluetooth/hbqtbluetooth.hbc
+  + hbqt/qtbluetooth/hbqtbluetooth.hbm
+  + hbqt/qtbluetooth/hbqtbluetooth.hbp
+  + hbqt/qtbluetooth/hbqtbluetooth.hbx
+  + hbqt/qtbluetooth/hbqtbluetooths.hbp
+  + hbqt/qtbluetooth/qth
+  + hbqt/qtbluetooth/qth/filelist.hbm
+  + hbqt/qtbluetooth/qth/QBluetoothAddress.qth
+  + hbqt/qtbluetooth/qth/QBluetoothDeviceDiscoveryAgent.qth
+  + hbqt/qtbluetooth/qth/QBluetoothDeviceInfo.qth
+  + hbqt/qtbluetooth/qth/QBluetoothHostInfo.qth
+  + hbqt/qtbluetooth/qth/QBluetoothLocalDevice.qth
+  + hbqt/qtbluetooth/qth/QBluetoothServer.qth
+  + hbqt/qtbluetooth/qth/QBluetoothServiceDiscoveryAgent.qth
+  + hbqt/qtbluetooth/qth/QBluetoothServiceInfo.qth
+  + hbqt/qtbluetooth/qth/QBluetoothSocket.qth
+  + hbqt/qtbluetooth/qth/QBluetoothTransferManager.qth
+  + hbqt/qtbluetooth/qth/QBluetoothTransferReply.qth
+  + hbqt/qtbluetooth/qth/QBluetoothTransferRequest.qth
+  + hbqt/qtbluetooth/qth/QBluetoothUuid.qth
+    
+  * hbqt/qtcore/qth/filelist.hbm
+  + hbqt/qtcore/qth/QUuid.qth
+    + Added: QUuid class.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QBluetooth_* constants.
+
 2014-04-10 12:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r287)
   * hbqt/qtgui/hbqtgui.ch
     + Added: QWebSocket*_* constants.

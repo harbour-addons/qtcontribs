@@ -1,0 +1,83 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothServiceDiscoveryAgent>
+
+/*
+ * QBluetoothServiceDiscoveryAgent(QObject * parent = 0)
+ * QBluetoothServiceDiscoveryAgent(const QBluetoothAddress & deviceAdapter, QObject * parent = 0)
+ * ~QBluetoothServiceDiscoveryAgent()
+ */
+HB_FUNC( QT_QBLUETOOTHSERVICEDISCOVERYAGENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothServiceDiscoveryAgent( hbqt_par_QObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothAddress" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothServiceDiscoveryAgent( * hbqt_par_QBluetoothAddress( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QBluetoothAddress" ) && hbqt_par_isDerivedFrom( 2, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothServiceDiscoveryAgent( * hbqt_par_QBluetoothAddress( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothServiceDiscoveryAgent() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   DiscoveryMode { MinimalDiscovery, FullDiscovery }
+enum   Error { NoError, PoweredOffError, InputOutputError, InvalidBluetoothAdapterError, UnknownError }
+</ENUMS>
+
+<PROTOS>
+QList<QBluetoothServiceInfo>   discoveredServices() const
+Error   error() const
+QString   errorString() const
+bool   isActive() const
+QBluetoothAddress   remoteAddress() const
+bool   setRemoteAddress(const QBluetoothAddress & address)
+void   setUuidFilter(const QList<QBluetoothUuid> & uuids)
+void   setUuidFilter(const QBluetoothUuid & uuid)
+QList<QBluetoothUuid>   uuidFilter() const
+</PROTOS>
+
+<SLOTS>
+void   clear()
+void   start(QBluetoothServiceDiscoveryAgent::DiscoveryMode mode = MinimalDiscovery)
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   canceled()
+void   error(QBluetoothServiceDiscoveryAgent::Error error)
+void   finished()
+void   serviceDiscovered(const QBluetoothServiceInfo & info)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

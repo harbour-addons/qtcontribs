@@ -1,0 +1,81 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     =
+</CLASS>
+
+<CODE>
+#include <QtCore/QUuid>
+
+
+/*
+ * QUuid()
+ * QUuid(uint l, ushort w1, ushort w2, uchar b1, uchar b2, uchar b3, uchar b4, uchar b5, uchar b6, uchar b7, uchar b8)
+ * QUuid(const QString & text)
+ * QUuid(const QByteArray & text)
+ * QUuid(const GUID & guid)
+ */
+HB_FUNC( QT_QUUID )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QByteArray" ) )
+   {
+      __HB_RETPTRGC__( new QUuid( * hbqt_par_QByteArray( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QUuid( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QUuid() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Variant { VarUnknown, NCS, DCE, Microsoft, Reserved }
+enum   Version { VerUnknown, Time, EmbeddedPOSIX, Name, ..., Sha1 }
+</ENUMS>
+
+<PROTOS>
+bool   isNull() const
+QByteArray   toByteArray() const                                           [*V=0x040800*]
+QByteArray   toRfc4122() const                                             [*V=0x040800*]
+QString   toString() const
+QUuid::Variant   variant() const
+QUuid::Version   version() const
+
+QUuid   createUuid()
+QUuid   createUuidV3(const QUuid & ns, const QByteArray & baseData)         [*V=0x050000*]
+QUuid   createUuidV3(const QUuid & ns, const QString & baseData)            [*V=0x050000*]
+QUuid   createUuidV5(const QUuid & ns, const QByteArray & baseData)         [*V=0x050000*]
+QUuid   createUuidV5(const QUuid & ns, const QString & baseData)            [*V=0x050000*]
+QUuid   fromRfc4122(const QByteArray & bytes)                               [*V=0x040800*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

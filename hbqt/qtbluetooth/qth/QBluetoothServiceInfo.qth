@@ -1,0 +1,92 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothServiceInfo>
+#include <QtBluetooth/QBluetoothDeviceInfo>
+
+/*
+ * QBluetoothServiceInfo()
+ * QBluetoothServiceInfo(const QBluetoothServiceInfo & other)
+ * ~QBluetoothServiceInfo()
+ */
+HB_FUNC( QT_QBLUETOOTHSERVICEINFO )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothServiceInfo" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothServiceInfo( * hbqt_par_QBluetoothServiceInfo( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothServiceInfo() );
+   }
+}
+</CODE>
+
+<ENUMS>
+class   Alternative
+class   Sequence
+enum   AttributeId { ServiceRecordHandle, ServiceClassIds, ServiceRecordState, ServiceId, ..., ServiceProvider }
+enum   Protocol { UnknownProtocol, L2capProtocol, RfcommProtocol }
+</ENUMS>
+
+<PROTOS>
+QVariant   attribute(quint16 attributeId) const
+QList<quint16>   attributes() const
+bool   contains(quint16 attributeId) const
+QBluetoothDeviceInfo   device() const
+bool   isComplete() const
+bool   isRegistered() const
+bool   isValid() const
+//QBluetoothServiceInfo::Sequence   protocolDescriptor(QBluetoothUuid::ProtocolUuid protocol) const
+int   protocolServiceMultiplexer() const
+bool   registerService(const QBluetoothAddress & localAdapter = QBluetoothAddress())
+void   removeAttribute(quint16 attributeId)
+int   serverChannel() const
+quint8   serviceAvailability() const
+QList<QBluetoothUuid>   serviceClassUuids() const
+QString   serviceDescription() const
+QString   serviceName() const
+QString   serviceProvider() const
+QBluetoothUuid   serviceUuid() const
+void   setAttribute(quint16 attributeId, const QVariant & value)
+void   setAttribute(quint16 attributeId, const QBluetoothUuid & value)
+//void   setAttribute(quint16 attributeId, const QBluetoothServiceInfo::Sequence & value)
+//void   setAttribute(quint16 attributeId, const QBluetoothServiceInfo::Alternative & value)
+void   setDevice(const QBluetoothDeviceInfo & device)
+void   setServiceAvailability(quint8 availability)
+void   setServiceDescription(const QString & description)
+void   setServiceName(const QString & name)
+void   setServiceProvider(const QString & provider)
+void   setServiceUuid(const QBluetoothUuid & uuid)
+QBluetoothServiceInfo::Protocol   socketProtocol() const
+bool   unregisterService()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

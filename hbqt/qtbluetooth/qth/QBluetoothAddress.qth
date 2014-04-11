@@ -1,0 +1,73 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     =
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothAddress>
+
+/*
+ * QBluetoothAddress()
+ * QBluetoothAddress(quint64 address)
+ * QBluetoothAddress(const QString & address)
+ * QBluetoothAddress(const QBluetoothAddress & other)
+ * ~QBluetoothAddress()
+ */
+HB_FUNC( QT_QBLUETOOTHADDRESS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QBluetoothAddress" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothAddress( * hbqt_par_QBluetoothAddress( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothAddress( hb_parnl( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QBluetoothAddress( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBluetoothAddress() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   clear()
+bool   isNull() const
+QString   toString() const
+quint64   toUInt64() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

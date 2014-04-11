@@ -1,0 +1,77 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = yes
+Inherit     =
+Type        =
+New         =
+Version     = 0x050200
+</CLASS>
+
+<CODE>
+#include <QtBluetooth/QBluetoothServer>
+
+/*
+ * QBluetoothServer(QBluetoothServiceInfo::Protocol serverType, QObject * parent = 0)
+ * ~QBluetoothServer()
+ */
+HB_FUNC( QT_QBLUETOOTHSERVER )
+{
+   if( hb_pcount() == 2 && HB_ISNUM( 1 ) && hbqt_par_isDerivedFrom( 2, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothServer( ( QBluetoothServiceInfo::Protocol ) hb_parni( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QBluetoothServer( ( QBluetoothServiceInfo::Protocol ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, UnknownError, PoweredOffError, InputOutputError, ServiceAlreadyRegisteredError, UnsupportedProtocolError }
+</ENUMS>
+
+<PROTOS>
+void   close()
+Error   error() const
+bool   hasPendingConnections() const
+bool   isListening() const
+bool   listen(const QBluetoothAddress & address = QBluetoothAddress(), quint16 port = 0)
+QBluetoothServiceInfo   listen(const QBluetoothUuid & uuid, const QString & serviceName = QString())
+int   maxPendingConnections() const
+QBluetoothSocket *   nextPendingConnection()
+QBluetooth::SecurityFlags   securityFlags() const
+QBluetoothAddress   serverAddress() const
+quint16   serverPort() const
+QBluetoothServiceInfo::Protocol   serverType() const
+void   setMaxPendingConnections(int numConnections)
+void   setSecurityFlags(QBluetooth::SecurityFlags security)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   error(QBluetoothServer::Error error)
+void   newConnection()
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

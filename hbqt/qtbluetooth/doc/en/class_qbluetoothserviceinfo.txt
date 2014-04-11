@@ -1,0 +1,70 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothServiceInfo()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothserviceinfo.html
+   $ONELINER$
+      Creates a new QBluetoothServiceInfo object.
+   $INHERITS$
+
+   $SYNTAX$
+      QBluetoothServiceInfo( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothServiceInfo
+   $METHODS$
+      :attribute( nAttributeId )                          -> oQVariant
+      :attributes()                                       -> oQList_quint16>
+      :contains( nAttributeId )                           -> lBool
+      :device()                                           -> oQBluetoothDeviceInfo
+      :isComplete()                                       -> lBool
+      :isRegistered()                                     -> lBool
+      :isValid()                                          -> lBool
+      :protocolServiceMultiplexer()                       -> nInt
+      :registerService( oQBluetoothAddress )              -> lBool
+      :removeAttribute( nAttributeId )                    -> NIL
+      :serverChannel()                                    -> nInt
+      :serviceAvailability()                              -> nQuint8
+      :serviceClassUuids()                                -> oQList_QBluetoothUuid>
+      :serviceDescription()                               -> cQString
+      :serviceName()                                      -> cQString
+      :serviceProvider()                                  -> cQString
+      :serviceUuid()                                      -> oQBluetoothUuid
+      :setAttribute( nAttributeId, oQVariant )            -> NIL
+      :( nAttributeId, oQBluetoothUuid )                  -> NIL
+      :setDevice( oQBluetoothDeviceInfo )                 -> NIL
+      :setServiceAvailability( nAvailability )            -> NIL
+      :setServiceDescription( cDescription )              -> NIL
+      :setServiceName( cName )                            -> NIL
+      :setServiceProvider( cProvider )                    -> NIL
+      :setServiceUuid( oQBluetoothUuid )                  -> NIL
+      :socketProtocol()                                   -> nQBluetoothServiceInfo_Protocol
+      :unregisterService()                                -> lBool
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

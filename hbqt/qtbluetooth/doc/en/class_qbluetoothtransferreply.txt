@@ -1,0 +1,49 @@
+
+/* $DOC$
+   $TEMPLATE$
+      Class
+   $NAME$
+      QBluetoothTransferReply()
+   $CATEGORY$
+      Harbour Bindings for Qt
+   $SUBCATEGORY$
+      GUI
+   $EXTERNALLINK$
+      http://doc.trolltech.com/5.2/qbluetoothtransferreply.html
+   $ONELINER$
+      Creates a new QBluetoothTransferReply object.
+   $INHERITS$
+
+   $SYNTAX$
+      QBluetoothTransferReply( ... )
+
+   $ARGUMENTS$
+
+   $RETURNS$
+      An instance of the object of type QBluetoothTransferReply
+   $METHODS$
+      :errorString()                                      -> cQString
+      :isFinished()                                       -> lBool
+      :isRunning()                                        -> lBool
+      :manager()                                          -> oQBluetoothTransferManager
+      :request()                                          -> oQBluetoothTransferRequest
+      :abort()                                            -> NIL
+
+   $DESCRIPTION$
+
+   $EXAMPLES$
+
+   $TESTS$
+
+   $STATUS$
+      R
+   $COMPLIANCE$
+      Not Clipper compatible
+   $PLATFORMS$
+      Windows, Linux, Mac OS X, OS/2
+   $VERSION$
+      5.2 or upper
+   $FILES$
+      Library: hbqtbluetooth
+   $END$
+ */

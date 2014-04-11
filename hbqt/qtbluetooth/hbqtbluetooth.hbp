@@ -1,0 +1,14 @@
+#
+# $Id$
+#
+
+-cflag=-I${HB_WITH_QT}/QtCore
+
+../hbqt_common.hbm
+
+hbqtbluetooth.hbm
+
+-instfile=inc:hbqtbluetooth.ch
+-instfile=inc:hbqtbluetooth.hbx
+
+hbqtbluetooths.hbp
