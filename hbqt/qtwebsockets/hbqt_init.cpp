@@ -57,8 +57,10 @@
 #include "hbqt.h"
 #include "hbqtinit.h"
 
+#include "hbapiitm.h"
 #include "hbvm.h"
 #include "hbinit.h"
+#include "hbstack.h"
 
 #if QT_VERSION >= 0x050300
 
@@ -90,7 +92,7 @@ HB_CALL_ON_STARTUP_BEGIN( _hbqtwebsockets_init_ )
 HB_CALL_ON_STARTUP_END( _hbqtwebsockets_init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
-   #pragma startup _hbqtwebsockets_init_ 
+   #pragma startup _hbqtwebsockets_init_
 #elif defined( HB_DATASEG_STARTUP )
    #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hbqtwebsockets_init_ )
    #include "hbiniseg.h"

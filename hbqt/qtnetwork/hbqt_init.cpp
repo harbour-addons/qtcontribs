@@ -57,9 +57,10 @@
 #include "hbqt.h"
 #include "hbqtinit.h"
 
-#include "hbvm.h"
 #include "hbapiitm.h"
+#include "hbvm.h"
 #include "hbinit.h"
+#include "hbstack.h"
 
 #if QT_VERSION <= 0x040900
 
@@ -144,13 +145,141 @@ static void hbqt_registerCallbacks( void )
 }
 
 
-#else 
+#else
+
+
+#include <QtNetwork/QNetworkProxy>
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QAuthenticator>
+#include <QtNetwork/QNetworkConfiguration>
+
+HB_EXTERN_BEGIN
+
+extern void hbqt_del_QNetworkProxy( void * pObj, int iFlags );
+extern void hbqt_del_QNetworkReply( void * pObj, int iFlags );
+extern void hbqt_del_QNetworkConfiguration( void * pObj, int iFlags );
+
+HB_EXTERN_END
+
+
+static void hbqt_SlotsExecQNetworkReply( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   void * obj = *reinterpret_cast< void*( * ) >( arguments[ 1 ] );
+   if( obj )
+   {
+      PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, obj, "HB_QNETWORKREPLY", NULL, HBQT_BIT_QOBJECT );
+      if( p0 )
+      {
+         hb_vmPushEvalSym();
+         hb_vmPush( codeBlock );
+         hb_vmPush( p0 );
+         hb_vmSend( 1 );
+         hb_itemRelease( p0 );
+      }
+   }
+}
+
+static void hbqt_SlotsExecQNetworkProxyQAuthenticator( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkProxy( ( *reinterpret_cast< QNetworkProxy( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKPROXY", hbqt_del_QNetworkProxy, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      void * obj = *reinterpret_cast< void*( * ) >( arguments[ 2 ] );
+      if( obj )
+      {
+         PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, obj, "HB_QAUTHENTICATOR", NULL, HBQT_BIT_QOBJECT );
+         if( p1 )
+         {
+            hb_vmPushEvalSym();
+            hb_vmPush( codeBlock );
+            hb_vmPush( p0 );
+            hb_vmPush( p1 );
+            hb_vmSend( 2 );
+            hb_itemRelease( p1 );
+         }
+      }
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQNetworkReplyQAuthenticator( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   void * obj = *reinterpret_cast< void*( * ) >( arguments[ 1 ] );
+   if( obj )
+   {
+      PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, obj, "HB_QNETWORKREPLY", NULL, HBQT_BIT_QOBJECT );
+      if( p0 )
+      {
+         void * obj1 = *reinterpret_cast< void*( * ) >( arguments[ 2 ] );
+         if( obj1 )
+         {
+            PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, obj1, "HB_QAUTHENTICATOR", NULL, HBQT_BIT_QOBJECT );
+            if( p1 )
+            {
+               hb_vmPushEvalSym();
+               hb_vmPush( codeBlock );
+               hb_vmPush( p0 );
+               hb_vmPush( p1 );
+               hb_vmSend( 2 );
+               hb_itemRelease( p1 );
+            }
+         }
+         hb_itemRelease( p0 );
+      }
+   }
+}
+
+static void hbqt_SlotsExecQNetworkConfiguration( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkConfiguration( ( *reinterpret_cast< QNetworkConfiguration( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKCONFIGURATION", hbqt_del_QNetworkConfiguration, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQNetworkConfigurationBool( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QNetworkConfiguration( ( *reinterpret_cast< QNetworkConfiguration( * ) >( arguments[ 1 ] ) ) ), "HB_QNETWORKCONFIGURATION", hbqt_del_QNetworkConfiguration, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmPushLogical( *reinterpret_cast< bool( * ) >( arguments[ 2 ] ) );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
+
+
+HB_FUNC_EXTERN( HB_QAUTHENTICATOR );
+
+void _hbqtgui_force_link_for_event( void )
+{
+   HB_FUNC_EXEC( HB_QAUTHENTICATOR );
+}
+
 
 static void hbqt_registerCallbacks( void )
 {
+   hbqt_slots_register_callback( "QNetworkReply*"                  , hbqt_SlotsExecQNetworkReply                );
+   hbqt_slots_register_callback( "QNetworkProxy$QAuthenticator*"   , hbqt_SlotsExecQNetworkProxyQAuthenticator  );
+   hbqt_slots_register_callback( "QNetworkReply*$QAuthenticator*"  , hbqt_SlotsExecQNetworkReplyQAuthenticator  );
+   hbqt_slots_register_callback( "QNetworkConfiguration"           , hbqt_SlotsExecQNetworkConfiguration        );
+   hbqt_slots_register_callback( "QNetworkConfiguration$bool"      , hbqt_SlotsExecQNetworkConfigurationBool    );
 }
 
-#endif 
+#endif
 
 
 HB_FUNC( __HBQTNETWORK ) {;}

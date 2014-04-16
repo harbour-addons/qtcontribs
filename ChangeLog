@@ -17,6 +17,13 @@
 */
 
 
+2014-04-15 19:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r291)
+  * hbqt/qtcore/hbqt_init.cpp
+  * hbqt/qtnetwork/hbqt_init.cpp
+  * hbqt/qtwebsockets/hbqt_init.cpp
+    + Added: code to manage many new signals introduced in Qt's later versions.
+       None is tested but should be ok.
+
 2014-04-15 17:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r290)
   * hbqt/qtpositioning/hbqt_init.cpp
     + Added: methods to execute various signals except for one.
