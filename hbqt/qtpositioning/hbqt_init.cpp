@@ -57,15 +57,88 @@
 #include "hbqt.h"
 #include "hbqtinit.h"
 
+#include "hbapiitm.h"
 #include "hbvm.h"
 #include "hbinit.h"
+#include "hbstack.h"
 
 #if QT_VERSION >= 0x050200
 
+
+#include <QtPositioning/QGeoAreaMonitorInfo>
+#include <QtPositioning/QGeoPositionInfo>
+
 /*----------------------------------------------------------------------*/
+
+HB_EXTERN_BEGIN
+
+extern void hbqt_del_QGeoAreaMonitorInfo( void * pObj, int iFlags );
+extern void hbqt_del_QGeoPositionInfo( void * pObj, int iFlags );
+
+HB_EXTERN_END
+
+
+static void hbqt_SlotsExecQGeoAreaMonitorInfo( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QGeoAreaMonitorInfo( ( *reinterpret_cast< QGeoAreaMonitorInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QGEOAREAMONITORINFO", hbqt_del_QGeoAreaMonitorInfo, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQGeoPositionInfo( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QGeoPositionInfo( ( *reinterpret_cast< QGeoPositionInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QGEOPOSITIONINFO", hbqt_del_QGeoPositionInfo, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQGeoAreaMonitorInfoQGeoPositionInfo( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QGeoAreaMonitorInfo( ( *reinterpret_cast< QGeoAreaMonitorInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QGEOAREAMONITORINFO", hbqt_del_QGeoAreaMonitorInfo, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, new QGeoPositionInfo( ( *reinterpret_cast< QGeoPositionInfo( * ) >( arguments[ 2 ] ) ) ), "HB_QGEOPOSITIONINFO", hbqt_del_QGeoPositionInfo, HBQT_BIT_OWNER );
+      if( p1 )
+      {
+         hb_vmPushEvalSym();
+         hb_vmPush( codeBlock );
+         hb_vmPush( p0 );
+         hb_vmPush( p1 );
+         hb_vmSend( 2 );
+         hb_itemRelease( p1 );
+      }
+      hb_itemRelease( p0 );
+   }
+}
+
+
+HB_FUNC_EXTERN( HB_QGEOAREAMONITORINFO );
+
+void _hbqtgui_force_link_for_event( void )
+{
+   HB_FUNC_EXEC( HB_QGEOAREAMONITORINFO );
+}
 
 static void hbqt_registerCallbacks( void )
 {
+   hbqt_slots_register_callback( "QGeoAreaMonitorInfo"                   , hbqt_SlotsExecQGeoAreaMonitorInfo                  );
+   hbqt_slots_register_callback( "QGeoPositionInfo"                      , hbqt_SlotsExecQGeoPositionInfo                     );
+   hbqt_slots_register_callback( "QGeoAreaMonitorInfo$QGeoPositionInfo"  , hbqt_SlotsExecQGeoAreaMonitorInfoQGeoPositionInfo  );
 }
 
 /*----------------------------------------------------------------------*/
@@ -90,7 +163,7 @@ HB_CALL_ON_STARTUP_BEGIN( _hbqtpositioning_init_ )
 HB_CALL_ON_STARTUP_END( _hbqtpositioning_init_ )
 
 #if defined( HB_PRAGMA_STARTUP )
-   #pragma startup _hbqtpositioning_init_ 
+   #pragma startup _hbqtpositioning_init_
 #elif defined( HB_DATASEG_STARTUP )
    #define HB_DATASEG_BODY    HB_DATASEG_FUNC( _hbqtpositioning_init_ )
    #include "hbiniseg.h"

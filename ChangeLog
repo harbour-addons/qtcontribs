@@ -17,6 +17,10 @@
 */
 
 
+2014-04-15 17:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r290)
+  * hbqt/qtpositioning/hbqt_init.cpp
+    + Added: methods to execute various signals except for one.
+
 2014-04-15 17:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r289)
   * hbqt/qtbluetooth/hbqt_init.cpp
     + Added: methods to execute various signals.
