@@ -17,6 +17,10 @@
 */
 
 
+2014-04-15 17:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r289)
+  * hbqt/qtbluetooth/hbqt_init.cpp
+    + Added: methods to execute various signals.
+
 2014-04-10 18:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r288)
   * hbqt/hbmk2_qt.hb
     + Added: qint8 and quint8.

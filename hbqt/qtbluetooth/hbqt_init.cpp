@@ -57,15 +57,143 @@
 #include "hbqt.h"
 #include "hbqtinit.h"
 
+#include "hbapiitm.h"
 #include "hbvm.h"
 #include "hbinit.h"
+#include "hbstack.h"
 
 #if QT_VERSION >= 0x050200
 
+#include <QtCore/QString>
+#include <QtBluetooth/QBluetoothDeviceInfo>
+#include <QtBluetooth/QBluetoothServiceInfo>
+#include <QtBluetooth/QBluetoothAddress>
+#include <QtBluetooth/QBluetoothTransferReply>
+
 /*----------------------------------------------------------------------*/
+
+HB_EXTERN_BEGIN
+
+extern void hbqt_del_QBluetoothDeviceInfo( void * pObj, int iFlags );
+extern void hbqt_del_QBluetoothServiceInfo( void * pObj, int iFlags );
+extern void hbqt_del_QBluetoothAddress( void * pObj, int iFlags );
+
+HB_EXTERN_END
+
+
+static void hbqt_SlotsExecQBluetoothDeviceInfo( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QBluetoothDeviceInfo( ( *reinterpret_cast< QBluetoothDeviceInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QBLUETOOTHDEVICEINFO", hbqt_del_QBluetoothDeviceInfo, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQBluetoothServiceInfo( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QBluetoothServiceInfo( ( *reinterpret_cast< QBluetoothServiceInfo( * ) >( arguments[ 1 ] ) ) ), "HB_QBLUETOOTHSERVICEINFO", hbqt_del_QBluetoothServiceInfo, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQBluetoothAddress( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QBluetoothAddress( ( *reinterpret_cast< QBluetoothAddress( * ) >( arguments[ 1 ] ) ) ), "HB_QBLUETOOTHADDRESS", hbqt_del_QBluetoothAddress, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQBluetoothAddressQString( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QBluetoothAddress( ( *reinterpret_cast< QBluetoothAddress( * ) >( arguments[ 1 ] ) ) ), "HB_QBLUETOOTHADDRESS", hbqt_del_QBluetoothAddress, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      QString text = *reinterpret_cast< QString( * ) >( arguments[ 2 ] );
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQBluetoothAddressInt( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QBluetoothAddress( ( *reinterpret_cast< QBluetoothAddress( * ) >( arguments[ 1 ] ) ) ), "HB_QBLUETOOTHADDRESS", hbqt_del_QBluetoothAddress, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 2 ] ) );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQBluetoothTransferReply( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   void * obj = *reinterpret_cast< void*( * ) >( arguments[ 1 ] );
+   if( obj )
+   {
+      PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, obj , "HB_QBLUETOOTHTRANSFERREPLY", NULL, HBQT_BIT_QOBJECT );
+      if( p0 )
+      {
+         hb_vmPushEvalSym();
+         hb_vmPush( codeBlock );
+         hb_vmPush( p0 );
+         hb_vmSend( 1 );
+         hb_itemRelease( p0 );
+      }
+   }
+}
+
+
+HB_FUNC_EXTERN( HB_QBLUETOOTHDEVICEINFO );
+HB_FUNC_EXTERN( HB_QBLUETOOTHADDRESS );
+HB_FUNC_EXTERN( HB_QBLUETOOTHSERVICEINFO );
+HB_FUNC_EXTERN( HB_QBLUETOOTHTRANSFERREPLY );
+
+void _hbqtgui_force_link_for_event( void )
+{
+   HB_FUNC_EXEC( HB_QBLUETOOTHDEVICEINFO );
+   HB_FUNC_EXEC( HB_QBLUETOOTHADDRESS );
+   HB_FUNC_EXEC( HB_QBLUETOOTHSERVICEINFO );
+   HB_FUNC_EXEC( HB_QBLUETOOTHTRANSFERREPLY );
+}
 
 static void hbqt_registerCallbacks( void )
 {
+   hbqt_slots_register_callback( "QBluetoothDeviceInfo"                   , hbqt_SlotsExecQBluetoothDeviceInfo                  );
+   hbqt_slots_register_callback( "QBluetoothServiceInfo"                  , hbqt_SlotsExecQBluetoothServiceInfo                 );
+   hbqt_slots_register_callback( "QBluetoothAddress"                      , hbqt_SlotsExecQBluetoothAddress                     );
+   hbqt_slots_register_callback( "QBluetoothAddress$QString"              , hbqt_SlotsExecQBluetoothAddressQString              );
+   hbqt_slots_register_callback( "QBluetoothAddress$int"                  , hbqt_SlotsExecQBluetoothAddressInt                  );
+   hbqt_slots_register_callback( "QBluetoothTransferReply*"               , hbqt_SlotsExecQBluetoothTransferReply               );
 }
 
 /*----------------------------------------------------------------------*/
