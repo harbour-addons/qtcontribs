@@ -129,7 +129,7 @@ static void hbqt_SlotsExecQGeoAreaMonitorInfoQGeoPositionInfo( PHB_ITEM * codeBl
 
 HB_FUNC_EXTERN( HB_QGEOAREAMONITORINFO );
 
-void _hbqtgui_force_link_for_event( void )
+void _hbqtpositioning_force_link_for_event( void )
 {
    HB_FUNC_EXEC( HB_QGEOAREAMONITORINFO );
 }

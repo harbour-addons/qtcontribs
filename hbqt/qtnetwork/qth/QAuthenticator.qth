@@ -47,7 +47,7 @@ HB_FUNC( QT_QAUTHENTICATOR )
 <PROTOS>
 bool   isNull() const
 QVariant   option(const QString & opt) const
-QVariantHash   options() const
+//QVariantHash   options() const
 QString   password() const
 QString   realm() const
 void   setOption(const QString & opt, const QVariant & value)

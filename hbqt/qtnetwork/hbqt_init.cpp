@@ -264,7 +264,7 @@ static void hbqt_SlotsExecQNetworkConfigurationBool( PHB_ITEM * codeBlock, void 
 
 HB_FUNC_EXTERN( HB_QAUTHENTICATOR );
 
-void _hbqtgui_force_link_for_event( void )
+void _hbqtnetwork_force_link_for_event( void )
 {
    HB_FUNC_EXEC( HB_QAUTHENTICATOR );
 }

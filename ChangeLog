@@ -17,6 +17,16 @@
 */
 
 
+2014-04-16 16:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r292)
+  * hbqt/qtbluetooth/hbqt_init.cpp
+  * hbqt/qtnetwork/hbqt_init.cpp
+  * hbqt/qtpositioning/hbqt_init.cpp
+    ! Fixed: recent cut/copy/paste ( without deep observation ) issues. soory.
+
+  * hbqt/qtnetwork/qth/QAuthenticator.qth
+    ! Fixed: commented out QVariantHash options() method. HbQt does not 
+       support such construct anyway. 
+
 2014-04-15 19:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r291)
   * hbqt/qtcore/hbqt_init.cpp
   * hbqt/qtnetwork/hbqt_init.cpp
