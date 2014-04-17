@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-17 14:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r295)
+  * hbqt/qtpositioning/qth/QNmeaPositionInfoSource.qth
+    ! Guarded: two methods against Qt v5.3, broke Qt 5.2 HbQt builds.
+
 2014-04-17 02:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r294)
   * hbqt/qtgui/hbqt_version.ch
     * Version bump.

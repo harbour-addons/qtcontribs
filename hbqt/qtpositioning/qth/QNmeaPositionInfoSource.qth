@@ -40,9 +40,9 @@ enum   UpdateMode { RealTimeMode, SimulationMode }
 <PROTOS>
 QIODevice *   device() const
 void   setDevice(QIODevice * device)
-void   setUserEquivalentRangeError(double uere)
+void   setUserEquivalentRangeError(double uere)              [*V=0x050300*]
 QNmeaPositionInfoSource::UpdateMode   updateMode() const
-double   userEquivalentRangeError() const
+double   userEquivalentRangeError() const                    [*V=0x050300*]
 
 virtual Error   error() const
 virtual QGeoPositionInfo   lastKnownPosition(bool fromSatellitePositioningMethodsOnly = false) const
