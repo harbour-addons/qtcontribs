@@ -194,8 +194,8 @@ QRegion.qth
 QResizeEvent.qth
 QScrollArea.qth
 QScrollBar.qth
-QScroller.qth
 QScrollerProperties.qth
+QScroller.qth
 QSessionManager.qth
 QShortcutEvent.qth
 QShowEvent.qth

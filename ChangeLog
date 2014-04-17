@@ -16,6 +16,46 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-17 02:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r293)
+  * hbqt/hbqt_common.hbm
+    % Changed: to post binaries in upper level lib folder.
+
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtdeclarative/hbqtdeclarative.hbc
+  * hbqt/qtdesigner/hbqtdesigner.hbc
+  * hbqt/qtgui/hbqtgui.hbc
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+  * hbqt/qtopengl/hbqtopengl.hbc
+  * hbqt/qtscript/hbqtscript.hbc
+  * hbqt/qtsql/hbqtsql.hbc
+  * hbqt/qtsvg/hbqtsvg.hbc
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+  * hbqt/qtxml/hbqtxml.hbc
+    % Updated per CDQ's patch, many thanks.
+
+  * hbqt/qtgui/hbqtgui.hbx
+    + Added: QScroller and QScrollerProperties.
+
+  * hbqt/qtgui/qth/filelist.hbm
+    % Minor.
+
+  * hbqt/qtgui/qth/QScrollerProperties.qth
+    ! Fixed: wrong version hex and missing enums.
+
+  * hbqt/qtwebsockets/hbqtwebsockets.hbc
+    ! Fixed: typo.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+  * hbxbp/hbxbp.hbp
+  * hbdbu/hbdbu.hbp
+  * hbide/hbide.hbp
+    % Changed: output destinations at addons/lib|bin/platform/compiler.
+       Now all libs and binaries are posted lb/bin folders in /addons.
+
+  * qtcontribs.hbp
+    + Added: newly added Qt Modules.
+    ; Rearrangement.   
 
 2014-04-16 16:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r292)
   * hbqt/qtbluetooth/hbqt_init.cpp

@@ -5,8 +5,7 @@
 -hblib
 -inc
 
-$hb_pkg_install.hbm
--o../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
+-o${hb_work}/../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
 -workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_targetname}
 
 -w3 -es2
@@ -68,3 +67,6 @@ xbp.qrc
 hbpdbstruct.ui
 hbpfetchdate.ui
 hbptables.ui
+
+
+$hb_pkg_install.hbm

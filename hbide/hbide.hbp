@@ -6,14 +6,21 @@
 -3rd=hbide_title=hbide
 -3rd=hbide_output=hbide
 
+{android}-hblib
+
 -inc
-
--obin/${hb_plat}/${hb_comp}/${hb_name}
--instpath=${HB_BIN}/
-
--w3 -es2
+-w3
+-es2
 
 -icon={allwin}hbide.ico
+
+-workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_name}
+
+-o{hb_work}/../../bin/${hb_plat}/${hb_comp}/${hb_name}
+{android}-o${hb_work}/../../lib/${hb_plat}/${hb_comp}/${hb_name}
+
+-instpath=${HB_BIN}/
+{android}-instpath=${HB_LIB}/
 
 #-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/libgcc_s_dw2-1.dll
 #-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/mingwm10.dll

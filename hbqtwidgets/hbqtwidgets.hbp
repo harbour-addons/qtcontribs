@@ -3,13 +3,14 @@
 #
 
 -hblib
+
+-w3 
+-es2
 -inc
 
-$hb_pkg_install.hbm
--o../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
+-o${hb_work}/../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
 -workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_targetname}
 
--w3 -es2
 
 hbqt.hbc
 
@@ -45,5 +46,5 @@ hbqtwidgets.qrc
 scroll.ui
 
 
-
+$hb_pkg_install.hbm
 

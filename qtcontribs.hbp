@@ -4,23 +4,35 @@
 
 -hbcontainer
 
-#    Qt Modules
+#    Generate SVN Revision Info
+#
+-vcshead=hbide/hbide_v.ch
+
+#    Qt Modules - mandatory
 #
 hbqt/qtcore/hbqtcore.hbp
 hbqt/qtgui/hbqtgui.hbp
 hbqt/qtnetwork/hbqtnetwork.hbp
 
-#   Un-comment whatever lib is required
+#    Uncomment whatever lib not required
 #
-#hbqt/qtwebkit/hbqtwebkit.hbp
-#hbqt/qtdesigner/hbqtdesigner.hbp
-#hbqt/qtdeclarative/hbqtdeclarative.hbp
-#hbqt/qtmultimedia/hbqtmultimedia.hbp
-#hbqt/qtopengl/hbqtopengl.hbp
-#hbqt/qtscript/hbqtscript.hbp
-#hbqt/qtsql/hbqtsql.hbp
-#hbqt/qtsvg/hbqtsvg.hbp
-#hbqt/qtxml/hbqtxml.hbp
+hbqt/qtdeclarative/hbqtdeclarative.hbp
+hbqt/qtmultimedia/hbqtmultimedia.hbp
+hbqt/qtopengl/hbqtopengl.hbp
+hbqt/qtscript/hbqtscript.hbp
+hbqt/qtsql/hbqtsql.hbp
+hbqt/qtsvg/hbqtsvg.hbp
+hbqt/qtxml/hbqtxml.hbp
+hbqt/qtpositioning/hbqtpositioning.hbp
+hbqt/qtwebsockets/hbqtwebsockets.hbp
+hbqt/qtbluetooth/hbqtbluetooth.hbp
+
+#    These libs are not supported by Android
+#    So how to prevent Android build to stop ? 
+#
+hbqt/qtwebkit/hbqtwebkit.hbp
+hbqt/qtdesigner/hbqtdesigner.hbp
+
 
 #    Qt Based Widgets
 hbqtwidgets/hbqtwidgets.hbp
@@ -32,7 +44,6 @@ hbxbp/hbxbp.hbp
 #    Qt based Harbour IDE
 #
 hbide/hbide.hbp
-
 
 #    Qt based Harbour DBU
 #

@@ -16,15 +16,11 @@ QObject     =
 Inherit     =
 Type        =
 New         =
-Version     = 0x0408000
+Version     = 0x040800
 </CLASS>
 
 <CODE>
-#if QT_VERSION >= 0x050000
-#include <QtWidgets/QScrollerProperties>
-#else
 #include <QtGui/QScrollerProperties>
-#endif
 
 /*
  * QScrollerProperties()
@@ -51,8 +47,8 @@ enum	ScrollMetric { MousePressEventDelay, DragStartDistance, DragVelocitySmoothi
 </ENUMS>
 
 <PROTOS>
-QVariant scrollMetric(ScrollMetric metric) const
-void setScrollMetric(ScrollMetric metric, const QVariant & value)
+QVariant scrollMetric(QScrollerProperties::ScrollMetric metric) const
+void setScrollMetric(QScrollerProperties::ScrollMetric metric, const QVariant & value)
 
 void setDefaultScrollerProperties(const QScrollerProperties & sp)
 void unsetDefaultScrollerProperties()

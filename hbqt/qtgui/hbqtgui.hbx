@@ -221,6 +221,8 @@ DYNAMIC hb_QRegion
 DYNAMIC hb_QResizeEvent
 DYNAMIC hb_QScrollArea
 DYNAMIC hb_QScrollBar
+DYNAMIC hb_QScrollerProperties
+DYNAMIC hb_QScroller
 DYNAMIC hb_QSessionManager
 DYNAMIC hb_QShortcutEvent
 DYNAMIC hb_QShowEvent
@@ -496,6 +498,8 @@ DYNAMIC QRegion
 DYNAMIC QResizeEvent
 DYNAMIC QScrollArea
 DYNAMIC QScrollBar
+DYNAMIC QScrollerProperties
+DYNAMIC QScroller
 DYNAMIC QSessionManager
 DYNAMIC QShortcutEvent
 DYNAMIC QShowEvent
