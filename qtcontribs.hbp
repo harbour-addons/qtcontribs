@@ -30,8 +30,8 @@ hbqt/qtbluetooth/hbqtbluetooth.hbp
 #    These libs are not supported by Android
 #    So how to prevent Android build to stop ? 
 #
-hbqt/qtwebkit/hbqtwebkit.hbp
-hbqt/qtdesigner/hbqtdesigner.hbp
+-stop{android}hbqt/qtwebkit/hbqtwebkit.hbp
+-stop{android}hbqt/qtdesigner/hbqtdesigner.hbp
 
 
 #    Qt Based Widgets

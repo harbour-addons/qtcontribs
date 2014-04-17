@@ -56,7 +56,7 @@ enum   Pairing { Unpaired, Paired, AuthorizedPaired }
 
 <PROTOS>
 QBluetoothAddress   address() const
-QList<QBluetoothAddress>   connectedDevices() const
+QList<QBluetoothAddress>   connectedDevices() const          [*V=0x050300*]
 QBluetoothLocalDevice::HostMode   hostMode() const
 bool   isValid() const
 QString   name() const

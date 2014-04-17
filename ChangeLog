@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-17 14:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r296)
+  * hbqt/qtbluetooth/qth/QBluetoothLocalDevice.qth
+  * hbqt/qtpositioning/qth/QGeoShape.qth
+    ! Fixed: to be compilable with Qt 5.2.
+
+  * qtcontribs.hbp
+    ! Fixed: to issue -stop{android} for libs not supported on Android.
+       Patch provided by Francesco, thanks.
+
 2014-04-17 14:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r295)
   * hbqt/qtpositioning/qth/QNmeaPositionInfoSource.qth
     ! Guarded: two methods against Qt v5.3, broke Qt 5.2 HbQt builds.

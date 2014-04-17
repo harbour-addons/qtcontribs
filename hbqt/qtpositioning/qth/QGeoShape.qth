@@ -46,7 +46,7 @@ enum   ShapeType { UnknownType, RectangleType, CircleType }
 
 <PROTOS>
 bool   contains(const QGeoCoordinate & coordinate) const
-void   extendShape(const QGeoCoordinate & coordinate)
+void   extendShape(const QGeoCoordinate & coordinate)          [*V=0x050300*]
 bool   isEmpty() const
 bool   isValid() const
 QGeoShape::ShapeType   type() const
