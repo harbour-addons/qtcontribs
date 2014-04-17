@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-17 02:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r294)
+  * hbqt/qtgui/hbqt_version.ch
+    * Version bump.
+
 2014-04-17 02:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r293)
   * hbqt/hbqt_common.hbm
     % Changed: to post binaries in upper level lib folder.
