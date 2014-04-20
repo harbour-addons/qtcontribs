@@ -2,6 +2,8 @@
 # $Id$
 #
 
+-skip={android}
+
 ../hbqt_common.hbm
 
 hbqtwebkit.hbm

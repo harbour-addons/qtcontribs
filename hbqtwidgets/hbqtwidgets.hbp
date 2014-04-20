@@ -8,7 +8,7 @@
 -es2
 -inc
 
--o${hb_work}/../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
+-o../../lib/${hb_plat}/${hb_comp}/${hb_targetname}
 -workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_targetname}
 
 

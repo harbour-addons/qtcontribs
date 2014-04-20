@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-19 22:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r297)
+  * hbqt/qtdesigner/hbqtdesigner.hbp
+  * hbqt/qtwebkit/hbqtwebkit.hbp
+    ! Fixed to not to be compiled with Android.
+
+  * hbqt/hbqt_common.hbm
+  * hbqtwidgets/hbqtwidgets.hbp
+  * hbxbp/hbxbp.hbp
+  * qtcontribs.hbp
+    ! Fixed: paths pointing to harbour's lib folders instaed of outer-local.
+       This also covers to deposit libs in harbour's libs without using 
+       HB_INSTALL_PREFIX to correctly cover cross-compilations.
+
 2014-04-17 14:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r296)
   * hbqt/qtbluetooth/qth/QBluetoothLocalDevice.qth
   * hbqt/qtpositioning/qth/QGeoShape.qth
