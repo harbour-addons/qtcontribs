@@ -2,8 +2,6 @@
 # $Id$
 #
 
--skip={android}
-
 ../hbqt_common.hbm
 
 hbqtdesigner.hbm

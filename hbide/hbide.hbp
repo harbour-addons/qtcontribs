@@ -16,10 +16,10 @@
 
 -workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_name}
 
--o{hb_work}/../../bin/${hb_plat}/${hb_comp}/${hb_name}
-{android}-o${hb_work}/../../lib/${hb_plat}/${hb_comp}/${hb_name}
+{!android}-o../../bin/${hb_plat}/${hb_comp}/${hb_name}
+{android}-o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
 
--instpath=${HB_BIN}/
+{!android}-instpath=${HB_BIN}/
 {android}-instpath=${HB_LIB}/
 
 #-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/libgcc_s_dw2-1.dll

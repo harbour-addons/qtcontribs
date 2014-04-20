@@ -14,7 +14,7 @@ hbqt/qtcore/hbqtcore.hbp
 hbqt/qtgui/hbqtgui.hbp
 hbqt/qtnetwork/hbqtnetwork.hbp
 
-#    Uncomment whatever lib not required
+#    Uncomment whatever module is not required
 #
 hbqt/qtdeclarative/hbqtdeclarative.hbp
 hbqt/qtmultimedia/hbqtmultimedia.hbp
@@ -26,9 +26,6 @@ hbqt/qtxml/hbqtxml.hbp
 hbqt/qtpositioning/hbqtpositioning.hbp
 hbqt/qtwebsockets/hbqtwebsockets.hbp
 hbqt/qtbluetooth/hbqtbluetooth.hbp
-hbqt/qtwebkit/hbqtwebkit.hbp
-hbqt/qtdesigner/hbqtdesigner.hbp
-
 
 #    Qt Based Widgets
 hbqtwidgets/hbqtwidgets.hbp
@@ -44,3 +41,11 @@ hbide/hbide.hbp
 #    Qt based Harbour DBU
 #
 hbdbu/hbdbu.hbp
+
+#    These modules are not supported on android 
+#    and I found no way to stop builds for android so placing at the end 
+#    to avoid another .hbp. This will show some errors at the end of 
+#    android builds...
+#
+hbqt/qtwebkit/hbqtwebkit.hbp
+hbqt/qtdesigner/hbqtdesigner.hbp

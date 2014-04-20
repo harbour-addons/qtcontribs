@@ -16,6 +16,22 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-20 12:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r299)
+  * hbdbu/hbdbu.hbp
+  * hbide/hbide.hbp
+    ! Yet another tweak to set the target paths right.
+       Learning hbmk2 the difficult way.
+
+  * hbqt/qtdesigner/hbqtdesigner.hbp
+  * hbqt/qtwebkit/hbqtwebkit.hbp
+  * qtcontribs.hbp
+    ! Placed these two modules at the end of the qtcontribs.hbp as 
+       as these are not supported on Android. I could not find a way 
+       to skip them for Android builds. I tried -stop= -skip{ in 
+       various combinations in .hbc and/or .hbp's but failed.
+       This will generate some effors at the end of Android builds 
+       but that's ok to live with.
+
 2014-04-19 23:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r298)
   + hbqt/hbqtbluetooth.hbc
   + hbqt/hbqtdeclarative.hbc
