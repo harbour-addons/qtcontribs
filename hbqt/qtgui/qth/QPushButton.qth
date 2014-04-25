@@ -32,7 +32,6 @@ HB_FUNC( QT_QPUSHBUTTON )
    {
       __HB_RETPTRGC__( new QPushButton( hbqt_par_QWidget( 1 ) ) );
    }
-#if 0   
    else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
    {
       void * pText01 = NULL;
@@ -51,7 +50,6 @@ HB_FUNC( QT_QPUSHBUTTON )
       __HB_RETPTRGC__( new QPushButton( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
       hb_strfree( pText01 );
    }
-#endif   
    else   
    {   
       __HB_RETPTRGC__( new QPushButton() );
