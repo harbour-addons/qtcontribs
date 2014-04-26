@@ -20,7 +20,11 @@ Version     = 0x040800
 </CLASS>
 
 <CODE>
+#if QT_VERSION >= 0x050000
+#include <QtWidgets/QScrollerProperties>
+#else
 #include <QtGui/QScrollerProperties>
+#endif
 
 /*
  * QScrollerProperties()

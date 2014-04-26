@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-04-26 08:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r301)
+  * hbqt/qtgui/qth/QScrollerProperties.qth
+    ! Guarded: #includes against Qt version.
+
 2014-04-24 21:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r300)
   * hbqt/qtgui/qth/QPushButton.qth
     + Added: commented out constructors.
