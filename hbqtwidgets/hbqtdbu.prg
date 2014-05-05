@@ -669,6 +669,7 @@ METHOD HbQtDBU:buildBrwStruct()
 
    oBrowse:statusBar           := .T.
    oBrowse:toolBar             := .T.
+   oBrowse:toolBarLeft         := .F.
    oBrowse:editEnabled         := .F.
    oBrowse:columnsComboEnabled := .F.
    oBrowse:verticalScrollbar   := .T.
@@ -2907,6 +2908,8 @@ METHOD HbQtMdiBrowser:destroy()
    dbCloseArea()
    Select( nArea )
 
+   ::oBrw:destroy()                               // Call HbQtBrowse()
+   ::oBrw := NIL
    RETURN Self
 
 

@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -431,6 +431,8 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "DBU"                 , "IdeDBU"                        , "browser"        , ""     , "No", "Yes" } )
    aadd( aAct, { "EDITOR"              , "IdeEDITOR"                     , "editor"         , ""     , "No", "Yes" } )
    aadd( aAct, { "REPORTS"             , "IdeREPORTS"                    , "designer"       , ""     , "No", "Yes" } )
+   //
+   aadd( aAct, { "NumObjects"          , "Number of Qt Objects"          , ""               , ""     , "No", "Yes" } )
 
    RETURN aAct
 
@@ -725,6 +727,8 @@ METHOD IdeActions:buildMainMenu()
    hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "HarbourUsersList"    ), {|| hbide_help( 3 ) } } )
    oSubMenu:addItem( { ::getAction( "HarbourDevList"      ), {|| hbide_help( 2 ) } } )
+   hbide_menuAddSep( oSubMenu )
+   oSubMenu:addItem( { ::getAction( "NumObjects"          ), {|| HbQtAlert( { "Number of Qt Objects", hb_ntos( __hbqt_dump_itemsInGlobalList() ) } ) } } )
 
    /*----------------------------------------------------------------------------*/
    /*                                   Encoding                                 */

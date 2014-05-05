@@ -147,6 +147,7 @@ HBQAbstractItemModel::HBQAbstractItemModel( PHB_ITEM pBlock ) : QAbstractItemMod
 
 HBQAbstractItemModel::~HBQAbstractItemModel( void )
 {
+   HB_TRACE( HB_TR_DEBUG, ( "HBQAbstractItemModel::~HBQAbstractItemModel( void )" ) );
    if( block )
    {
       hb_itemRelease( block );

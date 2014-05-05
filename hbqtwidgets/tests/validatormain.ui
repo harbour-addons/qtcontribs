@@ -23,7 +23,8 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper GETs Fetched In
+      <string>4
+Clipper GETs Fetched In
 Pure Clipper Form
 Like GT Terminal</string>
      </property>
@@ -38,7 +39,8 @@ Like GT Terminal</string>
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper GETs Integrated In
+      <string>3
+Clipper GETs Integrated In
 Qt Designer Created Form </string>
      </property>
     </widget>
@@ -52,7 +54,8 @@ Qt Designer Created Form </string>
       </sizepolicy>
      </property>
      <property name="text">
-      <string>OOP GETs Fetched In
+      <string>2
+OOP GETs Fetched In
 Q FormLayout
 What we miss . Page Up/Down</string>
      </property>
@@ -67,7 +70,8 @@ What we miss . Page Up/Down</string>
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper GETs Fetched In
+      <string>1
+Clipper GETs Fetched In
 A Scrollable Widget
 </string>
      </property>
@@ -82,7 +86,8 @@ A Scrollable Widget
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Clipper GETs Fetched In
+      <string>5
+Clipper GETs Fetched In
 QFormLayout</string>
      </property>
     </widget>
@@ -96,7 +101,9 @@ QFormLayout</string>
       </sizepolicy>
      </property>
      <property name="text">
-      <string>Yet To Be Implemented</string>
+      <string>Click to dump HB_TRACE()
+of
+QObjects in HbQt_Global_ List</string>
      </property>
     </widget>
    </item>

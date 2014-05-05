@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id$
  */
 
@@ -142,6 +142,8 @@ CLASS HbQtBrowse INHERIT TBrowse
 
    DATA   oWidget
 
+   METHOD destroy()
+
    /* Overloaded Methods */
    METHOD new( nTop, nLeft, nBottom, nRight, oParent, oFont )
    METHOD doConfigure()
@@ -263,7 +265,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD dispRow( nRow )                         // display TBrowse data
 
    METHOD execute()                               INLINE iif( __objGetClsName( ::oParent ) == "QDIALOG", ::oParent:exec(), NIL )
-   METHOD terminate()                             INLINE ::oParent:close()
+   METHOD terminate()                             //INLINE iif( HB_ISOBJECT( ::oParent ), ::oParent:close(), NIL )
+   METHOD exit()                                  INLINE __hbqtKeyboard( K_CTRL_ENTER, ::oTableView )
    METHOD getParent()                             INLINE ::oParent
    METHOD showCellContents()
 
@@ -295,7 +298,7 @@ PROTECTED:
    DATA   oToolbar, oToolbarLeft
 
    DATA   oDbfModel
-   DATA   oModelIndex                             INIT   QModelIndex()
+   DATA   oModelIndex
    DATA   oVHeaderView
    DATA   oHeaderView
    DATA   oVScrollBar
@@ -382,7 +385,7 @@ PROTECTED:
    DATA   hIcons                                  INIT {=>}
    DATA   hBrushes                                INIT {=>}
 
-   DATA   aCellValuesA  AS ARRAY                  INIT {}   // cell values buffers for each record - actual
+   DATA   aCellValuesA                            INIT {}   // cell values buffers for each record - actual
 
    DATA   bGotoBlock                              INIT NIL
    DATA   bInitializationBlock                    INIT NIL
@@ -525,13 +528,203 @@ PROTECTED:
    METHOD copySelectionToClipboard()
 
    DATA   oCellEditor
-   DATA   oEditorDlg                              INIT QWidget()
+   DATA   oEditorDlg
 
    DATA   lInitialized                            INIT .F.
 
    DATA   oContentsDlg, oContentsEditor, oContentsRect
 
+   METHOD disConnect()
+
+   DATA   aActColumns
+   DATA   aActIndexes
+   DATA   aActAddColumns
+
    ENDCLASS
+
+
+METHOD HbQtBrowse:destroy()
+
+   ::oParent                   := NIL
+
+   ::oDbfModel                 := NIL
+   ::oFooterModel              := NIL
+   ::oLeftDbfModel             := NIL
+   ::oLeftFooterModel          := NIL
+   ::oRightDbfModel            := NIL
+   ::oRightFooterModel         := NIL
+
+   ::aIndexes                  := NIL
+   ::lInitialized              := NIL
+   ::xTitle                    := NIL
+   ::pCurIndex                 := NIL
+   ::lFirst                    := NIL
+   ::nRowsInView               := NIL
+   ::lHScroll                  := NIL
+   ::lVScroll                  := NIL
+   ::nCursorMode               := NIL
+   ::lSizeCols                 := NIL
+   ::softTrack                 := NIL
+   ::nHorzOffset               := NIL
+   ::lReset                    := NIL
+   ::lHorzMove                 := NIL
+   ::aLeftFrozen               := NIL
+   ::aRightFrozen              := NIL
+   ::nLeftFrozen               := NIL
+   ::nRightFrozen              := NIL
+   ::gridStyle                 := NIL
+   ::nCellHeight               := NIL
+   ::oDefaultCellSize          := NIL
+   ::hColors                   := NIL
+   ::hIcons                    := NIL
+   ::hBrushes                  := NIL
+   ::aCellValuesA              := NIL
+   ::bGotoBlock                := NIL
+   ::bInitializationBlock      := NIL
+   ::bNavigationBlock          := NIL
+   ::bSearchBlock              := NIL
+   ::bSearchExBlock            := NIL
+   ::bEditBlock                := NIL
+   ::bFirstPosBlock            := NIL
+   ::bLastPosBlock             := NIL
+   ::bPhyPosBlock              := NIL
+   ::bPosBlock                 := NIL
+   ::bGoPosBlock               := NIL
+   ::bHitBottomBlock           := NIL
+   ::bHitTopBlock              := NIL
+   ::bStableBlock              := NIL
+   ::bVerticalMovementBlock    := NIL
+   ::bHorizontalMovementBlock  := NIL
+   ::bHelpBlock                := NIL
+   ::bAddColumnsBlock          := NIL
+   ::bPressHeaderBlock         := NIL
+   ::bPressFrozenBlock         := NIL
+   ::lVerticalMovementBlock    := NIL
+   ::lHorizontalMovementBlock  := NIL
+   ::bEditFinishedBlock        := NIL
+   ::aOriginal                 := NIL
+   ::aModified                 := NIL
+   ::aCaptions                 := NIL
+   ::lSaveOnLastGet            := NIL
+   ::lDownAfterSave            := NIL
+   ::aGetList                  := NIL
+   ::aPosSize                  := NIL
+   ::lEditable                 := NIL
+   ::lToColumnCombo            := NIL
+   ::lPrinting                 := NIL
+   ::lMoveColumns              := NIL
+   ::nScrollMode               := NIL
+   ::isSearchActive            := NIL
+   ::xSearchValue              := NIL
+   ::aSearchList               := NIL
+   ::nSearchMode               := NIL
+   ::bContextMenuBlock         := NIL
+
+   ::aActColumns               := NIL
+   ::aActIndexes               := NIL
+   ::aActAddColumns            := NIL
+
+   ::oLeftVHeaderView          := NIL
+   ::oLeftHeaderView           := NIL
+   ::oRightVHeaderView         := NIL
+   ::oRightHeaderView          := NIL
+
+   ::oSearchGet                := NIL
+   ::oSearchLabel              := NIL
+   ::oSearchTimer              := NIL
+   ::oScrollTimer              := NIL
+   ::oContextMenu              := NIL
+   ::oActHelp                  := NIL
+   ::oActSave                  := NIL
+   ::oActEdit                  := NIL
+   ::oActPrint                 := NIL
+   ::oActSearch                := NIL
+   ::oActGoUp                  := NIL
+   ::oActGoTop                 := NIL
+   ::oActGoDown                := NIL
+   ::oActGoBottom              := NIL
+   ::oActGoTo                  := NIL
+   ::oActPanHome               := NIL
+   ::oActLeft                  := NIL
+   ::oActRight                 := NIL
+   ::oActPanEnd                := NIL
+   ::oActMoveToLeft            := NIL
+   ::oActMoveToRight           := NIL
+   ::oActMoveToFirst           := NIL
+   ::oActMoveToLast            := NIL
+   ::oActToColumn              := NIL
+   ::oActToColumnM             := NIL
+   ::oColumnsButton            := NIL
+   ::oColumnsMenu              := NIL
+   ::oComboColumn              := NIL
+   ::oComboColumnM             := NIL
+   ::oActFreezeLPlus           := NIL
+   ::oActFreezeLMinus          := NIL
+   ::oActFreezeRPlus           := NIL
+   ::oActFreezeRMinus          := NIL
+   ::oActScroll                := NIL
+   ::oActStop                  := NIL
+   ::oActCopySel               := NIL
+   ::oActCellMemo              := NIL
+   ::oActAddColumn             := NIL
+   ::oActDelColumn             := NIL
+   ::oAddColumnsButton         := NIL
+   ::oAddColumnsMenu           := NIL
+   ::oActIndexes               := NIL
+   ::oComboIndexes             := NIL
+   ::oIndexButton              := NIL
+   ::oIndexMenu                := NIL
+   ::oPenBlack                 := NIL
+   ::oPrinter                  := NIL
+   ::oCellEditor               := NIL
+   ::oEditorDlg                := NIL
+   ::oGetList                  := NIL
+   ::oGetObject                := NIL
+   ::oFont                     := NIL
+   ::oModelIndex               := NIL
+   ::oVHeaderView              := NIL
+   ::oHeaderView               := NIL
+   ::oVScrollBar               := NIL
+   ::oHScrollBar               := NIL
+   ::oViewport                 := NIL
+   ::oContentsDlg              := NIL
+   ::oContentsEditor           := NIL
+   ::oContentsRect             := NIL
+
+   ::oGridLayout               := NIL
+
+   ::oIndicator                := NIL
+   ::oToolbar                  := NIL
+   ::oToolbarLeft              := NIL
+   ::oTableView                := NIL
+   ::oFooterView               := NIL
+   ::oLeftView                 := NIL
+   ::oLeftFooterView           := NIL
+   ::oRightView                := NIL
+   ::oRightFooterView          := NIL
+   ::oSearchLabel              := NIL
+   ::oVScrollBar               := NIL
+   ::oHScrollBar               := NIL
+   ::oStatusBar                := NIL
+   IF HB_ISOBJECT( ::oWidget )
+      ::oWidget:setParent( QWidget() )
+   ENDIF
+   ::oWidget                   := NIL
+
+   Self                        := NIL
+
+   RETURN NIL
+
+
+METHOD HbQtBrowse:terminate()
+   LOCAL oParent := ::oParent
+
+   ::destroy()
+   IF HB_ISOBJECT( oParent )
+      oParent:close()
+   ENDIF
+
+   RETURN NIL
 
 
 METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
@@ -653,29 +846,13 @@ METHOD HbQtBrowse:create()
    ENDWITH
 
    /* Place all widgets in a Grid Layout */
-   WITH OBJECT ::oGridLayout := QGridLayout( ::oWidget )
+   WITH OBJECT ::oGridLayout := QGridLayout()
+      ::oWidget:setLayout( ::oGridLayout )
+
       :setContentsMargins( 0,0,0,0 )
       :setHorizontalSpacing( 0 )
       :setVerticalSpacing( 0 )
-#if 0
-      :addWidget( ::oIndicator      , 0, 0, 1, 4 )
-      :addWidget( ::oToolbar        , 1, 0, 1, 4 )
 
-      :addWidget( ::oLeftView       , 2, 0, 1, 1 )
-      :addWidget( ::oLeftFooterView , 3, 0, 1, 1 )
-
-      :addWidget( ::oTableView      , 2, 1, 1, 1 )
-      :addWidget( ::oFooterView     , 3, 1, 1, 1 )
-
-      :addWidget( ::oRightView      , 2, 2, 1, 1 )
-      :addWidget( ::oRightFooterView, 3, 2, 1, 1 )
-
-      :addWidget( ::oHScrollBar     , 4, 0, 1, 3 )
-
-      :addWidget( ::oVScrollBar     , 2, 3, 2, 1 )
-      :addWidget( ::oStatusBar      , 5, 0, 1, 4 )
-      :addWidget( ::oSearchLabel    , 6, 0, 1, 4 )
-#else
       :addWidget( ::oIndicator      , 0, 0, 1, 5 )
       :addWidget( ::oToolbar        , 1, 0, 1, 5 )
       :addWidget( ::oToolbarLeft    , 2, 0, 2, 1 )
@@ -689,13 +866,11 @@ METHOD HbQtBrowse:create()
       :addWidget( ::oRightView      , 2, 3, 1, 1 )
       :addWidget( ::oRightFooterView, 3, 3, 1, 1 )
 
-//      :addWidget( ::oHScrollBar     , 4, 1, 1, 3 )
       :addWidget( ::oHScrollBar     , 4, 0, 1, 4 )
 
       :addWidget( ::oVScrollBar     , 2, 3, 2, 1 )
       :addWidget( ::oStatusBar      , 5, 0, 1, 5 )
       :addWidget( ::oSearchLabel    , 6, 0, 1, 5 )
-#endif
    ENDWITH
 
    ::connect()
@@ -858,8 +1033,8 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ENDIF
       nLeftWidth += ::oLeftHeaderView:sectionSize( n-1 )
    NEXT
-   ::oLeftView:setFixedWidth( 4 + nLeftWidth )
-   ::oLeftFooterView:setFixedWidth( 4 + nLeftWidth )
+   ::oLeftView:setFixedWidth( nLeftWidth )
+   ::oLeftFooterView:setFixedWidth( nLeftWidth )
 
    nLeftWidth := 0
    FOR n := 1 TO ::nRightFrozen
@@ -920,11 +1095,13 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::oComboColumnM:addItem( oCol:heading )
    NEXT
 
+   ::aActColumns := {}
    ::oColumnsMenu:clear()
    FOR EACH oCol IN ::columns
       cMenu := oCol:heading
       oAct := ::oColumnsMenu:addAction( cMenu )
       oAct:connect( "triggered(bool)", __toColumnBlock( Self, cMenu ) )
+      AAdd( ::aActColumns, oAct )
    NEXT
 
    IF HB_ISBLOCK( ::horizontalMovementBlock )
@@ -1037,9 +1214,9 @@ STATIC FUNCTION __toColumnBlock( obj, cMenu )
 
 
 METHOD HbQtBrowse:connect()
+   ::oWidget          : connect( QEvent_Resize                       , {|         | ::manageFrameResized(), .T.                        } )
 
    ::oTableView       : connect( QEvent_KeyPress                     , {|oKeyEvent| ::manageKeyPress( oKeyEvent )                      } )
-   ::oWidget          : connect( QEvent_Resize                       , {|         | ::manageFrameResized(), .T.                        } )
 
    ::oLeftHeaderView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
    ::oLeftFooterView  : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_mousepress_on_frozen__     , i    ) } )
@@ -1059,13 +1236,46 @@ METHOD HbQtBrowse:connect()
    ::oVScrollBar      : connect( "sliderReleased()"                  , {|i      | ::execSlot( __ev_vertscroll_sliderreleased__, i    ) } )
 
    ::oHeaderView      : connect( "sectionPressed(int)"               , {|i      | ::execSlot( __ev_columnheader_pressed__     , i    ) } )
-#if 1
+#if 0
    ::oHeaderView      : connect( "sectionResized(int,int,int)"       , {|i,i1,i2| ::execSlot( __ev_headersec_resized__   , i, i1, i2 ) } )
    ::oHeaderView      : connect( "sectionMoved(int,int,int)"         , {|i,i1,i2| ::manageColumnMoved( i, i1, i2 )                     } )  /* Revisit Later */
 #endif
 
    ::oTableView:verticalScrollbar():connect( "valueChanged(int)"     , {|y| iif( HB_ISOBJECT( ::oLeftView ), ::oLeftView:verticalScrollbar():setValue( y ), NIL ), ;
-                                                                            iif( HB_ISOBJECT( ::oRightView ), ::oRightView:verticalScrollbar():setValue( y ), NIL ) } )
+                                                                           iif( HB_ISOBJECT( ::oRightView ), ::oRightView:verticalScrollbar():setValue( y ), NIL ) } )
+   RETURN Self
+
+
+METHOD HbQtBrowse:disConnect()
+   ::oWidget          : disconnect( QEvent_Resize                        )
+
+   ::oTableView       : disconnect( QEvent_KeyPress                      )
+
+   ::oLeftHeaderView  : disconnect( "sectionPressed(int)"                )
+   ::oLeftFooterView  : disconnect( "sectionPressed(int)"                )
+
+   ::oRightHeaderView : disconnect( "sectionPressed(int)"                )
+   ::oRightFooterView : disconnect( "sectionPressed(int)"                )
+
+   ::oLeftView        : disconnect( "clicked(const QModelIndex&)"        )
+   ::oRightView       : disconnect( "clicked(const QModelIndex&)"        )
+
+   ::oTableView       : disconnect( "customContextMenuRequested(QPoint)" )
+
+   ::oHScrollBar      : disconnect( "actionTriggered(int)"               )
+   ::oHScrollBar      : disconnect( "sliderReleased()"                   )
+
+   ::oVScrollBar      : disconnect( "actionTriggered(int)"               )
+   ::oVScrollBar      : disconnect( "sliderReleased()"                   )
+
+   ::oHeaderView      : disconnect( "sectionPressed(int)"                )
+#if 0
+   ::oHeaderView      : disconnect( "sectionResized(int,int,int)"        )
+   ::oHeaderView      : disconnect( "sectionMoved(int,int,int)"          )
+#endif
+
+   ::oTableView:verticalScrollbar():disconnect( "valueChanged(int)"      )
+
    RETURN Self
 
 
@@ -2118,11 +2328,13 @@ METHOD HbQtBrowse:setIndexes( aIndexes )
    LOCAL aIndex, oAct
    IF HB_ISARRAY( aIndexes )
       ::aIndexes := aIndexes
+      ::aActIndexes := {}
       ::oActIndexes:setVisible( .T. )
       ::oIndexMenu:clear()
       FOR EACH aIndex IN ::aIndexes
          oAct := ::oIndexMenu:addAction( aIndex[ 1 ] )
          oAct:connect( "triggered()", __execIndexBlock( Self, aIndex[ 1 ] ) )
+         AAdd( ::aActIndexes, oAct )
       NEXT
    ENDIF
    RETURN ::aIndexes
@@ -2222,12 +2434,7 @@ METHOD HbQtBrowse:freeze( nColumns )              /* Overloaded */
          ::Right()
       ENDIF
    ENDIF
-#if 0                                             /* Not remembering why did this code made it up - Freeze only belongs to horozontal movement */
-   ::down()
-   IF ! ::hitBottom()
-      ::up()
-   ENDIF
-#endif
+
    RETURN ::nLeftFrozen
 
 
@@ -2263,12 +2470,7 @@ METHOD HbQtBrowse:rFreeze( nColumns )             /* Not a TBrowse METHOD  */
          ::Left()
       ENDIF
    ENDIF
-#if 0                                             /* Not remembering why did this code made it up - Freeze only belongs to horozontal movement */
-   ::down()
-   IF ! ::hitBottom()
-      ::up()
-   ENDIF
-#endif
+
    RETURN ::nRightFrozen
 
 
@@ -2831,7 +3033,9 @@ METHOD HbQtBrowse:editCellEx( cPicture, cColor, bWhen, bValid, nKey )
       :resize( oRect:width(), oRect:height() )
       :show()
    ENDWITH
-
+   IF Empty( ::oEditorDlg )
+      ::oEditorDlg := QWidget()
+   ENDIF
    @ 0,0 QGET xValue CONTROL ::oCellEditor PICTURE cPicture ;
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
                      WHEN    {|oGet| iif( HB_ISBLOCK( bWhen  ), Eval( bWhen , oGet ), iif( HB_ISBLOCK( oCol:preBlock  ), Eval( oCol:preBlock , oGet ), .T. ) ) } ;
@@ -3183,8 +3387,11 @@ METHOD HbQtBrowse:search( xValue, cPicture, nMode )
       :setStyleSheet( "background-color: lightblue;" )
       :connect( QEvent_Show, {|| oDlg:move( oBtmCtr:x() - ( oDlg:width() / 2 ), oBtmCtr:y() - ( oDlg:height() / 2 ) ) } )
       :exec()
+      :disconnect( QEvent_Show )
       :setParent( QWidget() )
    ENDWITH
+   oDlg := NIL
+   oBtmCtr := NIL
    ::oTableView:setFocus()
 
    SetKey( K_UP       , k1 )
@@ -3677,9 +3884,11 @@ METHOD HbQtBrowse:addAColumn( cColumn )
          IF ::oAddColumnsMenu:isEmpty()
             aNames := Eval( ::addColumnsBlock, 0, NIL, Self )
             IF HB_ISARRAY( aNames )
+               ::aActAddColumns := {}
                FOR EACH cColumn IN aNames
                   oAct := ::oAddColumnsMenu:addAction( cColumn )
                   oAct:connect( "triggered(bool)", __addColumnBlock( Self, cColumn ) )
+                  AAdd( ::aActAddColumns, oAct )
                NEXT
             ENDIF
          ENDIF
@@ -3802,7 +4011,7 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
    ENDIF
 
    ::printPreview( oPrinter )
-
+   oPrinter := NIL
 #if 0
    IF HB_ISOBJECT( oDlg )
       oDlg:setParent( QWidget() )

@@ -710,7 +710,7 @@ METHOD HbIde:parseParams()
             aadd( ::aDbfOnCmdLine, s )
          CASE cExt == ".hbp"
             aadd( ::aHbpOnCmdLine, s )
-         CASE cExt $ ".prg.cpp"
+         CASE cExt $ ".prg.hb.cpp"
             aadd( ::aSrcOnCmdLine, s )
          CASE hbide_isValidText( s )
             aadd( ::aSrcOnCmdLine, s )
@@ -1454,16 +1454,16 @@ METHOD HbIde:manageFuncContext( mp1, mp2, oXbp )
    HB_SYMBOL_UNUSED( mp2 )
 
    IF ::oFuncList:numItems() > 0
-      aadd( aPops, { 'Show Sorted'           , {|| ::updateFuncList( .t. ) } } )
-      aadd( aPops, { 'Show in Natural Order' , {|| ::updateFuncList( .f. ) } } )
+      aadd( aPops, { "Show Sorted"           , {|| ::updateFuncList( .t. ) } } )
+      aadd( aPops, { "Show in Natural Order" , {|| ::updateFuncList( .f. ) } } )
       aadd( aPops, { "" } )
       aadd( aPops, { "Show Code Fregment"    , {|| ::showCodeFregment( oXbp ) } } )
       aadd( aPops, { "" } )
-      aadd( aPops, { 'Comment out'           , {|| NIL } } )
-      aadd( aPops, { 'Reformat'              , {|| NIL } } )
-      aadd( aPops, { 'Print'                 , {|| NIL } } )
-      aadd( aPops, { 'Delete'                , {|| NIL } } )
-      aadd( aPops, { 'Move to another source', {|| NIL } } )
+      aadd( aPops, { "Comment out"           , {|| NIL } } )
+      aadd( aPops, { "Reformat"              , {|| NIL } } )
+      aadd( aPops, { "Print"                 , {|| NIL } } )
+      aadd( aPops, { "Delete"                , {|| NIL } } )
+      aadd( aPops, { "Move to another source", {|| NIL } } )
 
       hbide_ExecPopup( aPops, mp1, ::oFuncList:oWidget )
 
@@ -1482,12 +1482,12 @@ METHOD HbIde:CreateTags()
    FOR i := 1 TO Len( ::aSources )
       HB_FNameSplit( ::aSources[ i ], @cPath, @cSource, @cExt )
 
-      IF Upper( cExt ) $ ".PRG.CPP"
+      IF Upper( cExt ) $ ".PRG.HB.CPP"
          IF !empty( ::aText := hbide_readSource( ::aSources[ i ] ) )
             aSumData  := {}
 
             cComments := CheckComments( ::aText )
-            aSummary  := Summarize( ::aText, cComments, @aSumData , iif( Upper( cExt ) == ".PRG", 9, 1 ) )
+            aSummary  := Summarize( ::aText, cComments, @aSumData , iif( Upper( cExt ) $ ".PRG.HB", 9, 1 ) )
             ::aTags   := UpdateTags( ::aSources[ i ], aSummary, aSumData, @::aFuncList, @::aLines, ::aText )
 
             #if 0

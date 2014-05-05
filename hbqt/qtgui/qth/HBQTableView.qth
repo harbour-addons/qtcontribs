@@ -52,7 +52,9 @@ HB_FUNC( QT_HBQTABLEVIEW )
 
 <PROTOS>
 void hbSetBlock( PHB_ITEM block )
+void hbClearBlock()
 QRect visualRect ( const QModelIndex & index ) const
+void setModel(QAbstractItemModel * model)
 </PROTOS>
 
 <SLOTS>

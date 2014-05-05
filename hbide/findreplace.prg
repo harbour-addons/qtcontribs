@@ -1902,7 +1902,7 @@ METHOD IdeFunctionsMap:mapABunch( aFiles )
          aBuffer   := hb_ATokens( StrTran( hb_MemoRead( cSource ), Chr( 13 ) ), Chr( 10 ) )
 
          cComments := CheckComments( aBuffer )
-         aSummary  := Summarize( aBuffer, cComments, @aSumData , iif( Upper( cExt ) == ".PRG", 9, 1 ) )
+         aSummary  := Summarize( aBuffer, cComments, @aSumData , iif( Upper( cExt ) $ ".PRG.HB", 9, 1 ) )
          aTags     := UpdateTags( cSource, aSummary, aSumData, @aFuncList, @aBufLines, aBuffer )
          nTags     := Len( aTags )
 

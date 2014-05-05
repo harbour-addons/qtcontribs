@@ -1412,10 +1412,15 @@ METHOD HbQtDashboardObject:update( xData )
 
 
 METHOD HbQtDashboardObject:destroy()
-
+   LOCAL lDestroyed := __objHasMethod( ::oHbQtWidget, "DESTROY" )
+   IF lDestroyed
+      ::oHbQtWidget:destroy()
+   ENDIF
    ::oSubWindow:setParent( QWidget() )
    IF HB_ISOBJECT( ::oHbQtWidget )
-      ::oHbQtWidget:oWidget:setParent( QWidget() )
+      IF ! lDestroyed
+         ::oHbQtWidget:oWidget:setParent( QWidget() )
+      ENDIF
       ::oHbQtWidget := NIL
    ENDIF
    ::oSubWindow := NIL

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,6 @@ FUNCTION HbQtClearGets( oWnd, ... )
       __hbqtBindGetList( oParent, NIL )
    NEXT
    IF HB_ISOBJECT( oWnd )
-//HB_TRACE( HB_TR_ALWAYS, Len( hb_AParams() ) )
       oWnd:setParent( QWidget() )
    ENDIF
    __hbqtGetsActiveWindow( NIL )
@@ -88,8 +87,26 @@ FUNCTION HbQtClearGets( oWnd, ... )
    RETURN NIL
 
 
+// Specifically designed for direct built GETs with HbQtGet():new()
+//
+FUNCTION HbQtClearGetsEx( oWnd, aGets )
+   LOCAL oGet
+
+   IF HB_ISARRAY( aGets )
+      FOR EACH oGet IN aGets
+         oGet:destroy()
+         oGet := NIL
+      NEXT
+   ENDIF
+   IF HB_ISOBJECT( oWnd )
+      oWnd:setParent( QWidget() )
+   ENDIF
+
+   RETURN NIL
+
+
 FUNCTION __hbqtBindGetList( oWnd, GetList )
-   LOCAL n, oGetList
+   LOCAL n, oGetList, oGet
 
    THREAD STATIC t_GetList := {}
 
@@ -104,8 +121,15 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
             AAdd( t_GetList, { oWnd, GetList } )
          ENDIF
       ELSEIF PCount() == 2 .AND. n > 0
-         t_GetList[ n,2 ]:oFocusFrame:setParent( QWidget() )
+         oGetList := t_GetList[ n,2 ]
          hb_ADel( t_GetList, n, .T. )
+
+         oGetList:oFocusFrame:setParent( QWidget() )
+         FOR EACH oGet IN oGetList:getList()
+            oGet:destroy()
+            oGet := NIL
+         NEXT
+         oGetList := NIL
       ENDIF
    ENDIF
 
@@ -280,6 +304,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             :create()
 
             IF :widget == "HbQtBrowse"
+               :data[ 1 ]:oGetList := oGetList
                :data[ 1 ]:setGetObject( oEdit )
             ENDIF
          ENDWITH
@@ -350,9 +375,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       oWnd:connect( QEvent_KeyPress,       {|oKey| iif( oKey:key() == 27, oWnd:done( 0 ), NIL ), .T. } )
 
       IF lExec
-//HB_TRACE( HB_TR_ALWAYS,  "executing...", oWnd:testAttribute( Qt_WA_DeleteOnClose ), oWnd:setAttribute( Qt_WA_DeleteOnClose, .T. ), oWnd:testAttribute( Qt_WA_DeleteOnClose ) )
          oWnd:exec()
-//HB_TRACE( HB_TR_ALWAYS,  "executed.........." )
       ELSE
          IF ! lNoModal
             oWnd:setModal( .T. )
@@ -365,9 +388,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
 
    RETURN NIL
 
-
 /*----------------------------------------------------------------------*/
-
+//                        CLASS HbQtGetList()
+/*----------------------------------------------------------------------*/
 
 CREATE CLASS HbQtGetList INHERIT HbGetList
 
@@ -383,6 +406,7 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    METHOD getIndex( oGet )
    METHOD setFocus( xGet, nReason )
    METHOD getByIndex( nIndex )                    INLINE iif( nIndex > 0 .AND. nIndex <= Len( ::aGetList ), ::aGetList[ nIndex ], NIL )
+   METHOD getList()                               INLINE ::aGetList
 
    DATA   bOnLastGet
    METHOD lastGetBlock( bBlock )                  SETGET

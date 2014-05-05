@@ -1,4 +1,4 @@
-   /*
+/*
  * $Id$
  */
 
@@ -731,7 +731,9 @@ METHOD IdeDocks:execEvent( nEvent, p, p1 )
 
    CASE __editWidget_dragMoveEvent__
    CASE __editWidget_dragEnterEvent__
-      p:acceptProposedAction()
+      IF p:mimeData():hasUrls()
+         p:acceptProposedAction()
+      ENDIF
       EXIT
 
    CASE __editWidget_dropEvent__
@@ -744,7 +746,7 @@ METHOD IdeDocks:execEvent( nEvent, p, p1 )
                ::oSM:editSource( hbide_pathToOSPath( qUrl:toLocalFile() ) )
             ENDIF
          NEXT
-         p:setDropAction( Qt_CopyAction )
+         p:setDropAction( Qt_IgnoreAction ) //Qt_CopyAction )
          p:accept()
          qList := NIL
       ENDIF
@@ -873,11 +875,13 @@ METHOD IdeDocks:restState( nMode )
 
 METHOD IdeDocks:stackMaximized()
    LOCAL qObj, qMdi
-   qObj := ::oStackedWidget:activeSubWindow()
+
+   qObj := ::oStackedWidget:oWidget:activeSubWindow()
    FOR EACH qMdi IN ::oIde:aMdies
       qMdi:setWindowState( Qt_WindowMaximized )
    NEXT
-   ::oStackedWidget:setActiveSubWindow( qObj )
+   ::oStackedWidget:oWidget:setActiveSubWindow( qObj )
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -911,12 +915,12 @@ METHOD IdeDocks:stackZoom( nMode )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocks:stackHorizontally()
-   LOCAL qArea, qObj, qVPort, nH, nT, nW, qMdi, nL
+   LOCAL qArea, qVPort, nH, nT, nW, qMdi, nL, qObj
 
    ::restState( 0 )
 
    qArea  := ::oStackedWidget
-   qObj   := qArea:activeSubWindow()
+   qObj   := qArea:oWidget:activeSubWindow()
    qVPort := qArea:viewport()
    nH     := qVPort:height()
    nW     := qVPort:width() / Len( ::oIde:aMdies )
@@ -928,18 +932,19 @@ METHOD IdeDocks:stackHorizontally()
       nL += nW
    NEXT
 
-   ::oStackedWidget:setActiveSubWindow( qObj )
+   ::oStackedWidget:oWidget:setActiveSubWindow( qObj )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocks:stackVertically()
-   LOCAL qArea, qObj, qVPort, nH, nT, nW, qMdi
+   LOCAL qArea, qVPort, nH, nT, nW, qMdi
+   LOCAL qObj
 
    ::restState( 0 )
 
    qArea  := ::oStackedWidget
-   qObj   := qArea:activeSubWindow()
+   qObj   := qArea:oWidget:activeSubWindow()
    qVPort := qArea:viewport()
    nH     := qVPort:height() / Len( ::oIde:aMdies )
    nW     := qVPort:width()
@@ -950,7 +955,7 @@ METHOD IdeDocks:stackVertically()
       nT += nH
    NEXT
 
-   ::oStackedWidget:setActiveSubWindow( qObj )
+   ::oStackedWidget:oWidget:setActiveSubWindow( qObj )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1130,7 +1135,7 @@ METHOD IdeDocks:buildStackedWidget()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeDocks:buildViewWidget( cView )
-   LOCAL oFrame, qTBtnClose, qDrop, qMdi, n
+   LOCAL oFrame, qTBtnClose, qMdi, n, qDrop
 
    qMdi := QMdiSubWindow( ::oDlg:oWidget )
    qMdi:setWindowTitle( cView )

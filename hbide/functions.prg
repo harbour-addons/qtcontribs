@@ -546,11 +546,11 @@ METHOD IdeFunctions:tagProject( cProjectTitle, lGUI )
 
          HB_FNameSplit( cSrc, @cPath, @cSource, @cExt )
 
-         IF upper( cExt ) $ ".PRG.CPP"
+         IF upper( cExt ) $ ".PRG.HB.CPP"
             IF !empty( aText := hbide_readSource( cSrc ) )
                aSumData  := {}
                cComments := CheckComments( aText )
-               aSummary  := Summarize( aText, cComments, @aSumData , iif( upper( cExt ) == ".PRG", 9, 1 ) )
+               aSummary  := Summarize( aText, cComments, @aSumData , iif( upper( cExt ) $ ".PRG.HB", 9, 1 ) )
                aTags     := UpdateTags( cSrc, aSummary, aSumData, @aFuncList, @aLines, aText )
 
                IF !empty( aTags )

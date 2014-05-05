@@ -1,4 +1,4 @@
-         /*
+/*
  * $Id$
  */
 
@@ -663,6 +663,7 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
       :horizontalScrollbar := .T.
       :verticalScrollbar   := .T.
       :toolbar             := .T.
+      :toolbarLeft         := .T.
       :statusbar           := .F.
       :editBlock           := {|aMod,aData,oBrw  | ::saveRecord( aMod, aData, oBrw, oMdiBrowse )     }
       :searchBlock         := {|xValue,nMode,oBrw| ::manageSearch( xValue, nMode, oBrw, oMdiBrowse ) }

@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2012-2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  */
 
@@ -11,6 +11,7 @@
 #include "hbtoqt.ch"
 #include "hbqtgui.ch"
 #include "inkey.ch"
+#include "hbtrace.ch"
 
 
 FUNCTION Main()
@@ -33,7 +34,7 @@ FUNCTION Main()
    oBrowse := HbQtBrowseNew( 5, 5, 16, 30, oMain, QFont( "Courier New", 10 ) )
    oBrowse:colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
 
-   oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )           /* Does nothing, but no ERROR */
+   oBrowse:ColSep        := hb_UTF8ToStrBox( "│" )             /* Does nothing, but no ERROR */
    oBrowse:HeadSep       := hb_UTF8ToStrBox( "╤═" )          /* Does nothing, but no ERROR */
    oBrowse:FootSep       := hb_UTF8ToStrBox( "╧═" )          /* Does nothing, but no ERROR */
 
@@ -72,6 +73,7 @@ FUNCTION Main()
    /* needed since I've changed some columns _after_ I've added them to TBrowse object */
    oBrowse:Configure()
    oBrowse:navigationBlock := {|nKey,xData,oBrw|  Navigate( nKey, xData, oBrw, aTest0, aTest1, aTest2, aTest3 )  }
+   oBrowse:pressHeaderBlock := {|nColPos,cColHeading,oBrw|  HB_TRACE( HB_TR_ALWAYS, nColPos, cColHeading, oBrw:colPos ) }
 
    /* Freeze first column TO the left */
    oBrowse:freeze := 1
@@ -79,6 +81,7 @@ FUNCTION Main()
 
    /* Make the toolbar visible */
    oBrowse:toolbar       := .T.                       /* I always longed for this interface */
+   oBrowse:toolbarLeft   := .T.                       /* I always longed for this interface */
    oBrowse:statusbar     := .T.                       /* Yes, we want statusbar messages */
    oBrowse:editEnabled   := .F.                       /* User must not be able to edit via edit button */
    oBrowse:statusMessage := "Ready !"
@@ -86,7 +89,7 @@ FUNCTION Main()
    SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
 
    oMain:setCentralWidget( oBrowse:oWidget )
-   oMain:resize( 360, 360 )
+   oMain:resize( 380, 360 )
    oMain:show()
 
    QApplication():exec()
@@ -104,6 +107,9 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse, aTest0, aTest1, aTest2, aTest3 )
    oBrowse:statusMessage := DToC( Date() ) + " | " + Time() + " | " + hb_ntos( oBrowse:colPos )
 
    DO CASE
+   CASE nKey == K_ESC
+      oBrowse:terminate()
+
    CASE nKey == K_CTRL_F
       oBrowse:search()
 
@@ -248,11 +254,11 @@ STATIC FUNCTION SearchMyData( xSearch, nMode, oBrw, aTest0, aTest1, aTest2, aTes
 
 
 STATIC FUNCTION ArIndexNo( nIndex )
-   STATIC s_nIndex := 1 
-   LOCAL l_nIndex := s_nIndex 
+   STATIC s_nIndex := 1
+   LOCAL l_nIndex := s_nIndex
 
    IF HB_ISNUMERIC( nIndex )
-      s_nIndex := nIndex 
+      s_nIndex := nIndex
    ENDIF
 
    RETURN l_nIndex

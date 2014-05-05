@@ -402,13 +402,9 @@ FUNCTION HbQtMsgBox( cMsg, cTitle )
    oMB := QMessageBox()
    oMB:setText( /* "<b>" + */ cMsg /* + "</b>" */ )
    oMB:setIcon( QMessageBox_Information )
-   oMB:setParent( QApplication():focusWidget() )
    oMB:setWindowFlags( Qt_Dialog )
    oMB:setWindowTitle( cTitle )
-
    oMB:exec()
-
-   oMB:setParent( QWidget() )
 
    RETURN NIL
 

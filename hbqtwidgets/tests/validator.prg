@@ -17,24 +17,36 @@
 
 
 FUNCTION Main()
-   LOCAL oMain
+   LOCAL oMain, oELoop, lExit
 
    hbqt_errorSys()
 
    oMain := hbqtui_validatormain()
    oMain:oWidget:connect( QEvent_KeyPress, {|oKeyEvent| iif( oKeyEvent:key() == Qt_Key_Escape, QApplication():sendEvent( QApplication(), QCloseEvent() ), NIL ) } )
+   oMain:oWidget:connect( QEvent_Close   , {|| lExit := .T. } )
 
    oMain:btnClipper   : connect( "clicked()", {|| Clipper( oMain:oWidget )         } )
    oMain:btnOOPLayout : connect( "clicked()", {|| OOPLayout( oMain:oWidget )       } )
    oMain:btnUI        : connect( "clicked()", {|| UIGets( oMain:oWidget )          } )
    oMain:btnPure      : connect( "clicked()", {|| NoParentPureClipper()            } )
    oMain:btnInLayout  : connect( "clicked()", {|| ClipperInLayout( oMain:oWidget ) } )
+   oMain:btnYet       : connect( "clicked()", {|| __hbqt_dump_itemsInGlobalList()  } )
 
    oMain:show()
 
    SetKey( K_F2, {|| HbQtCalculate( oMain:oWidget ) } )
 
-   QApplication():exec()
+   lExit := .F.
+   oELoop := QEventLoop( oMain:oWidget )
+   DO WHILE .t.
+      oELoop:processEvents()
+      IF lExit
+         EXIT
+      ENDIF
+      oMain:setWindowTitle( LTrim( Str( __hbqt_itemsInGlobalList() ) ) )
+   ENDDO
+   oMain:setWindowTitle( LTrim( Str( __hbqt_itemsInGlobalList() ) ) )
+   oELoop:exit( 0 )
 
    QApplication():clipboard:clear( QClipboard_Clipboard )
    QApplication():clipboard:clear( QClipboard_Selection )
@@ -342,7 +354,7 @@ STATIC FUNCTION OOPLayout( oMain )
    oFLayout1:addRow( "Val[ 1 ]:", oEdit10:edit() )
 
    /* IMPORTANT: to release memory associated with this window and contained getlist */
-   oWnd:connect( QEvent_Close, {|| HbQtClearGets( oWnd ) } )
+   oWnd:connect( QEvent_Close, {|| HbQtClearGetsEx( oWnd, { oEdit1, oEdit2, oEdit3, oEdit4, oEdit5, oEdit6, oEdit7, oEdit8, oEdit9, oEdit10 } ) } )
 
    /* Show up the GET screen ready to receive user input */
    oWnd:show()
@@ -371,6 +383,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    LOCAL aDeptt  := { "Accounts","Store","MIS","HR","Technical" }
    LOCAL lDone   := .T.
    LOCAL val     := Array( 3 )
+   LOCAL cName   := Space( 10 )
 
    val[ 1 ]      := Space( 10 )
    val[ 2 ]      := 0.00
@@ -411,6 +424,8 @@ STATIC FUNCTION fetchGets( GetList, SayList )
 
    @  7, 52 SAY "Salary:"
    @  7, 60 GET nSlry PICTURE "@E 99,999" WHEN {|| HB_TRACE( HB_TR_ALWAYS, cDeptt ), .T. } VALID {|| nSlry > 600 .AND. nSlry < 17000 }
+
+   @  8, 02 SAY "Name:" GET cName
 
    @  9, 48 SAY "Done:"
    @  9, 54 GET lDone CHECKBOX

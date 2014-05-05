@@ -149,9 +149,7 @@ HBQPlainTextEdit::HBQPlainTextEdit( QWidget * parent ) : QPlainTextEdit( parent 
    m_selectionColor = pl.color( QPalette::Highlight );
 
    setContentsMargins( 0,0,0,0 );
-
-   QTextDocument * doc = document();
-   doc->setDocumentMargin( 0 );
+   document()->setDocumentMargin( 0 );
 
    highlighter = NULL;
    block = NULL;

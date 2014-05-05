@@ -71,6 +71,7 @@ HBQTableView::~HBQTableView()
 {
    if( block )
    {
+      HB_TRACE( HB_TR_DEBUG, ( "HBQTableView::~HBQTableView()" ) );
       hb_itemRelease( block );
       block = NULL;
    }
@@ -85,8 +86,25 @@ void HBQTableView::hbSetBlock( PHB_ITEM b )
          hb_itemRelease( block );
       }
       block = hb_itemNew( b );
-      // hb_gcUnlock( block );
+      hb_gcUnlock( block );
    }
+}
+
+void HBQTableView::hbClearBlock( void )
+{
+   if( block )
+   {
+      HB_TRACE( HB_TR_ALWAYS, ( "HBQTableView::hbClearBlock( void )" ) );
+      hb_itemRelease( block );
+      block = NULL;
+   }
+}
+
+void HBQTableView::setModel( QAbstractItemModel * model )
+{
+   QItemSelectionModel *m = this->selectionModel();
+   QTableView::setModel( model );
+   delete m;
 }
 
 void HBQTableView::mousePressEvent( QMouseEvent * event )

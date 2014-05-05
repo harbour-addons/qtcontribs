@@ -1636,8 +1636,8 @@ FUNCTION hbide_popupBrwContextMenu( qTextBrowser, p )
 
 FUNCTION hbide_groupSources( cMode, a_ )
    LOCAL cTyp, s, d_, n
-   LOCAL aSrc := { ".prg", ".c", ".cpp", ".h", ".ch", ".hbp", ".hbc", ".rc", ".res", ".obj", ".o", ".lib", ".a" }
-   LOCAL aTxt := { {}    , {}  , {}    , {}  , {}   , {}    , {}    , {}   , {}    , {}    , {}  , {}    , {}   }
+   LOCAL aSrc := { ".prg", ".hb", ".c", ".cpp", ".h", ".ch", ".hbp", ".hbc", ".rc", ".res", ".obj", ".o", ".lib", ".a" }
+   LOCAL aTxt := { {}    , {}   , {}  , {}    , {}  , {}   , {}    , {}    , {}   , {}    , {}    , {}  , {}    , {}   }
    LOCAL aRst := {}
 
    IF     cMode == "az"
@@ -1696,6 +1696,7 @@ FUNCTION hbide_imageForFileType( cType )
    CASE ".rc"
    CASE ".res"
       RETURN "source_res" //"fl_res"
+   CASE ".hb"
    CASE ".prg"
       RETURN "source_prg" //"fl_prg"
    CASE ".c"

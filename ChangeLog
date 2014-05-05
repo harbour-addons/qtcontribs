@@ -16,6 +16,76 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-05-04 23:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r303)
+  * hbdbu/dbu.prg
+    + Added: oBrowse:toolbarLeft := .T.
+
+  * hbide/actions.prg
+  * hbide/docks.prg
+  * hbide/editor.prg
+  * hbide/findreplace.prg
+  * hbide/functions.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+  * hbide/sources.prg
+    + Applied: patch sent by Grzegorz which completes .hb files treatment 
+       equal to .prg. Many thanks.
+
+    + Added: code to destroy editing objects properly when an editing instance 
+       is closed.
+
+  * hbqt/qtcore/hbqt_bind.cpp
+  * hbqt/qtcore/hbqt_misc.prg
+    ! Restructured: binding Harbour variables to Qt objects. 
+       Now a HbQt object is referenced only once and hence Harbour GC calls 
+       the varible destructor properly. This has made it possible to reclaim 
+       memory after Qt frees the object pointers, either initiated by Harbour
+       or by Qt. This commit is very important and I hope that HbQt is 
+       now production ready.
+
+    ; INCOMPATIBLE: the only side-effect, seen by many Harbour programmers,
+       is that any variable holding a Qt object which is :connect()ed will 
+       have to live according to Harbour scoping rules. Before HbQt was 
+       keeping that variable alive by adding the object to an instance 
+       variable of another class which effectively was blocking Harbour 
+       GC to destroy the Qt object.
+
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+    + Added: one HB_TRACE() call.
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+    % Minor.
+
+  * hbqt/qtgui/hbqt_hbqtableview.cpp
+  * hbqt/qtgui/hbqt_hbqtableview.h
+  * hbqt/qtgui/qth/HBQTableView.qth
+    + Added: method HB_ClearBlock() 
+             method SetModel() - Important: Qt docs says that setting a model
+              does not "delete" previous selection model.
+
+  * hbqtwidgets/alert.prg
+  * hbqtwidgets/dashboard.prg
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtdbu.prg
+  * hbqtwidgets/misc.prg
+    + Added: methods and code to destroy Qt objects held in instance variables 
+       of above classes. As a rule, every specialized widget must implement 
+       :destroy() method responsible to destroy Qt objects used for the class.
+       QGet and HbQtBrowse now has :destroy() method.
+
+  * hbqtwidgets/tests/browser.prg
+  * hbqtwidgets/tests/pureclip.prg
+  * hbqtwidgets/tests/validator.prg
+  * hbqtwidgets/tests/validatormain.ui
+    + Added: code to destroy the Qt objects.
+
+  ; This commit takes HbQt to production level. Object destruction is proper.
+     Memory management is proper. It has been four-and-a-half years to reach 
+     this goal. Cheers.
+
 2014-04-28 09:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r302)
   * hbqt/qtgui/qth/QScrollerProperties.qth
     ! Guarded: #includes against Qt 5.0.

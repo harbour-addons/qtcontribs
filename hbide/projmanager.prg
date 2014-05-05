@@ -1063,8 +1063,8 @@ METHOD IdeProjManager:synchronizeAlienProject( cProjFileName )
 
 METHOD IdeProjManager:sortSources( cMode )
    LOCAL a_, cTyp, s, d_, n
-   LOCAL aSrc := { ".prg", ".ch", ".c", ".cpp", ".h", ".obj", ".o", ".lib", ".a", ".rc", ".res", ".ui", ".qrc" }
-   LOCAL aTxt := { {}    , {}   , {}  , {}    , {}  , {}    , {}  , {}    , {}  , {}   , {}    , {}   , {}     }
+   LOCAL aSrc := { ".prg", ".hb", ".ch", ".c", ".cpp", ".h", ".obj", ".o", ".lib", ".a", ".rc", ".res", ".ui", ".qrc" }
+   LOCAL aTxt := { {}    , {}   , {}   , {}  , {}    , {}  , {}    , {}  , {}    , {}  , {}   , {}    , {}   , {}     }
    LOCAL aRst := {}
 
    a_:= hbide_memoToArray( ::oUI:editSources:toPlainText() )

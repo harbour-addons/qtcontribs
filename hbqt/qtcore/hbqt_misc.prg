@@ -54,11 +54,10 @@
 #include "error.ch"
 #include "hbtrace.ch"
 
-/*----------------------------------------------------------------------*/
 
 CREATE CLASS HbQtObjectHandler
 
-   VAR    __hEvents  PROTECTED INIT { => }
+   VAR    __hEvents  INIT { => }
 
    VAR    __Slots
    VAR    __Events
@@ -74,7 +73,6 @@ CREATE CLASS HbQtObjectHandler
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtObjectHandler:findChild( cObjectName )
 
@@ -84,7 +82,6 @@ METHOD HbQtObjectHandler:findChild( cObjectName )
 
    RETURN __hbqt_findChild( Self, cObjectName )
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtObjectHandler:setSlots()
 
@@ -95,7 +92,6 @@ METHOD HbQtObjectHandler:setSlots()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtObjectHandler:setEvents()
 
@@ -106,7 +102,6 @@ METHOD HbQtObjectHandler:setEvents()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtObjectHandler:onError()
    LOCAL cMsg := __GetMessage()
@@ -135,7 +130,6 @@ METHOD HbQtObjectHandler:onError()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtObjectHandler:connect( cnEvent, bBlock )
    LOCAL nResult
@@ -190,7 +184,6 @@ METHOD HbQtObjectHandler:connect( cnEvent, bBlock )
    __hbqt_error( 1200 + nResult )
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtObjectHandler:disconnect( cnEvent )
    LOCAL nResult := 0
@@ -241,28 +234,4 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
 
    __hbqt_error( 1300 + nResult )
    RETURN .F.
-
-/*----------------------------------------------------------------------*/
-//                        Holding Conneced States
-/*----------------------------------------------------------------------*/
-
-CLASS HbQtConnecteds
-
-   VAR    __ConnectedObjects
-
-   METHOD init()
-
-   ENDCLASS
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtConnecteds:init()
-
-   IF Empty( ::__ConnectedObjects )
-      ::__ConnectedObjects := {}
-   ENDIF
-
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 

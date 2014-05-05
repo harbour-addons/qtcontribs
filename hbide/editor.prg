@@ -1506,7 +1506,7 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    ENDIF
 
    ::cType := upper( strtran( ::cExt, ".", "" ) )
-   ::cType := iif( ::cType $ "PRG,C,CPP,H,CH,PPO,HBS", ::cType, "U" )
+   ::cType := iif( ::cType $ "PRG,HB,C,CPP,H,CH,PPO,HBS", ::cType, "U" )
 
    ::lIsPRG := ::cType $ "PRG,HB"
 
@@ -1567,10 +1567,6 @@ METHOD IdeEditor:destroy()
    /* This code is reached under normal circumstances, so delete auto saved file */
    ferase( hbide_pathToOSPath( ::cPath + ::cFile + ::cExt + ".tmp" ) )
 
-   ::qCqEdit  := NIL
-   ::qCoEdit  := NIL
-   ::qEdit    := NIL
-
    DO WHILE Len( ::aEdits ) > 0
       oEdit := ::aEdits[ 1 ]
       hb_adel( ::aEdits, 1, .t. )
@@ -1582,6 +1578,11 @@ METHOD IdeEditor:destroy()
       ::qDocument := NIL
    ENDIF
 
+#if 0
+   ::qCqEdit  := NIL
+   ::qCoEdit  := NIL
+   ::qEdit    := NIL
+
    IF !Empty( ::qHiliter )
       ::qHiliter := NIL
    ENDIF
@@ -1589,7 +1590,7 @@ METHOD IdeEditor:destroy()
    ::qSplitter := NIL
    ::oEdit := NIL
    ::qLayout := NIL
-
+#endif
    IF ( n := ascan( ::aTabs, {|e_| e_[ TAB_OEDITOR ] == Self } ) ) > 0
       hb_adel( ::oIde:aTabs, n, .T. )
    ENDIF
@@ -1597,6 +1598,9 @@ METHOD IdeEditor:destroy()
    ::oEM:removeSourceInTree( ::sourceFile )
 
    ::qTabWidget:removeTab( ::qTabWidget:indexOf( ::oTab:oWidget ) )
+   ::oTab:oWidget:setParent( QWidget() )
+   ::oTab:destroy()   // Call Xbp:destroy() ???
+   ::oTab:oWidget := NIL
    ::oTab := NIL
 
    IF ::qTabWidget:count() == 0
@@ -1808,7 +1812,7 @@ METHOD IdeEditor:setDocumentProperties()
          ::qEdit:hbHighlightPage()
       ENDIF
 
-      IF ::cType $ "PRG,C,CPP,H,CH,HBS"
+      IF ::cType $ "PRG,HB,C,CPP,H,CH,HBS"
          ::qTimerSave := QTimer()
          ::qTimerSave:setInterval( max( 30000, ::oINI:nTmpBkpPrd * 1000 ) )
          ::qTimerSave:connect( "timeout()", {|| ::execEvent( __qTimeSave_timeout__ ) } )

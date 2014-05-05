@@ -84,6 +84,8 @@ CLASS HbQtGet INHERIT GET
 
    METHOD new( oControl )
    METHOD create( oControl )
+   METHOD destroy()
+
    METHOD edit()                                  INLINE ::oEdit
    METHOD get( oGet )                             SETGET
    METHOD control( oControl )                     SETGET
@@ -141,12 +143,10 @@ CLASS HbQtGet INHERIT GET
    VAR    sl_commaSep                             INIT ","
    VAR    sl_commaProxy                           INIT ","
    VAR    sl_fixupCalled                          INIT .F.
-   VAR    sl_font
    VAR    lUserControl                            INIT .F.
    VAR    aPos                                    INIT {}
    VAR    aSize                                   INIT {}
    VAR    cClassName                              INIT ""
-   VAR    oApp
    VAR    cWidget                                 INIT "QLineEdit"
    VAR    nToRow                                  INIT 0
    VAR    nToCol                                  INIT 0
@@ -192,21 +192,21 @@ CLASS HbQtGet INHERIT GET
    METHOD reset()
    /* ::oGet operation methods overloaded from GET : ends */
 
-   METHOD end()                                   INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_End      , Qt_NoModifier      ) )
-   METHOD home()                                  INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Home     , Qt_NoModifier      ) )
-   METHOD left()                                  INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Left     , Qt_NoModifier      ) )
-   METHOD right()                                 INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Right    , Qt_NoModifier      ) )
+   METHOD end()                                   INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_End      , Qt_NoModifier      ) )
+   METHOD home()                                  INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Home     , Qt_NoModifier      ) )
+   METHOD left()                                  INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Left     , Qt_NoModifier      ) )
+   METHOD right()                                 INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Right    , Qt_NoModifier      ) )
    METHOD toDecPos()                              INLINE iif( ::sl_dec == 0, NIL, ::oEdit:setCursorPosition( At( ::sl_decProxy, ::text() ) ) )
-   METHOD wordLeft()                              INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Left     , Qt_ControlModifier ) )
-   METHOD wordRight()                             INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Right    , Qt_ControlModifier ) )
+   METHOD wordLeft()                              INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Left     , Qt_ControlModifier ) )
+   METHOD wordRight()                             INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Right    , Qt_ControlModifier ) )
 
-   METHOD backSpace()                             INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_NoModifier      ) )
-   METHOD delete()                                INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_NoModifier      ) )
-   METHOD delEnd()                                INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_K        , Qt_ControlModifier ) )
-   METHOD delLeft()                               INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_NoModifier      ) )
-   METHOD delRight()                              INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_NoModifier      ) )
-   METHOD delWordLeft()                           INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_ControlModifier ) )
-   METHOD delWordRight()                          INLINE ::oApp:sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_ControlModifier ) )
+   METHOD backSpace()                             INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_NoModifier      ) )
+   METHOD delete()                                INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_NoModifier      ) )
+   METHOD delEnd()                                INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_K        , Qt_ControlModifier ) )
+   METHOD delLeft()                               INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_NoModifier      ) )
+   METHOD delRight()                              INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_NoModifier      ) )
+   METHOD delWordLeft()                           INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Backspace, Qt_ControlModifier ) )
+   METHOD delWordRight()                          INLINE QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Delete   , Qt_ControlModifier ) )
 
    METHOD insert( cChar )                         VIRTUAL
    METHOD overStrike( cChar )                     VIRTUAL
@@ -218,28 +218,48 @@ CLASS HbQtGet INHERIT GET
    METHOD varGet()
    METHOD varPut( xValue )
    METHOD display()
+   METHOD manageCursor()
 
    FRIEND CLASS HbQtGetList
 
+   DATA   sl_font
+   DATA   oStyle
    DATA   nKeyPressed
    DATA   cPastBuffer
    DATA   nPastPosition
-   DATA   oStyle
    DATA   nCharWidth
-   METHOD manageCursor()
 
    ENDCLASS
 
 
 METHOD HbQtGet:new( oControl )
 
-   ::oApp := QApplication()
-
    IF HB_ISOBJECT( oControl )
       ::oControl := oControl
    ENDIF
 
    RETURN Self
+
+
+METHOD HbQtGet:destroy()
+   HB_TRACE( HB_TR_DEBUG, "HbQtGet:destroy()" )
+
+   IF ::widget() == "HbQtBrowse"
+      ::data()[ 1 ]:destroy()
+   ENDIF
+   IF HB_ISOBJECT( ::oEdit )
+      ::oEdit:setParent( QWidget() )
+   ENDIF
+
+   ::oParent   := NIL
+   ::sl_font   := NIL
+   ::oStyle    := NIL
+   ::oEdit     := NIL
+   ::oGet      := NIL
+   ::oControl  := NIL
+   //::oGetList  := NIL
+
+   RETURN NIL
 
 
 METHOD HbQtGet:create( oControl )
@@ -278,9 +298,10 @@ METHOD HbQtGet:create( oControl )
          EXIT
       CASE "HbQtBrowse"
          ::oEdit := QFrame( ::oParent )
-         xTmp := QVBoxLayout( ::oEdit )
-         xTmp:setContentsMargins( 0, 0, 0, 0 )
-         xTmp:addWidget( ::data()[ 1 ]:oWidget )
+         WITH OBJECT xTmp := QVBoxLayout( ::oEdit )
+            :setContentsMargins( 0, 0, 0, 0 )
+            :addWidget( ::data()[ 1 ]:oWidget )
+         ENDWITH
          EXIT
       CASE "QImage"
          ::oEdit := QLabel( ::oParent )
@@ -296,11 +317,6 @@ METHOD HbQtGet:create( oControl )
 
    ::connect()
 
-   /* Still TO be determined IF font should be of fixed pitch IF it is a user supplied control */
-   IF ! HB_ISOBJECT( ::sl_font )
-      ::sl_font := QFont( "Courier New", 10 )
-   ENDIF
-
    ::oEdit:setFocusPolicy( iif( ::sl_mousable, Qt_StrongFocus, Qt_TabFocus ) )
    SWITCH ::cClassName
    CASE "QLINEEDIT"
@@ -308,12 +324,12 @@ METHOD HbQtGet:create( oControl )
    CASE "QLISTWIDGET"
    CASE "QCOMBOBOX"
       ::oEdit:setStyleSheet( ::sl_cssColor )
-      ::oEdit:setFont( ::sl_font )
+      ::oEdit:setFont( __getFont( ::sl_font ) )
       EXIT
    CASE "QPUSHBUTTON"
       ::oEdit:setStyleSheet( ::sl_cssColor )
       IF ! ::lUserControl
-         ::oEdit:setFont( ::sl_font )
+         ::oEdit:setFont( __getFont( ::sl_font ) )
       ENDIF
       EXIT
    CASE "QCHECKBOX"
@@ -322,7 +338,7 @@ METHOD HbQtGet:create( oControl )
       EXIT
    ENDSWITCH
 
-   ::nCharWidth := QFontMetrics( ::sl_font ):averageCharWidth()
+   ::nCharWidth := QFontMetrics( __getFont( ::sl_font ) ):averageCharWidth()
 
    ::setParams()
    ::setData( ::original )
@@ -336,7 +352,7 @@ METHOD HbQtGet:create( oControl )
       ::oEdit:home( .F. )
       ::positionCursor()
    ENDIF
-
+   HB_SYMBOL_UNUSED( xTmp )
    RETURN Self
 
 
@@ -1167,9 +1183,11 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       Eval( SetKey( nHbKey ) )
 #if 0
       oKeyEvent:accept()
-      ::manageCursor()
       RETURN .T.
 #endif
+   ENDIF
+   IF nHbKey == K_INS
+      ::manageCursor()
    ENDIF
 
    ::nKeyPressed := nHbKey
@@ -2015,4 +2033,10 @@ METHOD HbQtGet:positionCursor()
    ENDIF
 
    RETURN NIL
+
+
+STATIC FUNCTION __getFont( oFont )
+   RETURN iif( HB_ISOBJECT( oFont ), oFont, QFont( "Courier New", 10 ) )
+
+
 

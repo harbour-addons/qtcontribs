@@ -289,11 +289,17 @@ STATIC FUNCTION navigate( nKey, xData, oBrowse, lExecute )
             GetActive():varPut( Eval( oBrowse:getColumn( 2 ):block ) )
             GetActive():display()
          ENDIF
-         oBrowse:terminate()          /* Here we need to inform which record is selected and appln acts accordingly */
+         oBrowse:terminate()
+      ELSE
+         oBrowse:exit()
       ENDIF
 
    CASE nKey == K_ESC
-      oBrowse:terminate()             /* Here appln should act OTHERWISE */
+      IF lExecute
+         oBrowse:terminate()
+      ELSE
+         oBrowse:exit()             /* Here appln should act OTHERWISE */
+      ENDIF
 
    CASE nKey == K_CTRL_F
       oBrowse:search()

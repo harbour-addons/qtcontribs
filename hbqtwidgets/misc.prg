@@ -115,6 +115,7 @@ FUNCTION HbQtSet( nSet, xValue )
       EXIT
    CASE _QSET_GETSFONT
       IF __objGetClsName( xValue ) == "QFONT"
+         t_sets[ _QSET_GETSFONT    ] := NIL
          t_sets[ _QSET_GETSFONT    ] := xValue
       ENDIF
       EXIT

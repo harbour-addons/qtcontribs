@@ -90,7 +90,6 @@ typedef struct
    HBQDestroyer *       pDestroyer;
    HBQSlots *           pReceiverSlots;
    HBQEvents *          pReceiverEvents;
-   PHB_ITEM             pConnecteds;
 } HB_BIND_THREADDATA, * PHB_BIND_THREADDATA;
 
 /* locks for MT mode, now just dummy definitions which checks
@@ -104,7 +103,7 @@ static HB_CRITICAL_NEW( s_qtMtx );
 #define HBQT_BIND_UNLOCK   hb_threadLeaveCriticalSection( &s_qtMtx ); } while( 0 );
 
 static PHB_DYNS s_dynsym_NEW       = NULL;
-static PHB_DYNS s_dynsym___CHILDS  = NULL;
+static PHB_DYNS s_dynsym___HEVENTS = NULL;
 static PHB_DYNS s_dynsym___SLOTS   = NULL;
 static PHB_DYNS s_dynsym_SETSLOTS  = NULL;
 static PHB_DYNS s_dynsym___EVENTS  = NULL;
@@ -124,8 +123,6 @@ static QList<PHB_ITEM> hbqt_bindGetObjectListByThread( int iThreadId );
 static PHBQT_BIND      hbqt_bindGetBindByQtObject( void * qtObject );
 static PHBQT_BIND      hbqt_bindGetBindByHbObject( void * hbObject );
 static void            hbqt_bindDestroyQtObjectA( void * qtObject, QObject * qObject );
-static void            hbqt_bindAddConnected( PHB_ITEM pSenderObject );
-static void            hbqt_bindDelConnected( PHB_ITEM pSenderObject );
 
 static int s_bind_threadId = 0;
 
@@ -149,28 +146,6 @@ static void hbqt_bindThreadInit( void * cargo )
    pBindThreadData->pReceiverSlots = new HBQSlots();
    pBindThreadData->pReceiverEvents = new HBQEvents();
    HB_TRACE( HB_TR_DEBUG, ( "...hbqt_bindThreadInit( %i )...ENDS",pBindThreadData->iThreadId ) );
-
-   pBindThreadData->pConnecteds = hb_itemNew( NULL );
-
-   PHB_SYMB pClassFunc = hb_dynsymGetSymbol( "HBQTCONNECTEDS" );
-   if( pClassFunc != NULL )
-   {
-      hb_stackPush();
-
-      hb_vmPushSymbol( pClassFunc );
-      hb_vmPushNil();
-      hb_vmDo( 0 );
-
-      if( HB_IS_OBJECT( hb_stackReturnItem() ) )
-      {
-         pBindThreadData->pConnecteds = hb_itemNew( hb_stackReturnItem() );
-
-         hb_vmPushDynSym( hb_dynsymGetCase( "INIT" ) );
-         hb_vmPush( pBindThreadData->pConnecteds );
-         hb_vmSend( 0 );
-      }
-      hb_stackPop();
-   }
 }
 
 static void hbqt_bindThreadRelease( void * cargo )
@@ -292,10 +267,6 @@ static void hbqt_bindThreadRelease( void * cargo )
    delete pBindThreadData->pDestroyer;
    delete pBindThreadData->pReceiverSlots;
    delete pBindThreadData->pReceiverEvents;
-   if( pBindThreadData->pConnecteds )
-   {
-      hb_itemRelease( pBindThreadData->pConnecteds );
-   }
 
    HB_TRACE( HB_TR_DEBUG, ( "          " ) );
    HB_TRACE( HB_TR_DEBUG, ( "...hbqt_bindThreadRelease( %i )...ENDS", iThreadId ) );
@@ -312,7 +283,7 @@ static void hbqt_bind_init( void * cargo )
    hbqt_bindGetData() = NULL;
 
    s_dynsym_NEW       = hb_dynsymGetCase( "NEW" );
-   s_dynsym___CHILDS  = hb_dynsymGetCase( "__CHILDS" );
+   s_dynsym___HEVENTS = hb_dynsymGetCase( "__HEVENTS" );
    s_dynsym___SLOTS   = hb_dynsymGetCase( "__SLOTS" );
    s_dynsym_SETSLOTS  = hb_dynsymGetCase( "SETSLOTS" );
    s_dynsym___EVENTS  = hb_dynsymGetCase( "__EVENTS" );
@@ -452,6 +423,29 @@ static void hbqt_bindDestroyChildren( void * hbObject, bool fDeleteSelf )
          }
       }
    }
+}
+
+bool hbqt_bindIsObjectConnected( PHB_ITEM pSenderObject )  /* Implementation causes many-many problems then solutions */
+{
+   bool bConnected = false;
+
+   if( hb_vmRequestReenter() )
+   {
+      hb_vmPushDynSym( s_dynsym___HEVENTS );
+      hb_vmPush( pSenderObject );
+      hb_vmSend( 0 );
+      if( hb_vmRequestQuery() == 0 )
+      {
+         PHB_ITEM pArray = hb_stackReturnItem();
+
+         if( pArray && HB_IS_HASH( pArray ) && hb_hashLen( pArray ) > 0 )
+         {
+            bConnected = true;
+         }
+      }
+      hb_vmRequestRestore();
+   }
+   return bConnected;
 }
 
 PHB_ITEM hbqt_bindGetHbObject( PHB_ITEM pItem, void * qtObject, const char * szClassName, PHBQT_DEL_FUNC pDelFunc, int iFlags )
@@ -599,7 +593,7 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
             {
                if( isQObject )
                {
-                  HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_DESTROYING_qt_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
+                  HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_DESTROYING_qt_q_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
                   qObject->disconnect();
                   if( bind->fEventFilterInstalled )
                   {
@@ -610,7 +604,6 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
                {
                   HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_DESTROYING_qt_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
                }
-               hbqt_bindDelConnected( pObject );
                hbqt_bindRemoveBind( bind );
                pDelFunc( qtObject, iFlags );
             }
@@ -618,8 +611,8 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
             {
                if( isQObject )
                {
+                  HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_NOT-DESTROYING_qt_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
                   hbqt_bindRemoveBind( bind );  /*  MUST HAVE : hb_arrayFromId() returns NIL onto retained object as such  */
-                  HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_NOT-DESTROYING_hb_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
                }
             }
          }
@@ -647,8 +640,6 @@ void hbqt_bindDestroyQtObject( void * qtObject, QObject * qObject )
       if( bind != NULL )
       {
          HB_TRACE( HB_TR_DEBUG, ( "............QT_DESTROYS( %i, %i, %p, %s )..............", bind->iThreadId, bind->iFlags, bind->qtObject, bind->szClassName ) );
-         hbqt_bindDelConnected( hb_arrayFromId( NULL, bind->hbObject ) );
-
          if( bind->fEventFilterInstalled )
          {
             qObject->removeEventFilter( hbqt_bindGetThreadData()->pReceiverEvents );
@@ -669,8 +660,6 @@ static void hbqt_bindDestroyQtObjectA( void * qtObject, QObject * qObject )
       PHBQT_BIND bind = hbqt_bindGetBindByQtObject( qtObject );
       if( bind != NULL )
       {
-         hbqt_bindDelConnected( hb_arrayFromId( NULL, bind->hbObject ) );
-
          HB_TRACE( HB_TR_DEBUG, ( "............QT_DESTROYS( %i, %i, %p, %s )..............", bind->iThreadId, bind->iFlags, bind->qtObject, bind->szClassName ) );
          if( bind->fEventFilterInstalled )
          {
@@ -876,8 +865,6 @@ void hbqt_bindAddSlot( PHB_ITEM pSenderObject, int iSignalid, PHB_ITEM pCode )
             hb_arrayAdd( pArray, pCode );
          else
             hb_errRT_BASE( EG_BOUND, 4005, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-
-         hbqt_bindAddConnected( pSenderObject );
       }
       hb_vmRequestRestore();
    }
@@ -970,57 +957,6 @@ PHB_ITEM hbqt_bindGetSlots( PHB_ITEM pSenderObject, int iSignalid )
    return pSlots;
 }
 
-static void hbqt_bindAddConnected( PHB_ITEM pSenderObject )
-{
-   if( pSenderObject && hb_vmRequestReenter() )
-   {
-      hb_vmPushDynSym( hb_dynsymGetCase( "__CONNECTEDOBJECTS" ) );
-      hb_vmPush( hbqt_bindGetThreadData()->pConnecteds );
-      hb_vmSend( 0 );
-      if( hb_vmRequestQuery() == 0 )
-      {
-         PHB_ITEM pArray = hb_stackReturnItem();
-         if( pArray && HB_IS_ARRAY( pArray ) )
-         {
-            HB_SIZE iIndex = hb_arrayScan( pArray, pSenderObject, NULL, NULL, HB_TRUE );
-            if( ! iIndex )
-            {
-               hb_arrayAdd( pArray, pSenderObject );
-            }
-         }
-         else
-         {
-            hb_errRT_BASE( EG_BOUND, 4005, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-         }
-      }
-      hb_vmRequestRestore();
-   }
-}
-
-static void hbqt_bindDelConnected( PHB_ITEM pSenderObject )
-{
-   if( pSenderObject && hb_vmRequestReenter() )
-   {
-      hb_vmPushDynSym( hb_dynsymGetCase( "__CONNECTEDOBJECTS" ) );
-      hb_vmPush( hbqt_bindGetThreadData()->pConnecteds );
-      hb_vmSend( 0 );
-      if( hb_vmRequestQuery() == 0 )
-      {
-         PHB_ITEM pArray = hb_stackReturnItem();
-         if( pArray && HB_IS_ARRAY( pArray ) )
-         {
-            HB_SIZE iIndex = hb_arrayScan( pArray, pSenderObject, NULL, NULL, HB_TRUE );
-            if( iIndex )
-            {
-               hb_arrayDel( pArray, iIndex );
-               hb_arraySize( pArray, hb_arrayLen( pArray ) - 1 );
-            }
-         }
-      }
-      hb_vmRequestRestore();
-   }
-}
-
 void hbqt_bindAddEvent( PHB_ITEM pSenderObject, int iEventId, PHB_ITEM pCode )
 {
    if( HB_IS_BLOCK( pCode ) && hb_vmRequestReenter() )
@@ -1040,8 +976,6 @@ void hbqt_bindAddEvent( PHB_ITEM pSenderObject, int iEventId, PHB_ITEM pCode )
             hb_arrayAdd( pArray, pCode );
          else
             hb_errRT_BASE( EG_BOUND, 4005, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-
-         hbqt_bindAddConnected( pSenderObject );
       }
       hb_vmRequestRestore();
    }
@@ -1134,70 +1068,6 @@ PHB_ITEM hbqt_bindGetEvents( PHB_ITEM pSenderObject, int iEventId )
    return pEvents;
 }
 
-void hbqt_bindAddChild( PHB_ITEM pObject, PHB_ITEM pChild )
-{
-#ifdef HBQT_BIND_DEBUG
-   QObject * qtParent = hbqt_bindGetQtObject( pObject );
-   QObject * qtChild = hbqt_bindGetQtObject( pChild );
-
-   if( qtParent == NULL || qtChild == NULL ||
-       HBQT_PARENT( qtChild ) != qtParent )
-   {
-      hb_errRT_BASE( EG_BOUND, 4001, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-      return;
-   }
-#endif
-
-   if( hb_vmRequestReenter() )
-   {
-      PHB_ITEM pArray;
-
-      hb_vmPushDynSym( s_dynsym___CHILDS );
-      hb_vmPush( pObject );
-      hb_vmSend( 0 );
-      pArray = hb_stackReturnItem();
-      if( hb_vmRequestQuery() == 0 )
-      {
-         if( HB_IS_ARRAY( pArray ) )
-            hb_arrayAdd( pArray, pChild );
-         else
-            hb_errRT_BASE( EG_BOUND, 4002, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-      }
-      hb_vmRequestRestore();
-   }
-}
-
-void hbqt_bindDelChild( PHB_ITEM pObject, PHB_ITEM pChild )
-{
-#ifdef HBQT_BIND_DEBUG
-   QObject * qtParent = hbqt_bindGetQtObject( pObject );
-   QObject * qtChild = hbqt_bindGetQtObject( pChild );
-
-   if( qtParent == NULL || qtChild == NULL ||
-       HBQT_PARENT( qtChild ) != NULL )
-   {
-      hb_errRT_BASE( EG_BOUND, 4003, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-      return;
-   }
-#endif
-
-   if( hb_vmRequestReenter() )
-   {
-      hb_vmPushDynSym( s_dynsym___CHILDS );
-      hb_vmPush( pObject );
-      hb_vmSend( 0 );
-      if( hb_vmRequestQuery() == 0 )
-      {
-         PHB_ITEM pArray = hb_stackReturnItem();
-         if( hb_arrayDel( pArray, hb_arrayScan( pArray, pChild,
-                                                NULL, NULL, HB_TRUE ) ) )
-            hb_arraySize( pArray, hb_arrayLen( pArray ) - 1 );
-         else
-            hb_errRT_BASE( EG_BOUND, 4004, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
-      }
-      hb_vmRequestRestore();
-   }
-}
 
 /* this function has to be executed from HBQT object destructor
  * with Self parameter:
@@ -1246,6 +1116,28 @@ int __hbqt_bindItemsInGlobalList( void )
    }
    HBQT_BIND_UNLOCK
    return i;
+}
+
+int __hbqt_dump_bindItemsInGlobalList( void )
+{
+   int i = 0;
+   PHBQT_BIND bind;
+
+   HBQT_BIND_LOCK
+   bind = hbqt_bindGetData();
+   while( bind )
+   {
+      i++;
+      HB_TRACE( HB_TR_ALWAYS, ( "_____Items # %i______( %p, %s )", i, bind->qtObject, bind->szClassName ) );
+      bind = bind->next;
+   }
+   HBQT_BIND_UNLOCK
+   return i;
+}
+
+HB_FUNC( __HBQT_DUMP_ITEMSINGLOBALLIST )
+{
+   hb_retni( __hbqt_dump_bindItemsInGlobalList() );
 }
 
 HB_FUNC( __HBQT_ITEMSINGLOBALLIST )

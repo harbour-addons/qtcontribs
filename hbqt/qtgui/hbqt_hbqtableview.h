@@ -79,11 +79,13 @@ public:
 
 public slots:
    void hbSetBlock( PHB_ITEM b );
+   void hbClearBlock( void );
 
    void mousePressEvent( QMouseEvent * event );
    void mouseDoubleClickEvent( QMouseEvent * event );
    void wheelEvent( QWheelEvent * event );
    void scrollContentsBy( int x, int y );
+   void setModel( QAbstractItemModel * model );
 
    void scrollTo( const QModelIndex & index, QAbstractItemView::ScrollHint hint = QAbstractItemView::EnsureVisible );
    QModelIndex navigate( int cursorAction );
