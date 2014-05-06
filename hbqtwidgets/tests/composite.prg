@@ -35,7 +35,7 @@ PROCEDURE Main()
    oWnd:connect( QEvent_Close   , {|| lExit := .T. } )
    oWnd:Show()
 
-   USE a_uknj NEW
+   USE testwgt.dbf NEW
 
    oELoop := QEventLoop( oWnd )
    DO WHILE .t.
