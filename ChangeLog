@@ -16,6 +16,28 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-05-05 18:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r304)
+  * hbqtwidgets/getsys.prg
+    + Enabled: return to calling process if a key is set to evaluate 
+       a block via SetKey(). In many cases it throughs run-time error
+       if allowed to proceed to apply key to the OGET.
+
+  * hbqtwidgets/getlist.prg
+    + Added: another argument to HbQtReadGets( .., <[lNoResize]> )
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: clause NORESIZE with QREAD ...
+       This facilitate to place GETS in a Qt Creator created ui's 
+       container control, like, QFrame, QGroupBox, etc. 
+
+  + hbqtwidgets/tests/composite.hbp
+  + hbqtwidgets/tests/composite.prg
+  + hbqtwidgets/tests/composite.ui
+    + Added: another demo code to demonstrate how many components of 
+       HbQtWidgets can be combined with Qt Creator created UI and 
+       embedded into its controls. It also demonstrate what methods 
+       can be adopted to release memory properly.
+
 2014-05-04 23:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r303)
   * hbdbu/dbu.prg
     + Added: oBrowse:toolbarLeft := .T.

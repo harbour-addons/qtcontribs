@@ -114,6 +114,7 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
       IF ( n := AScan( t_GetList, {|e_| e_[ 1 ] == oWnd } ) ) > 0
          oGetList := t_GetList[ n, 2 ]
       ENDIF
+      HB_TRACE( HB_TR_DEBUG, n, oWnd:className() )
       IF HB_ISOBJECT( GetList )
          IF n > 0
             t_GetList[ n, 2 ] := GetList
@@ -136,7 +137,7 @@ FUNCTION __hbqtBindGetList( oWnd, GetList )
    RETURN oGetList
 
 
-FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet, lNoFocusFrame, aAttrbs )
+FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, xIcon, lNoModal, bProperties, bOnLastGet, lNoFocusFrame, aAttrbs, lNoResize )
    LOCAL oFLayout, oEdit, aEdit, oGet, cClsName, oFontM, lFLayout, cCaption, oGetList, oWnd
    LOCAL nLHeight, nAvgWid, cText, nObjHeight, oLabel, aPic, nAttrb, xAttrb, aInfo
    LOCAL nMinX := 50000, nMaxX := 0, nMinY := 50000, nMaxY := 0, nMLabW := 0, nMObjW := 0, nCumObjH := 0
@@ -149,6 +150,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
    hb_default( @nLineSpacing, HbQtSet( _QSET_LINESPACING ) )
    hb_default( @cTitle      , "Please Fill-up Info!" )
    hb_default( @lNoModal    , .F. )
+   hb_default( @lNoResize   , .F. )
 
    IF .T.                                         /* Compute row height and formulae to have text width */
       oEdit      := QLineEdit( oWnd )
@@ -231,6 +233,9 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             lFit := .F.
          ENDIF
       NEXT
+   ENDIF
+   IF lNoResize
+      lFit := .F.
    ENDIF
 
    /* This is independent of @ ... SAY ... GET combined */

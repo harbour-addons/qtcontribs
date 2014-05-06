@@ -280,8 +280,9 @@
                   [ LASTGETBLOCK <bLast>   ] ;
                   [ <nofous:NOFOCUSFRAME>  ] ;
                   [ ATTRIBUTES <aAttrbs>   ] ;
+                  [ <noresize:NORESIZE>    ] ;
                         => ;
-         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}>, <.nofous.>, <aAttrbs> )
+         HbQtReadGets( @GetList, SayList, <GetParent>, <oFont>, <nSpc>, <title>, <icon>, <.nomodal.>, <{prop}>, <{bLast}>, <.nofous.>, <aAttrbs>, <.noresize.> )
 
 
    /* Dashboard Objects - Attributes Array Elements per Object Type */

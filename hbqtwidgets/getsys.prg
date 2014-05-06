@@ -1181,7 +1181,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    IF HB_ISBLOCK( SetKey( nHbKey ) )
       Eval( SetKey( nHbKey ) )
-#if 0
+#if 1
       oKeyEvent:accept()
       RETURN .T.
 #endif
