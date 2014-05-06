@@ -16,6 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-05-05 22:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r306)
+  * hbdbu/dbu.prg
+  * hbide/hbide.qrc
+  * hbide/main.prg
+  + hbide/resources/hbide-2014.png
+  * hbide/resources/hbidesplashwatermark.png
+  * hbqtwidgets/hbqtwidgets.qrc
+  + hbqtwidgets/resources/hbdbu-2014.png
+    % Changed: splash images containing copyright info upto 2014.
+
+  * hbqtwidgets/tests/composite.prg
+  * hbqtwidgets/tests/testwgt.dbf
+    % Replaced: table contents with tests/test.dbf.
+
 2014-05-05 19:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r305)
   + hbqtwidgets/tests/testwgt.dbf
   * hbqtwidgets/tests/composite.prg

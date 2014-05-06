@@ -129,8 +129,9 @@ STATIC FUNCTION CustInfo()
 
 STATIC FUNCTION BuildBrowse( oDlg )
    LOCAL oBrowse, i
-   LOCAL field_list := { "DAT_KNJ", "NALOG", "TEMELJD", "DUG", "TEMELJP", "POT", "VRSTA", "NAPOMENA", "BR_DOK" }
-   LOCAL asm        := { "Dat.knj.", "Br.dnevnika", "Tem.ulaz", "Ulaz", "Tem.izlaz", "Izlaz","Vrsta [", "Napomena","Ra~un" }
+   LOCAL aFields := { "LAST", "FIRST", "SALARY", "HIREDATE", "AGE", "CITY", "STATE", "ZIP", "NOTES" }
+   LOCAL aTitles := { "Last Name", "First Name", "Salary", "Hire Date", "Age", "City", "State", "Zip", "Notes" }
+
 
    oBrowse := HbQtBrowseNew( 0, 0, 0, 0, oDlg:frameBrowse, QFont( "Courier new", 10 ) )
 
@@ -149,8 +150,8 @@ STATIC FUNCTION BuildBrowse( oDlg )
       oBrowse:phyPosBlock      := {| | OrdKeyNo()       }
    ENDIF
 
-   FOR i := 1 to len( field_list )
-      oBrowse:addColumn( HbQtColumnNew( asm[ i ], FieldWBlock( field_list[ i ], select() ) ) )
+   FOR i := 1 to len( aFields )
+      oBrowse:addColumn( HbQtColumnNew( aTitles[ i ], FieldWBlock( aFields[ i ], select() ) ) )
    NEXT
 
    oBrowse:horizontalScrollbar := .T.
