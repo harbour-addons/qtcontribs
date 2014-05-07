@@ -186,10 +186,26 @@ METHOD HbQtObjectHandler:connect( cnEvent, bBlock )
 
 
 METHOD HbQtObjectHandler:disconnect( cnEvent )
-   LOCAL nResult := 0
+   LOCAL hEvent, xKey, nResult := 0
 
    IF ! __objDerivedFrom( Self, "QOBJECT" )
       RETURN .f.
+   ENDIF
+
+   IF PCount() == 0                               // Intent is to disconnect all connections.
+      IF ! Empty( ::__hEvents )
+         FOR EACH hEvent IN ::__hEvents
+            xKey := hEvent:__enumKey()
+            IF HB_ISNUMERIC( xKey )
+               hbqt_disconnectEvent( Self, xKey )
+            ELSE
+               hbqt_disconnect( Self, xKey )
+            ENDIF
+            ::__hEvents[ xKey ] := NIL
+         NEXT
+         ::__hEvents := { => }
+      ENDIF
+      RETURN .T.
    ENDIF
 
    IF ! hb_hHasKey( ::__hEvents, cnEvent )

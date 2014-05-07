@@ -20,12 +20,13 @@ REQUEST DBFCDX
 
 
 FUNCTION MAIN()
-   LOCAL oMain, oBrw
+   LOCAL oMain, oBrw, oELoop, lExit
 
    hbqt_errorSys()
 
    oMain := QMainWindow()
    oMain:setWindowTitle( "Database TBrowse Implemented !" )
+   oMain:connect( QEvent_Close, {|| lExit := .T. } )
 
    oBrw := BrowseMe( oMain )
    IF ! Empty( oBrw )
@@ -35,7 +36,21 @@ FUNCTION MAIN()
    oMain:resize( 670, 200 )
    oMain:show()
 
-   QApplication():exec()
+
+   lExit := .F.
+   oELoop := QEventLoop( oMain )
+   oMain:setWindowTitle( hb_ntos( __hbqt_dump_ItemsInGlobalList() ) ) 
+   DO WHILE .t.
+      oELoop:processEvents()
+      IF lExit
+         EXIT
+      ENDIF
+      oMain:setWindowTitle( hb_ntos( __hbqt_ItemsInGlobalList() ) ) 
+   ENDDO
+   HB_TRACE( HB_TR_ALWAYS, "=====================================" )
+   oMain:setWindowTitle( hb_ntos( __hbqt_dump_ItemsInGlobalList() ) ) 
+   oELoop:exit( 0 )
+
 
    dbCloseAll()
 
@@ -161,7 +176,7 @@ STATIC FUNCTION FBMWL( oBrowse, field_list )
       CASE field_list[ i ] == "N003" ; oColumn:picture := "@K"
       CASE field_list[ i ] == "N004" ; oColumn:picture := "@ZK"
       CASE field_list[ i ] == "N005" ; oColumn:picture := "@K 9,999,999.99"
-      CASE field_list[ i ] == "C001" ; oColumn:picture := "@R 99-99-999-99999/9"
+      CASE field_list[ i ] == "C001" ; oColumn:picture := "@K!" //"@R 99-99-999-99999/9"
       ENDCASE
    NEXT
 

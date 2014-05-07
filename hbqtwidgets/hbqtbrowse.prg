@@ -3001,11 +3001,14 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
                                     ENDIF
                                  ENDIF
                                  oDlg:resize( oDlg:width() + oRect:width() - oSz:width(), oDlg:height() )
+                                 oRect := NIL
+                                 oSz := NIL
                                  RETURN .F.
                              } )
    ENDWITH
 
    nRes := oDlg:exec()
+   HbQtClearGets( oDlg )
    oDlg:setParent( QWidget() )
 
    ::refreshCurrent()

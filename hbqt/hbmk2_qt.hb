@@ -799,7 +799,8 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
    NEXT
    AAdd( aLinesPRG, "" )
    AAdd( aLinesPRG, "   METHOD init( oParent )" )
-   AAdd( aLinesPRG, "   METHOD destroy()                               INLINE ::oWidget:setParent( QWidget() )" )
+// AAdd( aLinesPRG, "   METHOD destroy()                               INLINE ::oWidget:setParent( QWidget() )" )
+   AAdd( aLinesPRG, "   METHOD destroy()" )
    AAdd( aLinesPRG, "" )
    AAdd( aLinesPRG, "   ERROR HANDLER __OnError( ... )" )
    AAdd( aLinesPRG, "" )
@@ -930,6 +931,20 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
    AAdd( aLinesPRG, "   ENDIF" )
    AAdd( aLinesPRG, "" )
    AAdd( aLinesPRG, "   RETURN NIL" )
+   AAdd( aLinesPRG, "" )
+   AAdd( aLinesPRG, "" )
+   AAdd( aLinesPRG, "METHOD " + cClass + ":destroy()" )
+   FOR EACH item IN aWidgets
+      IF item:__enumIndex() > 1
+         AAdd( aLinesPRG, "   ::" + PadR( item[ 2 ], 34 ) + " := NIL" )
+      ENDIF
+   NEXT
+   AAdd( aLinesPRG, "" )
+   AAdd( aLinesPRG, "   ::oWidget:setParent( QWidget() )" )
+   AAdd( aLinesPRG, "   ::oWidget := NIL" )
+   AAdd( aLinesPRG, "" )
+   AAdd( aLinesPRG, "   RETURN NIL" )
+   AAdd( aLinesPRG, "" )
    AAdd( aLinesPRG, "" )
 
    RETURN NIL

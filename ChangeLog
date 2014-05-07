@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-05-07 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r307)
+  * hbqt/hbmk2_qt.hb
+    % Changed: how a .ui object's :destroy() method was implemented.
+       Now all objects in a .ui are passed throuh GC which cleans residual 
+       objects which are not derived from QObject were hanging there.
+
+  * hbqt/qtcore/hbqt_misc.prg
+    % Restuctured: :disconnect( [<cnEventSlot>] ) to disconnect all connected 
+       events or slots if called without any argument.
+        <cnEventSlot> can have three possible values: NUMERIC, CHARACTER, NONE.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed to release objects referenced in a codeblock at a cell edit.
+
+  * hbqtwidgets/tests/browgets.prg
+    + Added: QEventLoop() to monitor object counts.
+
 2014-05-05 22:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r306)
   * hbdbu/dbu.prg
   * hbide/hbide.qrc
