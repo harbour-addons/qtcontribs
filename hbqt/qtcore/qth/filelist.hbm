@@ -9,9 +9,11 @@
 HBQString.qth
 
 # QAbstractEventDispatcher.qth
+QAbstractAnimation.qth
 QAbstractItemModel.qth
 QAbstractListModel.qth
 QAbstractTableModel.qth
+QAnimationGroup.qth
 QBitArray.qth
 QBuffer.qth
 QByteArray.qth
@@ -23,6 +25,7 @@ QDate.qth
 QDateTime.qth
 QDir.qth
 QDirIterator.qth
+QEasingCurve.qth
 QEvent.qth
 QEventLoop.qth
 QFile.qth
@@ -38,6 +41,8 @@ QLineF.qth
 QList.qth
 QLibraryInfo.qth
 QLocale.qth
+QMargins.qth
+QMarginsF.qth
 QMetaClassInfo.qth
 QMetaEnum.qth
 QMetaMethod.qth
@@ -50,6 +55,7 @@ QObject.qth
 QPoint.qth
 QPointF.qth
 QProcess.qth
+QPropertyAnimation.qth
 QRect.qth
 QRectF.qth
 QRegExp.qth
@@ -74,13 +80,9 @@ QTranslator.qth
 QUrl.qth
 QUuid.qth
 QVariant.qth
-
-QMargins.qth
-QPropertyAnimation.qth
 QVariantAnimation.qth
-QAbstractAnimation.qth
-QEasingCurve.qth
-QAnimationGroup.qth
+
+
 
 
 

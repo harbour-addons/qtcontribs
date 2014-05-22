@@ -164,7 +164,9 @@ QMessageBox.qth
 QMouseEvent.qth
 QMoveEvent.qth
 QMovie.qth
+QPageLayout.qth
 QPageSetupDialog.qth
+QPageSize.qth
 QPaintDevice.qth
 QPaintEngine.qth
 QPainter.qth

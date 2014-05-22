@@ -221,7 +221,7 @@ STATIC PROCEDURE hbqt_messageBox( cMsg, cInfo, cTitle, nIcon )
 
    ELSE
       #include "hbtrace.ch"
-      HB_TRACE( HB_TR_ALWAYS, cMsg )
+      HB_TRACE( HB_TR_ALWAYS, hb_ValToExp( cMsg ) )
    ENDIF
 
    RETURN

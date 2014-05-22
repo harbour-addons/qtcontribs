@@ -1,0 +1,117 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = no
+Inherit     =
+Type        = PlainObject
+New         =
+Version     = 0x050300
+</CLASS>
+
+<CODE>
+#include <QtGui/QPageSize>
+#include <QtCore/QSize>
+#include <QtCore/QSizeF>
+#include <QtCore/QRect>
+
+
+/*
+ * QPageSize()
+ * QPageSize(PageSizeId pageSize)
+ * QPageSize(const QSize & pointSize, const QString & name = QString(), SizeMatchPolicy matchPolicy = FuzzyMatch)
+ * QPageSize(const QSizeF & size, Unit units, const QString & name = QString(), SizeMatchPolicy matchPolicy = FuzzyMatch)
+ * QPageSize(const QPageSize & other)
+ * virtual ~QPageSize()
+ */
+HB_FUNC( QT_QPAGESIZE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPageSize" ) )
+   {
+      __HB_RETPTRGC__( new QPageSize( *hbqt_par_QPageSize( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QPageSize( ( QPageSize::PageSizeId ) hb_parni( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSize" ) )
+   {
+      __HB_RETPTRGC__( new QPageSize( *hbqt_par_QSize( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QSizeF" ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QPageSize( *hbqt_par_QSizeF( 1 ), ( QPageSize::Unit ) hb_parni( 2 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QSize" ) && HB_ISCHAR( 2 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QPageSize( *hbqt_par_QSize( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 3 && hbqt_par_isDerivedFrom( 1, "QSizeF" ) && HB_ISNUM( 2 ) && HB_ISCHAR( 3 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QPageSize( *hbqt_par_QSizeF( 1 ), ( QPageSize::Unit ) hb_parni( 2 ), hb_parstr_utf8( 3, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPageSize() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum PageSizeId { A0, A1, A2, A3, ..., LastPageSize }
+enum SizeMatchPolicy { FuzzyMatch, FuzzyOrientationMatch, ExactMatch }
+enum Unit { Millimeter, Point, Inch, Pica, Didot, Cicero }
+</ENUMS>
+
+<PROTOS>
+QSizeF   definitionSize() const
+Unit     definitionUnits() const
+QPageSize::PageSizeId id() const
+bool     isEquivalentTo(const QPageSize & other) const
+bool     isValid() const
+QString  key() const
+QString  name() const
+QRectF   rect(Unit units) const
+QRect    rectPixels(int resolution) const
+QRect    rectPoints() const
+QSizeF   size(Unit units) const
+QSize    sizePixels(int resolution) const
+QSize    sizePoints() const
+void     swap(QPageSize & other)
+int      windowsId() const
+
+QSizeF   definitionSize(QPageSize::PageSizeId pageSizeId)
+Unit     definitionUnits(QPageSize::PageSizeId pageSizeId)
+QPageSize::PageSizeId id(const QSize & pointSize, SizeMatchPolicy matchPolicy = FuzzyMatch)
+QPageSize::PageSizeId id(const QSizeF & size, QPageSize::Unit units, QPageSize::SizeMatchPolicy matchPolicy = FuzzyMatch)
+QPageSize::PageSizeId id(int windowsId)
+QString  key(QPageSize::PageSizeId pageSizeId)
+QString  name(QPageSize::PageSizeId pageSizeId)
+QSizeF   size(QPageSize::PageSizeId pageSizeId, QPageSize::Unit units)
+QSize    sizePixels(QPageSize::PageSizeId pageSizeId, int resolution)
+QSize    sizePoints(QPageSize::PageSizeId pageSizeId)
+int      windowsId(QPageSize::PageSizeId pageSizeId)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>

@@ -1835,15 +1835,6 @@ METHOD HbQtSource:build()
       ENDIF
       AAdd( aLine, "" )
    ENDIF
-#if 0                           /* Why this construct without any material ?? */
-   IF ::cQtVer > "0x040500"
-      AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer )
-   ENDIF
-
-   IF ::cQtVer > "0x040500"
-      AAdd( aLine, "#endif" )
-   ENDIF
-#endif
    AAdd( aLine, "" )
 
    AAdd( aLine, "static PHB_ITEM s_oClass = NULL;" )
@@ -4026,6 +4017,7 @@ STATIC FUNCTION IsQt5PrintSupport( cWidget )
          "QPrintPreviewDialog"                  => NIL , ;
          "QPrinter"                             => NIL , ;
          "QPrintEngine"                         => NIL , ;
+         "QPrinterInfo"                         => NIL , ;
          "QPrinterInfo"                         => NIL , ;
          "QPrintPreviewWidget"                  => NIL   }
 

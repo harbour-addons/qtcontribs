@@ -13,9 +13,9 @@
 
 <CLASS>
 QObject     = no
-Inherit     = 
-Type        = 
-New         = 
+Inherit     =
+Type        =
+New         =
 </CLASS>
 
 <CODE>
@@ -49,15 +49,26 @@ HB_FUNC( QT_QPRINTERINFO )
 </ENUMS>
 
 <PROTOS>
-bool isDefault () const
-bool isNull () const
-QString printerName () const
+QPageSize      defaultPageSize() const                   [*V=0x050300*]
+QString        description() const                       [*V=0x050000*]
+bool           isDefault() const
+bool           isNull() const
+bool           isRemote() const                          [*V=0x050300*]
+QString        location() const                          [*V=0x050000*]
+QString        makeAndModel() const                      [*V=0x050000*]
+QPageSize      maximumPhysicalPageSize() const           [*V=0x050300*]
+QPageSize      minimumPhysicalPageSize() const           [*V=0x050300*]
+QString        printerName() const
+QPrinter::PrinterState   state() const                   [*V=0x050300*]
+QList<QPageSize>   supportedPageSizes() const            [*V=0x050300*]
+QList<int>     supportedResolutions() const              [*V=0x050300*]
+bool           supportsCustomPageSizes() const           [*V=0x050300*]
 
-QList<QPrinter::PaperSize> supportedPaperSizes () const
-
-QList<QPrinterInfo> availablePrinters ()
-
-QPrinterInfo defaultPrinter ()
+QStringList    availablePrinterNames()                   [*V=0x050300*]
+QList<QPrinterInfo>   availablePrinters()
+QPrinterInfo   defaultPrinter()
+QString        defaultPrinterName()                      [*V=0x050300*]
+QPrinterInfo   printerInfo(const QString & printerName)  [*V=0x050000*]
 </PROTOS>
 
 <SLOTS>

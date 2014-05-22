@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-05-22 01:12 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r308)
+  * hbqt/hbmk2_qt.hb
+    % Minor cleanup.
+  * hbqt/qtcore/qth/filelist.hbm
+  + hbqt/qtcore/qth/QMarginsF.qth
+    + Added: Qt 5.3 introduced class.
+
+  * hbqt/qtgui/hbqt_errorsys.prg
+    ! Fixed: via convertion of cMsg => hb_ValToExp( cMsg ).
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: contants for QPageSize, QPageLayout classes.
+
+  * hbqt/qtgui/qth/filelist.hbm
+  + hbqt/qtgui/qth/QPageLayout.qth
+  + hbqt/qtgui/qth/QPageSize.qth
+    + Added: Qt 5.3 introduced classes extremely useful for printing.
+
+  * hbqt/qtgui/qth/QPrinterInfo.qth
+    + Added: methods introduced in Qt 5.3.
+
 2014-05-07 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r307)
   * hbqt/hbmk2_qt.hb
     % Changed: how a .ui object's :destroy() method was implemented.
