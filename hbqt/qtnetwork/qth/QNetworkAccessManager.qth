@@ -23,7 +23,7 @@ Version     =
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkConfiguration>
 #include <QtNetwork/QNetworkProxy>
-
+#include <QtNetwork/QSslConfiguration>
 
 /*
  * QNetworkAccessManager(QObject * parent = 0)
