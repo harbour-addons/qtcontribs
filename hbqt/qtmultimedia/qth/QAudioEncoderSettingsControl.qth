@@ -1,0 +1,49 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioEncoderSettingsControl>
+
+
+/*
+ * virtual   ~QAudioEncoderSettingsControl()
+ */
+HB_FUNC( QT_QAUDIOENCODERSETTINGSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QAUDIOENCODERSETTINGSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QAudioEncoderSettings   audioSettings() const = 0
+virtual QString   codecDescription(const QString & codec) const = 0
+virtual void   setAudioSettings(const QAudioEncoderSettings & settings) = 0
+virtual QStringList   supportedAudioCodecs() const = 0
+virtual QList<int>   supportedSampleRates(const QAudioEncoderSettings & settings, bool * continuous = 0) const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

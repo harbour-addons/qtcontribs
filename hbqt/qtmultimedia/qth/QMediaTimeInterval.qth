@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaTimeInterval>
+
+
+/*
+ * QMediaTimeInterval()
+ * QMediaTimeInterval(qint64 start, qint64 end)
+ * QMediaTimeInterval(const QMediaTimeInterval & other)
+ */
+HB_FUNC( QT_QMEDIATIMEINTERVAL )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaTimeInterval" ) )
+   {
+      __HB_RETPTRGC__( new QMediaTimeInterval( *hbqt_par_QMediaTimeInterval( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QMediaTimeInterval( hb_parnl( 1 ), hb_parnl( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMediaTimeInterval() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   contains(qint64 time) const
+qint64   end() const
+bool   isNormal() const
+QMediaTimeInterval   normalized() const
+qint64   start() const
+QMediaTimeInterval   translated(qint64 offset) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

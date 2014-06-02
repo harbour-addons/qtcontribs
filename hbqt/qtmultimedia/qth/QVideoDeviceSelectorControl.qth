@@ -1,0 +1,53 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QVideoDeviceSelectorControl>
+
+
+/*
+ * virtual	~QVideoDeviceSelectorControl()
+ */
+HB_FUNC( QT_QVIDEODEVICESELECTORCONTROL )
+{
+   HB_FUNC_EXEC( HB_QVIDEODEVICESELECTORCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual int	defaultDevice() const = 0
+virtual int	deviceCount() const = 0
+virtual QString	deviceDescription(int index) const = 0
+virtual QString	deviceName(int index) const = 0
+virtual int	selectedDevice() const = 0
+</PROTOS>
+
+<SLOTS>
+virtual void	setSelectedDevice(int index) = 0
+</SLOTS>
+
+<SIGNALS>
+void	devicesChanged()
+void	selectedDeviceChanged(int index)
+void	selectedDeviceChanged(const QString & name)
+</SIGNALS>

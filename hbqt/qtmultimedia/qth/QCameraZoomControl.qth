@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraZoomControl>
+
+
+/*
+ * ~QCameraZoomControl()
+ */
+HB_FUNC( QT_QCAMERAZOOMCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERAZOOMCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual qreal   currentDigitalZoom() const = 0
+virtual qreal   currentOpticalZoom() const = 0
+virtual qreal   maximumDigitalZoom() const = 0
+virtual qreal   maximumOpticalZoom() const = 0
+virtual qreal   requestedDigitalZoom() const = 0
+virtual qreal   requestedOpticalZoom() const = 0
+virtual void   zoomTo(qreal optical, qreal digital) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   currentDigitalZoomChanged(qreal zoom)
+void   currentOpticalZoomChanged(qreal zoom)
+void   maximumDigitalZoomChanged(qreal zoom)
+void   maximumOpticalZoomChanged(qreal zoom)
+void   requestedDigitalZoomChanged(qreal zoom)
+void   requestedOpticalZoomChanged(qreal zoom)
+</SIGNALS>

@@ -1,0 +1,53 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QVideoWidget
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimediaWidgets/QCameraViewfinder>
+
+
+/*
+ * QCameraViewfinder(QWidget * parent = 0)
+ * ~QCameraViewfinder()
+ */
+HB_FUNC( QT_QCAMERAVIEWFINDER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QCameraViewfinder( hbqt_par_QWidget( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QCameraViewfinder() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QMediaObject *   mediaObject() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

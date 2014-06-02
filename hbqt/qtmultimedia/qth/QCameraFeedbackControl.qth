@@ -1,0 +1,52 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+Destructors = Yes
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraFeedbackControl>
+
+
+/*
+ * ~QCameraFeedbackControl()
+ */
+HB_FUNC( QT_QCAMERAFEEDBACKCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERAFEEDBACKCONTROL );
+}
+</CODE>
+
+<ENUMS>
+enum   EventType { ViewfinderStarted, ViewfinderStopped, ImageCaptured, ImageSaved, ..., AutoFocusFailed }
+</ENUMS>
+
+<PROTOS>
+virtual bool   isEventFeedbackEnabled(QCameraFeedbackControl::EventType event) const = 0
+virtual bool   isEventFeedbackLocked(QCameraFeedbackControl::EventType event) const = 0
+virtual void   resetEventFeedback(QCameraFeedbackControl::EventType event) = 0
+virtual bool   setEventFeedbackEnabled(QCameraFeedbackControl::EventType event, bool enabled) = 0
+virtual bool   setEventFeedbackSound(QCameraFeedbackControl::EventType event, const QString & filePath) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

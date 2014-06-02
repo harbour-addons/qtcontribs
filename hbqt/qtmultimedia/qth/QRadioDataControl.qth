@@ -1,0 +1,60 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QRadioDataControl>
+
+
+/*
+ * ~QRadioDataControl()
+ */
+HB_FUNC( QT_QRADIODATACONTROL )
+{
+   HB_FUNC_EXEC( HB_QRADIODATACONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QRadioData::Error   error() const = 0
+virtual QString   errorString() const = 0
+virtual bool   isAlternativeFrequenciesEnabled() const = 0
+virtual QRadioData::ProgramType   programType() const = 0
+virtual QString   programTypeName() const = 0
+virtual QString   radioText() const = 0
+virtual void   setAlternativeFrequenciesEnabled(bool enabled) = 0
+virtual QString   stationId() const = 0
+virtual QString   stationName() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   alternativeFrequenciesEnabledChanged(bool enabled)
+void   error(QRadioData::Error error)
+void   programTypeChanged(QRadioData::ProgramType programType)
+void   programTypeNameChanged(QString programTypeName)
+void   radioTextChanged(QString radioText)
+void   stationIdChanged(QString stationId)
+void   stationNameChanged(QString stationName)
+</SIGNALS>

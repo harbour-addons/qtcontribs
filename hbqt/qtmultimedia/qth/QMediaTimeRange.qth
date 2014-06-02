@@ -1,0 +1,78 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     =
+QObject     = no
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaTimeRange>
+
+
+/*
+ * QMediaTimeRange()
+ * QMediaTimeRange(qint64 start, qint64 end)
+ * QMediaTimeRange(const QMediaTimeInterval & interval)
+ * QMediaTimeRange(const QMediaTimeRange & range)
+ * ~QMediaTimeRange()
+ */
+HB_FUNC( QT_QMEDIATIMERANGE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaTimeRange" ) )
+   {
+      __HB_RETPTRGC__( new QMediaTimeRange( *hbqt_par_QMediaTimeRange( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaTimeInterval" ) )
+   {
+      __HB_RETPTRGC__( new QMediaTimeRange( *hbqt_par_QMediaTimeInterval( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QMediaTimeRange( hb_parnl( 1 ), hb_parnl( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMediaTimeRange() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   addInterval(const QMediaTimeInterval & interval)
+void   addInterval(qint64 start, qint64 end)
+void   addTimeRange(const QMediaTimeRange & range)
+void   clear()
+bool   contains(qint64 time) const
+qint64   earliestTime() const
+QList<QMediaTimeInterval>   intervals() const
+bool   isContinuous() const
+bool   isEmpty() const
+qint64   latestTime() const
+void   removeInterval(const QMediaTimeInterval & interval)
+void   removeInterval(qint64 start, qint64 end)
+void   removeTimeRange(const QMediaTimeRange & range)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -881,15 +881,15 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
       ENDIF
    NEXT
    AAdd( aLinesPRG, "" )
-   // One more pass, needed FOR 5.0.1
+   // One more pass, needed FOR 5x
    AEval( aLinesPRG, {|e,i| aLinesPRG[ i ] := StrTran( e, "->", ":" ) }  )
-
+#if 0
    FOR EACH item IN aWidgets
       IF item[ 1 ] == "QAction"
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( item[ 2 ] ) + ":  connect( " + '"triggered()", {|| ::' + item[ 2 ] + "_triggered() } )" )
       ENDIF
    NEXT
-
+#endif
    /* supported method calls */
    AAdd( aLinesPRG, "" )
    FOR EACH item IN aCalls
@@ -1545,7 +1545,13 @@ METHOD HbQtSource:new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileNa
    /* Pull out Enumerators  */
    ::enums_:= hbqtgen_PullOutSection( @cQth, "ENUMS"  )
    ::enum_:= {}
+
    FOR EACH s IN ::enums_
+      s := StrTran( s, "      ", " " )
+      s := StrTran( s, "     ", " " )
+      s := StrTran( s, "    ", " " )
+      s := StrTran( s, "   ", " " )
+      s := StrTran( s, "  ", " " )
       IF "enum " $ s .OR. "flags " $ s
          b_:= hb_ATokens( AllTrim( s ), " " )
          AAdd( ::enum_, b_[ 2 ] )
@@ -3772,6 +3778,67 @@ STATIC FUNCTION qth_is_QObject( cWidget )
 
       aadd( aQObjects, "QAudioInput" )
       aadd( aQObjects, "QAudioOutput" )
+
+      aadd( aQObjects, "QCamera" )
+      aadd( aQObjects, "QAbstractVideoSurface" )
+      aadd( aQObjects, "QAudioDecoder" )
+      aadd( aQObjects, "QAudioDecoderControl" )
+      aadd( aQObjects, "QAudioEncoderSettingsControl" )
+      aadd( aQObjects, "QAudioInput" )
+      aadd( aQObjects, "QAudioInputSelectorControl" )
+      aadd( aQObjects, "QAudioOutput" )
+      aadd( aQObjects, "QAudioOutputSelectorControl" )
+      aadd( aQObjects, "QAudioRecorder" )
+      aadd( aQObjects, "QCameraCaptureBufferFormatControl" )
+      aadd( aQObjects, "QCameraCaptureDestinationControl" )
+      aadd( aQObjects, "QCameraControl" )
+      aadd( aQObjects, "QCameraExposure" )
+      aadd( aQObjects, "QCameraExposureControl" )
+      aadd( aQObjects, "QCameraFeedbackControl" )
+      aadd( aQObjects, "QCameraFlashControl" )
+      aadd( aQObjects, "QCameraFocus" )
+      aadd( aQObjects, "QCameraFocusControl" )
+      aadd( aQObjects, "QCameraImageCapture" )
+      aadd( aQObjects, "QCameraImageCaptureControl" )
+      aadd( aQObjects, "QCameraImageProcessing" )
+      aadd( aQObjects, "QCameraImageProcessingControl" )
+      aadd( aQObjects, "QCameraInfoControl" )
+      aadd( aQObjects, "QCameraLocksControl" )
+      aadd( aQObjects, "QCameraViewfinderSettingsControl" )
+      aadd( aQObjects, "QCameraZoomControl" )
+      aadd( aQObjects, "QImageEncoderControl" )
+      aadd( aQObjects, "QMediaAudioProbeControl" )
+      aadd( aQObjects, "QMediaAvailabilityControl" )
+      aadd( aQObjects, "QMediaContainerControl" )
+      aadd( aQObjects, "QMediaControl" )
+      aadd( aQObjects, "QMediaGaplessPlaybackControl" )
+      aadd( aQObjects, "QMediaNetworkAccessControl" )
+      aadd( aQObjects, "QMediaObject" )
+      aadd( aQObjects, "QMediaPlayer" )
+      aadd( aQObjects, "QMediaPlayerControl" )
+      aadd( aQObjects, "QMediaPlaylist" )
+      aadd( aQObjects, "QMediaRecorder" )
+      aadd( aQObjects, "QMediaRecorderControl" )
+      aadd( aQObjects, "QMediaService" )
+      aadd( aQObjects, "QMediaServiceProviderPlugin" )
+      aadd( aQObjects, "QMediaStreamsControl" )
+      aadd( aQObjects, "QMediaVideoProbeControl" )
+      aadd( aQObjects, "QMetaDataReaderControl" )
+      aadd( aQObjects, "QMetaDataWriterControl" )
+      aadd( aQObjects, "QRadioData" )
+      aadd( aQObjects, "QRadioDataControl" )
+      aadd( aQObjects, "QRadioTuner" )
+      aadd( aQObjects, "QRadioTunerControl" )
+      aadd( aQObjects, "QSoundEffect" )
+      aadd( aQObjects, "QVideoDeviceSelectorControl" )
+      aadd( aQObjects, "QVideoEncoderSettingsControl" )
+      aadd( aQObjects, "QVideoProbe" )
+      aadd( aQObjects, "QVideoRendererControl" )
+      aadd( aQObjects, "QVideoWindowControl" )
+
+      aadd( aQObjects, "QCameraViewfinder" )
+      aadd( aQObjects, "QVideoWidget" )
+      aadd( aQObjects, "QVideoWidgetControl" )
 
    ENDIF
 

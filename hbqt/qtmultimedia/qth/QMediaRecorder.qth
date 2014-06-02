@@ -1,0 +1,112 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject, QMediaBindableInterface
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaRecorder>
+#include <QtCore/QUrl>
+
+/*
+ * QMediaRecorder(QMediaObject * mediaObject, QObject * parent = 0)
+ * ~QMediaRecorder()
+ */
+HB_FUNC( QT_QMEDIARECORDER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaObject" ) )
+   {
+      __HB_RETPTRGC__( new QMediaRecorder( hbqt_par_QMediaObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QMediaObject" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QMediaRecorder( hbqt_par_QMediaObject( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, ResourceError, FormatError, OutOfSpaceError }
+enum   State { StoppedState, RecordingState, PausedState }
+enum   Status { UnavailableStatus, UnloadedStatus, LoadingStatus, LoadedStatus, ..., FinalizingStatus }
+</ENUMS>
+
+<PROTOS>
+QUrl   actualLocation() const
+QString   audioCodecDescription(const QString & codec) const
+QAudioEncoderSettings   audioSettings() const
+QMultimedia::AvailabilityStatus   availability() const
+QStringList   availableMetaData() const
+QString   containerDescription(const QString & format) const
+QString   containerFormat() const
+qint64   duration() const
+QMediaRecorder::Error   error() const
+QString   errorString() const
+bool   isAvailable() const
+bool   isMetaDataAvailable() const
+bool   isMetaDataWritable() const
+bool   isMuted() const
+QVariant   metaData(const QString & key) const
+QUrl   outputLocation() const
+void   setAudioSettings(const QAudioEncoderSettings & settings)
+void   setContainerFormat(const QString & container)
+void   setEncodingSettings(const QAudioEncoderSettings & audio, const QVideoEncoderSettings & video = QVideoEncoderSettings(), const QString & container = QString())
+void   setMetaData(const QString & key, const QVariant & value)
+bool   setOutputLocation(const QUrl & location)
+void   setVideoSettings(const QVideoEncoderSettings & settings)
+QMediaRecorder::State   state() const
+QMediaRecorder::Status   status() const
+QStringList   supportedAudioCodecs() const
+QList<int>   supportedAudioSampleRates(const QAudioEncoderSettings & settings = QAudioEncoderSettings(), bool * continuous = 0) const
+QStringList   supportedContainers() const
+QList<qreal>   supportedFrameRates(const QVideoEncoderSettings & settings = QVideoEncoderSettings(), bool * continuous = 0) const
+QList<QSize>   supportedResolutions(const QVideoEncoderSettings & settings = QVideoEncoderSettings(), bool * continuous = 0) const
+QStringList   supportedVideoCodecs() const
+QString   videoCodecDescription(const QString & codec) const
+QVideoEncoderSettings   videoSettings() const
+qreal   volume() const
+
+virtual QMediaObject *   mediaObject() const
+</PROTOS>
+
+<SLOTS>
+void   pause()
+void   record()
+void   setMuted(bool muted)
+void   setVolume(qreal volume)
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   actualLocationChanged(const QUrl & location)
+void   availabilityChanged(bool available)
+void   availabilityChanged(QMultimedia::AvailabilityStatus availability)
+void   durationChanged(qint64 duration)
+void   error(QMediaRecorder::Error error)
+void   metaDataAvailableChanged(bool available)
+void   metaDataChanged()
+void   metaDataChanged(const QString & key, const QVariant & value)
+void   metaDataWritableChanged(bool writable)
+void   mutedChanged(bool muted)
+void   stateChanged(QMediaRecorder::State state)
+void   statusChanged(QMediaRecorder::Status status)
+void   volumeChanged(qreal volume)
+</SIGNALS>

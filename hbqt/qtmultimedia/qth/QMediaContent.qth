@@ -1,0 +1,79 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     =
+QObject     =
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaContent>
+#include <QtNetwork/QNetworkRequest>
+
+
+/*
+ * QMediaContent()
+ * QMediaContent(const QUrl & url)
+ * QMediaContent(const QNetworkRequest & request)
+ * QMediaContent(const QMediaResource & resource)
+ * QMediaContent(const QList<QMediaResource> & resources)
+ * QMediaContent(const QMediaContent & other)
+ * QMediaContent(QMediaPlaylist * playlist, const QUrl & contentUrl = QUrl(), bool takeOwnership = false)
+ * ~QMediaContent()
+ */
+HB_FUNC( QT_QMEDIACONTENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaContent" ) )
+   {
+      __HB_RETPTRGC__( new QMediaContent( *hbqt_par_QMediaContent( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QUrl" ) )
+   {
+      __HB_RETPTRGC__( new QMediaContent( *hbqt_par_QUrl( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QNetworkRequest" ) )
+   {
+      __HB_RETPTRGC__( new QMediaContent( *hbqt_par_QNetworkRequest( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaResource" ) )
+   {
+      __HB_RETPTRGC__( new QMediaContent( *hbqt_par_QMediaResource( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMediaContent() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QNetworkRequest   canonicalRequest() const
+QMediaResource   canonicalResource() const
+QUrl   canonicalUrl() const
+bool   isNull() const
+QMediaPlaylist *   playlist() const
+QList<QMediaResource>   resources() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

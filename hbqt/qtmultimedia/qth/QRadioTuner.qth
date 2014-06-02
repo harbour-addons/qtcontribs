@@ -1,0 +1,97 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QRadioTuner>
+
+
+/*
+ * QRadioTuner(QObject * parent = 0)
+ * ~QRadioTuner()
+ */
+HB_FUNC( QT_QRADIOTUNER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QRadioTuner( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QRadioTuner() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Band { AM, FM, SW, LW, FM2 }
+enum   Error { NoError, ResourceError, OpenError, OutOfRangeError }
+enum   SearchMode { SearchFast, SearchGetStationId }
+enum   State { ActiveState, StoppedState }
+enum   StereoMode { ForceStereo, ForceMono, Auto }
+</ENUMS>
+
+<PROTOS>
+QRadioTuner::Band   band() const
+Error   error() const
+QString   errorString() const
+int   frequency() const
+QPair<int, int>   frequencyRange(QRadioTuner::Band band) const
+int   frequencyStep(QRadioTuner::Band band) const
+bool   isAntennaConnected() const
+bool   isBandSupported(QRadioTuner::Band band) const
+bool   isMuted() const
+bool   isSearching() const
+bool   isStereo() const
+QRadioData *   radioData() const
+void   setStereoMode(QRadioTuner::StereoMode mode)
+int   signalStrength() const
+QRadioTuner::State   state() const
+QRadioTuner::StereoMode   stereoMode() const
+int   volume() const
+
+virtual QMultimedia::AvailabilityStatus   availability() const
+</PROTOS>
+
+<SLOTS>
+void   cancelSearch()
+void   searchAllStations(QRadioTuner::SearchMode searchMode = QRadioTuner::SearchFast)
+void   searchBackward()
+void   searchForward()
+void   setBand(QRadioTuner::Band band)
+void   setFrequency(int frequency)
+void   setMuted(bool muted)
+void   setVolume(int volume)
+void   start()
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   antennaConnectedChanged(bool connectionStatus)
+void   bandChanged(QRadioTuner::Band band)
+void   error(QRadioTuner::Error error)
+void   frequencyChanged(int frequency)
+void   mutedChanged(bool muted)
+void   searchingChanged(bool searching)
+void   signalStrengthChanged(int strength)
+void   stateChanged(QRadioTuner::State state)
+void   stationFound(int frequency, QString stationId)
+void   stereoStatusChanged(bool stereo)
+void   volumeChanged(int volume)
+</SIGNALS>

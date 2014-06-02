@@ -1,0 +1,78 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaResource>
+#include <QtCore/QSize>
+
+/*
+ * QMediaResource()
+ * QMediaResource(const QUrl & url, const QString & mimeType = QString())
+ * QMediaResource(const QNetworkRequest & request, const QString & mimeType = QString())
+ * QMediaResource(const QMediaResource & other)
+ * ~QMediaResource()
+ */
+HB_FUNC( QT_QMEDIARESOURCE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaResource" ) )
+   {
+      __HB_RETPTRGC__( new QMediaResource( *hbqt_par_QMediaResource( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMediaResource() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   audioBitRate() const
+QString   audioCodec() const
+int   channelCount() const
+qint64   dataSize() const
+bool   isNull() const
+QString   language() const
+QString   mimeType() const
+QNetworkRequest   request() const
+QSize   resolution() const
+int   sampleRate() const
+void   setAudioBitRate(int rate)
+void   setAudioCodec(const QString & codec)
+void   setChannelCount(int channels)
+void   setDataSize(const qint64 size)
+void   setLanguage(const QString & language)
+void   setResolution(const QSize & resolution)
+void   setResolution(int width, int height)
+void   setSampleRate(int sampleRate)
+void   setVideoBitRate(int rate)
+void   setVideoCodec(const QString & codec)
+QUrl   url() const
+int   videoBitRate() const
+QString   videoCodec() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

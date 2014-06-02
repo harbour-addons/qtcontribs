@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaAudioProbeControl>
+
+
+/*
+ * virtual   ~QMediaAudioProbeControl()
+ */
+HB_FUNC( QT_QMEDIAAUDIOPROBECONTROL )
+{
+   HB_FUNC_EXEC( HB_QMEDIAAUDIOPROBECONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   audioBufferProbed(const QAudioBuffer & buffer)
+void   flush()
+</SIGNALS>

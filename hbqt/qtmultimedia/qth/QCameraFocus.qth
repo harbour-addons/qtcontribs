@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+Destructor  = no
+Constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraFocus>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QCAMERAFOCUS )
+{
+   HB_FUNC_EXEC( HB_QCAMERAFOCUS );
+}
+</CODE>
+
+<ENUMS>
+enum   FocusMode { ManualFocus, HyperfocalFocus, InfinityFocus, AutoFocus, ContinuousFocus, MacroFocus }
+flags   FocusModes
+enum   FocusPointMode { FocusPointAuto, FocusPointCenter, FocusPointFaceDetection, FocusPointCustom }
+</ENUMS>
+
+<PROTOS>
+QPointF   customFocusPoint() const
+qreal   digitalZoom() const
+FocusModes   focusMode() const
+FocusPointMode   focusPointMode() const
+QList<QCameraFocusZone>  focusZones() const
+bool   isAvailable() const
+bool   isFocusModeSupported(QCameraFocus::FocusModes mode) const
+bool   isFocusPointModeSupported(QCameraFocus::FocusPointMode mode) const
+qreal  maximumDigitalZoom() const
+qreal  maximumOpticalZoom() const
+qreal  opticalZoom() const
+void   setCustomFocusPoint(const QPointF & point)
+void   setFocusMode(QCameraFocus::FocusModes mode)
+void   setFocusPointMode(QCameraFocus::FocusPointMode mode)
+void   zoomTo(qreal optical, qreal digital)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   digitalZoomChanged(qreal value)
+void   focusZonesChanged()
+void   maximumDigitalZoomChanged(qreal zoom)
+void   maximumOpticalZoomChanged(qreal zoom)
+void   opticalZoomChanged(qreal value)
+</SIGNALS>

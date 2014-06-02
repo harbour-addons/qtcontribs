@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioOutputSelectorControl>
+
+
+/*
+ * virtual   ~QAudioOutputSelectorControl()
+ */
+HB_FUNC( QT_QAUDIOOUTPUTSELECTORCONTROL )
+{
+   HB_FUNC_EXEC( HB_QAUDIOOUTPUTSELECTORCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QString   activeOutput() const = 0
+//virtual QList<QString>   availableOutputs() const = 0
+virtual QString   defaultOutput() const = 0
+virtual QString   outputDescription(const QString & name) const = 0
+</PROTOS>
+
+<SLOTS>
+virtual void   setActiveOutput(const QString & name) = 0
+</SLOTS>
+
+<SIGNALS>
+void   activeOutputChanged(const QString & name)
+void   availableOutputsChanged()
+</SIGNALS>

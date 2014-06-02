@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaRecorder
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioRecorder>
+
+
+/*
+ * QAudioRecorder(QObject * parent = 0)
+ * ~QAudioRecorder()
+ */
+HB_FUNC( QT_QAUDIORECORDER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QAudioRecorder( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAudioRecorder() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   audioInput() const
+QString   audioInputDescription(const QString & name) const
+QStringList   audioInputs() const
+QString   defaultAudioInput() const
+</PROTOS>
+
+<SLOTS>
+void   setAudioInput(const QString & name)
+</SLOTS>
+
+<SIGNALS>
+void   audioInputChanged(const QString & name)
+void   availableAudioInputsChanged()
+</SIGNALS>

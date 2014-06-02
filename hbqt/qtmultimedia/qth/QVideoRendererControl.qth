@@ -1,0 +1,46 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QVideoRendererControl>
+
+
+/*
+ * ~QVideoRendererControl()
+ */
+HB_FUNC( QT_QVIDEORENDERERCONTROL )
+{
+   HB_FUNC_EXEC( HB_QVIDEORENDERERCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual void   setSurface(QAbstractVideoSurface * surface) = 0
+virtual QAbstractVideoSurface *   surface() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

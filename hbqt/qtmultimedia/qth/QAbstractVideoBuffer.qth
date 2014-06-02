@@ -41,9 +41,9 @@ enum MapMode { NotMapped, ReadOnly, WriteOnly, ReadWrite }
 
 <PROTOS>
 virtual QVariant handle () const
-HandleType handleType () const
+QAbstractVideoBuffer::HandleType handleType () const
 virtual uchar * map ( MapMode mode, int * numBytes, int * bytesPerLine ) = 0
-virtual MapMode mapMode () const = 0
+virtual QAbstractVideoBuffer::MapMode mapMode () const = 0
 virtual void unmap () = 0
 </PROTOS>
 

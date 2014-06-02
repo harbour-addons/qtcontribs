@@ -2,6 +2,8 @@
 # $Id$
 #
 
+{android}-stop='QtWebkit is not available for Android...'
+
 ../hbqt_common.hbm
 
 hbqtwebkit.hbm

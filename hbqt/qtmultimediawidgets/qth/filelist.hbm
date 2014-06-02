@@ -1,0 +1,13 @@
+#
+# $Id$
+#
+
+-pflag=-qtver=0x040500
+-pflag=-qtmodule=qtmultimediawidgets
+-pflag=-qthdocdir=../doc/
+
+QCameraViewfinder.qth
+QGraphicsVideoItem.qth
+QVideoWidget.qth
+QVideoWidgetControl.qth
+

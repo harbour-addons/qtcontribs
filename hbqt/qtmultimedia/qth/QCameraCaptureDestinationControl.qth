@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+Constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraCaptureDestinationControl>
+
+
+/*
+ * ~QCameraCaptureDestinationControl()
+ */
+HB_FUNC( QT_QCAMERACAPTUREDESTINATIONCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERACAPTUREDESTINATIONCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QCameraImageCapture::CaptureDestinations   captureDestination() const = 0
+virtual bool   isCaptureDestinationSupported(QCameraImageCapture::CaptureDestinations destination) const = 0
+virtual void   setCaptureDestination(QCameraImageCapture::CaptureDestinations destination) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   captureDestinationChanged(QCameraImageCapture::CaptureDestinations destination)
+</SIGNALS>

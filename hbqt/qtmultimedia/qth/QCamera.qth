@@ -1,0 +1,114 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaObject
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCamera>
+
+
+/*
+ *   QCamera(QObject * parent = 0)
+ *   QCamera(const QByteArray & deviceName, QObject * parent = 0)
+ *   QCamera(const QCameraInfo & cameraInfo, QObject * parent = 0)
+ *   QCamera(QCamera::Position position, QObject * parent = 0)
+ *   ~QCamera()
+ */
+HB_FUNC( QT_QCAMERA )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QCamera( hbqt_par_QObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QByteArray" ) )
+   {
+      __HB_RETPTRGC__( new QCamera( *hbqt_par_QByteArray( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QCameraInfo" ) )
+   {
+      __HB_RETPTRGC__( new QCamera( *hbqt_par_QCameraInfo( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QCamera( ( QCamera::Position ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QCamera() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   CaptureMode { CaptureViewfinder, CaptureStillImage, CaptureVideo }
+flags  CaptureModes
+enum   Error { NoError, CameraError, InvalidRequestError, ServiceMissingError, NotSupportedFeatureError }
+enum   LockChangeReason { UserRequest, LockAcquired, LockFailed, LockLost, LockTemporaryLost }
+enum   LockStatus { Unlocked, Searching, Locked }
+enum   LockType { NoLock, LockExposure, LockWhiteBalance, LockFocus }
+flags  LockTypes
+enum   Position { UnspecifiedPosition, BackFace, FrontFace }
+enum   State { UnloadedState, LoadedState, ActiveState }
+enum   Status { ActiveStatus, StartingStatus, StoppingStatus, StandbyStatus, ..., UnavailableStatus }
+</ENUMS>
+
+<PROTOS>
+CaptureModes   captureMode() const
+Error   error() const
+QString   errorString() const
+QCameraExposure *   exposure() const
+QCameraFocus *   focus() const
+QCameraImageProcessing *   imageProcessing() const
+bool   isCaptureModeSupported(QCamera::CaptureModes mode) const
+QCamera::LockStatus   lockStatus() const
+QCamera::LockStatus   lockStatus(QCamera::LockType lockType) const
+QCamera::LockTypes   requestedLocks() const
+void   setViewfinder(QVideoWidget * viewfinder)
+void   setViewfinder(QGraphicsVideoItem * viewfinder)
+void   setViewfinder(QAbstractVideoSurface * surface)
+State   state() const
+Status   status() const
+LockTypes   supportedLocks() const
+
+virtual QMultimedia::AvailabilityStatus   availability() const
+</PROTOS>
+
+<SLOTS>
+void   load()
+void   searchAndLock()
+void   searchAndLock(QCamera::LockTypes locks)
+void   setCaptureMode(QCamera::CaptureModes mode)
+void   start()
+void   stop()
+void   unload()
+void   unlock()
+void   unlock(QCamera::LockTypes locks)
+</SLOTS>
+
+<SIGNALS>
+void   captureModeChanged(QCamera::CaptureModes mode)
+void   error(QCamera::Error value)
+void   lockFailed()
+void   lockStatusChanged(QCamera::LockStatus status, QCamera::LockChangeReason reason)
+void   lockStatusChanged(QCamera::LockType lock, QCamera::LockStatus status, QCamera::LockChangeReason reason)
+void   locked()
+void   stateChanged(QCamera::State state)
+void   statusChanged(QCamera::Status status)
+</SIGNALS>

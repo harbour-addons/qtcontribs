@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     =
+QObject     = no
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaServiceCameraInfoInterface>
+
+
+/*
+ * virtual   ~QMediaServiceCameraInfoInterface()
+ */
+HB_FUNC( QT_QMEDIASERVICECAMERAINFOINTERFACE )
+{
+   HB_FUNC_EXEC( HB_QMEDIASERVICECAMERAINFOINTERFACE );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual int   cameraOrientation(const QByteArray & device) const = 0
+virtual QCamera::Position   cameraPosition(const QByteArray & device) const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

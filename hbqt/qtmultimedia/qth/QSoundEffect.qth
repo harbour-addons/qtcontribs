@@ -1,0 +1,79 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QSoundEffect>
+
+
+/*
+ * QSoundEffect(QObject * parent = 0)
+ * ~QSoundEffect()
+ */
+HB_FUNC( QT_QSOUNDEFFECT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QSoundEffect( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSoundEffect() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Loop { Infinite }
+enum   Status { Null, Loading, Ready, Error }
+</ENUMS>
+
+<PROTOS>
+QString   category() const
+bool   isLoaded() const
+bool   isMuted() const
+bool   isPlaying() const
+int   loopCount() const
+int   loopsRemaining() const
+void   setCategory(const QString & category)
+void   setLoopCount(int loopCount)
+void   setMuted(bool muted)
+void   setSource(const QUrl & url)
+void   setVolume(qreal volume)
+QUrl   source() const
+QSoundEffect::Status   status() const
+qreal   volume() const
+</PROTOS>
+
+<SLOTS>
+void   play()
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   categoryChanged()
+void   loadedChanged()
+void   loopCountChanged()
+void   loopsRemainingChanged()
+void   mutedChanged()
+void   playingChanged()
+void   sourceChanged()
+void   statusChanged()
+void   volumeChanged()
+</SIGNALS>

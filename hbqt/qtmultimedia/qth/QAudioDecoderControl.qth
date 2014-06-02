@@ -1,0 +1,66 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioDecoderControl>
+
+
+/*
+ * ~QAudioDecoderControl()
+ */
+HB_FUNC( QT_QAUDIODECODERCONTROL )
+{
+   HB_FUNC_EXEC( HB_QAUDIODECODERCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QAudioFormat   audioFormat() const = 0
+virtual bool   bufferAvailable() const = 0
+virtual qint64   duration() const = 0
+virtual qint64   position() const = 0
+virtual QAudioBuffer   read() = 0
+virtual void   setAudioFormat(const QAudioFormat & format) = 0
+virtual void   setSourceDevice(QIODevice * device) = 0
+virtual void   setSourceFilename(const QString & fileName) = 0
+virtual QIODevice *   sourceDevice() const = 0
+virtual QString   sourceFilename() const = 0
+virtual void   start() = 0
+virtual QAudioDecoder::State   state() const = 0
+virtual void   stop() = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   bufferAvailableChanged(bool available)
+void   bufferReady()
+void   durationChanged(qint64 duration)
+void   error(int error, const QString & errorString)
+void   finished()
+void   formatChanged(const QAudioFormat & format)
+void   positionChanged(qint64 position)
+void   sourceChanged()
+void   stateChanged(QAudioDecoder::State state)
+</SIGNALS>

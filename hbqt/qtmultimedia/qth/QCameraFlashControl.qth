@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraFlashControl>
+
+
+/*
+ * ~QCameraFlashControl()
+ */
+HB_FUNC( QT_QCAMERAFLASHCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERAFLASHCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QCameraExposure::FlashModes   flashMode() const = 0
+virtual bool   isFlashModeSupported(QCameraExposure::FlashModes mode) const = 0
+virtual bool   isFlashReady() const = 0
+virtual void   setFlashMode(QCameraExposure::FlashModes mode) = 0
+</PROTOS>
+
+<SLOTS>
+void   flashReady(bool ready)
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

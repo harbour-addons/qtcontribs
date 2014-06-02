@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QVideoEncoderSettingsControl>
+
+
+/*
+ * virtual   ~QVideoEncoderSettingsControl()
+ */
+HB_FUNC( QT_QVIDEOENCODERSETTINGSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QVIDEOENCODERSETTINGSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual void   setVideoSettings(const QVideoEncoderSettings & settings) = 0
+virtual QList<qreal>   supportedFrameRates(const QVideoEncoderSettings & settings, bool * continuous = 0) const = 0
+virtual QList<QSize>   supportedResolutions(const QVideoEncoderSettings & settings, bool * continuous = 0) const = 0
+virtual QStringList   supportedVideoCodecs() const = 0
+virtual QString   videoCodecDescription(const QString & codec) const = 0
+virtual QVideoEncoderSettings   videoSettings() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     =
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMetaDataReaderControl>
+
+
+/*
+ * ~QMetaDataReaderControl()
+ */
+HB_FUNC( QT_QMETADATAREADERCONTROL )
+{
+   HB_FUNC_EXEC( HB_QMETADATAREADERCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QStringList   availableMetaData() const = 0
+virtual bool   isMetaDataAvailable() const = 0
+virtual QVariant   metaData(const QString & key) const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   metaDataAvailableChanged(bool available)
+void   metaDataChanged()
+void   metaDataChanged(const QString & key, const QVariant & value)
+</SIGNALS>

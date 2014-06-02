@@ -1,0 +1,52 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaStreamsControl>
+
+
+/*
+ * virtual   ~QMediaStreamsControl()
+ */
+HB_FUNC( QT_QMEDIASTREAMSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QMEDIASTREAMSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+enum   StreamType { AudioStream, VideoStream, SubPictureStream, UnknownStream, DataStream }
+</ENUMS>
+
+<PROTOS>
+virtual bool   isActive(int stream) = 0
+virtual QVariant   metaData(int stream, const QString & key) = 0
+virtual void   setActive(int stream, bool state) = 0
+virtual int   streamCount() = 0
+virtual StreamType   streamType(int stream) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   activeStreamsChanged()
+void   streamsChanged()
+</SIGNALS>

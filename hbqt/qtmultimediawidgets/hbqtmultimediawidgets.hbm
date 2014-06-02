@@ -1,0 +1,26 @@
+#
+# $Id$
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtmultimediawidgets.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc
+../qtgui/hbqtgui.hbc
+../qtnetwork/hbqtnetwork.hbc
+
+-deppkgname=qtmultimediawidgets:QtMultimediaWidgets
+-depkeyhead=qtmultimediawidgets:QtMultimediaWidgets/QtMultimediaWidgets
+-depcontrol=qtmultimediawidgets:${HB_WITH_QT}
+{!darwin}-depincpath=qtmultimediawidgets:/usr/include/qt5
+{!darwin}-depincpath=qtmultimediawidgets:/usr/lib/qt5/include
+{!darwin}-depincpath=qtmultimediawidgets:/usr/include
+{bsd}-depincpath=qt:/usr/local/include/qt5
+{darwin}-depincpath=qtmultimediawidgets:/Developer/qt/include
+{darwin}-depincpath=qtmultimediwidgetsa:/Library/Frameworks
+{darwin}-depincpath=qtmultimediawidgets:/usr/local/include

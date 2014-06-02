@@ -1,0 +1,78 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject, QMediaBindableInterface
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QRadioData>
+
+
+/*
+ * QRadioData(QMediaObject * mediaObject, QObject * parent = 0)
+ * ~QRadioData()
+ */
+HB_FUNC( QT_QRADIODATA )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaObject" ) )
+   {
+      __HB_RETPTRGC__( new QRadioData( hbqt_par_QMediaObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QMediaObject" ) && hbqt_par_isDerivedFrom( 2, "QObject" ))
+   {
+      __HB_RETPTRGC__( new QRadioData( hbqt_par_QMediaObject( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, ResourceError, OpenError, OutOfRangeError }
+enum   ProgramType { Undefined, News, CurrentAffairs, Information, ..., College }
+</ENUMS>
+
+<PROTOS>
+QMultimedia::AvailabilityStatus   availability() const
+QRadioData::Error   error() const
+QString   errorString() const
+bool   isAlternativeFrequenciesEnabled() const
+QRadioData::ProgramType   programType() const
+QString   programTypeName() const
+QString   radioText() const
+QString   stationId() const
+QString   stationName() const
+
+virtual QMediaObject *   mediaObject() const
+
+void   setAlternativeFrequenciesEnabled(bool enabled)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   alternativeFrequenciesEnabledChanged(bool enabled)
+void   error(QRadioData::Error error)
+void   programTypeChanged(QRadioData::ProgramType programType)
+void   programTypeNameChanged(QString programTypeName)
+void   radioTextChanged(QString radioText)
+void   stationIdChanged(QString stationId)
+void   stationNameChanged(QString stationName)
+</SIGNALS>

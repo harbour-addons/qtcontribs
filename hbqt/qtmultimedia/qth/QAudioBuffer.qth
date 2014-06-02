@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioBuffer>
+
+
+/*
+ * QAudioBuffer()
+ * QAudioBuffer(const QAudioBuffer & other)
+ * QAudioBuffer(const QByteArray & data, const QAudioFormat & format, qint64 startTime = -1)
+ * QAudioBuffer(int numFrames, const QAudioFormat & format, qint64 startTime = -1)
+ * ~QAudioBuffer()
+ */
+HB_FUNC( QT_QAUDIOBUFFER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QAudioBuffer" ) )
+   {
+      __HB_RETPTRGC__( new QAudioBuffer( *hbqt_par_QAudioBuffer( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAudioBuffer() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   byteCount() const
+const void *   constData() const
+//const T *   constData() const
+const void *   data() const
+void *   data()
+const T *   data() const
+T *   data()
+qint64   duration() const
+QAudioFormat   format() const
+int   frameCount() const
+bool   isValid() const
+int   sampleCount() const
+qint64   startTime() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

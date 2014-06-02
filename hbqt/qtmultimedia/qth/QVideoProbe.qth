@@ -1,0 +1,57 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QVideoProbe>
+
+
+/*
+ * QVideoProbe(QObject * parent = 0)
+ * ~QVideoProbe()
+ */
+HB_FUNC( QT_QVIDEOPROBE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QVideoProbe( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVideoProbe() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   isActive() const
+bool   setSource(QMediaObject * source)
+bool   setSource(QMediaRecorder * mediaRecorder)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   flush()
+void   videoFrameProbed(const QVideoFrame & frame)
+</SIGNALS>

@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioEncoderSettings>
+
+
+/*
+ * QAudioEncoderSettings()
+ * QAudioEncoderSettings(const QAudioEncoderSettings & other)
+ * ~QAudioEncoderSettings()
+ */
+HB_FUNC( QT_QAUDIOENCODERSETTINGS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QAudioEncoderSettings" ) )
+   {
+      __HB_RETPTRGC__( new QAudioEncoderSettings( *hbqt_par_QAudioEncoderSettings( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAudioEncoderSettings() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   bitRate() const
+int   channelCount() const
+QString   codec() const
+QMultimedia::EncodingMode   encodingMode() const
+QVariant   encodingOption(const QString & option) const
+//QVariantMap   encodingOptions() const
+bool   isNull() const
+QMultimedia::EncodingQuality   quality() const
+int   sampleRate() const
+void   setBitRate(int rate)
+void   setChannelCount(int channels)
+void   setCodec(const QString & codec)
+void   setEncodingMode(QMultimedia::EncodingMode mode)
+void   setEncodingOption(const QString & option, const QVariant & value)
+//void   setEncodingOptions(const QVariantMap & options)
+void   setQuality(QMultimedia::EncodingQuality quality)
+void   setSampleRate(int rate)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

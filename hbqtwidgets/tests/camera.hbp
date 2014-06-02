@@ -1,0 +1,15 @@
+
+hbqt.hbc
+hbqtmultimediawidgets.hbc
+hbqtmultimedia.hbc
+hbqtwidgets.hbc
+
+-es2
+-w3
+
+camera.prg
+
+imagesettings.ui
+videosettings.ui
+camera.ui
+

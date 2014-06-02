@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject
+QObject     = yes
+Version     = 0x050300
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaServiceProviderPlugin>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QMEDIASERVICEPROVIDERPLUGIN )
+{
+   HB_FUNC_EXEC( HB_QMEDIASERVICEPROVIDERPLUGIN );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QMediaService *   create(const QString & key) = 0
+virtual void   release(QMediaService * service) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

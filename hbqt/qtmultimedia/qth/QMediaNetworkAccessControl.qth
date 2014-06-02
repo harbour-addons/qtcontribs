@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaNetworkAccessControl>
+
+
+/*
+ * virtual   ~QMediaNetworkAccessControl()
+ */
+HB_FUNC( QT_QMEDIANETWORKACCESSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QMEDIANETWORKACCESSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QNetworkConfiguration   currentConfiguration() const = 0
+virtual void   setConfigurations(const QList<QNetworkConfiguration> & configurations) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraImageCaptureControl>
+
+
+/*
+ * ~QCameraImageCaptureControl()
+ */
+HB_FUNC( QT_QCAMERAIMAGECAPTURECONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERAIMAGECAPTURECONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual void   cancelCapture() = 0
+virtual int   capture(const QString & fileName) = 0
+virtual QCameraImageCapture::DriveMode   driveMode() const = 0
+virtual bool   isReadyForCapture() const = 0
+virtual void   setDriveMode(QCameraImageCapture::DriveMode mode) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   error(int id, int error, const QString & errorString)
+void   imageAvailable(int requestId, const QVideoFrame & buffer)
+void   imageCaptured(int requestId, const QImage & preview)
+void   imageExposed(int requestId)
+void   imageMetadataAvailable(int id, const QString & key, const QVariant & value)
+void   imageSaved(int requestId, const QString & fileName)
+void   readyForCaptureChanged(bool ready)
+</SIGNALS>

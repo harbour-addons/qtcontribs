@@ -1,0 +1,109 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaObject
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaPlayer>
+#include <QtCore/QIODevice>
+
+/*
+ * QMediaPlayer(QObject * parent = 0, Flags flags = 0)
+ * ~QMediaPlayer()
+ */
+HB_FUNC( QT_QMEDIAPLAYER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QMediaPlayer( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, ResourceError, FormatError, NetworkError, AccessDeniedError, ServiceMissingError }
+enum   Flag { LowLatency, StreamPlayback, VideoSurface }
+flags  Flags
+enum   MediaStatus { UnknownMediaStatus, NoMedia, LoadingMedia, LoadedMedia, ..., InvalidMedia }
+enum   State { StoppedState, PlayingState, PausedState }
+</ENUMS>
+
+<PROTOS>
+int   bufferStatus() const
+QMediaContent   currentMedia() const
+QNetworkConfiguration   currentNetworkConfiguration() const
+qint64   duration() const
+QMediaPlayer::Error   error() const
+QString   errorString() const
+bool   isAudioAvailable() const
+bool   isMuted() const
+bool   isSeekable() const
+bool   isVideoAvailable() const
+QMediaContent   media() const
+QMediaPlayer::MediaStatus   mediaStatus() const
+// const QIODevice *   mediaStream() const          // cannot be constructed with new()
+qreal   playbackRate() const
+QMediaPlaylist *   playlist() const
+qint64   position() const
+void   setVideoOutput(QVideoWidget * output)
+void   setVideoOutput(QGraphicsVideoItem * output)
+void   setVideoOutput(QAbstractVideoSurface * surface)
+State   state() const
+int   volume() const
+
+virtual QMultimedia::AvailabilityStatus   availability() const
+
+QMultimedia::SupportEstimate	hasSupport(const QString & mimeType, const QStringList & codecs = QStringList(), Flags flags = 0)
+</PROTOS>
+
+<SLOTS>
+void   pause()
+void   play()
+void   setMedia(const QMediaContent & media, QIODevice * stream = 0)
+void   setMuted(bool muted)
+void   setNetworkConfigurations(const QList<QNetworkConfiguration> & configurations)
+void   setPlaybackRate(qreal rate)
+void   setPlaylist(QMediaPlaylist * playlist)
+void   setPosition(qint64 position)
+void   setVolume(int volume)
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   audioAvailableChanged(bool available)
+void   bufferStatusChanged(int percentFilled)
+void   currentMediaChanged(const QMediaContent & media)
+void   durationChanged(qint64 duration)
+void   error(QMediaPlayer::Error error)
+void   mediaChanged(const QMediaContent & media)
+void   mediaStatusChanged(QMediaPlayer::MediaStatus status)
+void   mutedChanged(bool muted)
+void   networkConfigurationChanged(const QNetworkConfiguration & configuration)
+void   playbackRateChanged(qreal rate)
+void   positionChanged(qint64 position)
+void   seekableChanged(bool seekable)
+void   stateChanged(QMediaPlayer::State state)
+void   videoAvailableChanged(bool videoAvailable)
+void   volumeChanged(int volume)
+</SIGNALS>

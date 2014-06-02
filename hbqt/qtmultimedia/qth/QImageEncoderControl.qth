@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QImageEncoderControl>
+
+
+/*
+ * virtual   ~QImageEncoderControl()
+ */
+HB_FUNC( QT_QIMAGEENCODERCONTROL )
+{
+   HB_FUNC_EXEC( HB_QIMAGEENCODERCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QString   imageCodecDescription(const QString & codec) const = 0
+virtual QImageEncoderSettings   imageSettings() const = 0
+virtual void   setImageSettings(const QImageEncoderSettings & settings) = 0
+virtual QStringList   supportedImageCodecs() const = 0
+virtual QList<QSize>   supportedResolutions(const QImageEncoderSettings & settings, bool * continuous = 0) const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

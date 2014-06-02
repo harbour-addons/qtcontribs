@@ -1,0 +1,92 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject, QMediaBindableInterface
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraImageCapture>
+
+
+/*
+ * QCameraImageCapture(QMediaObject * mediaObject, QObject * parent = 0)
+ * ~QCameraImageCapture()
+ */
+HB_FUNC( QT_QCAMERAIMAGECAPTURE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QMediaObject" ) )
+   {
+      __HB_RETPTRGC__( new QCameraImageCapture( hbqt_par_QMediaObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QMediaObject" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QCameraImageCapture( hbqt_par_QMediaObject( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   CaptureDestination { CaptureToFile, CaptureToBuffer }
+flags   CaptureDestinations
+enum   DriveMode { SingleImageCapture }
+enum   Error { NoError, NotReadyError, ResourceError, OutOfSpaceError, NotSupportedFeatureError, FormatError }
+</ENUMS>
+
+<PROTOS>
+QMultimedia::AvailabilityStatus   availability() const
+QVideoFrame::PixelFormat   bufferFormat() const
+QCameraImageCapture::CaptureDestinations   captureDestination() const
+QImageEncoderSettings   encodingSettings() const
+QCameraImageCapture::Error   error() const
+QString   errorString() const
+QString   imageCodecDescription(const QString & codec) const
+bool   isAvailable() const
+bool   isCaptureDestinationSupported(QCameraImageCapture::CaptureDestinations destination) const
+bool   isReadyForCapture() const
+void   setBufferFormat(const QVideoFrame::PixelFormat format)
+void   setCaptureDestination(QCameraImageCapture::CaptureDestinations destination)
+void   setEncodingSettings(const QImageEncoderSettings & settings)
+QList<QVideoFrame::PixelFormat>   supportedBufferFormats() const
+QStringList   supportedImageCodecs() const
+QList<QSize>   supportedResolutions(const QImageEncoderSettings & settings = QImageEncoderSettings(), bool * continuous = 0) cons
+
+virtual QMediaObject *   mediaObject() const
+</PROTOS>
+
+<SLOTS>
+void   cancelCapture()
+int   capture(const QString & file = QString())
+</SLOTS>
+
+<SIGNALS>
+void   bufferFormatChanged(QVideoFrame::PixelFormat format)
+void   captureDestinationChanged(QCameraImageCapture::CaptureDestinations destination)
+void   error(int id, QCameraImageCapture::Error error, const QString & errorString)
+void   imageAvailable(int id, const QVideoFrame & buffer)
+void   imageCaptured(int id, const QImage & preview)
+void   imageExposed(int id)
+void   imageMetadataAvailable(int id, const QString & key, const QVariant & value)
+void   imageSaved(int id, const QString & fileName)
+void   readyForCaptureChanged(bool ready)
+</SIGNALS>
+

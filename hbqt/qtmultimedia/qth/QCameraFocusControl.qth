@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraFocusControl>
+
+
+/*
+ * ~QCameraFocusControl()
+ */
+HB_FUNC( QT_QCAMERAFOCUSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERAFOCUSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QPointF   customFocusPoint() const = 0
+virtual QCameraFocus::FocusModes   focusMode() const = 0
+virtual QCameraFocus::FocusPointMode   focusPointMode() const = 0
+virtual QList<QCameraFocusZone>  focusZones() const = 0
+virtual bool   isFocusModeSupported(QCameraFocus::FocusModes mode) const = 0
+virtual bool   isFocusPointModeSupported(QCameraFocus::FocusPointMode mode) const = 0
+virtual void   setCustomFocusPoint(const QPointF & point) = 0
+virtual void   setFocusMode(QCameraFocus::FocusModes mode) = 0
+virtual void   setFocusPointMode(QCameraFocus::FocusPointMode mode) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   customFocusPointChanged(const QPointF & point)
+void   focusModeChanged(QCameraFocus::FocusModes mode)
+void   focusPointModeChanged(QCameraFocus::FocusPointMode mode)
+void   focusZonesChanged()
+</SIGNALS>

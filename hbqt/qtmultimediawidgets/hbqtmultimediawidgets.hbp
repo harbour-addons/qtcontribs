@@ -1,0 +1,12 @@
+#
+# $Id$
+#
+
+../hbqt_common.hbm
+
+hbqtmultimediawidgets.hbm
+
+-instfile=inc:hbqtmultimediawidgets.ch
+-instfile=inc:hbqtmultimediawidgets.hbx
+
+hbqtmultimediawidgetss.hbp

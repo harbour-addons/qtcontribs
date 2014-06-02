@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QImageEncoderSettings>
+
+
+/*
+ * QImageEncoderSettings()
+ * QImageEncoderSettings(const QImageEncoderSettings & other)
+ * ~QImageEncoderSettings()
+ */
+HB_FUNC( QT_QIMAGEENCODERSETTINGS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QImageEncoderSettings" ) )
+   {
+      __HB_RETPTRGC__( new QImageEncoderSettings( *hbqt_par_QImageEncoderSettings( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QImageEncoderSettings() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   codec() const
+QVariant   encodingOption(const QString & option) const
+//QMap<QString, QVariant>   encodingOptions() const
+bool   isNull() const
+QMultimedia::EncodingQuality   quality() const
+QSize   resolution() const
+void   setCodec(const QString & codec)
+void   setEncodingOption(const QString & option, const QVariant & value)
+//void   setEncodingOptions(const QMap<QString, QVariant> & options)
+void   setQuality(QMultimedia::EncodingQuality quality)
+void   setResolution(const QSize & resolution)
+void   setResolution(int width, int height)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

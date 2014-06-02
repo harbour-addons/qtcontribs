@@ -52,18 +52,158 @@
  */
 /*----------------------------------------------------------------------*/
 
+#include "hbgtinfo.ch"
+
 #include "hbqt.h"
 #include "hbqtinit.h"
 
+#include "hbapierr.h"
+#include "hbapiitm.h"
 #include "hbvm.h"
 #include "hbinit.h"
 
 #if QT_VERSION >= 0x040500
 
+#if QT_VERSION >= 0x050300
+#include <QtCore/QStringList>
+
+#include <QtMultimedia/QVideoSurfaceFormat>
+#include <QtMultimedia/QAudioFormat>
+#include <QtMultimedia/QMediaTimeRange>
+#include <QtMultimedia/QVideoFrame>
+#include <QtMultimedia/QAudioBuffer>
+#include <QtMultimedia/QMediaContent>
+#endif
+
+HB_EXTERN_BEGIN
+
+extern void hbqt_del_QVideoFrame( void * pObj, int iFlags );
+extern void hbqt_del_QVideoSurfaceFormat( void * pObj, int iFlags );
+extern void hbqt_del_QAudioFormat( void * pObj, int iFlags );
+extern void hbqt_del_QMediaTimeRange( void * pObj, int iFlags );
+extern void hbqt_del_QAudioBuffer( void * pObj, int iFlags );
+extern void hbqt_del_QMediaContent( void * pObj, int iFlags );
+
+HB_EXTERN_END
+
+/*----------------------------------------------------------------------*/
+
+#if QT_VERSION >= 0x050300
+
+static void hbqt_SlotsExecIntQVideoFrame( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QVideoFrame( ( *reinterpret_cast< QVideoFrame( * ) >( arguments[ 2 ] ) ) ), "HB_QVIDEOFRAME", hbqt_del_QVideoFrame, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 1 ] ) );
+      hb_vmPush( p0 );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQVideoSurfaceFormat( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QVideoSurfaceFormat( ( *reinterpret_cast< QVideoSurfaceFormat( * ) >( arguments[ 1 ] ) ) ), "HB_QVIDEOSURFACEFORMAT", hbqt_del_QVideoSurfaceFormat, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQAudioFormat( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QAudioFormat( ( *reinterpret_cast< QAudioFormat( * ) >( arguments[ 1 ] ) ) ), "HB_QAUDIOFORMAT", hbqt_del_QAudioFormat, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQMediaTimeRange( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QMediaTimeRange( ( *reinterpret_cast< QMediaTimeRange( * ) >( arguments[ 1 ] ) ) ), "HB_QMEDIATIMERANGE", hbqt_del_QMediaTimeRange, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQVideoFrame( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QVideoFrame( ( *reinterpret_cast< QVideoFrame( * ) >( arguments[ 1 ] ) ) ), "HB_QVIDEOFRAME", hbqt_del_QVideoFrame, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQAudioBuffer( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QAudioBuffer( ( *reinterpret_cast< QAudioBuffer( * ) >( arguments[ 1 ] ) ) ), "HB_QAUDIOBUFFER", hbqt_del_QAudioBuffer, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQMediaContent( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QMediaContent( ( *reinterpret_cast< QMediaContent( * ) >( arguments[ 1 ] ) ) ), "HB_QMEDIACONTENT", hbqt_del_QMediaContent, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+#endif
+
 /*----------------------------------------------------------------------*/
 
 static void hbqt_registerCallbacks( void )
 {
+#if QT_VERSION >= 0x050300
+   hbqt_slots_register_callback( "int$QVideoFrame"                           , hbqt_SlotsExecIntQVideoFrame                   );
+   hbqt_slots_register_callback( "QVideoSurfaceFormat"                       , hbqt_SlotsExecQVideoSurfaceFormat              );
+   hbqt_slots_register_callback( "QAudioFormat"                              , hbqt_SlotsExecQAudioFormat                     );
+   hbqt_slots_register_callback( "QMediaTimeRange"                           , hbqt_SlotsExecQMediaTimeRange                  );
+   hbqt_slots_register_callback( "QVideoFrame"                               , hbqt_SlotsExecQVideoFrame                      );
+   hbqt_slots_register_callback( "QAudioBuffer"                              , hbqt_SlotsExecQAudioBuffer                     );
+   hbqt_slots_register_callback( "QMediaContent"                             , hbqt_SlotsExecQMediaContent                    );
+#endif
 }
 
 /*----------------------------------------------------------------------*/

@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     =
+QObject     = No
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraFocusZone>
+
+
+/*
+ * QCameraFocusZone(const QCameraFocusZone & other)
+ * ~QCameraFocusZone()
+ */
+HB_FUNC( QT_QCAMERAFOCUSZONE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QCameraFocusZone" ) )
+   {
+      __HB_RETPTRGC__( new QCameraFocusZone( *hbqt_par_QCameraFocusZone( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QCameraFocusZone() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   FocusZoneStatus { Invalid, Unused, Selected, Focused
+</ENUMS>
+
+<PROTOS>
+QRectF   area() const
+bool   isValid() const
+QCameraFocusZone::FocusZoneStatus   status() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

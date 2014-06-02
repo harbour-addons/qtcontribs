@@ -1,0 +1,62 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+Destructor  = no
+Constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraImageProcessing>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QCAMERAIMAGEPROCESSING )
+{
+   HB_FUNC_EXEC( HB_QCAMERAIMAGEPROCESSING );
+}
+</CODE>
+
+<ENUMS>
+enum   WhiteBalanceMode { WhiteBalanceAuto, WhiteBalanceManual, WhiteBalanceSunlight, WhiteBalanceCloudy, ..., WhiteBalanceVendor }
+</ENUMS>
+
+<PROTOS>
+qreal   contrast() const
+qreal   denoisingLevel() const
+bool   isAvailable() const
+bool   isWhiteBalanceModeSupported(QCameraImageProcessing::WhiteBalanceMode mode) const
+qreal   manualWhiteBalance() const
+qreal   saturation() const
+void   setContrast(qreal value)
+void   setDenoisingLevel(qreal level)
+void   setManualWhiteBalance(qreal colorTemperature)
+void   setSaturation(qreal value)
+void   setSharpeningLevel(qreal level)
+void   setWhiteBalanceMode(QCameraImageProcessing::WhiteBalanceMode mode)
+qreal   sharpeningLevel() const
+QCameraImageProcessing::WhiteBalanceMode   whiteBalanceMode() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

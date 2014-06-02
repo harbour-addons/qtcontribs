@@ -1,0 +1,64 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QGraphicsObject, QMediaBindableInterface
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimediaWidgets/QGraphicsVideoItem>
+
+
+/*
+ * QGraphicsVideoItem(QGraphicsItem * parent = 0)
+ * ~QGraphicsVideoItem()
+ */
+HB_FUNC( QT_QGRAPHICSVIDEOITEM )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGraphicsItem" ) )
+   {
+      __HB_RETPTRGC__( new QGraphicsVideoItem( hbqt_par_QGraphicsItem( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGraphicsVideoItem() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+Qt::AspectRatioMode   aspectRatioMode() const
+QSizeF   nativeSize() const
+QPointF   offset() const
+void   setAspectRatioMode(Qt::AspectRatioMode mode)
+void   setOffset(const QPointF & offset)
+void   setSize(const QSizeF & size)
+QSizeF   size() const
+
+virtual QRectF   boundingRect() const
+virtual QMediaObject *   mediaObject() const
+virtual void   paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   nativeSizeChanged(const QSizeF & size)
+</SIGNALS>

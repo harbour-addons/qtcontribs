@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraControl>
+
+
+/*
+ *   ~QCameraControl()
+ */
+HB_FUNC( QT_QCAMERACONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERACONTROL );
+}
+</CODE>
+
+<ENUMS>
+enum   PropertyChangeType { CaptureMode, ImageEncodingSettings, VideoEncodingSettings, Viewfinder }
+</ENUMS>
+
+<PROTOS>
+virtual bool   canChangeProperty(QCameraControl::PropertyChangeType changeType, QCamera::Status status) const = 0
+virtual QCamera::CaptureModes   captureMode() const = 0
+virtual bool   isCaptureModeSupported(QCamera::CaptureModes mode) const = 0
+virtual void   setCaptureMode(QCamera::CaptureModes mode) = 0
+virtual void   setState(QCamera::State state) = 0
+virtual QCamera::State   state() const = 0
+virtual QCamera::Status   status() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   captureModeChanged(QCamera::CaptureModes mode)
+void   error(int error, const QString & errorString)
+void   stateChanged(QCamera::State state)
+void   statusChanged(QCamera::Status status)
+</SIGNALS>

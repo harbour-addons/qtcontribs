@@ -717,18 +717,15 @@
 #define Qt_IntersectsItemBoundingRect             0x3   // The output list contains both items whose bounding rectangle is fully contained inside the selection area, and items that intersect with the area's outline. This method is commonly used for determining areas that need redrawing.
 // See also QGraphicsScene_items(), QGraphicsScene_collidingItems(), QGraphicsView_items(), QGraphicsItem_collidesWithItem(), and QGraphicsItem_collidesWithPath().
 
-// enum #define Qt_Key
-// The key names used by Qt.
-//
 #define Qt_Key_Escape                             0x01000000
 #define Qt_Key_Tab                                0x01000001
 #define Qt_Key_Backtab                            0x01000002
 #define Qt_Key_Backspace                          0x01000003
 #define Qt_Key_Return                             0x01000004
-#define Qt_Key_Enter                              0x01000005   // Typically located on the keypad.
+#define Qt_Key_Enter                              0x01000005     // Typically located on the keypad.
 #define Qt_Key_Insert                             0x01000006
 #define Qt_Key_Delete                             0x01000007
-#define Qt_Key_Pause                              0x01000008
+#define Qt_Key_Pause                              0x01000008     // The Pause/Break key (
 #define Qt_Key_Print                              0x01000009
 #define Qt_Key_SysReq                             0x0100000a
 #define Qt_Key_Clear                              0x0100000b
@@ -741,10 +738,10 @@
 #define Qt_Key_PageUp                             0x01000016
 #define Qt_Key_PageDown                           0x01000017
 #define Qt_Key_Shift                              0x01000020
-#define Qt_Key_Control                            0x01000021   // On Mac OS X, this corresponds to the Command keys.
-#define Qt_Key_Meta                               0x01000022   // On Mac OS X, this corresponds to the Control keys. On Windows keyboards, this key is mapped to the Windows key.
+#define Qt_Key_Control                            0x01000021     // On Mac OS X, this corresponds to the Command keys.
+#define Qt_Key_Meta                               0x01000022     // On Mac OS X, this corresponds to the Control keys. On Windows keyboards, this key is mapped to the Windows key.
 #define Qt_Key_Alt                                0x01000023
-#define Qt_Key_AltGr                              0x01001103   // On Windows, when the KeyDown event for this key is sent, the Ctrl+Alt modifiers are also set.
+#define Qt_Key_AltGr                              0x01001103     // On Windows, when the KeyDown event for this key is sent, the Ctrl+Alt modifiers are also set.
 #define Qt_Key_CapsLock                           0x01000024
 #define Qt_Key_NumLock                            0x01000025
 #define Qt_Key_ScrollLock                         0x01000026
@@ -792,7 +789,7 @@
 #define Qt_Key_Direction_L                        0x01000059
 #define Qt_Key_Direction_R                        0x01000060
 #define Qt_Key_Space                              0x20
-#define Qt_Key_Any                                Key_Space
+#define Qt_Key_Any                                Qt_Key_Space
 #define Qt_Key_Exclam                             0x21
 #define Qt_Key_QuoteDbl                           0x22
 #define Qt_Key_NumberSign                         0x23
@@ -824,8 +821,8 @@
 #define Qt_Key_Equal                              0x3d
 #define Qt_Key_Greater                            0x3e
 #define Qt_Key_Question                           0x3f
-#define Qt_Key_At                                 0x40      // 64
-#define Qt_Key_A                                  0x41      // 65
+#define Qt_Key_At                                 0x40
+#define Qt_Key_A                                  0x41
 #define Qt_Key_B                                  0x42
 #define Qt_Key_C                                  0x43
 #define Qt_Key_D                                  0x44
@@ -838,19 +835,19 @@
 #define Qt_Key_K                                  0x4b
 #define Qt_Key_L                                  0x4c
 #define Qt_Key_M                                  0x4d
-#define Qt_Key_N                                  0x4e      // 78
-#define Qt_Key_O                                  0x4f      // 79
-#define Qt_Key_P                                  0x50      // 80
-#define Qt_Key_Q                                  0x51      // 81
-#define Qt_Key_R                                  0x52      // 82
-#define Qt_Key_S                                  0x53      // 83
+#define Qt_Key_N                                  0x4e
+#define Qt_Key_O                                  0x4f
+#define Qt_Key_P                                  0x50
+#define Qt_Key_Q                                  0x51
+#define Qt_Key_R                                  0x52
+#define Qt_Key_S                                  0x53
 #define Qt_Key_T                                  0x54
 #define Qt_Key_U                                  0x55
 #define Qt_Key_V                                  0x56
 #define Qt_Key_W                                  0x57
 #define Qt_Key_X                                  0x58
 #define Qt_Key_Y                                  0x59
-#define Qt_Key_Z                                  0x5a      // 90
+#define Qt_Key_Z                                  0x5a
 #define Qt_Key_BracketLeft                        0x5b
 #define Qt_Key_Backslash                          0x5c
 #define Qt_Key_BracketRight                       0x5d
@@ -991,11 +988,13 @@
 #define Qt_Key_BassDown                           0x01000075
 #define Qt_Key_TrebleUp                           0x01000076
 #define Qt_Key_TrebleDown                         0x01000077
-#define Qt_Key_MediaPlay                          0x01000080
-#define Qt_Key_MediaStop                          0x01000081
+#define Qt_Key_MediaPlay                          0x01000080     // A key setting the state of the media player to play
+#define Qt_Key_MediaStop                          0x01000081     // A key setting the state of the media player to stop
 #define Qt_Key_MediaPrevious                      0x01000082
 #define Qt_Key_MediaNext                          0x01000083
 #define Qt_Key_MediaRecord                        0x01000084
+#define Qt_Key_MediaPause                         0x1000085      // A key setting the state of the media player to pause (
+#define Qt_Key_MediaTogglePlayPause               0x1000086      // A key to toggle the play/pause state in the media player (rather than setting an absolute state)
 #define Qt_Key_HomePage                           0x01000090
 #define Qt_Key_Favorites                          0x01000091
 #define Qt_Key_Search                             0x01000092
@@ -1003,46 +1002,150 @@
 #define Qt_Key_OpenUrl                            0x01000094
 #define Qt_Key_LaunchMail                         0x010000a0
 #define Qt_Key_LaunchMedia                        0x010000a1
-#define Qt_Key_Launch0                            0x010000a2
-#define Qt_Key_Launch1                            0x010000a3
-#define Qt_Key_Launch2                            0x010000a4
-#define Qt_Key_Launch3                            0x010000a5
-#define Qt_Key_Launch4                            0x010000a6
-#define Qt_Key_Launch5                            0x010000a7
-#define Qt_Key_Launch6                            0x010000a8
-#define Qt_Key_Launch7                            0x010000a9
-#define Qt_Key_Launch8                            0x010000aa
-#define Qt_Key_Launch9                            0x010000ab
-#define Qt_Key_LaunchA                            0x010000ac
-#define Qt_Key_LaunchB                            0x010000ad
-#define Qt_Key_LaunchC                            0x010000ae
-#define Qt_Key_LaunchD                            0x010000af
-#define Qt_Key_LaunchE                            0x010000b0
-#define Qt_Key_LaunchF                            0x010000b1
+#define Qt_Key_Launch0                            0x010000a2     // On X11 this key is mapped to "My Computer" (XF86XK_MyComputer) key for legacy reasons.
+#define Qt_Key_Launch1                            0x010000a3     // On X11 this key is mapped to "Calculator" (XF86XK_Calculator) key for legacy reasons.
+#define Qt_Key_Launch2                            0x010000a4     // On X11 this key is mapped to XF86XK_Launch0 key for legacy reasons.
+#define Qt_Key_Launch3                            0x010000a5     // On X11 this key is mapped to XF86XK_Launch1 key for legacy reasons.
+#define Qt_Key_Launch4                            0x010000a6     // On X11 this key is mapped to XF86XK_Launch2 key for legacy reasons.
+#define Qt_Key_Launch5                            0x010000a7     // On X11 this key is mapped to XF86XK_Launch3 key for legacy reasons.
+#define Qt_Key_Launch6                            0x010000a8     // On X11 this key is mapped to XF86XK_Launch4 key for legacy reasons.
+#define Qt_Key_Launch7                            0x010000a9     // On X11 this key is mapped to XF86XK_Launch5 key for legacy reasons.
+#define Qt_Key_Launch8                            0x010000aa     // On X11 this key is mapped to XF86XK_Launch6 key for legacy reasons.
+#define Qt_Key_Launch9                            0x010000ab     // On X11 this key is mapped to XF86XK_Launch7 key for legacy reasons.
+#define Qt_Key_LaunchA                            0x010000ac     // On X11 this key is mapped to XF86XK_Launch8 key for legacy reasons.
+#define Qt_Key_LaunchB                            0x010000ad     // On X11 this key is mapped to XF86XK_Launch9 key for legacy reasons.
+#define Qt_Key_LaunchC                            0x010000ae     // On X11 this key is mapped to XF86XK_LaunchA key for legacy reasons.
+#define Qt_Key_LaunchD                            0x010000af     // On X11 this key is mapped to XF86XK_LaunchB key for legacy reasons.
+#define Qt_Key_LaunchE                            0x010000b0     // On X11 this key is mapped to XF86XK_LaunchC key for legacy reasons.
+#define Qt_Key_LaunchF                            0x010000b1     // On X11 this key is mapped to XF86XK_LaunchD key for legacy reasons.
+#define Qt_Key_LaunchG                            0x0100010e     // On X11 this key is mapped to XF86XK_LaunchE key for legacy reasons.
+#define Qt_Key_LaunchH                            0x0100010f     // On X11 this key is mapped to XF86XK_LaunchF key for legacy reasons.
+#define Qt_Key_MonBrightnessUp                    0x010000b2
+#define Qt_Key_MonBrightnessDown                  0x010000b3
+#define Qt_Key_KeyboardLightOnOff                 0x010000b4
+#define Qt_Key_KeyboardBrightnessUp               0x010000b5
+#define Qt_Key_KeyboardBrightnessDown             0x010000b6
+#define Qt_Key_PowerOff                           0x010000b7
+#define Qt_Key_WakeUp                             0x010000b8
+#define Qt_Key_Eject                              0x010000b9
+#define Qt_Key_ScreenSaver                        0x010000ba
+#define Qt_Key_WWW                                0x010000bb
+#define Qt_Key_Memo                               0x010000bc
+#define Qt_Key_LightBulb                          0x010000bd
+#define Qt_Key_Shop                               0x010000be
+#define Qt_Key_History                            0x010000bf
+#define Qt_Key_AddFavorite                        0x010000c0
+#define Qt_Key_HotLinks                           0x010000c1
+#define Qt_Key_BrightnessAdjust                   0x010000c2
+#define Qt_Key_Finance                            0x010000c3
+#define Qt_Key_Community                          0x010000c4
+#define Qt_Key_AudioRewind                        0x010000c5
+#define Qt_Key_BackForward                        0x010000c6
+#define Qt_Key_ApplicationLeft                    0x010000c7
+#define Qt_Key_ApplicationRight                   0x010000c8
+#define Qt_Key_Book                               0x010000c9
+#define Qt_Key_CD                                 0x010000ca
+#define Qt_Key_Calculator                         0x010000cb     // On X11 this key is not mapped for legacy reasons. Use #define Qt_Key_Launch1 instead.
+#define Qt_Key_ToDoList                           0x010000cc
+#define Qt_Key_ClearGrab                          0x010000cd
+#define Qt_Key_Close                              0x010000ce
+#define Qt_Key_Copy                               0x010000cf
+#define Qt_Key_Cut                                0x010000d0
+#define Qt_Key_Display                            0x010000d1
+#define Qt_Key_DOS                                0x010000d2
+#define Qt_Key_Documents                          0x010000d3
+#define Qt_Key_Excel                              0x010000d4
+#define Qt_Key_Explorer                           0x010000d5
+#define Qt_Key_Game                               0x010000d6
+#define Qt_Key_Go                                 0x010000d7
+#define Qt_Key_iTouch                             0x010000d8
+#define Qt_Key_LogOff                             0x010000d9
+#define Qt_Key_Market                             0x010000da
+#define Qt_Key_Meeting                            0x010000db
+#define Qt_Key_MenuKB                             0x010000dc
+#define Qt_Key_MenuPB                             0x010000dd
+#define Qt_Key_MySites                            0x010000de
+#define Qt_Key_News                               0x010000df
+#define Qt_Key_OfficeHome                         0x010000e0
+#define Qt_Key_Option                             0x010000e1
+#define Qt_Key_Paste                              0x010000e2
+#define Qt_Key_Phone                              0x010000e3
+#define Qt_Key_Calendar                           0x010000e4
+#define Qt_Key_Reply                              0x010000e5
+#define Qt_Key_Reload                             0x010000e6
+#define Qt_Key_RotateWindows                      0x010000e7
+#define Qt_Key_RotationPB                         0x010000e8
+#define Qt_Key_RotationKB                         0x010000e9
+#define Qt_Key_Save                               0x010000ea
+#define Qt_Key_Send                               0x010000eb
+#define Qt_Key_Spell                              0x010000ec
+#define Qt_Key_SplitScreen                        0x010000ed
+#define Qt_Key_Support                            0x010000ee
+#define Qt_Key_TaskPane                           0x010000ef
+#define Qt_Key_Terminal                           0x010000f0
+#define Qt_Key_Tools                              0x010000f1
+#define Qt_Key_Travel                             0x010000f2
+#define Qt_Key_Video                              0x010000f3
+#define Qt_Key_Word                               0x010000f4
+#define Qt_Key_Xfer                               0x010000f5
+#define Qt_Key_ZoomIn                             0x010000f6
+#define Qt_Key_ZoomOut                            0x010000f7
+#define Qt_Key_Away                               0x010000f8
+#define Qt_Key_Messenger                          0x010000f9
+#define Qt_Key_WebCam                             0x010000fa
+#define Qt_Key_MailForward                        0x010000fb
+#define Qt_Key_Pictures                           0x010000fc
+#define Qt_Key_Music                              0x010000fd
+#define Qt_Key_Battery                            0x010000fe
+#define Qt_Key_Bluetooth                          0x010000ff
+#define Qt_Key_WLAN                               0x01000100
+#define Qt_Key_UWB                                0x01000101
+#define Qt_Key_AudioForward                       0x01000102
+#define Qt_Key_AudioRepeat                        0x01000103
+#define Qt_Key_AudioRandomPlay                    0x01000104
+#define Qt_Key_Subtitle                           0x01000105
+#define Qt_Key_AudioCycleTrack                    0x01000106
+#define Qt_Key_Time                               0x01000107
+#define Qt_Key_Hibernate                          0x01000108
+#define Qt_Key_View                               0x01000109
+#define Qt_Key_TopMenu                            0x0100010a
+#define Qt_Key_PowerDown                          0x0100010b
+#define Qt_Key_Suspend                            0x0100010c
+#define Qt_Key_ContrastAdjust                     0x0100010d
+#define Qt_Key_TouchpadToggle                     0x01000110
+#define Qt_Key_TouchpadOn                         0x01000111
+#define Qt_Key_TouchpadOff                        0x01000112
+#define Qt_Key_MicMute                            0x01000113
+#define Qt_Key_Red                                0x01000114
+#define Qt_Key_Green                              0x01000115
+#define Qt_Key_Yellow                             0x01000116
+#define Qt_Key_Blue                               0x01000117
+#define Qt_Key_ChannelUp                          0x01000118
+#define Qt_Key_ChannelDown                        0x01000119
 #define Qt_Key_MediaLast                          0x0100ffff
 #define Qt_Key_unknown                            0x01ffffff
-#define Qt_Key_Call                               0x01100004
+#define Qt_Key_Call                               0x01100004     // A key to answer or initiate a call (see #define Qt_Key_ToggleCallHangup for a key to toggle current call state)
+#define Qt_Key_Camera                             0x01100020     // A key to activate the camera shutter
+#define Qt_Key_CameraFocus                        0x01100021     // A key to focus the camera
 #define Qt_Key_Context1                           0x01100000
 #define Qt_Key_Context2                           0x01100001
 #define Qt_Key_Context3                           0x01100002
 #define Qt_Key_Context4                           0x01100003
 #define Qt_Key_Flip                               0x01100006
-#define Qt_Key_Hangup                             0x01100005
+#define Qt_Key_Hangup                             0x01100005     // A key to end an ongoing call (see #define Qt_Key_ToggleCallHangup for a key to toggle current call state)
 #define Qt_Key_No                                 0x01010002
 #define Qt_Key_Select                             0x01010000
 #define Qt_Key_Yes                                0x01010001
+#define Qt_Key_ToggleCallHangup                   0x01100007     // A key to toggle the current call state (ie. either answer, or hangup) depending on current call state
+#define Qt_Key_VoiceDial                          0x01100008
+#define Qt_Key_LastNumberRedial                   0x01100009
 #define Qt_Key_Execute                            0x01020003
 #define Qt_Key_Printer                            0x01020002
 #define Qt_Key_Play                               0x01020005
 #define Qt_Key_Sleep                              0x01020004
 #define Qt_Key_Zoom                               0x01020006
 #define Qt_Key_Cancel                             0x01020001
-// See also QKeyEvent_key().
 
-// enum #define Qt_KeyboardModifier
-// flags #define Qt_KeyboardModifiers
-// This enum describes the modifier keys.
-//
 #define Qt_NoModifier                             0x00000000   // No modifier key is pressed.
 #define Qt_ShiftModifier                          0x02000000   // A Shift key on the keyboard is pressed.
 #define Qt_ControlModifier                        0x04000000   // A Ctrl key on the keyboard is pressed.
@@ -1050,10 +1153,6 @@
 #define Qt_MetaModifier                           0x10000000   // A Meta key on the keyboard is pressed.
 #define Qt_KeypadModifier                         0x20000000   // A keypad button is pressed.
 #define Qt_GroupSwitchModifier                    0x40000000   // X11 only. A Mode_switch key on the keyboard is pressed.
-// Note: On Mac OS X, the ControlModifier value corresponds to the Command keys on the Macintosh keyboard, and the MetaModifier value corresponds to the Control keys. The KeypadModifier value will also be set when an arrow key is pressed as the arrow keys are considered part of the keypad.
-// Note: On Windows Keyboards, #define Qt_MetaModifier and #define Qt_Key_Meta are mapped to the Windows key.
-// The KeyboardModifiers type is a typedef for QFlags<KeyboardModifier>. It stores an OR combination of KeyboardModifier values.
-// See also MouseButton and Modifier.
 
 // enum #define Qt_LayoutDirection
 // Specifies the direction of Qt's layouts:
@@ -1882,11 +1981,11 @@
 // This enum describes the different ways drawing underlined text.
 //
 #define QTextCharFormat_NoUnderline               0      // Text is draw without any underlining decoration.
-#define QTextCharFormat_SingleUnderline           1      // A line is drawn using Qt::SolidLine.
-#define QTextCharFormat_DashUnderline             2      // Dashes are drawn using Qt::DashLine.
-#define QTextCharFormat_DotLine                   3      // Dots are drawn using Qt::DotLine;
-#define QTextCharFormat_DashDotLine               4      // Dashs and dots are drawn using Qt::DashDotLine.
-#define QTextCharFormat_DashDotDotLine            5      // Underlines draw drawn using Qt::DashDotDotLine.
+#define QTextCharFormat_SingleUnderline           1      // A line is drawn using #define Qt_SolidLine.
+#define QTextCharFormat_DashUnderline             2      // Dashes are drawn using #define Qt_DashLine.
+#define QTextCharFormat_DotLine                   3      // Dots are drawn using #define Qt_DotLine;
+#define QTextCharFormat_DashDotLine               4      // Dashs and dots are drawn using #define Qt_DashDotLine.
+#define QTextCharFormat_DashDotDotLine            5      // Underlines draw drawn using #define Qt_DashDotDotLine.
 #define QTextCharFormat_WaveUnderline             6      // The text is underlined using a wave shaped line.
 #define QTextCharFormat_SpellCheckUnderline       7      // The underline is drawn depending on the QStyle::SH_SpellCeckUnderlineStyle style hint of the QApplication style. By default this is mapped to WaveUnderline, on Mac OS X it is mapped to DashDotLine.
 
@@ -2711,7 +2810,7 @@
 // enum QGesture::GestureCancelPolicy
 // This enum describes how accepting a gesture can cancel other gestures automatically.
 #define QGesture_CancelNone                                  0       // On accepting this gesture no other gestures will be affected.
-#define QGesture_CancelAllInContext                          1       // On accepting this gesture all gestures that are active in the context (respecting the Qt::GestureFlag that were specified when subscribed to the gesture) will be cancelled.
+#define QGesture_CancelAllInContext                          1       // On accepting this gesture all gestures that are active in the context (respecting the #define Qt_GestureFlag that were specified when subscribed to the gesture) will be cancelled.
 
 // enum QPinchGesture::ChangeFlag
 // flags QPinchGesture::ChangeFlags
@@ -3114,8 +3213,8 @@
 #define QStyle_SP_ArrowDown                                  51      // Icon arrow pointing down.
 #define QStyle_SP_ArrowLeft                                  52      // Icon arrow pointing left.
 #define QStyle_SP_ArrowRight                                 53      // Icon arrow pointing right.
-#define QStyle_SP_ArrowBack                                  54      // Equivalent to SP_ArrowLeft when the current layout direction is Qt::LeftToRight, otherwise SP_ArrowRight.
-#define QStyle_SP_ArrowForward                               55      // Equivalent to SP_ArrowRight when the current layout direction is Qt::LeftToRight, otherwise SP_ArrowLeft.
+#define QStyle_SP_ArrowBack                                  54      // Equivalent to SP_ArrowLeft when the current layout direction is #define Qt_LeftToRight, otherwise SP_ArrowRight.
+#define QStyle_SP_ArrowForward                               55      // Equivalent to SP_ArrowRight when the current layout direction is #define Qt_LeftToRight, otherwise SP_ArrowLeft.
 #define QStyle_SP_CommandLink                                57      // Icon used to indicate a Vista style command link glyph.
 #define QStyle_SP_VistaShield                                58      // Icon used to indicate UAC prompts on Windows Vista. This will return a null pixmap or icon on all other platforms.
 #define QStyle_SP_BrowserReload                              59      // Icon indicating that the current page should be reloaded.
@@ -4217,6 +4316,332 @@
 #define QPageLayout_Pica                                     3   // 1/72th of a foot, 1/6th of an inch, 12 Points
 #define QPageLayout_Didot                                    4   // 1/72th of a French inch, 0.375 mm
 #define QPageLayout_Cicero                                   5   // 1/6th of a French inch, 12 Didot, 4.5mm
+
+
+//enum #define QCamera_CaptureMode
+#define QCamera_CaptureViewfinder                            0      // Camera is only configured to display viewfinder.
+#define QCamera_CaptureStillImage                            0x01   // Camera is configured for still frames capture.
+#define QCamera_CaptureVideo                                 0x02   // Camera is configured for video capture.
+
+//enum #define QCamera_Error
+#define QCamera_NoError                                      0      // No errors have occurred.
+#define QCamera_CameraError                                  1      // An error has occurred.
+#define QCamera_InvalidRequestError                          2      // System resource doesn't support requested functionality.
+#define QCamera_ServiceMissingError                          3      // No camera service available.
+#define QCamera_NotSupportedFeatureError                     4      // The feature is not supported.
+                                                                    //
+//enum #define QCamera_LockChangeReason                             //
+#define QCamera_UserRequest                                  0      // The lock status changed in result of user request, usually to unlock camera settings.
+#define QCamera_LockAcquired                                 1      // The lock status successfuly changed to #define QCamera_Locked.
+#define QCamera_LockFailed                                   2      // The camera failed to acquire the requested lock in result of autofocus failure, exposure out of supported range, etc.
+#define QCamera_LockLost                                     3      // The camera is not able to maintain the requested lock any more. Lock status is changed to #define QCamera_Unlocked.
+#define QCamera_LockTemporaryLost                            4      // The lock is lost, but the camera is working hard to reacquire it. This value may be used in continuous focusing mode, when the camera loses the focus, the focus lock state is changed to #define QCamera_Searching with LockTemporaryLost reason.
+                                                                    //
+//enum #define QCamera_LockStatus                                   //
+#define QCamera_Unlocked                                     0      // The application is not interested in camera settings value. The camera may keep this parameter without changes, this is common with camera focus, or adjust exposure and white balance constantly to keep the viewfinder image nice.
+#define QCamera_Searching                                    1      // The application has requested the camera focus, exposure or white balance lock with #define QCamera_searchAndLock(). This state indicates the camera is focusing or calculating exposure and white balance.
+#define QCamera_Locked                                       2      // The camera focus, exposure or white balance is locked. The camera is ready to capture, application may check the exposure parameters.
+
+//enum #define QCamera_LockType
+#define QCamera_NoLock                                       0      //
+#define QCamera_LockExposure                                 0x01   // Lock camera exposure.
+#define QCamera_LockWhiteBalance                             0x02   // Lock the white balance.
+#define QCamera_LockFocus                                    0x04   // Lock camera focus.
+
+//enum #define QCamera_Position
+#define QCamera_UnspecifiedPosition                          0      // The camera position is unspecified or unknown.
+#define QCamera_BackFace                                     1      // The camera is on the back face of the system hardware. For example on a mobile device, it means it is on the opposite side to that of the screen.
+#define QCamera_FrontFace                                    2      // The camera is on the front face of the system hardware. For example on a mobile device, it means it is on the same side as that of the screen. Viewfinder frames of front-facing cameras are mirrored horizontally, so the users can see themselves as looking into a mirror. Captured images or videos are not mirrored.
+
+//enum #define QCamera_State
+#define QCamera_UnloadedState                                0      // The initial camera state, with camera not loaded, the camera capabilities except of supported capture modes are unknown.
+#define QCamera_LoadedState                                  1      // The camera is loaded and ready to be configured.
+#define QCamera_ActiveState                                  2      // In the active state as soon as camera is started the viewfinder displays video frames and the camera is ready for capture.
+                                                                    //
+//enum #define QCamera_Status                                       //
+#define QCamera_ActiveStatus                                 8      // The camera has been started and can produce data. The viewfinder displays video frames in active state.
+#define QCamera_StartingStatus                               6      // The camera is starting in result of state transition to #define QCamera_ActiveState. The camera service is not ready to capture yet.
+#define QCamera_StoppingStatus                               7      // The camera is stopping in result of state transition from #define QCamera_ActiveState to #define QCamera_LoadedState or #define QCamera_UnloadedState.
+#define QCamera_StandbyStatus                                5      // The camera is in the power saving standby mode. The camera may come to the standby mode after some time of inactivity in the #define QCamera_LoadedState state.
+#define QCamera_LoadedStatus                                 4      // The camera is loaded and ready to be configured. This status indicates the camera device is opened and it's possible to query for supported image and video capture settings, like resolution, framerate and codecs.
+#define QCamera_LoadingStatus                                2      // The camera device loading in result of state transition from #define QCamera_UnloadedState to #define QCamera_LoadedState or #define QCamera_ActiveState.
+#define QCamera_UnloadingStatus                              3      // The camera device is unloading in result of state transition from #define QCamera_LoadedState or #define QCamera_ActiveState to #define QCamera_UnloadedState.
+#define QCamera_UnloadedStatus                               1      // The initial camera status, with camera not loaded. The camera capabilities including supported capture settings may be unknown.
+#define QCamera_UnavailableStatus                            0      // The camera or camera backend is not available.
+
+//enum #define QCameraControl_PropertyChangeType
+#define QCameraControl_CaptureMode                           1      // Indicates the capture mode is changed.
+#define QCameraControl_ImageEncodingSettings                 2      // Image encoder settings are changed, including resolution.
+#define QCameraControl_VideoEncodingSettings                 3      // Video encoder settings are changed, including audio, video and container settings.
+#define QCameraControl_Viewfinder                            4      // Viewfinder is changed.
+
+
+//enum #define QCameraExposure_ExposureMode
+#define QCameraExposure_ExposureAuto                         0      // Automatic mode.
+#define QCameraExposure_ExposureManual                       1      // Manual mode.
+#define QCameraExposure_ExposurePortrait                     2      // Portrait exposure mode.
+#define QCameraExposure_ExposureNight                        3      // Night mode.
+#define QCameraExposure_ExposureBacklight                    4      // Backlight exposure mode.
+#define QCameraExposure_ExposureSpotlight                    5      // Spotlight exposure mode.
+#define QCameraExposure_ExposureSports                       6      // Spots exposure mode.
+#define QCameraExposure_ExposureSnow                         7      // Snow exposure mode.
+#define QCameraExposure_ExposureBeach                        8      // Beach exposure mode.
+#define QCameraExposure_ExposureLargeAperture                9      // Use larger aperture with small depth of field.
+#define QCameraExposure_ExposureSmallAperture                10     // Use smaller aperture.
+#define QCameraExposure_ExposureModeVendor                   1000   //  The base value for device specific exposure modes.
+
+//enum #define QCameraExposure_FlashMode
+#define QCameraExposure_FlashAuto                            0x1    // Automatic flash.
+#define QCameraExposure_FlashOff                             0x2    // Flash is Off.
+#define QCameraExposure_FlashOn                              0x4    // Flash is On.
+#define QCameraExposure_FlashRedEyeReduction                 0x8    // Red eye reduction flash.
+#define QCameraExposure_FlashFill                            0x10   // Use flash to fillin shadows.
+#define QCameraExposure_FlashTorch                           0x20   // Constant light source. If supported, torch can be enabled without loading the camera.
+#define QCameraExposure_FlashVideoLight                      0x40   // Constant light source, useful for video capture. The light is turned on only while camera is active.
+#define QCameraExposure_FlashSlowSyncFrontCurtain            0x80   // Use the flash in conjunction with a slow shutter speed. This mode allows better exposure of distant objects and/or motion blur effect.
+#define QCameraExposure_FlashSlowSyncRearCurtain             0x100  // The similar mode to FlashSlowSyncFrontCurtain but flash is fired at the end of exposure.
+#define QCameraExposure_FlashManual                          0x200  // Flash power is manualy set.
+
+//enum  QCameraExposure_MeteringMode
+#define QCameraExposure_MeteringMatrix                       1      // Matrix metering mode.
+#define QCameraExposure_MeteringAverage                      2      // Center weighted average metering mode.
+#define QCameraExposure_MeteringSpot                         3      // Spot metering mode.
+
+//enum QCameraExposureControl_ExposureParameter
+#define QCameraExposureControl_ISO                           0      // Camera ISO sensitivity, specified as integer value.
+#define QCameraExposureControl_Aperture                      1      // Lens aperture is specified as an qreal F number. The supported apertures list can change depending on the focal length, in such a case the exposureParameterRangeChanged() signal is emitted.
+#define QCameraExposureControl_ShutterSpeed                  2      // Shutter speed in seconds, specified as qreal.
+#define QCameraExposureControl_ExposureCompensation          3      // Exposure compensation, specified as qreal EV value.
+#define QCameraExposureControl_FlashPower                    4      // Manual flash power, specified as qreal value. Accepted power range is [0..1.0], with 0 value means no flash and 1.0 corresponds to full flash power.
+#define QCameraExposureControl_TorchPower                    6      // Manual torch power, specified as qreal value. Accepted power range is [0..1.0], with 0 value means no light and 1.0 corresponds to full torch power.
+#define QCameraExposureControl_FlashCompensation             5      // Flash compensation, specified as qreal EV value.
+#define QCameraExposureControl_SpotMeteringPoint             7      // The relative frame coordinate of the point to use for exposure metering in spot metering mode, specified as a QPointF.
+#define QCameraExposureControl_ExposureMode                  8      // Camera exposure mode.
+#define QCameraExposureControl_MeteringMode                  9      // Camera metering mode.
+#define QCameraExposureControl_ExtendedExposureParameter     1000   // The base value for platform specific extended parameters. For such parameters the sequential values starting from ExtendedExposureParameter shuld be used.
+
+//enum QCameraFeedbackControl_EventType
+#define QCameraFeedbackControl_ViewfinderStarted             1      // The viewfinder stream was started (even if not visible)
+#define QCameraFeedbackControl_ViewfinderStopped             2      // The viewfinder stream was stopped
+#define QCameraFeedbackControl_ImageCaptured                 3      // An image was captured but not yet fully processed
+#define QCameraFeedbackControl_ImageSaved                    4      // An image is fully available and saved somewhere.
+#define QCameraFeedbackControl_ImageError                    5      // An error occurred while capturing an image
+#define QCameraFeedbackControl_RecordingStarted              6      // Video recording has started
+#define QCameraFeedbackControl_RecordingInProgress           7      // Video recording is in progress
+#define QCameraFeedbackControl_RecordingStopped              8      // Video recording has stopped
+#define QCameraFeedbackControl_AutoFocusInProgress           9      // The camera is trying to automatically focus
+#define QCameraFeedbackControl_AutoFocusLocked               10     // The camera has automatically focused successfully
+#define QCameraFeedbackControl_AutoFocusFailed               11     // The camera was unable to focus automatically
+
+//enum QCameraFocus::FocusMode
+#define QCameraFocus_ManualFocus                             0x1    // Manual or fixed focus mode.
+#define QCameraFocus_HyperfocalFocus                         0x02   // Focus to hyperfocal distance, with the maximum depth of field achieved. All objects at distances from half of this distance out to infinity will be acceptably sharp.
+#define QCameraFocus_InfinityFocus                           0x04   // Focus strictly to infinity.
+#define QCameraFocus_AutoFocus                               0x8    // One-shot auto focus mode.
+#define QCameraFocus_ContinuousFocus                         0x10   // Continuous auto focus mode.
+#define QCameraFocus_MacroFocus                              0x20   // One shot auto focus to objects close to camera.
+
+//enum QCameraFocus::FocusPointMode
+#define QCameraFocus_FocusPointAuto                          0      // Automatically select one or multiple focus points.
+#define QCameraFocus_FocusPointCenter                        1      // Focus to the frame center.
+#define QCameraFocus_FocusPointFaceDetection                 2      // Focus on faces in the frame.
+#define QCameraFocus_FocusPointCustom                        3      // Focus to the custom point, defined by QCameraFocus::customFocusPoint property.
+
+//enum QCameraFocusZone::FocusZoneStatus
+#define QCameraFocusZone_Invalid                             0      // This zone is not valid
+#define QCameraFocusZone_Unused                              1      // This zone may be used for autofocusing, but is not currently.
+#define QCameraFocusZone_Selected                            2      // This zone is currently being used for autofocusing, but is not in focus.
+#define QCameraFocusZone_Focused                             3      // This zone is being used for autofocusing and is currently in focus.
+
+//enum QCameraImageProcessing::WhiteBalanceMode
+#define QCameraImageProcessing_WhiteBalanceAuto              0      // Auto white balance mode.
+#define QCameraImageProcessing_WhiteBalanceManual            1      // Manual white balance. In this mode the white balance should be set with setManualWhiteBalance()
+#define QCameraImageProcessing_WhiteBalanceSunlight          2      // Sunlight white balance mode.
+#define QCameraImageProcessing_WhiteBalanceCloudy            3      // Cloudy white balance mode.
+#define QCameraImageProcessing_WhiteBalanceShade             4      // Shade white balance mode.
+#define QCameraImageProcessing_WhiteBalanceTungsten          5      // Tungsten (incandescent) white balance mode.
+#define QCameraImageProcessing_WhiteBalanceFluorescent       6      // Fluorescent white balance mode.
+#define QCameraImageProcessing_WhiteBalanceFlash             7      // Flash white balance mode.
+#define QCameraImageProcessing_WhiteBalanceSunset            8      // Sunset white balance mode.
+#define QCameraImageProcessing_WhiteBalanceVendor            1000   // Base value for vendor defined white balance modes.
+
+//enum QCameraImageProcessingControl::ProcessingParameter
+#define QCameraImageProcessingControl_WhiteBalancePreset     0      // The white balance preset.
+#define QCameraImageProcessingControl_ColorTemperature       1      // Color temperature in K. This value is used when the manual white balance mode is selected.
+#define QCameraImageProcessingControl_Contrast               2      // Image contrast.
+#define QCameraImageProcessingControl_Saturation             3      // Image saturation.
+#define QCameraImageProcessingControl_Brightness             4      // Image brightness.
+#define QCameraImageProcessingControl_Sharpening             5      // Amount of sharpening applied.
+#define QCameraImageProcessingControl_Denoising              6      // Amount of denoising applied.
+#define QCameraImageProcessingControl_ContrastAdjustment     7      // Image contrast adjustment.
+#define QCameraImageProcessingControl_SaturationAdjustment   8      // Image saturation adjustment.
+#define QCameraImageProcessingControl_BrightnessAdjustment   9      // Image brightness adjustment.
+#define QCameraImageProcessingControl_SharpeningAdjustment   10     // Adjustment of sharpening applied.
+#define QCameraImageProcessingControl_DenoisingAdjustment    11     // Adjustment of denoising applied.
+#define QCameraImageProcessingControl_ExtendedParameter      1000   // The base value for platform specific extended parameters.
+
+//enum QCameraViewfinderSettingsControl::ViewfinderParameter
+#define QCameraViewfinderSettingsControl_Resolution          0      // Viewfinder resolution, QSize.
+#define QCameraViewfinderSettingsControl_PixelAspectRatio    1      // Pixel aspect ratio, QSize as in QVideoSurfaceFormat::pixelAspectRatio
+#define QCameraViewfinderSettingsControl_MinimumFrameRate    2      // Minimum viewfinder frame rate, qreal
+#define QCameraViewfinderSettingsControl_MaximumFrameRate    3      // Maximum viewfinder frame rate, qreal
+#define QCameraViewfinderSettingsControl_PixelFormat         4      // Viewfinder pixel format, QVideoFrame::PixelFormat
+#define QCameraViewfinderSettingsControl_UserParameter       1000   // The base value for platform specific extended parameters. For such parameters the sequential values starting from UserParameter shuld be used.
+
+//enum QMediaPlaylist::Error
+#define QMediaPlaylist_NoError                               0      // No errors.
+#define QMediaPlaylist_FormatError                           1      // Format error.
+#define QMediaPlaylist_FormatNotSupportedError               2      // Format not supported.
+#define QMediaPlaylist_NetworkError                          3      // Network error.
+#define QMediaPlaylist_AccessDeniedError                     4      // Access denied error.
+
+//enum #defineQMediaPlaylist_PlaybackMode
+#define QMediaPlaylist_CurrentItemOnce                       0      // The current item is played only once.
+#define QMediaPlaylist_CurrentItemInLoop                     1      // The current item is played repeatedly in a loop.
+#define QMediaPlaylist_Sequential                            2      // Playback starts from the current and moves through each successive item until the last is reached and then stops. The next item is a null item when the last one is currently playing.
+#define QMediaPlaylist_Loop                                  3      // Playback restarts at the first item after the last has finished playing.
+#define QMediaPlaylist_Random                                4      // Play items in random order.
+
+//enum QMediaRecorder::Error
+#define QMediaRecorder_NoError                               0      // No Errors.
+#define QMediaRecorder_ResourceError                         1      // Device is not ready or not available.
+#define QMediaRecorder_FormatError                           2      // Current format is not supported.
+#define QMediaRecorder_OutOfSpaceError                       3      // No space left on device.
+                                                                    //
+//enum #define QMediaRecorder_State                                 //
+#define QMediaRecorder_StoppedState                          0      // The recorder is not active.
+#define QMediaRecorder_RecordingState                        1      // The recording is requested.
+#define QMediaRecorder_PausedState                           2      // The recorder is paused.
+                                                                    //
+//enum #define QMediaRecorder_Status                                //
+#define QMediaRecorder_UnavailableStatus                     0      // The recorder is not available or not supported by connected media object.
+#define QMediaRecorder_UnloadedStatus                        1      // The recorder is avilable but not loaded.
+#define QMediaRecorder_LoadingStatus                         2      // The recorder is initializing.
+#define QMediaRecorder_LoadedStatus                          3      // The recorder is initialized and ready to record media.
+#define QMediaRecorder_StartingStatus                        4      // Recording is requested but not active yet.
+#define QMediaRecorder_RecordingStatus                       5      // Recording is active.
+#define QMediaRecorder_PausedStatus                          6      // Recording is paused.
+#define QMediaRecorder_FinalizingStatus                      7      // Recording is stopped with media being finalized.
+                                                                    //
+//enum QMediaStreamsControl::StreamType                             //
+#define QMediaStreamsControl_AudioStream                     2      // Audio stream.
+#define QMediaStreamsControl_VideoStream                     1      // Video stream.
+#define QMediaStreamsControl_SubPictureStream                3      // Subpicture or teletext stream.
+#define QMediaStreamsControl_UnknownStream                   0      // The stream type is unknown.
+#define QMediaStreamsControl_DataStream                      4      //
+
+//enum QRadioTuner::Band
+#define QRadioTuner_AM                                       0      // 520 to 1610 kHz, 9 or 10kHz channel spacing, extended 1610 to 1710 kHz
+#define QRadioTuner_FM                                       1      // 87.5 to 108.0 MHz, except Japan 76-90 MHz
+#define QRadioTuner_SW                                       2      // 1.711 to 30.0 MHz, divided into 15 bands. 5kHz channel spacing
+#define QRadioTuner_LW                                       3      // 148.5 to 283.5 kHz, 9kHz channel spacing (Europe, Africa, Asia)
+#define QRadioTuner_FM2                                      4      // range not defined, used when area supports more than one FM range.
+                                                                    //
+//enum #define QRadioTuner_Error                                    //
+#define QRadioTuner_NoError                                  0      // No errors have occurred.
+#define QRadioTuner_ResourceError                            1      // There is no radio service available.
+#define QRadioTuner_OpenError                                2      // Unable to open radio device.
+#define QRadioTuner_OutOfRangeError                          3      // An attempt to set a frequency or band that is not supported by radio device.
+
+//enum #define QRadioTuner_SearchMode
+#define QRadioTuner_SearchFast                               0      // Use only signal strength when searching.
+#define QRadioTuner_SearchGetStationId                       1      // After finding a strong signal, wait for the RDS station id (PI) before continuing.
+                                                                    //
+//enum #define QRadioTuner_State                                    //
+#define QRadioTuner_ActiveState                              0      // The tuner is started and active.
+#define QRadioTuner_StoppedState                             1      // The tuner device is stopped.
+
+//enum #define QRadioTuner_StereoMode
+#define QRadioTuner_ForceStereo                              0      // Provide stereo mode, converting if required.
+#define QRadioTuner_ForceMono                                1      // Provide mono mode, converting if required.
+#define QRadioTuner_Auto                                     2      // Uses the stereo mode matching the station.
+                                                                    //
+//enum QSoundEffect::Loop                                           //
+#define QSoundEffect_Infinite                                -2     // Used as a parameter to setLoopCount() for infinite looping
+
+//enum QSoundEffect::Status
+#define QSoundEffect_Null                                    0      // No source has been set or the source is null.
+#define QSoundEffect_Loading                                 1      // The SoundEffect is trying to load the source.
+#define QSoundEffect_Ready                                   2      // The source is loaded and ready for play.
+#define QSoundEffect_Error                                   3      // An error occurred during operation, such as failure of loading the source.
+                                                                    //
+//enum QVideoFrame::FieldType                                       //
+#define QVideoFrame_ProgressiveFrame                         0      // The frame is not interlaced.
+#define QVideoFrame_TopField                                 1      // The frame contains a top field.
+#define QVideoFrame_BottomField                              2      // The frame contains a bottom field.
+#define QVideoFrame_InterlacedFrame                          3      // The frame contains a merged top and bottom field.
+
+//enum #define QVideoFrame_PixelFormat
+#define QVideoFrame_Format_Invalid                           0      // The frame is invalid.
+#define QVideoFrame_Format_ARGB32                            1      // The frame is stored using a 32-bit ARGB format (0xAARRGGBB). This is equivalent to QImage::Format_ARGB32.
+#define QVideoFrame_Format_ARGB32_Premultiplied              2      // The frame stored using a premultiplied 32-bit ARGB format (0xAARRGGBB). This is equivalent to QImage::Format_ARGB32_Premultiplied.
+#define QVideoFrame_Format_RGB32                             3      // The frame stored using a 32-bit RGB format (0xffRRGGBB). This is equivalent to QImage::Format_RGB32
+#define QVideoFrame_Format_RGB24                             4      // The frame is stored using a 24-bit RGB format (8-8-8). This is equivalent to QImage::Format_RGB888
+#define QVideoFrame_Format_RGB565                            5      // The frame is stored using a 16-bit RGB format (5-6-5). This is equivalent to QImage::Format_RGB16.
+#define QVideoFrame_Format_RGB555                            6      // The frame is stored using a 16-bit RGB format (5-5-5). This is equivalent to QImage::Format_RGB555.
+#define QVideoFrame_Format_ARGB8565_Premultiplied            7      // The frame is stored using a 24-bit premultiplied ARGB format (8-5-6-5).
+#define QVideoFrame_Format_BGRA32                            8      // The frame is stored using a 32-bit BGRA format (0xBBGGRRAA).
+#define QVideoFrame_Format_BGRA32_Premultiplied              9      // The frame is stored using a premultiplied 32bit BGRA format.
+#define QVideoFrame_Format_BGR32                             10     // The frame is stored using a 32-bit BGR format (0xBBGGRRff).
+#define QVideoFrame_Format_BGR24                             11     // The frame is stored using a 24-bit BGR format (0xBBGGRR).
+#define QVideoFrame_Format_BGR565                            12     // The frame is stored using a 16-bit BGR format (5-6-5).
+#define QVideoFrame_Format_BGR555                            13     // The frame is stored using a 16-bit BGR format (5-5-5).
+#define QVideoFrame_Format_BGRA5658_Premultiplied            14     // The frame is stored using a 24-bit premultiplied BGRA format (5-6-5-8).
+#define QVideoFrame_Format_AYUV444                           15     // The frame is stored using a packed 32-bit AYUV format (0xAAYYUUVV).
+#define QVideoFrame_Format_AYUV444_Premultiplied             16     // The frame is stored using a packed premultiplied 32-bit AYUV format (0xAAYYUUVV).
+#define QVideoFrame_Format_YUV444                            17     // The frame is stored using a 24-bit packed YUV format (8-8-8).
+#define QVideoFrame_Format_YUV420P                           18     // The frame is stored using an 8-bit per component planar YUV format with the U and V planes horizontally and vertically sub-sampled, i.e. the height and width of the U and V planes are half that of the Y plane.
+#define QVideoFrame_Format_YV12                              19     // The frame is stored using an 8-bit per component planar YVU format with the V and U planes horizontally and vertically sub-sampled, i.e. the height and width of the V and U planes are half that of the Y plane.
+#define QVideoFrame_Format_UYVY                              20     // The frame is stored using an 8-bit per component packed YUV format with the U and V planes horizontally sub-sampled (U-Y-V-Y), i.e. two horizontally adjacent pixels are stored as a 32-bit macropixel which has a Y value for each pixel and common U and V values.
+#define QVideoFrame_Format_YUYV                              21     // The frame is stored using an 8-bit per component packed YUV format with the U and V planes horizontally sub-sampled (Y-U-Y-V), i.e. two horizontally adjacent pixels are stored as a 32-bit macropixel which has a Y value for each pixel and common U and V values.
+#define QVideoFrame_Format_NV12                              22     // The frame is stored using an 8-bit per component semi-planar YUV format with a Y plane (Y) followed by a horizontally and vertically sub-sampled, packed UV plane (U-V).
+#define QVideoFrame_Format_NV21                              23     // The frame is stored using an 8-bit per component semi-planar YUV format with a Y plane (Y) followed by a horizontally and vertically sub-sampled, packed VU plane (V-U).
+#define QVideoFrame_Format_IMC1                              24     // The frame is stored using an 8-bit per component planar YUV format with the U and V planes horizontally and vertically sub-sampled. This is similar to the Format_YUV420P type, except that the bytes per line of the U and V planes are padded out to the same stride as the Y plane.
+#define QVideoFrame_Format_IMC2                              25     // The frame is stored using an 8-bit per component planar YUV format with the U and V planes horizontally and vertically sub-sampled. This is similar to the Format_YUV420P type, except that the lines of the U and V planes are interleaved, i.e. each line of U data is followed by a line of V data creating a single line of the same stride as the Y data.
+#define QVideoFrame_Format_IMC3                              26     // The frame is stored using an 8-bit per component planar YVU format with the V and U planes horizontally and vertically sub-sampled. This is similar to the Format_YV12 type, except that the bytes per line of the V and U planes are padded out to the same stride as the Y plane.
+#define QVideoFrame_Format_IMC4                              27     // The frame is stored using an 8-bit per component planar YVU format with the V and U planes horizontally and vertically sub-sampled. This is similar to the Format_YV12 type, except that the lines of the V and U planes are interleaved, i.e. each line of V data is followed by a line of U data creating a single line of the same stride as the Y data.
+#define QVideoFrame_Format_Y8                                28     // The frame is stored using an 8-bit greyscale format.
+#define QVideoFrame_Format_Y16                               29     // The frame is stored using a 16-bit linear greyscale format. Little endian.
+#define QVideoFrame_Format_Jpeg                              30     // The frame is stored in compressed Jpeg format.
+#define QVideoFrame_Format_CameraRaw                         31     // The frame is stored using a device specific camera raw format.
+#define QVideoFrame_Format_AdobeDng                          32     // The frame is stored using raw Adobe Digital Negative (DNG) format.
+#define QVideoFrame_Format_User                              1000   // Start value for user defined pixel formats.
+
+//enum QAudioDecoder::Error
+#define QAudioDecoder_NoError                                0      // No error has occurred.
+#define QAudioDecoder_ResourceError                          1      // A media resource couldn't be resolved.
+#define QAudioDecoder_FormatError                            2      // The format of a media resource isn't supported.
+#define QAudioDecoder_AccessDeniedError                      3      // There are not the appropriate permissions to play a media resource.
+#define QAudioDecoder_ServiceMissingError                    4      // A valid playback service was not found, playback cannot proceed.
+                                                                    //
+//enum #define QAudioDecoder_State                                  //
+#define QAudioDecoder_StoppedState                           0      // The decoder is not decoding. Decoding will start at the start of the media.
+#define QAudioDecoder_DecodingState                          1      // The audio player is currently decoding media.
+
+//enum QMultimedia::AvailabilityStatus
+#define QMultimedia_Available                                0      // The service is operating correctly.
+#define QMultimedia_ServiceMissing                           1      // There is no service available to provide the requested functionality.
+#define QMultimedia_ResourceError                            3      // The service could not allocate resources required to function correctly.
+#define QMultimedia_Busy                                     2      // The service must wait for access to necessary resources.
+
+//enum #define QMultimedia_EncodingMode
+#define QMultimedia_ConstantQualityEncoding                  0      // Encoding will aim to have a constant quality, adjusting bitrate to fit.
+#define QMultimedia_ConstantBitRateEncoding                  1      // Encoding will use a constant bit rate, adjust quality to fit.
+#define QMultimedia_AverageBitRateEncoding                   2      // Encoding will try to keep an average bitrate setting, but will use more or less as needed.
+#define QMultimedia_TwoPassEncoding                          3      // The media will first be processed to determine the characteristics, and then processed a second time allocating more bits to the areas that need it.
+
+//enum #define QMultimedia_EncodingQuality
+#define QMultimedia_VeryLowQuality                           0
+#define QMultimedia_LowQuality                               1
+#define QMultimedia_NormalQuality                            2
+#define QMultimedia_HighQuality                              3
+#define QMultimedia_VeryHighQuality                          4
+
+//enum #define QMultimedia_SupportEstimate
+#define QMultimedia_NotSupported                             0      // The feature is not supported.
+#define QMultimedia_MaybeSupported                           1      // The feature may be supported.
+#define QMultimedia_ProbablySupported                        2      // The feature is probably supported.
+#define QMultimedia_PreferredService                         3      // The service is the preferred provider of a service.
 
 #endif
 

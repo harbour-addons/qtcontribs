@@ -1,0 +1,54 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaGaplessPlaybackControl>
+
+
+/*
+ * virtual   ~QMediaGaplessPlaybackControl()
+ */
+HB_FUNC( QT_QMEDIAGAPLESSPLAYBACKCONTROL )
+{
+   HB_FUNC_EXEC( HB_QMEDIAGAPLESSPLAYBACKCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual qreal   crossfadeTime() const = 0
+virtual bool   isCrossfadeSupported() const = 0
+virtual QMediaContent   nextMedia() const = 0
+virtual void   setCrossfadeTime(qreal crossfadeTime) = 0
+virtual void   setNextMedia(const QMediaContent & media) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   advancedToNextMedia()
+void   crossfadeTimeChanged(qreal crossfadeTime)
+void   nextMediaChanged(const QMediaContent & media)
+</SIGNALS>

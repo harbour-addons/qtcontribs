@@ -208,7 +208,7 @@ struct FlickData {
       if (scrollArea) {
          const int x = scrollArea->horizontalScrollBar()->value();
          const int y = scrollArea->verticalScrollBar()->value();
-      //    scrollArea->horizontalScrollBar()->setValue(x - dx);
+         scrollArea->horizontalScrollBar()->setValue(x - dx);
          scrollArea->verticalScrollBar()->setValue(y - dy);
          return (scrollArea->horizontalScrollBar()->value() != x
                  || scrollArea->verticalScrollBar()->value() != y);

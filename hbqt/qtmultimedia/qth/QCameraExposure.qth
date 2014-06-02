@@ -1,0 +1,89 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+Constructor = no
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraExposure>
+#include <QtCore/QPointF>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QCAMERAEXPOSURE )
+{
+   HB_FUNC_EXEC( HB_QCAMERAEXPOSURE );
+}
+</CODE>
+
+<ENUMS>
+enum   ExposureMode { ExposureAuto, ExposureManual, ExposurePortrait, ExposureNight, ..., ExposureModeVendor }
+enum   FlashMode { FlashAuto, FlashOff, FlashOn, FlashRedEyeReduction, ..., FlashManual }
+flags  FlashModes
+enum   MeteringMode { MeteringMatrix, MeteringAverage, MeteringSpot }
+</ENUMS>
+
+<PROTOS>
+qreal   aperture() const
+qreal   exposureCompensation() const
+ExposureMode   exposureMode() const
+FlashModes   flashMode() const
+bool   isAvailable() const
+bool   isExposureModeSupported(QCameraExposure::ExposureMode mode) const
+bool   isFlashModeSupported(QCameraExposure::FlashModes mode) const
+bool   isFlashReady() const
+bool   isMeteringModeSupported(QCameraExposure::MeteringMode mode) const
+int   isoSensitivity() const
+MeteringMode   meteringMode() const
+qreal   requestedAperture() const
+int   requestedIsoSensitivity() const
+qreal   requestedShutterSpeed() const
+void   setSpotMeteringPoint(const QPointF & point)
+qreal   shutterSpeed() const
+QPointF   spotMeteringPoint() const
+QList<qreal>   supportedApertures(bool * continuous = 0) const
+QList<int>   supportedIsoSensitivities(bool * continuous = 0) const
+QList<qreal>   supportedShutterSpeeds(bool * continuous = 0) const
+</PROTOS>
+
+<SLOTS>
+void   setAutoAperture()
+void   setAutoIsoSensitivity()
+void   setAutoShutterSpeed()
+void   setExposureCompensation(qreal ev)
+void   setExposureMode(QCameraExposure::ExposureMode mode)
+void   setFlashMode(QCameraExposure::FlashModes mode)
+void   setManualAperture(qreal aperture)
+void   setManualIsoSensitivity(int iso)
+void   setManualShutterSpeed(qreal seconds)
+void   setMeteringMode(QCameraExposure::MeteringMode mode)
+</SLOTS>
+
+<SIGNALS>
+void   apertureChanged(qreal value)
+void   apertureRangeChanged()
+void   exposureCompensationChanged(qreal value)
+void   flashReady(bool ready)
+void   isoSensitivityChanged(int value)
+void   shutterSpeedChanged(qreal speed)
+void   shutterSpeedRangeChanged()
+</SIGNALS>

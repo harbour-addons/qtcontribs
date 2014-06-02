@@ -1,0 +1,49 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+Constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraCaptureBufferFormatControl>
+
+
+/*
+ * ~QCameraCaptureBufferFormatControl()
+ */
+HB_FUNC( QT_QCAMERACAPTUREBUFFERFORMATCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERACAPTUREBUFFERFORMATCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QVideoFrame::PixelFormat   bufferFormat() const = 0
+virtual void   setBufferFormat(QVideoFrame::PixelFormat format) = 0
+virtual QList<QVideoFrame::PixelFormat>   supportedBufferFormats() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   bufferFormatChanged(QVideoFrame::PixelFormat format)
+</SIGNALS>

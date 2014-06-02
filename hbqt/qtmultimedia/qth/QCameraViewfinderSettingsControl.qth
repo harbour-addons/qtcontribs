@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraViewfinderSettingsControl>
+
+
+/*
+ * ~QCameraViewfinderSettingsControl()
+ */
+HB_FUNC( QT_QCAMERAVIEWFINDERSETTINGSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERAVIEWFINDERSETTINGSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+enum   ViewfinderParameter { Resolution, PixelAspectRatio, MinimumFrameRate, MaximumFrameRate, PixelFormat, UserParameter }
+</ENUMS>
+
+<PROTOS>
+virtual bool   isViewfinderParameterSupported(QCameraViewfinderSettingsControl::ViewfinderParameter parameter) const = 0
+virtual void   setViewfinderParameter(QCameraViewfinderSettingsControl::ViewfinderParameter parameter, const QVariant & value) = 0
+virtual QVariant   viewfinderParameter(QCameraViewfinderSettingsControl::ViewfinderParameter parameter) const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

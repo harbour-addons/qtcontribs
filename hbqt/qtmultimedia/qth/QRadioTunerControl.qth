@@ -1,0 +1,81 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QRadioTunerControl>
+
+
+/*
+ * ~QRadioTunerControl()
+ */
+HB_FUNC( QT_QRADIOTUNERCONTROL )
+{
+   HB_FUNC_EXEC( HB_QRADIOTUNERCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QRadioTuner::Band   band() const = 0
+virtual void   cancelSearch() = 0
+virtual QRadioTuner::Error   error() const = 0
+virtual QString   errorString() const = 0
+virtual int   frequency() const = 0
+virtual QPair<int, int>   frequencyRange(QRadioTuner::Band band) const = 0
+virtual int   frequencyStep(QRadioTuner::Band band) const = 0
+virtual bool   isAntennaConnected() const
+virtual bool   isBandSupported(QRadioTuner::Band band) const = 0
+virtual bool   isMuted() const = 0
+virtual bool   isSearching() const = 0
+virtual bool   isStereo() const = 0
+virtual void   searchAllStations(QRadioTuner::SearchMode searchMode = QRadioTuner::SearchFast) = 0
+virtual void   searchBackward() = 0
+virtual void   searchForward() = 0
+virtual void   setBand(QRadioTuner::Band band) = 0
+virtual void   setFrequency(int frequency) = 0
+virtual void   setMuted(bool muted) = 0
+virtual void   setStereoMode(QRadioTuner::StereoMode mode) = 0
+virtual void   setVolume(int volume) = 0
+virtual int   signalStrength() const = 0
+virtual void   start() = 0
+virtual QRadioTuner::State   state() const = 0
+virtual QRadioTuner::StereoMode   stereoMode() const = 0
+virtual void   stop() = 0
+virtual int   volume() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   antennaConnectedChanged(bool connectionStatus)
+void   bandChanged(QRadioTuner::Band band)
+void   error(QRadioTuner::Error error)
+void   frequencyChanged(int frequency)
+void   mutedChanged(bool muted)
+void   searchingChanged(bool searching)
+void   signalStrengthChanged(int strength)
+void   stateChanged(QRadioTuner::State state)
+void   stationFound(int frequency, QString stationId)
+void   stereoStatusChanged(bool stereo)
+void   volumeChanged(int volume)
+</SIGNALS>

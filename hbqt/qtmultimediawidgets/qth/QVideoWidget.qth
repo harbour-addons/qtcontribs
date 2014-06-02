@@ -1,0 +1,72 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget, QMediaBindableInterface
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimediaWidgets/QVideoWidget>
+
+
+/*
+ * QVideoWidget(QWidget * parent = 0)
+ * ~QVideoWidget()
+ */
+HB_FUNC( QT_QVIDEOWIDGET )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QVideoWidget( hbqt_par_QWidget( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVideoWidget() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+Qt::AspectRatioMode   aspectRatioMode() const
+int   brightness() const
+int   contrast() const
+int   hue() const
+bool   isFullScreen() const
+int   saturation() const
+
+virtual QMediaObject *   mediaObject() const
+virtual QSize   sizeHint() const
+</PROTOS>
+
+<SLOTS>
+void   setAspectRatioMode(Qt::AspectRatioMode mode)
+void   setBrightness(int brightness)
+void   setContrast(int contrast)
+void   setFullScreen(bool fullScreen)
+void   setHue(int hue)
+void   setSaturation(int saturation)
+</SLOTS>
+
+<SIGNALS>
+void   brightnessChanged(int brightness)
+void   contrastChanged(int contrast)
+void   fullScreenChanged(bool fullScreen)
+void   hueChanged(int hue)
+void   saturationChanged(int saturation)
+</SIGNALS>

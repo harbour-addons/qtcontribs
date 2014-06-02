@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QMediaControl
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraLocksControl>
+
+
+/*
+ * ~QCameraLocksControl()
+ */
+HB_FUNC( QT_QCAMERALOCKSCONTROL )
+{
+   HB_FUNC_EXEC( HB_QCAMERALOCKSCONTROL );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QCamera::LockStatus   lockStatus(QCamera::LockType lock) const = 0
+virtual void   searchAndLock(QCamera::LockTypes locks) = 0
+virtual QCamera::LockTypes   supportedLocks() const = 0
+virtual void   unlock(QCamera::LockTypes locks) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   lockStatusChanged(QCamera::LockType lock, QCamera::LockStatus status, QCamera::LockChangeReason reason)
+</SIGNALS>

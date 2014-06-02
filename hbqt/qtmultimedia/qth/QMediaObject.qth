@@ -1,0 +1,62 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaObject>
+#include <QtCore/QVariant>
+
+/*
+ * ~QMediaObject()
+ */
+HB_FUNC( QT_QMEDIAOBJECT )
+{
+   HB_FUNC_EXEC( HB_QMEDIAOBJECT );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QMultimedia::AvailabilityStatus   availability() const
+QStringList   availableMetaData() const
+virtual bool   bind(QObject * object)
+virtual bool   isAvailable() const
+bool   isMetaDataAvailable() const
+QVariant   metaData(const QString & key) const
+int   notifyInterval() const
+virtual QMediaService *   service() const
+void   setNotifyInterval(int milliSeconds)
+virtual void   unbind(QObject * object)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   availabilityChanged(bool available)
+void   availabilityChanged(QMultimedia::AvailabilityStatus availability)
+void   metaDataAvailableChanged(bool available)
+void   metaDataChanged()
+void   metaDataChanged(const QString & key, const QVariant & value)
+void   notifyIntervalChanged(int milliseconds)
+</SIGNALS>

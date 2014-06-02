@@ -16,6 +16,122 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-06-01 18:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r310)
+  * hbqt/hbmk2_qt.hb
+  * hbqt/hbqtmultimediawidgets.hbc
+  * hbqt/qtcore/hbqt_init.cpp
+  * hbqt/qtdesigner/hbqtdesigner.hbp
+  * hbqt/qtgui/hbqt_flickcharm.cpp
+  * hbqt/qtgui/hbqt_init.cpp
+  * hbqt/qtgui/hbqtgui.ch
+  * hbqt/qtgui/qth/filelist.hbm
+  + hbqt/qtgui/qth/QGraphicsObject.qth
+  + hbqt/qtmultimedia/hbqt_init.cpp
+  + hbqt/qtmultimedia/hbqtmultimedia.hbc
+  + hbqt/qtmultimedia/hbqtmultimedia.hbx
+  + hbqt/qtmultimedia/qth/filelist.hbm
+  + hbqt/qtmultimedia/qth/QAbstractVideoBuffer.qth
+  + hbqt/qtmultimedia/qth/QAudioBuffer.qth
+  + hbqt/qtmultimedia/qth/QAudioDecoder.qth
+  + hbqt/qtmultimedia/qth/QAudioDecoderControl.qth
+  + hbqt/qtmultimedia/qth/QAudioEncoderSettings.qth
+  + hbqt/qtmultimedia/qth/QAudioEncoderSettingsControl.qth
+  + hbqt/qtmultimedia/qth/QAudioInputSelectorControl.qth
+  + hbqt/qtmultimedia/qth/QAudioOutputSelectorControl.qth
+  + hbqt/qtmultimedia/qth/QAudioProbe.qth
+  + hbqt/qtmultimedia/qth/QAudioRecorder.qth
+  + hbqt/qtmultimedia/qth/QCamera.qth
+  + hbqt/qtmultimedia/qth/QCameraCaptureBufferFormatControl.qth
+  + hbqt/qtmultimedia/qth/QCameraCaptureDestinationControl.qth
+  + hbqt/qtmultimedia/qth/QCameraControl.qth
+  + hbqt/qtmultimedia/qth/QCameraExposure.qth
+  + hbqt/qtmultimedia/qth/QCameraExposureControl.qth
+  + hbqt/qtmultimedia/qth/QCameraFeedbackControl.qth
+  + hbqt/qtmultimedia/qth/QCameraFlashControl.qth
+  + hbqt/qtmultimedia/qth/QCameraFocus.qth
+  + hbqt/qtmultimedia/qth/QCameraFocusControl.qth
+  + hbqt/qtmultimedia/qth/QCameraFocusZone.qth
+  + hbqt/qtmultimedia/qth/QCameraImageCapture.qth
+  + hbqt/qtmultimedia/qth/QCameraImageCaptureControl.qth
+  + hbqt/qtmultimedia/qth/QCameraImageProcessing.qth
+  + hbqt/qtmultimedia/qth/QCameraImageProcessingControl.qth
+  + hbqt/qtmultimedia/qth/QCameraInfo.qth
+  + hbqt/qtmultimedia/qth/QCameraInfoControl.qth
+  + hbqt/qtmultimedia/qth/QCameraLocksControl.qth
+  + hbqt/qtmultimedia/qth/QCameraViewfinderSettingsControl.qth
+  + hbqt/qtmultimedia/qth/QCameraZoomControl.qth
+  + hbqt/qtmultimedia/qth/QImageEncoderControl.qth
+  + hbqt/qtmultimedia/qth/QImageEncoderSettings.qth
+  + hbqt/qtmultimedia/qth/QMediaAudioProbeControl.qth
+  + hbqt/qtmultimedia/qth/QMediaAvailabilityControl.qth
+  + hbqt/qtmultimedia/qth/QMediaBindableInterface.qth
+  + hbqt/qtmultimedia/qth/QMediaContainerControl.qth
+  + hbqt/qtmultimedia/qth/QMediaContent.qth
+  + hbqt/qtmultimedia/qth/QMediaControl.qth
+  + hbqt/qtmultimedia/qth/QMediaGaplessPlaybackControl.qth
+  + hbqt/qtmultimedia/qth/QMediaNetworkAccessControl.qth
+  + hbqt/qtmultimedia/qth/QMediaObject.qth
+  + hbqt/qtmultimedia/qth/QMediaPlayer.qth
+  + hbqt/qtmultimedia/qth/QMediaPlayerControl.qth
+  + hbqt/qtmultimedia/qth/QMediaPlaylist.qth
+  + hbqt/qtmultimedia/qth/QMediaRecorder.qth
+  + hbqt/qtmultimedia/qth/QMediaRecorderControl.qth
+  + hbqt/qtmultimedia/qth/QMediaResource.qth
+  + hbqt/qtmultimedia/qth/QMediaService.qth
+  + hbqt/qtmultimedia/qth/QMediaServiceCameraInfoInterface.qth
+  + hbqt/qtmultimedia/qth/QMediaServiceFeaturesInterface.qth
+  + hbqt/qtmultimedia/qth/QMediaServiceProviderPlugin.qth
+  + hbqt/qtmultimedia/qth/QMediaServiceSupportedDevicesInterface.qth
+  + hbqt/qtmultimedia/qth/QMediaServiceSupportedFormatsInterface.qth
+  + hbqt/qtmultimedia/qth/QMediaStreamsControl.qth
+  + hbqt/qtmultimedia/qth/QMediaTimeInterval.qth
+  + hbqt/qtmultimedia/qth/QMediaTimeRange.qth
+  + hbqt/qtmultimedia/qth/QMediaVideoProbeControl.qth
+  + hbqt/qtmultimedia/qth/QMetaDataReaderControl.qth
+  + hbqt/qtmultimedia/qth/QMetaDataWriterControl.qth
+  + hbqt/qtmultimedia/qth/QRadioData.qth
+  + hbqt/qtmultimedia/qth/QRadioDataControl.qth
+  + hbqt/qtmultimedia/qth/QRadioTuner.qth
+  + hbqt/qtmultimedia/qth/QRadioTunerControl.qth
+  + hbqt/qtmultimedia/qth/QSoundEffect.qth
+  + hbqt/qtmultimedia/qth/QVideoDeviceSelectorControl.qth
+  + hbqt/qtmultimedia/qth/QVideoEncoderSettings.qth
+  + hbqt/qtmultimedia/qth/QVideoEncoderSettingsControl.qth
+  + hbqt/qtmultimedia/qth/QVideoProbe.qth
+  + hbqt/qtmultimedia/qth/QVideoRendererControl.qth
+  + hbqt/qtmultimedia/qth/QVideoWindowControl.qth
+  + hbqt/qtmultimediawidgets
+  + hbqt/qtmultimediawidgets/doc
+  + hbqt/qtmultimediawidgets/doc/en
+  + hbqt/qtmultimediawidgets/hbqt_init.cpp
+  + hbqt/qtmultimediawidgets/hbqtmultimediawidgets.ch
+  + hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbc
+  + hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbm
+  + hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbp
+  + hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbx
+  + hbqt/qtmultimediawidgets/hbqtmultimediawidgetss.hbp
+  + hbqt/qtmultimediawidgets/qth
+  + hbqt/qtmultimediawidgets/qth/filelist.hbm
+  + hbqt/qtmultimediawidgets/qth/QCameraViewfinder.qth
+  + hbqt/qtmultimediawidgets/qth/QGraphicsVideoItem.qth
+  + hbqt/qtmultimediawidgets/qth/QVideoWidget.qth
+  + hbqt/qtmultimediawidgets/qth/QVideoWidgetControl.qth
+  * hbqt/qtwebkit/hbqtwebkit.hbp
+  + hbqtwidgets/tests/camera.hbp
+  + hbqtwidgets/tests/camera.prg
+  + hbqtwidgets/tests/camera.ui
+  + hbqtwidgets/tests/imagesettings.ui
+  + hbqtwidgets/tests/videosettings.ui
+
+    + Implemented: Qt 5.3.0 specifc MultiMedia API.
+       The example is specific to accessing and controlling cameras.
+       In the coming days some other media example are scheduled 
+       to be in this repository. The camera example is adopted from
+       Qt 5.3.0 examples repository with some minor changes specific
+       to HbQt way of implementation.
+
+       Enjoy !
+
 2014-05-23 13:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r309)
   * hbqt/qtnetwork/qth/QNetworkAccessManager.qth
     % Added an include which may be needed for linux distros for Qt 5.3,

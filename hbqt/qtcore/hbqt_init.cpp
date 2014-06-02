@@ -77,6 +77,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
+#include <QtCore/QVariant>
 
 
 HB_EXTERN_BEGIN
@@ -97,6 +98,7 @@ extern void hbqt_del_QModelIndex( void * pObj, int iFlags );
 extern void hbqt_del_QStringList( void * pObj, int iFlags );
 extern void hbqt_del_QList( void * pObj, int iFlags );
 extern void hbqt_del_QByteArray( void * pObj, int iFlags );
+extern void hbqt_del_QVariant( void * pObj, int iFlags );
 
 extern void hbqt_del_QEvent( void * pObj, int iFlags );
 
@@ -568,6 +570,51 @@ static void hbqt_SlotsExecIntString( PHB_ITEM * codeBlock, void ** arguments, QS
    hb_vmSend( 2 );
 }
 
+static void hbqt_SlotsExecIntIntString( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   hb_vmPushEvalSym();
+   hb_vmPush( codeBlock );
+   hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 1 ] ) );
+   hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 2 ] ) );
+   QString text = *reinterpret_cast< QString( * ) >( arguments[ 3 ] );
+   hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
+   hb_vmSend( 3 );
+}
+
+static void hbqt_SlotsExecIntStringQVariant( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QVariant( ( *reinterpret_cast< QVariant( * ) >( arguments[ 3 ] ) ) ), "HB_QVARIANT", hbqt_del_QVariant, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 1 ] ) );
+      QString text = *reinterpret_cast< QString( * ) >( arguments[ 2 ] );
+      hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
+      hb_vmPush( p0 );
+      hb_vmSend( 3 );
+      hb_itemRelease( p0 );
+   }
+}
+
+
+static void hbqt_SlotsExecStringQVariant( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QVariant( ( *reinterpret_cast< QVariant( * ) >( arguments[ 2 ] ) ) ), "HB_QVARIANT", hbqt_del_QVariant, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      QString text = *reinterpret_cast< QString( * ) >( arguments[ 1 ] );
+      hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
+      hb_vmPush( p0 );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
 
 /*----------------------------------------------------------------------*/
 
@@ -616,6 +663,9 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QByteArray"              , hbqt_SlotsExecQByteArray       );
    hbqt_slots_register_callback( "quint64$QByteArray"      , hbqt_SlotsExecQuint64QByteArray );
    hbqt_slots_register_callback( "int$QString"             , hbqt_SlotsExecIntString        );
+   hbqt_slots_register_callback( "int$int$QString"         , hbqt_SlotsExecIntIntString     );
+   hbqt_slots_register_callback( "int$QString$QVariant"    , hbqt_SlotsExecIntStringQVariant );
+   hbqt_slots_register_callback( "QString$QVariant"        , hbqt_SlotsExecStringQVariant   );
 
    hbqt_events_register_createobj( QEvent::Timer           , "hb_QEvent"                    );
 }

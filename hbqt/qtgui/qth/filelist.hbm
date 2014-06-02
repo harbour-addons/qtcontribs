@@ -102,6 +102,7 @@ QGraphicsLayout.qth
 QGraphicsLayoutItem.qth
 QGraphicsLinearLayout.qth
 QGraphicsLineItem.qth
+QGraphicsObject.qth
 QGraphicsPathItem.qth
 QGraphicsPixmapItem.qth
 QGraphicsPolygonItem.qth

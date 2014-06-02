@@ -1,0 +1,71 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QVideoEncoderSettings>
+
+
+/*
+ * QVideoEncoderSettings()
+ * QVideoEncoderSettings(const QVideoEncoderSettings & other)
+ * ~QVideoEncoderSettings()
+ */
+HB_FUNC( QT_QVIDEOENCODERSETTINGS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QVideoEncoderSettings" ) )
+   {
+      __HB_RETPTRGC__( new QVideoEncoderSettings( *hbqt_par_QVideoEncoderSettings( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVideoEncoderSettings() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   bitRate() const
+QString   codec() const
+QMultimedia::EncodingMode   encodingMode() const
+QVariant   encodingOption(const QString & option) const
+//QVariantMap   encodingOptions() const
+qreal   frameRate() const
+bool   isNull() const
+QMultimedia::EncodingQuality   quality() const
+QSize   resolution() const
+void   setBitRate(int value)
+void   setCodec(const QString & codec)
+void   setEncodingMode(QMultimedia::EncodingMode mode)
+void   setEncodingOption(const QString & option, const QVariant & value)
+//void   setEncodingOptions(const QVariantMap & options)
+void   setFrameRate(qreal rate)
+void   setQuality(QMultimedia::EncodingQuality quality)
+void   setResolution(const QSize & resolution)
+void   setResolution(int width, int height)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

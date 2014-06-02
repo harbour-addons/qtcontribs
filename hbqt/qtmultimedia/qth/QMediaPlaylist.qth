@@ -1,0 +1,96 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     = QObject, QMediaBindableInterface
+QObject     = Yes
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaPlaylist>
+
+
+/*
+ * QMediaPlaylist(QObject * parent = 0)
+ * virtual   ~QMediaPlaylist()
+ */
+HB_FUNC( QT_QMEDIAPLAYLIST )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QMediaPlaylist( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMediaPlaylist() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, FormatError, FormatNotSupportedError, NetworkError, AccessDeniedError }
+enum   PlaybackMode { CurrentItemOnce, CurrentItemInLoop, Sequential, Loop, Random }
+</ENUMS>
+
+<PROTOS>
+bool   addMedia(const QMediaContent & content)
+bool   addMedia(const QList<QMediaContent> & items)
+bool   clear()
+int   currentIndex() const
+QMediaContent   currentMedia() const
+QMediaPlaylist::Error   error() const
+QString   errorString() const
+bool   insertMedia(int pos, const QMediaContent & content)
+bool   insertMedia(int pos, const QList<QMediaContent> & items)
+bool   isEmpty() const
+bool   isReadOnly() const
+void   load(const QNetworkRequest & request, const char * format = 0)
+void   load(const QUrl & location, const char * format = 0)
+void   load(QIODevice * device, const char * format = 0)
+QMediaContent   media(int index) const
+int   mediaCount() const
+int   nextIndex(int steps = 1) const
+QMediaPlaylist::PlaybackMode   playbackMode() const
+int   previousIndex(int steps = 1) const
+bool   removeMedia(int pos)
+bool   removeMedia(int start, int end)
+bool   save(const QUrl & location, const char * format = 0)
+bool   save(QIODevice * device, const char * format)
+void   setPlaybackMode(QMediaPlaylist::PlaybackMode mode)
+
+virtual QMediaObject *   mediaObject() const
+</PROTOS>
+
+<SLOTS>
+void   next()
+void   previous()
+void   setCurrentIndex(int playlistPosition)
+void   shuffle()
+</SLOTS>
+
+<SIGNALS>
+void   currentIndexChanged(int position)
+void   currentMediaChanged(const QMediaContent & content)
+void   loadFailed()
+void   loaded()
+void   mediaAboutToBeInserted(int start, int end)
+void   mediaAboutToBeRemoved(int start, int end)
+void   mediaChanged(int start, int end)
+void   mediaInserted(int start, int end)
+void   mediaRemoved(int start, int end)
+void   playbackModeChanged(QMediaPlaylist::PlaybackMode mode)
+</SIGNALS>

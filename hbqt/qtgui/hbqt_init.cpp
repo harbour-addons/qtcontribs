@@ -75,6 +75,7 @@
 #include <QtGui/QSessionManager>
 #include <QtGui/QColor>
 #include <QtGui/QBrush>
+#include <QtGui/QImage>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QStandardItem>
 #include <QtGui/QCloseEvent>
@@ -109,6 +110,7 @@ HB_EXTERN_BEGIN
 extern void hbqt_del_QObject( void * pObj, int iFlags );
 extern void hbqt_del_QColor( void * pObj, int iFlags );
 extern void hbqt_del_QBrush( void * pObj, int iFlags );
+extern void hbqt_del_QImage( void * pObj, int iFlags );
 extern void hbqt_del_QItemSelection( void * pObj, int iFlags );
 extern void hbqt_del_QTextCharFormat( void * pObj, int iFlags );
 extern void hbqt_del_QFont( void * pObj, int iFlags );
@@ -582,6 +584,22 @@ static void hbqt_SlotsExecBlurHints( PHB_ITEM * codeBlock, void ** arguments, QS
    hb_vmSend( 1 );
 }
 
+static void hbqt_SlotsExecIntQImage( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QImage( ( *reinterpret_cast< QImage( * ) >( arguments[ 2 ] ) ) ), "HB_QIMAGE", hbqt_del_QImage, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 1 ] ) );
+      hb_vmPush( p0 );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
+
+
 HB_FUNC_EXTERN( HB_QABSTRACTBUTTON );
 HB_FUNC_EXTERN( HB_QACTION );
 HB_FUNC_EXTERN( HB_QMDISUBWINDOW );
@@ -696,6 +714,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QWidget*"                                  , hbqt_SlotsExecQWidget                          );
    hbqt_slots_register_callback( "QRect$int"                                 , hbqt_SlotsExecQRectInt                         );
    hbqt_slots_register_callback( "BlurHints"                                 , hbqt_SlotsExecBlurHints                        );
+   hbqt_slots_register_callback( "int$QImage"                                , hbqt_SlotsExecIntQImage                        );
 
    hbqt_events_register_createobj( QEvent::MouseButtonPress                  , "hb_QMouseEvent"                    );
    hbqt_events_register_createobj( QEvent::MouseButtonRelease                , "hb_QMouseEvent"                    );

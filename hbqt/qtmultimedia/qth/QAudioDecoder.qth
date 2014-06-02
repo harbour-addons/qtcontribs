@@ -1,0 +1,80 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QMediaObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QAudioDecoder>
+
+
+/*
+ * QAudioDecoder(QObject * parent = 0)
+ * ~QAudioDecoder()
+ */
+HB_FUNC( QT_QAUDIODECODER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QAudioDecoder( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAudioDecoder() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, ResourceError, FormatError, AccessDeniedError, ServiceMissingError }
+enum   State { StoppedState, DecodingState }
+</ENUMS>
+
+<PROTOS>
+QAudioFormat   audioFormat() const
+bool   bufferAvailable() const
+qint64   duration() const
+Error   error() const
+QString   errorString() const
+qint64   position() const
+QAudioBuffer   read() const
+void   setAudioFormat(const QAudioFormat & format)
+void   setSourceDevice(QIODevice * device)
+void   setSourceFilename(const QString & fileName)
+QIODevice *   sourceDevice() const
+QString   sourceFilename() const
+State   state() const
+
+QMultimedia::SupportEstimate   hasSupport(const QString & mimeType, const QStringList & codecs = QStringList())
+</PROTOS>
+
+<SLOTS>
+void   start()
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   bufferAvailableChanged(bool available)
+void   bufferReady()
+void   durationChanged(qint64 duration)
+void   error(QAudioDecoder::Error error)
+void   finished()
+void   formatChanged(const QAudioFormat & format)
+void   positionChanged(qint64 position)
+void   sourceChanged()
+void   stateChanged(QAudioDecoder::State state)
+</SIGNALS>

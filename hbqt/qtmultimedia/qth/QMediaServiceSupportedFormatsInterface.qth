@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+
+Inherit     =
+QObject     = no
+Version     = 0x050300
+
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QMediaServiceSupportedFormatsInterface>
+
+
+/*
+ * virtual   ~QMediaServiceSupportedFormatsInterface()
+ */
+HB_FUNC( QT_QMEDIASERVICESUPPORTEDFORMATSINTERFACE )
+{
+   HB_FUNC_EXEC( HB_QMEDIASERVICESUPPORTEDFORMATSINTERFACE );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QMultimedia::SupportEstimate   hasSupport(const QString & mimeType, const QStringList & codecs) const = 0
+virtual QStringList   supportedMimeTypes() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
