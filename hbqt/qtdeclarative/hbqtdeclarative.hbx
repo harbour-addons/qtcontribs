@@ -1,18 +1,14 @@
-/*
- * $Id$
+/* --------------------------------------------------------------------
+ * NOTE: You can add manual override which functions to include or
+ *       exclude from automatically generated EXTERNAL/DYNAMIC list.
+ *          Syntax: // HB_FUNC_INCLUDE <func>
+ *                  // HB_FUNC_EXCLUDE <func>
  */
 
-/* -------------------------------------------------------------------- */
-/* NOTE: You can add manual override which functions to include or      */
-/*       exclude from automatically generated EXTERNAL/DYNAMIC list.    */
-/*          Syntax: // HB_FUNC_INCLUDE <func>                           */
-/*                  // HB_FUNC_EXCLUDE <func>                           */
-/* -------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------- */
-/* WARNING: Automatically generated code below. DO NOT EDIT!            */
-/*          Regenerate using hbmk2 '-hbx=' option.                      */
-/* -------------------------------------------------------------------- */
+/* --------------------------------------------------------------------
+ * WARNING: Automatically generated code below. DO NOT EDIT! (except casing)
+ *          Regenerate using hbmk2 '-hbx=' option.
+ */
 
 #ifndef __HBEXTERN_CH__HBQTDECLARATIVE__
 #define __HBEXTERN_CH__HBQTDECLARATIVE__
@@ -25,34 +21,34 @@
    #command DYNAMIC <fncs,...> => EXTERNAL <fncs>
 #endif
 
-DYNAMIC hb_QDeclarativeComponent
-DYNAMIC hb_QDeclarativeContext
-DYNAMIC hb_QDeclarativeEngine
-DYNAMIC hb_QDeclarativeError
-DYNAMIC hb_QDeclarativeExpression
-DYNAMIC hb_QDeclarativeImageProvider
-DYNAMIC hb_QDeclarativeItem
-DYNAMIC hb_QDeclarativeListReference
-DYNAMIC hb_QDeclarativeParserStatus
-DYNAMIC hb_QDeclarativeProperty
-DYNAMIC hb_QDeclarativePropertyMap
-DYNAMIC hb_QDeclarativePropertyValueSource
-DYNAMIC hb_QDeclarativeScriptString
-DYNAMIC hb_QDeclarativeView
-DYNAMIC hb_QDeclarativeComponent
-DYNAMIC QDeclarativeContext
-DYNAMIC QDeclarativeEngine
-DYNAMIC QDeclarativeError
-DYNAMIC QDeclarativeExpression
-DYNAMIC QDeclarativeImageProvider
-DYNAMIC QDeclarativeItem
-DYNAMIC QDeclarativeListReference
-DYNAMIC QDeclarativeParserStatus
-DYNAMIC QDeclarativeProperty
-DYNAMIC QDeclarativePropertyMap
-DYNAMIC QDeclarativePropertyValueSource
-DYNAMIC QDeclarativeScriptString
-DYNAMIC QDeclarativeView
+DYNAMIC HB_QDECLARATIVECOMPONENT
+DYNAMIC HB_QDECLARATIVECONTEXT
+DYNAMIC HB_QDECLARATIVEENGINE
+DYNAMIC HB_QDECLARATIVEERROR
+DYNAMIC HB_QDECLARATIVEEXPRESSION
+DYNAMIC HB_QDECLARATIVEIMAGEPROVIDER
+DYNAMIC HB_QDECLARATIVEITEM
+DYNAMIC HB_QDECLARATIVELISTREFERENCE
+DYNAMIC HB_QDECLARATIVEPARSERSTATUS
+DYNAMIC HB_QDECLARATIVEPROPERTY
+DYNAMIC HB_QDECLARATIVEPROPERTYMAP
+DYNAMIC HB_QDECLARATIVEPROPERTYVALUESOURCE
+DYNAMIC HB_QDECLARATIVESCRIPTSTRING
+DYNAMIC HB_QDECLARATIVEVIEW
+DYNAMIC QDECLARATIVECOMPONENT
+DYNAMIC QDECLARATIVECONTEXT
+DYNAMIC QDECLARATIVEENGINE
+DYNAMIC QDECLARATIVEERROR
+DYNAMIC QDECLARATIVEEXPRESSION
+DYNAMIC QDECLARATIVEIMAGEPROVIDER
+DYNAMIC QDECLARATIVEITEM
+DYNAMIC QDECLARATIVELISTREFERENCE
+DYNAMIC QDECLARATIVEPARSERSTATUS
+DYNAMIC QDECLARATIVEPROPERTY
+DYNAMIC QDECLARATIVEPROPERTYMAP
+DYNAMIC QDECLARATIVEPROPERTYVALUESOURCE
+DYNAMIC QDECLARATIVESCRIPTSTRING
+DYNAMIC QDECLARATIVEVIEW
 DYNAMIC __HBQTDECLARATIVE
 
 #if defined( __HBEXTREQ__ ) .OR. defined( __HBEXTERN__HBQTDECLARATIVE__REQUEST )

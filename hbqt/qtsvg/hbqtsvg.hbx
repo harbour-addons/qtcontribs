@@ -1,18 +1,14 @@
-/*
- * $Id$
+/* --------------------------------------------------------------------
+ * NOTE: You can add manual override which functions to include or
+ *       exclude from automatically generated EXTERNAL/DYNAMIC list.
+ *          Syntax: // HB_FUNC_INCLUDE <func>
+ *                  // HB_FUNC_EXCLUDE <func>
  */
 
-/* -------------------------------------------------------------------- */
-/* NOTE: You can add manual override which functions to include or      */
-/*       exclude from automatically generated EXTERNAL/DYNAMIC list.    */
-/*          Syntax: // HB_FUNC_INCLUDE <func>                           */
-/*                  // HB_FUNC_EXCLUDE <func>                           */
-/* -------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------- */
-/* WARNING: Automatically generated code below. DO NOT EDIT!            */
-/*          Regenerate using hbmk2 '-hbx=' option.                      */
-/* -------------------------------------------------------------------- */
+/* --------------------------------------------------------------------
+ * WARNING: Automatically generated code below. DO NOT EDIT! (except casing)
+ *          Regenerate using hbmk2 '-hbx=' option.
+ */
 
 #ifndef __HBEXTERN_CH__HBQTSVG__
 #define __HBEXTERN_CH__HBQTSVG__
@@ -25,16 +21,14 @@
    #command DYNAMIC <fncs,...> => EXTERNAL <fncs>
 #endif
 
-DYNAMIC hb_QGraphicsSvgItem
-DYNAMIC hb_QSvgGenerator
-DYNAMIC hb_QSvgRenderer
-DYNAMIC hb_QSvgWidget
-
-DYNAMIC QGraphicsSvgItem
-DYNAMIC QSvgGenerator
-DYNAMIC QSvgRenderer
-DYNAMIC QSvgWidget
-
+DYNAMIC HB_QGRAPHICSSVGITEM
+DYNAMIC HB_QSVGGENERATOR
+DYNAMIC HB_QSVGRENDERER
+DYNAMIC HB_QSVGWIDGET
+DYNAMIC QGRAPHICSSVGITEM
+DYNAMIC QSVGGENERATOR
+DYNAMIC QSVGRENDERER
+DYNAMIC QSVGWIDGET
 DYNAMIC __HBQTSVG
 
 #if defined( __HBEXTREQ__ ) .OR. defined( __HBEXTERN__HBQTSVG__REQUEST )

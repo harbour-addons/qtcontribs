@@ -33,6 +33,7 @@
       :setLatitude( nLatitude )                           -> NIL
       :setLongitude( nLongitude )                         -> NIL
       :toString( nFormat )                                -> cQString
+      :type()                                             -> nCoordinateType
 
    $DESCRIPTION$
 

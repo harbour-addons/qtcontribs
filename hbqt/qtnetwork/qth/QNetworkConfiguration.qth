@@ -51,7 +51,7 @@ enum   Type { InternetAccessPoint, ServiceNetwork, UserChoice, Invalid }
 
 <PROTOS>
 BearerType   bearerType() const
-BearerType   bearerTypeFamily() const
+BearerType   bearerTypeFamily() const                                          [*V=0x050200*]
 QString   bearerTypeName() const
 QList<QNetworkConfiguration>   children() const
 QString   identifier() const

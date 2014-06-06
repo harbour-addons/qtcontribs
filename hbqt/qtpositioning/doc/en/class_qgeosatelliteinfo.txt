@@ -26,6 +26,7 @@
       :hasAttribute( nAttribute )                         -> lBool
       :removeAttribute( nAttribute )                      -> NIL
       :satelliteIdentifier()                              -> nInt
+      :satelliteSystem()                                  -> nSatelliteSystem
       :setAttribute( nAttribute, nValue )                 -> NIL
       :setSatelliteIdentifier( nSatId )                   -> NIL
       :setSatelliteSystem( nSystem )                      -> NIL

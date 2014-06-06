@@ -16,6 +16,52 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-06-06 15:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r311)
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothdevicediscoveryagent.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothdeviceinfo.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothserver.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothservicediscoveryagent.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothsocket.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothtransferreply.txt
+  * hbqt/qtcore/hbqtcore.hbx
+  * hbqt/qtdeclarative/hbqtdeclarative.hbx
+  * hbqt/qtdesigner/hbqtdesigner.hbx
+  * hbqt/qtgui/hbqtgui.hbx
+  * hbqt/qtnetwork/hbqtnetwork.hbx
+  * hbqt/qtopengl/hbqtopengl.hbx
+  * hbqt/qtpositioning/doc/en/class_qgeoareamonitorsource.txt
+  * hbqt/qtpositioning/doc/en/class_qgeocoordinate.txt
+  * hbqt/qtpositioning/doc/en/class_qgeopositioninfosource.txt
+  * hbqt/qtpositioning/doc/en/class_qgeosatelliteinfo.txt
+  * hbqt/qtscript/hbqtscript.hbx
+  * hbqt/qtsql/hbqtsql.hbx
+  * hbqt/qtsvg/hbqtsvg.hbx
+  * hbqt/qtwebkit/hbqtwebkit.hbx
+  * hbqt/qtxml/hbqtxml.hbx
+    * Regenerated.
+
+  * hbqt/qtnetwork/qth/QLocalServer.qth
+  * hbqt/qtnetwork/qth/QNetworkConfiguration.qth
+    ! Fixed to compile with Qt lower versions also.
+
+  * hbqt/hbmk2_qt.hb
+    - Commented out code which was forcing the all required classes to be present.
+       With the new versions of Qt, at times some methods could not be avialble 
+       in prior versions and hence linking an application was failing. A link 
+       will eventually fail if a class is not available, anyway, at link time,
+       so exculsion of these forced classes do not pose any issues.
+       Reported by CDQ.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added code to look for a function __hbqtLibraryPath() linked with the 
+        application and call as
+        QCoreApplication::addLibraryPath( __hbqtLibraryPathReturnString ).
+        I could find this way efficient enough where such requirement is sought for.
+        Requested by CdQ.
+
+        FUNCTION __hbqtLibraryPath() ; RETURN hb_dirBase() + "Plugins" and deposit 
+        all plugin folders there.
+
 2014-06-01 18:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r310)
   * hbqt/hbmk2_qt.hb
   * hbqt/hbqtmultimediawidgets.hbc

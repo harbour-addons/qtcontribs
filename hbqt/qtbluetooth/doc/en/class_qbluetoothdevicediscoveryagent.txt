@@ -23,6 +23,7 @@
       An instance of the object of type QBluetoothDeviceDiscoveryAgent
    $METHODS$
       :discoveredDevices()                                -> oQList_QBluetoothDeviceInfo>
+      :error()                                            -> nError
       :errorString()                                      -> cQString
       :inquiryType()                                      -> nQBluetoothDeviceDiscoveryAgent_InquiryType
       :isActive()                                         -> lBool

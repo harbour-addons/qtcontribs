@@ -29,6 +29,7 @@
       :minorDeviceClass()                                 -> nQuint8
       :name()                                             -> cQString
       :rssi()                                             -> nQint16
+      :serviceClasses()                                   -> nServiceClasses
       :serviceUuids( @nCompleteness )                     -> oQList_QBluetoothUuid>
       :serviceUuidsCompleteness()                         -> nQBluetoothDeviceInfo_DataCompleteness
       :setCached( lCached )                               -> NIL

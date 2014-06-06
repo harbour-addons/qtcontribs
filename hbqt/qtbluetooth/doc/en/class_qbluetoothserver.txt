@@ -23,6 +23,7 @@
       An instance of the object of type QBluetoothServer
    $METHODS$
       :close()                                            -> NIL
+      :error()                                            -> nError
       :hasPendingConnections()                            -> lBool
       :isListening()                                      -> lBool
       :listen( oQBluetoothAddress, nPort )                -> lBool

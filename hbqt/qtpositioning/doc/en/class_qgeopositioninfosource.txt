@@ -22,8 +22,10 @@
    $RETURNS$
       An instance of the object of type QGeoPositionInfoSource
    $METHODS$
+      :error()                                            -> nError
       :lastKnownPosition( lFromSatellitePositioningMethodsOnly )  -> oQGeoPositionInfo
       :minimumUpdateInterval()                            -> nInt
+      :preferredPositioningMethods()                      -> nPositioningMethods
       :setPreferredPositioningMethods( nMethods )         -> NIL
       :setUpdateInterval( nMsec )                         -> NIL
       :sourceName()                                       -> cQString

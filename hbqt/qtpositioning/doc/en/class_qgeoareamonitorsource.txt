@@ -24,12 +24,14 @@
    $METHODS$
       :activeMonitors()                                   -> oQList_QGeoAreaMonitorInfo>
       :( oQGeoShape )                                     -> oQList_QGeoAreaMonitorInfo>
+      :error()                                            -> nError
       :positionInfoSource()                               -> oQGeoPositionInfoSource
       :requestUpdate( oQGeoAreaMonitorInfo, cSignal )     -> lBool
       :setPositionInfoSource( oQGeoPositionInfoSource )   -> NIL
       :sourceName()                                       -> cQString
       :startMonitoring( oQGeoAreaMonitorInfo )            -> lBool
       :stopMonitoring( oQGeoAreaMonitorInfo )             -> lBool
+      :supportedAreaMonitorFeatures()                     -> nAreaMonitorFeatures
       :availableSources()                                 -> oQStringList
       :createDefaultSource( oQObject )                    -> oQGeoAreaMonitorSource
       :createSource( cSourceName, oQObject )              -> oQGeoAreaMonitorSource

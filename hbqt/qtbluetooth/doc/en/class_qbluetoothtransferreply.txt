@@ -22,6 +22,7 @@
    $RETURNS$
       An instance of the object of type QBluetoothTransferReply
    $METHODS$
+      :error()                                            -> nTransferError
       :errorString()                                      -> cQString
       :isFinished()                                       -> lBool
       :isRunning()                                        -> lBool

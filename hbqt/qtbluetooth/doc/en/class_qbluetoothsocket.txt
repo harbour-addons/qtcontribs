@@ -27,6 +27,7 @@
       :( oQBluetoothAddress, oQBluetoothUuid, nOpenMode )  -> NIL
       :( oQBluetoothAddress, nPort, nOpenMode )           -> NIL
       :disconnectFromService()                            -> NIL
+      :error()                                            -> nSocketError
       :errorString()                                      -> cQString
       :localAddress()                                     -> oQBluetoothAddress
       :localName()                                        -> cQString
@@ -37,6 +38,7 @@
       :setSocketDescriptor( nSocketDescriptor, nSocketType, nSocketState, nOpenMode )  -> lBool
       :socketDescriptor()                                 -> nInt
       :socketType()                                       -> nQBluetoothServiceInfo_Protocol
+      :state()                                            -> nSocketState
       :bytesAvailable()                                   -> nQint64
       :bytesToWrite()                                     -> nQint64
       :canReadLine()                                      -> lBool

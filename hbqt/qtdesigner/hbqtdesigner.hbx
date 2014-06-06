@@ -1,18 +1,14 @@
-/*
- * $Id$
+/* --------------------------------------------------------------------
+ * NOTE: You can add manual override which functions to include or
+ *       exclude from automatically generated EXTERNAL/DYNAMIC list.
+ *          Syntax: // HB_FUNC_INCLUDE <func>
+ *                  // HB_FUNC_EXCLUDE <func>
  */
 
-/* -------------------------------------------------------------------- */
-/* NOTE: You can add manual override which functions to include or      */
-/*       exclude from automatically generated EXTERNAL/DYNAMIC list.    */
-/*          Syntax: // HB_FUNC_INCLUDE <func>                           */
-/*                  // HB_FUNC_EXCLUDE <func>                           */
-/* -------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------- */
-/* WARNING: Automatically generated code below. DO NOT EDIT!            */
-/*          Regenerate using hbmk2 '-hbx=' option.                      */
-/* -------------------------------------------------------------------- */
+/* --------------------------------------------------------------------
+ * WARNING: Automatically generated code below. DO NOT EDIT! (except casing)
+ *          Regenerate using hbmk2 '-hbx=' option.
+ */
 
 #ifndef __HBEXTERN_CH__HBQTDESIGNER__
 #define __HBEXTERN_CH__HBQTDESIGNER__
@@ -25,22 +21,22 @@
    #command DYNAMIC <fncs,...> => EXTERNAL <fncs>
 #endif
 
-DYNAMIC hb_QDesignerActionEditorInterface
-DYNAMIC hb_QDesignerFormEditorInterface
-DYNAMIC hb_QDesignerFormWindowCursorInterface
-DYNAMIC hb_QDesignerFormWindowInterface
-DYNAMIC hb_QDesignerFormWindowManagerInterface
-DYNAMIC hb_QDesignerObjectInspectorInterface
-DYNAMIC hb_QDesignerPropertyEditorInterface
-DYNAMIC hb_QDesignerWidgetBoxInterface
-DYNAMIC QDesignerActionEditorInterface
-DYNAMIC QDesignerFormEditorInterface
-DYNAMIC QDesignerFormWindowCursorInterface
-DYNAMIC QDesignerFormWindowInterface
-DYNAMIC QDesignerFormWindowManagerInterface
-DYNAMIC QDesignerObjectInspectorInterface
-DYNAMIC QDesignerPropertyEditorInterface
-DYNAMIC QDesignerWidgetBoxInterface
+DYNAMIC HB_QDESIGNERACTIONEDITORINTERFACE
+DYNAMIC HB_QDESIGNERFORMEDITORINTERFACE
+DYNAMIC HB_QDESIGNERFORMWINDOWCURSORINTERFACE
+DYNAMIC HB_QDESIGNERFORMWINDOWINTERFACE
+DYNAMIC HB_QDESIGNERFORMWINDOWMANAGERINTERFACE
+DYNAMIC HB_QDESIGNEROBJECTINSPECTORINTERFACE
+DYNAMIC HB_QDESIGNERPROPERTYEDITORINTERFACE
+DYNAMIC HB_QDESIGNERWIDGETBOXINTERFACE
+DYNAMIC QDESIGNERACTIONEDITORINTERFACE
+DYNAMIC QDESIGNERFORMEDITORINTERFACE
+DYNAMIC QDESIGNERFORMWINDOWCURSORINTERFACE
+DYNAMIC QDESIGNERFORMWINDOWINTERFACE
+DYNAMIC QDESIGNERFORMWINDOWMANAGERINTERFACE
+DYNAMIC QDESIGNEROBJECTINSPECTORINTERFACE
+DYNAMIC QDESIGNERPROPERTYEDITORINTERFACE
+DYNAMIC QDESIGNERWIDGETBOXINTERFACE
 DYNAMIC __HBQTDESIGNER
 
 #if defined( __HBEXTREQ__ ) .OR. defined( __HBEXTERN__HBQTDESIGNER__REQUEST )

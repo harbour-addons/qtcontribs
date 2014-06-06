@@ -58,6 +58,7 @@
 
 #include "hbqt.h"
 #include "hbqtinit.h"
+#include "hbstack.h"
 
 #include "hbapierr.h"
 #include "hbapiitm.h"
@@ -66,6 +67,7 @@
 
 #if QT_VERSION >= 0x040500
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
 #include <QtCore/QTextCodec>
 
@@ -878,6 +880,24 @@ static void hbqt_lib_init( void * cargo )
    static char ** s_argv;
 
    HB_SYMBOL_UNUSED( cargo );
+
+   PHB_DYNS pDynsym = hb_dynsymFind( "__HBQTLIBRARYPATH" );
+   if( pDynsym && hb_vmRequestReenter() )
+   {
+      hb_vmPushDynSym( pDynsym );
+      hb_vmPushNil();
+      hb_vmDo( 0 );
+      if( hb_vmRequestQuery() == 0 )
+      {
+         PHB_ITEM pReturn = hb_stackReturnItem();
+
+         if( pReturn && ( hb_itemType( pReturn ) & HB_IT_STRING ) )
+         {
+            QCoreApplication::addLibraryPath( ( QString ) hb_itemGetC( pReturn ) );
+         }
+      }
+      hb_vmRequestRestore();
+   }
 
    s_argc = hb_cmdargARGC();
    s_argv = hb_cmdargARGV();

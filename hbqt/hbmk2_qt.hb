@@ -1715,6 +1715,7 @@ METHOD HbQtSource:build()
    ENDIF
 
    AAdd( aLine, "HB_EXTERN_BEGIN" )
+#if 0
    AAdd( aLine, "" )
    AAdd( aLine, "HB_FUNC_EXTERN( __HB" + Upper( ::cQtModule ) + " );" )
    FOR EACH s IN ::hRef
@@ -1733,7 +1734,7 @@ METHOD HbQtSource:build()
    NEXT
    AAdd( aLine, "}" )
    AAdd( aLine, "" )
-
+#endif
    IF ::cQtVer > "0x040500"
       AAdd( aLine, "#if QT_VERSION >= " + ::cQtVer )
    ENDIF
@@ -3439,7 +3440,6 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QAbstractItemDelegate" )
       aadd( aQObjects, "QAbstractItemModel" )
       aadd( aQObjects, "QAbstractMessageHandler" )
-      aadd( aQObjects, "QAbstractNetworkCache" )
       aadd( aQObjects, "QAbstractState" )
       aadd( aQObjects, "QAbstractTextDocumentLayout" )
       aadd( aQObjects, "QAbstractTransition" )
@@ -3511,10 +3511,6 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QMimeData" )
       aadd( aQObjects, "QMouseDriverPlugin" )
       aadd( aQObjects, "QMovie" )
-      aadd( aQObjects, "QNetworkAccessManager" )
-      aadd( aQObjects, "QNetworkConfigurationManager" )
-      aadd( aQObjects, "QNetworkCookieJar" )
-      aadd( aQObjects, "QNetworkSession" )
       aadd( aQObjects, "QObjectCleanupHandler" )
       aadd( aQObjects, "QPictureFormatPlugin" )
       aadd( aQObjects, "QPlatformCursor" )
@@ -3776,9 +3772,29 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QScriptEngine" )
       aadd( aQObjects, "QScriptExtensionPlugin" )
 
-      aadd( aQObjects, "QAudioInput" )
-      aadd( aQObjects, "QAudioOutput" )
+      // QtNetwork
+      aadd( aQObjects, "QNetworkAccessManager" )
+      aadd( aQObjects, "QNetworkConfigurationManager" )
+      aadd( aQObjects, "QNetworkCookieJar" )
+      aadd( aQObjects, "QNetworkSession" )
+      aadd( aQObjects, "QAbstractNetworkCache" )
+      aadd( aQObjects, "QAbstractSocket" )
+      aadd( aQObjects, "QDnsLookup" )
+      aadd( aQObjects, "QFtp" )
+      aadd( aQObjects, "QHttp" )
+      aadd( aQObjects, "QHttpMultiPart" )
+      aadd( aQObjects, "QLocalServer" )
+      aadd( aQObjects, "QLocalSocket" )
+      aadd( aQObjects, "QNetworkDiskCache" )
+      aadd( aQObjects, "QNetworkProxyFactory" )
+      aadd( aQObjects, "QNetworkReply" )
+      aadd( aQObjects, "QNetworkSession" )
+      aadd( aQObjects, "QSslSocket" )
+      aadd( aQObjects, "QTcpServer" )
+      aadd( aQObjects, "QTcpSocket" )
+      aadd( aQObjects, "QUdpSocket" )
 
+      // QtMultimedi
       aadd( aQObjects, "QCamera" )
       aadd( aQObjects, "QAbstractVideoSurface" )
       aadd( aQObjects, "QAudioDecoder" )
@@ -3836,9 +3852,30 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QVideoRendererControl" )
       aadd( aQObjects, "QVideoWindowControl" )
 
+      // QtMultimediaWidgets
       aadd( aQObjects, "QCameraViewfinder" )
       aadd( aQObjects, "QVideoWidget" )
       aadd( aQObjects, "QVideoWidgetControl" )
+
+      // QtPositioning
+      aadd( aQObjects, "QGeoAreaMonitorSource" )
+      aadd( aQObjects, "QGeoPositionInfoSource" )
+      aadd( aQObjects, "QGeoSatelliteInfoSource" )
+      aadd( aQObjects, "QNmeaPositionInfoSource" )
+
+      // QtBluetooth
+      aadd( aQObjects, "QBluetoothDeviceDiscoveryAgent" )
+      aadd( aQObjects, "QBluetoothLocalDevice" )
+      aadd( aQObjects, "QBluetoothServer" )
+      aadd( aQObjects, "QBluetoothServiceDiscoveryAgent" )
+      aadd( aQObjects, "QBluetoothSocket" )
+      aadd( aQObjects, "QBluetoothTransferManager" )
+      aadd( aQObjects, "QBluetoothTransferReply" )
+
+      // QtWebSockets
+      aadd( aQObjects, "QMaskGenerator" )
+      aadd( aQObjects, "QWebSocket" )
+      aadd( aQObjects, "QWebSocketServer" )
 
    ENDIF
 

@@ -1,18 +1,14 @@
-/*
- * $Id$
+/* --------------------------------------------------------------------
+ * NOTE: You can add manual override which functions to include or
+ *       exclude from automatically generated EXTERNAL/DYNAMIC list.
+ *          Syntax: // HB_FUNC_INCLUDE <func>
+ *                  // HB_FUNC_EXCLUDE <func>
  */
 
-/* -------------------------------------------------------------------- */
-/* NOTE: You can add manual override which functions to include or      */
-/*       exclude from automatically generated EXTERNAL/DYNAMIC list.    */
-/*          Syntax: // HB_FUNC_INCLUDE <func>                           */
-/*                  // HB_FUNC_EXCLUDE <func>                           */
-/* -------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------- */
-/* WARNING: Automatically generated code below. DO NOT EDIT!            */
-/*          Regenerate using hbmk2 '-hbx=' option.                      */
-/* -------------------------------------------------------------------- */
+/* --------------------------------------------------------------------
+ * WARNING: Automatically generated code below. DO NOT EDIT! (except casing)
+ *          Regenerate using hbmk2 '-hbx=' option.
+ */
 
 #ifndef __HBEXTERN_CH__HBQTOPENGL__
 #define __HBEXTERN_CH__HBQTOPENGL__
@@ -25,30 +21,28 @@
    #command DYNAMIC <fncs,...> => EXTERNAL <fncs>
 #endif
 
-DYNAMIC hb_QGLBuffer
-DYNAMIC hb_QGLColormap
-DYNAMIC hb_QGLContext
-DYNAMIC hb_QGLFormat
-DYNAMIC hb_QGLFramebufferObject
-DYNAMIC hb_QGLFramebufferObjectFormat
-DYNAMIC hb_QGLFunctions
-DYNAMIC hb_QGLPixelBuffer
-DYNAMIC hb_QGLShader
-DYNAMIC hb_QGLShaderProgram
-DYNAMIC hb_QGLWidget
-
-DYNAMIC QGLBuffer
-DYNAMIC QGLColormap
-DYNAMIC QGLContext
-DYNAMIC QGLFormat
-DYNAMIC QGLFramebufferObject
-DYNAMIC QGLFramebufferObjectFormat
-DYNAMIC QGLFunctions
-DYNAMIC QGLPixelBuffer
-DYNAMIC QGLShader
-DYNAMIC QGLShaderProgram
-DYNAMIC QGLWidget
-
+DYNAMIC HB_QGLBUFFER
+DYNAMIC HB_QGLCOLORMAP
+DYNAMIC HB_QGLCONTEXT
+DYNAMIC HB_QGLFORMAT
+DYNAMIC HB_QGLFRAMEBUFFEROBJECT
+DYNAMIC HB_QGLFRAMEBUFFEROBJECTFORMAT
+DYNAMIC HB_QGLFUNCTIONS
+DYNAMIC HB_QGLPIXELBUFFER
+DYNAMIC HB_QGLSHADER
+DYNAMIC HB_QGLSHADERPROGRAM
+DYNAMIC HB_QGLWIDGET
+DYNAMIC QGLBUFFER
+DYNAMIC QGLCOLORMAP
+DYNAMIC QGLCONTEXT
+DYNAMIC QGLFORMAT
+DYNAMIC QGLFRAMEBUFFEROBJECT
+DYNAMIC QGLFRAMEBUFFEROBJECTFORMAT
+DYNAMIC QGLFUNCTIONS
+DYNAMIC QGLPIXELBUFFER
+DYNAMIC QGLSHADER
+DYNAMIC QGLSHADERPROGRAM
+DYNAMIC QGLWIDGET
 DYNAMIC __HBQTOPENGL
 
 #if defined( __HBEXTREQ__ ) .OR. defined( __HBEXTERN__HBQTOPENGL__REQUEST )

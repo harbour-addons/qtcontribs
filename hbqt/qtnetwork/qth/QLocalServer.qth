@@ -88,7 +88,7 @@ QAbstractSocket::SocketError   serverError() const
 QString   serverName() const
 void   setMaxPendingConnections(int numConnections)
 void   setSocketOptions(QLocalServer::SocketOptions options)                   [*V=0x050000*]
-SocketOptions   socketOptions() const
+SocketOptions   socketOptions() const                                          [*V=0x050000*]
 bool   waitForNewConnection(int msec = 0, bool * timedOut = 0)
 
 bool   removeServer(const QString & name)
