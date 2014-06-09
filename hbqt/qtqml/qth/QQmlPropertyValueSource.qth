@@ -1,0 +1,46 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlPropertyValueSource>
+
+
+/*
+ * QQmlPropertyValueSource()
+ * virtual   ~QQmlPropertyValueSource()
+ */
+HB_FUNC( QT_QQMLPROPERTYVALUESOURCE )
+{
+   HB_FUNC_EXEC( HB_QQMLPROPERTYVALUESOURCE );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual void   setTarget(const QQmlProperty & property) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

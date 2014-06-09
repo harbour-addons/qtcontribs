@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlIncubator>
+
+
+/*
+ * QQmlIncubator(IncubationMode mode = Asynchronous)
+ */
+HB_FUNC( QT_QQMLINCUBATOR )
+{
+   if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QQmlIncubator( ( QQmlIncubator::IncubationMode ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQmlIncubator() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   IncubationMode { Asynchronous, AsynchronousIfNested, Synchronous }
+enum   Status { Null, Ready, Loading, Error }
+</ENUMS>
+
+<PROTOS>
+void   clear()
+QList<QQmlError>   errors() const
+void   forceCompletion()
+IncubationMode   incubationMode() const
+bool   isError() const
+bool   isLoading() const
+bool   isNull() const
+bool   isReady() const
+QObject *   object() const
+Status   status() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

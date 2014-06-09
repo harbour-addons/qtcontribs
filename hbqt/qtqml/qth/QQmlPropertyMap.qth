@@ -1,0 +1,61 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlPropertyMap>
+
+
+/*
+ * QQmlPropertyMap(QObject * parent = 0)
+ * virtual   ~QQmlPropertyMap()
+ */
+HB_FUNC( QT_QQMLPROPERTYMAP )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QQmlPropertyMap( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQmlPropertyMap() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   clear(const QString & key)
+bool   contains(const QString & key) const
+int   count() const
+void   insert(const QString & key, const QVariant & value)
+bool   isEmpty() const
+QStringList   keys() const
+int   size() const
+QVariant   value(const QString & key) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   valueChanged(const QString & key, const QVariant & value)
+</SIGNALS>

@@ -3877,6 +3877,30 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QWebSocket" )
       aadd( aQObjects, "QWebSocketServer" )
 
+      // QtQuick
+      aadd( aQObjects, "QQuickFramebufferObject" )
+      aadd( aQObjects, "QQuickItem" )
+      aadd( aQObjects, "QQuickPaintedItem" )
+      aadd( aQObjects, "QQuickTextDocument" )
+      aadd( aQObjects, "QQuickTextureFactory" )
+      aadd( aQObjects, "QQuickView" )
+      aadd( aQObjects, "QQuickWindow" )
+      aadd( aQObjects, "QQuickWidget" )
+      aadd( aQObjects, "QSGDynamicTexture" )
+      aadd( aQObjects, "QSGTexture" )
+
+      // QtQml
+      aadd( aQObjects, "QJSEngine" )
+      aadd( aQObjects, "QQmlAbstractProfilerAdapter" )
+      aadd( aQObjects, "QQmlApplicationEngine" )
+      aadd( aQObjects, "QQmlComponent" )
+      aadd( aQObjects, "QQmlContext" )
+      aadd( aQObjects, "QQmlEngine" )
+      aadd( aQObjects, "QQmlExpression" )
+      aadd( aQObjects, "QQmlExtensionPlugin" )
+      aadd( aQObjects, "QQmlFileSelector" )
+      aadd( aQObjects, "QQmlPropertyMap" )
+
    ENDIF
 
    RETURN ascan( aQObjects, {| e | e == cWidget } ) > 0

@@ -1,0 +1,49 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSGGeometryNode
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QSGGeometryNode>
+
+
+/*
+ * QSGGeometryNode()
+ * ~QSGGeometryNode()
+ */
+HB_FUNC( QT_QSGGEOMETRYNODE )
+{
+   __HB_RETPTRGC__( new QSGGeometryNode() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QSGMaterial *   material() const
+QSGMaterial *   opaqueMaterial() const
+void   setMaterial(QSGMaterial * material)
+void   setOpaqueMaterial(QSGMaterial * material)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,85 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QJSEngine
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlEngine>
+
+
+/*
+ * QQmlEngine(QObject * parent = 0)
+ * virtual   ~QQmlEngine()
+ */
+HB_FUNC( QT_QQMLENGINE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QQmlEngine( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQmlEngine() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   ObjectOwnership { CppOwnership, JavaScriptOwnership }
+</ENUMS>
+
+<PROTOS>
+void   addImageProvider(const QString & providerId, QQmlImageProviderBase * provider)
+void   addImportPath(const QString & path)
+bool   addNamedBundle(const QString & name, const QString & fileName)
+void   addPluginPath(const QString & path)
+QUrl   baseUrl() const
+void   clearComponentCache()
+QQmlImageProviderBase *   imageProvider(const QString & providerId) const
+QStringList   importPathList() const
+bool   importPlugin(const QString & filePath, const QString & uri, QList<QQmlError> * errors)
+QQmlIncubationController *   incubationController() const
+QNetworkAccessManager *   networkAccessManager() const
+QQmlNetworkAccessManagerFactory *   networkAccessManagerFactory() const
+QString   offlineStoragePath() const
+bool   outputWarningsToStandardError() const
+QStringList   pluginPathList() const
+void   removeImageProvider(const QString & providerId)
+QQmlContext *   rootContext() const
+void   setBaseUrl(const QUrl & url)
+void   setImportPathList(const QStringList & paths)
+void   setIncubationController(QQmlIncubationController * controller)
+void   setNetworkAccessManagerFactory(QQmlNetworkAccessManagerFactory * factory)
+void   setOfflineStoragePath(const QString & dir)
+void   setOutputWarningsToStandardError(bool enabled)
+void   setPluginPathList(const QStringList & paths)
+void   trimComponentCache()
+
+QQmlContext *   contextForObject(const QObject * object)
+ObjectOwnership   objectOwnership(QObject * object)
+void   setContextForObject(QObject * object, QQmlContext * context)
+void   setObjectOwnership(QObject * object, ObjectOwnership ownership)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   quit()
+void   warnings(const QList<QQmlError> & warnings)
+</SIGNALS>

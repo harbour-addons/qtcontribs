@@ -1,0 +1,124 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QJSValue>
+#include <QtCore/QDateTime>
+#include <QtCore/QVariant>
+
+/*
+ * QJSValue(SpecialValue value = UndefinedValue)
+ * QJSValue(const QJSValue & other)
+ * QJSValue(bool value)
+ * QJSValue(int value)
+ * QJSValue(uint value)
+ * QJSValue(double value)
+ * QJSValue(const QString & value)
+ * QJSValue(const QLatin1String & value)
+ * QJSValue(const char * value)
+ * QJSValue(QJSValuePrivate * dd)
+ * ~QJSValue()
+ */
+HB_FUNC( QT_QJSVALUE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QLatin1String" ) )
+   {
+      __HB_RETPTRGC__( new QJSValue( *hbqt_par_QLatin1String( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJSValue" ) )
+   {
+      __HB_RETPTRGC__( new QJSValue( *hbqt_par_QJSValue( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJSValuePrivate" ) )
+   {
+      __HB_RETPTRGC__( new QJSValue( hbqt_par_QJSValuePrivate( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QJSValue( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QJSValue( hb_parni( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISLOG( 1 ) )
+   {
+      __HB_RETPTRGC__( new QJSValue( hb_parl( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && ( hb_param( 1, HB_IT_DOUBLE ) != NULL ) )
+   {
+      __HB_RETPTRGC__( new QJSValue( hb_parnd( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QJSValue() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   SpecialValue { UndefinedValue, NullValue }
+</ENUMS>
+
+<PROTOS>
+QJSValue   call(const QList<QJSValue> & args = QList<QJSValue>())
+QJSValue   callAsConstructor(const QList<QJSValue> & args = QList<QJSValue>())
+QJSValue   callWithInstance(const QJSValue & instance, const QList<QJSValue> & args = QList<QJSValue>())
+bool   deleteProperty(const QString & name)
+bool   equals(const QJSValue & other) const
+bool   hasOwnProperty(const QString & name) const
+bool   hasProperty(const QString & name) const
+bool   isArray() const
+bool   isBool() const
+bool   isCallable() const
+bool   isDate() const
+bool   isError() const
+bool   isNull() const
+bool   isNumber() const
+bool   isObject() const
+bool   isQObject() const
+bool   isRegExp() const
+bool   isString() const
+bool   isUndefined() const
+bool   isVariant() const
+QJSValue   property(const QString & name) const
+QJSValue   property(quint32 arrayIndex) const
+QJSValue   prototype() const
+void   setProperty(const QString & name, const QJSValue & value)
+void   setProperty(quint32 arrayIndex, const QJSValue & value)
+void   setPrototype(const QJSValue & prototype)
+bool   strictlyEquals(const QJSValue & other) const
+bool   toBool() const
+QDateTime   toDateTime() const
+qint32   toInt() const
+double   toNumber() const
+QObject *   toQObject() const
+QString   toString() const
+quint32   toUInt() const
+QVariant   toVariant() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

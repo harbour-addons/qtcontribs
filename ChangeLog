@@ -16,6 +16,106 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-06-08 22:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r312)
+  * hbqt/hbmk2_qt.hb
+    + Added: QObject derived classes added below. 
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: constants used in classes below.
+
+  + hbqt/hbqtqml.hbc
+  + hbqt/hbqtquick.hbc
+  + hbqt/qtqml
+  + hbqt/qtqml/doc
+  + hbqt/qtqml/doc/en
+  + hbqt/qtqml/hbqt_init.cpp
+  + hbqt/qtqml/hbqtqml.ch
+  + hbqt/qtqml/hbqtqml.hbc
+  + hbqt/qtqml/hbqtqml.hbm
+  + hbqt/qtqml/hbqtqml.hbp
+  + hbqt/qtqml/hbqtqml.hbx
+  + hbqt/qtqml/hbqtqmls.hbp
+  + hbqt/qtqml/qth
+  + hbqt/qtqml/qth/filelist.hbm
+  + hbqt/qtqml/qth/QJSEngine.qth
+  + hbqt/qtqml/qth/QJSValue.qth
+  + hbqt/qtqml/qth/QJSValueIterator.qth
+  + hbqt/qtqml/qth/QQmlAbstractProfilerAdapter.qth
+  + hbqt/qtqml/qth/QQmlAbstractUrlInterceptor.qth
+  + hbqt/qtqml/qth/QQmlApplicationEngine.qth
+  + hbqt/qtqml/qth/QQmlComponent.qth
+  + hbqt/qtqml/qth/QQmlContext.qth
+  + hbqt/qtqml/qth/QQmlEngine.qth
+  + hbqt/qtqml/qth/QQmlError.qth
+  + hbqt/qtqml/qth/QQmlExpression.qth
+  + hbqt/qtqml/qth/QQmlExtensionPlugin.qth
+  + hbqt/qtqml/qth/QQmlFileSelector.qth
+  + hbqt/qtqml/qth/QQmlImageProviderBase.qth
+  + hbqt/qtqml/qth/QQmlIncubationController.qth
+  + hbqt/qtqml/qth/QQmlIncubator.qth
+  + hbqt/qtqml/qth/QQmlListProperty.qth
+  + hbqt/qtqml/qth/QQmlListReference.qth
+  + hbqt/qtqml/qth/QQmlNetworkAccessManagerFactory.qth
+  + hbqt/qtqml/qth/QQmlParserStatus.qth
+  + hbqt/qtqml/qth/QQmlProperty.qth
+  + hbqt/qtqml/qth/QQmlPropertyMap.qth
+  + hbqt/qtqml/qth/QQmlPropertyValueSource.qth
+  + hbqt/qtqml/qth/QQmlScriptString.qth
+  + hbqt/qtquick
+  + hbqt/qtquick/doc
+  + hbqt/qtquick/doc/en
+  + hbqt/qtquick/hbqt_init.cpp
+  + hbqt/qtquick/hbqtquick.ch
+  + hbqt/qtquick/hbqtquick.hbc
+  + hbqt/qtquick/hbqtquick.hbm
+  + hbqt/qtquick/hbqtquick.hbp
+  + hbqt/qtquick/hbqtquick.hbx
+  + hbqt/qtquick/hbqtquicks.hbp
+  + hbqt/qtquick/qth
+  + hbqt/qtquick/qth/filelist.hbm
+  + hbqt/qtquick/qth/QQuickFramebufferObject.qth
+  + hbqt/qtquick/qth/QQuickItem.qth
+  + hbqt/qtquick/qth/QQuickPaintedItem.qth
+  + hbqt/qtquick/qth/QQuickTextDocument.qth
+  + hbqt/qtquick/qth/QQuickTextureFactory.qth
+  + hbqt/qtquick/qth/QQuickView.qth
+  + hbqt/qtquick/qth/QQuickWidget.qth
+  + hbqt/qtquick/qth/QQuickWindow.qth
+  + hbqt/qtquick/qth/QSGBasicGeometryNode.qth
+  + hbqt/qtquick/qth/QSGClipNode.qth
+  + hbqt/qtquick/qth/QSGDynamicTexture.qth
+  + hbqt/qtquick/qth/QSGFlatColorMaterial.qth
+  + hbqt/qtquick/qth/QSGGeometry.qth
+  + hbqt/qtquick/qth/QSGGeometryNode.qth
+  + hbqt/qtquick/qth/QSGMaterial.qth
+  + hbqt/qtquick/qth/QSGMaterialShader.qth
+  + hbqt/qtquick/qth/QSGMaterialType.qth
+  + hbqt/qtquick/qth/QSGNode.qth
+  + hbqt/qtquick/qth/QSGOpacityNode.qth
+  + hbqt/qtquick/qth/QSGOpaqueTextureMaterial.qth
+  + hbqt/qtquick/qth/QSGSimpleMaterial.qth
+  + hbqt/qtquick/qth/QSGSimpleMaterialShader.qth
+  + hbqt/qtquick/qth/QSGSimpleTextureNode.qth
+  + hbqt/qtquick/qth/QSGTexture.qth
+  + hbqt/qtquick/qth/QSGTextureMaterial.qth
+  + hbqt/qtquick/qth/QSGTransformNode.qth
+  + hbqt/qtquick/qth/QSGVertexColorMaterial.qth
+    + Added: Qt 5x introduced modules. Very powerful classes specially 
+       suited for mobile devices.
+
+  * qtcontribs.hbp
+    + Added: hbqtqml and hbqtquick libraries.
+
+  + hbqt/tests/quickwidget.hbp
+  + hbqt/tests/quickwidget.prg
+  + hbqt/tests/quickwidget.qrc
+  + hbqt/tests/rotatingsquare.qml
+    + Added: example application to demonstrate the power of QtQuick.
+       The example is the exact replica of example shipped with Qt 5.3.0.
+       The behavior of the example is not exactly how it should be. It 
+       seems some bug in Qt itself because the same example code run 
+       via QtCreator also behaves exactly like Harbour's.
+       Any input is welcome.
+
 2014-06-06 15:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r311)
   * hbqt/qtbluetooth/doc/en/class_qbluetoothdevicediscoveryagent.txt
   * hbqt/qtbluetooth/doc/en/class_qbluetoothdeviceinfo.txt

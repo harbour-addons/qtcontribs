@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlExtensionPlugin>
+
+
+/*
+ *   QQmlExtensionPlugin(QObject * parent = 0)
+ */
+HB_FUNC( QT_QQMLEXTENSIONPLUGIN )
+{
+   HB_FUNC_EXEC( HB_QQMLEXTENSIONPLUGIN );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QUrl   baseUrl() const
+
+virtual void   initializeEngine(QQmlEngine * engine, const char * uri)
+virtual void   registerTypes(const char * uri) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

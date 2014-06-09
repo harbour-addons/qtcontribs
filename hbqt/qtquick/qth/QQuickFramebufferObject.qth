@@ -1,0 +1,48 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QQuickItem
+QObject     = yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QQuickFramebufferObject>
+
+
+/*
+ * QQuickFramebufferObject(QQuickItem * parent = 0)
+ */
+HB_FUNC( QT_QQUICKFRAMEBUFFEROBJECT )
+{
+   HB_FUNC_EXEC( HB_QQUICKFRAMEBUFFEROBJECT );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+//virtual Renderer *   createRenderer() const = 0
+void   setTextureFollowsItemSize(bool follows)
+bool   textureFollowsItemSize() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   textureFollowsItemSizeChanged(bool)
+</SIGNALS>

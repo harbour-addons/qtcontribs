@@ -1,0 +1,100 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWindow
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QQuickWindow>
+
+
+/*
+ * QQuickWindow(QWindow * parent = 0)
+ * virtual   ~QQuickWindow()
+ */
+HB_FUNC( QT_QQUICKWINDOW )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWindow" ) )
+   {
+      __HB_RETPTRGC__( new QQuickWindow( hbqt_par_QWindow( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQuickWindow() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   CreateTextureOption { TextureHasAlphaChannel, TextureHasMipmaps, TextureOwnsGLTexture, TextureCanUseAtlas }
+flags   CreateTextureOptions
+enum   SceneGraphError { ContextNotAvailable }
+</ENUMS>
+
+<PROTOS>
+QQuickItem *   activeFocusItem() const
+bool   clearBeforeRendering() const
+QColor   color() const
+QQuickItem *   contentItem() const
+QSGTexture *   createTextureFromId(uint id, const QSize & size, CreateTextureOptions options = CreateTextureOption( 0 )) const
+QSGTexture *   createTextureFromImage(const QImage & image, CreateTextureOptions options) const
+QSGTexture *   createTextureFromImage(const QImage & image) const
+QImage   grabWindow()
+QQmlIncubationController *   incubationController() const
+bool   isPersistentOpenGLContext() const
+bool   isPersistentSceneGraph() const
+QQuickItem *   mouseGrabberItem() const
+//QOpenGLContext *   openglContext() const
+//QOpenGLFramebufferObject *   renderTarget() const
+uint   renderTargetId() const
+QSize   renderTargetSize() const
+void   resetOpenGLState()
+bool   sendEvent(QQuickItem * item, QEvent * e)
+void   setClearBeforeRendering(bool enabled)
+void   setColor(const QColor & color)
+void   setPersistentOpenGLContext(bool persistent)
+void   setPersistentSceneGraph(bool persistent)
+void   setRenderTarget(QOpenGLFramebufferObject * fbo)
+void   setRenderTarget(uint fboId, const QSize & size)
+
+//virtual QAccessibleInterface *   accessibleRoot() const
+
+bool   hasDefaultAlphaBuffer()
+void   setDefaultAlphaBuffer(bool useAlpha)
+</PROTOS>
+
+<SLOTS>
+void   releaseResources()
+void   update()
+</SLOTS>
+
+<SIGNALS>
+void   activeFocusItemChanged()
+void   afterAnimating()
+void   afterRendering()
+void   afterSynchronizing()
+void   beforeRendering()
+void   beforeSynchronizing()
+void   closing(QQuickCloseEvent * close)
+void   colorChanged(const QColor &)
+void   frameSwapped()
+void   openglContextCreated(QOpenGLContext * context)
+void   sceneGraphAboutToStop()
+void   sceneGraphError(QQuickWindow::SceneGraphError error, const QString & message)
+void   sceneGraphInitialized()
+void   sceneGraphInvalidated()
+</SIGNALS>

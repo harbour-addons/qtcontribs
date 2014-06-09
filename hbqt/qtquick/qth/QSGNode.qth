@@ -1,0 +1,70 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QSGNode>
+
+
+/*
+ * QSGNode()
+ * virtual   ~QSGNode()
+ */
+HB_FUNC( QT_QSGNODE )
+{
+   __HB_RETPTRGC__( new QSGNode() );
+}
+</CODE>
+
+<ENUMS>
+flags   DirtyState
+enum   DirtyStateBit { DirtyMatrix, DirtyNodeAdded, DirtyNodeRemoved, DirtyGeometry, DirtyMaterial, DirtyOpacity }
+enum   Flag { OwnedByParent, UsePreprocess, OwnsGeometry, OwnsMaterial, OwnsOpaqueMaterial }
+flags   Flags
+enum   NodeType { BasicNodeType, GeometryNodeType, TransformNodeType, ClipNodeType, OpacityNodeType }
+</ENUMS>
+
+<PROTOS>
+void   appendChildNode(QSGNode * node)
+QSGNode *   childAtIndex(int i) const
+int   childCount() const
+QSGNode *   firstChild() const
+Flags   flags() const
+void   insertChildNodeAfter(QSGNode * node, QSGNode * after)
+void   insertChildNodeBefore(QSGNode * node, QSGNode * before)
+virtual bool   isSubtreeBlocked() const
+QSGNode *   lastChild() const
+void   markDirty(DirtyState bits)
+QSGNode *   nextSibling() const
+QSGNode *   parent() const
+void   prependChildNode(QSGNode * node)
+virtual void   preprocess()
+QSGNode *   previousSibling() const
+void   removeAllChildNodes()
+void   removeChildNode(QSGNode * node)
+void   setFlag(Flag f, bool enabled = true)
+void   setFlags(Flags f, bool enabled = true)
+NodeType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

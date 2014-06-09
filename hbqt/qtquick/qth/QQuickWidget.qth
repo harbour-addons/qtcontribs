@@ -1,0 +1,91 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuickWidgets/QQuickWidget>
+#include <QtQml/QQmlError>
+
+
+/*
+ * QQuickWidget(QWidget * parent = 0)
+ * QQuickWidget(QQmlEngine * engine, QWidget * parent)
+ * QQuickWidget(const QUrl & source, QWidget * parent = 0)
+ * virtual   ~QQuickWidget()
+ */
+HB_FUNC( QT_QQUICKWIDGET )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QQuickWidget( hbqt_par_QWidget( 1 ) ) );
+   }
+#if 0
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlEngine" ) )
+   {
+      __HB_RETPTRGC__( new QQuickWidget( hbqt_par_QQmlEngine( 1 ) ) );
+   }
+#endif
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QUrl" ) )
+   {
+      __HB_RETPTRGC__( new QQuickWidget( *hbqt_par_QUrl( 1 ) ) );
+   }
+#if 0
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QQmlEngine" ) && hbqt_par_isDerivedFrom( 2, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QQuickWidget( hbqt_par_QQmlEngine( 1 ), hbqt_par_QWidget( 2 ) ) );
+   }
+#endif
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QUrl" ) && hbqt_par_isDerivedFrom( 2, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QQuickWidget( *hbqt_par_QUrl( 1 ), hbqt_par_QWidget( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQuickWidget() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   ResizeMode { SizeViewToRootObject, SizeRootObjectToView }
+enum   Status { Null, Ready, Loading, Error }
+</ENUMS>
+
+<PROTOS>
+QQmlEngine *   engine() const
+QList<QQmlError>   errors() const
+QSurfaceFormat   format() const
+QSize   initialSize() const
+ResizeMode   resizeMode() const
+QQmlContext *   rootContext() const
+QQuickItem *   rootObject() const
+void   setFormat(const QSurfaceFormat & format)
+void   setResizeMode(ResizeMode)
+QUrl   source() const
+Status   status() const
+</PROTOS>
+
+<SLOTS>
+void   setSource(const QUrl & url)
+</SLOTS>
+
+<SIGNALS>
+void   sceneGraphError(QQuickWindow::SceneGraphError error, const QString & message)
+void   statusChanged(QQuickWidget::Status status)
+</SIGNALS>

@@ -4613,7 +4613,7 @@
 #define QAudioDecoder_FormatError                            2      // The format of a media resource isn't supported.
 #define QAudioDecoder_AccessDeniedError                      3      // There are not the appropriate permissions to play a media resource.
 #define QAudioDecoder_ServiceMissingError                    4      // A valid playback service was not found, playback cannot proceed.
-                                                                    //
+
 //enum #define QAudioDecoder_State                                  //
 #define QAudioDecoder_StoppedState                           0      // The decoder is not decoding. Decoding will start at the start of the media.
 #define QAudioDecoder_DecodingState                          1      // The audio player is currently decoding media.
@@ -4642,6 +4642,164 @@
 #define QMultimedia_MaybeSupported                           1      // The feature may be supported.
 #define QMultimedia_ProbablySupported                        2      // The feature is probably supported.
 #define QMultimedia_PreferredService                         3      // The service is the preferred provider of a service.
+
+//enum QQuickItem_Flag
+#define QQuickItem_ItemClipsChildrenToShape                  0x01   // Indicates this item should visually clip its children so that they are rendered only within the boundaries of this item.
+#define QQuickItem_ItemAcceptsInputMethod                    0x02   // Indicates the item supports text input methods.
+#define QQuickItem_ItemIsFocusScope                          0x04   // Indicates the item is a focus scope. See Keyboard Focus in Qt Quick for more information.
+#define QQuickItem_ItemHasContents                           0x08   // Indicates the item has visual content and should be rendered by the scene graph.
+#define QQuickItem_ItemAcceptsDrops                          0x10   // Indicates the item accepts drag and drop events.
+
+//enum QQuickItem_ItemChange                                        //
+#define QQuickItem_ItemChildAddedChange                      0      // A child was added. ItemChangeData::item contains the added child.
+#define QQuickItem_ItemChildRemovedChange                    1      // A child was removed. ItemChangeData::item contains the removed child.
+#define QQuickItem_ItemSceneChange                           2      // The item was added to or removed from a scene. The QQuickWindow rendering the scene is specified in using ItemChangeData::window. The window parameter is null when the item is removed from a scene.
+#define QQuickItem_ItemVisibleHasChanged                     3      // The item's visibility has changed. ItemChangeData::boolValue contains the new visibility.
+#define QQuickItem_ItemParentHasChanged                      4      // The item's parent has changed. ItemChangeData::item contains the new parent.
+#define QQuickItem_ItemOpacityHasChanged                     5      // The item's opacity has changed. ItemChangeData::realValue contains the new opacity.
+#define QQuickItem_ItemActiveFocusHasChanged                 6      // The item's focus has changed. ItemChangeData::boolValue contains whether the item has focus or not.
+#define QQuickItem_ItemRotationHasChanged                    7      // The item's rotation has changed. ItemChangeData::realValue contains the new rotation.
+
+//enum QQuickItem_TransformOrigin                                   //
+#define QQuickItem_TopLeft                                   0      // The top-left corner of the item.
+#define QQuickItem_Top                                       1      // The center point of the top of the item.
+#define QQuickItem_TopRight                                  2      // The top-right corner of the item.
+#define QQuickItem_Left                                      3      // The left most point of the vertical middle.
+#define QQuickItem_Center                                    4      // The center of the item.
+#define QQuickItem_Right                                     5      // The right most point of the vertical middle.
+#define QQuickItem_BottomLeft                                6      // The bottom-left corner of the item.
+#define QQuickItem_Bottom                                    7      // The center point of the bottom of the item.
+#define QQuickItem_BottomRight                               8      // The bottom-right corner of the item.
+
+//enum QQuickPaintedItem::PerformanceHint                           //
+#define QQuickPaintedItem_FastFBOResizing                    0x1    // If your item gets resized often and you are using the #define QQuickPaintedItem_FramebufferObject render target, set this flag to true to reduce the item resizing time at the cost of using more graphics memory. Resizing a Framebuffer object is a costly operation, by enabling this property the Framebuffer Object will use a texture larger than the actual size of the item to avoid as much as possible resizing it.
+
+//enum #define QQuickPaintedItem_RenderTarget                       //
+#define QQuickPaintedItem_Image                              0      // The default; QPainter paints into a QImage using the raster paint engine. The image's content needs to be uploaded to graphics memory afterward, this operation can potentially be slow if the item is large. This render target allows high quality anti-aliasing and fast item resizing.
+#define QQuickPaintedItem_FramebufferObject                  1      // QPainter paints into a QOpenGLFramebufferObject using the GL paint engine. Painting can be faster as no texture upload is required, but anti-aliasing quality is not as good as if using an image. This render target allows faster rendering in some cases, but you should avoid using it if the item is resized often.
+#define QQuickPaintedItem_InvertedYFramebufferObject         2      // Exactly as for FramebufferObject above, except once the painting is done, prior to rendering the painted image is flipped about the x-axis so that the top-most pixels are now at the bottom. Since this is done with the OpenGL texture coordinates it is a much faster way to achieve this effect than using a painter transform.
+
+//enum #define QQuickView_ResizeMode
+#define QQuickView_SizeViewToRootObject                      0      // The view resizes with the root item in the QML.
+#define QQuickView_SizeRootObjectToView                      1      // The view will automatically resize the root item to the size of the view.
+
+//enum #define QQuickView_Status                                    //
+#define QQuickView_Null                                      0      // This QQuickView has no source set.
+#define QQuickView_Ready                                     1      // This QQuickView has loaded and created the QML component.
+#define QQuickView_Loading                                   2      // This QQuickView is loading network data.
+#define QQuickView_Error                                     3      // One or more errors has occurred. Call errors() to retrieve a list of errors.
+
+//enum #define QQuickWindow_CreateTextureOption
+#define QQuickWindow_TextureHasAlphaChannel                  0x0001 // The texture has an alpha channel and should be drawn using blending.
+#define QQuickWindow_TextureHasMipmaps                       0x0002 // The texture has mipmaps and can be drawn with mipmapping enabled.
+#define QQuickWindow_TextureOwnsGLTexture                    0x0004 // The texture object owns the texture id and will delete the GL texture when the texture object is deleted.
+#define QQuickWindow_TextureCanUseAtlas                      0x0008 // The image can be uploaded into a texture atlas.
+
+//enum #define QQuickWindow_SceneGraphError
+#define QQuickWindow_ContextNotAvailable                     1      // OpenGL context creation failed. This typically means that no suitable OpenGL implementation was found, for example because no graphics drivers are installed and so no OpenGL 2 support is present. On mobile and embedded boards that use OpenGL ES such an error is likely to indicate issues in the windowing system integration and possibly an incorrect configuration of Qt.
+                                                                    //
+//enum #define QQuickWidget_ResizeMode                              //
+#define QQuickWidget_SizeViewToRootObject                    0      // The view resizes with the root item in the QML.
+#define QQuickWidget_SizeRootObjectToView                    1      // The view will automatically resize the root item to the size of the view.
+
+//enum #define QQuickWidget_Status                                  //
+#define QQuickWidget_Null                                    0      // This QQuickWidget has no source set.
+#define QQuickWidget_Ready                                   1      // This QQuickWidget has loaded and created the QML component.
+#define QQuickWidget_Loading                                 2      // This QQuickWidget is loading network data.
+#define QQuickWidget_Error                                   3      // One or more errors occurred. Call errors() to retrieve a list of errors.
+
+//enum #define QSGTexture_Filtering                                 //
+#define QSGTexture_None                                      0      // No filtering should occur. This value is only used together with setMipmapFiltering().
+#define QSGTexture_Nearest                                   1      // Sampling returns the nearest texel.
+#define QSGTexture_Linear                                    2      // Sampling returns a linear interpolation of the neighboring texels.
+
+//enum #define QSGTexture_WrapMode                                  //
+#define QSGTexture_Repeat                                    0      // Only the factional part of the texture coordiante is used, causing values above 1 and below 0 to repeat.
+#define QSGTexture_ClampToEdge                               1      // Values above 1 are clamped to 1 and values below 0 are clamped to 0.
+
+//enum #define QSGNode_DirtyStateBit
+#define QSGNode_DirtyMatrix                                  0x0100 // The matrix in a QSGTransformNode has changed.
+#define QSGNode_DirtyNodeAdded                               0x0400 // A node was added.
+#define QSGNode_DirtyNodeRemoved                             0x0800 // A node was removed.
+#define QSGNode_DirtyGeometry                                0x1000 // The geometry of a QSGGeometryNode has changed.
+#define QSGNode_DirtyMaterial                                0x2000 // The material of a QSGGeometryNode has changed.
+#define QSGNode_DirtyOpacity                                 0x4000 // The opacity of a QSGOpacityNode has changed.
+
+//enum #define QSGNode_Flag
+#define QSGNode_OwnedByParent                                0x0001       // The node is owned by its parent and will be deleted when the parent is deleted.
+#define QSGNode_UsePreprocess                                0x0002       // The node's virtual preprocess() function will be called before rendering starts.
+#define QSGNode_OwnsGeometry                                 0x00010000   // Only valid for QSGGeometryNode and QSGClipNode. The node has ownership over the QSGGeometry instance and will delete it when the node is destroyed or a geometry is assigned.
+#define QSGNode_OwnsMaterial                                 0x00020000   // Only valid for QSGGeometryNode. The node has ownership over the material and will delete it when the node is destroyed or a material is assigned.
+#define QSGNode_OwnsOpaqueMaterial                           0x00040000   // Only valid for QSGGeometryNode. The node has ownership over the opaque material and will delete it when the node is destroyed or a material is assigned.
+
+//enum #define QSGNode_NodeType
+#define QSGNode_BasicNodeType                                0      // The type of QSGNode
+#define QSGNode_GeometryNodeType                             1      // The type of QSGGeometryNode
+#define QSGNode_TransformNodeType                            2      // The type of QSGTransformNode
+#define QSGNode_ClipNodeType                                 3      // The type of QSGClipNode
+#define QSGNode_OpacityNodeType                              4      // The type of QSGOpacityNode
+
+//enum #define QSGGeometry_DataPattern                              //
+#define QSGGeometry_AlwaysUploadPattern                      0      // The data is always uploaded. This means that the user does not need to explicitly mark index and vertex data as dirty after changing it. This is the default.
+#define QSGGeometry_DynamicPattern                           2      // The data is modified repeatedly and drawn many times. This is a hint that may provide better performance. When set the user must make sure to mark the data as dirty after changing it.
+#define QSGGeometry_StaticPattern                            3      // The data is modified once and drawn many times. This is a hint that may provide better performance. When set the user must make sure to mark the data as dirty after changing it.
+#define QSGGeometry_StreamPattern                            1      // The data is modified for almost every time it is drawn. This is a hint that may provide better performance. When set, the user must make sure to mark the data as dirty after changing it.
+
+//enum #define QSGMaterial_Flag
+#define QSGMaterial_Blending                                 0x0001 // Set this flag to true if the material requires GL_BLEND to be enabled during rendering.
+#define QSGMaterial_RequiresDeterminant                      0x0002 // Set this flag to true if the material relies on the determinant of the matrix of the geometry nodes for rendering.
+#define QSGMaterial_RequiresFullMatrixExceptTranslate        hb_bitOr( 0x0004, QSGMaterial_RequiresDeterminant )                 // Set this flag to true if the material relies on the full matrix of the geometry nodes for rendering, except the translation part.
+#define QSGMaterial_RequiresFullMatrix                       hb_bitOr( 0x0008, QSGMaterial_RequiresFullMatrixExceptTranslate )   // Set this flag to true if the material relies on the full matrix of the geometry nodes for rendering.
+#define QSGMaterial_CustomCompileStep                        0x0010 // Starting with Qt 5.2, the scene graph will not always call
+
+//enum #define QSGSimpleTextureNode_TextureCoordinatesTransfomFlag
+#define QSGSimpleTextureNode_NoTransform                     0x00   // Texture coordinates are oriented with window coordinates i.e. with origin at top-left.
+#define QSGSimpleTextureNode_MirrorHorizontally              0x01   // Texture coordinates are inverted in the horizontal axis with respect to window coordinates
+#define QSGSimpleTextureNode_MirrorVertically                0x02   // Texture coordinates are inverted in the vertical axis with respect to window coordinates
+
+//enum #define QQmlComponent_CompilationMode
+#define QQmlComponent_PreferSynchronous                      0      // Prefer loading/compiling the component immediately, blocking the thread. This is not always possible; for example, remote URLs will always load asynchronously.
+#define QQmlComponent_Asynchronous                           1      // Load/compile the component in a background thread.
+
+//enum #define QQmlComponent_Status
+#define QQmlComponent_Null                                   0      // This QQmlComponent has no data. Call loadUrl() or setData() to add QML content.
+#define QQmlComponent_Ready                                  1      // This QQmlComponent is ready and create() may be called.
+#define QQmlComponent_Loading                                2      // This QQmlComponent is loading network data.
+#define QQmlComponent_Error                                  3      // An error has occurred. Call errors() to retrieve a list of {QQmlError}{errors}.
+
+//enum #define QQmlEngine_ObjectOwnership
+#define QQmlEngine_CppOwnership                              0      // The object is owned by C++ code, and will never be deleted by QML. The JavaScript destroy() method cannot be used on objects with CppOwnership. This option is similar to QScriptEngine::QtOwnership.
+#define QQmlEngine_JavaScriptOwnership                       1      // The object is owned by JavaScript. When the object is returned to QML as the return value of a method call or property access, QML will track it, and delete the object if there are no remaining JavaScript references to it and it has no QObject::parent(). An object tracked by one QQmlEngine will be deleted during that QQmlEngine's destructor, and thus JavaScript references between objects with JavaScriptOwnership from two different engines will not be valid after the deletion of one of those engines. This option is similar to QScriptEngine::ScriptOwnership.
+
+//enum #define QQmlImageProviderBase_Flag
+#define QQmlImageProviderBase_ForceAsynchronousImageLoading  0x01   // Ensures that image requests to the provider are run in a separate thread, which allows the provider to spend as much time as needed on producing the image without blocking the main thread.
+
+//enum #define QQmlImageProviderBase_ImageType
+#define QQmlImageProviderBase_Image                          0      // The Image Provider provides QImage images. The QQuickImageProvider::requestImage() method will be called for all image requests.
+#define QQmlImageProviderBase_Pixmap                         1      // The Image Provider provides QPixmap images. The QQuickImageProvider::requestPixmap() method will be called for all image requests.
+#define QQmlImageProviderBase_Texture                        2      // The Image Provider provides QSGTextureProvider based images. The QQuickImageProvider::requestTexture() method will be called for all image requests.
+
+//enum #define QQmlIncubator_IncubationMode
+#define QQmlIncubator_Asynchronous                           0      // The object will be created asynchronously.
+#define QQmlIncubator_AsynchronousIfNested                   1      // If the object is being created in a context that is already part of an asynchronous creation, this incubator will join that existing incubation and execute asynchronously. The existing incubation will not become Ready until both it and this incubation have completed. Otherwise, the incubation will execute synchronously.
+#define QQmlIncubator_Synchronous                            2      // The object will be created synchronously.
+
+//enum #define QQmlIncubator_Status
+#define QQmlIncubator_Null                                   0      // Incubation is not in progress. Call #define QQmlComponent_create() to begin incubating.
+#define QQmlIncubator_Ready                                  1      // The object is fully created and can be accessed by calling object().
+#define QQmlIncubator_Loading                                2      // The object is in the process of being created.
+#define QQmlIncubator_Error                                  3      // An error occurred. The errors can be access by calling errors().
+
+//enum #define QQmlProperty_PropertyTypeCategory
+#define QQmlProperty_InvalidCategory                         0      // The property is invalid, or is a signal property.
+#define QQmlProperty_List                                    1      // The property is a QQmlListProperty list property
+#define QQmlProperty_Object                                  2      // The property is a QObject derived type pointer
+#define QQmlProperty_Normal                                  3      // The property is a normal value property.
+
+//enum #define QQmlProperty_Type
+#define QQmlProperty_Invalid                                 0      // The property is invalid.
+#define QQmlProperty_Property                                1      // The property is a regular Qt property.
+#define QQmlProperty_SignalProperty                          2      // The property is a signal property.
 
 #endif
 

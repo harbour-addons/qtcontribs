@@ -1,0 +1,56 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlFileSelector>
+
+
+/*
+ * QQmlFileSelector(QQmlEngine * engine, QObject * parent = 0)
+ * ~QQmlFileSelector()
+ */
+HB_FUNC( QT_QQMLFILESELECTOR )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QQmlEngine" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QQmlFileSelector( hbqt_par_QQmlEngine( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   setExtraSelectors(QStringList & strings)
+void   setSelector(QFileSelector * selector)
+
+QQmlFileSelector *   get(QQmlEngine * engine)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

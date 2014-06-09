@@ -1,0 +1,26 @@
+#
+# $Id: hbqtsvg.hbm 34 2012-10-13 21:57:41Z bedipritpal $
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtquick.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc
+../qtgui/hbqtgui.hbc
+
+
+-deppkgname=qtquick:QtQuick
+-depkeyhead=qtquick:QtQuick/QtQuick
+-depcontrol=qtquick:${HB_WITH_QT}
+{!darwin}-depincpath=qtquick:/usr/include/qt5
+{!darwin}-depincpath=qtquick:/usr/lib/qt4/include
+{!darwin}-depincpath=qtquick:/usr/include
+{bsd}-depincpath=qt:/usr/local/include/qt5
+{darwin}-depincpath=qtquick:/Developer/qt/include
+{darwin}-depincpath=qtquick:/Library/Frameworks
+{darwin}-depincpath=qtquick:/usr/local/include

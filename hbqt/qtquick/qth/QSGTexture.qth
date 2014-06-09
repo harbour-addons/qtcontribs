@@ -1,0 +1,65 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QSGTexture>
+
+
+/*
+ * QSGTexture()
+ * ~QSGTexture()
+ */
+HB_FUNC( QT_QSGTEXTURE )
+{
+   HB_FUNC_EXEC( HB_QSGTEXTURE );
+}
+</CODE>
+
+<ENUMS>
+enum   Filtering { None, Nearest, Linear }
+enum   WrapMode { Repeat, ClampToEdge }
+</ENUMS>
+
+<PROTOS>
+virtual void   bind() = 0
+QRectF   convertToNormalizedSourceRect(const QRectF & rect) const
+QSGTexture::Filtering   filtering() const
+virtual bool   hasAlphaChannel() const = 0
+virtual bool   hasMipmaps() const = 0
+QSGTexture::WrapMode   horizontalWrapMode() const
+virtual bool   isAtlasTexture() const
+QSGTexture::Filtering   mipmapFiltering() const
+virtual QRectF   normalizedTextureSubRect() const
+virtual QSGTexture *   removedFromAtlas() const
+void   setFiltering(Filtering filter)
+void   setHorizontalWrapMode(WrapMode hwrap)
+void   setMipmapFiltering(Filtering filter)
+void   setVerticalWrapMode(WrapMode vwrap)
+virtual int   textureId() const = 0
+virtual QSize   textureSize() const = 0
+void   updateBindOptions(bool force = false)
+QSGTexture::WrapMode   verticalWrapMode() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

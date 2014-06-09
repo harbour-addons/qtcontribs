@@ -1,0 +1,45 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlNetworkAccessManagerFactory>
+
+
+/*
+ * virtual   ~QQmlNetworkAccessManagerFactory()
+ */
+HB_FUNC( QT_QQMLNETWORKACCESSMANAGERFACTORY )
+{
+   HB_FUNC_EXEC( HB_QQMLNETWORKACCESSMANAGERFACTORY );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QNetworkAccessManager *   create(QObject * parent) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

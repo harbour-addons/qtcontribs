@@ -1,0 +1,49 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlImageProviderBase>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QQMLIMAGEPROVIDERBASE )
+{
+   HB_FUNC_EXEC( HB_QQMLIMAGEPROVIDERBASE );
+}
+</CODE>
+
+<ENUMS>
+enum   Flag { ForceAsynchronousImageLoading }
+flags   Flags
+enum   ImageType { Image, Pixmap, Texture }
+</ENUMS>
+
+<PROTOS>
+virtual Flags   flags() const = 0
+virtual ImageType   imageType() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

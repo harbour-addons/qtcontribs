@@ -26,6 +26,9 @@ hbqt/qtxml/hbqtxml.hbp
 hbqt/qtpositioning/hbqtpositioning.hbp
 hbqt/qtwebsockets/hbqtwebsockets.hbp
 hbqt/qtbluetooth/hbqtbluetooth.hbp
+hbqt/qtqml/hbqtqml.hbp
+hbqt/qtquick/hbqtquick.hbp
+
 
 #    Qt Based Widgets
 hbqtwidgets/hbqtwidgets.hbp

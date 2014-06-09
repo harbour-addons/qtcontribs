@@ -1,0 +1,47 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+Destructor  = No
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlListProperty>
+
+
+/*
+ * QQmlListProperty(QObject * object, QList<T *> & list)
+ * QQmlListProperty(QObject * object, void * data, AppendFunction append, CountFunction count, AtFunction at, ClearFunction clear)
+ * QQmlListProperty(QObject * object, void * data, CountFunction count, AtFunction at)
+ */
+HB_FUNC( QT_QQMLLISTPROPERTY )
+{
+   HB_FUNC_EXEC( HB_QQMLLISTPROPERTY );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

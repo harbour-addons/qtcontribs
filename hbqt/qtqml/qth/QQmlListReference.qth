@@ -1,0 +1,73 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlListReference>
+
+
+/*
+ * QQmlListReference()
+ * QQmlListReference(QObject * object, const char * property, QQmlEngine * engine = 0)
+ */
+HB_FUNC( QT_QQMLLISTREFERENCE )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QObject" ) && HB_ISCHAR( 2 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QQmlListReference( hbqt_par_QObject( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QObject" ) && HB_ISCHAR( 2 ) && hbqt_par_isDerivedFrom( 3, "QQmlEngine" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QQmlListReference( hbqt_par_QObject( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), hbqt_par_QQmlEngine( 3 ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQmlListReference() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   append(QObject * object) const
+QObject *   at(int index) const
+bool   canAppend() const
+bool   canAt() const
+bool   canClear() const
+bool   canCount() const
+bool   clear() const
+int   count() const
+bool   isManipulable() const
+bool   isReadable() const
+bool   isValid() const
+const QMetaObject *   listElementType() const
+QObject *   object() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,56 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QJSValueIterator>
+
+
+/*
+ * QJSValueIterator(const QJSValue & object)
+ * ~QJSValueIterator()
+ */
+HB_FUNC( QT_QJSVALUEITERATOR )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJSValue" ) )
+   {
+      __HB_RETPTRGC__( new QJSValueIterator( *hbqt_par_QJSValue( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   hasNext() const
+QString   name() const
+bool   next()
+QJSValue   value() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

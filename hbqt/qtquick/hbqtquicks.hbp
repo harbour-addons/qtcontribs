@@ -1,0 +1,7 @@
+#
+# $Id: hbqtsvgs.hbp 34 2012-10-13 21:57:41Z bedipritpal $
+#
+
+../hbqt_commons.hbm
+
+hbqtquick.hbm

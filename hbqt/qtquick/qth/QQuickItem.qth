@@ -1,0 +1,152 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+//Inherit     = QObject, QQmlParserStatus
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QQuickItem>
+#include <QtGui/QCursor>
+
+/*
+ * QQuickItem(QQuickItem * parent = 0)
+ * virtual   ~QQuickItem()
+ */
+HB_FUNC( QT_QQUICKITEM )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQuickItem" ) )
+   {
+      __HB_RETPTRGC__( new QQuickItem( hbqt_par_QQuickItem( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQuickItem() );
+   }
+}
+</CODE>
+
+<ENUMS>
+class   ItemChangeData
+class   UpdatePaintNodeData
+enum   Flag { ItemClipsChildrenToShape, ItemAcceptsInputMethod, ItemIsFocusScope, ItemHasContents, ItemAcceptsDrops }
+flags   Flags
+enum   ItemChange { ItemChildAddedChange, ItemChildRemovedChange, ItemSceneChange, ItemVisibleHasChanged, ..., ItemRotationHasChanged }
+enum   TransformOrigin { TopLeft, Top, TopRight, Left, ..., BottomRight }
+</ENUMS>
+
+<PROTOS>
+bool   acceptHoverEvents() const
+Qt::MouseButtons   acceptedMouseButtons() const
+bool   activeFocusOnTab() const
+bool   antialiasing() const
+qreal   baselineOffset() const
+QQuickItem *   childAt(qreal x, qreal y) const
+QList<QQuickItem *>   childItems() const
+QRectF   childrenRect()
+bool   clip() const
+virtual bool   contains(const QPointF & point) const
+QCursor   cursor() const
+bool   filtersChildMouseEvents() const
+Flags   flags() const
+void   forceActiveFocus()
+void   forceActiveFocus(Qt::FocusReason reason)
+void   grabMouse()
+void   grabTouchPoints(const QVector<int> & ids)
+bool   hasActiveFocus() const
+bool   hasFocus() const
+qreal   height() const
+qreal   implicitHeight() const
+qreal   implicitWidth() const
+virtual QVariant   inputMethodQuery(Qt::InputMethodQuery query) const
+bool   isEnabled() const
+bool   isFocusScope() const
+virtual bool   isTextureProvider() const
+bool   isVisible() const
+bool   keepMouseGrab() const
+bool   keepTouchGrab() const
+QPointF   mapFromItem(const QQuickItem * item, const QPointF & point) const
+QPointF   mapFromScene(const QPointF & point) const
+QRectF   mapRectFromItem(const QQuickItem * item, const QRectF & rect) const
+QRectF   mapRectFromScene(const QRectF & rect) const
+QRectF   mapRectToItem(const QQuickItem * item, const QRectF & rect) const
+QRectF   mapRectToScene(const QRectF & rect) const
+QPointF   mapToItem(const QQuickItem * item, const QPointF & point) const
+QPointF   mapToScene(const QPointF & point) const
+QQuickItem *   nextItemInFocusChain(bool forward = true)
+qreal   opacity() const
+QQuickItem *   parentItem() const
+void   polish()
+void   resetAntialiasing()
+void   resetHeight()
+void   resetWidth()
+qreal   rotation() const
+qreal   scale() const
+QQuickItem *   scopedFocusItem() const
+void   setAcceptHoverEvents(bool enabled)
+void   setAcceptedMouseButtons(Qt::MouseButtons buttons)
+void   setActiveFocusOnTab(bool)
+void   setAntialiasing(bool)
+void   setBaselineOffset(qreal)
+void   setClip(bool)
+void   setCursor(const QCursor & cursor)
+void   setEnabled(bool)
+void   setFiltersChildMouseEvents(bool filter)
+void   setFlag(Flag flag, bool enabled = true)
+void   setFlags(Flags flags)
+void   setFocus(bool)
+void   setFocus(bool focus, Qt::FocusReason reason)
+void   setHeight(qreal)
+void   setImplicitHeight(qreal)
+void   setImplicitWidth(qreal)
+void   setKeepMouseGrab(bool keep)
+void   setKeepTouchGrab(bool keep)
+void   setOpacity(qreal)
+void   setParentItem(QQuickItem * parent)
+void   setRotation(qreal)
+void   setScale(qreal)
+void   setSmooth(bool)
+void   setState(const QString &)
+void   setTransformOrigin(TransformOrigin)
+void   setVisible(bool)
+void   setWidth(qreal)
+void   setX(qreal)
+void   setY(qreal)
+void   setZ(qreal)
+bool   smooth() const
+void   stackAfter(const QQuickItem * sibling)
+void   stackBefore(const QQuickItem * sibling)
+QString   state() const
+//virtual QSGTextureProvider *   textureProvider() const
+TransformOrigin   transformOrigin() const
+void   ungrabMouse()
+void   ungrabTouchPoints()
+void   unsetCursor()
+qreal   width() const
+QQuickWindow *   window() const
+qreal   x() const
+qreal   y() const
+qreal   z() const
+</PROTOS>
+
+<SLOTS>
+void   update()
+</SLOTS>
+
+<SIGNALS>
+void   windowChanged(QQuickWindow * window)
+</SIGNALS>

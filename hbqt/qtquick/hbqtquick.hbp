@@ -1,0 +1,12 @@
+#
+# $Id: hbqtsvg.hbp 34 2012-10-13 21:57:41Z bedipritpal $
+#
+
+../hbqt_common.hbm
+
+hbqtquick.hbm
+
+-instfile=inc:hbqtquick.ch
+-instfile=inc:hbqtquick.hbx
+
+hbqtquicks.hbp

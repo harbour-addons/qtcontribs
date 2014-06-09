@@ -1,0 +1,84 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QSGGeometry>
+
+
+/*
+ * QSGGeometry(const QSGGeometry::AttributeSet & attributes, int vertexCount, int indexCount = 0, int indexType = GL_UNSIGNED_SHORT)
+ * virtual   ~QSGGeometry()
+ */
+HB_FUNC( QT_QSGGEOMETRY )
+{
+   HB_FUNC_EXEC( HB_QSGGEOMETRY );
+}
+</CODE>
+
+<ENUMS>
+enum   DataPattern { AlwaysUploadPattern, DynamicPattern, StaticPattern, StreamPattern }
+</ENUMS>
+
+<PROTOS>
+void   allocate(int vertexCount, int indexCount = 0)
+int   attributeCount() const
+//const Attribute *   attributes() const
+GLenum   drawingMode() const
+int   indexCount() const
+void *   indexData()
+const void *   indexData() const
+//uint *   indexDataAsUInt()
+//const uint *   indexDataAsUInt() const
+//quint16 *   indexDataAsUShort()
+//const quint16 *   indexDataAsUShort() const
+DataPattern   indexDataPattern() const
+int   indexType() const
+float   lineWidth() const
+void   markIndexDataDirty()
+void   markVertexDataDirty()
+void   setDrawingMode(GLenum mode)
+void   setIndexDataPattern(DataPattern p)
+void   setLineWidth(float width)
+void   setVertexDataPattern(DataPattern p)
+int   sizeOfIndex() const
+int   sizeOfVertex() const
+int   vertexCount() const
+void *   vertexData()
+const void *   vertexData() const
+//ColoredPoint2D *   vertexDataAsColoredPoint2D()
+//const ColoredPoint2D *   vertexDataAsColoredPoint2D() const
+//Point2D *   vertexDataAsPoint2D()
+//const Point2D *   vertexDataAsPoint2D() const
+//TexturedPoint2D *   vertexDataAsTexturedPoint2D()
+//const TexturedPoint2D *   vertexDataAsTexturedPoint2D() const
+DataPattern   vertexDataPattern() const
+
+//const AttributeSet &   defaultAttributes_ColoredPoint2D()
+//const AttributeSet &   defaultAttributes_Point2D()
+//const AttributeSet &   defaultAttributes_TexturedPoint2D()
+void   updateRectGeometry(QSGGeometry * g, const QRectF & rect)
+void   updateTexturedRectGeometry(QSGGeometry * g, const QRectF & rect, const QRectF & textureRect)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

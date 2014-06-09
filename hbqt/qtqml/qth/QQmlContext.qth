@@ -1,0 +1,77 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlContext>
+
+
+/*
+ * QQmlContext(QQmlEngine * engine, QObject * parent = 0)
+ * QQmlContext(QQmlContext * parentContext, QObject * parent = 0)
+ * virtual   ~QQmlContext()
+ */
+HB_FUNC( QT_QQMLCONTEXT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlEngine" ) )
+   {
+      __HB_RETPTRGC__( new QQmlContext( hbqt_par_QQmlEngine( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlContext" ) )
+   {
+      __HB_RETPTRGC__( new QQmlContext( hbqt_par_QQmlContext( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlEngine" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QQmlContext( hbqt_par_QQmlContext( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlContext" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QQmlContext( hbqt_par_QQmlContext( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QUrl   baseUrl() const
+QObject *   contextObject() const
+QVariant   contextProperty(const QString & name) const
+QQmlEngine *   engine() const
+bool   isValid() const
+QString   nameForObject(QObject * object) const
+QQmlContext *   parentContext() const
+QUrl   resolvedUrl(const QUrl & src)
+void   setBaseUrl(const QUrl & baseUrl)
+void   setContextObject(QObject * object)
+void   setContextProperty(const QString & name, QObject * value)
+void   setContextProperty(const QString & name, const QVariant & value)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

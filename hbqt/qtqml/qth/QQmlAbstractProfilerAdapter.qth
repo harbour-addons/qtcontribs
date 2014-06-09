@@ -1,0 +1,66 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlAbstractProfilerAdapter>
+
+
+/*
+ * QQmlAbstractProfilerAdapter(QQmlProfilerService * service)
+ * virtual   ~QQmlAbstractProfilerAdapter()
+ */
+HB_FUNC( QT_QQMLABSTRACTPROFILERADAPTER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlProfilerService" ) )
+   {
+      __HB_RETPTRGC__( new QQmlAbstractProfilerAdapter( hbqt_par_QQmlProfilerService( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   isRunning() const
+void   reportData()
+virtual qint64   sendMessages(qint64 until, QList<QByteArray> & messages) = 0
+void   startProfiling()
+void   startWaiting()
+void   stopProfiling()
+void   stopWaiting()
+void   synchronize(const QElapsedTimer & timer)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   dataRequested()
+void   profilingDisabled()
+void   profilingDisabledWhileWaiting()
+void   profilingEnabled()
+void   profilingEnabledWhileWaiting()
+void   referenceTimeKnown(const QElapsedTimer & timer)
+</SIGNALS>

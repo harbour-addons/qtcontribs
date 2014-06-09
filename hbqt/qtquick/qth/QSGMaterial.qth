@@ -1,0 +1,51 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QSGMaterial>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSGMATERIAL )
+{
+   HB_FUNC_EXEC( HB_QSGMATERIAL );
+}
+</CODE>
+
+<ENUMS>
+enum   Flag { Blending, RequiresDeterminant, RequiresFullMatrixExceptTranslate, RequiresFullMatrix, CustomCompileStep }
+flags   Flags
+</ENUMS>
+
+<PROTOS>
+virtual int   compare(const QSGMaterial * other) const
+virtual QSGMaterialShader *   createShader() const = 0
+QSGMaterial::Flags   flags() const
+void   setFlag(Flags flags, bool on = true)
+virtual QSGMaterialType *   type() const = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

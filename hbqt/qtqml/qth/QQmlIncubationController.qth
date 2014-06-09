@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlIncubationController>
+
+
+/*
+ * QQmlIncubationController()
+ */
+HB_FUNC( QT_QQMLINCUBATIONCONTROLLER )
+{
+   __HB_RETPTRGC__( new QQmlIncubationController() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QQmlEngine *   engine() const
+void   incubateFor(int msecs)
+//void   incubateWhile(volatile bool * flag, int msecs = 0)
+int   incubatingObjectCount() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

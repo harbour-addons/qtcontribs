@@ -1,0 +1,25 @@
+#
+# $Id$
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtqml.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc
+
+
+-deppkgname=qtqml:QtQml
+-depkeyhead=qtqml:QtQml/QtQml
+-depcontrol=qtqml:${HB_WITH_QT}
+{!darwin}-depincpath=qtqml:/usr/include/qt5
+{!darwin}-depincpath=qtqml:/usr/lib/qt4/include
+{!darwin}-depincpath=qtqml:/usr/include
+{bsd}-depincpath=qt:/usr/local/include/qt5
+{darwin}-depincpath=qtqml:/Developer/qt/include
+{darwin}-depincpath=qtqml:/Library/Frameworks
+{darwin}-depincpath=qtqml:/usr/local/include

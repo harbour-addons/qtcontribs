@@ -1,0 +1,73 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QQuickItem
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QQuickPaintedItem>
+
+
+/*
+ * QQuickPaintedItem(QQuickItem * parent = 0)
+ * virtual   ~QQuickPaintedItem()
+ */
+HB_FUNC( QT_QQUICKPAINTEDITEM )
+{
+   HB_FUNC_EXEC( HB_QQUICKPAINTEDITEM );
+}
+</CODE>
+
+<ENUMS>
+enum   PerformanceHint { FastFBOResizing }
+flags   PerformanceHints
+enum   RenderTarget { Image, FramebufferObject, InvertedYFramebufferObject }
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+bool   antialiasing() const
+QRectF   contentsBoundingRect() const
+qreal   contentsScale() const
+QSize   contentsSize() const
+QColor   fillColor() const
+bool   mipmap() const
+bool   opaquePainting() const
+virtual void   paint(QPainter * painter) = 0
+PerformanceHints   performanceHints() const
+RenderTarget   renderTarget() const
+void   resetContentsSize()
+void   setAntialiasing(bool enable)
+void   setContentsScale(qreal)
+void   setContentsSize(const QSize &)
+void   setFillColor(const QColor &)
+void   setMipmap(bool enable)
+void   setOpaquePainting(bool opaque)
+void   setPerformanceHint(PerformanceHint hint, bool enabled = true)
+void   setPerformanceHints(PerformanceHints hints)
+void   setRenderTarget(RenderTarget target)
+void   update(const QRect & rect = QRect())
+</SLOTS>
+
+<SIGNALS>
+void   contentsScaleChanged()
+void   contentsSizeChanged()
+void   fillColorChanged()
+void   renderTargetChanged()
+</SIGNALS>

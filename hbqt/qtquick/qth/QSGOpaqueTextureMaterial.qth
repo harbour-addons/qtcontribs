@@ -1,0 +1,54 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSGMaterial
+QObject     = No
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQuick/QSGOpaqueTextureMaterial>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSGOPAQUETEXTUREMATERIAL )
+{
+   __HB_RETPTRGC__( new QSGOpaqueTextureMaterial() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QSGTexture::Filtering   filtering() const
+QSGTexture::WrapMode   horizontalWrapMode() const
+QSGTexture::Filtering   mipmapFiltering() const
+void   setFiltering(QSGTexture::Filtering filtering)
+void   setHorizontalWrapMode(QSGTexture::WrapMode mode)
+void   setMipmapFiltering(QSGTexture::Filtering filtering)
+void   setTexture(QSGTexture * texture)
+void   setVerticalWrapMode(QSGTexture::WrapMode mode)
+QSGTexture *   texture() const
+QSGTexture::WrapMode   verticalWrapMode() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050300
+Destructor  = No
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QQmlScriptString>
+
+
+/*
+ * QQmlScriptString()
+ * QQmlScriptString(const QQmlScriptString & other)
+ */
+HB_FUNC( QT_QQMLSCRIPTSTRING )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlScriptString" ) )
+   {
+      __HB_RETPTRGC__( new QQmlScriptString( *hbqt_par_QQmlScriptString( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QQmlScriptString() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   booleanLiteral(bool * ok) const
+bool   isEmpty() const
+bool   isNullLiteral() const
+bool   isUndefinedLiteral() const
+qreal   numberLiteral(bool * ok) const
+QString   stringLiteral() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

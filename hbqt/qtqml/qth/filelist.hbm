@@ -1,0 +1,33 @@
+#
+# $Id$
+#
+
+-pflag=-qtver=0x050300
+-pflag=-qtmodule=qtqml
+-pflag=-qthdocdir=../doc/
+
+QJSEngine.qth
+QJSValue.qth
+QJSValueIterator.qth
+# QQmlAbstractProfilerAdapter.qth
+QQmlAbstractUrlInterceptor.qth
+QQmlApplicationEngine.qth
+QQmlComponent.qth
+QQmlContext.qth
+QQmlEngine.qth
+QQmlError.qth
+QQmlExpression.qth
+QQmlExtensionPlugin.qth
+QQmlFileSelector.qth
+QQmlImageProviderBase.qth
+QQmlIncubationController.qth
+QQmlIncubator.qth
+QQmlListProperty.qth
+QQmlListReference.qth
+QQmlNetworkAccessManagerFactory.qth
+QQmlParserStatus.qth
+QQmlProperty.qth
+QQmlPropertyMap.qth
+QQmlPropertyValueSource.qth
+QQmlScriptString.qth
+

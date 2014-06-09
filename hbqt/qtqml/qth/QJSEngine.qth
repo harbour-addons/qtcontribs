@@ -1,0 +1,61 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtQml/QJSEngine>
+
+
+/*
+ * QJSEngine()
+ * QJSEngine(QObject * parent)
+ * virtual   ~QJSEngine()
+ */
+HB_FUNC( QT_QJSENGINE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QJSEngine( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QJSEngine() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   collectGarbage()
+QJSValue   evaluate(const QString & program, const QString & fileName = QString(), int lineNumber = 1)
+//T   fromScriptValue(const QJSValue & value)
+QJSValue   globalObject() const
+QJSValue   newArray(uint length = 0)
+QJSValue   newObject()
+QJSValue   newQObject(QObject * object)
+QJSValue   toScriptValue(const T & value)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
