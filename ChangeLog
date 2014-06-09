@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-06-09 09:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r313)
+  * hbide/actions.prg
+    ! Fixed: selected-text toolbar was behaving differently in Qt 5.3.0.
+
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump.
+
 2014-06-08 22:44 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r312)
   * hbqt/hbmk2_qt.hb
     + Added: QObject derived classes added below. 

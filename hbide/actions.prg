@@ -1339,9 +1339,10 @@ METHOD IdeActions:buildToolbarSelectedText()
       :create( "SelectedText_Toolbar" )
       :setObjectName( "ToolbarSelectedText" )
       :setWindowTitle( "Actions on Selected Text" )
-      :setWindowFlags( hb_bitOr( Qt_Tool, Qt_CustomizeWindowHint ) )
+      :setStyleSheet( "background-color: rgba(230,230,230,255);" )
       :setMovable( .T. )
       :setFloatable( .T. )
+      :setFocusPolicy( Qt_NoFocus )
       :hide()
    ENDWITH
 
@@ -1397,6 +1398,7 @@ METHOD IdeActions:buildToolButton( cName, cDesc, cImage, bAction, lCheckable, lD
    oBtn:setMaximumHeight( ::nToolBtnHeight )
    oBtn:setFocusPolicy( Qt_NoFocus )
    oBtn:setAutoRaise( .T. )
+   oBtn:setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
 
    IF HB_ISOBJECT( cDesc )
       oBtn:setObjectName( cName )
