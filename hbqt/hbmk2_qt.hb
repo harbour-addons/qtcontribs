@@ -1663,7 +1663,7 @@ METHOD HbQtSource:new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileNa
 /*----------------------------------------------------------------------*/
 
 METHOD HbQtSource:build()
-   LOCAL i, s, oMtd, tmp, tmp1, n, k, aLine, uQtObject
+   LOCAL i, s, oMtd, tmp, tmp1, n, k, aLine, uQtObject, aParents, cParent
 
    uQtObject := Upper( ::cQtObject )
 
@@ -1747,7 +1747,13 @@ METHOD HbQtSource:build()
 
    n := AScan( ::cls_, {| e_ | Left( Lower( e_[ 1 ] ), 7 ) == "inherit" .and. ! Empty( e_[ 2 ] ) } )
    IF n > 0
-      s := Upper( StrTran( ::cls_[ n, 2 ], "Q", "HB_Q" ) )
+      aParents := hb_ATokens( AllTrim( ::cls_[ n, 2 ] ), "," )
+      s := ""
+      FOR EACH cParent IN aParents
+         IF ! Empty( cParent )
+            s += Upper( "HB_" + AllTrim( cParent ) + iif( cParent:__enumIndex() == Len( aParents ), "", ", " ) )
+         ENDIF
+      NEXT
    ELSE
       s := "HBQTOBJECTHANDLER"
    ENDIF
@@ -3772,6 +3778,8 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QScriptEngine" )
       aadd( aQObjects, "QScriptExtensionPlugin" )
 
+      aadd( aQObjects, "QScroller" )
+
       // QtNetwork
       aadd( aQObjects, "QNetworkAccessManager" )
       aadd( aQObjects, "QNetworkConfigurationManager" )
@@ -3900,6 +3908,8 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QQmlExtensionPlugin" )
       aadd( aQObjects, "QQmlFileSelector" )
       aadd( aQObjects, "QQmlPropertyMap" )
+
+      aadd( aQObjects, "QZXing" )
 
    ENDIF
 

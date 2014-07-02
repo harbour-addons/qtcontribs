@@ -12,8 +12,7 @@
  */
 
 <CLASS>
-//Inherit     = QObject, QQmlParserStatus
-Inherit     = QObject
+Inherit     = QObject, QQmlParserStatus
 QObject     = Yes
 Version     = 0x050300
 </CLASS>

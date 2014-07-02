@@ -61,7 +61,18 @@ QList<QScroller *>   activeScrollers()
 Qt::GestureType   grabGesture(QObject * target, QScroller::ScrollerGestureType scrollGestureType = TouchGesture)
 Qt::GestureType   grabbedGesture(QObject * target)
 bool   hasScroller(QObject * target)
-QScroller *   scroller(QObject * target)
+QScroller *   scroller(QObject * target){
+   #if QT_VERSION >= 0x050000
+   {
+      if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+      {
+         hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, QScroller::scroller( hbqt_par_QObject( 1 ) ), "HB_QSCROLLER", hbqt_del_QScroller, HBQT_BIT_NONE ) );
+         return;
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+   #endif
+}
 //const QScroller *   scroller(const QObject * target)
 void   ungrabGesture(QObject * target)
 </PROTOS>

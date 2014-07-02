@@ -138,6 +138,7 @@ struct FlickData {
       AutoScrollAcceleration // Scrolling automatically but a finger is on the screen
    } State;
    State state;
+   QEvent::Type lastEvent;
    QWidget *widget;
    QPoint pressPos;
    QPoint lastPos;
@@ -151,6 +152,7 @@ struct FlickData {
    FlickData()
       : lastPosValid(false)
       , waitingAcceleration(false)
+      , lastEvent(QEvent::None)
    {}
 
    void resetSpeed()
@@ -333,6 +335,14 @@ bool HBQFlickCharm::eventFilter(QObject *object, QEvent *event)
    FlickData *data = d->flickData.value( viewport );
    if( ! viewport || !data || data->ignored.removeAll( event ) )
        return false;
+
+   if( data->lastEvent == BUTTON_PRESS && type == BUTTON_RELEASE )
+   {
+       data->state = FlickData::Steady;
+       data->lastPosValid = false;
+       return false;
+   }
+   data->lastEvent = type;
 
    const QPoint mousePos = pos;
    bool consumed = false;

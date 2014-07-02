@@ -16,6 +16,30 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-02 08:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r314)
+  * hbqt/hbmk2_qt.hb
+    ! Fixed a nasty bug where parent objects were not beining initialized 
+       properly. This was present in only few classes so nobody noticed.
+
+  * hbqt/qtgui/hbqt_flickcharm.cpp
+    % Small enhancement.
+   
+  * hbqt/qtgui/qth/QScroller.qth
+    ! Fixed: to get a real object of this type.
+       oScroller := QScroller():scroller( oAbstractScrollAreaDerivedClassObject )
+       oScroller:grabGesture( oAbstractScrollAreaDerivedClassObject, ;
+                                    QScroller_LeftMouseButtonGesture )
+      An Android example is scheduled to be comming in near future.
+ 
+  * hbqt/qtquick/qth/QQuickItem.qth
+    ! Fixed: proper parenting
+
+  * hbqtwidgets/calculator.prg
+    ! Fixed: K_ESC was causing a RTE, reported by Maurizio, thanks.
+
+  * qtcontribs.hbp
+    + Added: hbqtmultimediawidgets.hbp
+
 2014-06-09 09:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r313)
   * hbide/actions.prg
     ! Fixed: selected-text toolbar was behaving differently in Qt 5.3.0.

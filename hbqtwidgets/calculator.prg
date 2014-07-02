@@ -846,7 +846,7 @@ METHOD __KeyPress( oKeyEvent ) Class HbQtCalculator
    ::EqualButton():SetFocus()
 
    IF     nKey == Qt_Key_Escape
-      ::Close()
+      ::oWidget:close()
 
    ELSEIF nKey == Qt_Key_Backspace
       ::BackspaceClicked()
