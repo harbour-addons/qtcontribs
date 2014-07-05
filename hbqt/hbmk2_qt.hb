@@ -238,8 +238,8 @@ FUNCTION hbmk_plugin_qt( hbmk )
 
                   cCommand := hbmk[ "vars" ][ "cRCC_BIN" ] +;
                               " -binary" +;
-                              " " + hbmk_FNameEscape( hbmk_PathSepToTarget( hbmk, cSrc ), hbmk[ "nCmd_Esc" ], hbmk[ "nCmd_FNF" ] ) +;
-                              " -o " + hbmk_FNameEscape( hbmk_PathSepToTarget( hbmk, cDst ), hbmk[ "nCmd_Esc" ], hbmk[ "nCmd_FNF" ] )
+                              " " + hbmk_FNameEscape( hbmk, hbmk_PathSepToTarget( hbmk, cSrc ) ) +;
+                              " -o " + hbmk_FNameEscape( hbmk, hbmk_PathSepToTarget( hbmk, cDst ) )
 
                   IF hbmk[ "lTRACE" ]
                      IF ! hbmk[ "lQUIET" ]
@@ -264,7 +264,7 @@ FUNCTION hbmk_plugin_qt( hbmk )
                                 hb_eol() +;
                                 "#pragma -km+" + hb_eol() +;
                                 hb_eol() +;
-                                "FUNCTION hbqtres_" + hbmk_FNameToSymbol( hb_FNameName( cSrc ) ) + "()" + hb_eol() +;
+                                "FUNCTION hbqtres_" + hbmk_FuncNameEncode( hb_FNameName( cSrc ) ) + "()" + hb_eol() +;
                                 "   #pragma __binarystreaminclude " + Chr( 34 ) + hb_FNameNameExt( cDst ) + Chr( 34 ) + " | RETURN %s" + hb_eol()
 
                         IF ! hb_MemoWrit( cPRG, cTmp )
@@ -303,8 +303,8 @@ FUNCTION hbmk_plugin_qt( hbmk )
                   FClose( hb_FTempCreateEx( @cTmp ) )
 
                   cCommand := hbmk[ "vars" ][ "cUIC_BIN" ] +;
-                              " " + hbmk_FNameEscape( hbmk_PathSepToTarget( hbmk, cSrc ), hbmk[ "nCmd_Esc" ], hbmk[ "nCmd_FNF" ] ) +;
-                              " -o " + hbmk_FNameEscape( cTmp, hbmk[ "nCmd_Esc" ], hbmk[ "nCmd_FNF" ] )
+                              " " + hbmk_FNameEscape( hbmk, hbmk_PathSepToTarget( hbmk, cSrc ) ) +;
+                              " -o " + hbmk_FNameEscape( hbmk, cTmp )
 
                   IF hbmk[ "lTRACE" ]
                      IF ! hbmk[ "lQUIET" ]
@@ -325,7 +325,7 @@ FUNCTION hbmk_plugin_qt( hbmk )
                            EXIT
                         ENDIF
                      ELSE
-                        IF ! uic_to_prg( hbmk, cTmp, cDst, hbmk_FNameToSymbol( hb_FNameName( cSrc ) ) )
+                        IF ! uic_to_prg( hbmk, cTmp, cDst, hbmk_FuncNameEncode( hb_FNameName( cSrc ) ) )
                            IF ! hbmk[ "lIGNOREERROR" ]
                               FErase( cTmp )
                               cRetVal := "error"
@@ -397,8 +397,8 @@ FUNCTION hbmk_plugin_qt( hbmk )
                IF lBuildIt
 
                   cCommand := hbmk[ "vars" ][ "cMOC_BIN" ] +;
-                              " " + hbmk_FNameEscape( hbmk_PathSepToTarget( hbmk, cSrc ), hbmk[ "nCmd_Esc" ], hbmk[ "nCmd_FNF" ] ) +;
-                              " -o " + hbmk_FNameEscape( hbmk_PathSepToTarget( hbmk, cDst ), hbmk[ "nCmd_Esc" ], hbmk[ "nCmd_FNF" ] )
+                              " " + hbmk_FNameEscape( hbmk, hbmk_PathSepToTarget( hbmk, cSrc ) ) +;
+                              " -o " + hbmk_FNameEscape( hbmk, hbmk_PathSepToTarget( hbmk, cDst ) )
 
                   IF hbmk[ "lTRACE" ]
                      IF ! hbmk[ "lQUIET" ]

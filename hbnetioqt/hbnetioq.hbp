@@ -8,8 +8,8 @@
 
 -o../../bin/${hb_plat}/${hb_comp}/${hb_name}
 
--icon={allwin}../../../../package/harb_win.ico
--icon={os2}../../../package/harb_os2.ico
+-icon={allwin}harb_win.ico
+-icon={os2}harb_os2.ico
 
 hbxbp.hbc
 hbnetio.hbc
