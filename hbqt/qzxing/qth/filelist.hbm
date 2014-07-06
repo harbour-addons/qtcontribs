@@ -1,0 +1,9 @@
+#
+# $Id$
+#
+
+-pflag=-qtver=0x050300
+-pflag=-qtmodule=QZXing
+-pflag=-qthdocdir=../doc/
+
+QZXing.qth

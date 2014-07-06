@@ -1,0 +1,19 @@
+
+             CHANGES IN HARBOUR PORT OF QZXING LIBRARY
+      (https://sourceforge.net/projects/qzxing/?source=navbar)
+
+
+QZXing is a Qt port of ZXing library and is published under Apache License 2.0 
+or later. Following are the only changes made in the sources of QZXing v2.3.
+
+
+1. Filename changes ( to make it compilable under Harbour make system )
+     QZXing.cpp  =>  hbqt_hbqzxing.cpp
+     QZXing.h    =>  hbqt_hbqzxing.h
+
+
+2. Header includes changes 
+     The lines where Qt headers were #included, like:
+       #include <qglobal>  =>  #include <QtCore/qglobal>
+     
+

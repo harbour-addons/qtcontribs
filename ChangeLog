@@ -16,6 +16,300 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-06 01:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r316)
+  + hbqt/qzxing
+  + hbqt/qzxing/CameraImageWrapper.cpp
+  + hbqt/qzxing/CameraImageWrapper.h
+  + hbqt/qzxing/COPYING
+  + hbqt/qzxing/doc
+  + hbqt/qzxing/doc/en
+  + hbqt/qzxing/hbqt_hbqzxing.cpp
+  + hbqt/qzxing/hbqt_hbqzxing.h
+  + hbqt/qzxing/hbqt_init.cpp
+  + hbqt/qzxing/hbqtzxing.ch
+  + hbqt/qzxing/hbqtzxing.hbc
+  + hbqt/qzxing/hbqtzxing.hbm
+  + hbqt/qzxing/hbqtzxing.hbp
+  + hbqt/qzxing/hbqtzxing.hbx
+  + hbqt/qzxing/hbqtzxings.hbp
+  + hbqt/qzxing/imagehandler.cpp
+  + hbqt/qzxing/imagehandler.h
+  + hbqt/qzxing/NOTICE
+  + hbqt/qzxing/qth
+  + hbqt/qzxing/qth/filelist.hbm
+  + hbqt/qzxing/qth/QZXing.qth
+  + hbqt/qzxing/QZXing_global.h
+  + hbqt/qzxing/zxing
+  + hbqt/qzxing/zxing/bigint
+  + hbqt/qzxing/zxing/bigint/BigInteger.cc
+  + hbqt/qzxing/zxing/bigint/BigInteger.hh
+  + hbqt/qzxing/zxing/bigint/BigIntegerAlgorithms.cc
+  + hbqt/qzxing/zxing/bigint/BigIntegerAlgorithms.hh
+  + hbqt/qzxing/zxing/bigint/BigIntegerLibrary.hh
+  + hbqt/qzxing/zxing/bigint/BigIntegerUtils.cc
+  + hbqt/qzxing/zxing/bigint/BigIntegerUtils.hh
+  + hbqt/qzxing/zxing/bigint/BigUnsigned.cc
+  + hbqt/qzxing/zxing/bigint/BigUnsigned.hh
+  + hbqt/qzxing/zxing/bigint/BigUnsignedInABase.cc
+  + hbqt/qzxing/zxing/bigint/BigUnsignedInABase.hh
+  + hbqt/qzxing/zxing/bigint/ChangeLog
+  + hbqt/qzxing/zxing/bigint/NumberlikeArray.hh
+  + hbqt/qzxing/zxing/bigint/README
+  + hbqt/qzxing/zxing/win32
+  + hbqt/qzxing/zxing/win32/zxing
+  + hbqt/qzxing/zxing/win32/zxing/iconv.h
+  + hbqt/qzxing/zxing/win32/zxing/msvc
+  + hbqt/qzxing/zxing/win32/zxing/msvc/stdint.h
+  + hbqt/qzxing/zxing/win32/zxing/win_iconv.c
+  + hbqt/qzxing/zxing/zxing
+  + hbqt/qzxing/zxing/zxing/aztec
+  + hbqt/qzxing/zxing/zxing/aztec/AztecDetectorResult.cpp
+  + hbqt/qzxing/zxing/zxing/aztec/AztecDetectorResult.h
+  + hbqt/qzxing/zxing/zxing/aztec/AztecReader.cpp
+  + hbqt/qzxing/zxing/zxing/aztec/AztecReader.h
+  + hbqt/qzxing/zxing/zxing/aztec/decoder
+  + hbqt/qzxing/zxing/zxing/aztec/decoder/AztecDecoder.cpp
+  + hbqt/qzxing/zxing/zxing/aztec/decoder/Decoder.h
+  + hbqt/qzxing/zxing/zxing/aztec/detector
+  + hbqt/qzxing/zxing/zxing/aztec/detector/AztecDetector.cpp
+  + hbqt/qzxing/zxing/zxing/aztec/detector/Detector.h
+  + hbqt/qzxing/zxing/zxing/BarcodeFormat.cpp
+  + hbqt/qzxing/zxing/zxing/BarcodeFormat.h
+  + hbqt/qzxing/zxing/zxing/Binarizer.cpp
+  + hbqt/qzxing/zxing/zxing/Binarizer.h
+  + hbqt/qzxing/zxing/zxing/BinaryBitmap.cpp
+  + hbqt/qzxing/zxing/zxing/BinaryBitmap.h
+  + hbqt/qzxing/zxing/zxing/ChecksumException.cpp
+  + hbqt/qzxing/zxing/zxing/ChecksumException.h
+  + hbqt/qzxing/zxing/zxing/common
+  + hbqt/qzxing/zxing/zxing/common/Array.h
+  + hbqt/qzxing/zxing/zxing/common/BitArray.cpp
+  + hbqt/qzxing/zxing/zxing/common/BitArray.h
+  + hbqt/qzxing/zxing/zxing/common/BitArrayIO.cpp
+  + hbqt/qzxing/zxing/zxing/common/BitMatrix.cpp
+  + hbqt/qzxing/zxing/zxing/common/BitMatrix.h
+  + hbqt/qzxing/zxing/zxing/common/BitSource.cpp
+  + hbqt/qzxing/zxing/zxing/common/BitSource.h
+  + hbqt/qzxing/zxing/zxing/common/CharacterSetECI.cpp
+  + hbqt/qzxing/zxing/zxing/common/CharacterSetECI.h
+  + hbqt/qzxing/zxing/zxing/common/Counted.h
+  + hbqt/qzxing/zxing/zxing/common/DecoderResult.cpp
+  + hbqt/qzxing/zxing/zxing/common/DecoderResult.h
+  + hbqt/qzxing/zxing/zxing/common/detector
+  + hbqt/qzxing/zxing/zxing/common/detector/JavaMath.h
+  + hbqt/qzxing/zxing/zxing/common/detector/MathUtils.h
+  + hbqt/qzxing/zxing/zxing/common/detector/MonochromeRectangleDetector.cpp
+  + hbqt/qzxing/zxing/zxing/common/detector/MonochromeRectangleDetector.h
+  + hbqt/qzxing/zxing/zxing/common/detector/WhiteRectangleDetector.cpp
+  + hbqt/qzxing/zxing/zxing/common/detector/WhiteRectangleDetector.h
+  + hbqt/qzxing/zxing/zxing/common/DetectorResult.cpp
+  + hbqt/qzxing/zxing/zxing/common/DetectorResult.h
+  + hbqt/qzxing/zxing/zxing/common/GlobalHistogramBinarizer.cpp
+  + hbqt/qzxing/zxing/zxing/common/GlobalHistogramBinarizer.h
+  + hbqt/qzxing/zxing/zxing/common/GreyscaleLuminanceSource.cpp
+  + hbqt/qzxing/zxing/zxing/common/GreyscaleLuminanceSource.h
+  + hbqt/qzxing/zxing/zxing/common/GreyscaleRotatedLuminanceSource.cpp
+  + hbqt/qzxing/zxing/zxing/common/GreyscaleRotatedLuminanceSource.h
+  + hbqt/qzxing/zxing/zxing/common/GridSampler.cpp
+  + hbqt/qzxing/zxing/zxing/common/GridSampler.h
+  + hbqt/qzxing/zxing/zxing/common/HybridBinarizer.cpp
+  + hbqt/qzxing/zxing/zxing/common/HybridBinarizer.h
+  + hbqt/qzxing/zxing/zxing/common/IllegalArgumentException.cpp
+  + hbqt/qzxing/zxing/zxing/common/IllegalArgumentException.h
+  + hbqt/qzxing/zxing/zxing/common/PerspectiveTransform.cpp
+  + hbqt/qzxing/zxing/zxing/common/PerspectiveTransform.h
+  + hbqt/qzxing/zxing/zxing/common/Point.h
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/GenericGF.cpp
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/GenericGF.h
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/GenericGFPoly.cpp
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/GenericGFPoly.h
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/ReedSolomonDecoder.cpp
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/ReedSolomonDecoder.h
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/ReedSolomonException.cpp
+  + hbqt/qzxing/zxing/zxing/common/reedsolomon/ReedSolomonException.h
+  + hbqt/qzxing/zxing/zxing/common/Str.cpp
+  + hbqt/qzxing/zxing/zxing/common/Str.h
+  + hbqt/qzxing/zxing/zxing/common/StringUtils.cpp
+  + hbqt/qzxing/zxing/zxing/common/StringUtils.h
+  + hbqt/qzxing/zxing/zxing/datamatrix
+  + hbqt/qzxing/zxing/zxing/datamatrix/DataMatrixReader.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/DataMatrixReader.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/DataMatrixVersion.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/BitMatrixParser.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/DataBlock.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/DataMatrixBitMatrixParser.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/DataMatrixDataBlock.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/DataMatrixDecodedBitStreamParser.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/DataMatrixDecoder.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/DecodedBitStreamParser.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/decoder/Decoder.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector/CornerPoint.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector/DataMatrixCornerPoint.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector/DataMatrixDetector.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector/DataMatrixDetectorException.cpp
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector/Detector.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/detector/DetectorException.h
+  + hbqt/qzxing/zxing/zxing/datamatrix/Version.h
+  + hbqt/qzxing/zxing/zxing/DecodeHints.cpp
+  + hbqt/qzxing/zxing/zxing/DecodeHints.h
+  + hbqt/qzxing/zxing/zxing/Exception.cpp
+  + hbqt/qzxing/zxing/zxing/Exception.h
+  + hbqt/qzxing/zxing/zxing/FormatException.cpp
+  + hbqt/qzxing/zxing/zxing/FormatException.h
+  + hbqt/qzxing/zxing/zxing/IllegalStateException.h
+  + hbqt/qzxing/zxing/zxing/InvertedLuminanceSource.cpp
+  + hbqt/qzxing/zxing/zxing/InvertedLuminanceSource.h
+  + hbqt/qzxing/zxing/zxing/LuminanceSource.cpp
+  + hbqt/qzxing/zxing/zxing/LuminanceSource.h
+  + hbqt/qzxing/zxing/zxing/multi
+  + hbqt/qzxing/zxing/zxing/multi/ByQuadrantReader.cpp
+  + hbqt/qzxing/zxing/zxing/multi/ByQuadrantReader.h
+  + hbqt/qzxing/zxing/zxing/multi/GenericMultipleBarcodeReader.cpp
+  + hbqt/qzxing/zxing/zxing/multi/GenericMultipleBarcodeReader.h
+  + hbqt/qzxing/zxing/zxing/multi/MultipleBarcodeReader.cpp
+  + hbqt/qzxing/zxing/zxing/multi/MultipleBarcodeReader.h
+  + hbqt/qzxing/zxing/zxing/multi/qrcode
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/detector
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/detector/MultiDetector.cpp
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/detector/MultiDetector.h
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/detector/MultiFinderPatternFinder.cpp
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/detector/MultiFinderPatternFinder.h
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/detector/tmp
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/QRCodeMultiReader.cpp
+  + hbqt/qzxing/zxing/zxing/multi/qrcode/QRCodeMultiReader.h
+  + hbqt/qzxing/zxing/zxing/MultiFormatReader.cpp
+  + hbqt/qzxing/zxing/zxing/MultiFormatReader.h
+  + hbqt/qzxing/zxing/zxing/NotFoundException.h
+  + hbqt/qzxing/zxing/zxing/oned
+  + hbqt/qzxing/zxing/zxing/oned/CodaBarReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/CodaBarReader.h
+  + hbqt/qzxing/zxing/zxing/oned/Code128Reader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/Code128Reader.h
+  + hbqt/qzxing/zxing/zxing/oned/Code39Reader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/Code39Reader.h
+  + hbqt/qzxing/zxing/zxing/oned/Code93Reader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/Code93Reader.h
+  + hbqt/qzxing/zxing/zxing/oned/EAN13Reader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/EAN13Reader.h
+  + hbqt/qzxing/zxing/zxing/oned/EAN8Reader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/EAN8Reader.h
+  + hbqt/qzxing/zxing/zxing/oned/ITFReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/ITFReader.h
+  + hbqt/qzxing/zxing/zxing/oned/MultiFormatOneDReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/MultiFormatOneDReader.h
+  + hbqt/qzxing/zxing/zxing/oned/MultiFormatUPCEANReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/MultiFormatUPCEANReader.h
+  + hbqt/qzxing/zxing/zxing/oned/OneDReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/OneDReader.h
+  + hbqt/qzxing/zxing/zxing/oned/OneDResultPoint.cpp
+  + hbqt/qzxing/zxing/zxing/oned/OneDResultPoint.h
+  + hbqt/qzxing/zxing/zxing/oned/UPCAReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/UPCAReader.h
+  + hbqt/qzxing/zxing/zxing/oned/UPCEANReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/UPCEANReader.h
+  + hbqt/qzxing/zxing/zxing/oned/UPCEReader.cpp
+  + hbqt/qzxing/zxing/zxing/oned/UPCEReader.h
+  + hbqt/qzxing/zxing/zxing/pdf417
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/BitMatrixParser.h
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/DecodedBitStreamParser.h
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/Decoder.h
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec/ErrorCorrection.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec/ErrorCorrection.h
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec/ModulusGF.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec/ModulusGF.h
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec/ModulusPoly.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/ec/ModulusPoly.h
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/PDF417BitMatrixParser.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/PDF417DecodedBitStreamParser.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/decoder/PDF417Decoder.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/detector
+  + hbqt/qzxing/zxing/zxing/pdf417/detector/Detector.h
+  + hbqt/qzxing/zxing/zxing/pdf417/detector/LinesSampler.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/detector/LinesSampler.h
+  + hbqt/qzxing/zxing/zxing/pdf417/detector/PDF417Detector.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/PDF417Reader.cpp
+  + hbqt/qzxing/zxing/zxing/pdf417/PDF417Reader.h
+  + hbqt/qzxing/zxing/zxing/qrcode
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/BitMatrixParser.h
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/DataBlock.h
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/DataMask.h
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/DecodedBitStreamParser.h
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/Decoder.h
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/Mode.h
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/QRBitMatrixParser.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/QRDataBlock.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/QRDataMask.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/QRDecodedBitStreamParser.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/QRDecoder.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/decoder/QRMode.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/detector
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/AlignmentPattern.h
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/AlignmentPatternFinder.h
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/Detector.h
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/FinderPattern.h
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/FinderPatternFinder.h
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/FinderPatternInfo.h
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/QRAlignmentPattern.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/QRAlignmentPatternFinder.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/QRDetector.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/QRFinderPattern.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/QRFinderPatternFinder.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/detector/QRFinderPatternInfo.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/ErrorCorrectionLevel.h
+  + hbqt/qzxing/zxing/zxing/qrcode/FormatInformation.h
+  + hbqt/qzxing/zxing/zxing/qrcode/QRCodeReader.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/QRCodeReader.h
+  + hbqt/qzxing/zxing/zxing/qrcode/QRErrorCorrectionLevel.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/QRFormatInformation.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/QRVersion.cpp
+  + hbqt/qzxing/zxing/zxing/qrcode/Version.h
+  + hbqt/qzxing/zxing/zxing/Reader.cpp
+  + hbqt/qzxing/zxing/zxing/Reader.h
+  + hbqt/qzxing/zxing/zxing/ReaderException.h
+  + hbqt/qzxing/zxing/zxing/Result.cpp
+  + hbqt/qzxing/zxing/zxing/Result.h
+  + hbqt/qzxing/zxing/zxing/ResultIO.cpp
+  + hbqt/qzxing/zxing/zxing/ResultPoint.cpp
+  + hbqt/qzxing/zxing/zxing/ResultPoint.h
+  + hbqt/qzxing/zxing/zxing/ResultPointCallback.cpp
+  + hbqt/qzxing/zxing/zxing/ResultPointCallback.h
+  + hbqt/qzxing/zxing/zxing/ZXing.h
+
+  + hbqt/hbqtzxing.hbc
+    + Added: QZXing Library.
+    
+  * qtcontribs.hbp
+    + Added: hbqtzxing.hbp 
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: constants for QListView_*.
+
+  * hbqt/qtgui/qth/QScroller.qth
+    % Minor.
+
+    This commit brings Qt complient QZXing Library, based on ZXing Library, 
+    to Harbour. This library enables you to scan Linear and 2D barcodes.
+    Barcode detection is immensely useful in business applications. I have 
+    changed only a few lines of code needed to port the code to Harbour 
+    build system. I also have changed the names of two files which was 
+    necessary to build the lib per Harbour specs. Rest everything is the 
+    same as per its original repository.
+
+    I have tried to remain compliant with its licensing issues by having 
+    two files COPYING and NOTICE in the root folder. Please overlook me if 
+    I have done it right.
+
+    A comprehensive demo code will be committed in few days, just polishing 
+    few finer points. The library is useful both for desktop and mobile 
+    applications. For Android we have to wait until QtMultimediaWidgets 
+    module is fully supported for this platform.
+
 2014-07-05 13:34 UTC+0200 Viktor Szakats (vszakats users.noreply.github.com)
   + hbnetioqt/harb_os2.ico
   + hbnetioqt/harb_win.ico

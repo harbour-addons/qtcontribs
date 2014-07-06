@@ -4801,5 +4801,27 @@
 #define QQmlProperty_Property                                1      // The property is a regular Qt property.
 #define QQmlProperty_SignalProperty                          2      // The property is a signal property.
 
+
+//enum QListView::Flow
+#define QListView_LeftToRight                                0      // The items are laid out in the view from the left to the right.
+#define QListView_TopToBottom                                1      // The items are laid out in the view from the top to the bottom.
+
+//enum #define QListView_LayoutMode
+#define QListView_SinglePass                                 0      // The items are laid out all at once.
+#define QListView_Batched                                    1      // The items are laid out in batches of batchSize items.
+
+//enum #define QListView_Movement
+#define QListView_Static                                     0      // The items cannot be moved by the user.
+#define QListView_Free                                       1      // The items can be moved freely by the user.
+#define QListView_Snap                                       2      // The items snap to the specified grid when moved; see setGridSize().
+
+//enum #define QListView_ResizeMode
+#define QListView_Fixed                                      0      // The items will only be laid out the first time the view is shown.
+#define QListView_Adjust                                     1      // The items will be laid out every time the view is resized.
+
+//enum #define QListView_ViewMode
+#define QListView_ListMode                                   0      // The items are laid out using TopToBottom flow, with Small size and Static movement
+#define QListView_IconMode                                   1      // The items are laid out using LeftToRight flow, with Large size and Free movement
+
 #endif
 

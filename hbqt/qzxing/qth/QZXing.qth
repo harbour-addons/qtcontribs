@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+Destructor  = No
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QObject>
+#include "hbqt_hbqzxing.h"
+
+
+/*
+ * QZXing(QObject *parent = NULL);
+ */
+HB_FUNC( QT_QZXING )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QZXing( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QZXing() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum DecoderFormat {DecoderFormat_None, DecoderFormat_Aztec,.. };
+</ENUMS>
+
+<PROTOS>
+QString decodeImage(const QImage & image, int maxWidth=-1, int maxHeight=-1, bool smoothTransformation = false)
+QString decodeImageFromFile(QString imageFilePath, int maxWidth=-1, int maxHeight=-1, bool smoothTransformation = false)
+QString decodeImageQML(QObject * item)
+QString decodeSubImageQML(QObject * item, const double offsetX = 0 , const double offsetY = 0, const double width = 0, const double height = 0)
+int getProcessTimeOfLastDecoding()
+uint getEnabledFormats() const
+void setDecoder(const uint & hint)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void decodingStarted()
+void decodingFinished(bool succeeded)
+void tagFound(QString tag)
+void enabledFormatsChanged()
+</SIGNALS>

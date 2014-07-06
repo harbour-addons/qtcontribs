@@ -1,0 +1,13 @@
+#
+# $Id$
+#
+
+../hbqt_common.hbm
+
+hbqtzxing.hbm
+
+-instfile=inc:hbqtzxing.ch
+-instfile=inc:hbqtzxing.hbx
+
+
+hbqtzxings.hbp

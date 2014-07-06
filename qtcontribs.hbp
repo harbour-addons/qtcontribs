@@ -29,6 +29,7 @@ hbqt/qtwebsockets/hbqtwebsockets.hbp
 hbqt/qtbluetooth/hbqtbluetooth.hbp
 hbqt/qtqml/hbqtqml.hbp
 hbqt/qtquick/hbqtquick.hbp
+hbqt/qzxing/hbqtzxing.hbp
 
 
 #    Qt Based Widgets
