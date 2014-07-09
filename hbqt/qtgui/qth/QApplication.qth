@@ -11,7 +11,7 @@
  * See COPYING for licensing terms.
  */
 <CLASS>
-Inherit     = QCoreApplication
+Inherit     = QGuiApplication
 New         =
 Constructor = no
 </CLASS>
@@ -56,7 +56,7 @@ enum Type { Tty, GuiClient, GuiServer }
 virtual void commitData ( QSessionManager & manager )                          [*V=-0x040900*]
 #
 # Disabled because OS2 does not like it
-// QInputContext * inputContext () const
+//QInputContext * inputContext () const
 #
 bool isSessionRestored () const
 #
@@ -70,7 +70,7 @@ virtual void saveState ( QSessionManager & manager )                           [
 QString sessionId () const
 QString sessionKey () const
 #
-// void setInputContext ( QInputContext * inputContext )
+//void setInputContext ( QInputContext * inputContext )
 #
 QString styleSheet () const
 
@@ -151,7 +151,7 @@ QIcon windowIcon ()
 <SLOTS>
 void aboutQt ()
 //int autoMaximizeThreshold () const
-//bool autoSipEnabled () const
+bool autoSipEnabled () const
 void closeAllWindows ()
 //void setAutoMaximizeThreshold ( const int threshold )
 //void setAutoSipEnabled ( const bool enabled )
@@ -178,5 +178,4 @@ void saveStateRequest ( QSessionManager & manager )
    //note: candidates are: virtual void QApplication::commitData(QSessionManager&)
 
    hbqt_par_QApplication( 1 )->commitData( *hbqt_par_QSessionManager( 2 ) );
-
 */

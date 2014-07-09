@@ -1,0 +1,60 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     =
+Version     = 0x050000
+Destructor  = no
+Constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QStyleHints>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSTYLEHINTS )
+{
+   HB_FUNC_EXEC( HB_QSTYLEHINTS );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int	cursorFlashTime() const
+qreal	fontSmoothingGamma() const
+int	keyboardAutoRepeatRate() const
+int	keyboardInputInterval() const
+int	mouseDoubleClickInterval() const
+int	mousePressAndHoldInterval() const
+QChar	passwordMaskCharacter() const
+int	passwordMaskDelay() const
+bool	setFocusOnTouchRelease() const
+bool	showIsFullScreen() const
+int	startDragDistance() const
+int	startDragTime() const
+int	startDragVelocity() const
+bool	useRtlExtensions() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

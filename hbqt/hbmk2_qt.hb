@@ -3779,6 +3779,7 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       aadd( aQObjects, "QScriptExtensionPlugin" )
 
       aadd( aQObjects, "QScroller" )
+      aadd( aQObjects, "QInputMethod" )
 
       // QtNetwork
       aadd( aQObjects, "QNetworkAccessManager" )

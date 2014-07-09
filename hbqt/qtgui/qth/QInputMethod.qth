@@ -1,0 +1,74 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050000
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QInputMethod>
+#include <QtGui/QTransform>
+#include <QtCore/QRectF>
+#include <QtCore/QLocale>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QINPUTMETHOD )
+{
+   HB_FUNC_EXEC( HB_QINPUTMETHOD );
+}
+</CODE>
+
+<ENUMS>
+enum   Action { Click, ContextMenu }
+</ENUMS>
+
+<PROTOS>
+QRectF   cursorRectangle() const
+Qt::LayoutDirection   inputDirection() const
+QRectF   inputItemRectangle() const
+QTransform   inputItemTransform() const
+bool   isAnimating() const
+bool   isVisible() const
+QRectF   keyboardRectangle() const
+QLocale   locale() const
+void   setInputItemRectangle(const QRectF & rect)
+void   setInputItemTransform(const QTransform & transform)
+void   setVisible(bool visible)
+
+QVariant   queryFocusObject(Qt::InputMethodQuery query, const QVariant & argument)
+</PROTOS>
+
+<SLOTS>
+void   commit()
+void   hide()
+void   invokeAction(Action a, int cursorPosition)
+void   reset()
+void   show()
+void   update(Qt::InputMethodQueries queries)
+</SLOTS>
+
+<SIGNALS>
+void   animatingChanged()
+void   cursorRectangleChanged()
+void   inputDirectionChanged(Qt::LayoutDirection newDirection)
+void   keyboardRectangleChanged()
+void   localeChanged()
+void   visibleChanged()
+</SIGNALS>

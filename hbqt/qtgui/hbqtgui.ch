@@ -4823,5 +4823,9 @@
 #define QListView_ListMode                                   0      // The items are laid out using TopToBottom flow, with Small size and Static movement
 #define QListView_IconMode                                   1      // The items are laid out using LeftToRight flow, with Large size and Free movement
 
+//enum QInputMethod::Action
+#define QInputMethod_Click                                   0      // A normal click/tap
+#define QInputMethod_ContextMenu                             1      // A context menu click/tap (e.g. right-button or tap-and-hold)
+
 #endif
 

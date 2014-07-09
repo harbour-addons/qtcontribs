@@ -124,6 +124,7 @@ QGraphicsView.qth
 QGraphicsWidget.qth
 QGridLayout.qth
 QGroupBox.qth
+QGuiApplication.qth
 QHBoxLayout.qth
 QHeaderView.qth
 QHelpEvent.qth
@@ -133,9 +134,10 @@ QIcon.qth
 QImage.qth
 QImageReader.qth
 QImageWriter.qth
-# QInputContext.qth      # Disabled because of OS/2
+#QInputContext.qth      # Disabled because of OS/2
 QInputDialog.qth
 QInputEvent.qth
+QInputMethod.qth
 QInputMethodEvent.qth
 QIntValidator.qth
 QItemDelegate.qth
@@ -219,6 +221,7 @@ QStringListModel.qth
 QStyle.qth
 QStyledItemDelegate.qth
 QStyleFactory.qth
+QStyleHints.qth
 QStyleHintReturn.qth
 QStyleHintReturnMask.qth
 QStyleHintReturnVariant.qth

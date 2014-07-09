@@ -1,0 +1,105 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QCoreApplication
+New         =
+Constructor = no
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QGuiApplication>
+#include <QtGui/QPalette>
+#include <QtGui/QFont>
+#include <QtGui/QIcon>
+
+/*
+ * QGuiApplication(int & argc, char ** argv)
+ * virtual   ~QGuiApplication()
+ */
+
+HB_FUNC( QT_QGUIAPPLICATION )
+{
+   HB_FUNC_EXEC( HB_QGUIAPPLICATION );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal   devicePixelRatio() const
+bool   isSavingSession() const
+bool   isSessionRestored() const
+QString   sessionId() const
+QString   sessionKey() const
+
+virtual bool   notify(QObject * object, QEvent * event)
+
+QList<QWindow *>   allWindows()
+QString   applicationDisplayName()
+Qt::ApplicationState   applicationState()
+void   changeOverrideCursor(const QCursor & cursor)
+QClipboard *   clipboard()
+bool   desktopSettingsAware()
+int   exec()
+QObject *   focusObject()
+QWindow *   focusWindow()
+QFont   font()
+QInputMethod *   inputMethod()
+bool   isLeftToRight()
+bool   isRightToLeft()
+Qt::KeyboardModifiers   keyboardModifiers()
+Qt::LayoutDirection   layoutDirection()
+QWindow *   modalWindow()
+Qt::MouseButtons   mouseButtons()
+QCursor *   overrideCursor()
+QPalette   palette()
+QString   platformName()
+//QPlatformNativeInterface *   platformNativeInterface()
+QScreen *   primaryScreen()
+Qt::KeyboardModifiers   queryKeyboardModifiers()
+bool   quitOnLastWindowClosed()
+void   restoreOverrideCursor()
+QList<QScreen *>   screens()
+void   setApplicationDisplayName(const QString & name)
+void   setDesktopSettingsAware(bool on)
+void   setFont(const QFont & font)
+void   setLayoutDirection(Qt::LayoutDirection direction)
+void   setOverrideCursor(const QCursor & cursor)
+void   setPalette(const QPalette & pal)
+void   setQuitOnLastWindowClosed(bool quit)
+void   setWindowIcon(const QIcon & icon)
+QStyleHints *   styleHints()
+void   sync()
+QWindow *   topLevelAt(const QPoint & pos)
+QList<QWindow *>   topLevelWindows()
+QIcon   windowIcon()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   applicationStateChanged(Qt::ApplicationState state)
+void   commitDataRequest(QSessionManager & manager)
+void   focusObjectChanged(QObject * focusObject)
+void   focusWindowChanged(QWindow * focusWindow)
+void   fontDatabaseChanged()
+void   lastWindowClosed()
+void   saveStateRequest(QSessionManager & manager)
+void   screenAdded(QScreen * screen)
+</SIGNALS>
+
