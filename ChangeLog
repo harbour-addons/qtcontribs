@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-15 11:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r318)
+  * hbqt/qtcore/hbqt_misc.prg
+    + Added: method isConnected( cnEvent )
+       Requested by Luigi.
+
 2014-07-08 11:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r317)
   * hbqt/hbmk2_qt.hb
     + Added: QGuiApplication and QInputMethod as QObject derived classes.

@@ -67,6 +67,7 @@ CREATE CLASS HbQtObjectHandler
    METHOD setSlots()
    METHOD setEvents()
    METHOD findChild( cObjectName )
+   METHOD isConnected( cnEvent )
 
    DESTRUCTOR FUNCTION __hbqt_destroy()
    ERROR HANDLER onError()
@@ -129,6 +130,10 @@ METHOD HbQtObjectHandler:onError()
    Eval( ErrorBlock(), oError )
 
    RETURN NIL
+
+
+METHOD HbQtObjectHandler:isConnected( cnEvent )
+   RETURN hb_hHasKey( ::__hEvents, cnEvent )
 
 
 METHOD HbQtObjectHandler:connect( cnEvent, bBlock )
