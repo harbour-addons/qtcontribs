@@ -75,7 +75,14 @@ New      =
  */
 HB_FUNC( QT_QSQLDATABASE )
 {
-   __HB_RETPTRGC__( new QSqlDatabase() );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSqlDatabase" ) )
+   {
+      __HB_RETPTRGC__( new QSqlDatabase( * hbqt_par_QSqlDatabase( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlDatabase() );
+   }
 }
 </CODE>
 

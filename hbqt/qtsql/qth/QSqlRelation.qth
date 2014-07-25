@@ -1,0 +1,62 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     =
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtSql/QSqlRelation>
+
+
+/*
+ * QSqlRelation()
+ * QSqlRelation(const QString & tableName, const QString & indexColumn, const QString & displayColumn)
+ */
+HB_FUNC( QT_QSQLRELATION )
+{
+   if( hb_pcount() == 3 && HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) )
+   {
+      void * pText01 = NULL;
+      void * pText02 = NULL;
+      void * pText03 = NULL;
+      __HB_RETPTRGC__( new QSqlRelation( hb_parstr_utf8( 1, &pText01, NULL ),  hb_parstr_utf8( 2, &pText02, NULL ),  hb_parstr_utf8( 3, &pText03, NULL ) ) );
+      hb_strfree( pText03 );
+      hb_strfree( pText02 );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlRelation() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   displayColumn() const
+QString   indexColumn() const
+bool   isValid() const
+QString   tableName() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

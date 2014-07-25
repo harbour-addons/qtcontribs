@@ -72,7 +72,28 @@ New      =
  */
 HB_FUNC( QT_QSQLINDEX )
 {
-   __HB_RETPTRGC__( new QSqlIndex() );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSqlIndex" ) )
+   {
+      __HB_RETPTRGC__( new QSqlIndex( * hbqt_par_QSqlIndex( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QSqlIndex( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
+   {
+      void * pText01 = NULL;
+      void * pText02 = NULL;
+      __HB_RETPTRGC__( new QSqlIndex( hb_parstr_utf8( 1, &pText01, NULL ), hb_parstr_utf8( 2, &pText02, NULL ) ) );
+      hb_strfree( pText02 );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlIndex() );
+   }
 }
 </CODE>
 

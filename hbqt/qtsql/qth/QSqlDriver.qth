@@ -55,7 +55,7 @@
 ;
 
 <CLASS>
-QObject  =
+QObject  = Yes
 Inherit  = QObject
 Type     =
 New      =
@@ -75,7 +75,7 @@ New      =
  */
 HB_FUNC( QT_QSQLDRIVER )
 {
-   __HB_RETPTRGC__( NULL );
+   HB_FUNC_EXEC( HB_QSQLDRIVER );
 }
 </CODE>
 

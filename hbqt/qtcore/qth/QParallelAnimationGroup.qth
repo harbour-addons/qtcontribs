@@ -1,0 +1,53 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAnimationGroup
+QObject     = Yes
+Version     = 0x040600
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QParallelAnimationGroup>
+
+
+/*
+ * QParallelAnimationGroup(QObject * parent = 0)
+ * ~QParallelAnimationGroup()
+ */
+HB_FUNC( QT_QPARALLELANIMATIONGROUP )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QParallelAnimationGroup( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QParallelAnimationGroup() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual int   duration() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

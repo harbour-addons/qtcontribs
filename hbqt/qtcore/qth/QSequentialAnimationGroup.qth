@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x040600
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QSequentialAnimationGroup>
+
+
+/*
+ * QSequentialAnimationGroup(QObject * parent = 0)
+ * ~QSequentialAnimationGroup()
+ */
+HB_FUNC( QT_QSEQUENTIALANIMATIONGROUP )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QSequentialAnimationGroup( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSequentialAnimationGroup() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPauseAnimation *   addPause(int msecs)
+QAbstractAnimation *   currentAnimation() const
+QPauseAnimation *   insertPause(int index, int msecs)
+
+virtual int   duration() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   currentAnimationChanged(QAbstractAnimation * current)
+</SIGNALS>

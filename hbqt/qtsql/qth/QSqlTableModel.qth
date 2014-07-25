@@ -72,7 +72,18 @@ New      =
  */
 HB_FUNC( QT_QSQLTABLEMODEL )
 {
-   __HB_RETPTRGC__( new QSqlTableModel() );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QSqlTableModel( hbqt_par_QObject( 1 ) ) );
+   }
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QObject" ) && hbqt_par_isDerivedFrom( 2, "QSqlDatabase" ) )
+   {
+      __HB_RETPTRGC__( new QSqlTableModel( hbqt_par_QObject( 1 ), * hbqt_par_QSqlDatabase( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlTableModel() );
+   }
 }
 </CODE>
 

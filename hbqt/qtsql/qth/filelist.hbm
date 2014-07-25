@@ -8,12 +8,17 @@
 
 QSqlDatabase.qth
 QSqlDriver.qth
+QSqlDriverCreator.qth
+QSqlDriverCreatorBase.qth
+QSqlDriverPlugin.qth
 QSqlError.qth
 QSqlField.qth
 QSqlIndex.qth
 QSqlQuery.qth
 QSqlQueryModel.qth
 QSqlRecord.qth
+QSqlRelation.qth
+QSqlRelationalDelegate.qth
 QSqlRelationalTableModel.qth
 QSqlResult.qth
 QSqlTableModel.qth

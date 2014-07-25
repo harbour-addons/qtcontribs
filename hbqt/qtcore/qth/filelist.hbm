@@ -52,6 +52,8 @@ QMetaType.qth
 QMimeData.qth
 QModelIndex.qth
 QObject.qth
+QParallelAnimationGroup.qth
+QPauseAnimation.qth
 QPoint.qth
 QPointF.qth
 QProcess.qth
@@ -60,6 +62,7 @@ QRect.qth
 QRectF.qth
 QRegExp.qth
 QResource.qth
+QSequentialAnimationGroup.qth
 QSettings.qth
 QSignalMapper.qth
 QSize.qth

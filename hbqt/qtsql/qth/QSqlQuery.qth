@@ -79,7 +79,28 @@ New      =
  */
 HB_FUNC( QT_QSQLQUERY )
 {
-   __HB_RETPTRGC__( new QSqlQuery() );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSqlQuery" ) )
+   {
+      __HB_RETPTRGC__( new QSqlQuery( * hbqt_par_QSqlQuery( 1 ) ) );
+   }
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSqlResult" ) )
+   {
+      __HB_RETPTRGC__( new QSqlQuery( hbqt_par_QSqlResult( 1 ) ) );
+   }
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSqlDatabase" ) )
+   {
+      __HB_RETPTRGC__( new QSqlQuery( * hbqt_par_QSqlDatabase( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QSqlQuery( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlQuery() );
+   }
 }
 </CODE>
 

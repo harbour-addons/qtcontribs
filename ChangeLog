@@ -16,6 +16,42 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-24 18:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r319)
+  * hbqt/qtcore/qth/filelist.hbm
+  + hbqt/qtcore/qth/QParallelAnimationGroup.qth
+  + hbqt/qtcore/qth/QPauseAnimation.qth
+  + hbqt/qtcore/qth/QSequentialAnimationGroup.qth
+  * hbqt/qtcore/qth/QVariantAnimation.qth
+
+  * hbqt/qtgui/qth/QLayout.qth
+
+  * hbqt/qtsql/qth/filelist.hbm
+  * hbqt/qtsql/qth/QSqlDatabase.qth
+  * hbqt/qtsql/qth/QSqlDriver.qth
+  + hbqt/qtsql/qth/QSqlDriverCreator.qth
+  + hbqt/qtsql/qth/QSqlDriverCreatorBase.qth
+  + hbqt/qtsql/qth/QSqlDriverPlugin.qth
+  * hbqt/qtsql/qth/QSqlError.qth
+  * hbqt/qtsql/qth/QSqlField.qth
+  * hbqt/qtsql/qth/QSqlIndex.qth
+  * hbqt/qtsql/qth/QSqlQuery.qth
+  * hbqt/qtsql/qth/QSqlQueryModel.qth
+  * hbqt/qtsql/qth/QSqlRecord.qth
+  + hbqt/qtsql/qth/QSqlRelation.qth
+  + hbqt/qtsql/qth/QSqlRelationalDelegate.qth
+  * hbqt/qtsql/qth/QSqlRelationalTableModel.qth
+  * hbqt/qtsql/qth/QSqlResult.qth
+  * hbqt/qtsql/qth/QSqlTableModel.qth
+    + Added: some more classes and completed constructors for QtSql
+       implemented classes.
+
+    ; Thanks to Alex who has show the group that how QtSql modules can 
+      be used for production. Please note that you have to recompile 
+      Sql drivers client libraries yourselves, as demonstrated by Alex.
+      This is beyond the scope of HbQt to include those drivers in the 
+      repository. This was the main reason I never gave enough attention 
+      to QSql classes constructors. 
+
 2014-07-15 11:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r318)
   * hbqt/qtcore/hbqt_misc.prg
     + Added: method isConnected( cnEvent )

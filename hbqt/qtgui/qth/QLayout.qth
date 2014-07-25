@@ -39,6 +39,7 @@ enum SizeConstraint { SetDefaultConstraint, SetFixedSize, SetMinimumSize, SetMax
 bool activate ()
 virtual void addItem ( QLayoutItem * item )     [*D=1*]
 void addWidget ( QWidget * w )                  [*X=1*]
+QMargins   contentsMargins() const                [*V=0x040600*]
 QRect contentsRect () const
 virtual int count () const = 0
 virtual Qt::Orientations expandingDirections () const
@@ -50,12 +51,14 @@ virtual QSize maximumSize () const
 QWidget * menuBar () const
 virtual QSize minimumSize () const
 QWidget * parentWidget () const
+QLayoutItem *   replaceWidget(QWidget * from, QWidget * to, Qt::FindChildOptions options = Qt::FindChildrenRecursively)  [*V=0x050200*]
 void removeItem ( QLayoutItem * item )          [*A=1*]
 void removeWidget ( QWidget * widget )          [*A=1*]
-bool setAlignment ( QWidget * w, Qt::Alignment alignment )     
+bool setAlignment ( QWidget * w, Qt::Alignment alignment )
 void setAlignment ( Qt::Alignment alignment )
 bool setAlignment ( QLayout * l, Qt::Alignment alignment )
 void setContentsMargins ( int left, int top, int right, int bottom )
+void   setContentsMargins(const QMargins & margins)      [*V=0x040600*]
 void setEnabled ( bool enable )
 void setMenuBar ( QWidget * widget )            [*X=1*]
 void setSizeConstraint ( SizeConstraint )

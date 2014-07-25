@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractAnimation
+QObject     = Yes
+Version     = 0x040600
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QPauseAnimation>
+
+
+/*
+ * QPauseAnimation(QObject * parent = 0)
+ * QPauseAnimation(int msecs, QObject * parent = 0)
+ * ~QPauseAnimation()
+ */
+HB_FUNC( QT_QPAUSEANIMATION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPauseAnimation( hbqt_par_QObject( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPauseAnimation( hb_parni( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QPauseAnimation( hb_parni( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPauseAnimation() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   setDuration(int msecs)
+virtual int   duration() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

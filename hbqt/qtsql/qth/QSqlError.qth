@@ -72,7 +72,14 @@ New      =
  */
 HB_FUNC( QT_QSQLERROR )
 {
-   __HB_RETPTRGC__( new QSqlError() );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QSqlError" ) )
+   {
+      __HB_RETPTRGC__( new QSqlError( * hbqt_par_QSqlError( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlError() );
+   }
 }
 </CODE>
 

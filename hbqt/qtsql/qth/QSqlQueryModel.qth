@@ -55,7 +55,7 @@
 ;
 
 <CLASS>
-QObject  =
+QObject  = Yes
 Inherit  = QAbstractTableModel
 Type     =
 New      =
@@ -75,7 +75,14 @@ New      =
  */
 HB_FUNC( QT_QSQLQUERYMODEL )
 {
-   __HB_RETPTRGC__( new QSqlQueryModel() );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QSqlQueryModel( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSqlQueryModel() );
+   }
 }
 </CODE>
 

@@ -1,0 +1,47 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSqlDriverCreatorBase
+QObject     =
+Version     = 0x050000
+Constructor = no
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtSql/QSqlDriverCreator>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSQLDRIVERCREATOR )
+{
+   HB_FUNC_EXEC( HB_QSQLDRIVERCREATOR );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+//virtual QSqlDriver *   createObject() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
