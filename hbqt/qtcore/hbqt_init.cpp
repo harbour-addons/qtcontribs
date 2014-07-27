@@ -302,7 +302,7 @@ static void hbqt_SlotsExecModelModel( PHB_ITEM * codeBlock, void ** arguments, Q
    PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QModelIndex( ( *reinterpret_cast< QModelIndex( * ) >( arguments[ 1 ] ) ) ), "HB_QMODELINDEX", hbqt_del_QModelIndex, HBQT_BIT_OWNER );
    if( p0 )
    {
-      PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, new QModelIndex( ( *reinterpret_cast< QModelIndex( * ) >( arguments[ 1 ] ) ) ), "HB_QMODELINDEX", hbqt_del_QModelIndex, HBQT_BIT_OWNER );
+      PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, new QModelIndex( ( *reinterpret_cast< QModelIndex( * ) >( arguments[ 2 ] ) ) ), "HB_QMODELINDEX", hbqt_del_QModelIndex, HBQT_BIT_OWNER );
       if( p1 )
       {
          hb_vmPushEvalSym();

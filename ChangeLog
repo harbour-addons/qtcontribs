@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-26 23:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r320)
+  * hbqt/qtcore/hbqt_init.cpp
+    ! Fixed: Signal based on QModelIndex, QModelIndex, silly typo.
+
+  * hbqt/qtgui/qth/QTabWidget.qth
+    + Added: QTabBar * tabBar() const.
+
 2014-07-24 18:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r319)
   * hbqt/qtcore/qth/filelist.hbm
   + hbqt/qtcore/qth/QParallelAnimationGroup.qth

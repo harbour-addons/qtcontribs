@@ -73,6 +73,7 @@ void setTabToolTip ( int index, const QString & tip )
 void setTabWhatsThis ( int index, const QString & text )
 void setTabsClosable ( bool closeable )
 void setUsesScrollButtons ( bool useButtons )
+QTabBar * tabBar() const
 QIcon tabIcon ( int index ) const
 TabPosition tabPosition () const
 TabShape tabShape () const
