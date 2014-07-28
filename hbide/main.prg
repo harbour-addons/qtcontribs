@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -80,6 +80,9 @@
 #include "hbclass.ch"
 #include "hbver.ch"
 
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
+
 #if defined( __PLATFORM__WINDOWS ) .OR. ;
     defined( __PLATFORM__LINUX )
 //   #include "rddads.hbx"
@@ -109,6 +112,8 @@ FUNCTION Main( ... )
    LOCAL hRDDADS, tmp
 
    hb_cdpSelect( "UTF8EX" )
+   SET EPOCH TO 1950
+
 
    #ifdef HB_IDE_DISTRO
       LOCAL cBse := hb_dirBase() + ".."
@@ -380,6 +385,7 @@ CLASS HbIde
    METHOD setCodePage( cCodePage )
    METHOD showFragment( cCode, cTitle, oIcon )
    METHOD printFragment( oPlainTextEdit )
+   METHOD ideAlert( ... )                            INLINE Alert( ... )
 
    ENDCLASS
 
@@ -526,9 +532,8 @@ METHOD HbIde:create( aParams )
    ::oHM := IdeHome():new():create( Self )
 
    /* Browser Manager */
-   ::oBM := HbpDBU():new()
-   ::oBM:qtObject := ::oParts:oStackDbu
-   ::oBM:create( ::oDlg, , {0,0}, {640,400}, , .T. )
+   ::oBM := IdeDbuMGR():new():create( Self )
+
 
    /* Reports Manager */
    ::oRM := HbpReports():new()
@@ -606,7 +611,7 @@ METHOD HbIde:create( aParams )
    ENDIF
 
    IF ! empty( ::aDbfOnCmdLine )      /* Will take priority and allot more width to browser than editor : logical */
-      ::oBM:open( ::aDbfOnCmdLine )
+      ::oBM:oDbu:open( ::aDbfOnCmdLine )
       ::oParts:setStack( IDE_PART_DBU )
    ENDIF
 
@@ -881,7 +886,7 @@ METHOD HbIde:execAction( cKey )
       ::oParts:setStack( IDE_PART_EDITOR )
       EXIT
    CASE "DBU"
-            ::oParts:setStack( IDE_PART_DBU )
+      ::oParts:setStack( IDE_PART_DBU )
       EXIT
    CASE "REPORTS"
       ::oParts:setStack( IDE_PART_REPORTSDESIGNER )
@@ -1426,7 +1431,7 @@ METHOD HbIde:printFragment( oPlainTextEdit )
 /*----------------------------------------------------------------------*/
 
 METHOD HbIde:gotoFunction( mp1, mp2, oListBox )
-   LOCAL n, cAnchor, oEdit, lFound
+   LOCAL n, cAnchor, oEdit, lFound, nHPos, nVPos, qCursor
 
    mp1 := oListBox:getData()
    mp2 := oListBox:getItem( mp1 )
@@ -1434,11 +1439,15 @@ METHOD HbIde:gotoFunction( mp1, mp2, oListBox )
    IF ( n := ascan( ::aTags, {|e_| mp2 == e_[ 7 ] } ) ) > 0
       cAnchor := trim( ::aText[ ::aTags[ n,3 ] ] )
       IF !empty( oEdit := ::oEM:getEditCurrent() )
+         nHPos := oEdit:horizontalScrollBar():value()
+         nVPos := oEdit:verticalScrollBar():value()
+         qCursor := oEdit:textCursor()
          IF !( lFound := oEdit:find( cAnchor, QTextDocument_FindCaseSensitively ) )
             lFound := oEdit:find( cAnchor, QTextDocument_FindBackward + QTextDocument_FindCaseSensitively )
          ENDIF
          IF lFound
             oEdit:centerCursor()
+            ::oEM:getEditObjectCurrent():aLastEditingPosition := { nHPos, nVPos, qCursor }
          ENDIF
       ENDIF
    ENDIF

@@ -16,6 +16,138 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-27 20:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r321)
+  * hbqtwidgets/hbqtdbu.prg
+    ! Fixed: a bug being result of the latest developments in HbQt.
+       The GPF was produced when a browser instance was closed via 
+       X button click in certain circumstanced. Mere rearrangement of 
+       source lines fixed this issue.
+
+    + Added: toolbar actions and implementation:
+      1. Save Environment    - Saves the state of splitters, panels, tables
+                               etc. in the default "hbide.dbu" file.
+      2. Save Environment As - Asks for a filename with .dbu extention
+                               and saves above values therein.
+      3. Merge Environment   - Asks to select a .dbu file and merges the 
+                               environment with existing state.
+
+      This feature is very useful to embed HbDBU as a COM interface into 
+      your application. Now This is implemented in HbIDE, read below.
+
+  + hbqtwidgets/resources/echeck.png
+  + hbqtwidgets/resources/freeze-left.png
+  + hbqtwidgets/resources/freeze-right.png
+  + hbqtwidgets/resources/rest-env.png
+  + hbqtwidgets/resources/save-env.png
+
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: above images.
+
+  * hbide/hbide.hbp
+    + Added: dbumgr.prg
+
+  * hbdbu/dbu.prg
+    % Minor.
+
+  * hbide/setup.ui
+    + Added: Page <Projects>.
+
+  * hbide/actions.prg
+  + hbide/dbumgr.prg
+  * hbide/docks.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/environ.prg
+  * hbide/main.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+    + New Features
+      ------------
+      1. Return to last viewing / editing position with CTRL+L if naviaging 
+         via clicks in <Functions List>. Feature requested by Alex. 
+         I wanted to enhance it to return last position with all navigational
+         keys like UP | DOWN | PAGEUP | PAGEDN | SCROOLBAR ACTIONS |ETC
+         but faced some issue. Will revisit it later.
+
+      2. Column-Selection protocol is enhaced with a formatting feature
+         where text on the LEFT or RIGHT of selection marker can be 
+         aligned up the selection-marker.
+         HOW TO:
+          1. Switch on the column-selection via <Toggle Selection Mode> icon.
+          2. Place cursor on a column which will attract the alignment.
+          3. Select rows by Shift+Down Arrow which are subject to have aligned.
+             Make sure that you do not select any other columns and the 
+             selection block is visible as a thin vertical line. Let us
+             call it as "selection-marker".
+          4. On the Selected-Text-Toolbar, which will popup as soon as you 
+             start selection process, click the last icon <Align At>.
+          5. In the resulting input dialog, type "\L" or "\R" without quotes.
+          6. If you typed \L then all text to the right of selection-marker 
+             will align-left to its postion. If you typed \R then all the text 
+             on the left of selection marker will align-right to marker
+             positionn.
+          ;  The feature is very handy in formatting source where some parts 
+             or many rows needs to be aligned at a certain position.
+
+          ;  Already available features from this interface ( just to refresh )
+             \[0-9]   -   Regular Expression.
+             \nn      -   Where <nn> represents the column position.
+
+      3. Opening a context menu with right-click on the tabs in editors 
+         interface, requested by Jayadev. Currently this offers 
+         <Save>, <Close> and <Print> options. let me know what else can 
+         be added here.
+             
+      4. <Build and Launch> now supports extended protocol to launch the 
+         executable in addition to existing protocol. The extended protocol 
+         facilitates to setup the current envirnment settings before 
+         launching the application. Current "Environment" means the entry
+         shown in "Env:" section of HbIDE's statusbar. This effectively 
+         means all the SETs defined in the hbide.env#<env:> section are 
+         set via shell command and then application is fired. It is equivalent 
+         to running a batch file on command prompt which also calls the 
+         application. 
+
+         This feature facilitates you to SET the environment variables 
+         from outside the application. From a developers point of view 
+         it allows you to compile a single application, in a single session
+         of HbIDE, for multiple compilers and versions. I use this feature 
+         extensively for HbQt based applications against Qt 4x and 5x.
+
+         HOW TO:
+
+         1. Open and navigate to <Main Menu><Setup><HbIDE Setup><Projects>.
+         2. Check the Extended <Build and Launch> checkbox.
+         3. <Compile and Launch> some project.
+         4. Give attention to a console window appearing for a fraction of 
+            a second and then disappearing, just prior to compiled app
+            is launched.
+
+         ;  The only drawback of this feature is the appearnce of console
+            window but enhances your productivity many-fold.
+
+    ! Fixes
+      -----
+      1. Adding | Modifying a new source entry in Project file .hbp via 
+         <Project Properies> dialog was not reflecting the changes in 
+         <Project Tree> immediately. Pointed out by Jayadev.
+
+    % Changes 
+      -------
+      1. Background color of <Selected Text Toolbar> to have a more sobbering 
+         but distinct look so that it is not lost in the background text
+         and is prominently visible.
+
+      2. Positioning of <Selected Text Toolbar> has been reworked to 
+         facilitate better experience.
+
+      3. IdeDBU, HbIDE contained component, is switched to, and in 
+         synchronization with, HbDBU. The saved environment files (.dbu) 
+         are shareable. Infact the fully functional HbQtDbu is embedded 
+         in HbIDE as like a COM interface. This demonstrates the usefulness 
+         and versatility of HbQtDbu which you can embbed in your 
+         applications also.
+
 2014-07-26 23:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r320)
   * hbqt/qtcore/hbqt_init.cpp
     ! Fixed: Signal based on QModelIndex, QModelIndex, silly typo.

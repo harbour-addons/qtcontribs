@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -60,8 +58,6 @@
  *                  Pritpal Bedi <pritpal@vouchcac.com>
  *                               27Dec2009
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 #include "common.ch"
@@ -130,6 +126,7 @@ CLASS IdeEdit INHERIT IdeObject
    DATA   pointSize
    DATA   currentPointSize
    DATA   qFont
+   DATA   aLastEditingPosition                    INIT {}
    DATA   aBlockCopyContents                      INIT {}
    DATA   isLineSelectionON                       INIT .F.
    DATA   aSelectionInfo                          INIT { -1,-1,-1,-1,1,0 }
@@ -407,13 +404,13 @@ METHOD IdeEdit:connectEditSignals()
    ::qEdit:connect( "cursorPositionChanged()"           , {|    | ::execEvent( __cursorPositionChanged__  ) } )
    ::qEdit:connect( "copyAvailable(bool)"               , {|p   | ::execEvent( __copyAvailable__, p       ) } )
 
-   #if 0
+#if 0
    ::qEdit:connect( "modificationChanged(bool)"         , {|p   | ::execEvent( __modificationChanged__, p ) } )
    ::qEdit:connect( "textChanged()"                     , {|    | ::execEvent( __textChanged__            ) } )
    ::qEdit:connect( "updateRequest(QRect,int)"          , {|p,p1| ::execEvent( __updateRequest__, p, p1   ) } )
    ::qEdit:connect( "redoAvailable(bool)"               , {|p   | ::execEvent( __redoAvailable__, p       ) } )
    ::qEdit:connect( "undoAvailable(bool)"               , {|p   | ::execEvent( __undoAvailable__, p       ) } )
-   #endif
+#endif
 
    RETURN NIL
 
@@ -478,9 +475,9 @@ METHOD IdeEdit:execEvent( nMode, p, p1 )
       ::execContextMenu( p )
       EXIT
 
-   #if 0
+#if 0
    CASE __textChanged__
-      ::oEditor:setTabImage( ::qEdit )
+      ::aLastEditingPosition := { ::qEdit:horizontalScrollBar():value(), ::qEdit:verticalScrollBar():value(), ::qEdit:textCursor()  }
       EXIT
    CASE __modificationChanged__
       ::oEditor:setTabImage( ::qEdit )
@@ -491,7 +488,7 @@ METHOD IdeEdit:execEvent( nMode, p, p1 )
       EXIT
    CASE __updateRequest__
       EXIT
-   #endif
+#endif
    ENDSWITCH
 
    RETURN NIL
@@ -624,6 +621,16 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
             p:accept()
             ::oEM:previousEditor()
             RETURN .T.
+         ENDIF
+         EXIT
+      CASE Qt_Key_L
+         IF lCtrl
+            IF ! Empty( ::aLastEditingPosition )
+               ::qEdit:horizontalScrollBar():setValue( ::aLastEditingPosition[ 1 ] )
+               ::qEdit:verticalScrollBar():setValue( ::aLastEditingPosition[ 2 ] )
+               ::qEdit:setTextCursor( ::aLastEditingPosition[ 3 ] )
+               RETURN .T.
+            ENDIF
          ENDIF
          EXIT
       ENDSWITCH
@@ -1373,23 +1380,29 @@ METHOD IdeEdit:alignAt( cAt )
       RETURN Self
    ENDIF
 
-   IF Left( cAt, 1 ) == "\"
-      cAt := SubStr( cAt, 2 )
-      IF IsDigit( Left( cAt,1 ) )
-         nMode := 2
-         nCol  := Val( cAt )
-      ELSEIF ! Empty( cAt )
-         nMode := 3
-      ENDIF
-   ELSE
-      nMode := 1
-   ENDIF
-
    nMax := 0
    aCord := ::aSelectionInfo
    hbide_normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nW := nR - nL + 1
    a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
+
+   IF Left( cAt, 2 ) == "\L"          //   \L    align at left column of selected block
+      nCol := nL
+      nMode := 4
+   ELSEIF Left( cAt, 2 ) == "\R"          //   \L    align at right column of selected block
+      nCol := nR
+      nMode := 5
+   ELSEIF Left( cAt, 1 ) == "\"
+      cAt := SubStr( cAt, 2 )
+      IF IsDigit( Left( cAt,1 ) )         //   \52   align at column 52
+         nMode := 2
+         nCol  := Val( cAt )
+      ELSEIF ! Empty( cAt )               //   \[]   regular expression
+         nMode := 3
+      ENDIF
+   ELSE
+      nMode := 1
+   ENDIF
 
    SWITCH nMode
    CASE 1
@@ -1471,6 +1484,24 @@ METHOD IdeEdit:alignAt( cAt )
             NEXT
          ENDIF
 
+      ENDIF
+      EXIT
+   CASE 4                                         /* align left text right to the selection line */
+      IF nR - nL == 0                             /* Only when a thin vertical line is visible */
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            c1st  := PadR( SubStr( cLine, 1, nL ), nL ) + LTrim( SubStr( cLine, nL + 1 ) )
+            hbide_qReplaceLine( qCursor, i, c1st )
+         NEXT
+      ENDIF
+      EXIT
+   CASE 5                                         /* align right text left to the selection line */
+      IF nR - nL == 0                             /* Only when a thin vertical line is visible */
+         FOR i := nT TO nB
+            cLine := ::getLine( i + 1 )
+            c1st  := PadL( Trim( SubStr( cLine, 1, nL ) ), nL ) + SubStr( cLine, nL + 1 )
+            hbide_qReplaceLine( qCursor, i, c1st )
+         NEXT
       ENDIF
       EXIT
    ENDSWITCH

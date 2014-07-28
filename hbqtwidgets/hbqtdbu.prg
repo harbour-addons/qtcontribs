@@ -298,6 +298,10 @@ CLASS HbQtDBU
    ACCESS currentConxn()                          INLINE ::qConxnCombo:currentText()
    ACCESS currentConnection()                     INLINE ::qConxnCombo:currentText()
 
+   DATA   cWrkEnvironment
+   METHOD restEnvironment( cFile )
+   METHOD saveEnvironment( cFile )
+
    /* END */
 
 PROTECTED:
@@ -343,12 +347,14 @@ PROTECTED:
    DATA   qTablesButton
    DATA   aPanelsAct                              INIT  {}
 
-   DATA   lStructOpen                             INIT  .f.
-   DATA   lDeletedOn                              INIT  .t.
+   DATA   lStructOpen                             INIT  .F.
+   DATA   lDeletedOn                              INIT  .T.
    DATA   qComboAction
    DATA   sp0,sp1,sp2,sp3,sp4,sp5
 
    DATA   nPrevMode                               INIT  0
+   DATA   cSettingsPath                           INIT  ""
+   DATA   cSettingsFile                           INIT  ""
 
    METHOD open( aDbfs )
    METHOD buildToolbar()
@@ -416,6 +422,11 @@ PROTECTED:
 
    METHOD fetchRddInfo( cDriver )
    DATA   hRddInfo                                INIT {=>}
+
+   METHOD saveEnvAs()
+   METHOD restEnvFrom()
+   METHOD getPath( cFile )
+   DATA   cDefaultRDD                             INIT "DBFCDX"
 
    ENDCLASS
 
@@ -1843,7 +1854,7 @@ METHOD HbQtDBU:addArray( aData, aAttr )
 
 METHOD HbQtDBU:buildToolbar()
 
-   LOCAL nW := 25
+   LOCAL nW := 20
    LOCAL qTBar
 
    ::sp0 := QLabel(); ::sp0:setMinimumWidth( nW )
@@ -1851,6 +1862,7 @@ METHOD HbQtDBU:buildToolbar()
    ::sp2 := QLabel(); ::sp2:setMinimumWidth( nW )
    ::sp3 := QLabel(); ::sp3:setMinimumWidth( nW )
    ::sp4 := QLabel(); ::sp4:setMinimumWidth( nW )
+   ::sp5 := QLabel(); ::sp5:setMinimumWidth( nW )
 
    qTBar := HbQtToolbar():new()
    qTBar:imageWidth  := 12
@@ -1881,6 +1893,11 @@ METHOD HbQtDBU:buildToolbar()
    qTBar:addItem( ::sp4 )
    qTBar:addItem( { "Toggle"   , "Show/Hide Tables Tree Pane"     , QIcon( __hbqtImage( "form"      ) ), {|| ::execEvent( __buttonShowForm_clicked__ ) }, .F. } )
    qTBar:addItem( { "Structure", "Show/Hide Tables Structure Pane", QIcon( __hbqtImage( "dbstruct"  ) ), {|| ::execEvent( __buttonDbStruct_clicked__ ) }, .F. } )
+   qTBar:addItem( ::sp5 )
+   qTBar:addItem( { "SaveEnv"  , "Save Environment"               , QIcon( __hbqtImage( "save-env"  ) ), {|| ::saveEnvironment() }                      , .F. } )
+   qTBar:addItem( , , , , , HBQTTOOLBAR_BUTTON_SEPARATOR )
+   qTBar:addItem( { "SaveEnvAs", "Save Environment As..."         , QIcon( __hbqtImage( "save3"     ) ), {|| ::saveEnvAs() }                            , .F. } )
+   qTBar:addItem( { "RestEnv"  , "Merge Environment"              , QIcon( __hbqtImage( "rest-env"  ) ), {|| ::restEnvFrom() }                          , .F. } )
 
    RETURN Self
 
@@ -2419,6 +2436,153 @@ METHOD HbQtDBU:dispInfo( cAlias )
    ENDIF
    RETURN NIL
 
+
+METHOD HbQtDBU:saveEnvironment( cFile )
+   LOCAL oSettings
+
+   DEFAULT cFile TO ::getPath()
+
+   WITH OBJECT oSettings := QSettings( cFile, QSettings_IniFormat )
+      :setValue( "dbuSplitter"     , QVariant( ::splitter:saveState() ) )
+      :setValue( "dbuTablesVisible", QVariant( ::tablesPanel:isVisible() ) )
+      :setValue( "dbuStructVisible", QVariant( ::structPanel:isVisible() ) )
+      :setValue( "dbuPanelNames"   , QVariant( __arrayToString( ::getPanelNames(), "~" ) ) )
+      :setValue( "dbuPanelsInfo"   , QVariant( __arrayToString( ::getPanelsInfo(), "~" ) ) )
+      :setValue( "dbuTreeInfo"     , QVariant( __arrayToString( ::getTreeInfo()  , "~" ) ) )
+      :setValue( "dbuLinksInfo"    , QVariant( __arrayToString( ::getLinksInfo() , "~" ) ) )
+      :setValue( "dbuDriver"       , QVariant( ::currentDriver() ) )
+   ENDWITH
+
+   RETURN oSettings
+
+
+METHOD HbQtDBU:restEnvironment( cFile )
+   LOCAL oSettings
+   LOCAL lVal, cInfo
+
+   DEFAULT cFile TO ::getPath()
+
+   oSettings := QSettings( cFile, QSettings_IniFormat )
+
+   IF oSettings:contains( "dbuTablesVisible" )
+      lVal := oSettings:value( "dbuTablesVisible" ):toBool()
+      IF lVal
+         IF ! ::tablesPanel:isVisible()
+            ::tablesPanel:show()
+         ENDIF
+      ELSE
+         IF ::tablesPanel:isVisible()
+            ::tablesPanel:hide()
+         ENDIF
+      ENDIF
+   ENDIF
+   IF oSettings:contains( "dbuStructVisible" )
+      lVal := oSettings:value( "dbuStructVisible" ):toBool()
+      IF lVal
+         IF ! ::structPanel:isVisible()
+            ::structPanel:show()
+         ENDIF
+      ELSE
+         IF ::structPanel:isVisible()
+            ::structPanel:hide()
+         ENDIF
+      ENDIF
+   ENDIF
+   IF oSettings:contains( "dbuSplitter" )
+      ::splitter:restoreState( oSettings:value( "dbuSplitter" ):toByteArray() )
+   ENDIF
+
+   IF oSettings:contains( "dbuPanelNames" )
+      ::addPanels( hb_ATokens( oSettings:value( "dbuPanelNames" ):toString(), "~" ) )
+   ENDIF
+   IF oSettings:contains( "dbuPanelsInfo" )
+      ::loadTables( hb_ATokens( oSettings:value( "dbuPanelsInfo" ):toString(), "~" ) )
+   ENDIF
+
+   IF oSettings:contains( "dbuTreeInfo" )
+      FOR EACH cInfo IN hb_ATokens( oSettings:value( "dbuTreeInfo" ):toString(), "~" )
+         IF ! Empty( cInfo )
+            ::populateTree( hb_ATokens( cInfo, " " ) )
+         ENDIF
+      NEXT
+   ENDIF
+   IF oSettings:contains( "dbuLinksInfo" )
+     ::setLinksInfo( hb_ATokens( oSettings:value( "dbuLinksInfo" ):toString(), "~" ) )
+   ENDIF
+   IF oSettings:contains( "dbuDriver" )
+      ::cDefaultRDD := Upper( oSettings:value( "dbuDriver" ):toString() )
+   ENDIF
+
+   RETURN NIL
+
+
+METHOD HbQtDBU:saveEnvAs()
+   LOCAL cFile
+   cFile := hbdbu_saveAFile( ::oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
+      ::getPath( cFile )
+      ::saveEnvironment()
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtDBU:restEnvFrom()
+   LOCAL cFile
+
+   cFile := hbdbu_fetchAFile( ::oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
+      ::getPath( cFile )
+      // Close existing panels and browsers or should we merge ?
+      // merging make sense as .dbu can be opened via "Open With" option of explorer.
+      //
+      ::restEnvironment()
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtDBU:getPath( cFile )
+   LOCAL cPath, cName, cExt
+
+   DEFAULT cFile TO ( ::cSettingsPath + ::cSettingsFile )
+
+   hb_FNameSplit( cFile, @cPath, @cName, @cExt )
+
+   IF Lower( cExt ) == ".dbu"
+      IF Empty( cPath )
+#if defined( __PLATFORM__WINDOWS )
+         cPath := hb_DirSepAdd( GetEnv( "APPDATA" ) ) + "dbu\"
+#elif defined( __PLATFORM__UNIX )
+         cPath := hb_DirSepAdd( GetEnv( "HOME" ) ) + ".dbu/"
+#elif defined( __PLATFORM__OS2 )
+         cPath := hb_DirSepAdd( GetEnv( "HOME" ) ) + ".dbu/"
+#endif
+         IF ! hb_dirExists( cPath )
+            hb_DirCreate( cPath )
+         ENDIF
+      ELSEIF Left( cPath, 2 ) == ".."
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+      ENDIF
+
+      ::cSettingsPath := cPath
+      ::cSettingsFile := cName + cExt
+
+   ELSE
+      IF Empty( cPath )
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+      ELSEIF Left( cPath, 2 ) == ".."
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+      ENDIF
+
+   ENDIF
+
+   RETURN ( cPath + cName + cExt )
+
+
+STATIC FUNCTION __arrayToString( aStrings, cDlm )
+   LOCAL cStr := ""
+   aeval( aStrings, {|e| cStr += e + cDlm } )
+   RETURN cStr
+
 /*----------------------------------------------------------------------*/
 //                         Class HbQtPanelBrowse
 /*----------------------------------------------------------------------*/
@@ -2656,12 +2820,11 @@ METHOD HbQtPanelBrowse:destroyBrw( oBrw )
    IF ( n := ascan( ::aBrowsers, {|e_| e_[ SUB_BROWSER ] == oBrw } ) )  > 0
       ::oManager:aBrwStruct := {}
       ::oManager:oBrwStruct:goTop()
-
       oSub := ::aBrowsers[ n, SUB_WINDOW ]
-      hb_adel( ::aBrowsers, n, .t. )
-      oBrw:destroy()
       ::oWidget:removeSubWindow( oSub )
-      oSub:setParent( QWidget() ) /* This alone releases all Windows down its hirarchy, right at this line */
+      hb_ADel( ::aBrowsers, n, .t. )
+      oSub:setParent( QWidget() )
+      oBrw:destroy()
    ENDIF
 
    RETURN Self

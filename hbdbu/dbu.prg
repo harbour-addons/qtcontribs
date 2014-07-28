@@ -105,6 +105,9 @@ FUNCTION Main( ... )
    oSplash:show()
    QApplication():processEvents()
 
+   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+   ReadInsert( .T. )
+
    oMgr := DbuMGR():new( hb_AParams() )
    oMgr:create()
 
@@ -197,9 +200,6 @@ METHOD DbuMGR:new( aParams )
 #ifdef __ADS__
    ::lAds := .T.
 #endif
-
-   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
-   ReadInsert( .T. )
 
    ::fetchDbuData()
    ::setDatabaseParams()
@@ -1125,13 +1125,13 @@ METHOD DbuMGR:getPath( cFile )
 
    IF Lower( cExt ) == ".dbu"
       IF Empty( cPath )
-         #if defined( __PLATFORM__WINDOWS )
+#if defined( __PLATFORM__WINDOWS )
          cPath := hb_DirSepAdd( GetEnv( "APPDATA" ) ) + "dbu\"
-         #elif defined( __PLATFORM__UNIX )
+#elif defined( __PLATFORM__UNIX )
          cPath := hb_DirSepAdd( GetEnv( "HOME" ) ) + ".dbu/"
-         #elif defined( __PLATFORM__OS2 )
+#elif defined( __PLATFORM__OS2 )
          cPath := hb_DirSepAdd( GetEnv( "HOME" ) ) + ".dbu/"
-         #endif
+#endif
          IF ! hb_dirExists( cPath )
             hb_DirCreate( cPath )
          ENDIF

@@ -298,6 +298,7 @@ CLASS IdeINI INHERIT IdeObject
    DATA   lTabRemoveExt                           INIT .F.
    DATA   lTabAddClose                            INIT .F.
    DATA   nToolWindowColumns                      INIT 17
+   DATA   lExtBuildLaunch                         INIT .F.
 
    METHOD new( oIde )
    METHOD create( oIde )
@@ -568,6 +569,7 @@ METHOD IdeINI:save( cHbideIni )
    AAdd( txt_, "TabRemoveExt"              + "=" +   iif( ::lTabRemoveExt          , "YES", "NO" )      )
    AAdd( txt_, "TabAddClose"               + "=" +   iif( ::lTabAddClose           , "YES", "NO" )      )
    aadd( txt_, "ToolWindowColumns"         + "=" +   hb_ntos( ::nToolWindowColumns )                    )
+   aadd( txt_, "ExtBuildLaunch"            + "=" +   iif( ::lExtBuildLaunch        , "YES", "NO" )      )
 
    aadd( txt_, "" )
    aadd( txt_, "[PROJECTS]" )
@@ -688,21 +690,21 @@ METHOD IdeINI:save( cHbideIni )
       aadd( txt_, "keyword_" + hb_ntos( n ) + "=" + hbide_array2string( ::aKeywords[ n ], "~" ) )
    NEXT
    aadd( txt_, " " )
-
+#if 0
    aadd( txt_, "[DBUPANELS]" )
    aadd( txt_, " " )
-   FOR EACH s IN ::oBM:getPanelNames()
+   FOR EACH s IN ::oBM:oDbu:getPanelNames()
       aadd( txt_, "dbupanel_" + hb_ntos( s:__enumIndex() ) + "=" + s )
    NEXT
    aadd( txt_, " " )
 
    aadd( txt_, "[DBUPANELSINFO]" )
    aadd( txt_, " " )
-   FOR EACH s IN ::oBM:getPanelsInfo()
+   FOR EACH s IN ::oBM:oDbu:getPanelsInfo()
       aadd( txt_, "dbupanelinfo_" + hb_ntos( s:__enumIndex() ) + "=" + s )
    NEXT
    aadd( txt_, " " )
-
+#endif
    aadd( txt_, "[APPTHEMES]" )
    aadd( txt_, " " )
    FOR EACH s IN ::aAppThemes
@@ -937,7 +939,8 @@ METHOD IdeINI:load( cHbideIni )
                      CASE "SelToolbar"                  ; ::lSelToolbar                       := !( cVal == "NO" ) ; EXIT
                      CASE "TabRemoveExt"                ; ::lTabRemoveExt                     := !( cVal == "NO" ) ; EXIT
                      CASE "TabAddClose"                 ; ::lTabAddClose                      := !( cVal == "NO" ) ; EXIT
-                     CASE "ToolWindowColumns"           ; ::nToolWindowColumns                := val( cVal ); EXIT
+                     CASE "ToolWindowColumns"           ; ::nToolWindowColumns                := val( cVal )       ; EXIT
+                     CASE "ExtBuildLaunch"              ; ::lExtBuildLaunch                   := !( cVal == "NO" ) ; EXIT
 
                      ENDSWITCH
                   ENDIF
@@ -1048,7 +1051,7 @@ METHOD IdeINI:load( cHbideIni )
                ENDCASE
                EXIT
             ENDSWITCH
-         ENDIF
+          ENDIF
       NEXT
    ENDIF
 
@@ -1264,7 +1267,7 @@ CLASS IdeSetup INHERIT IdeObject
    DATA   oINI
    DATA   qOrgPalette
    DATA   aItems                                  INIT {}
-   DATA   aTree                                   INIT { "General", "Intelli-sense", "Selections", "Miscellaneous", "Paths", "Variables", "Dictionaries", "Themes", "Formatting", "VSS" }
+   DATA   aTree                                   INIT { "General", "Intelli-sense", "Selections", "Miscellaneous", "Paths", "Variables", "Dictionaries", "Themes", "Formatting", "VSS", "Projects" }
    DATA   aStyles                                 INIT { "cleanlooks", "windows", "windowsxp", ;
                                                          "windowsvista", "cde", "motif", "plastique", "macintosh" }
    DATA   aKeyItems                               INIT {}
@@ -1540,6 +1543,7 @@ METHOD IdeSetup:connectSlots()
    ::oUI:radioDictToLower    :connect( "clicked()"               , {| | ::execEvent( __radioDictToLower_clicked__                       ) } )
    ::oUI:radioDictToUpper    :connect( "clicked()"               , {| | ::execEvent( __radioDictToUpper_clicked__                       ) } )
    ::oUI:radioDictAsIn       :connect( "clicked()"               , {| | ::execEvent( __radioDictAsIn_clicked__                          ) } )
+   ::oUI:chkExtBuildLaunch   :connect( "stateChanged(int)"       , {|i| ::oINI:lExtBuildLaunch := ( i == 2 )                              } )
 
    RETURN Self
 
@@ -1627,6 +1631,7 @@ METHOD IdeSetup:retrieve()
    ::oINI:cISFormat                := ::oUI:comboISFormat      : currentText()
    ::oINI:lTabRemoveExt            := ::oUI:chkTabRemoveExt    : isChecked()
    ::oINI:lTabAddClose             := ::oUI:chkTabAddClose     : isChecked()
+   ::oINI:lExtBuildLaunch          := ::oUI:chkExtBuildLaunch  : isChecked()
 
    RETURN Self
 
@@ -1760,6 +1765,8 @@ METHOD IdeSetup:populate()
 
    ::oUI:chkTabRemoveExt    : setChecked( ::oINI:lTabRemoveExt   )
    ::oUI:chkTabAddClose     : setChecked( ::oINI:lTabAddClose    )
+   ::oUI:chkTabAddClose     : setChecked( ::oINI:lTabAddClose    )
+   ::oUI:chkExtBuildLaunch  : setChecked( ::oINI:lExtBuildLaunch )
 
    ::connectSlots()
 

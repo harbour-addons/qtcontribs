@@ -151,5 +151,7 @@
     <file>resources/images.png</file>
     <file>resources/text-file.png</file>
     <file>resources/memo.png</file>
+    <file>resources/save-env.png</file>
+    <file>resources/rest-env.png</file>
   </qresource>
 </RCC>

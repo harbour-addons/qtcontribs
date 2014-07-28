@@ -67,6 +67,7 @@ changelog.prg
 console.prg
 uisrcmanager.prg
 projectwizard.prg
+dbumgr.prg
 
 hbqtoolbar.prg
 

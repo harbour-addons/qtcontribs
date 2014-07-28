@@ -1830,18 +1830,24 @@ METHOD IdeDocks:showSelectedTextToolbar( oEdit )
             qToolbar:adjustSize()
             nVPW := oEdit:qEdit:viewport():width()
             nTBW := qToolbar:width()
-            nX   := ( nVPW / 2 ) - ( nTBW / 2 )
+            //nX   := ( nVPW / 2 ) - ( nTBW / 2 )
+            nX   := qRect:x()
             IF nX < 0
                nX := 0
             ELSEIF nX + nTBW > nVPW
                nX := nVPW - nTBW
             ENDIF
+#if 0
             IF oEdit:aSelectionInfo[ 1 ] <= oEdit:aSelectionInfo[ 3 ]  /* Downward selection */
-               nY := qRect:y() + ( qRect:height() * 2 )
+               nY := qRect:y() - ( qRect:height() * 5 )
             ELSE
-               nY := qRect:y() - ( qRect:height() * 3 )
+               nY := qRect:y() + ( qRect:height() * 1 )
             ENDIF
+#else
+            nY := qRect:y() + ( qRect:height() * 1 )
+#endif
             qToolbar:move( oEdit:qEdit:viewport():mapToGlobal( QPoint( nX, nY ) ) )
+            //qToolbar:move( nX, nY )
          ENDIF
          qToolbar:show()
          qToolbar:raise()

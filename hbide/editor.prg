@@ -112,8 +112,10 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    METHOD getTabBySource( cSource )
    METHOD getTabCurrent()
+   METHOD getTabByIndex( nIndex )
    METHOD getDocumentCurrent()
    METHOD getEditObjectCurrent()
+   METHOD getEditObjectByIndex( nIndex )
    METHOD getEditCurrent()
    METHOD getEditorCurrent()
    METHOD getEditorByIndex( nIndex )
@@ -138,6 +140,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD insertSeparator( cSep )
    METHOD zoom( nKey )
    METHOD printPreview()
+   METHOD printPreviewByIndex( nIndex )
    METHOD paintRequested( qPrinter )
    METHOD setMark()
    METHOD setTooltipMark( nIndex )
@@ -326,7 +329,7 @@ METHOD IdeEditsManager:setStyleSheet( nMode )
 METHOD IdeEditsManager:updateFieldsList( cAlias )
    LOCAL aFlds
 
-   IF ! empty( cAlias ) .AND. ! empty( aFlds := ::oBM:fetchFldsList( cAlias ) )
+   IF ! empty( cAlias ) .AND. ! empty( aFlds := ::oBM:oDbu:fetchFldsList( cAlias ) )
 
       asort( aFlds, , , {|e,f| lower( e ) < lower( f ) } )
 
@@ -509,6 +512,17 @@ METHOD IdeEditsManager:getTabCurrent()
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeEditsManager:getTabByIndex( nIndex )
+   LOCAL qTab, nTab
+
+   IF HB_ISNUMERIC( nIndex ) .AND. nIndex >= 0 .AND. nIndex < ::qTabWidget:count()
+      qTab := ::qTabWidget:widget( nIndex )
+      nTab := ascan( ::aTabs, {|e_| hbqt_IsEqual( e_[ TAB_OTAB ]:oWidget, qTab ) } )
+   ENDIF
+   RETURN nTab
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeEditsManager:getDocumentCurrent()
    LOCAL qTab, nTab
 
@@ -528,6 +542,20 @@ METHOD IdeEditsManager:getEditObjectCurrent()
 
    IF !empty( ::qTabWidget ) .AND. ::qTabWidget:count() > 0
       qTab := ::qTabWidget:currentWidget()
+      IF ( nTab := ascan( ::aTabs, {|e_| hbqt_IsEqual( e_[ TAB_OTAB ]:oWidget, qTab ) } ) ) > 0
+         RETURN ::aTabs[ nTab, TAB_OEDITOR ]:qCoEdit
+      ENDIF
+   ENDIF
+
+   RETURN Nil
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:getEditObjectByIndex( nIndex )
+   LOCAL qTab, nTab
+
+   IF !empty( ::qTabWidget ) .AND. ::qTabWidget:count() > 0 .AND. nIndex < ::qTabWidget:count()
+      qTab := ::qTabWidget:widget( nIndex )
       IF ( nTab := ascan( ::aTabs, {|e_| hbqt_IsEqual( e_[ TAB_OTAB ]:oWidget, qTab ) } ) ) > 0
          RETURN ::aTabs[ nTab, TAB_OEDITOR ]:qCoEdit
       ENDIF
@@ -1180,6 +1208,15 @@ METHOD IdeEditsManager:printPreview()
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeEditsManager:printPreviewByIndex( nIndex )
+   LOCAL oEdit
+   IF !empty( oEdit := ::getEditObjectByIndex( nIndex ) )
+      oEdit:printPreview()
+   ENDIF
+   RETURN self
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeEditsManager:paintRequested( qPrinter )
    ::qCurEdit:print( qPrinter )
    RETURN Self
@@ -1407,6 +1444,11 @@ CLASS IdeEditor INHERIT IdeObject
    DATA   qSplitter
 
    DATA   lIsPRG                                  INIT .t.
+   DATA   oTabBar
+   DATA   oTabContextMenu
+   DATA   aActions                                INIT {}
+
+   METHOD execTabContextMenu( oPos )
 
    METHOD new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
    METHOD create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
@@ -1909,6 +1951,37 @@ METHOD IdeEditor:activateTab( mp1, mp2, oXbp )
 
 /*----------------------------------------------------------------------*/
 
+METHOD IdeEditor:execTabContextMenu( oPos )
+   LOCAL qAct, nIndex, nTabIndex
+
+   IF ! HB_ISOBJECT( ::oTabContextMenu )
+      ::oTabContextMenu := QMenu()
+
+      aadd( ::aActions, { "Save" , ::oTabContextMenu:addAction( QIcon( hbide_image( "save3"  ) ), "Save"  ) } )
+      aadd( ::aActions, { "Close", ::oTabContextMenu:addAction( QIcon( hbide_image( "close3" ) ), "Close" ) } )
+      aadd( ::aActions, { "Print", ::oTabContextMenu:addAction( QIcon( hbide_image( "print"  ) ), "Print" ) } )
+   ENDIF
+
+   IF ! Empty( qAct := ::oTabContextMenu:exec( ::oTabBar:mapToGlobal( oPos ) ) )
+      nIndex := ::oTabBar:tabAt( oPos )
+      nTabIndex := ::oEM:getTabByIndex( nIndex )
+
+      SWITCH strtran( qAct:text(), "&", "" )
+      CASE "Save"
+         ::oSM:saveSource( nTabIndex, .f., .f. )
+         EXIT
+      CASE "Close"
+         ::oSM:closeSource( nTabIndex )
+         EXIT
+      CASE "Print"
+         ::oEM:printPreviewByIndex( nIndex )
+         EXIT
+      ENDSWITCH
+   ENDIF
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
 METHOD IdeEditor:buildTabPage( cSource )
 
    ::oTab := XbpTabPage():new( ::oTabParent, , { 5,5 }, { 700,400 }, , .t. )
@@ -1921,6 +1994,15 @@ METHOD IdeEditor:buildTabPage( cSource )
    ::oTab:minimized := .F.
 
    ::oTab:create()
+
+   WITH OBJECT ::oTabBar := ::qTabWidget:tabBar()
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setAcceptDrops( .T. )
+      :connect( QEvent_DragEnter, {|p| p:acceptProposedAction() } )
+      :connect( QEvent_DragMove , {|p| p:acceptProposedAction() } )
+      :connect( QEvent_Drop     , {|p| iif( p:mimeData():hasUrls(), Alert("hi"), Alert('no') ), p:setDropAction( Qt_IgnoreAction ), p:accept() } )
+      :connect( "customContextMenuRequested(QPoint)", {|oPos| ::execTabContextMenu( oPos )  } )
+   ENDWITH
 
    IF ::oINI:lTabAddClose
       ::qTabWidget:setTabsClosable( .T. )

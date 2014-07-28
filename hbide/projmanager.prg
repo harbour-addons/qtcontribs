@@ -232,7 +232,7 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD fetchProperties()
    METHOD getProperties()
    METHOD sortSources( cMode )
-   METHOD save( lCanClose )
+   METHOD save( lCanClose, lUpdateTree )
    METHOD updateHbp( iIndex )
    METHOD addSources()
    METHOD addSourcesToProject( aFiles )
@@ -588,10 +588,12 @@ METHOD IdeProjManager:pullHbpData( cHbp )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeProjManager:save( lCanClose )
+METHOD IdeProjManager:save( lCanClose, lUpdateTree )
    LOCAL a_, lOk, txt_, nAlready
    LOCAL c3rd := "-3rd="
    LOCAL hdr_:= {}
+
+   DEFAULT lUpdateTree TO .F.
 
    * Validate certain parameters before continuing ... (vailtom)
 
@@ -606,7 +608,7 @@ METHOD IdeProjManager:save( lCanClose )
    ENDIF
 
    /* This must be valid, we cannot skip */
-   IF !hbide_isValidPath( ::oUI:editPrjLoctn:text(), 'Project Location' )
+   IF ! hbide_isValidPath( ::oUI:editPrjLoctn:text(), 'Project Location' )
       ::oUI:editPrjLoctn:setFocus()
       RETURN .F.
    ENDIF
@@ -663,13 +665,13 @@ METHOD IdeProjManager:save( lCanClose )
 
       IF ( nAlready := ascan( ::aProjects, {|e_| hb_FileMatch( e_[ 1 ], hbide_pathNormalized( ::cSaveTo ) ) } ) ) == 0
          aadd( ::oIDE:aProjects, { hbide_pathNormalized( ::cSaveTo ), ::cSaveTo, aclone( ::aPrjProps ) } )
-         IF ::lUpdateTree
+         IF lUpdateTree
             ::oIDE:updateProjectTree( ::aPrjProps )
          ENDIF
          hbide_mnuAddFileToMRU( ::oIDE, ::cSaveTo, "recent_projects" )
       ELSE
          ::aProjects[ nAlready, 3 ] := aclone( ::aPrjProps )
-         IF ::lUpdateTree
+         IF lUpdateTree
             ::oIDE:updateProjectTree( ::aPrjProps )
          ENDIF
       ENDIF
@@ -973,8 +975,8 @@ METHOD IdeProjManager:buildInterface()
    ::oUI:buttonSortOrg:hide()
 
    ::oUI:buttonCn          :connect( "clicked()", {|| ::lSaveOK := .f., ::oPropertiesDock:hide() } )
-   ::oUI:buttonSave        :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .F. )          } )
-   ::oUI:buttonSaveExit    :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .T. )          } )
+   ::oUI:buttonSave        :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .F., .T. )       } )
+   ::oUI:buttonSaveExit    :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .T., .T. )       } )
    ::oUI:buttonSelect      :connect( "clicked()", {|| ::addSources()         } )
    ::oUI:buttonUp          :connect( "clicked()", {|| ::moveLine( -1 )       } )
    ::oUI:buttonDown        :connect( "clicked()", {|| ::moveLine( +1 )       } )
@@ -1824,24 +1826,23 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:launchProject( cProject, cExe )
-   LOCAL cTargetFN, cTmp, oProject, cPath, cParam, a_
-   LOCAL qProcess, qStr
+   LOCAL cTargetFN, cTmp, oProject, cPath, a_, cParam
+   LOCAL qProcess, qStr, cC, cCmd, cBuf
 
    IF empty( cProject )
       cProject := ::oPM:getCurrentProject( .f. )
    ENDIF
-
    IF !empty( cProject )
       oProject  := ::getProjectByTitle( cProject )
    ENDIF
 
    IF empty( cExe ) .AND. !empty( oProject )
       cTargetFN := hbide_pathFile( oProject:destination, iif( empty( oProject:outputName ), "_temp", oProject:outputName ) )
-      #ifdef __PLATFORM__WINDOWS
+#ifdef __PLATFORM__WINDOWS
       IF oProject:type == "Executable"
          cTargetFN += '.exe'
       ENDIF
-      #endif
+#endif
       IF ! hb_FileExists( cTargetFN )
          cTargetFN := oProject:launchProgram
       ENDIF
@@ -1859,11 +1860,40 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
    ELSEIF empty( oProject ) .OR. oProject:type == "Executable"
       cTmp := "Launching application [ " + cTargetFN + " ]"
 
-      IF .t.
-         qProcess := QProcess()
+      IF ::oINI:lExtBuildLaunch
+         ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
+         ::cBatch   := ::oEV:prepareBatch( ::cWrkEnvironment )
+
+         cCmd       := hbide_getShellCommand()
+         cC         := iif( hbide_getOS() == "nix", "", "/C " )
+         IF hb_fileExists( ::cBatch )
+            cBuf := memoread( ::cBatch )
+            cBuf += hb_eol() + iif( hbide_getOS() == "nix", "", "start " ) + cTargetFN + " "
+            IF ! empty( oProject ) .AND. ! empty( oProject:launchParams )
+               cBuf += oProject:launchParams
+            ENDIF
+            cBuf += hb_eol()
+            hb_memowrit( ::cBatch, cBuf )
+         ENDIF
 
          qStr := QStringList()
+         hb_fNameSplit( cTargetFN, @cPath )
+         IF ! Empty( cC )
+            qStr:append( cC )
+         ENDIF
+         qStr:append( ::cBatch )
 
+         qProcess := QProcess()
+         WITH OBJECT qProcess
+            :setWorkingDirectory( hbide_pathToOSPath( iif( Empty( oProject ), cPath, oProject:wrkDirectory ) ) )
+            :startDetached( cCmd, qStr )
+            :waitForStarted( 3000 )
+         ENDWITH
+         qProcess := NIL
+
+      ELSE                                        /* Kept it just for reference - may be switchable through .ini */
+         qProcess := QProcess()
+         qStr := QStringList()
          IF !empty( oProject )
             IF !empty( oProject:launchParams )
                a_:= hb_ATokens( oProject:launchParams, " " )
@@ -1878,13 +1908,6 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
             hb_fNameSplit( cTargetFN, @cPath )
             qProcess:startDetached( cTargetFN, qStr, hbide_pathToOSPath( cPath ) )
          ENDIF
-
-         qProcess:waitForStarted( 3000 )
-         qProcess := NIL
-
-      ELSE
-         hb_processRun( cTargetFN, , , , .t. )
-
       ENDIF
    ELSE
       cTmp := "Launching application [ " + cTargetFN + " ] ( not applicable )."
@@ -1892,7 +1915,7 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
    ENDIF
 
    ::oOutputResult:oWidget:append( cTmp )
-
+   HB_SYMBOL_UNUSED( qProcess )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
