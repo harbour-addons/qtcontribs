@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-29 14:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r323)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: missing QNetwork*_* constants.
+
 2014-07-29 00:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r322)
   * hbqt/qtgui/hbqt_flickcharm.cpp
     % Pacified recently introduced warnings.

@@ -3496,6 +3496,38 @@
 #define QNetworkAccessManager_DeleteOperation                5       // delete contents operation (created with deleteResource())
 #define QNetworkAccessManager_CustomOperation                6       // custom operation (created with sendCustomRequest())
 
+#define QNetworkConfiguration_BearerUnknown                  0       // The type of bearer is unknown or unspecified. The bearerTypeName() function may return additional information.
+#define QNetworkConfiguration_BearerEthernet                 1       // The configuration is for an Ethernet interfaces.
+#define QNetworkConfiguration_BearerWLAN                     2       // The configuration is for a Wireless LAN interface.
+#define QNetworkConfiguration_Bearer2G                       3       // The configuration is for a CSD, GPRS, HSCSD, EDGE or cdmaOne interface.
+#define QNetworkConfiguration_Bearer3G                       11      // The configuration is for a 3G interface.
+#define QNetworkConfiguration_Bearer4G                       12      // The configuration is for a 4G interface.
+#define QNetworkConfiguration_BearerCDMA2000                 4       // The configuration is for CDMA interface.
+#define QNetworkConfiguration_BearerWCDMA                    5       // The configuration is for W-CDMA/UMTS interface.
+#define QNetworkConfiguration_BearerHSPA                     6       // The configuration is for High Speed Packet Access (HSPA) interface.
+#define QNetworkConfiguration_BearerBluetooth                7       // The configuration is for a Bluetooth interface.
+#define QNetworkConfiguration_BearerWiMAX                    8       // The configuration is for a WiMAX interface.
+#define QNetworkConfiguration_BearerEVDO                     9       // The configuration is for an EVDO (3G) interface.
+#define QNetworkConfiguration_BearerLTE                      10      // The configuration is for a LTE (4G) interface.
+
+#define QNetworkConfiguration_UnknownPurpose                 0       // The configuration doesn't specify any purpose. This is the default value.
+#define QNetworkConfiguration_PublicPurpose                  1       // The configuration can be used for general purpose internet access.
+#define QNetworkConfiguration_PrivatePurpose                 2       // The configuration is suitable to access a private network such as an office Intranet.
+#define QNetworkConfiguration_ServiceSpecificPurpose         3       // The configuration can be used for operator specific services (e.g. receiving MMS messages or content streaming).
+
+#define QNetworkConfiguration_Undefined                      0x0000001   // This state is used for transient configurations such as newly discovered WLANs for which the user has not actually created a configuration yet.
+#define QNetworkConfiguration_Defined                        0x0000002   // Defined configurations are known to the system but are not immediately usable (e.g. a configured WLAN is not within range or the Ethernet cable is currently not plugged into the machine).
+#define QNetworkConfiguration_Discovered                     0x0000006   // A discovered configuration can be immediately used to create a new QNetworkSession. An example of a discovered configuration could be a WLAN which is within in range. If the device moves out of range the discovered flag is dropped. A second example is a GPRS configuration which generally remains discovered for as long as the device has network coverage. A configuration that has this state is also in state #define QNetworkConfiguration_Defined. If the configuration is a service network this flag is set if at least one of the underlying access points configurations has the Discovered state.
+#define QNetworkConfiguration_Active                         0x000000e   // The configuration is currently used by an open network session (see QNetworkSession::isOpen()). However this does not mean that the current process is the entity that created the open session. It merely indicates that if a new QNetworkSession were to be constructed based on this configuration QNetworkSession::state() would return QNetworkSession::Connected. This state implies the #define QNetworkConfiguration_Discovered state.
+
+#define QNetworkConfiguration_InternetAccessPoint            0       // The configuration specifies the details for a single access point. Note that configurations of type InternetAccessPoint may be part of other QNetworkConfigurations of type ServiceNetwork.
+#define QNetworkConfiguration_ServiceNetwork                 1       // The configuration is based on a group of QNetworkConfigurations of type InternetAccessPoint. All group members can reach the same target network. This type of configuration is a mandatory requirement for roaming enabled network sessions. On some platforms this form of configuration may also be called Service Network Access Point (SNAP).
+#define QNetworkConfiguration_UserChoice                     2       // The configuration is a placeholder which will be resolved to an actual configuration by the platform when a session is opened. Depending on the platform the selection may generate a popup dialog asking the user for his preferred choice.
+#define QNetworkConfiguration_Invalid                        3       // The configuration is invalid.
+
+#define QNetworkCookie_NameAndValueOnly                      0       // makes toRawForm() return only the "NAME=VALUE" part of the cookie, as suitable for sending back to a server in a client request's "Cookie:" header. Multiple cookies are separated by a semi-colon in the "Cookie:" header field.
+#define QNetworkCookie_Full                                  1       // makes toRawForm() return the full cookie contents, as suitable for sending to a client in a server's "Set-Cookie:" header.#define QNetworkInterface_IsUp                               0x1     // the network interface is active
+
 #define QNetworkInterface_IsUp                               0x1     // the network interface is active
 #define QNetworkInterface_IsRunning                          0x2     // the network interface has resources allocated
 #define QNetworkInterface_CanBroadcast                       0x4     // the network interface works in broadcast mode
@@ -3503,10 +3535,89 @@
 #define QNetworkInterface_IsPointToPoint                     0x10    // the network interface is a point-to-point interface: that is, there is one, single other address that can be directly reached by it.
 #define QNetworkInterface_CanMulticast                       0x20    // the network interface supports multicasting
 
+#define QNetworkProxy_TunnelingCapability                    0x0001  // Ability to open transparent, tunneled TCP connections to a remote host. The proxy server relays the transmission verbatim from one side to the other and does no caching.
+#define QNetworkProxy_ListeningCapability                    0x0002  // Ability to create a listening socket and wait for an incoming TCP connection from a remote host.
+#define QNetworkProxy_UdpTunnelingCapability                 0x0004  // Ability to relay UDP datagrams via the proxy server to and from a remote host.
+#define QNetworkProxy_CachingCapability                      0x0008  // Ability to cache the contents of the transfer. This capability is specific to each protocol and proxy type. For example, HTTP proxies can cache the contents of web data transferred with "GET" commands.
+#define QNetworkProxy_HostNameLookupCapability               0x0010  // Ability to connect to perform the lookup on a remote host name and connect to it, as opposed to requiring the application to perform the name lookup and request connection to IP addresses only.
+
+#define QNetworkProxy_NoProxy                                2       // No proxying is used
+#define QNetworkProxy_DefaultProxy                           0       // Proxy is determined based on the application proxy set using setApplicationProxy()
+#define QNetworkProxy_Socks5Proxy                            1       // Socks5 proxying is used
+#define QNetworkProxy_HttpProxy                              3       // HTTP transparent proxying is used
+#define QNetworkProxy_HttpCachingProxy                       4       // Proxying for HTTP requests only
+#define QNetworkProxy_FtpCachingProxy                        5       // Proxying for FTP requests only
+
 #define QNetworkProxyQuery_TcpSocket                         0       // a normal, outgoing TCP socket
 #define QNetworkProxyQuery_UdpSocket                         1       // a datagram-based UDP socket, which could send to multiple destinations
 #define QNetworkProxyQuery_TcpServer                         100     // a TCP server that listens for incoming connections from the network
 #define QNetworkProxyQuery_UrlRequest                        101     // a more complex request which involves loading of a URL
+
+#define QNetworkReply_NoError                                0       // no error condition.
+#define QNetworkReply_ConnectionRefusedError                 1       // the remote server refused the connection (the server is not accepting requests)
+#define QNetworkReply_RemoteHostClosedError                  2       // the remote server closed the connection prematurely, before the entire reply was received and processed
+#define QNetworkReply_HostNotFoundError                      3       // the remote host name was not found (invalid hostname)
+#define QNetworkReply_TimeoutError                           4       // the connection to the remote server timed out
+#define QNetworkReply_OperationCanceledError                 5       // the operation was canceled via calls to abort() or close() before it was finished.
+#define QNetworkReply_SslHandshakeFailedError                6       // the SSL/TLS handshake failed and the encrypted channel could not be established. The sslErrors() signal should have been emitted.
+#define QNetworkReply_TemporaryNetworkFailureError           7       // the connection was broken due to disconnection from the network, however the system has initiated roaming to another access point. The request should be resubmitted and will be processed as soon as the connection is re-established.
+#define QNetworkReply_NetworkSessionFailedError              8       // the connection was broken due to disconnection from the network or failure to start the network.
+#define QNetworkReply_BackgroundRequestNotAllowedError       9       // the background request is not currently allowed due to platform policy.
+#define QNetworkReply_ProxyConnectionRefusedError            101     // the connection to the proxy server was refused (the proxy server is not accepting requests)
+#define QNetworkReply_ProxyConnectionClosedError             102     // the proxy server closed the connection prematurely, before the entire reply was received and processed
+#define QNetworkReply_ProxyNotFoundError                     103     // the proxy host name was not found (invalid proxy hostname)
+#define QNetworkReply_ProxyTimeoutError                      104     // the connection to the proxy timed out or the proxy did not reply in time to the request sent
+#define QNetworkReply_ProxyAuthenticationRequiredError       105     // the proxy requires authentication in order to honour the request but did not accept any credentials offered (if any)
+#define QNetworkReply_ContentAccessDenied                    201     // the access to the remote content was denied (similar to HTTP error 401)
+#define QNetworkReply_ContentOperationNotPermittedError      202     // the operation requested on the remote content is not permitted
+#define QNetworkReply_ContentNotFoundError                   203     // the remote content was not found at the server (similar to HTTP error 404)
+#define QNetworkReply_AuthenticationRequiredError            204     // the remote server requires authentication to serve the content but the credentials provided were not accepted (if any)
+#define QNetworkReply_ContentReSendError                     205     // the request needed to be sent again, but this failed for example because the upload data could not be read a second time.
+#define QNetworkReply_ProtocolUnknownError                   301     // the Network Access API cannot honor the request because the protocol is not known
+#define QNetworkReply_ProtocolInvalidOperationError          302     // the requested operation is invalid for this protocol
+#define QNetworkReply_UnknownNetworkError                    99      // an unknown network-related error was detected
+#define QNetworkReply_UnknownProxyError                      199     // an unknown proxy-related error was detected
+#define QNetworkReply_UnknownContentError                    299     // an unknown error related to the remote content was detected
+
+#define QNetworkRequest_HttpStatusCodeAttribute              0       // Replies only, type: QMetaType::Int (no default) Indicates the HTTP status code received from the HTTP server (like 200, 304, 404, 401, etc.). If the connection was not HTTP-based, this attribute will not be present.
+#define QNetworkRequest_HttpReasonPhraseAttribute            1       // Replies only, type: QMetaType::QByteArray (no default) Indicates the HTTP reason phrase as received from the HTTP server (like "Ok", "Found", "Not Found", "Access Denied", etc.) This is the human-readable representation of the status code (see above). If the connection was not HTTP-based, this attribute will not be present.
+#define QNetworkRequest_RedirectionTargetAttribute           2       // Replies only, type: QMetaType::QUrl (no default) If present, it indicates that the server is redirecting the request to a different URL. The Network Access API does not by default follow redirections: it's up to the application to determine if the requested redirection should be allowed, according to its security policies. The returned URL might be relative. Use QUrl::resolved() to create an absolute URL out of it.
+#define QNetworkRequest_ConnectionEncryptedAttribute         3       // Replies only, type: QMetaType::Bool (default: false) Indicates whether the data was obtained through an encrypted (secure) connection.
+#define QNetworkRequest_CacheLoadControlAttribute            4       // Requests only, type: QMetaType::Int (default: #define QNetworkRequest_PreferNetwork) Controls how the cache should be accessed. The possible values are those of #define QNetworkRequest_CacheLoadControl. Note that the default QNetworkAccessManager implementation does not support caching. However, this attribute may be used by certain backends to modify their requests (for example, for caching proxies).
+#define QNetworkRequest_CacheSaveControlAttribute            5       // Requests only, type: QMetaType::Bool (default: true) Controls if the data obtained should be saved to cache for future uses. If the value is false, the data obtained will not be automatically cached. If true, data may be cached, provided it is cacheable (what is cacheable depends on the protocol being used).
+#define QNetworkRequest_SourceIsFromCacheAttribute           6       // Replies only, type: QMetaType::Bool (default: false) Indicates whether the data was obtained from cache or not.
+#define QNetworkRequest_DoNotBufferUploadDataAttribute       7       // Requests only, type: QMetaType::Bool (default: false) Indicates whether the QNetworkAccessManager code is allowed to buffer the upload data, e.g. when doing a HTTP POST. When using this flag with sequential upload data, the ContentLengthHeader header must be set.
+#define QNetworkRequest_HttpPipeliningAllowedAttribute       8       // Requests only, type: QMetaType::Bool (default: false) Indicates whether the QNetworkAccessManager code is allowed to use HTTP pipelining with this request.
+#define QNetworkRequest_HttpPipeliningWasUsedAttribute       9       // Replies only, type: QMetaType::Bool Indicates whether the HTTP pipelining was used for receiving this reply.
+#define QNetworkRequest_CustomVerbAttribute                  10      // Requests only, type: QMetaType::QByteArray Holds the value for the custom HTTP verb to send (destined for usage of other verbs than GET, POST, PUT and DELETE). This verb is set when calling QNetworkAccessManager::sendCustomRequest().
+#define QNetworkRequest_CookieLoadControlAttribute           11      // Requests only, type: QMetaType::Int (default: #define QNetworkRequest_Automatic) Indicates whether to send 'Cookie' headers in the request. This attribute is set to false by Qt WebKit when creating a cross-origin XMLHttpRequest where withCredentials has not been set explicitly to true by the Javascript that created the request. See here for more information. (This value was introduced in 4.7.)
+#define QNetworkRequest_CookieSaveControlAttribute           13      // Requests only, type: QMetaType::Int (default: #define QNetworkRequest_Automatic) Indicates whether to save 'Cookie' headers received from the server in reply to the request. This attribute is set to false by Qt WebKit when creating a cross-origin XMLHttpRequest where withCredentials has not been set explicitly to true by the Javascript that created the request. See here for more information. (This value was introduced in 4.7.)
+#define QNetworkRequest_AuthenticationReuseAttribute         12      // Requests only, type: QMetaType::Int (default: #define QNetworkRequest_Automatic) Indicates whether to use cached authorization credentials in the request, if available. If this is set to #define QNetworkRequest_Manual and the authentication mechanism is 'Basic' or 'Digest', Qt will not send an an 'Authorization' HTTP header with any cached credentials it may have for the request's URL. This attribute is set to #define QNetworkRequest_Manual by Qt WebKit when creating a cross-origin XMLHttpRequest where withCredentials has not been set explicitly to true by the Javascript that created the request. See here for more information. (This value was introduced in 4.7.)
+#define QNetworkRequest_BackgroundRequestAttribute           17      // Type: QMetaType::Bool (default: false) Indicates that this is a background transfer, rather than a user initiated transfer. Depending on the platform, background transfers may be subject to different policies. The QNetworkSession ConnectInBackground property will be set according to this attribute.
+#define QNetworkRequest_User                                 1000    // Special type. Additional information can be passed in QVariants with types ranging from User to UserMax. The default implementation of Network Access will ignore any request attributes in this range and it will not produce any attributes in this range in replies. The range is reserved for extensions of QNetworkAccessManager.
+#define QNetworkRequest_UserMax                              32767   // Special type. See User.
+
+#define QNetworkRequest_AlwaysNetwork                        0       // always load from network and do not check if the cache has a valid entry (similar to the "Reload" feature in browsers); in addition, force intermediate caches to re-validate.
+#define QNetworkRequest_PreferNetwork                        1       // default value; load from the network if the cached entry is older than the network entry. This will never return stale data from the cache, but revalidate resources that have become stale.
+#define QNetworkRequest_PreferCache                          2       // load from cache if available, otherwise load from network. Note that this can return possibly stale (but not expired) items from cache.
+#define QNetworkRequest_AlwaysCache                          3       // only load from cache, indicating error if the item was not cached (i.e., off-line mode)
+                                                                     //
+#define QNetworkRequest_ContentDispositionHeader             6       // Corresponds to the HTTP Content-Disposition header and contains a string containing the disposition type (for instance, attachment) and a parameter (for instance, filename).
+#define QNetworkRequest_ContentTypeHeader                    0       // Corresponds to the HTTP Content-Type header and contains a string containing the media (MIME) type and any auxiliary data (for instance, charset).
+#define QNetworkRequest_ContentLengthHeader                  1       // Corresponds to the HTTP Content-Length header and contains the length in bytes of the data transmitted.
+#define QNetworkRequest_LocationHeader                       2       // Corresponds to the HTTP Location header and contains a URL representing the actual location of the data, including the destination URL in case of redirections.
+#define QNetworkRequest_LastModifiedHeader                   3       // Corresponds to the HTTP Last-Modified header and contains a QDateTime representing the last modification date of the contents.
+#define QNetworkRequest_CookieHeader                         4       // Corresponds to the HTTP Cookie header and contains a QList<QNetworkCookie> representing the cookies to be sent back to the server.
+#define QNetworkRequest_SetCookieHeader                      5       // Corresponds to the HTTP Set-Cookie header and contains a QList<QNetworkCookie> representing the cookies sent by the server to be stored locally.
+#define QNetworkRequest_UserAgentHeader                      7       // The User-Agent header sent by HTTP clients.
+#define QNetworkRequest_ServerHeader                         8       // The Server header received by HTTP clients.
+
+#define QNetworkRequest_Automatic                            0       // default value: indicates default behaviour.
+#define QNetworkRequest_Manual                               1       // indicates behaviour has been manually overridden.
+
+#define QNetworkRequest_HighPriority                         1       // High priority
+#define QNetworkRequest_NormalPriority                       3       // Normal priority
+#define QNetworkRequest_LowPriority                          5       // Low priority
 
 #define QNetworkSession_UnknownSessionError                  0       // An unidentified error occurred.
 #define QNetworkSession_SessionAbortedError                  1       // The session was aborted by the user or system.
@@ -3543,7 +3654,6 @@
 #define QSslSocket_UnencryptedMode                           0       // The socket is unencrypted. Its behavior is identical to QTcpSocket.
 #define QSslSocket_SslClientMode                             1       // The socket is a client-side SSL socket. It is either alreayd encrypted, or it is in the SSL handshake phase (see QSslSocket_isEncrypted()).
 #define QSslSocket_SslServerMode                             2       // The socket is a server-side SSL socket. It is either already encrypted, or it is in the SSL handshake phase (see QSslSocket::isEncrypted()).
-
 
 // This enum describes the different flags that can be used for controlling the behavior of QStandardPaths::locate and QStandardPaths::locateAll.
 #define QStandardPaths_LocateFile                            0x0     // return only files
