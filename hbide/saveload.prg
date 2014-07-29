@@ -153,6 +153,10 @@
 #define __buttonDictAdd_clicked__                 2075
 #define __buttonDictDelete_clicked__              2076
 #define __checkShowSelToolbar_stateChanged__      2077
+#define __listIncludePaths_currentRowChanged__    2078
+#define __buttonIncludePathsAdd_clicked__         2079
+#define __buttonIncludePathsDel_clicked__         2080
+
 
 /*----------------------------------------------------------------------*/
 //
@@ -220,6 +224,7 @@ CLASS IdeINI INHERIT IdeObject
    DATA   aDictionaries                           INIT  {}
    DATA   aLogTitle                               INIT  {}
    DATA   aLogSources                             INIT  {}
+   DATA   aIncludePaths                           INIT  {}
 
    DATA   cFontName                               INIT  "Courier New"
    DATA   nPointSize                              INIT  10
@@ -623,14 +628,14 @@ METHOD IdeINI:save( cHbideIni )
 
    aadd( txt_, "[FIND]" )
    aadd( txt_, " " )
-   FOR n := 1 TO Len( ::aFind )
+   FOR n := 1 TO Min( 20, Len( ::aFind ) )
       aadd( txt_, "find_" + hb_ntos( n ) + "=" + ::aFind[ n ] )
    NEXT
    aadd( txt_, " " )
 
    aadd( txt_, "[REPLACE]" )
    aadd( txt_, " " )
-   FOR n := 1 TO Len( ::aReplace )
+   FOR n := 1 TO Min( 20, Len( ::aReplace ) )
       aadd( txt_, "replace_" + hb_ntos( n ) + "=" + ::aReplace[ n ] )
    NEXT
    aadd( txt_, " " )
@@ -716,6 +721,13 @@ METHOD IdeINI:save( cHbideIni )
    aadd( txt_, " " )
    FOR EACH s IN ::oIde:aUserDict  // aDictionaries
       aadd( txt_, "dictionary_" + hb_ntos( s:__enumIndex() ) + "=" + s:toString() )
+   NEXT
+   aadd( txt_, " " )
+
+   aadd( txt_, "[INCLUDEPATHS]" )
+   aadd( txt_, " " )
+   FOR EACH s IN ::oINI:aIncludePaths
+      aadd( txt_, "includepaths_" + hb_ntos( s:__enumIndex() ) + "=" + s )
    NEXT
    aadd( txt_, " " )
 
@@ -809,6 +821,9 @@ METHOD IdeINI:load( cHbideIni )
                EXIT
             CASE "[DICTIONARIES]"
                nPart := "INI_DICTIONARIES"
+               EXIT
+            CASE "[INCLUDEPATHS]"
+               nPart := "INI_INCLUDEPATHS"
                EXIT
             CASE "[LOGTITLE]"
                nPart := "INI_LOGTITLE"
@@ -1036,6 +1051,11 @@ METHOD IdeINI:load( cHbideIni )
                CASE nPart == "INI_DICTIONARIES"
                   IF hbide_parseKeyValPair( s, @cKey, @cVal )
                      aadd( ::aDictionaries, cVal )
+                  ENDIF
+
+               CASE nPart == "INI_INCLUDEPATHS"
+                  IF hbide_parseKeyValPair( s, @cKey, @cVal )
+                     aadd( ::aIncludePaths, cVal )
                   ENDIF
 
                CASE nPart == "INI_LOGTITLE"
@@ -1300,6 +1320,7 @@ CLASS IdeSetup INHERIT IdeObject
    METHOD getThemeData( nTheme )
    METHOD viewIt( cFileName, lSaveAs, lSave, lReadOnly, lApplyHiliter )
    METHOD uiDictionaries()
+   METHOD uiIncludePaths()
 
    ENDCLASS
 
@@ -1376,7 +1397,7 @@ METHOD IdeSetup:setIcons()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:disConnectSlots()
-
+#if 0
    ::oUI:buttonAddTextExt    :disconnect( "clicked()"                )
    ::oUI:buttonDelTextExt    :disconnect( "clicked()"                )
 
@@ -1442,7 +1463,7 @@ METHOD IdeSetup:disConnectSlots()
 
    ::oUI:buttonVSSExe        :disconnect( "clicked()"                )
    ::oUI:buttonVSSDatabase   :disconnect( "clicked()"                )
-
+#endif
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1523,6 +1544,10 @@ METHOD IdeSetup:connectSlots()
    ::oUI:btnDictColorBack    :connect( "clicked()"               , {| | ::execEvent( __btnDictColorBack_clicked__                       ) } )
    ::oUI:buttonDictAdd       :connect( "clicked()"               , {| | ::execEvent( __buttonDictAdd_clicked__                          ) } )
    ::oUI:buttonDictDelete    :connect( "clicked()"               , {| | ::execEvent( __buttonDictDelete_clicked__                       ) } )
+
+   ::oUI:listIncludePaths    :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listIncludePaths_currentRowChanged__, i          ) } )
+   ::oUI:btnIncludePathsAdd  :connect( "clicked()"               , {| | ::execEvent( __buttonIncludePathsAdd_clicked__                  ) } )
+   ::oUI:btnIncludePathsDel  :connect( "clicked()"               , {| | ::execEvent( __buttonIncludePathsDel_clicked__                  ) } )
 
    ::oUI:checkDictActive     :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictActive_stateChanged__   , i             ) } )
    ::oUI:checkDictToPrg      :connect( "stateChanged(int)"       , {|i| ::execEvent( __checkDictToPrg_stateChanged__    , i             ) } )
@@ -1772,6 +1797,8 @@ METHOD IdeSetup:populate()
 
    ::pushThemesData()
 
+   ::uiIncludePaths()
+
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1897,7 +1924,11 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
       EXIT
 
    CASE __checkLineNumbers_stateChanged__
-      ::oEM:toggleLineNumbers()
+      IF p == 2
+         ::oIde:lLineNumbersVisible := .T.
+      ELSE
+         ::oIde:lLineNumbersVisible := .F.
+      ENDIF
       EXIT
 
    CASE __checkShowSelToolbar_stateChanged__
@@ -1905,19 +1936,19 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
       EXIT
 
    CASE __checkShowTopToolbar_stateChanged__
-      IF ::oAC:qMdiToolbar:oWidget:isVisible()
-         ::oAC:qMdiToolbar:hide()
-      ELSE
+      IF p == 2
          ::oAC:qMdiToolbar:show()
+      ELSE
+         ::oAC:qMdiToolbar:hide()
       ENDIF
       ::oINI:lShowEditsTopToolbar := ::oAC:qMdiToolbar:oWidget:isVisible()
       EXIT
 
    CASE __checkShowLeftToolbar_stateChanged__
-      IF ::oAC:qMdiToolbarL:oWidget:isVisible()
-         ::oAC:qMdiToolbarL:hide()
-      ELSE
+      IF p == 2
          ::oAC:qMdiToolbarL:show()
+      ELSE
+         ::oAC:qMdiToolbarL:hide()
       ENDIF
       ::oINI:lShowEditsLeftToolbar := ::oAC:qMdiToolbarL:oWidget:isVisible()
       EXIT
@@ -2279,7 +2310,7 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
    CASE __buttonDictDelete_clicked__
       p := ::oUI:listDictNames:currentRow()
       IF p >= 0 .AND. p < Len( ::oIde:aUserDict )
-         hb_ADel( ::oIde:aUserDict, p, .T. )
+         hb_ADel( ::oIde:aUserDict, p + 1, .T. )
          ::uiDictionaries()
          ::oUI:listDictNames:setCurrentRow( Min( Len( ::oIde:aUserDict ) - 1, p ) )
       ENDIF
@@ -2299,6 +2330,23 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
          ::oUI:listDictNames:setCurrentRow( Len( ::oIde:aUserDict ) - 1 )
       ENDIF
       EXIT
+   CASE __buttonIncludePathsDel_clicked__
+      p := ::oUI:listIncludePaths:currentRow()
+      IF p >= 0 .AND. p < Len( ::oINI:aIncludePaths )
+         hb_ADel( ::oINI:aIncludePaths, p + 1, .T. )
+         ::uiIncludePaths()
+         ::oUI:listIncludePaths:setCurrentRow( Min( Len( ::oINI:aIncludePaths ) - 1, p ) )
+      ENDIF
+      EXIT
+   CASE __buttonIncludePathsAdd_clicked__
+      cFile := hbide_fetchADir( ::oDlg, "Select an Include Path", ::cLastFileOpenPath )
+      IF ! Empty( cFile )
+         ::oIde:cLastFileOpenPath := cFile
+         AAdd( ::oINI:aIncludePaths, hbide_pathNormalized( hbide_pathAppendLastSlash( cFile ) ) )
+         ::uiIncludePaths()
+         ::oUI:listIncludePaths:setCurrentRow( Len( ::oINI:aIncludePaths ) - 1 )
+      ENDIF
+      EXIT
    ENDSWITCH
 
    RETURN Self
@@ -2315,6 +2363,21 @@ METHOD IdeSetup:uiDictionaries()
       ::oUI:listDictNames:addItem( oDict:cFilename )
    NEXT
    ::oUI:listDictNames:setCurrentRow( Max( nRow, 0 ) )
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeSetup:uiIncludePaths()
+   LOCAL cDict, nRow
+
+   nRow := ::oUI:listIncludePaths:currentRow()
+   ::oUI:listIncludePaths:clear()
+   ::oUI:listIncludePaths:setCurrentRow( -1 )
+   FOR EACH cDict IN ::oINI:aIncludePaths
+      ::oUI:listIncludePaths:addItem( cDict )
+   NEXT
+   ::oUI:listIncludePaths:setCurrentRow( Max( nRow, 0 ) )
 
    RETURN NIL
 

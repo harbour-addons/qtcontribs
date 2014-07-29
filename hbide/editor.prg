@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,8 @@
 #include "hbide.ch"
 #include "xbp.ch"
 #include "fileio.ch"
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
 
 /*----------------------------------------------------------------------*/
 
@@ -102,6 +104,8 @@ CLASS IdeEditsManager INHERIT IdeObject
    DATA   qFldsModel
 
    DATA   hEditingWords                           INIT {=>}
+   DATA   k_
+   DATA   hK                                      INIT {=>}
 
    METHOD new( oIde )
    METHOD create( oIde )
@@ -198,6 +202,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD qscintilla()
    METHOD setStyleSheet( nMode )
    METHOD updateCompleter()
+   METHOD updateCompleterByEditingWords( cWord )
    METHOD updateFieldsList( cAlias )
    METHOD getProto( cWord )
    METHOD alignAt()
@@ -213,6 +218,9 @@ CLASS IdeEditsManager INHERIT IdeObject
 /*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:new( oIde )
+
+   hb_HCaseMatch( ::hK, .F. )
+   hb_HKeepOrder( ::hK, .F. )
 
    ::oIde := oIde
 
@@ -234,6 +242,7 @@ METHOD IdeEditsManager:destroy()
       a_[ 2 ] := NIL
       a_:= NIL
    NEXT
+
    ::aActions     := NIL
    ::aProtos      := NIL
 
@@ -305,13 +314,71 @@ METHOD IdeEditsManager:create( oIde )
    /* Define code completer */
    ::oIde:qProtoList := QStringList()
    ::oIde:qCompModel := QStringListModel()
+   ::qCompModel      :  setStringList( ::qProtoList )
    ::oIde:qCompleter := QCompleter()
-   //
-   ::qCompleter:connect( "activated(QString)", {|p| ::execEvent( __qcompleter_activated__, p ) } )
+   WITH OBJECT ::qCompleter
+      :setWrapAround( .t. )
+      :setCaseSensitivity( Qt_CaseInsensitive )
+      :setModelSorting( QCompleter_CaseInsensitivelySortedModel )
+      :setModel( ::qCompModel )
+      :setCompletionMode( QCompleter_PopupCompletion )
+      :popup():setAlternatingRowColors( .t. )
+      :popup():setFont( QFont( "Courier New", 8 ) )
+      :popup():setMaximumWidth( 400 )
+      :connect( "activated(QString)", {|p| ::execEvent( __qcompleter_activated__, p ) } )
+   ENDWITH
 
    /* Define fields completer */
    ::qFldsStrList   := QStringList()
    ::qFldsModel     := QStringListModel()
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:updateCompleterByEditingWords( cWord )
+   LOCAL s
+
+   ::hK[ cWord ] := NIL
+
+   ::qProtoList:clear()
+   FOR EACH s IN ::hK
+      ::qProtoList:append( s:__enumKey() )
+   NEXT
+   ::qCompModel:setStringList( ::qProtoList )
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:updateCompleter()
+   LOCAL aP := {}, s, n, aProto
+   LOCAL lCompletionWithArgs := ::oINI:lCompletionWithArgs
+
+   AAdd( aP, ::oFN:getFunctionPrototypes() )
+   AAdd( aP, ::oHL:getFunctionPrototypes() )
+   AAdd( aP, hbide_getUserPrototypes()     )
+
+   FOR EACH aProto IN aP
+      FOR EACH s IN aProto
+         IF ! lCompletionWithArgs
+            IF ( n := at( "(", s ) ) == 0
+               IF ( n := at( " ", s ) ) > 0
+                  s := substr( s, 1, n - 1 )
+               ENDIF
+            ELSE
+               s := substr( s, 1, n - 1 )
+            ENDIF
+         ENDIF
+         ::hK[ alltrim( s ) ] := NIL
+      NEXT
+   NEXT
+
+   ::qProtoList:clear()
+   FOR EACH s IN ::hK
+      ::qProtoList:append( s:__enumKey() )
+   NEXT
+   ::qCompModel:setStringList( ::qProtoList )
 
    RETURN Self
 
@@ -330,7 +397,6 @@ METHOD IdeEditsManager:updateFieldsList( cAlias )
    LOCAL aFlds
 
    IF ! empty( cAlias ) .AND. ! empty( aFlds := ::oBM:oDbu:fetchFldsList( cAlias ) )
-
       asort( aFlds, , , {|e,f| lower( e ) < lower( f ) } )
 
       ::qFldsStrList:clear()
@@ -344,69 +410,7 @@ METHOD IdeEditsManager:updateFieldsList( cAlias )
       ::qCompleter:setModel( ::qCompModel )
 
    ENDIF
-
    RETURN .f.
-
-/*----------------------------------------------------------------------*/
-
-METHOD IdeEditsManager:updateCompleter()
-   LOCAL aFun, aHrb, aUsr, n, s, k_
-
-   /* Collection of prototypes can be extended to honor plugins and defined in "setup" */
-
-   aFun := ::oFN:getFunctionPrototypes()
-   aHrb := ::oHL:getFunctionPrototypes()
-   aUsr := hbide_getUserPrototypes()
-
-   ::qCompleter:disconnect( "activated(QString)" )
-
-   ::aProtos := {}
-   aeval( aHrb, {|e| aadd( ::aProtos, e ) } )
-   aeval( aFun, {|e| aadd( ::aProtos, e ) } )
-   aeval( aUsr, {|e| aadd( ::aProtos, e ) } )
-   // Current session words
-   FOR EACH s IN ::hEditingWords
-      AAdd( ::aProtos, s )
-   NEXT
-
-   k_:= {}
-   FOR EACH s IN ::aProtos
-      // s := alltrim( s )
-      IF ! ::oINI:lCompletionWithArgs
-         IF ( n := at( "(", s ) ) == 0
-            IF ( n := at( " ", s ) ) > 0
-               s := substr( s, 1, n - 1 )
-            ENDIF
-         ELSE
-            s := substr( s, 1, n - 1 )
-         ENDIF
-      ENDIF
-      s := alltrim( s )
-      IF ascan( k_, s ) == 0
-         aadd( k_, s )
-      ENDIF
-   NEXT
-   asort( k_, , , {|e,f| lower( e ) < lower( f ) } )
-
-   ::qProtoList:clear()
-
-   aeval( k_, {|e| ::qProtoList:append( e ) } )
-
-   ::qCompModel:setStringList( ::qProtoList )
-   //
-   ::qCompleter:setWrapAround( .t. )
-   ::qCompleter:setCaseSensitivity( Qt_CaseInsensitive )
-   ::qCompleter:setModelSorting( QCompleter_CaseInsensitivelySortedModel )
-   ::qCompleter:setModel( ::qCompModel )
-   ::qCompleter:setCompletionMode( QCompleter_PopupCompletion )
-   ::qCompleter:popup():setAlternatingRowColors( .t. )
-   ::qCompleter:popup():setFont( QFont( "Courier New", 8 ) )
-   ::qCompleter:popup():setMaximumWidth( 400 )
-// ::qCompleter:popup():setHorizontalScrollBarPolicy ( Qt_ScrollBarAsNeeded )
-
-   ::qCompleter:connect( "activated(QString)", {|p| ::execEvent( __qcompleter_activated__, p ) } )
-
-   RETURN Self
 
 /*----------------------------------------------------------------------*/
 
@@ -416,11 +420,11 @@ METHOD IdeEditsManager:getProto( cWord )
    cWord := upper( cWord )
    nLen := Len( cWord )
 
-   /* This can be rationalized */
-   IF ( n := ascan( ::aProtos, {|e| upper( left( e, nLen ) ) == cWord } ) ) > 0
-      RETURN ::aProtos[ n ]
-   ENDIF
-
+   FOR EACH n IN ::hK
+      IF Upper( Left( n:__enumKey(), nLen ) ) == cWord
+         RETURN n:__enumKey()
+      ENDIF
+   NEXT
    RETURN ""
 
 /*----------------------------------------------------------------------*/
@@ -434,7 +438,6 @@ METHOD IdeEditsManager:removeSourceInTree( cSourceFile )
          hb_adel( ::aProjData, n, .T. )
       ENDIF
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -879,6 +882,7 @@ METHOD IdeEditsManager:toggleCurrentLineHighlightMode()
 
 METHOD IdeEditsManager:toggleLineNumbers()
    LOCAL oEdit
+
    ::oIde:lLineNumbersVisible := ! ::lLineNumbersVisible
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:toggleLineNumbers()

@@ -352,6 +352,8 @@ CLASS HbIde
 
    DATA   oBMM /* Testing */
 
+   DATA   hHeaderFiles                            INIT {=>}
+
    METHOD new( aParams )
    METHOD create( aParams )
    METHOD destroy()
@@ -384,6 +386,7 @@ CLASS HbIde
    METHOD showCodeFregment( oXbp )
    METHOD setCodePage( cCodePage )
    METHOD showFragment( cCode, cTitle, oIcon )
+   METHOD showHeaderFile( cCode, cTitle, oIcon, lSave )
    METHOD printFragment( oPlainTextEdit )
    METHOD ideAlert( ... )                            INLINE Alert( ... )
 
@@ -397,6 +400,8 @@ METHOD HbIde:destroy()
 /*----------------------------------------------------------------------*/
 
 METHOD HbIde:new( aParams )
+
+   hb_HCaseMatch( ::hHeaderFiles, .F. )
 
    DEFAULT aParams TO ::aParams
    ::aParams := aParams
@@ -626,7 +631,7 @@ METHOD HbIde:create( aParams )
    qPixMap := NIL
 
    /* Load tags last tagged projects */
-   ::oFN:loadTags( ::oINI:aTaggedProjects )
+   ::oFN:loadTags( ::oINI:aTaggedProjects, .F. )
 
    /* Run Auto Scripts */
    hbide_execAutoScripts()
@@ -1413,6 +1418,48 @@ METHOD HbIde:showFragment( cCode, cTitle, oIcon )
                                  } )
       :show()
    ENDWITH
+
+   RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD HbIde:showHeaderFile( cCode, cTitle, oIcon, lSave )
+   LOCAL qWidget, qH
+
+   DEFAULT lSave TO .T.
+
+   IF ! hb_HHasKey( ::hHeaderFiles, cTitle ) .OR. Empty( ::hHeaderFiles[ cTitle ] )
+
+      WITH OBJECT qWidget := QPlainTextEdit( ::oDlg:oWidget )
+         ::hHeaderFiles[ cTitle ] := qWidget
+
+         :setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
+         :setWindowTitle( cTitle )
+         :setWindowIcon( oIcon )
+         :setWordWrapMode( QTextOption_NoWrap )
+         :setFont( QFont( "Courier New", 8 ) )
+         qH := ::oTH:setSyntaxHilighting( qWidget, "Evening Glamour", , .F. )
+         qH:hbSetInitialized( .T. )
+         :setPlainText( cCode )
+         :setGeometry( iif( Empty( ::qFuncFragmentWindowGeometry ), QRect( 500, 200, 300, 300 ), ::qFuncFragmentWindowGeometry:translated( 10,20 ) ) )
+         :connect( QEvent_Close   , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry(), qWidget:hide() } )
+         :connect( QEvent_Move    , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry() } )
+         :connect( QEvent_Resize  , {|| ::qFuncFragmentWindowGeometry := qWidget:geometry() } )
+         :connect( QEvent_KeyPress, {|oKeyEvent|
+                                       IF oKeyEvent:key() == Qt_Key_P .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+                                          ::printFragment( qWidget )
+                                       ENDIF
+                                       IF lSave .AND. oKeyEvent:key() == Qt_Key_S .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+                                          hb_MemoWrit( cTitle, qWidget:toPlainText() )
+                                       ENDIF
+                                       RETURN .F.
+                                    } )
+         :show()
+      ENDWITH
+   ELSE
+      ::hHeaderFiles[ cTitle ]:show()
+      ::hHeaderFiles[ cTitle ]:raise()
+   ENDIF
 
    RETURN Self
 

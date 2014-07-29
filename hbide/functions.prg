@@ -69,6 +69,8 @@
 #include "hbclass.ch"
 #include "xbp.ch"
 #include "hbqtgui.ch"
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
 
 /*----------------------------------------------------------------------*/
 
@@ -120,7 +122,7 @@ CLASS IdeFunctions INHERIT IdeObject
    METHOD jumpToFunction( cWord )
    METHOD positionToFunction( cWord, lShowTip )
    METHOD buildTags()
-   METHOD loadTags( aProjects )
+   METHOD loadTags( aProjects, lPopulateTable )
    METHOD listProjects()
    METHOD clearProjects()
    METHOD getMarkedProjects()
@@ -186,7 +188,7 @@ METHOD IdeFunctions:execEvent( nEvent, p )
       EXIT
    CASE __buttonLoad_clicked__
       ::oUI:listProjects:hide()
-      ::loadTags()
+      ::loadTags( , .T. )
       EXIT
    CASE __buttonTag_clicked__
       ::oUI:listProjects:hide()
@@ -246,18 +248,16 @@ METHOD IdeFunctions:buildHeader()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:destroy()
+#if 0
    LOCAL qitm
 
    IF !empty( ::oUI )
       ::clearProjects()
-
       FOR EACH qItm IN ::aHdr
          qItm := NIL
       NEXT
       ::aHdr := {}
-
       ::clear( .t. )
-
       ::oUI:destroy()
    ENDIF
 
@@ -271,7 +271,7 @@ METHOD IdeFunctions:destroy()
    ::nPPr         := NIL
    ::nPSr         := NIL
    ::aProjList    := NIL
-
+#endif
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -296,19 +296,15 @@ METHOD IdeFunctions:clear( lHdrAlso )
    ELSE
       ::oUI:tableFuncList:clearContents()
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:show()
-
    IF ::isNotSetYet
       ::isNotSetYet := .f.
-
       ::oFunctionsDock:oWidget:setWidget( ::oUI:oWidget )
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -327,11 +323,9 @@ METHOD IdeFunctions:positionToFunction( cWord, lShowTip )
 
          IF lShowTip
             // TODO: where
-
          ENDIF
       ENDIF
    ENDIF
-
    RETURN cProto
 
 /*----------------------------------------------------------------------*/
@@ -449,12 +443,13 @@ METHOD IdeFunctions:enableControls( lEnable )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeFunctions:loadTags( aProjects )
+METHOD IdeFunctions:loadTags( aProjects, lPopulateTable )
    LOCAL cProjectTitle, cProjFile, cTagFile, aTags, n, a_
    LOCAL lPopulate := .f.
    LOCAL qApp := QApplication()
 
-   DEFAULT aProjects TO ::getMarkedProjects()
+   DEFAULT aProjects      TO ::getMarkedProjects()
+   DEFAULT lPopulateTable TO .F.
 
    IF empty( aProjects )
       RETURN Self
@@ -466,6 +461,7 @@ METHOD IdeFunctions:loadTags( aProjects )
 
       FOR EACH cProjectTitle IN a_
          cProjFile := ::oPM:getProjectFileNameFromTitle( cProjectTitle )
+
          IF ! empty( cProjFile ) .AND. hb_fileExists( cProjFile )
             cTagFile := hb_FNameExtSet( cProjFile, ".tag" )
             IF hb_fileExists( cTagFile )
@@ -489,14 +485,14 @@ METHOD IdeFunctions:loadTags( aProjects )
 
       IF lPopulate
          ::consolidateList()
+      ENDIF
+      IF lPopulateTable
          ::populateTable()
       ENDIF
 
       ::enableControls( .t. )
    ENDIF
-
    ::clearProjects()
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -580,11 +576,9 @@ METHOD IdeFunctions:tagProject( cProjectTitle, lGUI )
       IF lGUI
          ::consolidateList()
          ::populateTable()
-
          ::enableControls( .t. )
       ENDIF
    ENDIF
-
    RETURN cProjFile
 
 //----------------------------------------------------------------------//
@@ -608,7 +602,8 @@ METHOD IdeFunctions:consolidateList()
                  cDL + ;
                  pad( a_[ 4 ], ::nPSr )
 
-            aadd( ::aList, { a_[ 1 ], a_[ 5 ], s } )
+//          aadd( ::aList, { a_[ 1 ], a_[ 5 ], s } )
+            aadd( ::aList, { a_[ 1 ], AllTrim( a_[ 5 ] ), s } )
          NEXT
       ENDIF
    NEXT
@@ -633,10 +628,10 @@ METHOD IdeFunctions:populateTable()
 
    n := 0
    FOR EACH a_ IN ::aList
-      qItm := QTableWidgetItem()
-
-      qItm:setText( a_[ 3 ] )
-      qItm:setTooltip( a_[ 2 ] )
+      WITH OBJECT qItm := QTableWidgetItem()
+         :setText( a_[ 3 ] )
+         :setTooltip( a_[ 2 ] )
+      ENDWITH
       oTbl:setItem( n, 0, qItm )
       oTbl:setRowHeight( n, 16 )
 
@@ -658,7 +653,8 @@ METHOD IdeFunctions:getFunctionPrototypes()
    LOCAL aProto := {}, a_
 
    FOR EACH a_ IN ::aList
-      aadd( aProto, alltrim( a_[ 2 ] ) )
+//    aadd( aProto, alltrim( a_[ 2 ] ) )
+      aadd( aProto, a_[ 2 ] )
    NEXT
 
    RETURN aProto

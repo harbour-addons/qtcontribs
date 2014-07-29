@@ -256,6 +256,7 @@ CLASS IdeEdit INHERIT IdeObject
    METHOD stringify()
    METHOD execContextMenu( p )
    METHOD execToolsBox( p )
+   METHOD openHeaderFile()
 
    ENDCLASS
 
@@ -710,7 +711,9 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
       SWITCH p
       CASE QEvent_MouseButtonDblClick
       // ::lCopyWhenDblClicked := .t.
-         ::clickFuncHelp()
+         IF ! ::openHeaderFile()
+            ::clickFuncHelp()
+         ENDIF
          EXIT
       CASE 21000                            /* Sends Block Info { t,l,b,r,mode,state } hbGetBlockInfo() */
          ::aSelectionInfo := p1
@@ -2446,8 +2449,6 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
 
    IF ::oEditor:lIsPRG
       qCursor:joinPreviousEditBlock()
-   // qCursor:beginEditBlock()   /* Why this misbehaves - stops TO undo previous stacks */
-
       IF ! hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
 
          nPostn := qCursor:position()
@@ -2492,11 +2493,13 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
             /* Group I operations */
             IF cPWord == "." .AND. cPPWord $ ::hLogicals     /* ALWAYS */
                IF ! ::oINI:lSupressHbKWordsToUpper
-                  qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
-                  qCursor:select( QTextCursor_WordUnderCursor )
-                  qCursor:removeSelectedText()
-                  qCursor:insertText( upper( cPPWord ) )
-                  qCursor:setPosition( nPostn )
+                  WITH OBJECT qCursor
+                     :movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
+                     :select( QTextCursor_WordUnderCursor )
+                     :removeSelectedText()
+                     :insertText( upper( cPPWord ) )
+                     :setPosition( nPostn )
+                  ENDWITH
                ENDIF
 
             ELSEIF cPWord == ":=" .AND. cCWord == "=" .AND. nAdded == 1
@@ -2531,11 +2534,13 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
 
             ELSEIF cCWord == " " .AND. cPPWord != "#" .AND. hbide_isHarbourKeyword( cPWord )
                IF ! ::oINI:lSupressHbKWordsToUpper
-                  qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
-                  qCursor:select( QTextCursor_WordUnderCursor )
-                  qCursor:removeSelectedText()
-                  qCursor:insertText( upper( cPWord ) )
-                  qCursor:setPosition( nPostn )
+                  WITH OBJECT qCursor
+                     :movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
+                     :select( QTextCursor_WordUnderCursor )
+                     :removeSelectedText()
+                     :insertText( upper( cPWord ) )
+                     :setPosition( nPostn )
+                  ENDWITH
                ENDIF
 
             ENDIF
@@ -2544,7 +2549,8 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
                IF Len( cPWord ) > 3
                   IF ! cPWord $ ::oEM:hEditingWords
                      ::oEM:hEditingWords[ cPWord ] := cPWord
-                     ::oEM:updateCompleter()
+                     //::oEM:updateCompleter()
+                     ::oEM:updateCompleterByEditingWords( cPWord )
                   ENDIF
                ENDIF
 
@@ -2552,7 +2558,8 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
                IF Len( cPPWord ) > 3
                   IF ! cPPWord $ ::oEM:hEditingWords
                      ::oEM:hEditingWords[ cPPWord ] := cPPWord
-                     ::oEM:updateCompleter()
+                     //::oEM:updateCompleter()
+                     ::oEM:updateCompleterByEditingWords( cPPWord )
                   ENDIF
                ENDIF
 
@@ -2560,31 +2567,39 @@ METHOD IdeEdit:reformatLine( nPos, nDeleted, nAdded )
 
             /* Group II operations */
             IF empty( cPPWord ) .AND. cCWord == " "
-               IF hbide_isStartingKeyword( cPWord, ::oIde )                                        /* FUNCTION PROCEDURE CLASS */
-                  qCursor:movePosition( QTextCursor_StartOfBlock )
-                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
-                  qCursor:removeSelectedText()
-                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
+               IF hbide_isStartingKeyword( cPWord, ::oIde )
+                  WITH OBJECT qCursor                                       /* FUNCTION PROCEDURE CLASS */
+                     :movePosition( QTextCursor_StartOfBlock )
+                     :movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
+                     :removeSelectedText()
+                     :movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
+                  ENDWITH
 
                ELSEIF hbide_isMinimumIndentableKeyword( cPWord, ::oIde ) .AND. ::oINI:lAutoIndent  /* LOCAL STATIC DEFAULT PRIVATE PUBLIC ENDCLASS RETURN */
-                  qCursor:movePosition( QTextCursor_StartOfBlock )
-                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
-                  qCursor:removeSelectedText()
-                  qCursor:insertText( space( ::nTabSpaces ) )
-                  qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
+                  WITH OBJECT qCursor
+                     :movePosition( QTextCursor_StartOfBlock )
+                     :movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
+                     :removeSelectedText()
+                     :insertText( space( ::nTabSpaces ) )
+                     :movePosition( QTextCursor_NextCharacter, QTextCursor_MoveAnchor, Len( cPWord ) + 1 )
+                  ENDWITH
 
                ELSEIF hbide_isIndentableKeyword( cPWord, ::oIde ) .AND. ::oINI:lAutoIndent         /* IF SWITCH FOR DO */
                   IF nCPrev < ::nTabSpaces
                      nOff := ::nTabSpaces - nCPrev
-                     qCursor:movePosition( QTextCursor_StartOfBlock )
-                     qCursor:insertText( space( nOff ) )
-                     qCursor:setPosition( nPostn + nOff )
+                     WITH OBJECT qCursor
+                        :movePosition( QTextCursor_StartOfBlock )
+                        :insertText( space( nOff ) )
+                        :setPosition( nPostn + nOff )
+                     ENDWITH
 
                   ELSEIF ( nOff := nCPrev % ::nTabSpaces ) > 0            /* We always go back to the previous indent */
-                     qCursor:movePosition( QTextCursor_StartOfBlock )
-                     qCursor:movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nOff )
-                     qCursor:removeSelectedText()
-                     qCursor:setPosition( nPostn - nOff )
+                     WITH OBJECT qCursor
+                        :movePosition( QTextCursor_StartOfBlock )
+                        :movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nOff )
+                        :removeSelectedText()
+                        :setPosition( nPostn - nOff )
+                     ENDWITH
 
                   ENDIF
                ENDIF
@@ -2682,12 +2697,13 @@ FUNCTION hbide_getFrontSpacesAndWordsByCursor( qCursor, /*@*/aWords )
       RETURN 0
 
    ELSE
-      DO WHILE SubStr( cLine, ++nStart, 1 ) == " " ; ENDDO
+      DO WHILE SubStr( cLine, ++nStart, 1 ) == " " ; QApplication():processEvents() ; ENDDO
       nStart--
 
       qCursor:movePosition( QTextCursor_StartOfBlock )
       qCursor:movePosition( QTextCursor_StartOfWord )
       DO WHILE .T.
+         QApplication():processEvents()
          IF ! qCursor:movePosition( QTextCursor_EndOfWord, QTextCursor_KeepAnchor )
             qCursor:movePosition( QTextCursor_NextWord )
          ENDIF
@@ -2932,6 +2948,7 @@ STATIC FUNCTION hbide_appendIf( qCursor, nIndent, nCurPos, nTabSpaces, lElse, lE
                   EXIT
                ENDIF
                qCursor:insertText( Space( nTabSpaces ) )
+               QApplication():processEvents()
             ENDDO
          ENDIF
       ENDIF
@@ -3059,6 +3076,40 @@ METHOD IdeEdit:handleCurrentIndent()
    ENDIF
 
    RETURN Self
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeEdit:openHeaderFile()
+   LOCAL aCord, nT, nL, nB, nR, nW, cLine, cExt, cNext, cHeader, cPath
+   LOCAL lOpened := .F.
+
+   IF ! Empty( ::oINI:aIncludePaths )
+
+      aCord := ::aSelectionInfo
+      hbide_normalizeRect( aCord, @nT, @nL, @nB, @nR )
+      nW := nR - nL
+
+      IF nW >= 0 .AND. nT == nB
+         cLine := ::getLine( nT + 1 )
+         IF SubStr( cLine, nL, 1 ) $ ['"]
+            cExt := SubStr( cLine, nR + 1, 3 )
+            cNext := SubStr( cLine, nR + 1 + 3, 1 )
+            IF Lower( cExt ) == ".ch" .AND. cNext $ ['"]
+               cHeader := SubStr( cLine, nL + 1, nW ) + cExt
+            ELSEIF Lower( Left( cExt, 2 ) ) == ".h" .AND. Right( cExt, 1 ) $ ['"]
+               cHeader := SubStr( cLine, nL + 1, nW ) + Left( cExt, 2 )
+            ENDIF
+            FOR EACH cPath IN ::oINI:aIncludePaths
+               IF hb_FileExists( hbide_pathToOSPath( cPath + cHeader ) )
+                  ::oIde:showHeaderFile( hb_MemoRead( cPath + cHeader ), cPath + cHeader, QIcon( hbide_image( hbide_imageForFileType( cExt ) ) ), .T. )
+                  lOpened := .T.
+                  EXIT
+               ENDIF
+            NEXT
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN lOpened
 
 /*----------------------------------------------------------------------*/
 

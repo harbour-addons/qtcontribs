@@ -16,6 +16,60 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-29 00:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r322)
+  * hbqt/qtgui/hbqt_flickcharm.cpp
+    % Pacified recently introduced warnings.
+
+  * hbide/setup.ui
+    + Added: <HbIDE Setup><Projects><Include Paths to Open Header Files> 
+       Groupbox containing a listbox and add,delete buttons.
+
+  * hbide/actions.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/functions.prg
+  * hbide/main.prg
+  * hbide/saveload.prg
+    + Implemented: Opening of #included files directly from within the 
+       editing instance. The file is opened in a always-on-top widget 
+       and is supported by "Evening Glamour" theme. The window has two 
+       actions only besides standard editing menu (cut|copy|paste):
+        1. CTRL+P  Print Preview
+        2. CTRL_S  Save
+
+    ; HOW TO CONFIGURE
+       1. Open <Setup><HbIDE Setup><Projects>.
+       2. In <Include Paths to Open Header Files> groupbox, click on <Add>.
+       3. Select a folder containing header files with .ch and/or .h ext.
+       4. Add as many folders you might have for your projects.
+       5. Keep in mind the order of the provided folders. A header 
+          is searched sequentially and is opened from first location 
+          it is found.
+       6. Once first editing window is opened, resize an position where 
+          it does not hide editing tabbed area of HbIDE. Next window 
+          window will inherit the size and position of previous window.
+          You can close it when not required. Next invokation of same 
+          header will show the closed instance exactly on same position 
+          where it was before. Note that this info is not saved with 
+          HbIDE settings. You will rearrange the first invoked window 
+          again.
+       7. Click <Close> when finished.
+
+    ; HOW TO INVOKE
+       1. Double-Click on the filename part of the header line.
+          #include "hbqtgui.ch" - click somewhere inside "hbqtgui".
+       2. See a tiny window appearing on top of HbIDE interface.
+          Rearrange and resize per desktop territory. 
+
+          That's it.   
+
+    ; This is a very useful and productive feature from a developers 
+      point-of-view. At times I ever wished to have this feature to save 
+      many actions to search where the header is deposited.
+
+    + Enhanced: how keywords in dictionaries were being loaded and managed.
+       This has improved the opening of files and editing flow many-fold.
+
 2014-07-27 20:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r321)
   * hbqtwidgets/hbqtdbu.prg
     ! Fixed: a bug being result of the latest developments in HbQt.

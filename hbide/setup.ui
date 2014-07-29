@@ -2112,6 +2112,9 @@
       <property name="title">
        <string> Auto case convertion ?</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <widget class="QRadioButton" name="radioDictToLower">
        <property name="geometry">
         <rect>
@@ -2189,6 +2192,9 @@
       </property>
       <property name="title">
        <string> Apply to </string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <widget class="QCheckBox" name="checkDictToTxt">
        <property name="geometry">
@@ -2306,6 +2312,9 @@
       </property>
       <property name="title">
        <string> Colors / Fonts </string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <widget class="QCheckBox" name="checkDictCaseSens">
        <property name="geometry">
@@ -3181,6 +3190,9 @@
       <property name="title">
        <string>Empty Lines: before</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <widget class="QLabel" name="label_50">
        <property name="geometry">
         <rect>
@@ -3286,6 +3298,9 @@
       <property name="title">
        <string>Number of Indent Spaces</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <widget class="QLabel" name="label_41">
        <property name="geometry">
         <rect>
@@ -3367,6 +3382,9 @@
       </property>
       <property name="title">
        <string>Case Conversion</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <widget class="QLabel" name="label_44">
        <property name="geometry">
@@ -3496,6 +3514,9 @@
       <property name="title">
        <string>General</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
       <widget class="QLabel" name="label_49">
        <property name="geometry">
         <rect>
@@ -3577,6 +3598,9 @@
       </property>
       <property name="title">
        <string>Convert</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
       <widget class="QCheckBox" name="checkFmtConNotX">
        <property name="geometry">
@@ -3756,7 +3780,7 @@
       <property name="geometry">
        <rect>
         <x>20</x>
-        <y>20</y>
+        <y>12</y>
         <width>171</width>
         <height>17</height>
        </rect>
@@ -3764,6 +3788,64 @@
       <property name="text">
        <string>Extended &lt;Build and Launch&gt;</string>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="groupIncludePaths">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>68</y>
+        <width>331</width>
+        <height>137</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Include Paths Searched to Open Header Files</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <widget class="QListWidget" name="listIncludePaths">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>225</width>
+         <height>109</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnIncludePathsAdd">
+       <property name="geometry">
+        <rect>
+         <x>244</x>
+         <y>20</y>
+         <width>75</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnIncludePathsDel">
+       <property name="geometry">
+        <rect>
+         <x>244</x>
+         <y>50</y>
+         <width>75</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
      </widget>
     </widget>
    </widget>

@@ -138,7 +138,6 @@ struct FlickData {
       AutoScrollAcceleration // Scrolling automatically but a finger is on the screen
    } State;
    State state;
-   QEvent::Type lastEvent;
    QWidget *widget;
    QPoint pressPos;
    QPoint lastPos;
@@ -148,6 +147,7 @@ struct FlickData {
    QTime accelerationTimer;
    bool lastPosValid:1;
    bool waitingAcceleration:1;
+   QEvent::Type lastEvent;
 
    FlickData()
       : lastPosValid(false)
