@@ -396,20 +396,21 @@ METHOD IdeEditsManager:setStyleSheet( nMode )
 METHOD IdeEditsManager:updateFieldsList( cAlias )
    LOCAL aFlds
 
-   IF ! empty( cAlias ) .AND. ! empty( aFlds := ::oBM:oDbu:fetchFldsList( cAlias ) )
-      asort( aFlds, , , {|e,f| lower( e ) < lower( f ) } )
+   IF ! empty( cAlias )
+      IF ! empty( aFlds := ::oBM:oDbu:fetchFldsList( cAlias ) )
+         asort( aFlds, , , {|e,f| lower( e ) < lower( f ) } )
 
-      ::qFldsStrList:clear()
-      aeval( aFlds, {|e| ::qFldsStrList:append( e ) } )
-      ::qFldsModel:setStringList( ::qFldsStrList )
+         ::qFldsStrList:clear()
+         aeval( aFlds, {|e| ::qFldsStrList:append( e ) } )
+         ::qFldsModel:setStringList( ::qFldsStrList )
 
-      ::qCompleter:setModel( ::qFldsModel )
+         ::qCompleter:setModel( ::qFldsModel )
 
-      RETURN .t.
-   ELSE
-      ::qCompleter:setModel( ::qCompModel )
-
+         RETURN .t.
+      ENDIF
    ENDIF
+   ::qCompleter:setModel( ::qCompModel )
+
    RETURN .f.
 
 /*----------------------------------------------------------------------*/

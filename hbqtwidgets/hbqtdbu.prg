@@ -301,6 +301,7 @@ CLASS HbQtDBU
    DATA   cWrkEnvironment
    METHOD restEnvironment( cFile )
    METHOD saveEnvironment( cFile )
+   METHOD fetchFldsList( cAlias )
 
    /* END */
 
@@ -377,7 +378,6 @@ PROTECTED:
    METHOD linkTables()
    METHOD manageLinkTree( nMode, p, p1 )
    METHOD showTablesTree()
-   METHOD fetchFldsList( cAlias )
    METHOD getBrowserByAlias( cAlias )
 
    /* Bring functionality on application level keeping defaults intact */
