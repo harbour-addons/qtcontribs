@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-07-31 09:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r325)
+  * hbqt/qtgui/qth/QStandardItem.qth
+  * hbqt/qtgui/qth/QStandardItemModel.qth
+    ! Fixed: constructors. 
+       Pointed by Luigi, thanks.
+
 2014-07-29 14:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r324)
   * hbide/editor.prg
   * hbqtwidgets/hbqtdbu.prg

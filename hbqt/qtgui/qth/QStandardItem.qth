@@ -43,6 +43,14 @@ HB_FUNC( QT_QSTANDARDITEM )
       __HB_RETPTRGC__( new QStandardItem( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
       hb_strfree( pText01 );
    }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QStandardItem( hb_parni( 1 ), hb_parni( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QStandardItem( hb_parni( 1 ) ) );
+   }
    else
    {   
       __HB_RETPTRGC__( new QStandardItem() );
