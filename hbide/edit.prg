@@ -3099,13 +3099,15 @@ METHOD IdeEdit:openHeaderFile()
             ELSEIF Lower( Left( cExt, 2 ) ) == ".h" .AND. Right( cExt, 1 ) $ ['"]
                cHeader := SubStr( cLine, nL + 1, nW ) + Left( cExt, 2 )
             ENDIF
-            FOR EACH cPath IN ::oINI:aIncludePaths
-               IF hb_FileExists( hbide_pathToOSPath( cPath + cHeader ) )
-                  ::oIde:showHeaderFile( hb_MemoRead( cPath + cHeader ), cPath + cHeader, QIcon( hbide_image( hbide_imageForFileType( cExt ) ) ), .T. )
-                  lOpened := .T.
-                  EXIT
-               ENDIF
-            NEXT
+            IF ! Empty( cHeader )
+               FOR EACH cPath IN ::oINI:aIncludePaths
+                  IF hb_FileExists( hbide_pathToOSPath( cPath + cHeader ) )
+                     ::oIde:showHeaderFile( hb_MemoRead( cPath + cHeader ), cPath + cHeader, QIcon( hbide_image( hbide_imageForFileType( cExt ) ) ), .T. )
+                     lOpened := .T.
+                     EXIT
+                  ENDIF
+               NEXT
+            ENDIF
          ENDIF
       ENDIF
    ENDIF

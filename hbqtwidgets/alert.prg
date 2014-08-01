@@ -58,7 +58,7 @@
 
 
 FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oParent )
-   LOCAL cMessage, aOptionsOK, cOption, nEval, cColorHigh
+   LOCAL cMessage, aOptionsOK, cOption, nEval, cColorHigh, xTmp
 
    IF PCount() == 0
       RETURN NIL
@@ -83,8 +83,14 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oPare
       cColorNorm := "W+/R" // first pair color (Box line and Text)
       cColorHigh := "W+/B" // second pair color (Options buttons)
    ELSE
-      cColorHigh := StrTran( StrTran( iif( At( "/", cColorNorm ) == 0, "N", SubStr( cColorNorm, At( "/", cColorNorm ) + 1 ) ) + "/" + ;
-         iif( At( "/", cColorNorm ) == 0, cColorNorm, Left( cColorNorm, At( "/", cColorNorm ) - 1 ) ), "+", "" ), "*", "" )
+      IF "," $ cColorNorm
+         xTmp := SubStr( cColorNorm, 1, At( ",", cColorNorm ) - 1 )
+         cColorHigh := SubStr( cColorNorm, At( ",", cColorNorm ) + 1 )
+         cColorNorm := xTmp
+      ELSE
+         cColorHigh := StrTran( StrTran( iif( At( "/", cColorNorm ) == 0, "N", SubStr( cColorNorm, At( "/", cColorNorm ) + 1 ) ) + "/" + ;
+            iif( At( "/", cColorNorm ) == 0, cColorNorm, Left( cColorNorm, At( "/", cColorNorm ) - 1 ) ), "+", "" ), "*", "" )
+      ENDIF
    ENDIF
 
    aOptionsOK := {}

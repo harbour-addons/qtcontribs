@@ -16,6 +16,30 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-01 07:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r326)
+  * hbide/actions.prg
+    ! Attempted: HbIDE toolbars to have uniform size on any device.
+       Reported by Massimo, thanks. Please respond after recompile.
+
+  * hbide/edit.prg
+    ! Fixed: a regression where double clicking on quoted text was 
+       generating RTE.
+
+  * hbide/editor.prg
+    % Try to apply re-highlighting if theme is changed, but no success so far.
+
+  * hbide/main.prg
+    % Minor.
+
+  * hbide/themes.prg
+    ! Fixed: regression where applying a new theme was GPFfing.
+       Reported by with proc trail by Juan, thanks.
+
+  * hbqtwidgets/alert.prg
+    % Changed: third parameter <cColorNorm> now accepts color string with 
+       normal and highlighted parts like : "W+/R,W/N". The second part is 
+       used to draw the buttons. It gives Alert() a modern look and feel.
+
 2014-07-31 09:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r325)
   * hbqt/qtgui/qth/QStandardItem.qth
   * hbqt/qtgui/qth/QStandardItemModel.qth

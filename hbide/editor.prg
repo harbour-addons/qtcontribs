@@ -2080,7 +2080,8 @@ METHOD IdeEditor:applyTheme( cTheme )
 
       IF ::oTH:contains( cTheme )
          ::cTheme := cTheme
-         ::qHiliter := ::oTH:SetSyntaxHilighting( ::qEdit, @::cTheme )
+         ::qHiliter := ::oTH:setSyntaxHilighting( ::qEdit, @::cTheme )
+         ::qHiliter:rehighlight()
       ENDIF
    ENDIF
    RETURN Self

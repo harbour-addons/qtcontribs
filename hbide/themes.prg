@@ -113,6 +113,8 @@ CLASS IdeThemes INHERIT IdeObject
 
    VAR    oSL
    VAR    cSelTheme
+   VAR    oStrList
+   VAR    oStrModel
 
    METHOD new( oIde, cThemesFile )
    METHOD create( oIde, cThemesFile )
@@ -744,27 +746,30 @@ METHOD IdeThemes:updateAttribute( nAttr, iState )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:selectTheme()
-   LOCAL oStrList, oStrModel, a_, nDone
+   LOCAL a_, nDone
 
    IF empty( ::oSL )
       ::oSL := hbide_getUI( "selectionlist", ::oIde:oDlg:oWidget )
 
       ::oSL:setWindowTitle( "Available Themes" )
+      ::oSL             :connect( QEvent_Close                , {|| ::oSL:hide()               } )
 
       ::oSL:listOptions :connect( "doubleClicked(QModelIndex)", {|p| ::selectThemeProc( 1, p ) } )
       ::oSL:buttonOk    :connect( "clicked()"                 , {|p| ::selectThemeProc( 2, p ) } )
       ::oSL:buttonCancel:connect( "clicked()"                 , {|p| ::selectThemeProc( 3, p ) } )
+
+      ::oStrList := QStringList()
+      ::oStrModel := QStringListModel()
+      ::oStrModel:setStringList( ::oStrList )
+
+      ::oSL:listOptions:setModel( ::oStrModel )
    ENDIF
 
-   oStrList := QStringList()
+   ::oStrList:clear()
    FOR EACH a_ IN ::aThemes
-      oStrList:append( a_[ 1 ] )
+      ::oStrList:append( a_[ 1 ] )
    NEXT
-
-   oStrModel := QStringListModel()
-   oStrModel:setStringList( oStrList )
-
-   ::oSL:listOptions:setModel( oStrModel )
+   ::oStrModel:setStringList( ::oStrList )
 
    nDone := ::oSL:exec()
 
@@ -992,7 +997,7 @@ STATIC FUNCTION GetSource()
    LOCAL s := ""
    LOCAL txt_:= {}
 
-   aadd( txt_, '/* Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>              ' )
+   aadd( txt_, '/* Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>              ' )
    aadd( txt_, ' *                                                                         ' )
    aadd( txt_, ' * This program is free software; you can redistribute it and/or modify    ' )
    aadd( txt_, '*/                                                                         ' )

@@ -1286,8 +1286,8 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
          aadd( aPops, { aSub, "Select an environment" } )
       ENDIF
       aadd( aPops, { "" } )
-      aadd( aPops, { ::oAC:getAction( "Dictionary"      ), {|v| v := ::oFN:tagProject( ::aProjData[ n, TRE_ORIGINAL ], .F. ), ;
-                                                                          MsgBox( iif( Empty( v ), "Not Succeeded", v ), "Dictionary Creation" ) } } )
+      aadd( aPops, { ::oAC:getAction( "Dictionary"      ), {|v| v := ::oFN:tagProject( ::aProjData[ n, TRE_ORIGINAL ], .F., .F. ), ;
+                                                                MsgBox( iif( Empty( v ), "Not Succeeded", v ), "Dictionary Creation" ) } } )
 
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
 

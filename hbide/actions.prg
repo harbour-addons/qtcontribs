@@ -72,7 +72,9 @@
 
 /*----------------------------------------------------------------------*/
 
-#define _T( x )  ( mnuNormalizeItem( x ) )
+#define P_XX( n )                                 ( Int( QApplication():primaryScreen():logicalDotsPerInchY() * n / 96 ) )
+
+#define _T( x )                                   ( mnuNormalizeItem( x ) )
 
 #define __buttonViewTabbed_clicked__              2007
 #define __buttonViewOrganized_clicked__           2009
@@ -1227,7 +1229,7 @@ METHOD IdeActions:buildMdiToolbarLeft()
 
    ::qMdiToolbarL := HbqToolbar():new()
    ::qMdiToolbarL:orientation := Qt_Vertical
-   ::qMdiToolbarL:size := QSize(  val( ::oINI:cToolbarSize ), val( ::oINI:cToolbarSize ) )
+   ::qMdiToolbarL:size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
    ::qMdiToolbarL:create( "EditsManager_Left_Toolbar" )
    ::qMdiToolbarL:setWindowTitle( "Editing Area's Left" )
    ::qMdiToolbarL:setObjectName( "ToolbarEditingAreaLeft" )
@@ -1278,7 +1280,7 @@ METHOD IdeActions:buildMdiToolbar()
 
    ::qMdiToolbar := HbqToolbar():new()
    ::qMdiToolbar:orientation := Qt_Horizontal
-   ::qMdiToolbar:size := QSize(  val( ::oINI:cToolbarSize ), val( ::oINI:cToolbarSize ) )
+   ::qMdiToolbar:size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
    ::qMdiToolbar:create( "EditsManager_Top_Toolbar" )
    ::qMdiToolbar:setStyleSheet( GetStyleSheet( "QToolBar", ::nAnimantionMode ) )
    ::qMdiToolbar:setObjectName( "ToolbarEditingAreaTop" )
@@ -1335,7 +1337,7 @@ METHOD IdeActions:buildToolbarSelectedText()
 
    WITH OBJECT ::qSelToolbar := HbqToolbar():new( "ToolbarSelectedText", ::oDlg:oWidget )
       :orientation := Qt_Horizontal
-      :size := QSize(  val( ::oINI:cToolbarSize ), val( ::oINI:cToolbarSize ) )
+      :size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
       :create( "SelectedText_Toolbar" )
       :setObjectName( "ToolbarSelectedText" )
       :setWindowTitle( "Actions on Selected Text" )
