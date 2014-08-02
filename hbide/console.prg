@@ -77,6 +77,7 @@
 /*----------------------------------------------------------------------*/
 
 THREAD STATIC s_vid_stk := ""
+THREAD STATIC SayList := {}
 
 /*----------------------------------------------------------------------*/
 
@@ -464,7 +465,7 @@ METHOD hbCUIEditor:scrLoad( lAsk )
    LOCAL scr_:={}
 
    IF ::lEdited
-      IF alert( "Screen has been edited, save ?", { "Yes","No" } ) == 1
+      IF HbQtAlert( "Screen has been edited, save ?", { "Yes","No" } ) == 1
          ::scrSave( .f. )
       ENDIF
    ENDIF
@@ -1050,7 +1051,7 @@ METHOD hbCUIEditor:operate()
       setCursor( iif( readInsert(), 2, 1 ) )
 
       DO WHILE .t.
-         ::nLastKey := inkey( 0, INKEY_ALL + HB_INKEY_GTEVENT )
+         ::nLastKey := Inkey( NIL, INKEY_ALL + HB_INKEY_GTEVENT )
          qApp:processEvents()
          IF ::nLastKey != 0 .OR. ::nLastKey != K_MOUSEMOVE
             EXIT
@@ -1058,7 +1059,7 @@ METHOD hbCUIEditor:operate()
       ENDDO
 
       DO CASE
-      CASE ::lGraphics .AND. ascan( grf_,::nLastKey ) > 0
+      CASE ::lGraphics .AND. ascan( grf_, ::nLastKey ) > 0
          //processkey()
       CASE ::scrMouse()
 #IF 0
@@ -1069,9 +1070,9 @@ METHOD hbCUIEditor:operate()
 #ENDIF
       /*  Save Report */
       CASE ::nLastKey == K_ESC
-         IF alert( "Do you want to exit ?", { "Yes","No" } ) == 1
+         IF HbQtAlert( "Do you want to exit ?", { "Yes","No" } ) == 1
             IF ::lEdited
-               IF alert( "Screen has been edited, do you want to save ?", { "Yes","No" } ) == 1
+               IF HbQtAlert( "Screen has been edited, do you want to save ?", { "Yes","No" } ) == 1
                   ::scrSave()
                ENDIF
             ENDIF
@@ -1672,7 +1673,7 @@ METHOD hbCUIEditor:scrOrdGets()
       ::scrMsg()
 
       IF Len( n_ ) != len( t_ )
-         alert( "Must ORDER every field !" )
+         HbQtAlert( "Must ORDER every field !" )
          RETURN Self
       ENDIF
       FOR EACH n IN n_

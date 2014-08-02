@@ -95,11 +95,11 @@
 CLASS IdeEditsManager INHERIT IdeObject
 
    DATA   qContextMenu
+   DATA   qThemesSub
    DATA   qContextSub
    DATA   qSrcControlSub
    DATA   aActions                                INIT  {}
    DATA   aProtos                                 INIT  {}
-
    DATA   qFldsStrList
    DATA   qFldsModel
 
@@ -260,7 +260,7 @@ METHOD IdeEditsManager:destroy()
 /*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:create( oIde )
-   LOCAL qAct
+   LOCAL qAct, aTheme, aAct := {}
 
    DEFAULT oIde TO ::oIde
 
@@ -283,7 +283,14 @@ METHOD IdeEditsManager:create( oIde )
    aadd( ::aActions, { "TB_Compile"   , ::qContextMenu:addAction( ::oAC:getAction( "TB_Compile"    ) ) } )
    aadd( ::aActions, { "TB_CompilePPO", ::qContextMenu:addAction( ::oAC:getAction( "TB_CompilePPO" ) ) } )
    aadd( ::aActions, { ""             , ::qContextMenu:addSeparator() } )
-   aadd( ::aActions, { "Apply Theme"  , ::qContextMenu:addAction( QIcon( hbide_image( "syntaxhiliter" ) ), "Apply Theme" ) } )
+
+   ::qThemesSub := ::qContextMenu:addMenu( QIcon( hbide_image( "syntaxhiliter" ) ), "Change Theme" )
+   aadd( ::aActions, ::qThemesSub )
+   FOR EACH aTheme IN ::oTH:getThemesList()
+      aadd( aAct, ::qThemesSub:addAction( hb_ntos( aTheme:__enumIndex() ) + ". " + aTheme[ 1 ] ) )
+   NEXT
+   //aadd( ::aActions, { "Apply Theme"  , ::qContextMenu:addAction( QIcon( hbide_image( "syntaxhiliter" ) ), "Change Theme" ) } )
+
    aadd( ::aActions, { "Save as Skltn", ::qContextMenu:addAction( "Save as Skeleton..."              ) } )
    ::qContextSub := ::qContextMenu:addMenu( QIcon( hbide_image( "split" ) ), "Split" )
    //
@@ -310,6 +317,7 @@ METHOD IdeEditsManager:create( oIde )
    //
    aadd( ::aActions, { "Show Selected Text", ::qContextMenu:addAction( "Show Selected Text" ) } )
 
+   AAdd( ::aActions, aAct )
 
    /* Define code completer */
    ::oIde:qProtoList := QStringList()
@@ -1848,22 +1856,22 @@ METHOD IdeEditor:setDocumentProperties()
       ::qEdit:horizontalScrollBar():setValue( ::nHPos )
       ::qEdit:verticalScrollBar():setValue( ::nVPos )
 
-      ::qEdit:document():setModified( .f. )
-//    ::qEdit:document():setMetaInformation( QTextDocument_DocumentTitle, hbide_pathNormalized( ::sourceFile ) )
+      ::qEdit:document():setModified( .F. )
       ::qEdit:document():setMetaInformation( QTextDocument_DocumentTitle, hb_FNameName( ::sourceFile ) )
 
       ::lLoaded := .T.
 
       IF HB_ISOBJECT( ::qHiliter )
-         ::qHiliter:hbSetInitialized( .t. )
+         ::qHiliter:hbSetInitialized( .T. )
          ::qEdit:hbHighlightPage()
       ENDIF
 
       IF ::cType $ "PRG,HB,C,CPP,H,CH,HBS"
-         ::qTimerSave := QTimer()
-         ::qTimerSave:setInterval( max( 30000, ::oINI:nTmpBkpPrd * 1000 ) )
-         ::qTimerSave:connect( "timeout()", {|| ::execEvent( __qTimeSave_timeout__ ) } )
-         ::qTimerSave:start()
+         WITH OBJECT ::qTimerSave := QTimer()
+            :setInterval( max( 30000, ::oINI:nTmpBkpPrd * 1000 ) )
+            :connect( "timeout()", {|| ::execEvent( __qTimeSave_timeout__ ) } )
+            :start()
+         ENDWITH
       ENDIF
       ::oUpDn:show()
    ENDIF
@@ -1905,6 +1913,9 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
    CASE __qDocContentsChange__
       IF p1 + p2 > 0
          ::qCoEdit:reformatLine( p, p1, p2 )
+         ::oEM:getEditObjectCurrent():aLastEditingPosition := { ::qEdit:horizontalScrollBar():value(), ;
+                                                                ::qEdit:verticalScrollBar():value()  , ;
+                                                                ::qEdit:textCursor() }
       ENDIF
       EXIT
 
@@ -2077,11 +2088,9 @@ METHOD IdeEditor:applyTheme( cTheme )
       IF empty( cTheme )
          cTheme := ::oTH:selectTheme()
       ENDIF
-
       IF ::oTH:contains( cTheme )
          ::cTheme := cTheme
-         ::qHiliter := ::oTH:setSyntaxHilighting( ::qEdit, @::cTheme )
-         ::qHiliter:rehighlight()
+         ::oTH:changeSyntaxHilighting( ::qEdit, @::cTheme, ::qHiliter )
       ENDIF
    ENDIF
    RETURN Self

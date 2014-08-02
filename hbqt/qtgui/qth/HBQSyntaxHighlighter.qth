@@ -62,6 +62,7 @@ void hbSetEditor( HBQPlainTextEdit * edit )
 void hbSetEditor( QPlainTextEdit * edit )
 void hbSetInitialized( bool init )
 void hbSetType( int ty )
+void hbClear()
 
 # QTextBlock currentBlock () const
 # int currentBlockState () const

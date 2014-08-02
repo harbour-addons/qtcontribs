@@ -106,6 +106,7 @@ public:
    void hbSetEditor( QPlainTextEdit * edit ){ editor = ( HBQPlainTextEdit * ) edit; };
    void hbSetInitialized( bool bInit ){ initialized = bInit; };
    void hbSetType( int ty ){ type = ty; };
+   void hbClear();
 
 protected:
    void highlightBlock( const QString &text );

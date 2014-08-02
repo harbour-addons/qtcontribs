@@ -541,7 +541,7 @@ METHOD IdeEdit:execContextMenu( p )
       CASE "Save as Skeleton..."
          ::oSK:saveAs( ::getSelectedText() )
          EXIT
-      CASE "Apply Theme"
+      CASE "Change Theme"
          ::oEditor:applyTheme()
          EXIT
       CASE "Goto Function"
@@ -579,6 +579,11 @@ METHOD IdeEdit:execContextMenu( p )
          EXIT
       CASE "Checkout"
          ::oEditor:vssExecute( "Checkout" )
+         EXIT
+      OTHERWISE
+         IF "." $ cAct
+            ::oTH:changeSyntaxHilighting( ::qEdit, SubStr( cAct, At( ".", cAct ) + 2 ), ::oEditor:qHiliter )
+         ENDIF
          EXIT
       ENDSWITCH
    ENDIF

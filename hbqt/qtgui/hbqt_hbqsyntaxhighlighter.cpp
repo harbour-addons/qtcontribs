@@ -95,7 +95,6 @@ HBQSyntaxHighlighter::HBQSyntaxHighlighter( QTextDocument * parent )
    commentEndExpression   = QRegExp( "\\*/" );
    commentSingleLine      = QRegExp( "//[^\n]*|^[ ]*\\*[^\n]*" );
    patternQuotation       = QRegExp( "\"[^\"]*\"|\'[^\']*\'" );
-// definedConstants       = QRegExp( "\b(__[A-Za-z0-9_]+__)\b" );
    definedConstants       = QRegExp( "__[A-Za-z0-9_]+__" );
 
    initialized = false;
@@ -105,15 +104,11 @@ HBQSyntaxHighlighter::HBQSyntaxHighlighter( QTextDocument * parent )
    constantsFormat.setForeground( QColor( 255, 153, 51 ) );
    constantsFormat.setFontWeight( 1000 );
 
-   //entryHeaderFormat.setForeground( Qt::red );
    entryHeaderFormat.setForeground( QColor( 255, 153, 51 ) );
    entryHeaderFormat.setFontWeight( 1000 );
-   //entryHeaderFormat.setBackground( Qt::gray );
 
-   //entryTitleFormat.setForeground( Qt::darkBlue );
    entryTitleFormat.setForeground( QColor( 45, 187, 255 ) );
    entryTitleFormat.setFontItalic( true );
-   //entryTitleFormat.setFontWeight( 1000 );
 
    entrySourceFormat.setForeground( Qt::darkGreen );
    entrySourceFormat.setFontWeight( 1000 );
@@ -157,6 +152,13 @@ HBQSyntaxHighlighter::HBQSyntaxHighlighter( QTextDocument * parent )
    isEntry               =  QRegExp( "^[ ]*\\||^[ ]*\\@|^[ ]*\\;|^[ ]*\\-|^[ ]*\\+|^[ ]*\\%|^[ ]*\\&|^[ ]*\\!|^[ ]*\\*|^[ ]*\\#|^\\$" );
 }
 
+
+void HBQSyntaxHighlighter::hbClear()
+{
+   HighlightingRules.clear();
+}
+
+
 void HBQSyntaxHighlighter::hbSetRule( QString name, QString pattern, const QTextCharFormat & format )
 {
    if( pattern != "" )
@@ -164,10 +166,14 @@ void HBQSyntaxHighlighter::hbSetRule( QString name, QString pattern, const QText
    else
       HighlightingRules.remove( name );
 }
+
+
 void HBQSyntaxHighlighter::hbSetRuleWithRegExp( QString name, const QRegExp & reg, const QTextCharFormat & format )
 {
    HighlightingRules.insert( name, HighlightingRule( reg, format ) );
 }
+
+
 void HBQSyntaxHighlighter::hbSetFormat( QString name, const QTextCharFormat & format )
 {
    if( ( QString ) "TerminatedStrings" == name )
@@ -188,19 +194,25 @@ void HBQSyntaxHighlighter::hbSetFormat( QString name, const QTextCharFormat & fo
       }
    }
 }
+
+
 void HBQSyntaxHighlighter::hbSetMultiLineCommentFormat( const QTextCharFormat & format )
 {
    multiLineCommentFormat = format;
 }
+
+
 void HBQSyntaxHighlighter::hbSetSingleLineCommentFormat( const QTextCharFormat & format )
 {
    singleLineCommentFormat = format;
 }
 
+
 void HBQSyntaxHighlighter::hbSetFormatColumnSelection( int start, int count, const QColor & color )
 {
    setFormat( start, count, color );
 }
+
 
 void HBQSyntaxHighlighter::highlightBlock( const QString &text )
 {

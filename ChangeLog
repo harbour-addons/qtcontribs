@@ -16,6 +16,48 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-02 13:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r327)
+  * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.cpp
+  * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.h
+  * hbqt/qtgui/qth/HBQSyntaxHighlighter.qth
+    + Added method void hbClear().
+
+  * hbide/selectsources.ui
+    % Minor.
+
+  * hbide/actions.prg
+  * hbide/console.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/themes.prg
+    % Editing instance context menu option "Apply Theme" => "Change Theme".
+
+    ! Fixed "Change Theme" correctly applying the changed theme highlighting.
+
+    + Implemented availability of "Themes" list as context-menu options in 
+       context menu of editing instance under "Change Theme" sub-menu. 
+       Before another interface (not very intuitive) was presented 
+       to select a theme.
+
+    + Implemented jumping to last editing position with CTRL+L.
+       So far CTRL+L was returning to last viewing position after clicks 
+       to Functions List tree. This was limiting functionality and is available
+       as is. It is logical that one always needs to return to position he 
+       left as editing before navigating to other parts of the source by 
+       arrow keys, scrollbar actions, or search operations.
+  
+    ! Fixed not to generate RTE when CUIEditor is invoked. This interface 
+       was working fine absolutely. There seems to be some changes how 
+       Inkey( 0 ) behaves in Harbour. Probably it is not releasing CPU 
+       time-slices any more, but I am not sure. In a combined CUI and GUI 
+       application Inkey( 0 ) may force GUI components to freeze.
+       I need to ask Przemek for analysis on this part. I just changed 
+       Inkey( 0 ) to Inkey() and everything worked.
+
+    % Changed HbIDE main toolbar size to confirm to device pixels than 
+       absolute pixels per changes in other toolbars. The effect is evident in 
+       latest very high resolution monitors like "Retina Displays".
+
 2014-08-01 07:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r326)
   * hbide/actions.prg
     ! Attempted: HbIDE toolbars to have uniform size on any device.

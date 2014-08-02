@@ -133,6 +133,7 @@ CLASS IdeThemes INHERIT IdeObject
    METHOD setSyntaxRule( qHiliter, cName, cPattern, lCaseSensitive, aAttr )
    METHOD setSyntaxFormat( qHiliter, cName, aAttr )
    METHOD setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
+   METHOD changeSyntaxHilighting( qEdit, cTheme, qHiliter )
    METHOD show()
    METHOD copy()
    METHOD setTheme()
@@ -146,6 +147,7 @@ CLASS IdeThemes INHERIT IdeObject
    METHOD updateLineNumbersBkColor()
    METHOD updateCurrentLineColor()
    METHOD mergeUserDictionaries( qHiliter, cTheme )
+   METHOD getThemesList()                         INLINE ::aThemes
 
    ENDCLASS
 
@@ -459,7 +461,7 @@ METHOD IdeThemes:setSyntaxFormat( qHiliter, cName, aAttr )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*                         setSyntaxHilighting                          */
+
 METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
    LOCAL a_, aAttr, qHiliter
 
@@ -467,9 +469,9 @@ METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
       cTheme := ::cWrkTheme
    ENDIF
    IF empty( cTheme )
-      cTheme := "Bare Minimum"   /* "Pritpal's Favourite" */
+      cTheme := "Bare Minimum"                    /* "Pritpal's Favourite" */
    ENDIF
-   DEFAULT lNew       TO .f.           /* Apply one which is already formed */
+   DEFAULT lNew       TO .F.                      /* Apply one which is already formed */
    DEFAULT lSetEditor TO .t.
 
    HB_SYMBOL_UNUSED( lNew )
@@ -511,6 +513,42 @@ METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
    ENDIF
 
    RETURN qHiliter
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeThemes:changeSyntaxHilighting( qEdit, cTheme, qHiliter )
+   LOCAL a_, aAttr
+
+   qHiliter:hbClear()
+
+   ::setForeBackGround( qEdit, cTheme )
+
+   FOR EACH a_ IN ::aPatterns
+      IF !empty( aAttr := ::getThemeAttribute( a_[ 1 ], cTheme ) )
+         ::setSyntaxRule( qHiliter, a_[ 1 ], a_[ 2 ], a_[ 3 ], aAttr )
+      ENDIF
+   NEXT
+
+   ::mergeUserDictionaries( qHiliter, cTheme )
+   ::setMultiLineCommentRule( qHiliter, cTheme )
+   ::setSingleLineCommentRule( qHiliter, cTheme )
+   ::setQuotesRule( qHiliter, cTheme )
+
+   IF __ObjGetClsName( qEdit ) == "HBQPLAINTEXTEDIT"
+      IF !empty( aAttr := ::getThemeAttribute( "CurrentLineBackground", cTheme ) )
+         qEdit:hbSetCurrentLineColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      ENDIF
+      IF !empty( aAttr := ::getThemeAttribute( "LineNumbersBkColor", cTheme ) )
+         qEdit:hbSetLineAreaBkColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      ENDIF
+      IF !empty( aAttr := ::getThemeAttribute( "SelectionBackground", cTheme ) )
+         qEdit:hbSetSelectionColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
+      ENDIF
+
+      qEdit:hbHighlightPage()
+   ENDIF
+
+   RETURN NIL
 
 /*----------------------------------------------------------------------*/
 

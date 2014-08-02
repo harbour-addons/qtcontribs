@@ -25,9 +25,6 @@
      <attribute name="headerVisible">
       <bool>false</bool>
      </attribute>
-     <attribute name="headerVisible">
-      <bool>false</bool>
-     </attribute>
      <column>
       <property name="text">
        <string/>
@@ -437,7 +434,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>.hbp</string>
+        <string>.hbp:</string>
        </property>
       </widget>
      </item>

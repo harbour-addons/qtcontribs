@@ -1070,8 +1070,8 @@ METHOD IdeActions:buildToolbarMain()
    LOCAL nSep := XBPTOOLBAR_BUTTON_SEPARATOR
 
    oTBar := XbpToolBar():new( ::oDlg )
-   oTBar:imageWidth  := 12
-   oTBar:imageHeight := 12
+   oTBar:imageWidth  := P_XX( val( ::oINI:cToolbarSize ) )
+   oTBar:imageHeight := P_XX( val( ::oINI:cToolbarSize ) )
    oTBar:create( , , { 0, ::oDlg:currentSize()[ 2 ]-60 }, { ::oDlg:currentSize()[ 1 ], 60 } )
    oTBar:oWidget:setStyleSheet( GetStyleSheet( "QToolBar", ::nAnimantionMode ) )
    oTBar:oWidget:setAllowedAreas( Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea )
@@ -1099,7 +1099,7 @@ METHOD IdeActions:buildToolbarFiles()
 
    ::qFilesToolbar:cName := "ToolBar_Files"
    ::qFilesToolbar:allowedAreas := Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea
-   ::qFilesToolbar:size := QSize( 12, 12 )
+   ::qFilesToolbar:size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
 
    ::qFilesToolbar:create()
 
@@ -1125,7 +1125,7 @@ METHOD IdeActions:buildToolbarParts()
 
    ::qPartsToolbar:cName := "ToolBar_Parts"
    ::qPartsToolbar:allowedAreas := Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea
-   ::qPartsToolbar:size := QSize( 12, 12 )
+   ::qPartsToolbar:size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
 
    ::qPartsToolbar:create()
 
@@ -1150,7 +1150,7 @@ METHOD IdeActions:buildToolbarProject()
 
    ::qProjectToolbar:cName := "ToolBar_Project"
    ::qProjectToolbar:allowedAreas := Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea
-   ::qProjectToolbar:size := QSize( 12, 12 )
+   ::qProjectToolbar:size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
 
    ::qProjectToolbar:create()
 
@@ -1182,7 +1182,7 @@ METHOD IdeActions:buildToolBarDocks()
 
    ::qTBarDocks:cName := "ToolBar_Docks"
    ::qTBarDocks:allowedAreas := Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea
-   ::qTBarDocks:size := QSize( 12,12 )
+   ::qTBarDocks:size := QSize(  P_XX( val( ::oINI:cToolbarSize ) ), P_XX( val( ::oINI:cToolbarSize ) ) )
    ::qTBarDocks:create()
    ::qTBarDocks:setStyleSheet( GetStyleSheet( "QToolBarLR5", ::nAnimantionMode ) )
    ::qTBarDocks:setWindowTitle( "Dockable Widgets" )
