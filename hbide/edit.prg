@@ -582,7 +582,8 @@ METHOD IdeEdit:execContextMenu( p )
          EXIT
       OTHERWISE
          IF "." $ cAct
-            ::oTH:changeSyntaxHilighting( ::qEdit, SubStr( cAct, At( ".", cAct ) + 2 ), ::oEditor:qHiliter )
+            ::oEditor:cTheme := SubStr( cAct, At( ".", cAct ) + 2 )
+            ::oTH:changeSyntaxHilighting( ::qEdit, @::oEditor:cTheme, ::oEditor:qHiliter )
          ENDIF
          EXIT
       ENDSWITCH

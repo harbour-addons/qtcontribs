@@ -618,7 +618,8 @@ METHOD IdeINI:save( cHbideIni )
                               oEdit:cTheme           +  ","  + ;
                               oEdit:cView            +  ","  + ;
                               hbide_nArray2string( oEdit:oEdit:aBookMarks ) +  "," + ;
-                              oEdit:cCodePage )
+                              oEdit:cCodePage        +  ","  + ;
+                              oEdit:cExtras )
                ENDIF
             ENDIF
          ENDIF

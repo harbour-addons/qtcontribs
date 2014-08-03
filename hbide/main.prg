@@ -1230,12 +1230,12 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
 /*----------------------------------------------------------------------*/
 
 METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
-   LOCAL n, cHbp, s
-   LOCAL aPops := {}, aSub :={}
+   LOCAL n, cHbp, s, cProjectName
+   LOCAL aPops := {}, aSub :={}, aEnv :={}
 
    HB_SYMBOL_UNUSED( mp2 )
 
-   IF     oXbpTreeItem == ::oProjRoot
+   IF oXbpTreeItem == ::oProjRoot
       n  := -1
    ELSEIF oXbpTreeItem == ::oOpenedSources
       n  := -2
@@ -1263,31 +1263,44 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
 
    CASE ::aProjData[ n, TRE_TYPE ] == "Project Name"
+      cProjectName := oXbpTreeItem:caption
+
       cHbp := hbide_pathToOSPath( ::oPM:getProjectFileNameFromTitle( ::aProjData[ n, TRE_ORIGINAL ] ) )
       //
-      IF !( Alltrim( Upper( ::cWrkProject ) ) == Alltrim( Upper( oXbpTreeItem:caption ) ) )
-         aadd( aPops, { "Set as Current"                 , {|| ::oPM:setCurrentProject( oXbpTreeItem:caption ) } } )
-      End
-      aadd( aPops, { ::oAC:getAction( "Properties"      ), {|| ::oPM:loadProperties( cHbp, .f., .t., .t. ) } } )
+      IF !( Alltrim( Upper( ::cWrkProject ) ) == Alltrim( Upper( cProjectName ) ) )
+         aadd( aPops, { "Set as Current"                      , {|| ::oPM:setCurrentProject( oXbpTreeItem:caption ) } } )
+      ENDIF
+      aadd( aPops, { ::oAC:getAction( "Properties"      )     , {|| ::oPM:loadProperties( cHbp, .f., .t., .t. ) } } )
       aadd( aPops, { "" } )
-      aadd( aPops, { ::oAC:getAction( "BuildQt"         ), {|| ::oPM:buildProject( oXbpTreeItem:caption, .F.,    , , .T. ) } } )
-      aadd( aPops, { ::oAC:getAction( "BuildLaunchQt"   ), {|| ::oPM:buildProject( oXbpTreeItem:caption, .T.,    , , .T. ) } } )
-      aadd( aPops, { ::oAC:getAction( "ReBuildQt"       ), {|| ::oPM:buildProject( oXbpTreeItem:caption, .F., .T., , .T. ) } } )
-      aadd( aPops, { ::oAC:getAction( "ReBuildLaunchQt" ), {|| ::oPM:buildProject( oXbpTreeItem:caption, .T., .T., , .T. ) } } )
-      aadd( aPops, { "" } )
-      aadd( aPops, { ::oAC:getAction( "LaunchProjectByTitle" ), {|| ::oPM:launchProject( oXbpTreeItem:caption ) } } )
-      aadd( aPops, { "" } )
-      aadd( aPops, { "Remove Project"                    , {|| ::oPM:removeProject( oXbpTreeItem:caption ) } } )
-      IF !empty( ::oEV:getNames() )
+      aadd( aPops, { ::oAC:getAction( "BuildQt"         )     , {|| ::oPM:buildProject( cProjectName, .F., NIL, NIL, .T. ) } } )
+      aadd( aPops, { ::oAC:getAction( "BuildLaunchQt"   )     , {|| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T. ) } } )
+      aadd( aPops, { ::oAC:getAction( "ReBuildQt"       )     , {|| ::oPM:buildProject( cProjectName, .F., .T., NIL, .T. ) } } )
+      aadd( aPops, { ::oAC:getAction( "ReBuildLaunchQt" )     , {|| ::oPM:buildProject( cProjectName, .T., .T., NIL, .T. ) } } )
+      //
+      IF ! empty( ::oEV:getNames() )
          aadd( aPops, { "" } )
          FOR EACH s IN ::oEV:getNames()
-            aadd( aSub, { s                              , {|x| ::cWrkEnvironment := x, ::oDK:dispEnvironment( x ) } } )
+            aadd( aEnv, { s                                   , {|x| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T., x ) } } )
          NEXT
-         aadd( aPops, { aSub, "Select an environment" } )
+         aadd( aPops, { aEnv, "Build and Launch with..." } )
       ENDIF
+      //
       aadd( aPops, { "" } )
-      aadd( aPops, { ::oAC:getAction( "Dictionary"      ), {|v| v := ::oFN:tagProject( ::aProjData[ n, TRE_ORIGINAL ], .F., .F. ), ;
-                                                                MsgBox( iif( Empty( v ), "Not Succeeded", v ), "Dictionary Creation" ) } } )
+      aadd( aPops, { ::oAC:getAction( "LaunchProjectByTitle" ), {|| ::oPM:launchProject( cProjectName, NIL, ::cWrkEnvironment ) } } )
+      aadd( aPops, { "" } )
+      aadd( aPops, { "Remove Project"                         , {|| ::oPM:removeProject( cProjectName ) } } )
+      //
+      IF ! empty( ::oEV:getNames() )
+         aadd( aPops, { "" } )
+         FOR EACH s IN ::oEV:getNames()
+            aadd( aSub, { s                                   , {|x| ::cWrkEnvironment := x, ::oDK:dispEnvironment( x ) } } )
+         NEXT
+         aadd( aPops, { aSub, "Select an Environment" } )
+      ENDIF
+      //
+      aadd( aPops, { "" } )
+      aadd( aPops, { ::oAC:getAction( "Dictionary"      )     , {|v| v := ::oFN:tagProject( ::aProjData[ n, TRE_ORIGINAL ], .F., .F. ), ;
+                                                                     MsgBox( iif( Empty( v ), "Not Succeeded", v ), "Dictionary Creation" ) } } )
 
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
 

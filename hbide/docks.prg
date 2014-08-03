@@ -171,7 +171,7 @@ CLASS IdeDocks INHERIT IdeObject
    METHOD buildStatusBar()
    METHOD setStatusText( nPart, xValue )
    METHOD getMarkWidget( nIndex )
-   METHOD dispEnvironment( cEnviron )
+   METHOD dispEnvironment( cEnvironment )
    //METHOD addPanelButton( cPanel )
    METHOD disblePanelButton( qTBtn )
    METHOD getADockWidget( nAreas, cObjectName, cWindowTitle, nFlags )
@@ -1560,8 +1560,8 @@ METHOD IdeDocks:setStatusText( nPart, xValue )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeDocks:dispEnvironment( cEnviron )
-   ::setStatusText( SB_PNL_ENVIRON, cEnviron )
+METHOD IdeDocks:dispEnvironment( cEnvironment )
+   ::setStatusText( SB_PNL_ENVIRON, cEnvironment )
    RETURN Self
 
 /*----------------------------------------------------------------------*/

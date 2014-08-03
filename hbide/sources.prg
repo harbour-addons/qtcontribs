@@ -81,7 +81,7 @@ CLASS IdeSourcesManager INHERIT IdeObject
    METHOD loadSources()
    METHOD saveSource( nTab, lCancel, lAs )
    METHOD saveNamedSource( cSource )
-   METHOD editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, lAlert, lVisible, aBookMarks, cCodePage )
+   METHOD editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, lAlert, lVisible, aBookMarks, cCodePage, cExtras )
    METHOD closeSource( nTab, lCanCancel, lCanceled, lAsk )
    METHOD closeAllSources( lCanCancel )
    METHOD closeAllOthers( nTab )
@@ -142,7 +142,7 @@ METHOD IdeSourcesManager:loadSources()
    IF ! empty( ::oIni:aFiles )
       FOR EACH a_ IN ::oIni:aFiles
          /*            File     nPos     nVPos    nHPos    cTheme  cView lAlert lVisible, aBookMarks */
-         ::editSource( a_[ 1 ], a_[ 2 ], a_[ 3 ], a_[ 4 ], a_[ 5 ], a_[ 6 ], .t., .f., a_[ 7 ], a_[ 8 ] )
+         ::editSource( a_[ 1 ], a_[ 2 ], a_[ 3 ], a_[ 4 ], a_[ 5 ], a_[ 6 ], .t., .f., a_[ 7 ], a_[ 8 ], a_[ 9 ] )
       NEXT
    ELSE
       ::editSource( "default.prg" )
@@ -185,7 +185,7 @@ METHOD IdeSourcesManager:saveNamedSource( cSource )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, lAlert, lVisible, aBookMarks, cCodePage )
+METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, lAlert, lVisible, aBookMarks, cCodePage, cExtras )
    LOCAL lNew
 
    DEFAULT lAlert   TO .T.
@@ -228,7 +228,7 @@ METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cV
       ::oFileWatcher:addPath( cSourceFile )
    ENDIF
 
-   ::oEM:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+   ::oEM:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    IF lVisible
       ::oEM:setSourceVisible( cSourceFile )
    ENDIF

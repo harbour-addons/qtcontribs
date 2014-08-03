@@ -1,11 +1,11 @@
-                        /*
+/*
  * $Id$
  */
 
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -113,10 +113,8 @@ METHOD IdeSource:new( cSource )
 CLASS IdeProject
 
    DATA   aProjProps                              INIT {}
-
    DATA   fileName                                INIT ""
    DATA   normalizedName                          INIT ""
-
    DATA   type                                    INIT "Executable"
    DATA   title                                   INIT ""
    DATA   location                                INIT hb_dirBase() + "projects"
@@ -129,7 +127,6 @@ CLASS IdeProject
    DATA   isXhb                                   INIT .f.
    DATA   isXpp                                   INIT .f.
    DATA   isClp                                   INIT .f.
-
    DATA   hbpFlags                                INIT {}
    DATA   sources                                 INIT {}
    DATA   dotHbp                                  INIT ""
@@ -203,9 +200,7 @@ CLASS IdeProjManager INHERIT IdeObject
    DATA   cargo
    DATA   cSaveTo
    DATA   aPrjProps                               INIT {}
-
    DATA   nStarted                                INIT 0
-
    DATA   lLaunch                                 INIT .F.
    DATA   cProjectInProcess                       INIT ""
    DATA   cPPO                                    INIT ""
@@ -214,12 +209,10 @@ CLASS IdeProjManager INHERIT IdeObject
    DATA   cBatch
    DATA   oProcess
    DATA   lSaveOK                                 INIT .F.
-
    DATA   cProjFileName                           INIT ""
    DATA   lNew                                    INIT .F.
    DATA   lFetch                                  INIT .T.
    DATA   lUpdateTree                             INIT .F.
-
    DATA   cIfError                                INIT NIL
    DATA   oSelSrc
 
@@ -258,10 +251,10 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD closeProject( cProjectTitle )
    METHOD promptForPath( oEditPath, cTitle, cObjFileName )
    METHOD buildSource( lExecutable )
-   METHOD buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
-   METHOD launchProject( cProject, cExe )
+   METHOD buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron )
+   METHOD launchProject( cProject, cExe, cWrkEnviron )
    METHOD showOutput( cOutput, mp2, oProcess )
-   METHOD finished( nExitCode, nExitStatus, oProcess )
+   METHOD finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    METHOD isValidProjectLocation( lTell )
    METHOD setProjectLocation( cPath )
    METHOD buildInterface()
@@ -280,19 +273,14 @@ CLASS IdeProjManager INHERIT IdeObject
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:new( oIDE )
-
    ::oIDE := oIDE
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:create( oIDE )
-
    DEFAULT oIDE TO ::oIDE
-
    ::oIDE := oIDE
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1556,7 +1544,7 @@ METHOD IdeProjManager:buildSource( lExecutable )
    ::oProcess := HbpProcess():new()
    //
    ::oProcess:output      := {|cOut, mp2, oHbp| ::showOutput( cOut,mp2,oHbp ) }
-   ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC ,nES,oHbp ) }
+   ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC, nES, oHbp, ::cWrkEnvironment ) }
    ::oProcess:workingPath := hbide_pathToOSPath( oEdit:cPath )
    //
    cCmd := hbide_getShellCommand()
@@ -1582,29 +1570,29 @@ METHOD IdeProjManager:buildSource( lExecutable )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
+METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron )
    LOCAL cHbpPath, oEdit, cHbpFN, cTmp, cExeHbMk2, aHbp, cCmd, cC, oSource, cCmdParams, cBuf
    LOCAL cbRed := "<font color=blue>", ceRed := "</font>"
 
-   aHbp := {}
+   DEFAULT lLaunch     TO .F.
+   DEFAULT lRebuild    TO .F.
+   DEFAULT lPPO        TO .F.
+   DEFAULT lViaQt      TO .F.
+   DEFAULT cWrkEnviron TO ::cWrkEnvironment
 
-   DEFAULT lLaunch   TO .F.
-   DEFAULT lRebuild  TO .F.
-   DEFAULT lPPO      TO .F.
-   DEFAULT lViaQt    TO .F.
-
-   ::lPPO    := lPPO
-   ::lLaunch := lLaunch
+   aHbp                := {}
+   ::lPPO              := lPPO
+   ::lLaunch           := lLaunch
    ::cProjectInProcess := cProject
 
    IF ::lPPO .AND. empty( ::oEM:getEditCurrent() )
-      MsgBox( 'No source available to be compiled' )
+      MsgBox( 'No source available to be compiled !' )
       RETURN Self
    ENDIF
    IF empty( cProject )
       cProject := ::getCurrentProject( .f. )
    ENDIF
-   IF empty( cProject ) .AND. !( ::lPPO )
+   IF empty( cProject ) .AND. ! ::lPPO
       RETURN Self
    ENDIF
    IF ::lPPO
@@ -1625,8 +1613,8 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
       NEXT
    ENDIF
 
-   cHbpFN     := hbide_pathFile( ::oProject:location, iif( empty( ::oProject:outputName ), "_temp", ::oProject:outputName ) )
-   cHbpPath   := cHbpFN + iif( ::lPPO, '_tmp', "" ) + ".hbp"
+   cHbpFN   := hbide_pathFile( ::oProject:location, iif( empty( ::oProject:outputName ), "_temp", ::oProject:outputName ) )
+   cHbpPath := cHbpFN + iif( ::lPPO, '_tmp', "" ) + ".hbp"
 
    IF !( ::lPPO )
       IF     ::oProject:type == "Lib"
@@ -1661,13 +1649,10 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
 
             ::cPPO := hbide_pathFile( oEdit:cPath, oEdit:cFile + '.ppo' )
             FErase( ::cPPO )
-
          ELSE
             MsgBox( 'Operation not supported for this file type: "' + oEdit:sourceFile + '"' )
             RETURN Self
-
          ENDIF
-
          lViaQt := .t.   /* Donot know why it fails with Qt */
       ENDIF
    ENDIF
@@ -1688,8 +1673,8 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
       ::oOutputResult:oWidget:append( hbide_outputLine() )
 
       ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
-      ::cBatch   := ::oEV:prepareBatch( ::cWrkEnvironment )
-      aeval( ::oEV:getHbmk2Commands( ::cWrkEnvironment ), {|e| aadd( aHbp, e ) } )
+      ::cBatch   := ::oEV:prepareBatch( cWrkEnviron )
+      aeval( ::oEV:getHbmk2Commands( cWrkEnviron ), {|e| aadd( aHbp, e ) } )
 
       cExeHbMk2  := ::oINI:getHbmk2File()
       cCmdParams := hbide_array2cmdParams( aHbp )
@@ -1697,7 +1682,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
       ::oProcess := HbpProcess():new()
       //
       ::oProcess:output      := {|cOut, mp2, oHbp| ::showOutput( cOut,mp2,oHbp ) }
-      ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC ,nES,oHbp ) }
+      ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC, nES, oHbp, cWrkEnviron ) }
       ::oProcess:workingPath := hbide_pathToOSPath( ::oProject:location )
       //
       cCmd := hbide_getShellCommand()
@@ -1719,7 +1704,6 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt )
       ::oProcess:addArg( cC + ::cBatch )
       ::oProcess:start( cCmd )
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1739,10 +1723,12 @@ METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess )
+METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    LOCAL cTmp, n, n1, cTkn, cExe, qDoc, qCursor
 
    HB_SYMBOL_UNUSED( oProcess )
+
+   DEFAULT cWrkEnviron TO ::cWrkEnvironment
 
    ::outputText( hbide_outputLine() )
    cTmp := "Exit Code [ " + hb_ntos( nExitCode ) + " ]    Exit Status [ " + hb_ntos( nExitStatus ) + " ]    " +;
@@ -1806,7 +1792,7 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess )
       ::outputText( " " )
 
       IF nExitCode == 0
-         ::launchProject( ::cProjectInProcess, cExe )
+         ::launchProject( ::cProjectInProcess, cExe, cWrkEnviron )
       ELSE
          ::outputText( "Sorry, cannot launch project because of errors..." )
       ENDIF
@@ -1825,7 +1811,7 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeProjManager:launchProject( cProject, cExe )
+METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
    LOCAL cTargetFN, cTmp, oProject, cPath, a_, cParam
    LOCAL qProcess, qStr, cC, cCmd, cBuf
 
@@ -1862,7 +1848,7 @@ METHOD IdeProjManager:launchProject( cProject, cExe )
 
       IF ::oINI:lExtBuildLaunch
          ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
-         ::cBatch   := ::oEV:prepareBatch( ::cWrkEnvironment )
+         ::cBatch   := ::oEV:prepareBatch( cWrkEnviron )
 
          cCmd       := hbide_getShellCommand()
          cC         := iif( hbide_getOS() == "nix", "", "/C " )
@@ -1926,15 +1912,12 @@ METHOD IdeProjManager:runAsScript()
    IF !empty( oEdit := ::oEM:getEditorCurrent() )
       hbide_runAScript( oEdit:qEdit:toPlainText() )
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:outputText( cText )
-
    ::oOutputResult:oWidget:append( "<font color=black>" + cText + "</font>" )
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1948,14 +1931,10 @@ CLASS IdeSelectSource
    DATA   aSrcSelected                            INIT {}
    DATA   aSrc3rd                                 INIT {}
    DATA   aExt                                    INIT {}
-
    DATA   lOK                                     INIT .F.
-
    DATA   cHbp                                    INIT ""
    DATA   cType                                   INIT "Executable"
-
    DATA   cGT                                     INIT ""
-
    DATA   lShared                                 INIT .F.
    DATA   lFullStatic                             INIT .F.
    DATA   lHbQt                                   INIT .F.
@@ -1997,18 +1976,14 @@ METHOD IdeSelectSource:create()
    LOCAL nRes
 
    ::buildUI()
-
    WITH OBJECT ::oUI
       nRes := :oWidget:exec()                     /* Display on the Screen */
-
       IF nRes == 1                                /* Only IF OK is clicked */
          ::pullData()
          ::lOk := .T.
       ENDIF
-
       :oWidget:setParent( QWidget() )
    ENDWITH
-
    RETURN Self
 
 
@@ -2088,7 +2063,6 @@ METHOD IdeSelectSource:unSelectSources( cExt )
          oItm:setCheckState( 0, Qt_Unchecked )
       ENDIF
    NEXT
-
    RETURN Self
 
 
@@ -2250,6 +2224,3 @@ STATIC FUNCTION hbide_setWorkingProjectFolder( cFolder )
    ENDIF
 
    RETURN l_cFolder
-
-
-

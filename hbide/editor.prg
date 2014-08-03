@@ -113,7 +113,7 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD removeSourceInTree( cSourceFile )
    METHOD addSourceInTree( cSourceFile, cView )
    METHOD execEvent( nEvent, p )
-   METHOD buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+   METHOD buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    METHOD getTabBySource( cSource )
    METHOD getTabCurrent()
    METHOD getTabByIndex( nIndex )
@@ -497,9 +497,9 @@ METHOD IdeEditsManager:execEvent( nEvent, p )
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
-   IdeEditor():new():create( ::oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+   IdeEditor():new():create( ::oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
    RETURN Self
 
@@ -1412,6 +1412,7 @@ CLASS IdeEditor INHERIT IdeObject
    DATA   cView
    DATA   aBookMarks                              INIT   {}
    DATA   cCodePage
+   DATA   cExtras                                 INIT   ""
    DATA   qDocument
    DATA   qDocLayout
    DATA   qHiliter
@@ -1463,8 +1464,8 @@ CLASS IdeEditor INHERIT IdeObject
 
    METHOD execTabContextMenu( oPos )
 
-   METHOD new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
-   METHOD create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+   METHOD new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
+   METHOD create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    METHOD split( nOrient, oEditP )
    METHOD relay( oEdit )
    METHOD destroy()
@@ -1490,7 +1491,7 @@ CLASS IdeEditor INHERIT IdeObject
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
    DEFAULT oIde        TO ::oIde
    DEFAULT cSourceFile TO ::sourceFile
@@ -1501,6 +1502,7 @@ METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBoo
    DEFAULT cView       TO ::cView
    DEFAULT aBookMarks  TO ::aBookMarks
    DEFAULT cCodePage   TO ::cCodePage
+   DEFAULT cExtras     TO ::cExtras
 
    ::oIde       := oIde
    ::sourceFile := cSourceFile
@@ -1509,6 +1511,9 @@ METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBoo
    ::nVPos      := nVPos
    ::cTheme     := cTheme
    ::cView      := cView
+   ::aBookMarks := aBookMarks
+   ::cCodePage  := cCodePage
+   ::cExtras    := cExtras
 
    ::nID        := hbide_getNextUniqueID()
 
@@ -1516,7 +1521,7 @@ METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBoo
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage )
+METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    LOCAL cFileTemp, nAttr
 
    DEFAULT oIde        TO ::oIde
@@ -1528,6 +1533,7 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    DEFAULT cView       TO ::cView
    DEFAULT aBookMarks  TO ::aBookMarks
    DEFAULT cCodePage   TO ::cCodePage
+   DEFAULT cExtras     TO ::cExtras
 
    ::oIde           := oIde
    ::SourceFile     := hbide_pathNormalized( cSourceFile, .F. )
@@ -1538,6 +1544,7 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    ::cView          := cView
    ::aBookMarks     := aBookMarks
    ::cCodePage      := cCodePage
+   ::cExtras        := cExtras
 
    ::cCodePage := iif( Empty( ::cCodePage ), ::cWrkCodec, ::cCodePage )
 

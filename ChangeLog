@@ -16,6 +16,32 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-02 18:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r328)
+  * hbide/docks.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+  * hbide/sources.prg
+    + Added a futuristic argument in save/load of sources protocol.
+
+    + Implemented a sub-menu in context-menu of "Prohject Tree" which 
+       offers to "Compile and Launch with..." one of the selected 
+       environment. The action is equivalent to merging two actions 
+       1. Select an Environment
+       2. Build and Launch
+       from the same context menu. 
+
+    ; It is a productivity feature. It is usefule, rather extremely useful, 
+      where one develops applications with multiple compilers and versions.
+      For me it is useful for Android based applications which I have to
+      compile for desktop also (mostly) to see if all components are working,
+      and when satisfied, compile for Android. This feature facilitates to 
+      stay with one environment for all projects and allows me to select 
+      other environment for selected projects.
+
 2014-08-02 13:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r327)
   * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.cpp
   * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.h
