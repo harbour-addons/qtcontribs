@@ -85,7 +85,7 @@ CLASS IdeSource
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
+
 
 METHOD IdeSource:new( cSource )
    LOCAL cFilt, cPathFile, cPath, cFile, cExt
@@ -141,7 +141,6 @@ CLASS IdeProject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProject:new( oIDE, aProps )
    LOCAL b_, a_, oSource, cSource
@@ -270,20 +269,17 @@ CLASS IdeProjManager INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:new( oIDE )
    ::oIDE := oIDE
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:create( oIDE )
    DEFAULT oIDE TO ::oIDE
    ::oIDE := oIDE
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:destroy()
 
@@ -310,24 +306,22 @@ METHOD IdeProjManager:destroy()
    IF !empty( ::aPrjProps )
       ::aPrjProps[ 1,1 ] := NIL
       ::aPrjProps[ 1,2 ] := NIL
-      ::aPrjProps[ 1 ] := NIL
+      ::aPrjProps[ 1   ] := NIL
       ::aPrjProps[ 2,1 ] := NIL
       ::aPrjProps[ 2,2 ] := NIL
-      ::aPrjProps[ 2 ] := NIL
+      ::aPrjProps[ 2   ] := NIL
       ::aPrjProps[ 3,1 ] := NIL
       ::aPrjProps[ 3,2 ] := NIL
-      ::aPrjProps[ 3 ] := NIL
+      ::aPrjProps[ 3   ] := NIL
       ::aPrjProps[ 4,1 ] := NIL
       ::aPrjProps[ 4,2 ] := NIL
-      ::aPrjProps[ 4 ] := NIL
-      ::aPrjProps[ 5 ] := NIL
+      ::aPrjProps[ 4   ] := NIL
+      ::aPrjProps[ 5   ] := NIL
 
       ::aPrjProps := NIL
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:populate()
    LOCAL cProject
@@ -335,10 +329,8 @@ METHOD IdeProjManager:populate()
    FOR EACH cProject IN ::oINI:aProjFiles
       ::loadProperties( cProject, .f., .f., .T. )
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProperties()
    LOCAL cTmp, n
@@ -347,10 +339,8 @@ METHOD IdeProjManager:getProperties()
    IF ( n := ascan( ::aProjects, {|e_| e_[ 3, PRJ_PRP_PROPERTIES, 2, PRJ_PRP_TITLE ] == cTmp } ) ) > 0
       ::loadProperties( ::aProjects[ n, 1 ], .f., .t., .t. )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
    LOCAL nAlready, cProjPath
@@ -450,8 +440,7 @@ METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-//
+
 //  Without user-interface
 //
 METHOD IdeProjManager:pullHbpData( cHbp )
@@ -571,10 +560,8 @@ METHOD IdeProjManager:pullHbpData( cHbp )
          ENDIF
       NEXT
    ENDIF
-
    RETURN { { a1_0, a1_1 }, { a2_0, a2_1 }, { a3_0, a3_1 }, { a4_0, a4_1 }, hbide_readSource( cHbp ) }
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:save( lCanClose, lUpdateTree )
    LOCAL a_, lOk, txt_, nAlready
@@ -667,19 +654,15 @@ METHOD IdeProjManager:save( lCanClose, lUpdateTree )
       ::oHM:refresh()  /* Rearrange Projects Data */
    ELSE
       MsgBox( 'Error saving project file: ' + ::cSaveTo, 'Error saving project ...' )
-
    ENDIF
-
    IF lCanClose .AND. lOk
       ::oPropertiesDock:hide()
    ENDIF
-
    IF lOk
       ::oDockPT:show()
    ENDIF
    RETURN lOk
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:insertHeader( aHdr, aHbp )
    LOCAL txt_:={}
@@ -692,10 +675,8 @@ METHOD IdeProjManager:insertHeader( aHdr, aHbp )
    aadd( txt_, "" )
    aeval( aHbp, {|e| aadd( txt_, e ) } )
    aadd( txt_, "" )
-
    RETURN txt_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:stripHeader( aHbp )
    LOCAL nStart, n, s
@@ -731,10 +712,8 @@ METHOD IdeProjManager:stripHeader( aHbp )
    ELSE
       RETURN aHbp
    ENDIF
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:updateHbp( iIndex )
    LOCAL txt_
@@ -742,16 +721,12 @@ METHOD IdeProjManager:updateHbp( iIndex )
    IF iIndex != 3
       RETURN NIL
    ENDIF
-
    /* Sources */
    txt_:= hbide_synchronizeForHbp( hb_atokens( ::oUI:editSources:toPlainText(), _EOL ) )
-
    /* Final assault */
    ::oUI:editHbp:setPlainText( hbide_arrayToMemo( txt_ ) )
-
    RETURN txt_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:fetchProperties()
 
@@ -823,10 +798,8 @@ METHOD IdeProjManager:fetchProperties()
          :oWidget         :setWindowTitle( 'Properties for "' + ::oUI:editPrjTitle:Text() + '"' )
       ENDWITH
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:loadSelectedSources()
    LOCAL aMemo := {}, cMemo := ""
@@ -909,10 +882,8 @@ METHOD IdeProjManager:loadSelectedSources()
       :comboPrjType:setCurrentIndex( iif( oSel:cType == "Dll", 2, iif( oSel:cType == "Library", 1, 0 ) ) )
       :editSources:setPlainText( cMemo )
    ENDWITH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:addSourceToArray( aSrc, aTgt, cExt )
    LOCAL cSrc
@@ -927,10 +898,8 @@ METHOD IdeProjManager:addSourceToArray( aSrc, aTgt, cExt )
          ENDIF
       NEXT
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:buildInterface()
    LOCAL cLukupPng, qDrop
@@ -950,17 +919,17 @@ METHOD IdeProjManager:buildInterface()
    ::oUI:buttonChooseDest  :setIcon( QIcon( cLukupPng ) )
    ::oUI:buttonBackup      :setIcon( QIcon( cLukupPng ) )
 
-   ::oUI:buttonSelect :setIcon( QIcon( hbide_image( "open"        ) ) )
-   ::oUI:buttonUp     :setIcon( QIcon( hbide_image( "dc_up"       ) ) )
-   ::oUI:buttonDown   :setIcon( QIcon( hbide_image( "dc_down"     ) ) )
+   ::oUI:buttonSelect      :setIcon( QIcon( hbide_image( "open"        ) ) )
+   ::oUI:buttonUp          :setIcon( QIcon( hbide_image( "dc_up"       ) ) )
+   ::oUI:buttonDown        :setIcon( QIcon( hbide_image( "dc_down"     ) ) )
 
-   ::oUI:buttonSort   :setIcon( QIcon( hbide_image( "sort"        ) ) )
-   ::oUI:buttonSortZA :setIcon( QIcon( hbide_image( "sortdescend" ) ) )
-   ::oUI:buttonSortOrg:setIcon( QIcon( hbide_image( "invertcase"  ) ) )
+   ::oUI:buttonSort        :setIcon( QIcon( hbide_image( "sort"        ) ) )
+   ::oUI:buttonSortZA      :setIcon( QIcon( hbide_image( "sortdescend" ) ) )
+   ::oUI:buttonSortOrg     :setIcon( QIcon( hbide_image( "invertcase"  ) ) )
 
-   ::oUI:buttonSort   :hide()
-   ::oUI:buttonSortZA :hide()
-   ::oUI:buttonSortOrg:hide()
+   ::oUI:buttonSort        :hide()
+   ::oUI:buttonSortZA      :hide()
+   ::oUI:buttonSortOrg     :hide()
 
    ::oUI:buttonCn          :connect( "clicked()", {|| ::lSaveOK := .f., ::oPropertiesDock:hide() } )
    ::oUI:buttonSave        :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .F., .T. )       } )
@@ -975,9 +944,9 @@ METHOD IdeProjManager:buildInterface()
    ::oUI:editPrjLoctn      :connect( "textChanged(QString)", {|cPath| ::setProjectLocation( cPath ) } )
 
    /* Set monospaced fonts */
-   ::oUI:editFlags       :setFont( ::oFont:oWidget )
-   ::oUI:editSources     :setFont( ::oFont:oWidget )
-   ::oUI:editHbp         :setFont( ::oFont:oWidget )
+   ::oUI:editFlags         :setFont( ::oFont:oWidget )
+   ::oUI:editSources       :setFont( ::oFont:oWidget )
+   ::oUI:editHbp           :setFont( ::oFont:oWidget )
 
    qDrop := ::oUI:oWidget
 
@@ -1004,10 +973,8 @@ METHOD IdeProjManager:buildInterface()
                                           ENDIF
                                           RETURN .F.
                                      } )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:synchronizeAlienProject( cProjFileName )
    LOCAL cPath, cFile, cExt, cHbp
@@ -1046,10 +1013,8 @@ METHOD IdeProjManager:synchronizeAlienProject( cProjFileName )
    oProcess := QProcess()
    oProcess:start( cCmd )
    oProcess:waitForFinished()
-
    RETURN cHbp
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:sortSources( cMode )
    LOCAL a_, cTyp, s, d_, n
@@ -1102,10 +1067,8 @@ METHOD IdeProjManager:sortSources( cMode )
 
    ::oUI:editSources:clear()
    ::oUI:editSources:setPlainText( hbide_arrayToMemo( a_ ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:setProjectLocation( cPath )
 
@@ -1119,10 +1082,8 @@ METHOD IdeProjManager:setProjectLocation( cPath )
       ::oUI:editSources:setEnabled( .T. )
       ::oUI:buttonSelect:setEnabled( .T. )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:isValidProjectLocation( lTell )
    LOCAL lOk := .f.
@@ -1138,10 +1099,8 @@ METHOD IdeProjManager:isValidProjectLocation( lTell )
    ELSE
       lOk := .t.
    ENDIF
-
    RETURN lOk
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:moveLine( nDirection )
 
@@ -1150,16 +1109,13 @@ METHOD IdeProjManager:moveLine( nDirection )
    ELSE
 
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:addSourcesToProject( aFiles )
    LOCAL a_, cFile, cHome
 
    a_:= hbide_memoToArray( ::oUI:editSources:toPlainText() )
-
    cHome := ::oUI:editPrjLoctn:text()
    FOR EACH cFile IN aFiles
       cFile := hbide_prepareSourceForHbp( hbide_stripRoot( cHome, cFile ) )
@@ -1167,12 +1123,9 @@ METHOD IdeProjManager:addSourcesToProject( aFiles )
          aadd( a_, cFile )
       ENDIF
    NEXT
-
    ::oUI:editSources:setPlainText( hbide_arrayToMemo( a_ ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:addSources()
    LOCAL aFiles
@@ -1182,10 +1135,9 @@ METHOD IdeProjManager:addSources()
          ::addSourcesToProject( aFiles )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+
 /* Set current project for build - vailtom
  * 26/12/2009 - 02:19:38
  */
@@ -1200,10 +1152,8 @@ METHOD IdeProjManager:setCurrentProject( cProjectName )
    ELSEIF ( n := ascan( ::aProjects, {|e_| e_[ 3, PRJ_PRP_PROPERTIES, 2, E_oPrjTtl ] == cProjectName } ) ) > 0
       aPrjProps     := ::aProjects[ n, 3 ]
       ::oIDE:cWrkProject := aPrjProps[ PRJ_PRP_PROPERTIES, 2, E_oPrjTtl ]
-
    ELSE
       lValid := .F.
-
    ENDIF
 
    IF lValid
@@ -1228,10 +1178,8 @@ METHOD IdeProjManager:setCurrentProject( cProjectName )
          ::loadProperties( ::getProjectFileNameFromTitle( ::cWrkProject ), .f., .f., .f. )
       ENDIF
    ENDIF
-
    RETURN cOldProject
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getCurrentProjectTitle()
 
@@ -1245,10 +1193,8 @@ METHOD IdeProjManager:getCurrentProjectTitle()
       ::setCurrentProject( ::aProjects[ 1, 3, PRJ_PRP_PROPERTIES, 2, E_oPrjTtl ] )
       RETURN ::aProjects[ 1, 3, PRJ_PRP_PROPERTIES, 2, E_oPrjTtl ]
    ENDIF
-
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getCurrentProject( lAlert )
 
@@ -1264,15 +1210,12 @@ METHOD IdeProjManager:getCurrentProject( lAlert )
       ENDIF
       RETURN ""
    ENDIF
-
    IF Len( ::aProjects ) == 1
       ::setCurrentProject( ::aProjects[ 1, 3, PRJ_PRP_PROPERTIES, 2, E_oPrjTtl ] )
       RETURN ::aProjects[ 1, 3, PRJ_PRP_PROPERTIES, 2, E_oPrjTtl ]
    ENDIF
-
    RETURN ::selectCurrentProject()
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:selectAProject()
    LOCAL cProjectTitle := ""
@@ -1301,7 +1244,6 @@ METHOD IdeProjManager:selectAProject()
    oDlg:oWidget:setParent( QWidget() )
    RETURN cProjectTitle
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:selectCurrentProject()
    LOCAL cProjectTitle
@@ -1312,10 +1254,8 @@ METHOD IdeProjManager:selectCurrentProject()
    ENDIF
 
    ::setCurrentProject( cProjectTitle )
-
    RETURN ::cWrkProject
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectsTitleList()
    LOCAL a_, aList := {}
@@ -1323,10 +1263,8 @@ METHOD IdeProjManager:getProjectsTitleList()
    FOR EACH a_ IN ::aProjects
       aadd( aList, a_[ 3, PRJ_PRP_PROPERTIES, 2, PRJ_PRP_TITLE ] )
    NEXT
-
    RETURN aList
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectProperties( cProjectTitle )
    LOCAL n
@@ -1334,23 +1272,18 @@ METHOD IdeProjManager:getProjectProperties( cProjectTitle )
    IF ( n := ascan( ::aProjects, {|e_, x| x := e_[ 3 ], x[ 1, 2, PRJ_PRP_TITLE ] == cProjectTitle } ) ) > 0
       RETURN ::aProjects[ n, 3 ]
    ENDIF
-
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectByFile( cProjectFile )
    LOCAL n, aProj
 
    cProjectFile := hbide_pathNormalized( cProjectFile )
-
    IF ( n := ascan( ::aProjects, {|e_| hb_FileMatch( e_[ 1 ], cProjectFile ) } ) ) > 0
       aProj := ::aProjects[ n ]
    ENDIF
-
    RETURN IdeProject():new( ::oIDE, aProj )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectTypeFromTitle( cProjectTitle )
    LOCAL n, cType := ""
@@ -1358,19 +1291,14 @@ METHOD IdeProjManager:getProjectTypeFromTitle( cProjectTitle )
    IF ( n := ascan( ::aProjects, {|e_, x| x := e_[ 3 ], x[ 1, 2, PRJ_PRP_TITLE ] == cProjectTitle } ) ) > 0
       cType := ::aProjects[ n, 3, PRJ_PRP_PROPERTIES, 1, PRJ_PRP_TYPE ]
    ENDIF
-
    RETURN cType
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectPathFromTitle( cProjectTitle )
    LOCAL cPath
-
    hb_fNameSplit( ::getProjectFileNameFromTitle( cProjectTitle ), @cPath )
-
    RETURN cPath
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectFileNameFromTitle( cProjectTitle )
    LOCAL n, cProjFileName := ""
@@ -1378,10 +1306,8 @@ METHOD IdeProjManager:getProjectFileNameFromTitle( cProjectTitle )
    IF ( n := ascan( ::aProjects, {|e_, x| x := e_[ 3 ], x[ 1, 2, PRJ_PRP_TITLE ] == cProjectTitle } ) ) > 0
       cProjFileName := ::aProjects[ n, 2 ]
    ENDIF
-
    RETURN cProjFileName
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getSourcesByProjectTitle( cProjectTitle )
    LOCAL n, aProj
@@ -1390,10 +1316,8 @@ METHOD IdeProjManager:getSourcesByProjectTitle( cProjectTitle )
       aProj := ::aProjects[ n, 3 ]
       RETURN aProj[ PRJ_PRP_SOURCES, 2 ] /* 2 == parsed sources */
    ENDIF
-
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:getProjectByTitle( cProjectTitle )
    LOCAL n, aProj
@@ -1401,10 +1325,8 @@ METHOD IdeProjManager:getProjectByTitle( cProjectTitle )
    IF ( n := ascan( ::aProjects, {|e_, x| x := e_[ 3 ], x[ 1, 2, PRJ_PRP_TITLE ] == cProjectTitle } ) ) > 0
       aProj := ::aProjects[ n, 3 ]
    ENDIF
-
    RETURN IdeProject():new( ::oIDE, aProj )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:removeProject( cProjectTitle )
    LOCAL cProjFileName, nPos
@@ -1423,10 +1345,8 @@ METHOD IdeProjManager:removeProject( cProjectTitle )
          ::oINI:save()
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:closeProject( cProjectTitle )
    LOCAL oProject, aProp
@@ -1442,12 +1362,10 @@ METHOD IdeProjManager:closeProject( cProjectTitle )
    ENDIF
 
    ::oIDE:removeProjectTree( aProp )
-
    ::setCurrentProject( '' )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+
 /* Prompt for user to select a existing folder
  * 25/12/2009 - 19:03:09 - vailtom
  */
@@ -1482,7 +1400,6 @@ METHOD IdeProjManager:promptForPath( oEditPath, cTitle, cObjFileName )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:buildSource( lExecutable )
    LOCAL oEdit, cTmp, cExeHbMk2, cCmd, cC, cCmdParams, cBuf
@@ -1568,7 +1485,6 @@ METHOD IdeProjManager:buildSource( lExecutable )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron )
    LOCAL cHbpPath, oEdit, cHbpFN, cTmp, cExeHbMk2, aHbp, cCmd, cC, oSource, cCmdParams, cBuf
@@ -1706,7 +1622,6 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
    LOCAL cIfError
@@ -1721,7 +1636,6 @@ METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    LOCAL cTmp, n, n1, cTkn, cExe, qDoc, qCursor
@@ -1809,7 +1723,6 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
    LOCAL cTargetFN, cTmp, oProject, cPath, a_, cParam
@@ -1904,7 +1817,6 @@ METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
    HB_SYMBOL_UNUSED( qProcess )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:runAsScript()
    LOCAL oEdit
@@ -1914,7 +1826,6 @@ METHOD IdeProjManager:runAsScript()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjManager:outputText( cText )
    ::oOutputResult:oWidget:append( "<font color=black>" + cText + "</font>" )
@@ -2026,7 +1937,6 @@ METHOD IdeSelectSource:pullData()
    ::cG             := ::oUI:editG        :text()
    ::cM             := ::oUI:editM        :text()
    ::cW             := ::oUI:editW        :text()
-
    RETURN Self
 
 
@@ -2037,7 +1947,6 @@ METHOD IdeSelectSource:toggleSelection( lSelect )
       oItm := ::oUI:treeSources:topLevelItem( i )
       oItm:setCheckState( 0, iif( lSelect, Qt_Checked, Qt_Unchecked ) )
    NEXT
-
    RETURN Self
 
 
@@ -2050,7 +1959,6 @@ METHOD IdeSelectSource:selectSources( cExt )
          oItm:setCheckState( 0, Qt_Checked )
       ENDIF
    NEXT
-
    RETURN Self
 
 
@@ -2132,7 +2040,6 @@ METHOD IdeSelectSource:loadSources( cPathFile )
    ::oUI:treeSources:headerItem():setText( 0, cPath )
    ::oUI:treeSources:headerItem():setForeGround( 0, QBrush( QColor( 0,0,255 ) ) )
    ::cPath := cPath
-
    RETURN Self
 
 
@@ -2176,7 +2083,6 @@ METHOD IdeSelectSource:buildUI()
       :editHbp:connect( "textChanged(QString)", {|cPath| ::loadSources( cPath ) } )
       :editHbp:setText( hbide_getNextProject( hbide_setWorkingProjectFolder() ) )
    ENDWITH
-
    RETURN Self
 
 
@@ -2188,7 +2094,6 @@ STATIC FUNCTION hbide_getNextProject( cFolder )
    FOR EACH aPrj IN aDir
        nNext := Max( nNext, Val( SubStr( aPrj[ 1 ], 4, At( ".", aPrj[ 1 ] ) - 4 ) ) )
    NEXT
-
    RETURN cFolder + "prj" + StrZero( nNext+1, 5 ) + ".hbp"
 
 
@@ -2222,5 +2127,4 @@ STATIC FUNCTION hbide_setWorkingProjectFolder( cFolder )
    IF HB_ISSTRING( cFolder )
       s_cFolder := cFolder
    ENDIF
-
    RETURN l_cFolder

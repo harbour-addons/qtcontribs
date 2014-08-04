@@ -1916,38 +1916,41 @@ FUNCTION hbide_SetWrkFolderLast( cPathFile )
 /*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getUI( cUI, qParent )
+   LOCAL oUI
 
    IF hbide_setIde():nModeUI == UI_MODE_FUNC
       SWITCH Lower( cUI )
-      CASE "findinfilesex"       ; RETURN hbqtui_Findinfilesex( qParent )
-      CASE "updown"              ; RETURN hbqtui_UpDown( qParent )
-      CASE "updown_v"            ; RETURN hbqtui_UpDown_v( qParent )
-      CASE "searchreplace"       ; RETURN hbqtui_SearchReplace( qParent )
-      CASE "finddialog"          ; RETURN hbqtui_FindDialog( qParent )
-      CASE "environments"        ; RETURN hbqtui_Environments( qParent )
-      CASE "environ"             ; RETURN hbqtui_Environ( qParent )
-      CASE "shortcuts"           ; RETURN hbqtui_Shortcuts( qParent )
-      CASE "docwriter"           ; RETURN hbqtui_Docwriter( qParent )
-      CASE "toolsutilities"      ; RETURN hbqtui_Toolsutilities( qParent )
-      CASE "funclist"            ; RETURN hbqtui_Funclist( qParent )
-      CASE "docviewgenerator"    ; RETURN hbqtui_Docviewgenerator( qParent )
-      CASE "selectproject"       ; RETURN hbqtui_Selectproject( qParent )
-      CASE "projectpropertiesex" ; RETURN hbqtui_Projectpropertiesex( qParent )
-      CASE "selectionlist"       ; RETURN hbqtui_Selectionlist( qParent )
-      CASE "themesex"            ; RETURN hbqtui_Themesex( qParent )
-      CASE "setup"               ; RETURN hbqtui_Setup( qParent )
-      CASE "mainwindow"          ; RETURN hbqtui_Mainwindow( qParent )
-      CASE "skeletons"           ; RETURN hbqtui_Skeletons( qParent )
-      CASE "editor"              ; RETURN hbqtui_Editor( qParent )
-      CASE "fetchdate"           ; RETURN hbqtui_FetchDate( qParent )
-      CASE "format"              ; RETURN hbqtui_Format( qParent )
-      CASE "changelog"           ; RETURN hbqtui_Changelog( qParent )
-      CASE "functionsmap"        ; RETURN hbqtui_FunctionsMap( qParent )
-      CASE "selectsources"       ; RETURN hbqtui_SelectSources( qParent )
+      CASE "findinfilesex"       ; oUI :=  hbqtui_Findinfilesex( qParent )       ; EXIT
+      CASE "updown"              ; oUI :=  hbqtui_UpDown( qParent )              ; EXIT
+      CASE "updown_v"            ; oUI :=  hbqtui_UpDown_v( qParent )            ; EXIT
+      CASE "searchreplace"       ; oUI :=  hbqtui_SearchReplace( qParent )       ; EXIT
+      CASE "finddialog"          ; oUI :=  hbqtui_FindDialog( qParent )          ; EXIT
+      CASE "environments"        ; oUI :=  hbqtui_Environments( qParent )        ; EXIT
+      CASE "environ"             ; oUI :=  hbqtui_Environ( qParent )             ; EXIT
+      CASE "shortcuts"           ; oUI :=  hbqtui_Shortcuts( qParent )           ; EXIT
+      CASE "docwriter"           ; oUI :=  hbqtui_Docwriter( qParent )           ; EXIT
+      CASE "toolsutilities"      ; oUI :=  hbqtui_Toolsutilities( qParent )      ; EXIT
+      CASE "funclist"            ; oUI :=  hbqtui_Funclist( qParent )            ; EXIT
+      CASE "docviewgenerator"    ; oUI :=  hbqtui_Docviewgenerator( qParent )    ; EXIT
+      CASE "selectproject"       ; oUI :=  hbqtui_Selectproject( qParent )       ; EXIT
+      CASE "projectpropertiesex" ; oUI :=  hbqtui_Projectpropertiesex( qParent ) ; EXIT
+      CASE "selectionlist"       ; oUI :=  hbqtui_Selectionlist( qParent )       ; EXIT
+      CASE "themesex"            ; oUI :=  hbqtui_Themesex( qParent )            ; EXIT
+      CASE "setup"               ; oUI :=  hbqtui_Setup( qParent )               ; EXIT
+      CASE "mainwindow"          ; oUI :=  hbqtui_Mainwindow( qParent )          ; EXIT
+      CASE "skeletons"           ; oUI :=  hbqtui_Skeletons( qParent )           ; EXIT
+      CASE "editor"              ; oUI :=  hbqtui_Editor( qParent )              ; EXIT
+      CASE "fetchdate"           ; oUI :=  hbqtui_FetchDate( qParent )           ; EXIT
+      CASE "format"              ; oUI :=  hbqtui_Format( qParent )              ; EXIT
+      CASE "changelog"           ; oUI :=  hbqtui_Changelog( qParent )           ; EXIT
+      CASE "functionsmap"        ; oUI :=  hbqtui_FunctionsMap( qParent )        ; EXIT
+      CASE "selectsources"       ; oUI :=  hbqtui_SelectSources( qParent )       ; EXIT
       ENDSWITCH
+      IF HB_ISOBJECT( oUI )
+         oUI:setStyleSheet( 'font: 8pt "Arial";' )
+      ENDIF
    ENDIF
-
-   RETURN NIL
+   RETURN oUI
 
 /*----------------------------------------------------------------------*/
 /* An interface component function which will be called by Reports Manager

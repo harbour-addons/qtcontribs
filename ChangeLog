@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-04 08:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r329)
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+    ! Fixed to render the same look and feel of .ui dialogs.
+       A regression caused by Qt Creator's :setStyleSheet() handelling 
+       in Qt 5x.
+
 2014-08-02 18:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r328)
   * hbide/docks.prg
   * hbide/edit.prg
