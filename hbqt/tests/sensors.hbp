@@ -1,0 +1,13 @@
+
+-es2
+-w3
+-inc
+-gui
+
+
+hbqtgui.hbc
+hbqtsensors.hbc
+hbqtwidgets.hbc
+
+sensors.prg
+sensors.ui

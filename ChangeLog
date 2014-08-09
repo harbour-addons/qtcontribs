@@ -16,7 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2014-08-09 22:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r332)
+2014-08-09 10:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r333)
+  + hbqt/tests/sensors.hbp
+  + hbqt/tests/sensors.prg
+  + hbqt/tests/sensors.ui
+    + Added application demonstrating usage of QtSensors module.
+       It is exact replica of Qt's own example. On desktop it might not 
+       be useful but on mobile platforms it has great usage.
+
+2014-08-09 10:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r332)
   * hbqt/hbmk2_qt.hb
   * hbqt/qtsensors/hbqtsensors.hbp
   * hbqt/qtsensors/hbqtsensors.hbx
