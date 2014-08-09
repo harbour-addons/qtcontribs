@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSensorReading
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QMagnetometerReading>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QMAGNETOMETERREADING )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QMagnetometerReading( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QMagnetometerReading() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal   calibrationLevel() const
+void   setCalibrationLevel(qreal calibrationLevel)
+void   setX(qreal x)
+void   setY(qreal y)
+void   setZ(qreal z)
+qreal   x() const
+qreal   y() const
+qreal   z() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

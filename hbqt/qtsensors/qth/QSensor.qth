@@ -1,0 +1,115 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QSensor>
+
+
+/*
+ * QSensor(const QByteArray & type, QObject * parent = 0)
+ * virtual   ~QSensor()
+ */
+HB_FUNC( QT_QSENSOR )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QByteArray" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QSensor( *hbqt_par_QByteArray( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QByteArray" ) )
+   {
+      __HB_RETPTRGC__( new QSensor( *hbqt_par_QByteArray( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   AxesOrientationMode { FixedOrientation, AutomaticOrientation, UserOrientation }
+enum   Feature { Buffering, AlwaysOn, SkipDuplicates, GeoValues, ..., AxesOrientation }
+</ENUMS>
+
+<PROTOS>
+void   addFilter(QSensorFilter * filter)
+qrangelist   availableDataRates() const
+AxesOrientationMode   axesOrientationMode() const
+int   bufferSize() const
+bool   connectToBackend()
+int   currentOrientation() const
+int   dataRate() const
+QString   description() const
+int   efficientBufferSize() const
+int   error() const
+QList<QSensorFilter *>   filters() const
+QByteArray   identifier() const
+bool   isActive() const
+bool   isAlwaysOn() const
+bool   isBusy() const
+bool   isConnectedToBackend() const
+bool   isFeatureSupported(Feature feature) const
+int   maxBufferSize() const
+int   outputRange() const
+qoutputrangelist   outputRanges() const
+QSensorReading *   reading() const
+void   removeFilter(QSensorFilter * filter)
+void   setActive(bool active)
+void   setAlwaysOn(bool alwaysOn)
+void   setAxesOrientationMode(AxesOrientationMode axesOrientationMode)
+void   setBufferSize(int bufferSize)
+void   setCurrentOrientation(int currentOrientation)
+void   setDataRate(int rate)
+void   setEfficientBufferSize(int efficientBufferSize)
+void   setIdentifier(const QByteArray & identifier)
+void   setMaxBufferSize(int maxBufferSize)
+void   setOutputRange(int index)
+void   setSkipDuplicates(bool skipDuplicates)
+void   setUserOrientation(int userOrientation)
+bool   skipDuplicates() const
+QByteArray   type() const
+int   userOrientation() const
+
+QByteArray   defaultSensorForType(const QByteArray & type)
+QList<QByteArray>   sensorTypes()
+QList<QByteArray>   sensorsForType(const QByteArray & type)
+</PROTOS>
+
+<SLOTS>
+bool   start()
+void   stop()
+</SLOTS>
+
+<SIGNALS>
+void   activeChanged()
+void   alwaysOnChanged()
+void   availableSensorsChanged()
+void   axesOrientationModeChanged(AxesOrientationMode axesOrientationMode)
+void   bufferSizeChanged(int bufferSize)
+void   busyChanged()
+void   currentOrientationChanged(int currentOrientation)
+void   dataRateChanged()
+void   efficientBufferSizeChanged(int efficientBufferSize)
+void   maxBufferSizeChanged(int maxBufferSize)
+void   readingChanged()
+void   sensorError(int error)
+void   skipDuplicatesChanged(bool skipDuplicates)
+void   userOrientationChanged(int userOrientation)
+</SIGNALS>

@@ -1,0 +1,23 @@
+#
+# $Id$
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtquick.hbx
+
+hbqt_init.cpp
+
+../qtcore/hbqtcore.hbc
+
+-deppkgname=qtsensors:QtSensors
+-depkeyhead=qtsensors:QtSensors/QtSensors
+-depcontrol=qtsensors:${HB_WITH_QT}
+{!darwin}-depincpath=qtsensors:/usr/include/qt5
+{!darwin}-depincpath=qtsensors:/usr/include
+{bsd}-depincpath=qt:/usr/local/include/qt5
+{darwin}-depincpath=qtsensors:/Developer/qt/include
+{darwin}-depincpath=qtsensors:/Library/Frameworks
+{darwin}-depincpath=qtsensors:/usr/local/include

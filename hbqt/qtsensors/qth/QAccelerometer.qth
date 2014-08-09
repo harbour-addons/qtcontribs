@@ -1,0 +1,57 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSensor
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QAccelerometer>
+
+
+/*
+ * QAccelerometer(QObject * parent = 0)
+ * virtual   ~QAccelerometer()
+ */
+HB_FUNC( QT_QACCELEROMETER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QAccelerometer( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAccelerometer() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   AccelerationMode { Combined, Gravity, User }
+</ENUMS>
+
+<PROTOS>
+AccelerationMode   accelerationMode() const
+QAccelerometerReading *   reading() const
+void   setAccelerationMode(AccelerationMode accelerationMode)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   accelerationModeChanged(AccelerationMode accelerationMode)
+</SIGNALS>

@@ -81,6 +81,8 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QStandardItem>
 #include <QtGui/QCloseEvent>
+#include <QtWidgets/QScroller>
+#include <QtWidgets/QScrollerProperties>
 
 #if QT_VERSION <= 0x040900
 #include <QtGui/QMainWindow>
@@ -128,6 +130,7 @@ extern void hbqt_del_QTreeWidgetItem( void * pObj, int iFlags );
 extern void hbqt_del_QTableWidgetItem( void * pObj, int iFlags );
 extern void hbqt_del_QWidget( void * pObj, int iFlags );
 extern void hbqt_del_QRect( void * pObj, int iFlags );
+extern void hbqt_del_QScrollerProperties( void * pObj, int iFlags );
 //
 extern void hbqt_del_QActionEvent( void * pObj, int iFlags );
 extern void hbqt_del_QContextMenuEvent( void * pObj, int iFlags );
@@ -601,6 +604,20 @@ static void hbqt_SlotsExecIntQImage( PHB_ITEM * codeBlock, void ** arguments, QS
    }
 }
 
+static void hbqt_SlotsExecQScrollerProperties( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QScrollerProperties( ( *reinterpret_cast< QScrollerProperties( * ) >( arguments[ 1 ] ) ) ), "HB_QSCROLLERPROPERTIES", hbqt_del_QScrollerProperties, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
 
 HB_FUNC_EXTERN( HB_QABSTRACTBUTTON );
 HB_FUNC_EXTERN( HB_QACTION );
@@ -610,6 +627,8 @@ HB_FUNC_EXTERN( HB_QSTANDARDITEM );
 HB_FUNC_EXTERN( HB_QLISTWIDGETITEM );
 HB_FUNC_EXTERN( HB_QTABLEWIDGETITEM );
 HB_FUNC_EXTERN( HB_QTREEWIDGETITEM );
+HB_FUNC_EXTERN( HB_QSCROLLER );
+HB_FUNC_EXTERN( HB_QSCROLLERPROPERTIES );
 
 /*----------------------------------------------------------------------*/
 
@@ -687,6 +706,8 @@ void _hbqtgui_force_link_for_event( void )
    HB_FUNC_EXEC( HB_QLISTWIDGETITEM );
    HB_FUNC_EXEC( HB_QTABLEWIDGETITEM );
    HB_FUNC_EXEC( HB_QTREEWIDGETITEM );
+   HB_FUNC_EXEC( HB_QSCROLLER );
+   HB_FUNC_EXEC( HB_QSCROLLERPROPERTIES );
 }
 
 static void hbqt_registerCallbacks( void )
@@ -717,6 +738,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QRect$int"                                 , hbqt_SlotsExecQRectInt                         );
    hbqt_slots_register_callback( "BlurHints"                                 , hbqt_SlotsExecBlurHints                        );
    hbqt_slots_register_callback( "int$QImage"                                , hbqt_SlotsExecIntQImage                        );
+   hbqt_slots_register_callback( "QScrollerProperties"                       , hbqt_SlotsExecQScrollerProperties              );
 
    hbqt_events_register_createobj( QEvent::MouseButtonPress                  , "hb_QMouseEvent"                    );
    hbqt_events_register_createobj( QEvent::MouseButtonRelease                , "hb_QMouseEvent"                    );

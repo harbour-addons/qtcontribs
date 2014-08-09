@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+Constructor = No
+Destructor  = No
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QSensorReading>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSENSORREADING )
+{
+   HB_FUNC_EXEC( HB_QSENSORREADING );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   setTimestamp(quint64 timestamp)
+quint64   timestamp() const
+QVariant   value(int index) const
+int   valueCount() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

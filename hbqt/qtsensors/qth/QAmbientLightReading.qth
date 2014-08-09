@@ -1,0 +1,54 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSensorReading
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QAmbientLightReading>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QAMBIENTLIGHTREADING )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QAmbientLightReading( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAmbientLightReading() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   LightLevel { Undefined, Dark, Twilight, Light, Bright, Sunny }
+</ENUMS>
+
+<PROTOS>
+LightLevel   lightLevel() const
+void   setLightLevel(LightLevel lightLevel)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

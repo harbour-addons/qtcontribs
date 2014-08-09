@@ -16,6 +16,86 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-08 17:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r330)
+  * hbqt/hbmk2_qt.hb
+    + Added new QObject derived classes.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added one more signal.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added constants related to QtSensors module.
+
+  * hbqt/qtgui/qth/QGridLayout.qth
+  * hbqt/qtgui/qth/QScroller.qth
+  * hbqt/qtgui/qth/QSpacerItem.qth
+    + Added left-out public function members.
+
+  + hbqt/qtsensors
+  + hbqt/qtsensors/doc
+  + hbqt/qtsensors/doc/en
+  + hbqt/qtsensors/hbqt_init.cpp
+  + hbqt/qtsensors/hbqtsensors.ch
+  + hbqt/qtsensors/hbqtsensors.hbc
+  + hbqt/qtsensors/hbqtsensors.hbm
+  + hbqt/qtsensors/hbqtsensors.hbp
+  + hbqt/qtsensors/hbqtsensors.hbx
+  + hbqt/qtsensors/hbqtsensorss.hbp
+  + hbqt/qtsensors/qth
+  + hbqt/qtsensors/qth/filelist.hbm
+  + hbqt/qtsensors/qth/QAccelerometer.qth
+  + hbqt/qtsensors/qth/QAccelerometerFilter.qth
+  + hbqt/qtsensors/qth/QAccelerometerReading.qth
+  + hbqt/qtsensors/qth/QAltimeter.qth
+  + hbqt/qtsensors/qth/QAltimeterFilter.qth
+  + hbqt/qtsensors/qth/QAltimeterReading.qth
+  + hbqt/qtsensors/qth/QAmbientLightFilter.qth
+  + hbqt/qtsensors/qth/QAmbientLightReading.qth
+  + hbqt/qtsensors/qth/QAmbientLightSensor.qth
+  + hbqt/qtsensors/qth/QAmbientTemperatureFilter.qth
+  + hbqt/qtsensors/qth/QAmbientTemperatureReading.qth
+  + hbqt/qtsensors/qth/QAmbientTemperatureSensor.qth
+  + hbqt/qtsensors/qth/QCompass.qth
+  + hbqt/qtsensors/qth/QCompassFilter.qth
+  + hbqt/qtsensors/qth/QCompassReading.qth
+  + hbqt/qtsensors/qth/QGyroscope.qth
+  + hbqt/qtsensors/qth/QGyroscopeFilter.qth
+  + hbqt/qtsensors/qth/QGyroscopeReading.qth
+  + hbqt/qtsensors/qth/QHolsterFilter.qth
+  + hbqt/qtsensors/qth/QHolsterReading.qth
+  + hbqt/qtsensors/qth/QHolsterSensor.qth
+  + hbqt/qtsensors/qth/QIRProximityFilter.qth
+  + hbqt/qtsensors/qth/QIRProximityReading.qth
+  + hbqt/qtsensors/qth/QIRProximitySensor.qth
+  + hbqt/qtsensors/qth/QLightFilter.qth
+  + hbqt/qtsensors/qth/QLightReading.qth
+  + hbqt/qtsensors/qth/QLightSensor.qth
+  + hbqt/qtsensors/qth/QMagnetometer.qth
+  + hbqt/qtsensors/qth/QMagnetometerFilter.qth
+  + hbqt/qtsensors/qth/QMagnetometerReading.qth
+  + hbqt/qtsensors/qth/QOrientationFilter.qth
+  + hbqt/qtsensors/qth/QOrientationReading.qth
+  + hbqt/qtsensors/qth/QOrientationSensor.qth
+  + hbqt/qtsensors/qth/QPressureFilter.qth
+  + hbqt/qtsensors/qth/QPressureReading.qth
+  + hbqt/qtsensors/qth/QPressureSensor.qth
+  + hbqt/qtsensors/qth/QProximityFilter.qth
+  + hbqt/qtsensors/qth/QProximityReading.qth
+  + hbqt/qtsensors/qth/QProximitySensor.qth
+  + hbqt/qtsensors/qth/QRotationFilter.qth
+  + hbqt/qtsensors/qth/QRotationReading.qth
+  + hbqt/qtsensors/qth/QRotationSensor.qth
+  + hbqt/qtsensors/qth/QSensor.qth
+  + hbqt/qtsensors/qth/QSensorFilter.qth
+  + hbqt/qtsensors/qth/QSensorReading.qth
+  + hbqt/qtsensors/qth/QTapFilter.qth
+  + hbqt/qtsensors/qth/QTapReading.qth
+  + hbqt/qtsensors/qth/QTapSensor.qth
+  + hbqt/qtsensors/qth/QTiltFilter.qth
+  + hbqt/qtsensors/qth/QTiltReading.qth
+  + hbqt/qtsensors/qth/QTiltSensor.qth
+    + Added QtSensors module which was introcuced in Qt 5.1.
+
 2014-08-04 08:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r329)
   * hbide/misc.prg
   * hbide/projmanager.prg

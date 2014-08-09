@@ -4937,5 +4937,50 @@
 #define QInputMethod_Click                                   0      // A normal click/tap
 #define QInputMethod_ContextMenu                             1      // A context menu click/tap (e.g. right-button or tap-and-hold)
 
+#define QSensor_FixedOrientation                             0      // No automatic rotation is applied to the reading values.
+#define QSensor_AutomaticOrientation                         1      // The reading values are automatically rotated based on the screen orientation.
+#define QSensor_UserOrientation                              2      // The reading values are rotated based on the angle of the userOrientation property.
+#define QSensor_Buffering                                    0      // The backend supports buffering of readings, controlled by the #define QSensor_bufferSize property.
+#define QSensor_AlwaysOn                                     1      // The backend supports changing the policy on whether to suspend when idle, controlled by the #define QSensor_alwaysOn property.
+#define QSensor_SkipDuplicates                               5      // The backend supports skipping of same or very similar successive readings. This can be enabled by setting the #define QSensor_skipDuplicates property to true.
+#define QSensor_GeoValues                                    2      // The backend supports returning geo values, which can be controlled with the QMagnetometer::returnGeoValues property.
+#define QSensor_FieldOfView                                  3      // The backend specifies its field of view, which can be read from the QLightSensor::fieldOfView property.
+#define QSensor_AccelerationMode                             4      // The backend supports switching the acceleration mode of the acceleromter with the #define QAccelerometer_accelerationMode property.
+#define QSensor_PressureSensorTemperature                    7      // The backend provides the pressure sensor's die temperature
+#define QSensor_AxesOrientation                              6      // The backend supports changing the axes orientation from the default of #define QSensor_FixedOrientation to something else.
+
+#define QAmbientLightReading_Undefined                       0      // The light level is unknown.
+#define QAmbientLightReading_Dark                            1      // It is dark.
+#define QAmbientLightReading_Twilight                        2      // It is moderately dark.
+#define QAmbientLightReading_Light                           3      // It is light (eg. internal lights).
+#define QAmbientLightReading_Bright                          4      // It is bright (eg. shade).
+#define QAmbientLightReading_Sunny                           5      // It is very bright (eg. direct sunlight).
+
+#define QOrientationReading_Undefined                        0      // The orientation is unknown.
+#define QOrientationReading_TopUp                            1      // The Top edge of the device is pointing up.
+#define QOrientationReading_TopDown                          2      // The Top edge of the device is pointing down.
+#define QOrientationReading_LeftUp                           3      // The Left edge of the device is pointing up.
+#define QOrientationReading_RightUp                          4      // The Right edge of the device is pointing up.
+#define QOrientationReading_FaceUp                           5      // The Face of the device is pointing up.
+#define QOrientationReading_FaceDown                         6      // The Face of the device is pointing down.
+
+#define QTapReading_Undefined                                0      // This value means that the direction is unknown.
+#define QTapReading_X                                        0x0001 // This flag is set if the tap was along the X axis.
+#define QTapReading_Y                                        0x0002 // This flag is set if the tap was along the Y axis.
+#define QTapReading_Z                                        0x0004 // This flag is set if the tap was along the Z axis.
+#define QTapReading_X_Pos                                    0x0011 // This flag is set if the tap was towards the positive X direction.
+#define QTapReading_Y_Pos                                    0x0022 // This flag is set if the tap was towards the positive Y direction.
+#define QTapReading_Z_Pos                                    0x0044 // This flag is set if the tap was towards the positive Z direction.
+#define QTapReading_X_Neg                                    0x0101 // This flag is set if the tap was towards the negative X direction.
+#define QTapReading_Y_Neg                                    0x0202 // This flag is set if the tap was towards the negative Y direction.
+#define QTapReading_Z_Neg                                    0x0404 // This flag is set if the tap was towards the negative Z direction.
+#define QTapReading_X_Both                                   0x0111 // Equivalent to X_Pos|X_Neg. Returned by devices that cannot detect the direction of a tap.
+#define QTapReading_Y_Both                                   0x0222 // Equivalent to Y_Pos|Y_Neg. Returned by devices that cannot detect the direction of a tap.
+#define QTapReading_Z_Both                                   0x0444 // Equivalent to Z_Pos|Z_Neg. Returned by devices that cannot detect the direction of a tap.
+
+#define QAccelerometer_Combined                              0      // Both the acceleration caused by gravity and the acceleration caused by the user moving the device is reported combined.
+#define QAccelerometer_Gravity                               1      // Only the acceleration caused by gravity is reported. Movements of the device caused by the user have no effect other than changing the direction when the device is rotated.
+#define QAccelerometer_User                                  2      // Only the acceleration caused by the user moving the device is reported, the effect of gravity is canceled out. A device at rest therefore should report values of, or close to, zero. In other APIs, this mode might be known as linear acceleration.
+
 #endif
 

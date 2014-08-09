@@ -1,0 +1,12 @@
+#
+# $Id$
+#
+
+../hbqt_common.hbm
+
+hbqtsensors.hbm
+
+-instfile=inc:hbqtsensors.ch
+-instfile=inc:hbqtsensors.hbx
+
+hbqtsensorss.hbp

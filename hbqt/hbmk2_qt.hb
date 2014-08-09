@@ -3427,6 +3427,252 @@ STATIC FUNCTION qth_is_extended( cQTHFileName )
 
 /*----------------------------------------------------------------------*/
 
+#define HBQT_BIT_NONE                             0
+#define HBQT_BIT_OWNER                            1
+#define HBQT_BIT_QOBJECT                          2
+#define HBQT_BIT_CONSTRUCTOR                      4
+#define HBQT_BIT_DESTRUCTOR                       8
+#define HBQT_BIT_QPOINTER                         16
+
+STATIC FUNCTION qth_get_bits( cWidget, lNew )
+   LOCAL cBits := "HBQT_BIT_NONE"
+
+   IF lNew
+      cBits += " | HBQT_BIT_OWNER"
+   ENDIF
+   IF qth_is_QObject( cWidget )
+      cBits += " | HBQT_BIT_QOBJECT"
+   ENDIF
+
+   RETURN cBits
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION IsQt5Widget( cWidget )
+
+   STATIC s_b_ := { ;
+         "QAbstractButton"                      => NIL , ;
+         "QAbstractGraphicsShapeItem"           => NIL , ;
+         "QAbstractItemDelegate"                => NIL , ;
+         "QAbstractItemView"                    => NIL , ;
+         "QAbstractScrollArea"                  => NIL , ;
+         "QAbstractSlider"                      => NIL , ;
+         "QAbstractSpinBox"                     => NIL , ;
+         "QAction"                              => NIL , ;
+         "QActionGroup"                         => NIL , ;
+         "QApplication"                         => NIL , ;
+         "QBoxLayout"                           => NIL , ;
+         "QButtonGroup"                         => NIL , ;
+         "QCalendarWidget"                      => NIL , ;
+         "QCheckBox"                            => NIL , ;
+         "QColorDialog"                         => NIL , ;
+         "QColormap"                            => NIL , ;
+         "QColumnView"                          => NIL , ;
+         "QComboBox"                            => NIL , ;
+         "QCommandLinkButton"                   => NIL , ;
+         "QCommonStyle"                         => NIL , ;
+         "QCompleter"                           => NIL , ;
+         "QDataWidgetMapper"                    => NIL , ;
+         "QDateEdit"                            => NIL , ;
+         "QDateTimeEdit"                        => NIL , ;
+         "QDesktopWidget"                       => NIL , ;
+         "QDial"                                => NIL , ;
+         "QDialog"                              => NIL , ;
+         "QDialogButtonBox"                     => NIL , ;
+         "QDockWidget"                          => NIL , ;
+         "QDoubleSpinBox"                       => NIL , ;
+         "QErrorMessage"                        => NIL , ;
+         "QFileDialog"                          => NIL , ;
+         "QFileIconProvider"                    => NIL , ;
+         "QFileSystemModel"                     => NIL , ;
+         "QFocusFrame"                          => NIL , ;
+         "QFontComboBox"                        => NIL , ;
+         "QFontDialog"                          => NIL , ;
+         "QFormLayout"                          => NIL , ;
+         "QFrame"                               => NIL , ;
+         "QGesture"                             => NIL , ;
+         "QGestureEvent"                        => NIL , ;
+         "QGestureRecognizer"                   => NIL , ;
+         "QGraphicsAnchor"                      => NIL , ;
+         "QGraphicsAnchorLayout"                => NIL , ;
+         "QGraphicsBlurEffect"                  => NIL , ;
+         "QGraphicsColorizeEffect"              => NIL , ;
+         "QGraphicsDropShadowEffect"            => NIL , ;
+         "QGraphicsEffect"                      => NIL , ;
+         "QGraphicsEllipseItem"                 => NIL , ;
+         "QGraphicsGridLayout"                  => NIL , ;
+         "QGraphicsItem"                        => NIL , ;
+         "QGraphicsItemAnimation"               => NIL , ;
+         "QGraphicsItemGroup"                   => NIL , ;
+         "QGraphicsLayout"                      => NIL , ;
+         "QGraphicsLayoutItem"                  => NIL , ;
+         "QGraphicsLineItem"                    => NIL , ;
+         "QGraphicsLinearLayout"                => NIL , ;
+         "QGraphicsObject"                      => NIL , ;
+         "QGraphicsOpacityEffect"               => NIL , ;
+         "QGraphicsPathItem"                    => NIL , ;
+         "QGraphicsPixmapItem"                  => NIL , ;
+         "QGraphicsPolygonItem"                 => NIL , ;
+         "QGraphicsProxyWidget"                 => NIL , ;
+         "QGraphicsRectItem"                    => NIL , ;
+         "QGraphicsRotation"                    => NIL , ;
+         "QGraphicsScale"                       => NIL , ;
+         "QGraphicsScene"                       => NIL , ;
+         "QGraphicsSceneContextMenuEvent"       => NIL , ;
+         "QGraphicsSceneDragDropEvent"          => NIL , ;
+         "QGraphicsSceneEvent"                  => NIL , ;
+         "QGraphicsSceneHelpEvent"              => NIL , ;
+         "QGraphicsSceneHoverEvent"             => NIL , ;
+         "QGraphicsSceneMouseEvent"             => NIL , ;
+         "QGraphicsSceneMoveEvent"              => NIL , ;
+         "QGraphicsSceneResizeEvent"            => NIL , ;
+         "QGraphicsSceneWheelEvent"             => NIL , ;
+         "QGraphicsSimpleTextItem"              => NIL , ;
+         "QGraphicsTextItem"                    => NIL , ;
+         "QGraphicsTransform"                   => NIL , ;
+         "QGraphicsView"                        => NIL , ;
+         "QGraphicsWidget"                      => NIL , ;
+         "QGridLayout"                          => NIL , ;
+         "QGroupBox"                            => NIL , ;
+         "QHBoxLayout"                          => NIL , ;
+         "QHeaderView"                          => NIL , ;
+         "QInputDialog"                         => NIL , ;
+         "QItemDelegate"                        => NIL , ;
+         "QItemEditorCreator"                   => NIL , ;
+         "QItemEditorCreatorBase"               => NIL , ;
+         "QItemEditorFactory"                   => NIL , ;
+         "QKeyEventTransition"                  => NIL , ;
+         "QLCDNumber"                           => NIL , ;
+         "QLabel"                               => NIL , ;
+         "QLayout"                              => NIL , ;
+         "QLayoutItem"                          => NIL , ;
+         "QLineEdit"                            => NIL , ;
+         "QListView"                            => NIL , ;
+         "QListWidget"                          => NIL , ;
+         "QListWidgetItem"                      => NIL , ;
+         "QMacCocoaViewContainer"               => NIL , ;
+         "QMacNativeWidget"                     => NIL , ;
+         "QMainWindow"                          => NIL , ;
+         "QMdiArea"                             => NIL , ;
+         "QMdiSubWindow"                        => NIL , ;
+         "QMenu"                                => NIL , ;
+         "QMenuBar"                             => NIL , ;
+         "QMessageBox"                          => NIL , ;
+         "QMouseEventTransition"                => NIL , ;
+         "QPanGesture"                          => NIL , ;
+         "QPinchGesture"                        => NIL , ;
+         "QPlainTextDocumentLayout"             => NIL , ;
+         "QPlainTextEdit"                       => NIL , ;
+         "QProgressBar"                         => NIL , ;
+         "QProgressDialog"                      => NIL , ;
+         "QProxyStyle"                          => NIL , ;
+         "QPushButton"                          => NIL , ;
+         "QRadioButton"                         => NIL , ;
+         "QRubberBand"                          => NIL , ;
+         "QScrollArea"                          => NIL , ;
+         "QScrollBar"                           => NIL , ;
+         "QScroller"                            => NIL , ;
+         "QScrollerProperties"                  => NIL , ;
+         "QShortcut"                            => NIL , ;
+         "QSizeGrip"                            => NIL , ;
+         "QSizePolicy"                          => NIL , ;
+         "QSlider"                              => NIL , ;
+         "QSpacerItem"                          => NIL , ;
+         "QSpinBox"                             => NIL , ;
+         "QSplashScreen"                        => NIL , ;
+         "QSplitter"                            => NIL , ;
+         "QSplitterHandle"                      => NIL , ;
+         "QStackedLayout"                       => NIL , ;
+         "QStackedWidget"                       => NIL , ;
+         "QStandardItemEditorCreator"           => NIL , ;
+         "QStatusBar"                           => NIL , ;
+         "QStyle"                               => NIL , ;
+         "QStyleFactory"                        => NIL , ;
+         "QStyleHintReturn"                     => NIL , ;
+         "QStyleHintReturnMask"                 => NIL , ;
+         "QStyleHintReturnVariant"              => NIL , ;
+         "QStyleOption"                         => NIL , ;
+         "QStyleOptionButton"                   => NIL , ;
+         "QStyleOptionComboBox"                 => NIL , ;
+         "QStyleOptionComplex"                  => NIL , ;
+         "QStyleOptionDockWidget"               => NIL , ;
+         "QStyleOptionFocusRect"                => NIL , ;
+         "QStyleOptionFrame"                    => NIL , ;
+         "QStyleOptionGraphicsItem"             => NIL , ;
+         "QStyleOptionGroupBox"                 => NIL , ;
+         "QStyleOptionHeader"                   => NIL , ;
+         "QStyleOptionMenuItem"                 => NIL , ;
+         "QStyleOptionProgressBar"              => NIL , ;
+         "QStyleOptionRubberBand"               => NIL , ;
+         "QStyleOptionSizeGrip"                 => NIL , ;
+         "QStyleOptionSlider"                   => NIL , ;
+         "QStyleOptionSpinBox"                  => NIL , ;
+         "QStyleOptionTab"                      => NIL , ;
+         "QStyleOptionTabBarBase"               => NIL , ;
+         "QStyleOptionTabWidgetFrame"           => NIL , ;
+         "QStyleOptionTitleBar"                 => NIL , ;
+         "QStyleOptionToolBar"                  => NIL , ;
+         "QStyleOptionToolBox"                  => NIL , ;
+         "QStyleOptionToolButton"               => NIL , ;
+         "QStyleOptionViewItem"                 => NIL , ;
+         "QStylePainter"                        => NIL , ;
+         "QStylePlugin"                         => NIL , ;
+         "QStyledItemDelegate"                  => NIL , ;
+         "QSwipeGesture"                        => NIL , ;
+         "QSystemTrayIcon"                      => NIL , ;
+         "QTabBar"                              => NIL , ;
+         "QTabWidget"                           => NIL , ;
+         "QTableView"                           => NIL , ;
+         "QTableWidget"                         => NIL , ;
+         "QTableWidgetItem"                     => NIL , ;
+         "QTableWidgetSelectionRange"           => NIL , ;
+         "QTapAndHoldGesture"                   => NIL , ;
+         "QTapGesture"                          => NIL , ;
+         "QTextBrowser"                         => NIL , ;
+         "QTextEdit"                            => NIL , ;
+         "QTileRules"                           => NIL , ;
+         "QTimeEdit"                            => NIL , ;
+         "QToolBar"                             => NIL , ;
+         "QToolBox"                             => NIL , ;
+         "QToolButton"                          => NIL , ;
+         "QToolTip"                             => NIL , ;
+         "QTreeView"                            => NIL , ;
+         "QTreeWidget"                          => NIL , ;
+         "QTreeWidgetItem"                      => NIL , ;
+         "QTreeWidgetItemIterator"              => NIL , ;
+         "QUndoCommand"                         => NIL , ;
+         "QUndoGroup"                           => NIL , ;
+         "QUndoStack"                           => NIL , ;
+         "QUndoView"                            => NIL , ;
+         "QVBoxLayout"                          => NIL , ;
+         "QWhatsThis"                           => NIL , ;
+         "QWidget"                              => NIL , ;
+         "QWidgetAction"                        => NIL , ;
+         "QWidgetItem"                          => NIL , ;
+         "QWizard"                              => NIL , ;
+         "QWizardPage"                          => NIL   }
+
+   RETURN cWidget $ s_b_
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION IsQt5PrintSupport( cWidget )
+
+   STATIC s_b_ := { ;
+         "QAbstractPrintDialog"                 => NIL , ;
+         "QPrintDialog"                         => NIL , ;
+         "QPageSetupDialog"                     => NIL , ;
+         "QPrintPreviewDialog"                  => NIL , ;
+         "QPrinter"                             => NIL , ;
+         "QPrintEngine"                         => NIL , ;
+         "QPrinterInfo"                         => NIL , ;
+         "QPrinterInfo"                         => NIL , ;
+         "QPrintPreviewWidget"                  => NIL   }
+
+   RETURN cWidget $ s_b_
+
+/*----------------------------------------------------------------------*/
+
 STATIC FUNCTION qth_is_QObject( cWidget )
    STATIC aQObjects := {}
 
@@ -3912,254 +4158,47 @@ STATIC FUNCTION qth_is_QObject( cWidget )
 
       aadd( aQObjects, "QZXing" )
 
+      // QtSensors
+      aadd( aQObjects, "QSensor" )
+      aadd( aQObjects, "QSensorReading" )
+      //
+      aadd( aQObjects, "QAccelerometerReading" )
+      aadd( aQObjects, "QAltimeterReading" )
+      aadd( aQObjects, "QAmbientLightReading" )
+      aadd( aQObjects, "QAmbientTemperatureReading" )
+      aadd( aQObjects, "QCompassReading" )
+      aadd( aQObjects, "QGyroscopeReading" )
+      aadd( aQObjects, "QHolsterReading" )
+      aadd( aQObjects, "QIRProximityReading" )
+      aadd( aQObjects, "QLightReading" )
+      aadd( aQObjects, "QMagnetometerReading" )
+      aadd( aQObjects, "QOrientationReading" )
+      aadd( aQObjects, "QPressureReading" )
+      aadd( aQObjects, "QProximityReading" )
+      aadd( aQObjects, "QRotationReading" )
+      aadd( aQObjects, "QTapReading" )
+      aadd( aQObjects, "QTiltReading" )
+      //
+      aadd( aQObjects, "QAccelerometer" )
+      aadd( aQObjects, "QAltimeter" )
+      aadd( aQObjects, "QAmbientLightSensor" )
+      aadd( aQObjects, "QAmbientTemperatureSensor" )
+      aadd( aQObjects, "QCompass" )
+      aadd( aQObjects, "QGyroscope" )
+      aadd( aQObjects, "QHolsterSensor" )
+      aadd( aQObjects, "QIRProximitySensor" )
+      aadd( aQObjects, "QLightSensor" )
+      aadd( aQObjects, "QMagnetometer" )
+      aadd( aQObjects, "QOrientationSensor" )
+      aadd( aQObjects, "QPressureSensor" )
+      aadd( aQObjects, "QProximitySensor" )
+      aadd( aQObjects, "QRotationSensor" )
+      aadd( aQObjects, "QTapSensor" )
+      aadd( aQObjects, "QTiltSensor" )
+
    ENDIF
 
    RETURN ascan( aQObjects, {| e | e == cWidget } ) > 0
 
 /*----------------------------------------------------------------------*/
 
-#define HBQT_BIT_NONE                             0
-#define HBQT_BIT_OWNER                            1
-#define HBQT_BIT_QOBJECT                          2
-#define HBQT_BIT_CONSTRUCTOR                      4
-#define HBQT_BIT_DESTRUCTOR                       8
-#define HBQT_BIT_QPOINTER                         16
-
-STATIC FUNCTION qth_get_bits( cWidget, lNew )
-   LOCAL cBits := "HBQT_BIT_NONE"
-
-   IF lNew
-      cBits += " | HBQT_BIT_OWNER"
-   ENDIF
-   IF qth_is_QObject( cWidget )
-      cBits += " | HBQT_BIT_QOBJECT"
-   ENDIF
-
-   RETURN cBits
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION IsQt5Widget( cWidget )
-
-   STATIC s_b_ := { ;
-         "QAbstractButton"                      => NIL , ;
-         "QAbstractGraphicsShapeItem"           => NIL , ;
-         "QAbstractItemDelegate"                => NIL , ;
-         "QAbstractItemView"                    => NIL , ;
-         "QAbstractScrollArea"                  => NIL , ;
-         "QAbstractSlider"                      => NIL , ;
-         "QAbstractSpinBox"                     => NIL , ;
-         "QAction"                              => NIL , ;
-         "QActionGroup"                         => NIL , ;
-         "QApplication"                         => NIL , ;
-         "QBoxLayout"                           => NIL , ;
-         "QButtonGroup"                         => NIL , ;
-         "QCalendarWidget"                      => NIL , ;
-         "QCheckBox"                            => NIL , ;
-         "QColorDialog"                         => NIL , ;
-         "QColormap"                            => NIL , ;
-         "QColumnView"                          => NIL , ;
-         "QComboBox"                            => NIL , ;
-         "QCommandLinkButton"                   => NIL , ;
-         "QCommonStyle"                         => NIL , ;
-         "QCompleter"                           => NIL , ;
-         "QDataWidgetMapper"                    => NIL , ;
-         "QDateEdit"                            => NIL , ;
-         "QDateTimeEdit"                        => NIL , ;
-         "QDesktopWidget"                       => NIL , ;
-         "QDial"                                => NIL , ;
-         "QDialog"                              => NIL , ;
-         "QDialogButtonBox"                     => NIL , ;
-         "QDockWidget"                          => NIL , ;
-         "QDoubleSpinBox"                       => NIL , ;
-         "QErrorMessage"                        => NIL , ;
-         "QFileDialog"                          => NIL , ;
-         "QFileIconProvider"                    => NIL , ;
-         "QFileSystemModel"                     => NIL , ;
-         "QFocusFrame"                          => NIL , ;
-         "QFontComboBox"                        => NIL , ;
-         "QFontDialog"                          => NIL , ;
-         "QFormLayout"                          => NIL , ;
-         "QFrame"                               => NIL , ;
-         "QGesture"                             => NIL , ;
-         "QGestureEvent"                        => NIL , ;
-         "QGestureRecognizer"                   => NIL , ;
-         "QGraphicsAnchor"                      => NIL , ;
-         "QGraphicsAnchorLayout"                => NIL , ;
-         "QGraphicsBlurEffect"                  => NIL , ;
-         "QGraphicsColorizeEffect"              => NIL , ;
-         "QGraphicsDropShadowEffect"            => NIL , ;
-         "QGraphicsEffect"                      => NIL , ;
-         "QGraphicsEllipseItem"                 => NIL , ;
-         "QGraphicsGridLayout"                  => NIL , ;
-         "QGraphicsItem"                        => NIL , ;
-         "QGraphicsItemAnimation"               => NIL , ;
-         "QGraphicsItemGroup"                   => NIL , ;
-         "QGraphicsLayout"                      => NIL , ;
-         "QGraphicsLayoutItem"                  => NIL , ;
-         "QGraphicsLineItem"                    => NIL , ;
-         "QGraphicsLinearLayout"                => NIL , ;
-         "QGraphicsObject"                      => NIL , ;
-         "QGraphicsOpacityEffect"               => NIL , ;
-         "QGraphicsPathItem"                    => NIL , ;
-         "QGraphicsPixmapItem"                  => NIL , ;
-         "QGraphicsPolygonItem"                 => NIL , ;
-         "QGraphicsProxyWidget"                 => NIL , ;
-         "QGraphicsRectItem"                    => NIL , ;
-         "QGraphicsRotation"                    => NIL , ;
-         "QGraphicsScale"                       => NIL , ;
-         "QGraphicsScene"                       => NIL , ;
-         "QGraphicsSceneContextMenuEvent"       => NIL , ;
-         "QGraphicsSceneDragDropEvent"          => NIL , ;
-         "QGraphicsSceneEvent"                  => NIL , ;
-         "QGraphicsSceneHelpEvent"              => NIL , ;
-         "QGraphicsSceneHoverEvent"             => NIL , ;
-         "QGraphicsSceneMouseEvent"             => NIL , ;
-         "QGraphicsSceneMoveEvent"              => NIL , ;
-         "QGraphicsSceneResizeEvent"            => NIL , ;
-         "QGraphicsSceneWheelEvent"             => NIL , ;
-         "QGraphicsSimpleTextItem"              => NIL , ;
-         "QGraphicsTextItem"                    => NIL , ;
-         "QGraphicsTransform"                   => NIL , ;
-         "QGraphicsView"                        => NIL , ;
-         "QGraphicsWidget"                      => NIL , ;
-         "QGridLayout"                          => NIL , ;
-         "QGroupBox"                            => NIL , ;
-         "QHBoxLayout"                          => NIL , ;
-         "QHeaderView"                          => NIL , ;
-         "QInputDialog"                         => NIL , ;
-         "QItemDelegate"                        => NIL , ;
-         "QItemEditorCreator"                   => NIL , ;
-         "QItemEditorCreatorBase"               => NIL , ;
-         "QItemEditorFactory"                   => NIL , ;
-         "QKeyEventTransition"                  => NIL , ;
-         "QLCDNumber"                           => NIL , ;
-         "QLabel"                               => NIL , ;
-         "QLayout"                              => NIL , ;
-         "QLayoutItem"                          => NIL , ;
-         "QLineEdit"                            => NIL , ;
-         "QListView"                            => NIL , ;
-         "QListWidget"                          => NIL , ;
-         "QListWidgetItem"                      => NIL , ;
-         "QMacCocoaViewContainer"               => NIL , ;
-         "QMacNativeWidget"                     => NIL , ;
-         "QMainWindow"                          => NIL , ;
-         "QMdiArea"                             => NIL , ;
-         "QMdiSubWindow"                        => NIL , ;
-         "QMenu"                                => NIL , ;
-         "QMenuBar"                             => NIL , ;
-         "QMessageBox"                          => NIL , ;
-         "QMouseEventTransition"                => NIL , ;
-         "QPanGesture"                          => NIL , ;
-         "QPinchGesture"                        => NIL , ;
-         "QPlainTextDocumentLayout"             => NIL , ;
-         "QPlainTextEdit"                       => NIL , ;
-         "QProgressBar"                         => NIL , ;
-         "QProgressDialog"                      => NIL , ;
-         "QProxyStyle"                          => NIL , ;
-         "QPushButton"                          => NIL , ;
-         "QRadioButton"                         => NIL , ;
-         "QRubberBand"                          => NIL , ;
-         "QScrollArea"                          => NIL , ;
-         "QScrollBar"                           => NIL , ;
-         "QScroller"                            => NIL , ;
-         "QScrollerProperties"                  => NIL , ;
-         "QShortcut"                            => NIL , ;
-         "QSizeGrip"                            => NIL , ;
-         "QSizePolicy"                          => NIL , ;
-         "QSlider"                              => NIL , ;
-         "QSpacerItem"                          => NIL , ;
-         "QSpinBox"                             => NIL , ;
-         "QSplashScreen"                        => NIL , ;
-         "QSplitter"                            => NIL , ;
-         "QSplitterHandle"                      => NIL , ;
-         "QStackedLayout"                       => NIL , ;
-         "QStackedWidget"                       => NIL , ;
-         "QStandardItemEditorCreator"           => NIL , ;
-         "QStatusBar"                           => NIL , ;
-         "QStyle"                               => NIL , ;
-         "QStyleFactory"                        => NIL , ;
-         "QStyleHintReturn"                     => NIL , ;
-         "QStyleHintReturnMask"                 => NIL , ;
-         "QStyleHintReturnVariant"              => NIL , ;
-         "QStyleOption"                         => NIL , ;
-         "QStyleOptionButton"                   => NIL , ;
-         "QStyleOptionComboBox"                 => NIL , ;
-         "QStyleOptionComplex"                  => NIL , ;
-         "QStyleOptionDockWidget"               => NIL , ;
-         "QStyleOptionFocusRect"                => NIL , ;
-         "QStyleOptionFrame"                    => NIL , ;
-         "QStyleOptionGraphicsItem"             => NIL , ;
-         "QStyleOptionGroupBox"                 => NIL , ;
-         "QStyleOptionHeader"                   => NIL , ;
-         "QStyleOptionMenuItem"                 => NIL , ;
-         "QStyleOptionProgressBar"              => NIL , ;
-         "QStyleOptionRubberBand"               => NIL , ;
-         "QStyleOptionSizeGrip"                 => NIL , ;
-         "QStyleOptionSlider"                   => NIL , ;
-         "QStyleOptionSpinBox"                  => NIL , ;
-         "QStyleOptionTab"                      => NIL , ;
-         "QStyleOptionTabBarBase"               => NIL , ;
-         "QStyleOptionTabWidgetFrame"           => NIL , ;
-         "QStyleOptionTitleBar"                 => NIL , ;
-         "QStyleOptionToolBar"                  => NIL , ;
-         "QStyleOptionToolBox"                  => NIL , ;
-         "QStyleOptionToolButton"               => NIL , ;
-         "QStyleOptionViewItem"                 => NIL , ;
-         "QStylePainter"                        => NIL , ;
-         "QStylePlugin"                         => NIL , ;
-         "QStyledItemDelegate"                  => NIL , ;
-         "QSwipeGesture"                        => NIL , ;
-         "QSystemTrayIcon"                      => NIL , ;
-         "QTabBar"                              => NIL , ;
-         "QTabWidget"                           => NIL , ;
-         "QTableView"                           => NIL , ;
-         "QTableWidget"                         => NIL , ;
-         "QTableWidgetItem"                     => NIL , ;
-         "QTableWidgetSelectionRange"           => NIL , ;
-         "QTapAndHoldGesture"                   => NIL , ;
-         "QTapGesture"                          => NIL , ;
-         "QTextBrowser"                         => NIL , ;
-         "QTextEdit"                            => NIL , ;
-         "QTileRules"                           => NIL , ;
-         "QTimeEdit"                            => NIL , ;
-         "QToolBar"                             => NIL , ;
-         "QToolBox"                             => NIL , ;
-         "QToolButton"                          => NIL , ;
-         "QToolTip"                             => NIL , ;
-         "QTreeView"                            => NIL , ;
-         "QTreeWidget"                          => NIL , ;
-         "QTreeWidgetItem"                      => NIL , ;
-         "QTreeWidgetItemIterator"              => NIL , ;
-         "QUndoCommand"                         => NIL , ;
-         "QUndoGroup"                           => NIL , ;
-         "QUndoStack"                           => NIL , ;
-         "QUndoView"                            => NIL , ;
-         "QVBoxLayout"                          => NIL , ;
-         "QWhatsThis"                           => NIL , ;
-         "QWidget"                              => NIL , ;
-         "QWidgetAction"                        => NIL , ;
-         "QWidgetItem"                          => NIL , ;
-         "QWizard"                              => NIL , ;
-         "QWizardPage"                          => NIL   }
-
-   RETURN cWidget $ s_b_
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION IsQt5PrintSupport( cWidget )
-
-   STATIC s_b_ := { ;
-         "QAbstractPrintDialog"                 => NIL , ;
-         "QPrintDialog"                         => NIL , ;
-         "QPageSetupDialog"                     => NIL , ;
-         "QPrintPreviewDialog"                  => NIL , ;
-         "QPrinter"                             => NIL , ;
-         "QPrintEngine"                         => NIL , ;
-         "QPrinterInfo"                         => NIL , ;
-         "QPrinterInfo"                         => NIL , ;
-         "QPrintPreviewWidget"                  => NIL   }
-
-   RETURN cWidget $ s_b_
-
-/*----------------------------------------------------------------------*/

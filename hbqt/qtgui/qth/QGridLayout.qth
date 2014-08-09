@@ -65,4 +65,17 @@ void setSpacing ( int spacing )
 void setVerticalSpacing ( int spacing )
 int spacing () const
 int verticalSpacing () const
+
+virtual int count() const
+virtual Qt::Orientations expandingDirections() const
+virtual bool hasHeightForWidth() const
+virtual int heightForWidth(int w) const
+virtual void invalidate()
+virtual QLayoutItem * itemAt(int index) const
+virtual QSize maximumSize() const
+virtual int minimumHeightForWidth(int w) const
+virtual QSize minimumSize() const
+virtual void setGeometry(const QRect & rect)
+virtual QSize sizeHint() const
+virtual QLayoutItem * takeAt(int index)
 </PROTOS>

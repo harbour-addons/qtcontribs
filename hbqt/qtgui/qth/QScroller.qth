@@ -12,7 +12,7 @@
  */
 
 <CLASS>
-QObject     =
+QObject     = Yes
 Inherit     = QObject
 Type        =
 New         =
@@ -64,7 +64,7 @@ bool   hasScroller(QObject * target)
 QScroller *   scroller(QObject * target){
    if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
    {
-      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( QScroller * ) QScroller::scroller( hbqt_par_QObject( 1 ) ), "HB_QSCROLLER", NULL, HBQT_BIT_NONE ) );
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QScroller::scroller( hbqt_par_QObject( 1 ) ), "HB_QSCROLLER", NULL, HBQT_BIT_NONE ) );
       return;
    }
    hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );

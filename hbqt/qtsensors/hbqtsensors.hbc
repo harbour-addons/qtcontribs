@@ -1,0 +1,23 @@
+#
+# $Id$
+#
+
+# ---------------------------------------------------------------
+# Copyright 2010 Viktor Szakats (harbour syenar.net)
+# See COPYING for licensing terms.
+# ---------------------------------------------------------------
+
+incpaths=.
+
+libs=../qtcore/hbqtcore.hbc
+
+{!HB_STATIC_QT}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
+
+{!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|os2)}libs=Qt5Sensors
+{!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(linux|beos|symbian)}libs=Qt5Sensors
+{!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&darwin}frameworks=Qt5Sensors
+
+{HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}s${_HB_DYNSUFF}
+{HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
+
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos)}libs=Qt5Sensors

@@ -1,0 +1,45 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QSensorFilter
+QObject     =
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QTiltFilter>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QTILTFILTER )
+{
+   HB_FUNC_EXEC( HB_QTILTFILTER );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual bool filter(QTiltReading * reading) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
