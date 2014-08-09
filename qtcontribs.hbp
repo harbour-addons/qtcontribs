@@ -29,6 +29,7 @@ hbqt/qtwebsockets/hbqtwebsockets.hbp
 hbqt/qtbluetooth/hbqtbluetooth.hbp
 hbqt/qtqml/hbqtqml.hbp
 hbqt/qtquick/hbqtquick.hbp
+hbqt/qtsensors/hbqtsensors.hbp
 hbqt/qzxing/hbqtzxing.hbp
 
 

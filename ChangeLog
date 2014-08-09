@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-08 18:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r331)
+  + hbqt/hbqtsensors.hbc
+    + Missing entry in previous commit.
+
+  * qtcontribs.hbp
+    + Added QtSensors module to compile hbqtsensors library.
+
 2014-08-08 17:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r330)
   * hbqt/hbmk2_qt.hb
     + Added new QObject derived classes.
