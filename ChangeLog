@@ -16,6 +16,22 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-09 22:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r332)
+  * hbqt/hbmk2_qt.hb
+  * hbqt/qtsensors/hbqtsensors.hbp
+  * hbqt/qtsensors/hbqtsensors.hbx
+  * hbqt/qtsensors/qth/filelist.hbm
+  + hbqt/qtsensors/qth/QSensorBackend.qth
+  + hbqt/qtsensors/qth/QSensorBackendFactory.qth
+  + hbqt/qtsensors/qth/QSensorChangesInterface.qth
+  + hbqt/qtsensors/qth/QSensorGesture.qth
+  + hbqt/qtsensors/qth/QSensorGestureManager.qth
+  + hbqt/qtsensors/qth/QSensorGesturePluginInterface.qth
+  + hbqt/qtsensors/qth/QSensorGestureRecognizer.qth
+  + hbqt/qtsensors/qth/QSensorManager.qth
+  + hbqt/qtsensors/qth/QSensorPluginInterface.qth
+    + Addded remaining classes from QtSensors module. The suit is complete now.
+
 2014-08-08 18:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r331)
   + hbqt/hbqtsensors.hbc
     + Missing entry in previous commit.

@@ -2940,6 +2940,10 @@ METHOD HbQtSource:buildCppCode( oMtd )
       oMtd:cCmd := "hb_itemReturn( " + oMtd:cCmn + " )"
       oMtd:cPrgRet := "o" + oMtd:cDocNMRet
 
+   CASE oRet:cCast == "JavaVM"
+      oMtd:cCmd := "hb_retptr( ( void * ) " + oMtd:cCmn + " )"
+      oMtd:cPrgRet := "p" + oMtd:cDocNMRet
+
    CASE oRet:cCast == "void"
       oMtd:cCmd := oMtd:cCmn
       oMtd:cPrgRet := "NIL"
@@ -4160,6 +4164,9 @@ STATIC FUNCTION qth_is_QObject( cWidget )
 
       // QtSensors
       aadd( aQObjects, "QSensor" )
+      aadd( aQObjects, "QSensorBackend" )
+      aadd( aQObjects, "QSensorGesture" )
+      aadd( aQObjects, "QSensorGestureManager" )
       aadd( aQObjects, "QSensorReading" )
       //
       aadd( aQObjects, "QAccelerometerReading" )

@@ -9,4 +9,8 @@ hbqtsensors.hbm
 -instfile=inc:hbqtsensors.ch
 -instfile=inc:hbqtsensors.hbx
 
+# Workaround to cover directly referred includes from some header files in QSensor*.
+#
+-cflag=-I${HB_WITH_QT}\QtCore
+
 hbqtsensorss.hbp

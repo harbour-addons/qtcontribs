@@ -1,0 +1,52 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QSensorGestureRecognizer>
+
+
+/*
+ * QSensorGestureRecognizer(QObject * parent = 0)
+ * virtual ~QSensorGestureRecognizer()
+ */
+HB_FUNC( QT_QSENSORGESTURERECOGNIZER )
+{
+   HB_FUNC_EXEC( HB_QSENSORGESTURERECOGNIZER );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   createBackend()
+QStringList   gestureSignals() const
+virtual QString   id() const = 0
+virtual bool   isActive() = 0
+void   startBackend()
+void   stopBackend()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   detected(const QString & gestureId)
+</SIGNALS>

@@ -10,6 +10,16 @@ QSensor.qth
 QSensorFilter.qth
 QSensorReading.qth
 
+QSensorBackend.qth
+QSensorBackendFactory.qth
+QSensorChangesInterface.qth
+QSensorGesture.qth
+QSensorGestureManager.qth
+QSensorGesturePluginInterface.qth
+QSensorGestureRecognizer.qth
+QSensorManager.qth
+QSensorPluginInterface.qth
+
 QAccelerometerReading.qth
 QAltimeterReading.qth
 QAmbientLightReading.qth

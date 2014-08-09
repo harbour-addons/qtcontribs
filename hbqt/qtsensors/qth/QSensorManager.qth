@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     =
+Version     = 0x050300
+</CLASS>
+
+
+<CODE>
+#include <QtSensors/QSensor>
+#include <QtSensors/QSensorManager>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QSENSORMANAGER )
+{
+   __HB_RETPTRGC__( new QSensorManager() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QSensorBackend *   createBackend(QSensor * sensor)
+bool   isBackendRegistered(const QByteArray & type, const QByteArray & identifier)
+void   registerBackend(const QByteArray & type, const QByteArray & identifier, QSensorBackendFactory * factory)
+void   setDefaultBackend(const QByteArray & type, const QByteArray & identifier)
+void   unregisterBackend(const QByteArray & type, const QByteArray & identifier)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
