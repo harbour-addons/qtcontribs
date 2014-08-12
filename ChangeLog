@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-12 13:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r334)
+  * hbqt/tests/demoqt.prg
+    ! Fixed CPU usage, QFileDialog() and other dialogs calls.
+       Pointed by Itamar, thanks.
+
 2014-08-09 10:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r333)
   + hbqt/tests/sensors.hbp
   + hbqt/tests/sensors.prg

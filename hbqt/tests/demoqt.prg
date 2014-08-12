@@ -72,6 +72,8 @@
 
 STATIC oSys, oMenuSys, oActShow, oActHide  /* To keep variables in scope for entire duration of appn */
 
+REQUEST HB_QStyleOption
+
 /*----------------------------------------------------------------------*/
 
 PROCEDURE Main()
@@ -85,7 +87,8 @@ PROCEDURE Main()
 /*----------------------------------------------------------------------*/
 
 PROCEDURE ExecTheDialog()
-   LOCAL oBtn, oDA, oWnd, aMenu, aTool, aTabs, oELoop, oStyle, lExit := .f.
+   LOCAL oBtn, oDA, aMenu, aTool, aTabs, oStyle, lExit := .f.
+   LOCAL oELoop, oWnd
 
    hbqt_errorsys()
 
@@ -122,15 +125,16 @@ PROCEDURE ExecTheDialog()
    oWnd:connect( QEvent_Close   , {|| lExit := .T. } )
 
    oWnd:Show()
+
    oELoop := QEventLoop( oWnd )
    DO WHILE .t.
-      oELoop:processEvents()
+      oELoop:processEvents( 0 )
+      hb_idleState()
       IF lExit
          EXIT
       ENDIF
    ENDDO
    oELoop:exit( 0 )
-
    xReleaseMemory( { oBtn, aMenu, aTool, aTabs, oDA, oWnd } )
 
    HB_TRACE( HB_TR_DEBUG, "  " )
@@ -503,14 +507,19 @@ STATIC FUNCTION MsgInfo( oWnd, cMsg )
 /*----------------------------------------------------------------------*/
 
 STATIC FUNCTION FileDialog()
-   LOCAL oFD
 
-   oFD := QFileDialog()
-   oFD:setOption( QFileDialog_DontResolveSymlinks, .t. )
-   oFD:setWindowTitle( "Select a File" )
-   oFD:exec()
+   STATIC oFD
 
-   RETURN NIL
+   IF Empty( oFD )
+      WITH OBJECT oFD := QFileDialog()
+         :setOption( QFileDialog_DontResolveSymlinks, .t. )
+         :setWindowTitle( "Select a File" )
+         :setAttribute( Qt_WA_DeleteOnClose, .F. )
+         :connect( QEvent_Close, {|| oFD:hide() } )
+      ENDWITH
+   ENDIF
+
+   RETURN oFD:exec()
 
 /*----------------------------------------------------------------------*/
 
@@ -537,22 +546,23 @@ STATIC FUNCTION Dialogs( cType, oParent )
       oDlg:exec()
       oDlg:setParent( QWidget() )
    CASE cType == "WebPage"
-      #if 0    // Till we resolve for oDlg:show()
+#if 0    // Till we resolve for oDlg:show()
       oDlg := QWebView()
       oUrl := QUrl()
       oUrl:setUrl( "http://www.harbour.vouch.info" )
       oDlg:setWindowTitle( "Harbour-QT Web Page Navigator" )
       oDlg:exec()
-      #endif
+#endif
    CASE cType == "Fonts"
       oDlg := QFontDialog()
       oDlg:setWindowTitle( "Harbour-QT Font Selector" )
       oDlg:exec()
    ENDCASE
 
+   oDlg:setParent( QWidget() )
    oDlg := NIL
 
-   RETURN nil
+   RETURN NIL
 
 /*----------------------------------------------------------------------*/
 
