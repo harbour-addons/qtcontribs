@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-13 12:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r335)
+  * hbqt/qtgui/qth/QFileDialog.qth
+    % Minor.
+
+  * hbqt/qtgui/qth/QHeaderView.qth
+    + Updated the whole class with Qt 5.3 methods.
+
 2014-08-12 13:17 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r334)
   * hbqt/tests/demoqt.prg
     ! Fixed CPU usage, QFileDialog() and other dialogs calls.

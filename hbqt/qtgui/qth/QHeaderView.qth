@@ -46,78 +46,85 @@ enum ResizeMode { Interactive, Fixed, Stretch, ResizeToContents, Custom }
 </ENUMS>
 
 <PROTOS>
-bool cascadingSectionResizes () const
-int count () const
-Qt::Alignment defaultAlignment () const
-int defaultSectionSize () const
-int hiddenSectionCount () const
-void hideSection ( int logicalIndex )
-bool highlightSections () const
-bool isClickable () const                                                      [*V=-0x040900*]
-bool isMovable () const                                                        [*V=-0x040900*]
-bool isSectionHidden ( int logicalIndex ) const
-bool isSortIndicatorShown () const
-int length () const
-int logicalIndex ( int visualIndex ) const
-int logicalIndexAt ( int position ) const
-int logicalIndexAt ( int x, int y ) const
-int logicalIndexAt ( const QPoint & pos ) const
-int minimumSectionSize () const
-void moveSection ( int from, int to )
-int offset () const
-Qt::Orientation orientation () const
-ResizeMode resizeMode ( int logicalIndex ) const                               [*V=-0x040900*]
-void resizeSection ( int logicalIndex, int size )
-void resizeSections ( QHeaderView::ResizeMode mode )
-bool restoreState ( const QByteArray & state )
-QByteArray saveState () const
-int sectionPosition ( int logicalIndex ) const
-int sectionSize ( int logicalIndex ) const
-int sectionSizeHint ( int logicalIndex ) const
-int sectionViewportPosition ( int logicalIndex ) const
-bool sectionsHidden () const
-bool sectionsMoved () const
-void setCascadingSectionResizes ( bool enable )
-void setClickable ( bool clickable )                                           [*V=-0x040900*]
-void setDefaultAlignment ( Qt::Alignment alignment )
-void setDefaultSectionSize ( int size )
-void setHighlightSections ( bool highlight )
-void setMinimumSectionSize ( int size )
-void setMovable ( bool movable )                                               [*V=-0x040900*]
-void setResizeMode ( ResizeMode mode )                                         [*V=-0x040900*]
-void setResizeMode ( int logicalIndex, ResizeMode mode )                       [*V=-0x040900*]
-void setSectionHidden ( int logicalIndex, bool hide )
-void setSortIndicator ( int logicalIndex, Qt::SortOrder order )
-void setSortIndicatorShown ( bool show )
-void setStretchLastSection ( bool stretch )
-void showSection ( int logicalIndex )
-virtual QSize sizeHint () const
-Qt::SortOrder sortIndicatorOrder () const
-int sortIndicatorSection () const
-bool stretchLastSection () const
-int stretchSectionCount () const
-void swapSections ( int first, int second )
-int visualIndex ( int logicalIndex ) const
-int visualIndexAt ( int position ) const
+bool cascadingSectionResizes() const
+int   count() const
+Qt::Alignment   defaultAlignment() const
+int   defaultSectionSize() const
+int   hiddenSectionCount() const
+void   hideSection(int logicalIndex)
+bool   highlightSections() const
+bool   isSectionHidden(int logicalIndex) const
+bool   isSortIndicatorShown() const
+int   length() const
+int   logicalIndex(int visualIndex) const
+int   logicalIndexAt(int position) const
+int   logicalIndexAt(int x, int y) const
+int   logicalIndexAt(const QPoint & pos) const
+int   maximumSectionSize() const
+int   minimumSectionSize() const
+void   moveSection(int from, int to)
+int   offset() const
+Qt::Orientation   orientation() const
+int   resizeContentsPrecision() const
+void   resizeSection(int logicalIndex, int size)
+void   resizeSections(QHeaderView::ResizeMode mode)
+bool   restoreState(const QByteArray & state)
+QByteArray   saveState() const
+int   sectionPosition(int logicalIndex) const
+ResizeMode   sectionResizeMode(int logicalIndex) const
+int   sectionSize(int logicalIndex) const
+int   sectionSizeHint(int logicalIndex) const
+int   sectionViewportPosition(int logicalIndex) const
+bool   sectionsClickable() const
+bool   sectionsHidden() const
+bool   sectionsMovable() const
+bool   sectionsMoved() const
+void   setCascadingSectionResizes(bool enable)
+void   setDefaultAlignment(Qt::Alignment alignment)
+void   setDefaultSectionSize(int size)
+void   setHighlightSections(bool highlight)
+void   setMaximumSectionSize(int size)
+void   setMinimumSectionSize(int size)
+void   setResizeContentsPrecision(int precision)
+void   setSectionHidden(int logicalIndex, bool hide)
+void   setSectionResizeMode(ResizeMode mode)
+void   setSectionResizeMode(int logicalIndex, ResizeMode mode)
+void   setSectionsClickable(bool clickable)
+void   setSectionsMovable(bool movable)
+void   setSortIndicator(int logicalIndex, Qt::SortOrder order)
+void   setSortIndicatorShown(bool show)
+void   setStretchLastSection(bool stretch)
+void   showSection(int logicalIndex)
+Qt::SortOrder   sortIndicatorOrder() const
+int   sortIndicatorSection() const
+bool   stretchLastSection() const
+int   stretchSectionCount() const
+void   swapSections(int first, int second)
+int   visualIndex(int logicalIndex) const
+int   visualIndexAt(int position) const
+
+virtual void   reset()
+virtual void   setModel(QAbstractItemModel * model)
+virtual void   setVisible(bool v)
+virtual QSize   sizeHint() const
 </PROTOS>
 
 <SLOTS>
-void headerDataChanged ( Qt::Orientation orientation, int logicalFirst, int logicalLast )
-void setOffset ( int offset )
-void setOffsetToLastSection ()
-void setOffsetToSectionPosition ( int visualIndex )
+void   headerDataChanged(Qt::Orientation orientation, int logicalFirst, int logicalLast)
+void   setOffset(int offset)
+void   setOffsetToLastSection()
+void   setOffsetToSectionPosition(int visualSectionNumber)
 </SLOTS>
 
 <SIGNALS>
-void geometriesChanged ()
-void sectionAutoResize ( int logicalIndex, QHeaderView::ResizeMode mode )
-void sectionClicked ( int logicalIndex )
-void sectionCountChanged ( int oldCount, int newCount )
-void sectionDoubleClicked ( int logicalIndex )
-void sectionEntered ( int logicalIndex )
-void sectionHandleDoubleClicked ( int logicalIndex )
-void sectionMoved ( int logicalIndex, int oldVisualIndex, int newVisualIndex )
-void sectionPressed ( int logicalIndex )
-void sectionResized ( int logicalIndex, int oldSize, int newSize )
-void sortIndicatorChanged ( int logicalIndex, Qt::SortOrder order )
+void   geometriesChanged()
+void   sectionClicked(int logicalIndex)
+void   sectionCountChanged(int oldCount, int newCount)
+void   sectionDoubleClicked(int logicalIndex)
+void   sectionEntered(int logicalIndex)
+void   sectionHandleDoubleClicked(int logicalIndex)
+void   sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
+void   sectionPressed(int logicalIndex)
+void   sectionResized(int logicalIndex, int oldSize, int newSize)
+void   sortIndicatorChanged(int logicalIndex, Qt::SortOrder order)
 </SIGNALS>
