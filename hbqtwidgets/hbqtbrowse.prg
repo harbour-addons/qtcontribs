@@ -813,7 +813,7 @@ METHOD HbQtBrowse:create()
       :setHighlightSections( .F. )
       :setMinimumHeight( 20 )
       :setMaximumHeight( 20 )
-      :setResizeMode( QHeaderView_Fixed )
+      :setSectionResizeMode( QHeaderView_Fixed )
       :setFocusPolicy( Qt_NoFocus )
       :setModel( ::oFooterModel )
       :setFont( ::oFont )
@@ -978,14 +978,14 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
 
-   ::oHeaderView:setResizeMode( iif( ::lSizeCols, QHeaderView_Interactive, QHeaderView_Fixed ) )
-   ::oFooterView:setResizeMode( QHeaderView_Fixed )
+   ::oHeaderView:setSectionResizeMode( iif( ::lSizeCols, QHeaderView_Interactive, QHeaderView_Fixed ) )
+   ::oFooterView:setSectionResizeMode( QHeaderView_Fixed )
 
-   ::oLeftHeaderView:setResizeMode( QHeaderView_Fixed )
-   ::oLeftFooterView:setResizeMode( QHeaderView_Fixed )
+   ::oLeftHeaderView:setSectionResizeMode( QHeaderView_Fixed )
+   ::oLeftFooterView:setSectionResizeMode( QHeaderView_Fixed )
 
-   ::oRightHeaderView:setResizeMode( QHeaderView_Fixed )
-   ::oRightFooterView:setResizeMode( QHeaderView_Fixed )
+   ::oRightHeaderView:setSectionResizeMode( QHeaderView_Fixed )
+   ::oRightFooterView:setSectionResizeMode( QHeaderView_Fixed )
 
    IF .T.
       oFontMetrics := QFontMetrics( ::oTableView:font() )
@@ -1305,7 +1305,7 @@ METHOD HbQtBrowse:buildLeftFreeze()
       :setHighlightSections( .F. )
       :setMinimumHeight( 20 )
       :setMaximumHeight( 20 )
-      :setResizeMode( QHeaderView_Fixed )
+      :setSectionResizeMode( QHeaderView_Fixed )
       :setFocusPolicy( Qt_NoFocus )
       :setModel( ::oLeftFooterModel )
    ENDWITH
@@ -1339,7 +1339,7 @@ METHOD HbQtBrowse:buildRightFreeze()
       :setHighlightSections( .F. )
       :setMinimumHeight( 20 )
       :setMaximumHeight( 20 )
-      :setResizeMode( QHeaderView_Fixed )
+      :setSectionResizeMode( QHeaderView_Fixed )
       :setFocusPolicy( Qt_NoFocus )
       :setModel( ::oRightFooterModel )
    ENDWITH
