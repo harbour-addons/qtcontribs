@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-13 18:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r337)
+  + hbqt/tests/qt_in_gt.prg
+    Added demo to execute HbQt based modal dialogs.
+    This demo facilitates you to consider porting different parts of 
+    your console application to the GUI world. Many parts of the 
+    console application qualify for GUI interface without sacrificing 
+    the our beloved data entry architecture.
+
 2014-08-13 13:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r336)
   * hbqtwidgets/hbqtbrowse.prg
     ! Fixed: recent regression caused by updating QHeaderView() class.
