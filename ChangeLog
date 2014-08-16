@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-16 11:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r339)
+  * hbide/edit.prg
+    ! Fixed (hopefully) font issue on Linux for editing instances.
+      Reported by Juan. Please report if it fixes the issue.
+
 2014-08-16 00:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r338)
   * hbide/saveload.prg
     ! Fixed <Setup>HbIDE Setup><Misc><PointSize> edited directly was 

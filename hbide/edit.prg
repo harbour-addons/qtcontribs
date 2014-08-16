@@ -786,14 +786,25 @@ METHOD IdeEdit:zoom( nKey )
 /*----------------------------------------------------------------------*/
 
 METHOD IdeEdit:setFont()
-
+#if 0
    ::qFont := QFont( ::fontFamily, ::currentPointSize )
    //::qFont:setFamily( ::fontFamily )
    ::qFont:setFixedPitch( .t. )
    //::qFont:setPointSize( ::currentPointSize )
 
    ::qEdit:setFont( ::qFont )
+#else                                             // Probably fixes an issue on Linux and Mac
+   ::oIde:oFont:oWidget := NIL
+   ::oIde:oFont := NIL
+   IF ::fontFamily == "Courier New"
+      ::fontFamily := "Courier"
+   ENDIF
+   ::oIde:oFont := XbpFont():new()
+   ::oFont:fixed := .t.
+   ::oFont:create( hb_ntos( ::currentPointSize ) + "." + ::fontFamily ) //"10.Courier" )
 
+   ::qEdit:setFont( ::oFont:oWidget )
+#endif
    RETURN Self
 
 /*----------------------------------------------------------------------*/
