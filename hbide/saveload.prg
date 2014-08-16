@@ -1413,6 +1413,8 @@ METHOD IdeSetup:connectSlots()
    ::oUI:buttonKeyDown       :connect( "clicked()"               , {| | ::execEvent( __buttonKeyDown_clicked__                          ) } )
 
    ::oUI:buttonSelFont       :connect( "clicked()"               , {| | ::execEvent( __buttonSelFont_clicked__                          ) } )
+   ::oUI:editPointSize       :connect( "textEdited(QString)"     , {|s| ::oINI:nPointSize := Val( s )                                     } )
+
    ::oUI:buttonClose         :connect( "clicked()"               , {| | ::execEvent( __buttonClose_clicked__                            ) } )
    ::oUI:buttonOk            :connect( "clicked()"               , {| | ::execEvent( __buttonOk_clicked__                               ) } )
    ::oUI:buttonCancel        :connect( "clicked()"               , {| | ::execEvent( __buttonCancel_clicked__                           ) } )

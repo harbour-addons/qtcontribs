@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-16 00:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r338)
+  * hbide/saveload.prg
+    ! Fixed <Setup>HbIDE Setup><Misc><PointSize> edited directly was 
+      not setting the font to editied value. Pointed by Juan, thanks.
+
 2014-08-13 18:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r337)
   + hbqt/tests/qt_in_gt.prg
     Added demo to execute HbQt based modal dialogs.
