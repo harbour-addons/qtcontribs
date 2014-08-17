@@ -1811,43 +1811,40 @@ METHOD IdeDocks:showSelectedTextToolbar( oEdit )
          RETURN Self
       ENDIF
       IF oEdit:aSelectionInfo[ 1 ] > -1
+         qToolbar:setParent( oEdit:qEdit:viewport() )
+         nVPH := oEdit:qEdit:viewport():height()
+         nVPW := oEdit:qEdit:viewport():width()
+
+         qToolbar:setOrientation( iif( oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__, Qt_Vertical, Qt_Horizontal ) )
+         qToolbar:adjustSize()
+         nTBW := qToolbar:width()
+         nTBH := qToolbar:height()
+
          qRect := oEdit:qEdit:cursorRect()
          IF oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__
-            qToolbar:setOrientation( Qt_Vertical )
-            qToolbar:adjustSize()
-            nTBH := qToolbar:height()
-            nVPH := oEdit:qEdit:viewport():height()
             nY := qRect:y() - ( nTBH / 2 )
             IF nY < 0
                nY := 0
             ELSEIF nY + nTBH > nVPH
                nY := nVPH - nTBH
             ENDIF
-            nX := Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] )* oEdit:qEdit:fontMetrics():averageCharWidth() + 30
-            qToolbar:move( oEdit:qEdit:viewport():mapToGlobal( QPoint( nX, nY ) ) )
+            nX := ( Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] ) + 5 ) * oEdit:qEdit:fontMetrics():averageCharWidth()
+            IF nX + qToolbar:width() > nVPW
+               nX := ( Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] ) - 5 ) * oEdit:qEdit:fontMetrics():averageCharWidth() - nTBW
+            ENDIF
+            qToolbar:move( nX, nY )
          ELSE
-            qToolbar:setOrientation( Qt_Horizontal )
-            qToolbar:adjustSize()
-            nVPW := oEdit:qEdit:viewport():width()
-            nTBW := qToolbar:width()
-            //nX   := ( nVPW / 2 ) - ( nTBW / 2 )
-            nX   := qRect:x()
+            nX := qRect:x() - ( nTBW / 2 ) + 10  // arbitrary value
             IF nX < 0
                nX := 0
             ELSEIF nX + nTBW > nVPW
                nX := nVPW - nTBW
             ENDIF
-#if 0
-            IF oEdit:aSelectionInfo[ 1 ] <= oEdit:aSelectionInfo[ 3 ]  /* Downward selection */
-               nY := qRect:y() - ( qRect:height() * 5 )
-            ELSE
-               nY := qRect:y() + ( qRect:height() * 1 )
+            nY := qRect:y() + ( qRect:height() * 2 )
+            IF nY + nTBH >= nVPH
+               nY := qRect:y() - ( qRect:height() * 3 )
             ENDIF
-#else
-            nY := qRect:y() + ( qRect:height() * 1 )
-#endif
-            qToolbar:move( oEdit:qEdit:viewport():mapToGlobal( QPoint( nX, nY ) ) )
-            //qToolbar:move( nX, nY )
+            qToolbar:move( nX, nY )
          ENDIF
          qToolbar:show()
          qToolbar:raise()

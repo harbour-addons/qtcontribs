@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-17 13:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r340)
+  * hbide/docks.prg
+    ! Fixed placement of selected-text-context-toolbar within the 
+       viewport of editing instance with some rational jumping 
+       above the cursor row if current row in selection is at the 
+       bottom of the viewport. 
+
+  * hbqt/hbmk2_qt.hb
+    % Using hash instead of array to hold QObject derived classes.  
+       It may cause a marginal compilation speed improvement.
+
 2014-08-16 11:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r339)
   * hbide/edit.prg
     ! Fixed (hopefully) font issue on Linux for editing instances.

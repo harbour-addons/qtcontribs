@@ -3678,534 +3678,478 @@ STATIC FUNCTION IsQt5PrintSupport( cWidget )
 /*----------------------------------------------------------------------*/
 
 STATIC FUNCTION qth_is_QObject( cWidget )
-   STATIC aQObjects := {}
+
+   /* TOFIX: add this information to .qth.
+             it breaks modularity and split the same king of information between
+             this plugin and .qth files. */
+   STATIC s_b_:= { ;
+      "QObject"                                 => NIL , ;
+      "QAbstractAnimation"                      => NIL , ;
+      "QAbstractEventDispatcher"                => NIL , ;
+      "QAbstractFontEngine"                     => NIL , ;
+      "QAbstractItemDelegate"                   => NIL , ;
+      "QAbstractItemModel"                      => NIL , ;
+      "QAbstractMessageHandler"                 => NIL , ;
+      "QAbstractState"                          => NIL , ;
+      "QAbstractTextDocumentLayout"             => NIL , ;
+      "QAbstractTransition"                     => NIL , ;
+      "QAbstractUriResolver"                    => NIL , ;
+      "QAbstractVideoSurface"                   => NIL , ;
+      "QAccessibleBridgePlugin"                 => NIL , ;
+      "QAccessiblePlugin"                       => NIL , ;
+      "QAction"                                 => NIL , ;
+      "QActionGroup"                            => NIL , ;
+      "QAudioInput"                             => NIL , ;
+      "QAudioOutput"                            => NIL , ;
+      "QAxFactory"                              => NIL , ;
+      "QAxObject"                               => NIL , ;
+      "QAxScript"                               => NIL , ;
+      "QAxScriptManager"                        => NIL , ;
+      "QButtonGroup"                            => NIL , ;
+      "QClipboard"                              => NIL , ;
+      "QCompleter"                              => NIL , ;
+      "QCopChannel"                             => NIL , ;
+      "QCoreApplication"                        => NIL , ;
+      "QDataWidgetMapper"                       => NIL , ;
+      "QDBusAbstractAdaptor"                    => NIL , ;
+      "QDBusAbstractInterface"                  => NIL , ;
+      "QDBusPendingCallWatcher"                 => NIL , ;
+      "QDBusServiceWatcher"                     => NIL , ;
+      "QDeclarativeComponent"                   => NIL , ;
+      "QDeclarativeContext"                     => NIL , ;
+      "QDeclarativeEngine"                      => NIL , ;
+      "QDeclarativeExpression"                  => NIL , ;
+      "QDeclarativeExtensionPlugin"             => NIL , ;
+      "QDeclarativePropertyMap"                 => NIL , ;
+      "QDecorationPlugin"                       => NIL , ;
+      "QDesignerFormEditorInterface"            => NIL , ;
+      "QDesignerFormWindowManagerInterface"     => NIL , ;
+      "QDirectPainter"                          => NIL , ;
+      "QDrag"                                   => NIL , ;
+      "QEventLoop"                              => NIL , ;
+      "QExtensionFactory"                       => NIL , ;
+      "QExtensionManager"                       => NIL , ;
+      "QFileSystemWatcher"                      => NIL , ;
+      "QFontEnginePlugin"                       => NIL , ;
+      "QFtp"                                    => NIL , ;
+      "QFutureWatcher"                          => NIL , ;
+      "QGenericPlugin"                          => NIL , ;
+      "QGesture"                                => NIL , ;
+      "QGLShader"                               => NIL , ;
+      "QGLShaderProgram"                        => NIL , ;
+      "QGraphicsAnchor"                         => NIL , ;
+      "QGraphicsEffect"                         => NIL , ;
+      "QGraphicsItemAnimation"                  => NIL , ;
+      "QGraphicsObject"                         => NIL , ;
+      "QGraphicsScene"                          => NIL , ;
+      "QGraphicsTransform"                      => NIL , ;
+      "QHelpEngineCore"                         => NIL , ;
+      "QHelpSearchEngine"                       => NIL , ;
+      "QHttp"                                   => NIL , ;
+      "QHttpMultiPart"                          => NIL , ;
+      "QIconEnginePlugin"                       => NIL , ;
+      "QIconEnginePluginV2"                     => NIL , ;
+      "QImageIOPlugin"                          => NIL , ;
+      "QInputContext"                           => NIL , ;
+      "QInputContextPlugin"                     => NIL , ;
+      "QIODevice"                               => NIL , ;
+      "QItemSelectionModel"                     => NIL , ;
+      "QKbdDriverPlugin"                        => NIL , ;
+      "QLayout"                                 => NIL , ;
+      "QLibrary"                                => NIL , ;
+      "QLocalServer"                            => NIL , ;
+      "QMimeData"                               => NIL , ;
+      "QMouseDriverPlugin"                      => NIL , ;
+      "QMovie"                                  => NIL , ;
+      "QObjectCleanupHandler"                   => NIL , ;
+      "QPictureFormatPlugin"                    => NIL , ;
+      "QPlatformCursor"                         => NIL , ;
+      "QPluginLoader"                           => NIL , ;
+      "QScreenDriverPlugin"                     => NIL , ;
+      "QScriptEngine"                           => NIL , ;
+      "QScriptEngineDebugger"                   => NIL , ;
+      "QScriptExtensionPlugin"                  => NIL , ;
+      "QSessionManager"                         => NIL , ;
+      "QSettings"                               => NIL , ;
+      "QSharedMemory"                           => NIL , ;
+      "QShortcut"                               => NIL , ;
+      "QSignalMapper"                           => NIL , ;
+      "QSignalSpy"                              => NIL , ;
+      "QSocketNotifier"                         => NIL , ;
+      "QSound"                                  => NIL , ;
+      "QSqlDriver"                              => NIL , ;
+      "QSqlDriverPlugin"                        => NIL , ;
+      "QStyle"                                  => NIL , ;
+      "QStylePlugin"                            => NIL , ;
+      "QSvgRenderer"                            => NIL , ;
+      "QSyntaxHighlighter"                      => NIL , ;
+      "QSystemTrayIcon"                         => NIL , ;
+      "QTcpServer"                              => NIL , ;
+      "QTextCodecPlugin"                        => NIL , ;
+      "QTextDocument"                           => NIL , ;
+      "QTextObject"                             => NIL , ;
+      "QThread"                                 => NIL , ;
+      "QThreadPool"                             => NIL , ;
+      "QTimeLine"                               => NIL , ;
+      "QTimer"                                  => NIL , ;
+      "QTranslator"                             => NIL , ;
+      "QUiLoader"                               => NIL , ;
+      "QUndoGroup"                              => NIL , ;
+      "QUndoStack"                              => NIL , ;
+      "QValidator"                              => NIL , ;
+      "QWebFrame"                               => NIL , ;
+      "QWebHistoryInterface"                    => NIL , ;
+      "QWebPage"                                => NIL , ;
+      "QWebPluginFactory"                       => NIL , ;
+      "QWidget"                                 => NIL , ;
+      "QWSClient"                               => NIL , ;
+      "QWSInputMethod"                          => NIL , ;
+      "QWSServer"                               => NIL , ;
+      "QAbstractButton"                         => NIL , ;
+      "QAbstractSlider"                         => NIL , ;
+      "QAbstractSpinBox"                        => NIL , ;
+      "QAxWidget"                               => NIL , ;
+      "QCalendarWidget"                         => NIL , ;
+      "QComboBox"                               => NIL , ;
+      "QDesignerActionEditorInterface"          => NIL , ;
+      "QDesignerFormWindowInterface"            => NIL , ;
+      "QDesignerObjectInspectorInterface"       => NIL , ;
+      "QDesignerPropertyEditorInterface"        => NIL , ;
+      "QDesignerWidgetBoxInterface"             => NIL , ;
+      "QDesktopWidget"                          => NIL , ;
+      "QDialog"                                 => NIL , ;
+      "QDialogButtonBox"                        => NIL , ;
+      "QDockWidget"                             => NIL , ;
+      "QFocusFrame"                             => NIL , ;
+      "QFrame"                                  => NIL , ;
+      "QGLWidget"                               => NIL , ;
+      "QGroupBox"                               => NIL , ;
+      "QHelpSearchQueryWidget"                  => NIL , ;
+      "QHelpSearchResultWidget"                 => NIL , ;
+      "QLineEdit"                               => NIL , ;
+      "QMacCocoaViewContainer"                  => NIL , ;
+      "QMacNativeWidget"                        => NIL , ;
+      "QMainWindow"                             => NIL , ;
+      "QMdiSubWindow"                           => NIL , ;
+      "QMenu"                                   => NIL , ;
+      "QMenuBar"                                => NIL , ;
+      "QPrintPreviewWidget"                     => NIL , ;
+      "QProgressBar"                            => NIL , ;
+      "QRubberBand"                             => NIL , ;
+      "QSizeGrip"                               => NIL , ;
+      "QSplashScreen"                           => NIL , ;
+      "QSplitterHandle"                         => NIL , ;
+      "QStatusBar"                              => NIL , ;
+      "QSvgWidget"                              => NIL , ;
+      "QTabBar"                                 => NIL , ;
+      "QTabWidget"                              => NIL , ;
+      "QToolBar"                                => NIL , ;
+      "QWebInspector"                           => NIL , ;
+      "QWebView"                                => NIL , ;
+      "QWizardPage"                             => NIL , ;
+      "QWorkspace"                              => NIL , ;
+      "QWSEmbedWidget"                          => NIL , ;
+      "QX11EmbedContainer"                      => NIL , ;
+      "QX11EmbedWidget"                         => NIL , ;
+      "QAnimationGroup"                         => NIL , ;
+      "QPauseAnimation"                         => NIL , ;
+      "QVariantAnimation"                       => NIL , ;
+      "QParallelAnimationGroup"                 => NIL , ;
+      "QSequentialAnimationGroup"               => NIL , ;
+      "QPropertyAnimation"                      => NIL , ;
+      "QItemDelegate"                           => NIL , ;
+      "QStyledItemDelegate"                     => NIL , ;
+      "QSqlRelationalDelegate"                  => NIL , ;
+      "QSqlRelationalTableModel"                => NIL , ;
+      "QSqlTableModel"                          => NIL , ;
+      "QSqlQueryModel"                          => NIL , ;
+      "QIdentityProxyModel"                     => NIL , ;
+      "QSortFilterProxyModel"                   => NIL , ;
+      "QHelpIndexModel"                         => NIL , ;
+      "QStringListModel"                        => NIL , ;
+      "QAbstractListModel"                      => NIL , ;
+      "QAbstractProxyModel"                     => NIL , ;
+      "QAbstractTableModel"                     => NIL , ;
+      "QDirModel"                               => NIL , ;
+      "QFileSystemModel"                        => NIL , ;
+      "QHelpContentModel"                       => NIL , ;
+      "QProxyModel"                             => NIL , ;
+      "QStandardItemModel"                      => NIL , ;
+      "QNetworkDiskCache"                       => NIL , ;
+      "QFinalState"                             => NIL , ;
+      "QHistoryState"                           => NIL , ;
+      "QState"                                  => NIL , ;
+      "QStateMachine"                           => NIL , ;
+      "QPlainTextDocumentLayout"                => NIL , ;
+      "QEventTransition"                        => NIL , ;
+      "QSignalTransition"                       => NIL , ;
+      "QKeyEventTransition"                     => NIL , ;
+      "QMouseEventTransition"                   => NIL , ;
+      "QMenuItem"                               => NIL , ;
+      "QWidgetAction"                           => NIL , ;
+      "QAxScriptEngine"                         => NIL , ;
+      "QApplication"                            => NIL , ;
+      "QDBusConnectionInterface"                => NIL , ;
+      "QDBusInterface"                          => NIL , ;
+      "QPanGesture"                             => NIL , ;
+      "QPinchGesture"                           => NIL , ;
+      "QSwipeGesture"                           => NIL , ;
+      "QTapAndHoldGesture"                      => NIL , ;
+      "QTapGesture"                             => NIL , ;
+      "QGraphicsBlurEffect"                     => NIL , ;
+      "QGraphicsColorizeEffect"                 => NIL , ;
+      "QGraphicsDropShadowEffect"               => NIL , ;
+      "QGraphicsOpacityEffect"                  => NIL , ;
+      "QDeclarativeItem"                        => NIL , ;
+      "QGraphicsSvgItem"                        => NIL , ;
+      "QGraphicsTextItem"                       => NIL , ;
+      "QGraphicsWidget"                         => NIL , ;
+      "QGraphicsProxyWidget"                    => NIL , ;
+      "QGraphicsWebView"                        => NIL , ;
+      "QGraphicsRotation"                       => NIL , ;
+      "QGraphicsScale"                          => NIL , ;
+      "QHelpEngine"                             => NIL , ;
+      "QAbstractSocket"                         => NIL , ;
+      "QBuffer"                                 => NIL , ;
+      "QFile"                                   => NIL , ;
+      "QLocalSocket"                            => NIL , ;
+      "QNetworkReply"                           => NIL , ;
+      "QProcess"                                => NIL , ;
+      "QTcpSocket"                              => NIL , ;
+      "QUdpSocket"                              => NIL , ;
+      "QSslSocket"                              => NIL , ;
+      "QTemporaryFile"                          => NIL , ;
+      "QBoxLayout"                              => NIL , ;
+      "QFormLayout"                             => NIL , ;
+      "QGridLayout"                             => NIL , ;
+      "QStackedLayout"                          => NIL , ;
+      "QHBoxLayout"                             => NIL , ;
+      "QVBoxLayout"                             => NIL , ;
+      "QTextBlockGroup"                         => NIL , ;
+      "QTextFrame"                              => NIL , ;
+      "QTextList"                               => NIL , ;
+      "QTextTable"                              => NIL , ;
+      "QDoubleValidator"                        => NIL , ;
+      "QIntValidator"                           => NIL , ;
+      "QRegExpValidator"                        => NIL , ;
+      "QCheckBox"                               => NIL , ;
+      "QPushButton"                             => NIL , ;
+      "QRadioButton"                            => NIL , ;
+      "Q3Button"                                => NIL , ;
+      "QToolButton"                             => NIL , ;
+      "QCommandLinkButton"                      => NIL , ;
+      "QDial"                                   => NIL , ;
+      "QScrollBar"                              => NIL , ;
+      "QSlider"                                 => NIL , ;
+      "QDateTimeEdit"                           => NIL , ;
+      "QDoubleSpinBox"                          => NIL , ;
+      "QSpinBox"                                => NIL , ;
+      "QDateEdit"                               => NIL , ;
+      "QTimeEdit"                               => NIL , ;
+      "QFontComboBox"                           => NIL , ;
+      "QAbstractPrintDialog"                    => NIL , ;
+      "QColorDialog"                            => NIL , ;
+      "QErrorMessage"                           => NIL , ;
+      "QFileDialog"                             => NIL , ;
+      "QFontDialog"                             => NIL , ;
+      "QInputDialog"                            => NIL , ;
+      "QMessageBox"                             => NIL , ;
+      "QPageSetupDialog"                        => NIL , ;
+      "QPrintPreviewDialog"                     => NIL , ;
+      "QProgressDialog"                         => NIL , ;
+      "QWizard"                                 => NIL , ;
+      "QPrintDialog"                            => NIL , ;
+      "QAbstractScrollArea"                     => NIL , ;
+      "QLabel"                                  => NIL , ;
+      "QLCDNumber"                              => NIL , ;
+      "QSplitter"                               => NIL , ;
+      "QStackedWidget"                          => NIL , ;
+      "QToolBox"                                => NIL , ;
+      "QAbstractItemView"                       => NIL , ;
+      "QGraphicsView"                           => NIL , ;
+      "QMdiArea"                                => NIL , ;
+      "QPlainTextEdit"                          => NIL , ;
+      "QScrollArea"                             => NIL , ;
+      "QTextEdit"                               => NIL , ;
+      "QColumnView"                             => NIL , ;
+      "QHeaderView"                             => NIL , ;
+      "QListView"                               => NIL , ;
+      "QTableView"                              => NIL , ;
+      "QTreeView"                               => NIL , ;
+      "QHelpIndexWidget"                        => NIL , ;
+      "QListWidget"                             => NIL , ;
+      "QUndoView"                               => NIL , ;
+      "QTableWidget"                            => NIL , ;
+      "QHelpContentWidget"                      => NIL , ;
+      "QTreeWidget"                             => NIL , ;
+      "QDeclarativeView"                        => NIL , ;
+      "QTextBrowser"                            => NIL , ;
+      "QGLShader"                               => NIL , ;
+      "QGLShaderProgram"                        => NIL , ;
+      "QGLWidget"                               => NIL , ;
+      "QGraphicsSvgItem"                        => NIL , ;
+      "QSvgRenderer"                            => NIL , ;
+      "QScriptEngine"                           => NIL , ;
+      "QScriptExtensionPlugin"                  => NIL , ;
+      "QScroller"                               => NIL , ;
+      "QInputMethod"                            => NIL , ;
+      "QNetworkAccessManager"                   => NIL , ;
+      "QNetworkConfigurationManager"            => NIL , ;
+      "QNetworkCookieJar"                       => NIL , ;
+      "QNetworkSession"                         => NIL , ;
+      "QAbstractNetworkCache"                   => NIL , ;
+      "QAbstractSocket"                         => NIL , ;
+      "QDnsLookup"                              => NIL , ;
+      "QFtp"                                    => NIL , ;
+      "QHttp"                                   => NIL , ;
+      "QHttpMultiPart"                          => NIL , ;
+      "QLocalServer"                            => NIL , ;
+      "QLocalSocket"                            => NIL , ;
+      "QNetworkDiskCache"                       => NIL , ;
+      "QNetworkProxyFactory"                    => NIL , ;
+      "QNetworkReply"                           => NIL , ;
+      "QNetworkSession"                         => NIL , ;
+      "QSslSocket"                              => NIL , ;
+      "QTcpServer"                              => NIL , ;
+      "QTcpSocket"                              => NIL , ;
+      "QUdpSocket"                              => NIL , ;
+      "QCamera"                                 => NIL , ;
+      "QAbstractVideoSurface"                   => NIL , ;
+      "QAudioDecoder"                           => NIL , ;
+      "QAudioDecoderControl"                    => NIL , ;
+      "QAudioEncoderSettingsControl"            => NIL , ;
+      "QAudioInput"                             => NIL , ;
+      "QAudioInputSelectorControl"              => NIL , ;
+      "QAudioOutput"                            => NIL , ;
+      "QAudioOutputSelectorControl"             => NIL , ;
+      "QAudioRecorder"                          => NIL , ;
+      "QCameraCaptureBufferFormatControl"       => NIL , ;
+      "QCameraCaptureDestinationControl"        => NIL , ;
+      "QCameraControl"                          => NIL , ;
+      "QCameraExposure"                         => NIL , ;
+      "QCameraExposureControl"                  => NIL , ;
+      "QCameraFeedbackControl"                  => NIL , ;
+      "QCameraFlashControl"                     => NIL , ;
+      "QCameraFocus"                            => NIL , ;
+      "QCameraFocusControl"                     => NIL , ;
+      "QCameraImageCapture"                     => NIL , ;
+      "QCameraImageCaptureControl"              => NIL , ;
+      "QCameraImageProcessing"                  => NIL , ;
+      "QCameraImageProcessingControl"           => NIL , ;
+      "QCameraInfoControl"                      => NIL , ;
+      "QCameraLocksControl"                     => NIL , ;
+      "QCameraViewfinderSettingsControl"        => NIL , ;
+      "QCameraZoomControl"                      => NIL , ;
+      "QImageEncoderControl"                    => NIL , ;
+      "QMediaAudioProbeControl"                 => NIL , ;
+      "QMediaAvailabilityControl"               => NIL , ;
+      "QMediaContainerControl"                  => NIL , ;
+      "QMediaControl"                           => NIL , ;
+      "QMediaGaplessPlaybackControl"            => NIL , ;
+      "QMediaNetworkAccessControl"              => NIL , ;
+      "QMediaObject"                            => NIL , ;
+      "QMediaPlayer"                            => NIL , ;
+      "QMediaPlayerControl"                     => NIL , ;
+      "QMediaPlaylist"                          => NIL , ;
+      "QMediaRecorder"                          => NIL , ;
+      "QMediaRecorderControl"                   => NIL , ;
+      "QMediaService"                           => NIL , ;
+      "QMediaServiceProviderPlugin"             => NIL , ;
+      "QMediaStreamsControl"                    => NIL , ;
+      "QMediaVideoProbeControl"                 => NIL , ;
+      "QMetaDataReaderControl"                  => NIL , ;
+      "QMetaDataWriterControl"                  => NIL , ;
+      "QRadioData"                              => NIL , ;
+      "QRadioDataControl"                       => NIL , ;
+      "QRadioTuner"                             => NIL , ;
+      "QRadioTunerControl"                      => NIL , ;
+      "QSoundEffect"                            => NIL , ;
+      "QVideoDeviceSelectorControl"             => NIL , ;
+      "QVideoEncoderSettingsControl"            => NIL , ;
+      "QVideoProbe"                             => NIL , ;
+      "QVideoRendererControl"                   => NIL , ;
+      "QVideoWindowControl"                     => NIL , ;
+      "QCameraViewfinder"                       => NIL , ;
+      "QVideoWidget"                            => NIL , ;
+      "QVideoWidgetControl"                     => NIL , ;
+      "QGeoAreaMonitorSource"                   => NIL , ;
+      "QGeoPositionInfoSource"                  => NIL , ;
+      "QGeoSatelliteInfoSource"                 => NIL , ;
+      "QNmeaPositionInfoSource"                 => NIL , ;
+      "QBluetoothDeviceDiscoveryAgent"          => NIL , ;
+      "QBluetoothLocalDevice"                   => NIL , ;
+      "QBluetoothServer"                        => NIL , ;
+      "QBluetoothServiceDiscoveryAgent"         => NIL , ;
+      "QBluetoothSocket"                        => NIL , ;
+      "QBluetoothTransferManager"               => NIL , ;
+      "QBluetoothTransferReply"                 => NIL , ;
+      "QMaskGenerator"                          => NIL , ;
+      "QWebSocket"                              => NIL , ;
+      "QWebSocketServer"                        => NIL , ;
+      "QQuickFramebufferObject"                 => NIL , ;
+      "QQuickItem"                              => NIL , ;
+      "QQuickPaintedItem"                       => NIL , ;
+      "QQuickTextDocument"                      => NIL , ;
+      "QQuickTextureFactory"                    => NIL , ;
+      "QQuickView"                              => NIL , ;
+      "QQuickWindow"                            => NIL , ;
+      "QQuickWidget"                            => NIL , ;
+      "QSGDynamicTexture"                       => NIL , ;
+      "QSGTexture"                              => NIL , ;
+      "QJSEngine"                               => NIL , ;
+      "QQmlAbstractProfilerAdapter"             => NIL , ;
+      "QQmlApplicationEngine"                   => NIL , ;
+      "QQmlComponent"                           => NIL , ;
+      "QQmlContext"                             => NIL , ;
+      "QQmlEngine"                              => NIL , ;
+      "QQmlExpression"                          => NIL , ;
+      "QQmlExtensionPlugin"                     => NIL , ;
+      "QQmlFileSelector"                        => NIL , ;
+      "QQmlPropertyMap"                         => NIL , ;
+      "QZXing"                                  => NIL , ;
+      "QSensor"                                 => NIL , ;
+      "QSensorBackend"                          => NIL , ;
+      "QSensorGesture"                          => NIL , ;
+      "QSensorGestureManager"                   => NIL , ;
+      "QSensorReading"                          => NIL , ;
+      "QAccelerometerReading"                   => NIL , ;
+      "QAltimeterReading"                       => NIL , ;
+      "QAmbientLightReading"                    => NIL , ;
+      "QAmbientTemperatureReading"              => NIL , ;
+      "QCompassReading"                         => NIL , ;
+      "QGyroscopeReading"                       => NIL , ;
+      "QHolsterReading"                         => NIL , ;
+      "QIRProximityReading"                     => NIL , ;
+      "QLightReading"                           => NIL , ;
+      "QMagnetometerReading"                    => NIL , ;
+      "QOrientationReading"                     => NIL , ;
+      "QPressureReading"                        => NIL , ;
+      "QProximityReading"                       => NIL , ;
+      "QRotationReading"                        => NIL , ;
+      "QTapReading"                             => NIL , ;
+      "QTiltReading"                            => NIL , ;
+      "QAccelerometer"                          => NIL , ;
+      "QAltimeter"                              => NIL , ;
+      "QAmbientLightSensor"                     => NIL , ;
+      "QAmbientTemperatureSensor"               => NIL , ;
+      "QCompass"                                => NIL , ;
+      "QGyroscope"                              => NIL , ;
+      "QHolsterSensor"                          => NIL , ;
+      "QIRProximitySensor"                      => NIL , ;
+      "QLightSensor"                            => NIL , ;
+      "QMagnetometer"                           => NIL , ;
+      "QOrientationSensor"                      => NIL , ;
+      "QPressureSensor"                         => NIL , ;
+      "QProximitySensor"                        => NIL , ;
+      "QRotationSensor"                         => NIL , ;
+      "QTapSensor"                              => NIL , ;
+      "QTiltSensor"                             => NIL   }
 
    IF lower( left( cWidget, 3 ) ) == "hbq"
       cWidget := SubStr( cWidget, 3 )
    ENDIF
 
-   /* TOFIX: add this information to .qth.
-             it breaks modularity and split the same king of information between
-             this plugin and .qth files. */
-   IF empty( aQObjects )
-      aadd( aQObjects, "QObject" )
-
-      aadd( aQObjects, "QAbstractAnimation" )
-      aadd( aQObjects, "QAbstractEventDispatcher" )
-      aadd( aQObjects, "QAbstractFontEngine" )
-      aadd( aQObjects, "QAbstractItemDelegate" )
-      aadd( aQObjects, "QAbstractItemModel" )
-      aadd( aQObjects, "QAbstractMessageHandler" )
-      aadd( aQObjects, "QAbstractState" )
-      aadd( aQObjects, "QAbstractTextDocumentLayout" )
-      aadd( aQObjects, "QAbstractTransition" )
-      aadd( aQObjects, "QAbstractUriResolver" )
-      aadd( aQObjects, "QAbstractVideoSurface" )
-      aadd( aQObjects, "QAccessibleBridgePlugin" )
-      aadd( aQObjects, "QAccessiblePlugin" )
-      aadd( aQObjects, "QAction" )
-      aadd( aQObjects, "QActionGroup" )
-      aadd( aQObjects, "QAudioInput" )
-      aadd( aQObjects, "QAudioOutput" )
-      aadd( aQObjects, "QAxFactory" )
-      aadd( aQObjects, "QAxObject" )
-      aadd( aQObjects, "QAxScript" )
-      aadd( aQObjects, "QAxScriptManager" )
-      aadd( aQObjects, "QButtonGroup" )
-      aadd( aQObjects, "QClipboard" )
-      aadd( aQObjects, "QCompleter" )
-      aadd( aQObjects, "QCopChannel" )
-      aadd( aQObjects, "QCoreApplication" )
-      aadd( aQObjects, "QDataWidgetMapper" )
-      aadd( aQObjects, "QDBusAbstractAdaptor" )
-      aadd( aQObjects, "QDBusAbstractInterface" )
-      aadd( aQObjects, "QDBusPendingCallWatcher" )
-      aadd( aQObjects, "QDBusServiceWatcher" )
-      aadd( aQObjects, "QDeclarativeComponent" )
-      aadd( aQObjects, "QDeclarativeContext" )
-      aadd( aQObjects, "QDeclarativeEngine" )
-      aadd( aQObjects, "QDeclarativeExpression" )
-      aadd( aQObjects, "QDeclarativeExtensionPlugin" )
-      aadd( aQObjects, "QDeclarativePropertyMap" )
-      aadd( aQObjects, "QDecorationPlugin" )
-      aadd( aQObjects, "QDesignerFormEditorInterface" )
-      aadd( aQObjects, "QDesignerFormWindowManagerInterface" )
-      aadd( aQObjects, "QDirectPainter" )
-      aadd( aQObjects, "QDrag" )
-      aadd( aQObjects, "QEventLoop" )
-      aadd( aQObjects, "QExtensionFactory" )
-      aadd( aQObjects, "QExtensionManager" )
-      aadd( aQObjects, "QFileSystemWatcher" )
-      aadd( aQObjects, "QFontEnginePlugin" )
-      aadd( aQObjects, "QFtp" )
-      aadd( aQObjects, "QFutureWatcher" )
-      aadd( aQObjects, "QGenericPlugin" )
-      aadd( aQObjects, "QGesture" )
-      aadd( aQObjects, "QGLShader" )
-      aadd( aQObjects, "QGLShaderProgram" )
-      aadd( aQObjects, "QGraphicsAnchor" )
-      aadd( aQObjects, "QGraphicsEffect" )
-      aadd( aQObjects, "QGraphicsItemAnimation" )
-      aadd( aQObjects, "QGraphicsObject" )
-      aadd( aQObjects, "QGraphicsScene" )
-      aadd( aQObjects, "QGraphicsTransform" )
-      aadd( aQObjects, "QHelpEngineCore" )
-      aadd( aQObjects, "QHelpSearchEngine" )
-      aadd( aQObjects, "QHttp" )
-      aadd( aQObjects, "QHttpMultiPart" )
-      aadd( aQObjects, "QIconEnginePlugin" )
-      aadd( aQObjects, "QIconEnginePluginV2" )
-      aadd( aQObjects, "QImageIOPlugin" )
-      aadd( aQObjects, "QInputContext" )
-      aadd( aQObjects, "QInputContextPlugin" )
-      aadd( aQObjects, "QIODevice" )
-      aadd( aQObjects, "QItemSelectionModel" )
-      aadd( aQObjects, "QKbdDriverPlugin" )
-      aadd( aQObjects, "QLayout" )
-      aadd( aQObjects, "QLibrary" )
-      aadd( aQObjects, "QLocalServer" )
-      aadd( aQObjects, "QMimeData" )
-      aadd( aQObjects, "QMouseDriverPlugin" )
-      aadd( aQObjects, "QMovie" )
-      aadd( aQObjects, "QObjectCleanupHandler" )
-      aadd( aQObjects, "QPictureFormatPlugin" )
-      aadd( aQObjects, "QPlatformCursor" )
-      aadd( aQObjects, "QPluginLoader" )
-      aadd( aQObjects, "QScreenDriverPlugin" )
-      aadd( aQObjects, "QScriptEngine" )
-      aadd( aQObjects, "QScriptEngineDebugger" )
-      aadd( aQObjects, "QScriptExtensionPlugin" )
-      aadd( aQObjects, "QSessionManager" )
-      aadd( aQObjects, "QSettings" )
-      aadd( aQObjects, "QSharedMemory" )
-      aadd( aQObjects, "QShortcut" )
-      aadd( aQObjects, "QSignalMapper" )
-      aadd( aQObjects, "QSignalSpy" )
-      aadd( aQObjects, "QSocketNotifier" )
-      aadd( aQObjects, "QSound" )
-      aadd( aQObjects, "QSqlDriver" )
-      aadd( aQObjects, "QSqlDriverPlugin" )
-      aadd( aQObjects, "QStyle" )
-      aadd( aQObjects, "QStylePlugin" )
-      aadd( aQObjects, "QSvgRenderer" )
-      aadd( aQObjects, "QSyntaxHighlighter" )
-      aadd( aQObjects, "QSystemTrayIcon" )
-      aadd( aQObjects, "QTcpServer" )
-      aadd( aQObjects, "QTextCodecPlugin" )
-      aadd( aQObjects, "QTextDocument" )
-      aadd( aQObjects, "QTextObject" )
-      aadd( aQObjects, "QThread" )
-      aadd( aQObjects, "QThreadPool" )
-      aadd( aQObjects, "QTimeLine" )
-      aadd( aQObjects, "QTimer" )
-      aadd( aQObjects, "QTranslator" )
-      aadd( aQObjects, "QUiLoader" )
-      aadd( aQObjects, "QUndoGroup" )
-      aadd( aQObjects, "QUndoStack" )
-      aadd( aQObjects, "QValidator" )
-      aadd( aQObjects, "QWebFrame" )
-      aadd( aQObjects, "QWebHistoryInterface" )
-      aadd( aQObjects, "QWebPage" )
-      aadd( aQObjects, "QWebPluginFactory" )
-      aadd( aQObjects, "QWidget" )
-      aadd( aQObjects, "QWSClient" )
-      aadd( aQObjects, "QWSInputMethod" )
-      aadd( aQObjects, "QWSServer" )
-
-      aadd( aQObjects, "QAbstractButton" )
-      aadd( aQObjects, "QAbstractSlider" )
-      aadd( aQObjects, "QAbstractSpinBox" )
-      aadd( aQObjects, "QAxWidget" )
-      aadd( aQObjects, "QCalendarWidget" )
-      aadd( aQObjects, "QComboBox" )
-      aadd( aQObjects, "QDesignerActionEditorInterface" )
-      aadd( aQObjects, "QDesignerFormWindowInterface" )
-      aadd( aQObjects, "QDesignerObjectInspectorInterface" )
-      aadd( aQObjects, "QDesignerPropertyEditorInterface" )
-      aadd( aQObjects, "QDesignerWidgetBoxInterface" )
-      aadd( aQObjects, "QDesktopWidget" )
-      aadd( aQObjects, "QDialog" )
-      aadd( aQObjects, "QDialogButtonBox" )
-      aadd( aQObjects, "QDockWidget" )
-      aadd( aQObjects, "QFocusFrame" )
-      aadd( aQObjects, "QFrame" )
-      aadd( aQObjects, "QGLWidget" )
-      aadd( aQObjects, "QGroupBox" )
-      aadd( aQObjects, "QHelpSearchQueryWidget" )
-      aadd( aQObjects, "QHelpSearchResultWidget" )
-      aadd( aQObjects, "QLineEdit" )
-      aadd( aQObjects, "QMacCocoaViewContainer" )
-      aadd( aQObjects, "QMacNativeWidget" )
-      aadd( aQObjects, "QMainWindow" )
-      aadd( aQObjects, "QMdiSubWindow" )
-      aadd( aQObjects, "QMenu" )
-      aadd( aQObjects, "QMenuBar" )
-      aadd( aQObjects, "QPrintPreviewWidget" )
-      aadd( aQObjects, "QProgressBar" )
-      aadd( aQObjects, "QRubberBand" )
-      aadd( aQObjects, "QSizeGrip" )
-      aadd( aQObjects, "QSplashScreen" )
-      aadd( aQObjects, "QSplitterHandle" )
-      aadd( aQObjects, "QStatusBar" )
-      aadd( aQObjects, "QSvgWidget" )
-      aadd( aQObjects, "QTabBar" )
-      aadd( aQObjects, "QTabWidget" )
-      aadd( aQObjects, "QToolBar" )
-      aadd( aQObjects, "QWebInspector" )
-      aadd( aQObjects, "QWebView" )
-      aadd( aQObjects, "QWizardPage" )
-      aadd( aQObjects, "QWorkspace" )
-      aadd( aQObjects, "QWSEmbedWidget" )
-      aadd( aQObjects, "QX11EmbedContainer" )
-      aadd( aQObjects, "QX11EmbedWidget" )
-
-      aadd( aQObjects, "QAnimationGroup" )
-      aadd( aQObjects, "QPauseAnimation" )
-      aadd( aQObjects, "QVariantAnimation" )
-      aadd( aQObjects, "QParallelAnimationGroup" )
-      aadd( aQObjects, "QSequentialAnimationGroup" )
-      aadd( aQObjects, "QPropertyAnimation" )
-
-      aadd( aQObjects, "QItemDelegate" )
-      aadd( aQObjects, "QStyledItemDelegate" )
-      aadd( aQObjects, "QSqlRelationalDelegate" )
-
-      aadd( aQObjects, "QSqlRelationalTableModel" )
-      aadd( aQObjects, "QSqlTableModel" )
-      aadd( aQObjects, "QSqlQueryModel" )
-      aadd( aQObjects, "QIdentityProxyModel" )
-      aadd( aQObjects, "QSortFilterProxyModel" )
-      aadd( aQObjects, "QHelpIndexModel" )
-      aadd( aQObjects, "QStringListModel" )
-      aadd( aQObjects, "QAbstractListModel" )
-      aadd( aQObjects, "QAbstractProxyModel" )
-      aadd( aQObjects, "QAbstractTableModel" )
-      aadd( aQObjects, "QDirModel" )
-      aadd( aQObjects, "QFileSystemModel" )
-      aadd( aQObjects, "QHelpContentModel" )
-      aadd( aQObjects, "QProxyModel" )
-      aadd( aQObjects, "QStandardItemModel" )
-
-      aadd( aQObjects, "QNetworkDiskCache" )
-
-      aadd( aQObjects, "QFinalState" )
-      aadd( aQObjects, "QHistoryState" )
-      aadd( aQObjects, "QState" )
-      aadd( aQObjects, "QStateMachine" )
-
-      aadd( aQObjects, "QPlainTextDocumentLayout" )
-
-      aadd( aQObjects, "QEventTransition" )
-      aadd( aQObjects, "QSignalTransition" )
-      aadd( aQObjects, "QKeyEventTransition" )
-      aadd( aQObjects, "QMouseEventTransition" )
-
-      aadd( aQObjects, "QMenuItem" )
-      aadd( aQObjects, "QWidgetAction" )
-
-      aadd( aQObjects, "QAxScriptEngine" )
-
-      aadd( aQObjects, "QApplication" )
-
-      aadd( aQObjects, "QDBusConnectionInterface" )
-      aadd( aQObjects, "QDBusInterface" )
-
-      aadd( aQObjects, "QPanGesture" )
-      aadd( aQObjects, "QPinchGesture" )
-      aadd( aQObjects, "QSwipeGesture" )
-      aadd( aQObjects, "QTapAndHoldGesture" )
-      aadd( aQObjects, "QTapGesture" )
-
-      aadd( aQObjects, "QGraphicsBlurEffect" )
-      aadd( aQObjects, "QGraphicsColorizeEffect" )
-      aadd( aQObjects, "QGraphicsDropShadowEffect" )
-      aadd( aQObjects, "QGraphicsOpacityEffect" )
-
-      aadd( aQObjects, "QDeclarativeItem" )
-      aadd( aQObjects, "QGraphicsSvgItem" )
-      aadd( aQObjects, "QGraphicsTextItem" )
-      aadd( aQObjects, "QGraphicsWidget" )
-      aadd( aQObjects, "QGraphicsProxyWidget" )
-      aadd( aQObjects, "QGraphicsWebView" )
-
-      aadd( aQObjects, "QGraphicsRotation" )
-      aadd( aQObjects, "QGraphicsScale" )
-
-      aadd( aQObjects, "QHelpEngine" )
-
-      aadd( aQObjects, "QAbstractSocket" )
-      aadd( aQObjects, "QBuffer" )
-      aadd( aQObjects, "QFile" )
-      aadd( aQObjects, "QLocalSocket" )
-      aadd( aQObjects, "QNetworkReply" )
-      aadd( aQObjects, "QProcess" )
-      aadd( aQObjects, "QTcpSocket" )
-      aadd( aQObjects, "QUdpSocket" )
-      aadd( aQObjects, "QSslSocket" )
-      aadd( aQObjects, "QTemporaryFile" )
-
-      aadd( aQObjects, "QBoxLayout" )
-      aadd( aQObjects, "QFormLayout" )
-      aadd( aQObjects, "QGridLayout" )
-      aadd( aQObjects, "QStackedLayout" )
-      aadd( aQObjects, "QHBoxLayout" )
-      aadd( aQObjects, "QVBoxLayout" )
-
-      aadd( aQObjects, "QTextBlockGroup" )
-      aadd( aQObjects, "QTextFrame" )
-      aadd( aQObjects, "QTextList" )
-      aadd( aQObjects, "QTextTable" )
-
-      aadd( aQObjects, "QDoubleValidator" )
-      aadd( aQObjects, "QIntValidator" )
-      aadd( aQObjects, "QRegExpValidator" )
-
-      aadd( aQObjects, "QCheckBox" )
-      aadd( aQObjects, "QPushButton" )
-      aadd( aQObjects, "QRadioButton" )
-      aadd( aQObjects, "Q3Button" )
-      aadd( aQObjects, "QToolButton" )
-      aadd( aQObjects, "QCommandLinkButton" )
-
-      aadd( aQObjects, "QDial" )
-      aadd( aQObjects, "QScrollBar" )
-      aadd( aQObjects, "QSlider" )
-
-      aadd( aQObjects, "QDateTimeEdit" )
-      aadd( aQObjects, "QDoubleSpinBox" )
-      aadd( aQObjects, "QSpinBox" )
-      aadd( aQObjects, "QDateEdit" )
-      aadd( aQObjects, "QTimeEdit" )
-
-      aadd( aQObjects, "QFontComboBox" )
-
-      aadd( aQObjects, "QAbstractPrintDialog" )
-      aadd( aQObjects, "QColorDialog" )
-      aadd( aQObjects, "QErrorMessage" )
-      aadd( aQObjects, "QFileDialog" )
-      aadd( aQObjects, "QFontDialog" )
-      aadd( aQObjects, "QInputDialog" )
-      aadd( aQObjects, "QMessageBox" )
-      aadd( aQObjects, "QPageSetupDialog" )
-      aadd( aQObjects, "QPrintPreviewDialog" )
-      aadd( aQObjects, "QProgressDialog" )
-      aadd( aQObjects, "QWizard" )
-      aadd( aQObjects, "QPrintDialog" )
-
-      aadd( aQObjects, "QAbstractScrollArea" )
-      aadd( aQObjects, "QLabel" )
-      aadd( aQObjects, "QLCDNumber" )
-      aadd( aQObjects, "QSplitter" )
-      aadd( aQObjects, "QStackedWidget" )
-      aadd( aQObjects, "QToolBox" )
-      aadd( aQObjects, "QAbstractItemView" )
-      aadd( aQObjects, "QGraphicsView" )
-      aadd( aQObjects, "QMdiArea" )
-      aadd( aQObjects, "QPlainTextEdit" )
-      aadd( aQObjects, "QScrollArea" )
-      aadd( aQObjects, "QTextEdit" )
-      aadd( aQObjects, "QColumnView" )
-      aadd( aQObjects, "QHeaderView" )
-      aadd( aQObjects, "QListView" )
-      aadd( aQObjects, "QTableView" )
-      aadd( aQObjects, "QTreeView" )
-      aadd( aQObjects, "QHelpIndexWidget" )
-      aadd( aQObjects, "QListWidget" )
-      aadd( aQObjects, "QUndoView" )
-      aadd( aQObjects, "QTableWidget" )
-      aadd( aQObjects, "QHelpContentWidget" )
-      aadd( aQObjects, "QTreeWidget" )
-      aadd( aQObjects, "QDeclarativeView" )
-      aadd( aQObjects, "QTextBrowser" )
-
-      aadd( aQObjects, "QGLShader" )
-      aadd( aQObjects, "QGLShaderProgram" )
-      aadd( aQObjects, "QGLWidget" )
-
-      aadd( aQObjects, "QGraphicsSvgItem" )
-      aadd( aQObjects, "QSvgRenderer" )
-
-      aadd( aQObjects, "QScriptEngine" )
-      aadd( aQObjects, "QScriptExtensionPlugin" )
-
-      aadd( aQObjects, "QScroller" )
-      aadd( aQObjects, "QInputMethod" )
-
-      // QtNetwork
-      aadd( aQObjects, "QNetworkAccessManager" )
-      aadd( aQObjects, "QNetworkConfigurationManager" )
-      aadd( aQObjects, "QNetworkCookieJar" )
-      aadd( aQObjects, "QNetworkSession" )
-      aadd( aQObjects, "QAbstractNetworkCache" )
-      aadd( aQObjects, "QAbstractSocket" )
-      aadd( aQObjects, "QDnsLookup" )
-      aadd( aQObjects, "QFtp" )
-      aadd( aQObjects, "QHttp" )
-      aadd( aQObjects, "QHttpMultiPart" )
-      aadd( aQObjects, "QLocalServer" )
-      aadd( aQObjects, "QLocalSocket" )
-      aadd( aQObjects, "QNetworkDiskCache" )
-      aadd( aQObjects, "QNetworkProxyFactory" )
-      aadd( aQObjects, "QNetworkReply" )
-      aadd( aQObjects, "QNetworkSession" )
-      aadd( aQObjects, "QSslSocket" )
-      aadd( aQObjects, "QTcpServer" )
-      aadd( aQObjects, "QTcpSocket" )
-      aadd( aQObjects, "QUdpSocket" )
-
-      // QtMultimedi
-      aadd( aQObjects, "QCamera" )
-      aadd( aQObjects, "QAbstractVideoSurface" )
-      aadd( aQObjects, "QAudioDecoder" )
-      aadd( aQObjects, "QAudioDecoderControl" )
-      aadd( aQObjects, "QAudioEncoderSettingsControl" )
-      aadd( aQObjects, "QAudioInput" )
-      aadd( aQObjects, "QAudioInputSelectorControl" )
-      aadd( aQObjects, "QAudioOutput" )
-      aadd( aQObjects, "QAudioOutputSelectorControl" )
-      aadd( aQObjects, "QAudioRecorder" )
-      aadd( aQObjects, "QCameraCaptureBufferFormatControl" )
-      aadd( aQObjects, "QCameraCaptureDestinationControl" )
-      aadd( aQObjects, "QCameraControl" )
-      aadd( aQObjects, "QCameraExposure" )
-      aadd( aQObjects, "QCameraExposureControl" )
-      aadd( aQObjects, "QCameraFeedbackControl" )
-      aadd( aQObjects, "QCameraFlashControl" )
-      aadd( aQObjects, "QCameraFocus" )
-      aadd( aQObjects, "QCameraFocusControl" )
-      aadd( aQObjects, "QCameraImageCapture" )
-      aadd( aQObjects, "QCameraImageCaptureControl" )
-      aadd( aQObjects, "QCameraImageProcessing" )
-      aadd( aQObjects, "QCameraImageProcessingControl" )
-      aadd( aQObjects, "QCameraInfoControl" )
-      aadd( aQObjects, "QCameraLocksControl" )
-      aadd( aQObjects, "QCameraViewfinderSettingsControl" )
-      aadd( aQObjects, "QCameraZoomControl" )
-      aadd( aQObjects, "QImageEncoderControl" )
-      aadd( aQObjects, "QMediaAudioProbeControl" )
-      aadd( aQObjects, "QMediaAvailabilityControl" )
-      aadd( aQObjects, "QMediaContainerControl" )
-      aadd( aQObjects, "QMediaControl" )
-      aadd( aQObjects, "QMediaGaplessPlaybackControl" )
-      aadd( aQObjects, "QMediaNetworkAccessControl" )
-      aadd( aQObjects, "QMediaObject" )
-      aadd( aQObjects, "QMediaPlayer" )
-      aadd( aQObjects, "QMediaPlayerControl" )
-      aadd( aQObjects, "QMediaPlaylist" )
-      aadd( aQObjects, "QMediaRecorder" )
-      aadd( aQObjects, "QMediaRecorderControl" )
-      aadd( aQObjects, "QMediaService" )
-      aadd( aQObjects, "QMediaServiceProviderPlugin" )
-      aadd( aQObjects, "QMediaStreamsControl" )
-      aadd( aQObjects, "QMediaVideoProbeControl" )
-      aadd( aQObjects, "QMetaDataReaderControl" )
-      aadd( aQObjects, "QMetaDataWriterControl" )
-      aadd( aQObjects, "QRadioData" )
-      aadd( aQObjects, "QRadioDataControl" )
-      aadd( aQObjects, "QRadioTuner" )
-      aadd( aQObjects, "QRadioTunerControl" )
-      aadd( aQObjects, "QSoundEffect" )
-      aadd( aQObjects, "QVideoDeviceSelectorControl" )
-      aadd( aQObjects, "QVideoEncoderSettingsControl" )
-      aadd( aQObjects, "QVideoProbe" )
-      aadd( aQObjects, "QVideoRendererControl" )
-      aadd( aQObjects, "QVideoWindowControl" )
-
-      // QtMultimediaWidgets
-      aadd( aQObjects, "QCameraViewfinder" )
-      aadd( aQObjects, "QVideoWidget" )
-      aadd( aQObjects, "QVideoWidgetControl" )
-
-      // QtPositioning
-      aadd( aQObjects, "QGeoAreaMonitorSource" )
-      aadd( aQObjects, "QGeoPositionInfoSource" )
-      aadd( aQObjects, "QGeoSatelliteInfoSource" )
-      aadd( aQObjects, "QNmeaPositionInfoSource" )
-
-      // QtBluetooth
-      aadd( aQObjects, "QBluetoothDeviceDiscoveryAgent" )
-      aadd( aQObjects, "QBluetoothLocalDevice" )
-      aadd( aQObjects, "QBluetoothServer" )
-      aadd( aQObjects, "QBluetoothServiceDiscoveryAgent" )
-      aadd( aQObjects, "QBluetoothSocket" )
-      aadd( aQObjects, "QBluetoothTransferManager" )
-      aadd( aQObjects, "QBluetoothTransferReply" )
-
-      // QtWebSockets
-      aadd( aQObjects, "QMaskGenerator" )
-      aadd( aQObjects, "QWebSocket" )
-      aadd( aQObjects, "QWebSocketServer" )
-
-      // QtQuick
-      aadd( aQObjects, "QQuickFramebufferObject" )
-      aadd( aQObjects, "QQuickItem" )
-      aadd( aQObjects, "QQuickPaintedItem" )
-      aadd( aQObjects, "QQuickTextDocument" )
-      aadd( aQObjects, "QQuickTextureFactory" )
-      aadd( aQObjects, "QQuickView" )
-      aadd( aQObjects, "QQuickWindow" )
-      aadd( aQObjects, "QQuickWidget" )
-      aadd( aQObjects, "QSGDynamicTexture" )
-      aadd( aQObjects, "QSGTexture" )
-
-      // QtQml
-      aadd( aQObjects, "QJSEngine" )
-      aadd( aQObjects, "QQmlAbstractProfilerAdapter" )
-      aadd( aQObjects, "QQmlApplicationEngine" )
-      aadd( aQObjects, "QQmlComponent" )
-      aadd( aQObjects, "QQmlContext" )
-      aadd( aQObjects, "QQmlEngine" )
-      aadd( aQObjects, "QQmlExpression" )
-      aadd( aQObjects, "QQmlExtensionPlugin" )
-      aadd( aQObjects, "QQmlFileSelector" )
-      aadd( aQObjects, "QQmlPropertyMap" )
-
-      aadd( aQObjects, "QZXing" )
-
-      // QtSensors
-      aadd( aQObjects, "QSensor" )
-      aadd( aQObjects, "QSensorBackend" )
-      aadd( aQObjects, "QSensorGesture" )
-      aadd( aQObjects, "QSensorGestureManager" )
-      aadd( aQObjects, "QSensorReading" )
-      //
-      aadd( aQObjects, "QAccelerometerReading" )
-      aadd( aQObjects, "QAltimeterReading" )
-      aadd( aQObjects, "QAmbientLightReading" )
-      aadd( aQObjects, "QAmbientTemperatureReading" )
-      aadd( aQObjects, "QCompassReading" )
-      aadd( aQObjects, "QGyroscopeReading" )
-      aadd( aQObjects, "QHolsterReading" )
-      aadd( aQObjects, "QIRProximityReading" )
-      aadd( aQObjects, "QLightReading" )
-      aadd( aQObjects, "QMagnetometerReading" )
-      aadd( aQObjects, "QOrientationReading" )
-      aadd( aQObjects, "QPressureReading" )
-      aadd( aQObjects, "QProximityReading" )
-      aadd( aQObjects, "QRotationReading" )
-      aadd( aQObjects, "QTapReading" )
-      aadd( aQObjects, "QTiltReading" )
-      //
-      aadd( aQObjects, "QAccelerometer" )
-      aadd( aQObjects, "QAltimeter" )
-      aadd( aQObjects, "QAmbientLightSensor" )
-      aadd( aQObjects, "QAmbientTemperatureSensor" )
-      aadd( aQObjects, "QCompass" )
-      aadd( aQObjects, "QGyroscope" )
-      aadd( aQObjects, "QHolsterSensor" )
-      aadd( aQObjects, "QIRProximitySensor" )
-      aadd( aQObjects, "QLightSensor" )
-      aadd( aQObjects, "QMagnetometer" )
-      aadd( aQObjects, "QOrientationSensor" )
-      aadd( aQObjects, "QPressureSensor" )
-      aadd( aQObjects, "QProximitySensor" )
-      aadd( aQObjects, "QRotationSensor" )
-      aadd( aQObjects, "QTapSensor" )
-      aadd( aQObjects, "QTiltSensor" )
-
-   ENDIF
-
-   RETURN ascan( aQObjects, {| e | e == cWidget } ) > 0
+   RETURN cWidget $ s_b_
 
 /*----------------------------------------------------------------------*/
 
