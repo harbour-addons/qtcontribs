@@ -22,12 +22,6 @@
 {!android}-instpath=${HB_BIN}/
 {android}-instpath=${HB_LIB}/
 
-#-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/libgcc_s_dw2-1.dll
-#-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/mingwm10.dll
-#-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/QtCore4.dll
-#-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/QtGui4.dll
-#-instfile={win&HB_WITH_QT&!(HB_WITH_QT='no')}${HB_WITH_QT}/../bin/QtNetwork4.dll
-
 hbxbp.hbc
 hbqt.hbc
 hbqtwidgets.hbc
@@ -68,6 +62,7 @@ console.prg
 uisrcmanager.prg
 projectwizard.prg
 dbumgr.prg
+debugger.prg
 
 hbqtoolbar.prg
 
@@ -104,6 +99,7 @@ projectwizard.ui
 panels.ui
 functionsmap.ui
 selectsources.ui
+debugger.ui
 
 hbide.qrc
 settings.qrc

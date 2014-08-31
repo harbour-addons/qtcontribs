@@ -1626,6 +1626,12 @@ void HBQPlainTextEdit::paintEvent( QPaintEvent * event )
             QRect r( 0, top, width, height );
             painter.fillRect( r, brushForBookmark( index ) );
          }
+         index = BreakPointsList.indexOf( blockNumber + 1 );
+         if( index != -1 )
+         {
+            QRect r( 0, top, width, height );
+            painter.fillRect( r, QBrush( QColor( 255, 75, 75 ) ) );
+         }
          else if( curBlock == blockNumber && m_currentLineColor.isValid() )
          {
             if( highlightCurLine == true )
@@ -1941,6 +1947,22 @@ void HBQPlainTextEdit::horzRulerPaintEvent( QPaintEvent *event )
 
 /*----------------------------------------------------------------------*/
 
+void HBQPlainTextEdit::lineNumberAreaMouseEvent( QMouseEvent *e )
+{
+   if( e->type() == QEvent::MouseButtonPress )
+   {
+      if( e->buttons() & Qt::LeftButton )
+      {
+          QTextCursor cursor = cursorForPosition( QPoint( 0, e->pos().y() ) );
+          int line = cursor.blockNumber() + 1;
+          hbBreakPoints( line );
+          repaint();
+      }
+   }
+}
+
+/*----------------------------------------------------------------------*/
+
 void HBQPlainTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
 {
    QPainter painter( lineNumberArea );
@@ -1962,8 +1984,19 @@ void HBQPlainTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
          {
             painter.fillRect( 0, top, lineNumberArea->width()-2, fontHeight, brushForBookmark( index ) );
          }
+         index = BreakPointsList.indexOf( iNumber );
+         if( index != -1 )
+         {
+            painter.fillRect( 0, top, lineNumberArea->width()-2, fontHeight, QBrush( QColor( 255, 75, 75 ) ) );
+         }
          painter.setPen( iNumber % 10 == 0 ? Qt::red : Qt::black );
          painter.drawText( 0, top, lineNumberArea->width()-2, fontHeight, Qt::AlignRight, QString::number( iNumber ) );
+         if( index != -1 )
+         {
+            QIcon icon( QString::fromLatin1( ":/resources/b_20.png" ) );
+            const QRect r( 0, top, lineNumberArea->width() - 2, fontHeight );
+            icon.paint( &painter, r );
+         }
       }
       block  = block.next();
       top    = bottom;
@@ -1996,7 +2029,6 @@ QBrush HBQPlainTextEdit::brushForBookmark( int index )
    return br;
 }
 
-/*----------------------------------------------------------------------*/
 
 void HBQPlainTextEdit::hbBookmarks( int block )
 {
@@ -2029,7 +2061,6 @@ void HBQPlainTextEdit::hbBookmarks( int block )
    }
 }
 
-/*----------------------------------------------------------------------*/
 
 void HBQPlainTextEdit::hbGotoBookmark( int block )
 {
@@ -2048,7 +2079,6 @@ void HBQPlainTextEdit::hbGotoBookmark( int block )
    }
 }
 
-/*----------------------------------------------------------------------*/
 
 void HBQPlainTextEdit::hbNextBookmark( int block )
 {
@@ -2068,7 +2098,6 @@ void HBQPlainTextEdit::hbNextBookmark( int block )
    }
 }
 
-/*----------------------------------------------------------------------*/
 
 void HBQPlainTextEdit::hbPrevBookmark( int block )
 {
@@ -2093,6 +2122,62 @@ void HBQPlainTextEdit::hbPrevBookmark( int block )
 
 /*----------------------------------------------------------------------*/
 
+void HBQPlainTextEdit::hbBreakPoints( int block )
+{
+   int found = BreakPointsVector.indexOf( block );
+   if( found == -1 )
+   {
+      BreakPointsVector.push_back( block );
+      qSort( BreakPointsVector );
+   }
+   else
+   {
+      BreakPointsVector.remove( found );
+   }
+
+   found = -1;
+   int i = 0;
+   for( i = 0; i < BreakPointsList.size(); i++ )
+   {
+      if( BreakPointsList[ i ] == block )
+      {
+         BreakPointsList.removeAt( i );
+         found = i;
+         break;
+      }
+   }
+   if( found == -1 )
+   {
+      BreakPointsList.append( block );
+   }
+   emit hbBreakPointSet( block );
+}
+
+
+void HBQPlainTextEdit::hbSetBreakPoint( int block )
+{
+   hbBreakPoints( block );
+   repaint();
+}
+
+
+QString HBQPlainTextEdit::hbGetBreakPoints()
+{
+   int i;
+   QString RetString = QString( "" );
+   for( i = 1; i <= BreakPointsVector.count(); ++i )
+   {
+      RetString += QString( "%1" ).arg( BreakPointsVector.at( i - 1 ) );
+      if( i != BreakPointsVector.count() )
+      {
+         RetString += QString( "," );
+      }
+   }
+   return RetString;
+}
+
+/*----------------------------------------------------------------------*/
+
 void HBQPlainTextEdit::hbNumberBlockVisible( bool b )
 {
    numberBlock = b;
@@ -2109,7 +2194,6 @@ void HBQPlainTextEdit::hbNumberBlockVisible( bool b )
    update();
 }
 
-/*----------------------------------------------------------------------*/
 
 bool HBQPlainTextEdit::hbNumberBlockVisible()
 {

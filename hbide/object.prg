@@ -209,6 +209,7 @@ CLASS IdeObject
    ACCESS oCuiEdDock                              INLINE ::oIde:oCuiEdDock
    ACCESS oUISrcDock                              INLINE ::oIde:oUISrcDock
    ACCESS oFunctionsMapDock                       INLINE ::oIde:oFunctionsMapDock
+   ACCESS oDebuggerDock                           INLINE ::oIde:oDebuggerDock
 
    ACCESS lProjTreeVisible                        INLINE ::oIde:lProjTreeVisible
    ACCESS lDockRVisible                           INLINE ::oIde:lDockRVisible

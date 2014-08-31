@@ -251,6 +251,8 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD promptForPath( oEditPath, cTitle, cObjFileName )
    METHOD buildSource( lExecutable )
    METHOD buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron )
+   METHOD getCurrentExeName( cProject )
+   METHOD launchDebug( cProject )
    METHOD launchProject( cProject, cExe, cWrkEnviron )
    METHOD showOutput( cOutput, mp2, oProcess )
    METHOD finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
@@ -1633,7 +1635,6 @@ METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
    IF ! empty( cIfError ) .AND. empty( ::cIfError )
       ::cIfError := cIfError
    ENDIF
-
    RETURN Self
 
 
@@ -1724,6 +1725,61 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    RETURN Self
 
 
+METHOD IdeProjManager:getCurrentExeName( cProject )
+   LOCAL cTargetFN, oProject
+
+   IF empty( cProject )
+      cProject := ::getCurrentProjectTitle()
+   ENDIF
+   IF !empty( cProject )
+      oProject  := ::getProjectByTitle( cProject )
+   ELSE
+      RETURN ""
+   ENDIF
+
+   IF !empty( oProject )
+      cTargetFN := hbide_pathFile( oProject:destination, iif( empty( oProject:outputName ), "_temp", oProject:outputName ) )
+#ifdef __PLATFORM__WINDOWS
+      IF oProject:type == "Executable"
+         cTargetFN += '.exe'
+      ENDIF
+#endif
+      IF ! hb_FileExists( cTargetFN )
+         cTargetFN := oProject:launchProgram
+      ENDIF
+   ELSE
+      RETURN ""
+   ENDIF
+   IF empty( cTargetFN )
+      cTargetFN := ""
+   ENDIF
+   cTargetFN := hbide_pathToOSPath( cTargetFN )
+   RETURN cTargetFN
+
+
+METHOD IdeProjManager:launchDebug( cProject )
+   LOCAL cExe
+
+   IF empty( cProject )
+      cProject := ::getCurrentProjectTitle()
+   ENDIF
+   IF Empty( cProject )
+      ::oOutputResult:oWidget:append( "No active project found !" )
+      RETURN .F.
+   ENDIF
+   ::oDockB2:show()
+   ::oIde:oDebugger:cCurrentProject := cProject
+   ::oIde:oDebugger:aSources        := ::getSourcesByProjectTitle( cProject )
+   cExe := ::getCurrentExeName( cProject )
+   IF ! hb_FileExists( cExe )
+      ::oOutputResult:oWidget:append( "Launch error: executable not found !" )
+      RETURN .F.
+   ENDIF
+   ::oOutputResult:oWidget:append( "Launching with Debugger : " + cExe )
+   ::oIde:oDebugger:start( cExe )
+   RETURN .T.
+
+
 METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
    LOCAL cTargetFN, cTmp, oProject, cPath, a_, cParam
    LOCAL qProcess, qStr, cC, cCmd, cBuf
@@ -1812,9 +1868,7 @@ METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
       cTmp := "Launching application [ " + cTargetFN + " ] ( not applicable )."
 
    ENDIF
-
    ::oOutputResult:oWidget:append( cTmp )
-   HB_SYMBOL_UNUSED( qProcess )
    RETURN Self
 
 

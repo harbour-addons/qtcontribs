@@ -8,6 +8,9 @@
 #
 -vcshead=hbide/hbide_v.ch
 
+#    HWGDebug
+debug/hwgdebug.hbp
+
 #    Qt Modules - mandatory
 #
 hbqt/qtcore/hbqtcore.hbp

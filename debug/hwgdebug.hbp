@@ -1,0 +1,21 @@
+#
+# $Id$
+#
+
+-inc
+
+-hblib
+
+-n -q0 -w -es2
+
+-o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
+
+
+-instpath=${HB_LIB}/
+
+
+-cflag=-DHWG_USE_POINTER_ITEM
+"{unix}-cflag=`pkg-config --cflags gtk+-2.0`"
+
+*.c
+*.prg

@@ -174,6 +174,7 @@ CLASS IdeShortcuts INHERIT IdeObject
    METHOD reBuild( cProj )
    METHOD reBuildLaunch( cProj )
    METHOD launch( cProj )
+   METHOD LaunchDebug( cProj )
    METHOD insert( cText )
    METHOD separator( cSep )
    METHOD findAgain()
@@ -1240,6 +1241,12 @@ METHOD IdeShortcuts:launch( cProj )
    ENDIF
    RETURN ::oPM:launchProject( cProj )
 
+METHOD IdeShortcuts:LaunchDebug( cProj )
+   IF ! HB_ISSTRING( cProj )
+      cProj := ""
+   ENDIF
+   RETURN ::oPM:LaunchDebug( cProj )
+
 METHOD IdeShortcuts:dlgKeyboardMappings()
    RETURN ::oTM:show()
 
@@ -1539,6 +1546,9 @@ METHOD IdeShortcuts:loadMethods()
    aadd( ::aMethods, { 'launch( cProj )'   , ;
                        'launch( "" )'      , ;
                        'Launches <cProj> if it is already loaded.'  } )
+   aadd( ::aMethods, { 'LaunchDebug( cProj )'   , ;
+                       'LaunchDebug( "" )'      , ;
+                       'Launches Debug <cProj> if it is already loaded.'  } )
    aadd( ::aMethods, { 'compilePPO()'      , ;
                        'compilePPO()'      , ;
                        'Attemps to compile current source to .ppo formats, and if successful, presents the compiled source in a new edit instance.' } )
@@ -1643,6 +1653,7 @@ METHOD IdeShortcuts:loadDftSCuts()
       aadd( b_, { "Build Project"   , "F9"     , "NO", "YES", "NO" , "", '::build( "" )'         , "build"           , "", "" } )
       aadd( b_, { "Build & Launch"  , "F9"     , "NO", "NO" , "NO" , "", '::buildLaunch( "" )'   , "buildlaunch"     , "", "" } )
       aadd( b_, { "Launch Project"  , "F10"    , "NO", "YES", "NO" , "", '::launch( "" )'        , "launch"          , "", "" } )
+      aadd( b_, { "Launch Debug"    , "F5"     , "NO", "NO", "NO"  , "", '::LaunchDebug( "" )'   , "LaunchDebug"     , "", "" } )
 
       aadd( b_, { "Insert Text"     , "F7"     , "NO", "YES", "NO" , "", '::insert( "" )'        , "insert-external-file", "", "" } )
       aadd( b_, { "Insert Separator", "F7"     , "NO", "NO" , "NO" , "", '::separator( "" )'     , "insert-separator", "", "" } )

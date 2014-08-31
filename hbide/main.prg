@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -60,8 +58,6 @@
  *                  Pritpal Bedi <pritpal@vouchcac.com>
  *                               17Nov2009
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 /*
  *     Many thanks to Vailton Renato for adding new functionalities.
@@ -97,7 +93,6 @@
 //REQUEST __HBEXTERN__HBQTNETWORK__
 //REQUEST __HBEXTERN__HBQTSQL__
 
-/*----------------------------------------------------------------------*/
 
 REQUEST DBFCDX
 REQUEST DBFNTX
@@ -188,14 +183,10 @@ CLASS HbIde
 
    DATA   nRunMode                                INIT   HBIDE_RUN_MODE_INI
    DATA   nAnimantionMode                         INIT   HBIDE_ANIMATION_NONE
-
    DATA   oUI
    DATA   oColorizeEffect
-
    DATA   aMeta                                   INIT   {}  /* Holds current definition only  */
-
    DATA   mp1, mp2, oXbp, nEvent
-
    DATA   aTabs                                   INIT   {}
    DATA   aViews                                  INIT   {}
    DATA   aMdies                                  INIT   {}
@@ -213,9 +204,7 @@ CLASS HbIde
    DATA   oFrame
    DATA   qLayoutFrame
    DATA   qViewsCombo
-
    DATA   qFindDlg
-
    DATA   qFontWrkProject
    DATA   qBrushWrkProject
    DATA   qProcess
@@ -226,7 +215,6 @@ CLASS HbIde
    DATA   qCompleter
    DATA   qCompModel
    DATA   qProtoList
-
    ACCESS oCurEditor                              INLINE ::oEM:getEditorCurrent()
    ACCESS qCurEdit                                INLINE ::oEM:getEditCurrent()
    ACCESS qCurDocument                            INLINE ::oEM:getDocumentCurrent()
@@ -258,7 +246,6 @@ CLASS HbIde
    DATA   oGeneral
    DATA   oSearchReplace
    DATA   oMainToolbar
-
    DATA   oDockR
    DATA   oDockB
    DATA   oDockB1
@@ -284,11 +271,10 @@ CLASS HbIde
    DATA   oCuiEdDock
    DATA   oUISrcDock
    DATA   oFunctionsMapDock
-
+   DATA   oDebuggerDock
    DATA   qAnimateAction
    DATA   qStatusBarAction
    DATA   qFuncFragmentWindowGeometry
-
    DATA   lProjTreeVisible                        INIT   .t.
    DATA   lDockRVisible                           INIT   .f.
    DATA   lDockBVisible                           INIT   .f.
@@ -297,7 +283,6 @@ CLASS HbIde
    DATA   lLineNumbersVisible                     INIT   .t.
    DATA   lHorzRulerVisible                       INIT   .t.
    DATA   lCurrentLineHighlightEnabled            INIT   .t.
-
    DATA   cWrkFolderLast                          INIT   ""
    DATA   cWrkProject                             INIT   ""
    DATA   cWrkTheme                               INIT   ""
@@ -312,9 +297,7 @@ CLASS HbIde
    DATA   cWrkHarbour                             INIT   ""
    DATA   cPathShortcuts                          INIT   ""
    DATA   cTextExtensions                         INIT   ""
-
    DATA   oEnvironment
-
    DATA   cPathSkltns                             INIT   ""
    DATA   cSaveTo                                 INIT   ""
    DATA   oOpenedSources
@@ -324,10 +307,8 @@ CLASS HbIde
    DATA   cProcessInfo
    DATA   cIniThemes
    DATA   cSeparator                              INIT   "/*" + replicate( "-", 70 ) + "*/"
-
-   DATA   nTabSpaces                              INIT   3           /* Via User Setup */
-   DATA   cTabSpaces                              INIT   space( 3 )  //::nTabSpaces )
-
+   DATA   nTabSpaces                              INIT   3           // Via User Setup
+   DATA   cTabSpaces                              INIT   space( 3 )
    DATA   aTags                                   INIT   {}
    DATA   aText                                   INIT   {}
    DATA   aSkltns                                 INIT   {}
@@ -337,22 +318,23 @@ CLASS HbIde
    DATA   aComments                               INIT   {}
    DATA   aProjects                               INIT   {}
    DATA   aUserDict                               INIT   {}
-
    DATA   aMarkTBtns                              INIT   array( 6 )
    DATA   lClosing                                INIT   .f.
    DATA   lStatusBarVisible                       INIT   .t.
-
    DATA   nModeUI                                 INIT   UI_MODE_DEFAULT
-
    DATA   oSys
    DATA   oSysMenu
-
    DATA   lSortedFuncList                         INIT   .t.
    DATA   lQuitting                               INIT   .f.
-
-   DATA   oBMM /* Testing */
-
    DATA   hHeaderFiles                            INIT {=>}
+
+   // debugger interface
+   DATA   oDebugger
+   DATA   oDebugWatch
+   DATA   oDebugVariables
+   DATA   oDebugStack
+   DATA   oDebugWorkAreas
+
 
    METHOD new( aParams )
    METHOD create( aParams )
@@ -392,12 +374,10 @@ CLASS HbIde
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:destroy()
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:new( aParams )
 
@@ -405,10 +385,8 @@ METHOD HbIde:new( aParams )
 
    DEFAULT aParams TO ::aParams
    ::aParams := aParams
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:create( aParams )
    LOCAL qPixmap, qSplash, cView
@@ -539,6 +517,8 @@ METHOD HbIde:create( aParams )
    /* Browser Manager */
    ::oBM := IdeDbuMGR():new():create( Self )
 
+   /* HbIDE debugger */
+   ::oDebugger := IdeDebugger():new():create( Self )
 
    /* Reports Manager */
    ::oRM := HbpReports():new()
@@ -682,10 +662,8 @@ METHOD HbIde:create( aParams )
    ::cProjIni := NIL
    hbide_setIde( NIL )
    hbide_destroyPlugins()
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:parseParams()
    LOCAL s, cPath, cName, cExt, cCurPath
@@ -744,13 +722,10 @@ METHOD HbIde:parseParams()
       ::cProjIni := ""
       ::nRunMode := HBIDE_RUN_MODE_INI
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:showApplicationCursor( nCursor )
-
    LOCAL qCrs
 
    IF empty( nCursor )
@@ -759,17 +734,13 @@ METHOD HbIde:showApplicationCursor( nCursor )
       qCrs := QCursor( nCursor )
       QApplication():setOverrideCursor( qCrs )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:execAction( cKey )
 
    SWITCH cKey
-   CASE "Hide"
-      ::oINI:showHideDocks()
-      EXIT
+   CASE "Hide"                 ; ::oINI:showHideDocks()       ; EXIT
    CASE "ToggleStatusBar"
       IF ::lStatusBarVisible
          ::oSBar:oWidget:hide()
@@ -777,40 +748,22 @@ METHOD HbIde:execAction( cKey )
          ::oSBar:oWidget:show()
       ENDIF
       ::lStatusBarVisible := ! ::lStatusBarVisible
-      ::qStatusBarAction:setChecked( ::lStatusBarVisible )
-      EXIT
-
-   CASE "ChangeLog"
-      ::oCL:show()
-      EXIT
-
-   CASE "Tools"
-      ::oTM:show()
-      EXIT
-   CASE "Environments"
-      ::oEV:fetchNew()
-      EXIT
+      ::qStatusBarAction:setChecked( ::lStatusBarVisible )    ; EXIT
+   CASE "ChangeLog"            ; ::oCL:show()                 ; EXIT
+   CASE "Tools"                ; ::oTM:show()                 ; EXIT
+   CASE "Environments"         ; ::oEV:fetchNew()             ; EXIT
    CASE "Exit"
       ::lQuitting := .t.
       hbide_setClose( .T. )
-      PostAppEvent( xbeP_Close, NIL, NIL, ::oDlg )
-      EXIT
-   CASE "Home"
-      //::oDK:setView( "Stats" )
-      ::oHM:show()
-      RETURN Self
-   CASE "Animate"
-      ::oDK:animateComponents()
-      EXIT
-   CASE "Setup"
-      ::oSetup:show()
-      EXIT
-   CASE "Shortcuts"
-      ::oSC:show()
-      EXIT
+      PostAppEvent( xbeP_Close, NIL, NIL, ::oDlg )            ; EXIT
+   CASE "Home"                 ; ::oHM:show()                 ; RETURN Self
+   CASE "Animate"              ; ::oDK:animateComponents()    ; EXIT
+   CASE "Setup"                ; ::oSetup:show()              ; EXIT
+   CASE "Shortcuts"            ; ::oSC:show()                 ; EXIT
    CASE "NewProject"
    CASE "LoadProject"
    CASE "LaunchProject"
+   CASE "LaunchDebug"
    CASE "RunAsScript"
    CASE "BuildSource"
    CASE "Build"
@@ -821,9 +774,7 @@ METHOD HbIde:execAction( cKey )
    CASE "CompilePPO"
    CASE "Properties"
    CASE "SelectProject"
-   CASE "CloseProject"
-      ::execProjectAction( cKey )
-      EXIT
+   CASE "CloseProject"         ; ::execProjectAction( cKey )  ; EXIT
    CASE "New"
    CASE "Open"
    CASE "Save"
@@ -833,9 +784,7 @@ METHOD HbIde:execAction( cKey )
    CASE "Revert"
    CASE "Close"
    CASE "CloseAll"
-   CASE "CloseOther"
-      ::execSourceAction( cKey )
-      EXIT
+   CASE "CloseOther"           ; ::execSourceAction( cKey )   ; EXIT
    CASE "Print"
    CASE "Undo"
    CASE "Redo"
@@ -876,33 +825,18 @@ METHOD HbIde:execAction( cKey )
    CASE "FormatCommas"
    CASE "RemoveTabs"
    CASE "Spaces2Tabs"
-   CASE "RemoveTrailingSpaces"
-      ::execEditorAction( cKey )
-      EXIT
+   CASE "RemoveTrailingSpaces" ; ::execEditorAction( cKey )                    ; EXIT
+   CASE "Help"                 ; ::oHelpDock:show()                            ; EXIT
+   CASE "EDITOR"               ; ::oParts:setStack( IDE_PART_EDITOR )          ; EXIT
+   CASE "DBU"                  ; ::oParts:setStack( IDE_PART_DBU )             ; EXIT
+   CASE "REPORTS"              ; ::oParts:setStack( IDE_PART_REPORTSDESIGNER ) ; EXIT
    CASE "ToggleProjectTree"
    CASE "ToggleBuildInfo"
-   CASE "ToggleFuncList"
-      //::execWindowsAction( cKey )
-      EXIT
-   CASE "Help"
-      ::oHelpDock:show()
-      EXIT
-   CASE "EDITOR"
-      ::oParts:setStack( IDE_PART_EDITOR )
-      EXIT
-   CASE "DBU"
-      ::oParts:setStack( IDE_PART_DBU )
-      EXIT
-   CASE "REPORTS"
-      ::oParts:setStack( IDE_PART_REPORTSDESIGNER )
-      EXIT
+   CASE "ToggleFuncList"       ;                                               ; EXIT
    ENDSWITCH
-
    ::manageFocusInEditor()
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:execEditorAction( cKey )
 
@@ -951,96 +885,45 @@ METHOD HbIde:execEditorAction( cKey )
    CASE "FindEx"               ;  IF ! Empty( ::qCurEdit ) ; ::oSearchReplace:beginFind() ; ENDIF ; EXIT
    CASE "MatchPairs"           ;  EXIT
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:execSourceAction( cKey )
    SWITCH cKey
-   CASE "New"
-      ::oSM:editSource( "" )
-      EXIT
-   CASE "Open"
-      ::oSM:openSource()
-      EXIT
-   CASE "Save"
-      ::oSM:saveSource( ::oEM:getTabCurrent(), .f., .f. )
-      EXIT
-   CASE "SaveAs"
-      ::oSM:saveSource( ::oEM:getTabCurrent(), .t., .t. )
-      EXIT
-   CASE "SaveAll"
-      ::oSM:saveAllSources()
-      EXIT
-   CASE "SaveExit"
-      ::oSM:saveAndExit()
-      EXIT
-   CASE "Revert"
-      ::oSM:RevertSource()
-      EXIT
-   CASE "Close"
-      ::oSM:closeSource()
-      EXIT
-   CASE "CloseAll"
-      ::oSM:closeAllSources()
-      EXIT
-   CASE "CloseOther"
-      ::oSM:closeAllOthers()
-      EXIT
+   CASE "New"        ; ::oSM:editSource( "" )                              ; EXIT
+   CASE "Open"       ; ::oSM:openSource()                                  ; EXIT
+   CASE "Save"       ; ::oSM:saveSource( ::oEM:getTabCurrent(), .f., .f. ) ; EXIT
+   CASE "SaveAs"     ; ::oSM:saveSource( ::oEM:getTabCurrent(), .t., .t. ) ; EXIT
+   CASE "SaveAll"    ; ::oSM:saveAllSources()                              ; EXIT
+   CASE "SaveExit"   ; ::oSM:saveAndExit()                                 ; EXIT
+   CASE "Revert"     ; ::oSM:RevertSource()                                ; EXIT
+   CASE "Close"      ; ::oSM:closeSource()                                 ; EXIT
+   CASE "CloseAll"   ; ::oSM:closeAllSources()                             ; EXIT
+   CASE "CloseOther" ; ::oSM:closeAllOthers()                              ; EXIT
    ENDSWITCH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:execProjectAction( cKey )
    SWITCH cKey
-   CASE "NewProject"
-      ::oPM:loadProperties( , .t., .t., .t. )
-      EXIT
-   CASE "LoadProject"
-      ::oPM:loadProperties( , .f., .f., .t. )
-      EXIT
-   CASE "LaunchProject"
-      ::oPM:launchProject()
-      EXIT
-   CASE "RunAsScript"
-      ::oPM:runAsScript( .t. )
-      EXIT
-   CASE "BuildSource"
-      ::oPM:buildSource( .t. )
-      EXIT
-   CASE "Build"
-      ::oPM:buildProject( '', .F., .F. )
-      EXIT
-   CASE "BuildLaunch"
-      ::oPM:buildProject( '', .T., .F. )
-      EXIT
-   CASE "Rebuild"
-      ::oPM:buildProject( '', .F., .T. )
-      EXIT
-   CASE "RebuildLaunch"
-      ::oPM:buildProject( '', .T., .T. )
-      EXIT
-   CASE "Compile"
-      ::oPM:buildSource( .f. )
-      EXIT
-   CASE "CompilePPO"
-      ::oPM:buildProject( '', .F., .F., .T., .T. )
-      EXIT
-   CASE "Properties"
-      ::oPM:getProperties()
-      EXIT
-   CASE "SelectProject"
-      ::oPM:selectCurrentProject()
-      EXIT
-   CASE "CloseProject"
-      ::oPM:removeProject()
-      EXIT
+   CASE "NewProject"    ; ::oPM:loadProperties( , .t., .t., .t. )      ; EXIT
+   CASE "LoadProject"   ; ::oPM:loadProperties( , .f., .f., .t. )      ; EXIT
+   CASE "LaunchProject" ; ::oPM:launchProject()                        ; EXIT
+   CASE "LaunchDebug"   ; ::oPM:launchDebug()                          ; EXIT
+   CASE "RunAsScript"   ; ::oPM:runAsScript( .t. )                     ; EXIT
+   CASE "BuildSource"   ; ::oPM:buildSource( .t. )                     ; EXIT
+   CASE "Build"         ; ::oPM:buildProject( '', .F., .F. )           ; EXIT
+   CASE "BuildLaunch"   ; ::oPM:buildProject( '', .T., .F. )           ; EXIT
+   CASE "Rebuild"       ; ::oPM:buildProject( '', .F., .T. )           ; EXIT
+   CASE "RebuildLaunch" ; ::oPM:buildProject( '', .T., .T. )           ; EXIT
+   CASE "Compile"       ; ::oPM:buildSource( .f. )                     ; EXIT
+   CASE "CompilePPO"    ; ::oPM:buildProject( '', .F., .F., .T., .T. ) ; EXIT
+   CASE "Properties"    ; ::oPM:getProperties()                        ; EXIT
+   CASE "SelectProject" ; ::oPM:selectCurrentProject()                 ; EXIT
+   CASE "CloseProject"  ; ::oPM:removeProject()                        ; EXIT
    ENDSWITCH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:setPosAndSizeByIniEx( qWidget, cParams )
    LOCAL aRect
@@ -1052,10 +935,8 @@ METHOD HbIde:setPosAndSizeByIniEx( qWidget, cParams )
       qWidget:move( aRect[ 1 ], aRect[ 2 ] )
       qWidget:resize( aRect[ 3 ], aRect[ 4 ] )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:setPosByIniEx( qWidget, cParams )
    LOCAL aRect
@@ -1066,10 +947,8 @@ METHOD HbIde:setPosByIniEx( qWidget, cParams )
 
       qWidget:move( aRect[ 1 ], aRect[ 2 ] )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:manageFocusInEditor()
    LOCAL qEdit
@@ -1077,10 +956,8 @@ METHOD HbIde:manageFocusInEditor()
    IF !empty( qEdit := ::oEM:getEditCurrent() )
       qEdit:setFocus( 0 )
    ENDIF
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:removeProjectTree( aPrj )
    LOCAL oProject, nIndex, oParent, oP, n
@@ -1119,10 +996,8 @@ METHOD HbIde:removeProjectTree( aPrj )
    nIndex := aScan( ::aProjData, {|e_| e_[ TRE_OITEM ] == oP } )
    oParent:delItem( oP )
    hb_adel( ::aProjData, nIndex, .t. )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:updateProjectTree( aPrj )
    LOCAL oProject, n, oSource, oItem, nProjExists, oP, oParent, a_:={}, b_
@@ -1182,10 +1057,8 @@ METHOD HbIde:updateProjectTree( aPrj )
       oItem:oWidget:setIcon( 0, QIcon( hbide_image( hbide_imageForFileType( oSource:ext ) ) ) )
       aadd( ::aProjData, { oItem, "Source File", oP, oSource:original, oProject:title } )
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:manageItemSelected( oXbpTreeItem )
    LOCAL n, cHbp, cSource, cExt
@@ -1224,10 +1097,8 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
    CASE ::aProjData[ n, TRE_TYPE ] == "Path"
 
    ENDCASE
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
    LOCAL n, cHbp, s, cProjectName
@@ -1327,7 +1198,6 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
    ::manageFocusInEditor()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:updateFuncList( lSorted )
    LOCAL aFunc :={}, a_, nIndex
@@ -1352,10 +1222,8 @@ METHOD HbIde:updateFuncList( lSorted )
          NEXT
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:showCodeFregment( oXbp )
    LOCAL xTmp2, n, i, cAnchor, oEdit, lFound, qCursor, nLine, cCode, nVPos
@@ -1402,10 +1270,8 @@ METHOD HbIde:showCodeFregment( oXbp )
       ENDIF
    ENDIF
    ::manageFocusInEditor()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:showFragment( cCode, cTitle, oIcon )
    LOCAL qWidget, qH
@@ -1431,10 +1297,8 @@ METHOD HbIde:showFragment( cCode, cTitle, oIcon )
                                  } )
       :show()
    ENDWITH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:showHeaderFile( cCode, cTitle, oIcon, lSave )
    LOCAL qWidget, qH
@@ -1473,10 +1337,8 @@ METHOD HbIde:showHeaderFile( cCode, cTitle, oIcon, lSave )
       ::hHeaderFiles[ cTitle ]:show()
       ::hHeaderFiles[ cTitle ]:raise()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:printFragment( oPlainTextEdit )
    LOCAL qDlg := QPrintPreviewDialog( oPlainTextEdit )
@@ -1485,10 +1347,8 @@ METHOD HbIde:printFragment( oPlainTextEdit )
    qDlg:connect( "paintRequested(QPrinter*)", {|p| oPlainTextEdit:print( p ) } )
    qDlg:resize( 500, 600 )
    qDlg:exec()
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:gotoFunction( mp1, mp2, oListBox )
    LOCAL n, cAnchor, oEdit, lFound, nHPos, nVPos, qCursor
@@ -1512,10 +1372,8 @@ METHOD HbIde:gotoFunction( mp1, mp2, oListBox )
       ENDIF
    ENDIF
    ::manageFocusInEditor()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:manageFuncContext( mp1, mp2, oXbp )
    LOCAL aPops := {}
@@ -1540,9 +1398,8 @@ METHOD HbIde:manageFuncContext( mp1, mp2, oXbp )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
-METHOD HbIde:CreateTags()
+METHOD HbIde:createTags()
    LOCAL aSumData := ""
    LOCAL cComments, aSummary, i, cPath, cSource, cExt
 
@@ -1570,12 +1427,10 @@ METHOD HbIde:CreateTags()
          ENDIF
       ENDIF
    NEXT
-
    RETURN NIL
 
-//----------------------------------------------------------------------//
-/*
- * Update the project menu to show current info.
+
+/* Update the project menu to show current info.
  * 03/01/2010 - 12:48:18 - vailtom
  */
 METHOD HbIde:updateProjectMenu()
@@ -1584,18 +1439,15 @@ METHOD HbIde:updateProjectMenu()
    IF Empty( oItem )
       RETURN Self
    ENDIF
-
    IF Empty( ::cWrkProject )
       oItem[ 2 ]:setDisabled( .T. )
       RETURN Self
    ENDIF
-
    oItem[ 2 ]:setEnabled( .T. )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*
- * Updates the title bar of the main window, indicating the project and the
+
+/* Updates the title bar of the main window, indicating the project and the
  * current filename.
  * 02/01/2010 - 16:30:06 - vailtom
  */
@@ -1621,18 +1473,13 @@ METHOD HbIde:updateTitleBar()
 
    ::oDlg:Title := cTitle
    ::oDlg:oWidget:setWindowTitle( ::oDlg:Title )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:setCodePage( cCodePage )
-
    hb_cdpSelect( cCodePage )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:setCodec( cCodec, lMenuOption )
 
@@ -1644,12 +1491,9 @@ METHOD HbIde:setCodec( cCodec, lMenuOption )
          ::cWrkCodec := cCodec // hbide_getCDPforID( cCodec )
       ENDIF
    ENDIF
-
    ::oEM:setEncoding( cCodec )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbIde:testPainter( qPainter )
 
@@ -1661,13 +1505,10 @@ METHOD HbIde:testPainter( qPainter )
    qPainter:drawText( 100,300,"Harbour" )
 
    //qPainter:fillRect( 100, 100, 500, 500, QColor( 175, 175, 255 ) )
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hb_gtsys()
    REQUEST HB_GT_QTC
    RETURN NIL
 
-/*----------------------------------------------------------------------*/

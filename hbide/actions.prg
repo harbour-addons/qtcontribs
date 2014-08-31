@@ -173,39 +173,37 @@ METHOD IdeActions:destroy()
    NEXT
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:getAction( cKey )
 
    IF hb_hHasKey( ::hActions, cKey )
       RETURN ::hActions[ cKey ]
    ENDIF
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildDockActions()
    LOCAL qAct, a_, aBtns := {}
 
-   aadd( aBtns, { "DockProjects"   , ::oDockPT             , "projtree"      } )
-   aadd( aBtns, { "DockEdits"      , ::oDockED             , "editstree"     } )
-   aadd( aBtns, { "DockSkeletons"  , ::oSkltnsTreeDock     , "projtree"      } )
-   aadd( aBtns, { "DockIdeHelp"    , ::oHelpDock           , "help"          } )
-   aadd( aBtns, { "DockHbHelp"     , ::oDocViewDock        , "harbourhelp"   } )
-   aadd( aBtns, { "DockDocWriter"  , ::oDocWriteDock       , "docwriter"     } )
-   aadd( aBtns, { "DockFuncList"   , ::oFuncDock           , "dc_function"   } )
-   aadd( aBtns, { "DockProjFuncs"  , ::oFunctionsDock      , "ffn"           } )
-   aadd( aBtns, { "DockProjProps"  , ::oPropertiesDock     , "properties"    } )
-   aadd( aBtns, { "DockEnvConfig"  , ::oEnvironDock        , "envconfig"     } )
-   aadd( aBtns, { "DockCodeSkltns" , ::oSkeltnDock         , "codeskeletons" } )
-   aadd( aBtns, { "DockThemes"     , ::oThemesDock         , "syntaxhiliter" } )
-   aadd( aBtns, { "DockFindInFiles", ::oFindDock           , "search"        } )
-   aadd( aBtns, { "DockThumbNails" , ::oSourceThumbnailDock, "thumbnail"     } )
-   aadd( aBtns, { "DockCuiEditor"  , ::oCuiEdDock          , "cuied"         } )
-   aadd( aBtns, { "DockUISource"   , ::oUiSrcDock          , "fileprg"       } )
-   aadd( aBtns, { "DockFunctionsMap", ::oFunctionsMapDock  , "map"           } )
-   aadd( aBtns, { "DockBuildLog"   , ::oDockB2             , "builderror"    } )
+   aadd( aBtns, { "DockProjects"    , ::oDockPT             , "projtree"      } )
+   aadd( aBtns, { "DockEdits"       , ::oDockED             , "editstree"     } )
+   aadd( aBtns, { "DockSkeletons"   , ::oSkltnsTreeDock     , "projtree"      } )
+   aadd( aBtns, { "DockIdeHelp"     , ::oHelpDock           , "help"          } )
+   aadd( aBtns, { "DockHbHelp"      , ::oDocViewDock        , "harbourhelp"   } )
+   aadd( aBtns, { "DockDocWriter"   , ::oDocWriteDock       , "docwriter"     } )
+   aadd( aBtns, { "DockFuncList"    , ::oFuncDock           , "dc_function"   } )
+   aadd( aBtns, { "DockProjFuncs"   , ::oFunctionsDock      , "ffn"           } )
+   aadd( aBtns, { "DockProjProps"   , ::oPropertiesDock     , "properties"    } )
+   aadd( aBtns, { "DockEnvConfig"   , ::oEnvironDock        , "envconfig"     } )
+   aadd( aBtns, { "DockCodeSkltns"  , ::oSkeltnDock         , "codeskeletons" } )
+   aadd( aBtns, { "DockThemes"      , ::oThemesDock         , "syntaxhiliter" } )
+   aadd( aBtns, { "DockFindInFiles" , ::oFindDock           , "search"        } )
+   aadd( aBtns, { "DockThumbNails"  , ::oSourceThumbnailDock, "thumbnail"     } )
+   aadd( aBtns, { "DockCuiEditor"   , ::oCuiEdDock          , "cuied"         } )
+   aadd( aBtns, { "DockUISource"    , ::oUiSrcDock          , "fileprg"       } )
+   aadd( aBtns, { "DockFunctionsMap", ::oFunctionsMapDock   , "map"           } )
+   aadd( aBtns, { "DockDebugger"    , ::oDebuggerDock       , "debugger"      } )
+   aadd( aBtns, { "DockBuildLog"    , ::oDockB2             , "builderror"    } )
 
    FOR EACH a_ IN aBtns
       qAct := a_[ 2 ]:oWidget:toggleViewAction()
@@ -213,10 +211,8 @@ METHOD IdeActions:buildDockActions()
       ::qTBarDocks:addAction( a_[ 1 ], qAct )
       ::hActions[ a_[ 1 ] ] := qAct
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildActions()
    LOCAL aAct, a_, qAction //, qBtn
@@ -258,10 +254,8 @@ METHOD IdeActions:buildActions()
          #endif
       ENDIF
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:loadActions()
    LOCAL aAct := {}
@@ -370,6 +364,7 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "Compile"              , "Compile Current Source"       , "compile"        , ""     , "No", "Yes" } )
    aadd( aAct, { "CompilePPO"           , "Compile Current Source to PPO", "ppo"            , ""     , "No", "Yes" } )
    aadd( aAct, { "LaunchProject"        , "Launch Project"               , "launch_r"       , "^F10" , "No", "Yes" } )
+   aadd( aAct, { "LaunchDebug"          , "Launch Debug"                 , "launch_d"       , "F5"   , "No", "Yes" } )
    aadd( aAct, { "LaunchProjectByTitle" , "Launch Project"               , "launch_r"       , ""     , "No", "Yes" } )
    aadd( aAct, { "ConfigureTools"       , "Configure Tools...*"          , ""               , ""     , "No", "Yes" } )
    aadd( aAct, { "CuiEditor"            , "CUI Screen Edirot"            , "cuied"          , ""     , "No", "Yes" } )
@@ -435,10 +430,9 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "REPORTS"             , "IdeREPORTS"                    , "designer"       , ""     , "No", "Yes" } )
    //
    aadd( aAct, { "NumObjects"          , "Number of Qt Objects"          , ""               , ""     , "No", "Yes" } )
-
+   //
    RETURN aAct
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildMainMenu()
    LOCAL oMenuBar, oSubMenu, oSubMenu2, n, f
@@ -644,6 +638,7 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu2:oWidget:addAction( ::oCuiEdDock:toggleViewAction()                   )
    oSubMenu2:oWidget:addAction( ::oFunctionsMapDock:toggleViewAction()            )
    oSubMenu2:oWidget:addAction( ::oIde:oUISrcDock:toggleViewAction()              )
+   oSubMenu2:oWidget:addAction( ::oIde:oDebuggerDock:toggleViewAction()           )
    //
    hbide_menuAddSep( oSubMenu2 )
    //
@@ -700,6 +695,8 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu:addItem( { ::getAction( "RebuildLaunch"       ), {|| oIde:execAction( "RebuildLaunch"      ) } } )
    hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "LaunchProject"       ), {|| oIde:execAction( "LaunchProject"      ) } } )
+   hbide_menuAddSep( oSubMenu )
+   oSubMenu:addItem( { ::getAction( "LaunchDebug"         ), {|| oIde:execAction( "LaunchDebug"      ) } } )
 
    /*----------------------------------------------------------------------------*/
    /*                                   Setup                                    */
@@ -791,12 +788,10 @@ STATIC FUNCTION mnuNormalizeItem( cCaption )
    ELSE
       cKey := ''
    ENDIF
-
    RETURN cIco + cCaption + cKey
 
-/*----------------------------------------------------------------------*/
-/*
- * Add a file name to MRU menu item.
+
+/* Add a file name to MRU menu item.
  * 02/01/2010 - 23:23:22 - vailtom
  */
 FUNCTION hbide_mnuAddFileToMRU( oIde, cFileName, cType )
@@ -823,10 +818,8 @@ FUNCTION hbide_mnuAddFileToMRU( oIde, cFileName, cType )
    ENDIF
 
    hbide_mnuUpdateMRUpopup( oIde, cType ) /* Seems TO fix long standing bug : thanks Grzegorz */
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 #define QMF_POPUP  1
 
@@ -887,10 +880,8 @@ STATIC FUNCTION hbide_mnuUpdateMRUpopup( oIde, cType )
       ENDIF
       oItem[ 4 ]:disableItem( 1 )
    ENDIF
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_mnuFindItem( oIde, cCaption )
    LOCAL oMenuBar, oItem, n, c
@@ -916,7 +907,6 @@ FUNCTION hbide_mnuFindItem( oIde, cCaption )
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 #include "hbextcdp.ch"
 
@@ -957,7 +947,6 @@ FUNCTION hbide_getCDPforID( cCodec )
 
    RETURN cCodec
 
-/*----------------------------------------------------------------------*/
 /*
 STATIC FUNCTION hbide_buildCodecMenu( oIde, oMenu )
    LOCAL oSubMenu, oSub1
@@ -1045,7 +1034,7 @@ STATIC FUNCTION hbide_buildCodecMenu( oIde, oMenu )
 
    RETURN oSubMenu
 */
-/*----------------------------------------------------------------------*/
+
 
 METHOD IdeActions:buildToolBars()
 
@@ -1060,10 +1049,8 @@ METHOD IdeActions:buildToolBars()
 
    ::buildToolbarSelectedText()
    ::buildContextToolWidget()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolbarMain()
    LOCAL oTBar
@@ -1091,7 +1078,6 @@ METHOD IdeActions:buildToolbarMain()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolbarFiles()
 
@@ -1117,7 +1103,6 @@ METHOD IdeActions:buildToolbarFiles()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolbarParts()
 
@@ -1141,7 +1126,6 @@ METHOD IdeActions:buildToolbarParts()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolbarProject()
    LOCAL oTBar
@@ -1173,7 +1157,6 @@ METHOD IdeActions:buildToolbarProject()
 
   RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolBarDocks()
    LOCAL cAction, aBtns := {}
@@ -1208,6 +1191,7 @@ METHOD IdeActions:buildToolBarDocks()
    aadd( aBtns, "DockCuiEditor"    )
    aadd( aBtns, "DockUISource"     )
    aadd( aBtns, "DockFunctionsMap" )
+   aadd( aBtns, "DockDebugger"     )
    aadd( aBtns, ""                 )
    aadd( aBtns, "DockBuildLog"     )
 
@@ -1220,10 +1204,8 @@ METHOD IdeActions:buildToolBarDocks()
    NEXT
 
    ::oDlg:oWidget:addToolBar( Qt_TopToolBarArea, ::qTBarDocks:oWidget )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildMdiToolbarLeft()
 
@@ -1262,10 +1244,8 @@ METHOD IdeActions:buildMdiToolbarLeft()
    IF ! ::oINI:lShowEditsLeftToolbar
       ::qMdiToolbarL:hide()
    ENDIF
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeActions:buildMdiToolbar()
    LOCAL qTBar, nW := 25
@@ -1328,10 +1308,8 @@ METHOD IdeActions:buildMdiToolbar()
    IF ! ::oINI:lShowEditsTopToolbar
       ::qMdiToolbar:hide()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolbarSelectedText()
 
@@ -1388,10 +1366,8 @@ METHOD IdeActions:buildToolsLayout( aBtns )
          nRow++
       ENDIF
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildToolButton( cName, cDesc, cImage, bAction, lCheckable, lDraggable )
    LOCAL oBtn := QToolButton()
@@ -1427,10 +1403,8 @@ METHOD IdeActions:buildToolButton( cName, cDesc, cImage, bAction, lCheckable, lD
    ENDIF
 
    AAdd( ::aToolButtons, oBtn )
-
    RETURN oBtn
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:showContextWidget( oEdit, lHide )
    LOCAL qRect, qPos
@@ -1451,10 +1425,8 @@ METHOD IdeActions:showContextWidget( oEdit, lHide )
 
    ::qContextWidget:move( oEdit:qEdit:mapToGlobal( qPos ) )
    ::qContextWidget:show()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:buildContextToolWidget()
    LOCAL aBtns
@@ -1478,10 +1450,8 @@ METHOD IdeActions:buildContextToolWidget()
    AEval( ::loadContextButtons(), {|e_| AAdd( aBtns, ::buildToolButton( e_[ 1 ], e_[ 2 ], e_[ 3 ], e_[ 4 ], e_[ 5 ] ) ) } )
 
    ::buildToolsLayout( aBtns )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:loadContextButtons()
    LOCAL aBtns := {}
@@ -1565,19 +1535,17 @@ METHOD IdeActions:loadContextButtons()
    AAdd( aBtns, { "DockCuiEditor"  , "CUI Editor"                 , hbide_image( "cuied"            ), {|| ::getAction( "DockCuiEditor"   ):trigger()      }, .F. } )
    AAdd( aBtns, { "DockUISource"   , "UI Source Editor"           , hbide_image( "fileprg"          ), {|| ::getAction( "DockUISource"    ):trigger()      }, .F. } )
    AAdd( aBtns, { "DockFunctionsMap","Functions Map"              , hbide_image( "map"              ), {|| ::getAction( "DockFunctionsMap"):trigger()      }, .F. } )
+   AAdd( aBtns, { "DockDebugger"   , "HbIDE Debugger"             , hbide_image( "debugger"         ), {|| ::getAction( "DockDebugger"    ):trigger()      }, .F. } )
    AAdd( aBtns, { "DockBuildLog"   , "Build Logs"                 , hbide_image( "builderror"       ), {|| ::getAction( "DockBuildLog"    ):trigger()      }, .F. } )
 
    AAdd( aBtns, { "HideDocks"      , "Hide all docking widgets"   , hbide_image( "hideshow"         ), {|| ::oIde:execAction( "Hide" )                     }, .F. } )
    AAdd( aBtns, { "Home"           , "Show Home Info"             , hbide_image( "home3"            ), {|| ::oIde:execAction( "Home" )                     }, .F. } )
    AAdd( aBtns, { "Exit"           , "Exit HbIDE"                 , hbide_image( "exit3"            ), {|| ::oIde:execAction( "Exit" )                     }, .F. } )
-
+   //
    RETURN aBtns
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:manageToolBox()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 

@@ -276,5 +276,6 @@
     <file>resources/hbide-2013.png</file>
     <file>resources/hbide-2014.png</file>
     <file>resources/map.png</file>
+    <file>resources/debugger.png</file>
   </qresource>
 </RCC>

@@ -1357,6 +1357,7 @@
 #define Qt_ToolButtonTextOnly                     1     // Only display the text.
 #define Qt_ToolButtonTextBesideIcon               2     // The text appears beside the icon.
 #define Qt_ToolButtonTextUnderIcon                3     // The text appears under the icon.
+#define Qt_ToolButtonFollowStyle                  4     // Follow style
 
 // enum #define Qt_TransformationMode
 // This enum type defines whether image transformations (e.g., scaling) should be smooth or not.
@@ -4981,6 +4982,11 @@
 #define QAccelerometer_Combined                              0      // Both the acceleration caused by gravity and the acceleration caused by the user moving the device is reported combined.
 #define QAccelerometer_Gravity                               1      // Only the acceleration caused by gravity is reported. Movements of the device caused by the user have no effect other than changing the direction when the device is rotated.
 #define QAccelerometer_User                                  2      // Only the acceleration caused by the user moving the device is reported, the effect of gravity is canceled out. A device at rest therefore should report values of, or close to, zero. In other APIs, this mode might be known as linear acceleration.
+
+#define Qt_TouchPointPressed                                 0x01   // The touch point is now pressed.
+#define Qt_TouchPointMoved                                   0x02   // The touch point moved.
+#define Qt_TouchPointStationary                              0x04   // The touch point did not move.
+#define Qt_TouchPointReleased                                0x08   // The touch point was released.
 
 #endif
 

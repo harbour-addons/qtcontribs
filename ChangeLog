@@ -16,6 +16,125 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-31 10:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r342)
+  * qtcontribs.hbp
+    + Added: debug/hwgdebug.hbp
+
+  + debug
+  + debug/dbgconnect.prg
+  + debug/dbgdop.c
+  + debug/debugger.prg
+  + debug/hwgdebug.hbp
+    + Added: Alexander Kresin's <alex@kresin.ru> application-side debugger 
+       library. Many thanks Kresin. You fittingly separated the rectangular 
+       and non-rectangular code of Harbour's native debugger.
+       I added some missing features which were added to Harbour debugger, 
+       probably, later than Kresin wrote his library.
+
+  + hbide/debugger.prg
+  + hbide/debugger.ui
+  + hbide/resources/debugger.png
+    + Added: Alex <alexeyzapolskiy@gmail.com> written HbIDE specific bridge 
+       for HWGDebug defined protocol. It was a mammoth work. Thanks Alex.
+
+  * hbide/actions.prg
+  * hbide/docks.prg
+  * hbide/editor.prg
+  * hbide/hbide.hbp
+  * hbide/hbide.qrc
+  * hbide/main.prg
+  * hbide/object.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+    + Debbuger specific code parts. Mostly by Alex.
+
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: few more constants.
+  
+  * hbqt/qtcore/hbqt.h
+    + Added: MSVC specific defines. Proveded by M.Ronaldo, thanks.
+
+  * hbqt/qtgui/qth/HBQPlainTextEdit.qth
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+  * hbqt/qtgui/hbqt_hbqplaintextedit.h
+    + Added: methods essential to integrate debugger protocol. 
+       Courtesy: Alex. I just changed the identifiers to confirm to 
+       HbIDE laid rules.
+    
+    Harbour's debugger is brought to HbIDE by Alex based on Kresin's
+    communication layer which separates the user-interface from its core.
+    This separation makes it possible to embbed this protocol in any 
+    GUI/Console environment and for any type of Harbour/xHarbour 
+    compiled application.
+
+    PREREQUITES: ( for this version only. In future theme may change. )
+      1. Compile QtContribs (recompile not needed). It will build 
+         hwgdebug library and will deposit in the folder with rest of 
+         the libraries.
+
+      2. Spread sources belonging to the debugged project on same View.
+         Only those sources where you want to put the break-points needs 
+         to be visible on the active view.
+
+      3. Put the break-points by clicking on a line on Line-Numbers area
+         of editing instance. Such click will toggle the break-point.
+         The source line will turn RED if a break-point is installed.
+
+      4. To be on the safer side, exit HbIDE and execute it again.
+         All break-points you initiated in previous run will re-appear.
+
+      5. Only build the project. Do not launch. Click on the "Debugger" 
+         icon on the main toolbar. A left-hand side docking debugger widget 
+         will appear. Resize it to suit your preferences.
+
+      6. Click on "Build" menu on the main menu-bar then click on 
+         "Launch Debug". Application will be fired and will stop execution 
+         on first break-boint it will encounter. Debugger interface will
+         show up data in its many widgets. Rest you all know how to operate
+         the debugger. 
+
+      7. Here are some instructions specific to HbIDE interface:
+         a. Double-click on any work-area entry will refresh "Current Record"
+            displaying record information of clicked work-area.
+
+         b. Double-click on any entry in "Variables" table will refresh the 
+            "Object Inspector" widget containing relevant information of 
+            clicked variable. Only variables of type (O)bject or (A)rray 
+            can be inspected this way. Currently array can be inspected 
+            for primary elements only. Sub-arrays values cannot be inspected.
+
+         c. Click on "Add" button to intiate a new "Watch" and then 
+            double-click in "Expression" field. Punch-in or copy a Harbour
+            expression and press <Enter>. Its current value will be 
+            reflected in "Value" field. You can add as many "Watches" 
+            as you like. To delete a watch first select the entry and then 
+            click on "Delete" button. Watches are not saved in current vesrion.
+
+    ASSUMPTION: ( for current version only )
+      1. Project file (.hbp), sources (.prg.c.cpp.hb), executable ({win}.exe)
+         must reside in same folder.
+  
+      2. Project file (.hbp) must contain following entries:
+           -b
+           -lhwgdebug
+           -lhbdebug
+
+      3. Possessing some knowledge about Harbour debugger can greatly help
+         you to understand the basics of debugger but certainly is not 
+         neccessary.
+
+    Many more enhancements are planned for the final version. This is just the 
+    begining. The most important enhancement should be to implement it 
+    transparently inside <Build and Launch> mechanism without the need to 
+    add debugger specific switches inside .hbp. For this to happen a hbmk2 
+    provided macro "hb_debug" or similar is required to be used in -workdir 
+    switch. If you happen to know if this macro is available in hbmk2, please 
+    let me know. 
+       
 2014-08-17 22:18 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r341)
   * hbqtwidgets/dashboard.prg
     ! Fixed: a regression after recent fixes in HbQt where clicking  

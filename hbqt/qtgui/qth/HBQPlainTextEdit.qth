@@ -69,7 +69,9 @@ HB_FUNC( QT_HBQPLAINTEXTEDIT )
    bool           hbHighlightCurrentLine()
    void           hbSetEventBlock( PHB_ITEM block )
    void           hbSetHighLighter( HBQSyntaxHighlighter * hilighter )
-   void           hbHighlightPage()   
+   void           hbHighlightPage()
+   QString        hbGetBreakPoints()
+   void           hbSetBreakPoint(int block)
 </PROTOS>
 
 <SLOTS>
@@ -114,4 +116,5 @@ HB_FUNC( QT_HBQPLAINTEXTEDIT )
 </SLOTS>
 
 <SIGNALS>
+   void           hbBreakPointSet( int line )
 </SIGNALS>

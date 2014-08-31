@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -60,8 +58,6 @@
  *                  Pritpal Bedi <pritpal@vouchcac.com>
  *                               27Dec2009
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 #include "common.ch"
@@ -73,7 +69,6 @@
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define EDT_LINNO_WIDTH                           50
 
@@ -90,7 +85,7 @@
 #define __selectionMode_column__                  2
 #define __selectionMode_line__                    3
 
-/*----------------------------------------------------------------------*/
+
 
 CLASS IdeEditsManager INHERIT IdeObject
 
@@ -215,7 +210,6 @@ CLASS IdeEditsManager INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:new( oIde )
 
@@ -225,10 +219,8 @@ METHOD IdeEditsManager:new( oIde )
    ::oIde := oIde
 
    hb_hCaseMatch( ::hEditingWords, .F. )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:destroy()
    LOCAL a_
@@ -254,10 +246,8 @@ METHOD IdeEditsManager:destroy()
       a_[ 2 ]:destroy()
       a_:= NIL
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:create( oIde )
    LOCAL qAct, aTheme, aAct := {}
@@ -339,10 +329,8 @@ METHOD IdeEditsManager:create( oIde )
    /* Define fields completer */
    ::qFldsStrList   := QStringList()
    ::qFldsModel     := QStringListModel()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:updateCompleterByEditingWords( cWord )
    LOCAL s
@@ -354,10 +342,8 @@ METHOD IdeEditsManager:updateCompleterByEditingWords( cWord )
       ::qProtoList:append( s:__enumKey() )
    NEXT
    ::qCompModel:setStringList( ::qProtoList )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:updateCompleter()
    LOCAL aP := {}, s, n, aProto
@@ -387,19 +373,15 @@ METHOD IdeEditsManager:updateCompleter()
       ::qProtoList:append( s:__enumKey() )
    NEXT
    ::qCompModel:setStringList( ::qProtoList )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:setStyleSheet( nMode )
 
    ::qContextMenu:setStyleSheet( GetStyleSheet( "QMenuPop", nMode ) )
    ::qContextSub:setStyleSheet( GetStyleSheet( "QMenuPop", nMode ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:updateFieldsList( cAlias )
    LOCAL aFlds
@@ -421,7 +403,6 @@ METHOD IdeEditsManager:updateFieldsList( cAlias )
 
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getProto( cWord )
    LOCAL n, nLen
@@ -436,7 +417,6 @@ METHOD IdeEditsManager:getProto( cWord )
    NEXT
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:removeSourceInTree( cSourceFile )
    LOCAL n
@@ -449,7 +429,6 @@ METHOD IdeEditsManager:removeSourceInTree( cSourceFile )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:addSourceInTree( cSourceFile, cView )
    LOCAL cPath, cFile, cExt, oItem
@@ -1486,6 +1465,9 @@ CLASS IdeEditor INHERIT IdeObject
    METHOD vssExecute( cAction )
    METHOD updateComponents()
    METHOD setEncoding( cCodec )
+   METHOD setBreakPoint( cPrg, nLine )
+   METHOD extras()
+   METHOD manageExtras()
 
    ENDCLASS
 
@@ -1589,6 +1571,7 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    ::qLayout:addWidget( ::oEdit:qEdit )
 
    ::oEdit:qEdit:connect( "updateRequest(QRect,int)", {|| ::scrollThumbnail() } )
+   ::oEdit:qEdit:connect( "hbBreakPointSet(int)"    , {| nLine | ::setBreakPoint( ::cFile + ::cExt, nLine ) } )
 
    ::qDocument  := ::qEdit:document()
    ::qCursor := ::qEdit:textCursor()
@@ -1609,10 +1592,8 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    ::qDocument:connect( "contentsChange(int,int,int)", {|p,p1,p2| ::execEvent( __qDocContentsChange__     , p, p1, p2 ) } )
 
    ::qDocument:setModified( .f. )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:destroy()
    LOCAL n, oEdit
@@ -1628,6 +1609,12 @@ METHOD IdeEditor:destroy()
    ENDIF
    /* This code is reached under normal circumstances, so delete auto saved file */
    ferase( hbide_pathToOSPath( ::cPath + ::cFile + ::cExt + ".tmp" ) )
+
+   IF ! Empty( ::oIde:oDebugger )
+      IF ! Empty( ::oIde:oDebugger:cAppName )
+         ::oIde:oDebugger:clearBreakPoints( ::cFile + ::cExt )
+      ENDIF
+   ENDIF
 
    DO WHILE Len( ::aEdits ) > 0
       oEdit := ::aEdits[ 1 ]
@@ -1674,7 +1661,6 @@ METHOD IdeEditor:destroy()
    HB_TRACE( HB_TR_DEBUG, "................................................................IdeEditor:destroy()", 1 )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:relay( oEdit )
    LOCAL oEdt
@@ -1712,7 +1698,6 @@ METHOD IdeEditor:relay( oEdit )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:split( nOrient, oEditP )
    LOCAL oEdit
@@ -1732,7 +1717,6 @@ METHOD IdeEditor:split( nOrient, oEditP )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:prepareBufferToSave( cBuffer )
    LOCAL cE, cEOL, a_, s
@@ -1759,10 +1743,8 @@ METHOD IdeEditor:prepareBufferToSave( cBuffer )
       aeval( a_, {|e| cBuffer += e + cEOL } )
       cBuffer := substr( cBuffer, 1, Len( cBuffer ) - len( cEOL ) )
    ENDIF
-
    RETURN cBuffer
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:prepareBufferToLoad( cBuffer )
    LOCAL cSpaces
@@ -1773,10 +1755,8 @@ METHOD IdeEditor:prepareBufferToLoad( cBuffer )
       cSpaces := space( ::nTabSpaces )
       cBuffer := strtran( cBuffer, chr( 9 ), cSpaces )
    ENDIF
-
    RETURN cBuffer
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:setEncoding( cCodec )
    LOCAL cBuffer
@@ -1811,10 +1791,8 @@ METHOD IdeEditor:setEncoding( cCodec )
    ::qEdit:setTextCursor( qCursor )
    ::qEdit:horizontalScrollBar():setValue( nHPos )
    ::qEdit:verticalScrollBar():setValue( nVPos )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:reload()
    LOCAL nAttr, nPos, qCursor, nHPos, nVPos
@@ -1838,17 +1816,15 @@ METHOD IdeEditor:reload()
    ::qEdit:setTextCursor( qCursor )
    ::qEdit:horizontalScrollBar():setValue( nHPos )
    ::qEdit:verticalScrollBar():setValue( nVPos )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:setDocumentProperties()
    LOCAL qCursor
 
    qCursor := ::qEdit:textCursor()
 
-   IF !( ::lLoaded )       /* First Time */
+   IF ! ::lLoaded
       ::oIde:setCodePage( ::cCodePage )
 
       ::qEdit:setPlainText( ::prepareBufferToLoad( hb_memoread( ::sourceFile ) ) )
@@ -1872,6 +1848,8 @@ METHOD IdeEditor:setDocumentProperties()
          ::qHiliter:hbSetInitialized( .T. )
          ::qEdit:hbHighlightPage()
       ENDIF
+
+      ::manageExtras()
 
       IF ::cType $ "PRG,HB,C,CPP,H,CH,HBS"
          WITH OBJECT ::qTimerSave := QTimer()
@@ -1898,7 +1876,6 @@ METHOD IdeEditor:setDocumentProperties()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
    LOCAL cFileTemp
@@ -1934,10 +1911,8 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
       EXIT
 
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:updateComponents()
 
@@ -1958,7 +1933,6 @@ METHOD IdeEditor:updateComponents()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:activateTab( mp1, mp2, oXbp )
    LOCAL oEdit
@@ -1972,7 +1946,6 @@ METHOD IdeEditor:activateTab( mp1, mp2, oXbp )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:execTabContextMenu( oPos )
    LOCAL qAct, nIndex, nTabIndex
@@ -2003,7 +1976,6 @@ METHOD IdeEditor:execTabContextMenu( oPos )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:buildTabPage( cSource )
 
@@ -2036,7 +2008,6 @@ METHOD IdeEditor:buildTabPage( cSource )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:dispEditInfo( qEdit )
    LOCAL s, qDocument, qCursor
@@ -2058,10 +2029,38 @@ METHOD IdeEditor:dispEditInfo( qEdit )
       :getItem( SB_PNL_MODIFIED ):caption := iif( qDocument:isModified(), "Modified", iif( qEdit:isReadOnly(), "ReadOnly", " " ) )
       :getItem( SB_PNL_EDIT     ):caption := "Edit"
    ENDWITH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+
+METHOD IdeEditor:manageExtras()
+   LOCAL n, n1, cExtras, cLine
+   IF ! Empty( ::cExtras )
+      IF ( n := At( "<BREAKPOINTS>", ::cExtras ) ) > 0
+         IF ( n1 := At( "</BREAKPOINTS>", ::cExtras ) ) > 0
+            cExtras := SubStr( ::cExtras, n + Len( "<BREAKPOINTS>" ), n1 - n - Len( "<BREAKPOINTS>" ) )
+            FOR EACH cLine IN hb_ATokens( cExtras, " " )
+               //::setBreakPoint( ::cFile + ::cExt, Val( cLine ) )
+               ::qEdit:hbSetBreakPoint( Val( cLine ) )
+            NEXT
+         ENDIF
+      ELSE
+         // any other futuristic feature
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:extras()
+   LOCAL cExtras := iif( ! ::lLoaded, ::cExtras, "<BREAKPOINTS>" + StrTran( ::qEdit:hbGetBreakPoints(), ",", " " ) + "</BREAKPOINTS>" )
+   RETURN iif( Empty( cExtras ), "", cExtras )
+
+
+METHOD IdeEditor:setBreakPoint( cPrg, nLine )
+   IF ! Empty( ::oIde:oDebugger )
+      ::oIde:oDebugger:addBreakPoint( cPrg, nLine )
+   ENDIF
+   RETURN Nil
+
 
 METHOD IdeEditor:setTabImage( qEdit )
    LOCAL nIndex, lModified, lReadOnly, cIcon
