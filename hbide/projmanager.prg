@@ -1768,6 +1768,10 @@ METHOD IdeProjManager:launchDebug( cProject )
       RETURN .F.
    ENDIF
    ::oDockB2:show()
+
+   ::oIde:oDebugger:stop()
+   ::oIde:oDebugger:clear()
+
    ::oIde:oDebugger:cCurrentProject := cProject
    ::oIde:oDebugger:aSources        := ::getSourcesByProjectTitle( cProject )
    cExe := ::getCurrentExeName( cProject )

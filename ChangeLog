@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-08-31 20:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r343)
+  * hbide/debugger.prg
+  * hbide/projmanager.prg
+    ! Fixed: running multiple sessions of same executable.
+       Though I am not convinced what I did is the right way. Alex ?
+
 2014-08-31 10:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r342)
   * qtcontribs.hbp
     + Added: debug/hwgdebug.hbp

@@ -118,11 +118,9 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   nRowWatch
    DATA   nRowAreas                               INIT -1
    DATA   aSources
-   DATA   oOutputResult
    DATA   lDebugging                              INIT .F.
    DATA   handl1                                  INIT -1
    DATA   handl2
-   DATA   cBuffer
    DATA   nId1                                    INIT 0
    DATA   nId2                                    INIT -1
 
@@ -149,6 +147,8 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   cCurrentProject
    DATA   oTimer
    DATA   aTabs
+   DATA   oOutputResult
+   DATA   cBuffer
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -215,14 +215,50 @@ METHOD IdeDebugger:create( oIde )
    ::ui_init()
 
    ::oTimer := QTimer()
+   WITH OBJECT ::oTimer
+      :setInterval( 30 )
+      :connect( "timeout()",  {|| ::timerProc() } )
+   ENDWITH
    RETURN Self
+
+
+METHOD IdeDebugger:stop()
+   RETURN .T.
+
+
+METHOD IdeDebugger:clear()
+
+   ::nRequestedVarsIndex    := 0
+   ::lLoaded                := .F.
+   ::nRowWatch              := NIL
+   ::nRowAreas              := -1
+   ::aSources               := NIL
+   ::lDebugging             := .F.
+   ::handl1                 := -1
+   ::handl2                 := NIL
+   ::nId1                   := 0
+   ::nId2                   := -1
+   ::cAppName               := NIL
+   ::cPrgName               := ""
+   ::cInspectVar            := ""
+   ::cInspectType           := ""
+   ::aBP                    := {}
+   ::aWatches               := {}
+   ::nCurrLine              := 0
+   ::nMode                  := MODE_INPUT
+   ::nAnsType               := NIL
+   ::cPrgBP                 := NIL
+   ::nLineBP                := NIL
+   ::aBPLoad                := {}
+   ::nBPLoad                := NIL
+   ::nExitMode              := 2
+   ::nVerProto              := 0
+   //
+   RETURN .T.
 
 
 METHOD IdeDebugger:start( cExe )
    LOCAL cPath, cFile, cExt
-
-   ::stop()
-   ::clear()
 
    ::setMode( MODE_INIT )
 
@@ -231,7 +267,9 @@ METHOD IdeDebugger:start( cExe )
    FErase( cExe + ".d1" )
    FErase( cExe + ".d2" )
 
-   ::handl1 := FCreate( cExe + ".d1" )
+   IF ( ::handl1 := FCreate( cExe + ".d1" ) ) == -1
+      Alert( "Previous instance still active, cannot continue." )
+   ENDIF
    FWrite( ::handl1, "init,!" )
    FClose( ::handl1 )
    ::handl2 := FCreate( cExe + ".d2" )
@@ -240,8 +278,6 @@ METHOD IdeDebugger:start( cExe )
    hb_processOpen( cExe )                         //+ Iif( !Empty( cParams ), cParams, "" ) )
 
    WITH OBJECT ::oTimer
-      :setInterval( 30 )
-      :connect( "timeout()",  {|| ::timerProc() } )
       :start()
    ENDWITH
 
@@ -265,22 +301,16 @@ METHOD IdeDebugger:start( cExe )
    ::timerProc()
    ::loadBreakPoints()
 
-   DO WHILE ! Empty( ::aBPLoad )
-      hb_idleSleep( 0.1 )
-   ENDDO
    ::lDebugging := .T.
-
    ::oOutputResult:oWidget:append( "Debug started." )
 
-   ::doCommand( CMD_GO )
-   RETURN .T.
-
-
-METHOD IdeDebugger:stop()
-   RETURN .T.
-
-
-METHOD IdeDebugger:clear()
+   IF Empty( ::aBPLoad )
+      ::doCommand( CMD_GO )
+   ELSE
+      //::doCommand( CMD_STEP )
+      ::doCommand( CMD_GO )
+   ENDIF
+   //
    RETURN .T.
 
 
@@ -310,7 +340,6 @@ METHOD IdeDebugger:loadBreakPoints()
          NEXT i
       ENDIF
    NEXT j
-
    IF ! Empty( ::aBPLoad )
       ::nBPLoad := 1
       ::addBreakPoint( ::aBPLoad[ 1,2 ], ::aBPLoad[ 1,1 ] )
@@ -359,7 +388,7 @@ METHOD IdeDebugger:toggleBreakPoint( cAns, cLine )
          ENDIF
       NEXT
       IF i > Len( ::aBP )
-         Aadd( ::aBP, { nLine, ::cPrgBP } )
+         AAdd( ::aBP, { nLine, ::cPrgBP } )
       ENDIF
    ELSE
       IF ( i := ::getBP( nLine, ::cPrgBP ) ) == 0
@@ -379,7 +408,7 @@ METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
       RETURN NIL
    ENDIF
    IF .T.
-      IF ::getBP( nLine, cPrg ) == 0
+      IF .T. //::getBP( nLine, cPrg ) == 0
          ::oOutputResult:oWidget:append( "Setting break point: " + cPrg + ": " + Str( nLine ) )
          ::send( "brp", "add", cPrg, LTrim( Str( nLine ) ) )
       ELSE
@@ -394,6 +423,11 @@ METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
       ENDIF
    ENDIF
    RETURN NIL
+
+
+METHOD IdeDebugger:getBP( nLine, cPrg )
+   cPrg := Lower( iif( cPrg == NIL, ::cPrgName, cPrg ) )
+   RETURN Ascan( ::aBP, {|a| a[ 1 ] == nLine .and. Lower( a[ 2 ] ) == cPrg } )
 
 
 METHOD IdeDebugger:timerProc()
@@ -587,23 +621,18 @@ METHOD IdeDebugger:setMode( newMode )
    RETURN NIL
 
 
-METHOD IdeDebugger:getBP( nLine, cPrg )
-   cPrg := Lower( iif( cPrg == NIL, ::cPrgName, cPrg ) )
-   RETURN Ascan( ::aBP, {|a| a[ 1 ] == nLine .and. Lower( a[ 2 ] ) == cPrg } )
-
-
 METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2 )
    IF ::nMode == MODE_INPUT
       IF nCmd == CMD_GO
-         ::oUi:labelStatus:setText("Program executing")
+         ::oUi:labelStatus:setText( "Program executing" )
          ::send( "cmd", "go" )
 
       ELSEIF nCmd == CMD_STEP
-         ::oUi:labelStatus:setText("Program executing")
+         ::oUi:labelStatus:setText( "Program executing" )
          ::send( "cmd", "step" )
 
       ELSEIF nCmd == CMD_TOCURS
-         ::oUi:labelStatus:setText("Program executing")
+         ::oUi:labelStatus:setText( "Program executing" )
          ::send( "cmd", "to", ::getCurrPrgName(), Ltrim( Str( ::getCurrLine() ) ) )
 
       ELSEIF nCmd == CMD_TRACE
@@ -786,11 +815,26 @@ METHOD IdeDebugger:setWindow( cPrgName )
 
 
 METHOD IdeDebugger:stopDebug()
-   IF ::handl1 != -1
+   IF ::oTimer:isActive()
+      ::oTimer:stop()
+   ENDIF
+   //IF ::handl1 != -1
       FClose( ::handl1 )
       FClose( ::handl2 )
       ::handl1 := -1
-   ENDIF
+   //ENDIF
+
+   ::oUI:tableWatchExpressions:setRowCount( 0 )
+   ::oUI:tableStack           :setRowCount( 0 )
+   ::oUI:tableVarLocal        :setRowCount( 0 )
+   ::oUI:tableVarPrivate      :setRowCount( 0 )
+   ::oUI:tableVarPublic       :setRowCount( 0 )
+   ::oUI:tableVarStatic       :setRowCount( 0 )
+   ::oUI:tableOpenTables      :setRowCount( 0 )
+   ::oUI:tableCurrentRecord   :setRowCount( 0 )
+   ::oUI:tableObjectInspector :setRowCount( 0 )
+   ::oUI:tableSets            :setRowCount( 0 )
+
    ::oUi:labelStatus:setText( "Exited" )
    RETURN NIL
 
@@ -964,6 +1008,7 @@ METHOD IdeDebugger:showObject( arr, n )
          ::oUI:labelObjectInspector:setText( "Array Inspector [" + ::cInspectVar + "]" )
          n += 2
          FOR i := 1 TO nLen
+            ::oUI:tableObjectInspector:setItem( i - 1, 0, QTableWidgetItem( "Ele: " + hb_ntos( i ) ) )
             FOR j := 1 TO 2
                ::oUI:tableObjectInspector:setItem( i - 1, j, QTableWidgetItem( Hex2Str( arr[ ++n ] ) ) )
             NEXT
@@ -1218,7 +1263,6 @@ METHOD IdeDebugger:exitDbg()
    ::lDebugging := .F.
    ::stopDebug()
    RETURN .T.
-
 
 METHOD IdeDebugger:ui_init()
    LOCAL oHeaders
