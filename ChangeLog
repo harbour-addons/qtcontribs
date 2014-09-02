@@ -16,6 +16,28 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-02 12:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r344)
+  * hbide/debugger.prg
+  * hbide/docks.prg
+  * hbide/editor.prg
+  * hbide/environ.prg
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+    ! Fixed: crashing of selected-text toolbar crashing HbIDE.
+       The bug was introduced recently and belonged to the way toolbar 
+       was being parented.
+
+    ! Fixed: (hopefully) Saving a project via <Save> button of 
+       "Project Properties" dialog where new entries were being prefixed
+       by "3rd=" protocol. If you still encounter it please send me the 
+       relevant .hbp to investigate further.
+
+    ! Fixed: to handle toggling of break-points inside editing instance 
+       while debugger is active.
+
+    % Started: building blocks of embedding debugger in HbIDE's normal 
+       build process. Preliminary results are encouraging, stay tuned.
+
 2014-08-31 20:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r343)
   * hbide/debugger.prg
   * hbide/projmanager.prg

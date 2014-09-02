@@ -1600,6 +1600,8 @@ METHOD IdeEditor:destroy()
 
    HB_TRACE( HB_TR_DEBUG, "..........................................................IdeEditor:destroy()", 0 )
 
+   ::oAC:qSelToolbar:setParent( ::oIde:oDlg:oWidget )
+
    ::oEdit:qEdit:disconnect( "updateRequest(QRect,int)" )
 
    IF !empty( ::qTimerSave )
@@ -1916,6 +1918,7 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
 
 METHOD IdeEditor:updateComponents()
 
+   ::oAC:qSelToolbar:setParent( ::oDlg:oWidget )
    ::setDocumentProperties()
    WITH OBJECT ::qCoEdit
       :relayMarkButtons()
@@ -2039,7 +2042,6 @@ METHOD IdeEditor:manageExtras()
          IF ( n1 := At( "</BREAKPOINTS>", ::cExtras ) ) > 0
             cExtras := SubStr( ::cExtras, n + Len( "<BREAKPOINTS>" ), n1 - n - Len( "<BREAKPOINTS>" ) )
             FOR EACH cLine IN hb_ATokens( cExtras, " " )
-               //::setBreakPoint( ::cFile + ::cExt, Val( cLine ) )
                ::qEdit:hbSetBreakPoint( Val( cLine ) )
             NEXT
          ENDIF

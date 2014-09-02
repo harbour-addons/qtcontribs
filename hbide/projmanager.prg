@@ -67,6 +67,261 @@
 #include "common.ch"
 #include "hbclass.ch"
 
+
+/*----------------------------------------------------------------------*/
+//                         CLASS IdeSelectSource
+/*----------------------------------------------------------------------*/
+
+CLASS IdeSelectSource
+
+   DATA   oUI
+   DATA   cPath
+   DATA   aSrcSelected                            INIT {}
+   DATA   aSrc3rd                                 INIT {}
+   DATA   aExt                                    INIT {}
+   DATA   lOK                                     INIT .F.
+   DATA   cHbp                                    INIT ""
+   DATA   cType                                   INIT "Executable"
+   DATA   cGT                                     INIT ""
+   DATA   lShared                                 INIT .F.
+   DATA   lFullStatic                             INIT .F.
+   DATA   lHbQt                                   INIT .F.
+   DATA   lTrace                                  INIT .F.
+   DATA   lInfo                                   INIT .F.
+   DATA   lInc                                    INIT .F.
+   DATA   lGui                                    INIT .F.
+   DATA   lMt                                     INIT .F.
+   DATA   lA                                      INIT .F.
+   DATA   lB                                      INIT .F.
+   DATA   lEs                                     INIT .F.
+   DATA   lG                                      INIT .F.
+   DATA   lM                                      INIT .F.
+   DATA   lN                                      INIT .F.
+   DATA   lV                                      INIT .F.
+   DATA   lW                                      INIT .F.
+   DATA   cES                                     INIT ""
+   DATA   cG                                      INIT ""
+   DATA   cM                                      INIT ""
+   DATA   cW                                      INIT ""
+
+   METHOD new()
+   METHOD create()
+   METHOD buildUI()
+   METHOD loadSources( cPathFile )
+   METHOD toggleSelection( lSelect )
+   METHOD selectSources( cExt )
+   METHOD unSelectSources( cExt )
+   METHOD pullData()
+
+   ENDCLASS
+
+
+METHOD IdeSelectSource:new()
+   RETURN Self
+
+
+METHOD IdeSelectSource:create()
+   LOCAL nRes
+
+   ::buildUI()
+   WITH OBJECT ::oUI
+      nRes := :oWidget:exec()                     /* Display on the Screen */
+      IF nRes == 1                                /* Only IF OK is clicked */
+         ::pullData()
+         ::lOk := .T.
+      ENDIF
+      :oWidget:setParent( QWidget() )
+   ENDWITH
+   RETURN Self
+
+
+METHOD IdeSelectSource:pullData()
+   LOCAL i, cSrc
+
+   ::cHbp  := ::oUI:editHbp:text()
+   ::cType := ::oUI:comboType:currentText()
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      IF ::oUI:treeSources:topLevelItem( i ):checkState( 0 ) == Qt_Checked
+         cSrc := hbide_prepareSourceForHbp( ::oUI:treeSources:topLevelItem( i ):text( 0 ) )
+         IF Left( cSrc, 2 ) == "-3"
+            AAdd( ::aSrc3rd, cSrc )
+         ELSE
+            AAdd( ::aSrcSelected, cSrc )
+         ENDIF
+
+      ENDIF
+   NEXT
+
+   ::cGT            := ::oUI:comboGT      :currentText()
+   ::lShared        := ::oUI:chkShared    :isChecked()
+   ::lFullStatic    := ::oUI:chkFullStatic:isChecked()
+   ::lHbQt          := ::oUI:chkHbQt      :isChecked()
+   ::lTrace         := ::oUI:chkTrace     :isChecked()
+   ::lInfo          := ::oUI:chkInfo      :isChecked()
+   ::lInc           := ::oUI:chkInc       :isChecked()
+   ::lGui           := ::oUI:chkGui       :isChecked()
+   ::lMt            := ::oUI:chkMt        :isChecked()
+   ::lA             := ::oUI:chkA         :isChecked()
+   ::lB             := ::oUI:chkB         :isChecked()
+   ::lEs            := ::oUI:chkEs        :isChecked()
+   ::lG             := ::oUI:chkG         :isChecked()
+   ::lM             := ::oUI:chkM         :isChecked()
+   ::lN             := ::oUI:chkN         :isChecked()
+   ::lV             := ::oUI:chkV         :isChecked()
+   ::lW             := ::oUI:chkW         :isChecked()
+   ::cES            := ::oUI:editES       :text()
+   ::cG             := ::oUI:editG        :text()
+   ::cM             := ::oUI:editM        :text()
+   ::cW             := ::oUI:editW        :text()
+   RETURN Self
+
+
+METHOD IdeSelectSource:toggleSelection( lSelect )
+   LOCAL i, oItm
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      oItm := ::oUI:treeSources:topLevelItem( i )
+      oItm:setCheckState( 0, iif( lSelect, Qt_Checked, Qt_Unchecked ) )
+   NEXT
+   RETURN Self
+
+
+METHOD IdeSelectSource:selectSources( cExt )
+   LOCAL i, oItm
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      oItm := ::oUI:treeSources:topLevelItem( i )
+      IF Lower( hb_FNameExt( oItm:text( 0 ) ) ) == cExt
+         oItm:setCheckState( 0, Qt_Checked )
+      ENDIF
+   NEXT
+   RETURN Self
+
+
+METHOD IdeSelectSource:unSelectSources( cExt )
+   LOCAL i, oItm
+
+   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
+      oItm := ::oUI:treeSources:topLevelItem( i )
+      IF Lower( hb_FNameExt( oItm:text( 0 ) ) ) == cExt
+         oItm:setCheckState( 0, Qt_Unchecked )
+      ENDIF
+   NEXT
+   RETURN Self
+
+
+METHOD IdeSelectSource:loadSources( cPathFile )
+   LOCAL lOk, aDir, aSrc, cSrc, cExt, oItm, a_, cPath
+
+   ::oUI:treeSources:clear()
+   ::oUI:comboSelect:clear()
+   ::oUI:comboUnSelect:clear()
+
+   ::oUI:treeSources:headerItem():setText( 0, "..." )
+
+   ::aExt := {}
+
+   hb_FNameSplit( cPathFile, @cPath )
+
+   lOk := !( " " $ cPathFile ) .AND. Lower( hb_FNameExt( cPathFile ) ) == ".hbp" .AND. ! hb_FileExists( cPathFile ) .AND. hb_DirExists( cPath )
+   ::oUI:btnOK:setEnabled( lOk )
+   IF ! lOk
+      RETURN Self
+   ENDIF
+
+   aSrc := {}
+   aDir := Directory( cPath + "*.*" )
+   IF ! Empty( aDir )
+      FOR EACH a_ IN aDir
+         IF a_[ 1 ] == "." .OR. a_[ 1 ] == ".."
+            // Nothing TO do
+         ELSEIF a_[ 5 ] == "D"
+            // later
+         ELSE
+            cExt := Lower( hb_FNameExt( a_[ 1 ] ) )
+            IF ! Empty( cExt ) .AND. cExt $ ".h,.c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp,.ch"
+               AAdd( aSrc, a_[ 1 ] )
+               IF AScan( ::aExt, {|e| e == cExt } ) == 0
+                  AAdd( ::aExt, cExt )
+               ENDIF
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
+
+   IF Empty( aSrc )
+      RETURN Self
+   ENDIF
+   ASort( aSrc, , , {|e, f| Lower( hb_FNameExt( e ) ) + Lower( hb_FNameName( e ) ) <  Lower( hb_FNameExt( f ) ) + Lower( hb_FNameName( f ) ) } )
+
+   FOR EACH cExt IN ::aExt
+      ::oUI:comboSelect:addItem( cExt )
+      ::oUI:comboUnSelect:addItem( cExt )
+   NEXT
+
+   FOR EACH cSrc IN aSrc
+      cExt := Lower( hb_FNameExt( cSrc ) )
+      WITH OBJECT oItm := QTreeWidgetItem()
+         :setFlags( Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsUserCheckable )
+         :setText( 0, cSrc )
+         :setToolTip( 0, hbide_pathNormalized( cPath + cSrc ) )
+         ::oUI:treeSources:addTopLevelItem( oItm )
+         :setCheckState( 0, Qt_Checked )
+         IF  ! ( cExt == ".h" ) .AND. ( cExt $ ".hbc,.hbp,.hbm" )
+            :setCheckState( 0, Qt_Unchecked )
+         ENDIF
+      ENDWITH
+   NEXT
+
+   ::oUI:treeSources:headerItem():setText( 0, cPath )
+   ::oUI:treeSources:headerItem():setForeGround( 0, QBrush( QColor( 0,0,255 ) ) )
+   ::cPath := cPath
+   RETURN Self
+
+
+METHOD IdeSelectSource:buildUI()
+
+   WITH OBJECT ::oUI := hbide_getUI( "SelectSources" )
+      :comboType:addItem( "Executable" )
+      :comboType:addItem( "Library" )
+      :comboType:addItem( "Dll" )
+      :comboType:setCurrentIndex( 0 )
+
+      :comboSelect  :connect( "currentIndexChanged(QString)", {|cExt| ::selectSources( cExt ) } )
+      :comboUnSelect:connect( "currentIndexChanged(QString)", {|cExt| ::unSelectSources( cExt ) } )
+
+      :btnOK    :connect( "clicked()", {|| ::oUI:oWidget:done( 1 ) } )
+      :btnCancel:connect( "clicked()", {|| ::oUI:oWidget:done( 0 ) } )
+
+      :checkSelect:connect( "stateChanged(int)", {|iState|  ::toggleSelection( iState == 2 ) } )
+
+      WITH OBJECT :comboGT
+         : addItem( "gtWIN" )
+         : addItem( "gtWVT" )
+         : addItem( "gtWVG" )
+         : addItem( "gtCGI" )
+         : addItem( "gtCRS" )
+         : addItem( "gtDOS" )
+         : addItem( "gtGUI" )
+         : addItem( "gtOS2" )
+         : addItem( "gtPCA" )
+         : addItem( "gtSLN" )
+         : addItem( "gtSTD" )
+         : addItem( "gtTRM" )
+         : addItem( "gtXWC" )
+
+         : setCurrentIndex( 0 )
+      ENDWITH
+
+      :btnHbp:setIcon( QIcon( hbide_image( "folder" ) ) )
+
+      :btnHbp:connect( "clicked()", {|| hbide_fetchProject( :editHbp ) } )
+      :editHbp:connect( "textChanged(QString)", {|cPath| ::loadSources( cPath ) } )
+      :editHbp:setText( hbide_getNextProject( hbide_setWorkingProjectFolder() ) )
+   ENDWITH
+   RETURN Self
+
 /*----------------------------------------------------------------------*/
 //                             Class IdeSource
 /*----------------------------------------------------------------------*/
@@ -86,7 +341,6 @@ CLASS IdeSource
    ENDCLASS
 
 
-
 METHOD IdeSource:new( cSource )
    LOCAL cFilt, cPathFile, cPath, cFile, cExt
 
@@ -103,7 +357,6 @@ METHOD IdeSource:new( cSource )
    ::file       := cFile
    //::ext        := lower( cExt )
    ::ext        := cExt
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -187,7 +440,6 @@ METHOD IdeProject:new( oIDE, aProps )
          ENDIF
       NEXT
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -250,12 +502,12 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD closeProject( cProjectTitle )
    METHOD promptForPath( oEditPath, cTitle, cObjFileName )
    METHOD buildSource( lExecutable )
-   METHOD buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron )
+   METHOD buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron, lDebug )
    METHOD getCurrentExeName( cProject )
    METHOD launchDebug( cProject )
-   METHOD launchProject( cProject, cExe, cWrkEnviron )
+   METHOD launchProject( cProject, cExe, cWrkEnviron, lDebug )
    METHOD showOutput( cOutput, mp2, oProcess )
-   METHOD finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
+   METHOD finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, lDebug )
    METHOD isValidProjectLocation( lTell )
    METHOD setProjectLocation( cPath )
    METHOD buildInterface()
@@ -437,9 +689,7 @@ METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
 
       ::oHM:refresh()  /* Rearrange Projects Data */
    ENDIF
-
    ::oIde:oPropertiesDock:setWindowTitle( cProjFileName )
-
    RETURN Self
 
 
@@ -723,9 +973,7 @@ METHOD IdeProjManager:updateHbp( iIndex )
    IF iIndex != 3
       RETURN NIL
    ENDIF
-   /* Sources */
-   txt_:= hbide_synchronizeForHbp( hb_atokens( ::oUI:editSources:toPlainText(), _EOL ) )
-   /* Final assault */
+   txt_:= hbide_synchronizeForHbp( hb_ATokens( ::oUI:editSources:toPlainText(), _EOL ) )
    ::oUI:editHbp:setPlainText( hbide_arrayToMemo( txt_ ) )
    RETURN txt_
 
@@ -735,11 +983,9 @@ METHOD IdeProjManager:fetchProperties()
    IF empty( ::oProject )
       ::oProject := IdeProject():new( ::oIDE, ::aPrjProps )
    ENDIF
-
    IF empty( ::oUI )
       ::buildInterface()
    ENDIF
-
    IF empty( ::aPrjProps )
       WITH OBJECT ::oUI
          :comboPrjType    :setCurrentIndex( 0 )
@@ -1397,9 +1643,20 @@ METHOD IdeProjManager:promptForPath( oEditPath, cTitle, cObjFileName )
       ENDIF
       oEditPath:setText( cPath )
    ENDIF
-
    oEditPath:setFocus()
+   RETURN Self
 
+
+METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
+   LOCAL cIfError
+
+   HB_SYMBOL_UNUSED( mp2 )
+   HB_SYMBOL_UNUSED( oProcess )
+
+   cIfError := hbide_convertBuildStatusMsgToHtml( cOutput, ::oOutputResult:oWidget )
+   IF ! empty( cIfError ) .AND. empty( ::cIfError )
+      ::cIfError := cIfError
+   ENDIF
    RETURN Self
 
 
@@ -1484,11 +1741,10 @@ METHOD IdeProjManager:buildSource( lExecutable )
    //
    ::oProcess:addArg( cC + ::cBatch )
    ::oProcess:start( cCmd )
-
    RETURN Self
 
 
-METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron )
+METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron, lDebug )
    LOCAL cHbpPath, oEdit, cHbpFN, cTmp, cExeHbMk2, aHbp, cCmd, cC, oSource, cCmdParams, cBuf
    LOCAL cbRed := "<font color=blue>", ceRed := "</font>"
 
@@ -1497,6 +1753,11 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    DEFAULT lPPO        TO .F.
    DEFAULT lViaQt      TO .F.
    DEFAULT cWrkEnviron TO ::cWrkEnvironment
+#if 1
+   DEFAULT lDebug      TO .F.
+#else
+   DEFAULT lDebug      TO .T.
+#endif
 
    aHbp                := {}
    ::lPPO              := lPPO
@@ -1517,14 +1778,12 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
       lRebuild := .t.
    ENDIF
 
-   /* Set it as current project */
    ::setCurrentProject( cProject )
 
    /* Make Macros happy */
    hbide_setProjectTitle( cProject )
 
    ::oProject := ::getProjectByTitle( cProject )
-   // attempt to save the sources if are open in editors       should it be controlled by some option ?
    IF ::oINI:lSaveSourceWhenComp
       FOR EACH oSource IN ::oProject:hSources
          ::oSM:saveNamedSource( oSource:original )
@@ -1532,9 +1791,9 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    ENDIF
 
    cHbpFN   := hbide_pathFile( ::oProject:location, iif( empty( ::oProject:outputName ), "_temp", ::oProject:outputName ) )
-   cHbpPath := cHbpFN + iif( ::lPPO, '_tmp', "" ) + ".hbp"
+   cHbpPath := cHbpFN + iif( ::lPPO, "_tmp", "" ) + ".hbp"
 
-   IF !( ::lPPO )
+   IF ! ::lPPO
       IF     ::oProject:type == "Lib"
          aadd( aHbp, "-hblib" )
       ELSEIF ::oProject:type == "Dll"
@@ -1553,7 +1812,11 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    IF lRebuild
       aadd( aHbp, "-rebuild" )
    ENDIF
-
+   IF lDebug
+      aadd( aHbp, "-b"         )
+      aadd( aHbp, "-lhwgdebug" )
+      aadd( aHbp, "-lhbdebug"  )
+   ENDIF
    IF ::lPPO
       IF !empty( oEdit := ::oEM:getEditorCurrent() )
          IF hbide_isSourcePRG( oEdit:sourceFile )
@@ -1591,7 +1854,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
       ::oOutputResult:oWidget:append( hbide_outputLine() )
 
       ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
-      ::cBatch   := ::oEV:prepareBatch( cWrkEnviron )
+      ::cBatch   := ::oEV:prepareBatch( cWrkEnviron, lDebug )
       aeval( ::oEV:getHbmk2Commands( cWrkEnviron ), {|e| aadd( aHbp, e ) } )
 
       cExeHbMk2  := ::oINI:getHbmk2File()
@@ -1600,7 +1863,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
       ::oProcess := HbpProcess():new()
       //
       ::oProcess:output      := {|cOut, mp2, oHbp| ::showOutput( cOut,mp2,oHbp ) }
-      ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC, nES, oHbp, cWrkEnviron ) }
+      ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC, nES, oHbp, cWrkEnviron, lDebug ) }
       ::oProcess:workingPath := hbide_pathToOSPath( ::oProject:location )
       //
       cCmd := hbide_getShellCommand()
@@ -1625,20 +1888,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    RETURN Self
 
 
-METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
-   LOCAL cIfError
-
-   HB_SYMBOL_UNUSED( mp2 )
-   HB_SYMBOL_UNUSED( oProcess )
-
-   cIfError := hbide_convertBuildStatusMsgToHtml( cOutput, ::oOutputResult:oWidget )
-   IF ! empty( cIfError ) .AND. empty( ::cIfError )
-      ::cIfError := cIfError
-   ENDIF
-   RETURN Self
-
-
-METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
+METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, lDebug )
    LOCAL cTmp, n, n1, cTkn, cExe, qDoc, qCursor
 
    HB_SYMBOL_UNUSED( oProcess )
@@ -1654,9 +1904,9 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    ferase( ::cBatch )
 
    IF ! empty( ::cIfError )
-      ::oOutputResult:SelStart := 0
+      ::oOutputResult:selStart := 0
       ::oOutputResult:find( ::cIfError )
-      ::oOutputResult:SelBold  := .T.
+      ::oOutputResult:selBold  := .T.
 
       qDoc := ::oOutputResult:document()
       FOR n := 0 TO qDoc:blockCount() - 1
@@ -1707,7 +1957,7 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
       ::outputText( " " )
 
       IF nExitCode == 0
-         ::launchProject( ::cProjectInProcess, cExe, cWrkEnviron )
+         ::launchProject( ::cProjectInProcess, cExe, cWrkEnviron, lDebug )
       ELSE
          ::outputText( "Sorry, cannot launch project because of errors..." )
       ENDIF
@@ -1725,68 +1975,11 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron )
    RETURN Self
 
 
-METHOD IdeProjManager:getCurrentExeName( cProject )
-   LOCAL cTargetFN, oProject
-
-   IF empty( cProject )
-      cProject := ::getCurrentProjectTitle()
-   ENDIF
-   IF !empty( cProject )
-      oProject  := ::getProjectByTitle( cProject )
-   ELSE
-      RETURN ""
-   ENDIF
-
-   IF !empty( oProject )
-      cTargetFN := hbide_pathFile( oProject:destination, iif( empty( oProject:outputName ), "_temp", oProject:outputName ) )
-#ifdef __PLATFORM__WINDOWS
-      IF oProject:type == "Executable"
-         cTargetFN += '.exe'
-      ENDIF
-#endif
-      IF ! hb_FileExists( cTargetFN )
-         cTargetFN := oProject:launchProgram
-      ENDIF
-   ELSE
-      RETURN ""
-   ENDIF
-   IF empty( cTargetFN )
-      cTargetFN := ""
-   ENDIF
-   cTargetFN := hbide_pathToOSPath( cTargetFN )
-   RETURN cTargetFN
-
-
-METHOD IdeProjManager:launchDebug( cProject )
-   LOCAL cExe
-
-   IF empty( cProject )
-      cProject := ::getCurrentProjectTitle()
-   ENDIF
-   IF Empty( cProject )
-      ::oOutputResult:oWidget:append( "No active project found !" )
-      RETURN .F.
-   ENDIF
-   ::oDockB2:show()
-
-   ::oIde:oDebugger:stop()
-   ::oIde:oDebugger:clear()
-
-   ::oIde:oDebugger:cCurrentProject := cProject
-   ::oIde:oDebugger:aSources        := ::getSourcesByProjectTitle( cProject )
-   cExe := ::getCurrentExeName( cProject )
-   IF ! hb_FileExists( cExe )
-      ::oOutputResult:oWidget:append( "Launch error: executable not found !" )
-      RETURN .F.
-   ENDIF
-   ::oOutputResult:oWidget:append( "Launching with Debugger : " + cExe )
-   ::oIde:oDebugger:start( cExe )
-   RETURN .T.
-
-
-METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
+METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron, lDebug )
    LOCAL cTargetFN, cTmp, oProject, cPath, a_, cParam
    LOCAL qProcess, qStr, cC, cCmd, cBuf
+
+   DEFAULT lDebug TO .F.
 
    IF empty( cProject )
       cProject := ::oPM:getCurrentProject( .f. )
@@ -1876,6 +2069,65 @@ METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron )
    RETURN Self
 
 
+METHOD IdeProjManager:launchDebug( cProject )
+   LOCAL cExe
+
+   IF empty( cProject )
+      cProject := ::getCurrentProjectTitle()
+   ENDIF
+   IF Empty( cProject )
+      ::oOutputResult:oWidget:append( "No active project found !" )
+      RETURN .F.
+   ENDIF
+   ::oDockB2:show()
+
+   ::oIde:oDebugger:stop()
+   ::oIde:oDebugger:clear()
+
+   ::oIde:oDebugger:cCurrentProject := cProject
+   ::oIde:oDebugger:aSources        := ::getSourcesByProjectTitle( cProject )
+   cExe := ::getCurrentExeName( cProject )
+   IF ! hb_FileExists( cExe )
+      ::oOutputResult:oWidget:append( "Launch error: executable not found !" )
+      RETURN .F.
+   ENDIF
+   ::oOutputResult:oWidget:append( "Launching with Debugger : " + cExe )
+   ::oIde:oDebugger:start( cExe )
+   RETURN .T.
+
+
+METHOD IdeProjManager:getCurrentExeName( cProject )
+   LOCAL cTargetFN, oProject
+
+   IF empty( cProject )
+      cProject := ::getCurrentProjectTitle()
+   ENDIF
+   IF !empty( cProject )
+      oProject  := ::getProjectByTitle( cProject )
+   ELSE
+      RETURN ""
+   ENDIF
+
+   IF !empty( oProject )
+      cTargetFN := hbide_pathFile( oProject:destination, iif( empty( oProject:outputName ), "_temp", oProject:outputName ) )
+#ifdef __PLATFORM__WINDOWS
+      IF oProject:type == "Executable"
+         cTargetFN += '.exe'
+      ENDIF
+#endif
+      IF ! hb_FileExists( cTargetFN )
+         cTargetFN := oProject:launchProgram
+      ENDIF
+   ELSE
+      RETURN ""
+   ENDIF
+   IF empty( cTargetFN )
+      cTargetFN := ""
+   ENDIF
+   cTargetFN := hbide_pathToOSPath( cTargetFN )
+   RETURN cTargetFN
+
+
 METHOD IdeProjManager:runAsScript()
    LOCAL oEdit
 
@@ -1890,259 +2142,6 @@ METHOD IdeProjManager:outputText( cText )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-//                         CLASS IdeSelectSource
-/*----------------------------------------------------------------------*/
-
-CLASS IdeSelectSource
-
-   DATA   oUI
-   DATA   cPath
-   DATA   aSrcSelected                            INIT {}
-   DATA   aSrc3rd                                 INIT {}
-   DATA   aExt                                    INIT {}
-   DATA   lOK                                     INIT .F.
-   DATA   cHbp                                    INIT ""
-   DATA   cType                                   INIT "Executable"
-   DATA   cGT                                     INIT ""
-   DATA   lShared                                 INIT .F.
-   DATA   lFullStatic                             INIT .F.
-   DATA   lHbQt                                   INIT .F.
-   DATA   lTrace                                  INIT .F.
-   DATA   lInfo                                   INIT .F.
-   DATA   lInc                                    INIT .F.
-   DATA   lGui                                    INIT .F.
-   DATA   lMt                                     INIT .F.
-   DATA   lA                                      INIT .F.
-   DATA   lB                                      INIT .F.
-   DATA   lEs                                     INIT .F.
-   DATA   lG                                      INIT .F.
-   DATA   lM                                      INIT .F.
-   DATA   lN                                      INIT .F.
-   DATA   lV                                      INIT .F.
-   DATA   lW                                      INIT .F.
-   DATA   cES                                     INIT ""
-   DATA   cG                                      INIT ""
-   DATA   cM                                      INIT ""
-   DATA   cW                                      INIT ""
-
-   METHOD new()
-   METHOD create()
-   METHOD buildUI()
-   METHOD loadSources( cPathFile )
-   METHOD toggleSelection( lSelect )
-   METHOD selectSources( cExt )
-   METHOD unSelectSources( cExt )
-   METHOD pullData()
-
-   ENDCLASS
-
-
-METHOD IdeSelectSource:new()
-   RETURN Self
-
-
-METHOD IdeSelectSource:create()
-   LOCAL nRes
-
-   ::buildUI()
-   WITH OBJECT ::oUI
-      nRes := :oWidget:exec()                     /* Display on the Screen */
-      IF nRes == 1                                /* Only IF OK is clicked */
-         ::pullData()
-         ::lOk := .T.
-      ENDIF
-      :oWidget:setParent( QWidget() )
-   ENDWITH
-   RETURN Self
-
-
-METHOD IdeSelectSource:pullData()
-   LOCAL i, cSrc
-
-   ::cHbp  := ::oUI:editHbp:text()
-   ::cType := ::oUI:comboType:currentText()
-
-   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
-      IF ::oUI:treeSources:topLevelItem( i ):checkState( 0 ) == Qt_Checked
-         cSrc := hbide_prepareSourceForHbp( ::oUI:treeSources:topLevelItem( i ):text( 0 ) )
-         IF Left( cSrc, 2 ) == "-3"
-            AAdd( ::aSrc3rd, cSrc )
-         ELSE
-            AAdd( ::aSrcSelected, cSrc )
-         ENDIF
-
-      ENDIF
-   NEXT
-
-   ::cGT            := ::oUI:comboGT      :currentText()
-   ::lShared        := ::oUI:chkShared    :isChecked()
-   ::lFullStatic    := ::oUI:chkFullStatic:isChecked()
-   ::lHbQt          := ::oUI:chkHbQt      :isChecked()
-   ::lTrace         := ::oUI:chkTrace     :isChecked()
-   ::lInfo          := ::oUI:chkInfo      :isChecked()
-   ::lInc           := ::oUI:chkInc       :isChecked()
-   ::lGui           := ::oUI:chkGui       :isChecked()
-   ::lMt            := ::oUI:chkMt        :isChecked()
-   ::lA             := ::oUI:chkA         :isChecked()
-   ::lB             := ::oUI:chkB         :isChecked()
-   ::lEs            := ::oUI:chkEs        :isChecked()
-   ::lG             := ::oUI:chkG         :isChecked()
-   ::lM             := ::oUI:chkM         :isChecked()
-   ::lN             := ::oUI:chkN         :isChecked()
-   ::lV             := ::oUI:chkV         :isChecked()
-   ::lW             := ::oUI:chkW         :isChecked()
-   ::cES            := ::oUI:editES       :text()
-   ::cG             := ::oUI:editG        :text()
-   ::cM             := ::oUI:editM        :text()
-   ::cW             := ::oUI:editW        :text()
-   RETURN Self
-
-
-METHOD IdeSelectSource:toggleSelection( lSelect )
-   LOCAL i, oItm
-
-   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
-      oItm := ::oUI:treeSources:topLevelItem( i )
-      oItm:setCheckState( 0, iif( lSelect, Qt_Checked, Qt_Unchecked ) )
-   NEXT
-   RETURN Self
-
-
-METHOD IdeSelectSource:selectSources( cExt )
-   LOCAL i, oItm
-
-   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
-      oItm := ::oUI:treeSources:topLevelItem( i )
-      IF Lower( hb_FNameExt( oItm:text( 0 ) ) ) == cExt
-         oItm:setCheckState( 0, Qt_Checked )
-      ENDIF
-   NEXT
-   RETURN Self
-
-
-METHOD IdeSelectSource:unSelectSources( cExt )
-   LOCAL i, oItm
-
-   FOR i := 0 TO ::oUI:treeSources:topLevelItemCount() - 1
-      oItm := ::oUI:treeSources:topLevelItem( i )
-      IF Lower( hb_FNameExt( oItm:text( 0 ) ) ) == cExt
-         oItm:setCheckState( 0, Qt_Unchecked )
-      ENDIF
-   NEXT
-   RETURN Self
-
-
-METHOD IdeSelectSource:loadSources( cPathFile )
-   LOCAL lOk, aDir, aSrc, cSrc, cExt, oItm, a_, cPath
-
-   ::oUI:treeSources:clear()
-   ::oUI:comboSelect:clear()
-   ::oUI:comboUnSelect:clear()
-
-   ::oUI:treeSources:headerItem():setText( 0, "..." )
-
-   ::aExt := {}
-
-   hb_FNameSplit( cPathFile, @cPath )
-
-   lOk := !( " " $ cPathFile ) .AND. Lower( hb_FNameExt( cPathFile ) ) == ".hbp" .AND. ! hb_FileExists( cPathFile ) .AND. hb_DirExists( cPath )
-   ::oUI:btnOK:setEnabled( lOk )
-   IF ! lOk
-      RETURN Self
-   ENDIF
-
-   aSrc := {}
-   aDir := Directory( cPath + "*.*" )
-   IF ! Empty( aDir )
-      FOR EACH a_ IN aDir
-         IF a_[ 1 ] == "." .OR. a_[ 1 ] == ".."
-            // Nothing TO do
-         ELSEIF a_[ 5 ] == "D"
-            // later
-         ELSE
-            cExt := Lower( hb_FNameExt( a_[ 1 ] ) )
-            IF ! Empty( cExt ) .AND. cExt $ ".h,.c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp,.ch"
-               AAdd( aSrc, a_[ 1 ] )
-               IF AScan( ::aExt, {|e| e == cExt } ) == 0
-                  AAdd( ::aExt, cExt )
-               ENDIF
-            ENDIF
-         ENDIF
-      NEXT
-   ENDIF
-
-   IF Empty( aSrc )
-      RETURN Self
-   ENDIF
-   ASort( aSrc, , , {|e, f| Lower( hb_FNameExt( e ) ) + Lower( hb_FNameName( e ) ) <  Lower( hb_FNameExt( f ) ) + Lower( hb_FNameName( f ) ) } )
-
-   FOR EACH cExt IN ::aExt
-      ::oUI:comboSelect:addItem( cExt )
-      ::oUI:comboUnSelect:addItem( cExt )
-   NEXT
-
-   FOR EACH cSrc IN aSrc
-      cExt := Lower( hb_FNameExt( cSrc ) )
-      WITH OBJECT oItm := QTreeWidgetItem()
-         :setFlags( Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsUserCheckable )
-         :setText( 0, cSrc )
-         :setToolTip( 0, hbide_pathNormalized( cPath + cSrc ) )
-         ::oUI:treeSources:addTopLevelItem( oItm )
-         :setCheckState( 0, Qt_Checked )
-         IF  ! ( cExt == ".h" ) .AND. ( cExt $ ".hbc,.hbp,.hbm" )
-            :setCheckState( 0, Qt_Unchecked )
-         ENDIF
-      ENDWITH
-   NEXT
-
-   ::oUI:treeSources:headerItem():setText( 0, cPath )
-   ::oUI:treeSources:headerItem():setForeGround( 0, QBrush( QColor( 0,0,255 ) ) )
-   ::cPath := cPath
-   RETURN Self
-
-
-METHOD IdeSelectSource:buildUI()
-
-   WITH OBJECT ::oUI := hbide_getUI( "SelectSources" )
-      :comboType:addItem( "Executable" )
-      :comboType:addItem( "Library" )
-      :comboType:addItem( "Dll" )
-      :comboType:setCurrentIndex( 0 )
-
-      :comboSelect  :connect( "currentIndexChanged(QString)", {|cExt| ::selectSources( cExt ) } )
-      :comboUnSelect:connect( "currentIndexChanged(QString)", {|cExt| ::unSelectSources( cExt ) } )
-
-      :btnOK    :connect( "clicked()", {|| ::oUI:oWidget:done( 1 ) } )
-      :btnCancel:connect( "clicked()", {|| ::oUI:oWidget:done( 0 ) } )
-
-      :checkSelect:connect( "stateChanged(int)", {|iState|  ::toggleSelection( iState == 2 ) } )
-
-      WITH OBJECT :comboGT
-         : addItem( "gtWIN" )
-         : addItem( "gtWVT" )
-         : addItem( "gtWVG" )
-         : addItem( "gtCGI" )
-         : addItem( "gtCRS" )
-         : addItem( "gtDOS" )
-         : addItem( "gtGUI" )
-         : addItem( "gtOS2" )
-         : addItem( "gtPCA" )
-         : addItem( "gtSLN" )
-         : addItem( "gtSTD" )
-         : addItem( "gtTRM" )
-         : addItem( "gtXWC" )
-
-         : setCurrentIndex( 0 )
-      ENDWITH
-
-      :btnHbp:setIcon( QIcon( hbide_image( "folder" ) ) )
-
-      :btnHbp:connect( "clicked()", {|| hbide_fetchProject( :editHbp ) } )
-      :editHbp:connect( "textChanged(QString)", {|cPath| ::loadSources( cPath ) } )
-      :editHbp:setText( hbide_getNextProject( hbide_setWorkingProjectFolder() ) )
-   ENDWITH
-   RETURN Self
-
 
 STATIC FUNCTION hbide_getNextProject( cFolder )
    LOCAL aDir, aPrj

@@ -304,12 +304,7 @@ METHOD IdeDebugger:start( cExe )
    ::lDebugging := .T.
    ::oOutputResult:oWidget:append( "Debug started." )
 
-   IF Empty( ::aBPLoad )
-      ::doCommand( CMD_GO )
-   ELSE
-      //::doCommand( CMD_STEP )
-      ::doCommand( CMD_GO )
-   ENDIF
+   ::doCommand( CMD_GO )
    //
    RETURN .T.
 
@@ -350,6 +345,30 @@ METHOD IdeDebugger:loadBreakPoints()
    RETURN .T.
 
 
+METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
+   LOCAL n
+
+   IF ::nMode != MODE_INPUT .AND. Empty( ::aBPLoad )
+      RETURN NIL
+   ENDIF
+   IF ( n := ::getBP( nLine, cPrg ) ) == 0
+      ::oOutputResult:oWidget:append( "Setting break point: " + cPrg + ": " + Str( nLine ) )
+      ::send( "brp", "add", cPrg, LTrim( Str( nLine ) ) )
+      AAdd( ::aBP, { nLine, cPrg } )
+   ELSE
+      ::oOutputResult:oWidget:append( "Deleting break point: " + cPrg + ": " + Str( nLine ) )
+      ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
+      hb_ADel( ::aBP, n, .T. )
+   ENDIF
+   IF ::nMode != MODE_WAIT_ANS
+      ::nAnsType := ANS_BRP
+      ::cPrgBP   := cPrg
+      ::nLineBP  := nLine
+      ::setMode( MODE_WAIT_ANS )
+   ENDIF
+   RETURN NIL
+
+
 METHOD IdeDebugger:clearBreakPoints( cPrg )
    LOCAL n
 
@@ -362,17 +381,6 @@ METHOD IdeDebugger:clearBreakPoints( cPrg )
          ::wait4connection( "ok" )
       ENDIF
    NEXT
-   RETURN .T.
-
-
-METHOD IdeDebugger:deleteBreakPoint( cPrg, nLine )
-      ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
-      IF ::nMode != MODE_WAIT_ANS
-         ::nAnsType := ANS_BRP
-         ::cPrgBP   := cPrg
-         ::nLineBP  := nLine
-         ::setMode( MODE_WAIT_ANS )
-      ENDIF
    RETURN .T.
 
 
@@ -402,32 +410,20 @@ METHOD IdeDebugger:toggleBreakPoint( cAns, cLine )
    RETURN NIL
 
 
-METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
-
-   IF ::nMode != MODE_INPUT .AND. Empty( ::aBPLoad )
-      RETURN NIL
-   ENDIF
-   IF .T.
-      IF .T. //::getBP( nLine, cPrg ) == 0
-         ::oOutputResult:oWidget:append( "Setting break point: " + cPrg + ": " + Str( nLine ) )
-         ::send( "brp", "add", cPrg, LTrim( Str( nLine ) ) )
-      ELSE
-         ::oOutputResult:oWidget:append( "Deleting break point: " + cPrg + ": " + Str( nLine ) )
-         ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
-      ENDIF
+METHOD IdeDebugger:deleteBreakPoint( cPrg, nLine )
+      ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
       IF ::nMode != MODE_WAIT_ANS
          ::nAnsType := ANS_BRP
          ::cPrgBP   := cPrg
          ::nLineBP  := nLine
          ::setMode( MODE_WAIT_ANS )
       ENDIF
-   ENDIF
-   RETURN NIL
+   RETURN .T.
 
 
 METHOD IdeDebugger:getBP( nLine, cPrg )
    cPrg := Lower( iif( cPrg == NIL, ::cPrgName, cPrg ) )
-   RETURN Ascan( ::aBP, {|a| a[ 1 ] == nLine .and. Lower( a[ 2 ] ) == cPrg } )
+   RETURN Ascan( ::aBP, {|a_| a_[ 1 ] == nLine .and. Lower( a_[ 2 ] ) == cPrg } )
 
 
 METHOD IdeDebugger:timerProc()

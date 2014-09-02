@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  */
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,24 +60,23 @@
  *                               23Nov2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
+
 
 #include "common.ch"
 #include "fileio.ch"
-
 #include "xbp.ch"
-
 #include "hbide.ch"
+
+
+#define __S2A( c )                                hb_aTokens( strtran( c, chr( 13 ) ), chr( 10 ) )
+
 
 STATIC aRegList
 
-/*----------------------------------------------------------------------*/
 
 PROCEDURE AppSys()
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setIde( oIde )
    LOCAL oldIde
@@ -90,7 +87,6 @@ FUNCTION hbide_setIde( oIde )
    ENDIF
    RETURN oldIde
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setProjectOutputPath( cPath )
    LOCAL oldProjPath
@@ -102,10 +98,8 @@ FUNCTION hbide_setProjectOutputPath( cPath )
    IF HB_ISSTRING( cPath )
       cProjPath := cPath
    ENDIF
-
    RETURN oldProjPath
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setProjectTitle( cTitle )
    LOCAL oldProjTitle
@@ -120,10 +114,8 @@ FUNCTION hbide_setProjectTitle( cTitle )
    IF HB_ISSTRING( cTitle )
       cProjTitle := cTitle
    ENDIF
-
    RETURN oldProjTitle
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_execPopup( aPops, aqPos, qParent )
    LOCAL i, qPop, qPoint, qAct, cAct, xRet, a_, qSub, b_, qSub_:={}, qAct_:={}
@@ -187,15 +179,11 @@ FUNCTION hbide_execPopup( aPops, aqPos, qParent )
    HB_SYMBOL_UNUSED( xRet )
    RETURN cAct
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_menuAddSep( oMenu )
-
    oMenu:addItem( { NIL, NIL, XBPMENUBAR_MIS_SEPARATOR, NIL } )
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_createTarget( cFile, txt_ )
    LOCAL hHandle := fcreate( cFile )
@@ -205,17 +193,13 @@ FUNCTION hbide_createTarget( cFile, txt_ )
       aeval( txt_, {| e | fWrite( hHandle, e + cNewLine ) } )
       fClose( hHandle )
    ENDIF
-
    RETURN hb_FileExists( cFile )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_posAndSize( qWidget )
-
    RETURN hb_ntos( qWidget:x() )     + "," + hb_ntos( qWidget:y() )      + "," + ;
           hb_ntos( qWidget:width() ) + "," + hb_ntos( qWidget:height() ) + ","
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_showWarning( cMsg, cInfo, cTitle, qParent )
    LOCAL oMB, nRet
@@ -234,10 +218,8 @@ FUNCTION hbide_showWarning( cMsg, cInfo, cTitle, qParent )
 
    nRet := oMB:exec()
    oMB:setParent( QWidget() )
-
    RETURN nRet
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getYesNo( cMsg, cInfo, cTitle, qParent )
    LOCAL oMB, nRet
@@ -261,10 +243,8 @@ FUNCTION hbide_getYesNo( cMsg, cInfo, cTitle, qParent )
    hbide_setIde():oColorizeEffect:setEnabled( .F. )
 
    oMB:setParent( QWidget() )
-
    RETURN nRet == QMessageBox_Yes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getYesNoCancel( cMsg, cInfo, cTitle )
    LOCAL oMB, nRet
@@ -283,10 +263,8 @@ FUNCTION hbide_getYesNoCancel( cMsg, cInfo, cTitle )
 
    nRet := oMB:exec()
    oMB:setParent( QWidget() )
-
    RETURN nRet
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_fetchAFile( oWnd, cTitle, aFlt, cDftDir, cDftSuffix, lAllowMulti )
    LOCAL oDlg
@@ -305,10 +283,8 @@ FUNCTION hbide_fetchAFile( oWnd, cTitle, aFlt, cDftDir, cDftSuffix, lAllowMulti 
       oDlg:oWidget:setDefaultSuffix( cDftSuffix )
    ENDIF
    oDlg:oWidget:setOption( QFileDialog_DontUseNativeDialog, .T. )
-
    RETURN oDlg:open( cDftDir, , lAllowMulti )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_saveAFile( oWnd, cTitle, aFlt, cDftFile, cDftSuffix )
    LOCAL oDlg
@@ -324,10 +300,9 @@ FUNCTION hbide_saveAFile( oWnd, cTitle, aFlt, cDftFile, cDftSuffix )
       oDlg:oWidget:setDefaultSuffix( cDftSuffix )
    ENDIF
    oDlg:oWidget:setOption( QFileDialog_DontUseNativeDialog, .T. )
-
    RETURN oDlg:saveAs( cDftFile, .f., .t. )
 
-/*----------------------------------------------------------------------*/
+
 /* Function to user select a existing folder
  * 25/12/2009 - 19:10:41 - vailtom
  */
@@ -349,10 +324,8 @@ FUNCTION hbide_fetchADir( oWnd, cTitle, cDftDir )
       //cFile := strtran( cFile, "/", hb_ps() )
       RETURN cFile
    ENDIF
-
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getEol( cBuffer )
    LOCAL cStyle
@@ -366,10 +339,8 @@ FUNCTION hbide_getEol( cBuffer )
    ELSE
       cStyle := ""
    ENDIF
-
    RETURN cStyle
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_readSource( cTxtFile )
    LOCAL cFileBody := hb_MemoRead( cTxtFile )
@@ -377,10 +348,8 @@ FUNCTION hbide_readSource( cTxtFile )
    HB_TRACE( HB_TR_DEBUG, cFileBody )
 
    cFileBody := StrTran( cFileBody, Chr( 13 ) )
-
    RETURN hb_ATokens( cFileBody, Chr( 10 ) )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_evalAsString( cExp )
    LOCAL cValue
@@ -394,10 +363,8 @@ FUNCTION hbide_evalAsString( cExp )
    IF !HB_ISSTRING( cValue )
       cValue := ""
    ENDIF
-
    RETURN cValue
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_evalAsIs( cExp )
    LOCAL xValue
@@ -407,10 +374,8 @@ FUNCTION hbide_evalAsIs( cExp )
    RECOVER
       xValue := cExp
    END SEQUENCE
-
    RETURN xValue
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setupMetaKeys( a_ )
    LOCAL s, n, cKey, cVal
@@ -425,10 +390,8 @@ FUNCTION hbide_setupMetaKeys( a_ )
          ENDIF
       ENDIF
    NEXT
-
    RETURN a4_1
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_applyMetaData( s, a_ )
    LOCAL k
@@ -438,10 +401,8 @@ FUNCTION hbide_applyMetaData( s, a_ )
          s := StrTran( s, hbide_pathNormalized( k[ 2 ], .f. ), k[ 1 ] )
       NEXT
    ENDIF
-
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseWithMetaData( s, a_ )
    LOCAL k
@@ -451,46 +412,33 @@ FUNCTION hbide_parseWithMetaData( s, a_ )
          s := StrTran( s, k[ 1 ], k[ 2 ] )
       NEXT
    ENDIF
-
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_ar2delString( a_, cDlm )
    LOCAL s := ""
 
    aeval( a_, {|e| s += e + cDlm  } )
-
    RETURN substr( s, 1, Len( s ) - len( cDlm ) )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_arrayToMemo( a_ )
    LOCAL s := ""
 
    aeval( a_, {|e| s += e + hb_eol() } )
+   RETURN s += hb_eol()
 
-   s += hb_eol()
-
-   RETURN s
-
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_arrayToMemoEx( a_ )
    LOCAL s := ""
 
    aeval( a_, {|e| s += e + hb_eol() } )
+   RETURN substr( s, 1, Len( s ) - Len( hb_eol() ) )
 
-   s := substr( s, 1, Len( s ) - Len( hb_eol() ) )
-
-   RETURN s
-
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_arrayToMemoEx2( a_ )
    RETURN hbide_arrayToMemoEx( a_ )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_convertHtmlDelimiters( s )
 
@@ -498,15 +446,12 @@ FUNCTION hbide_convertHtmlDelimiters( s )
    s := StrTran( s, "<", "&lt;" )
    s := StrTran( s, ">", "&gt;" )
    s := StrTran( s, '"', "&quot;" )
-
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_arrayToMemoHtml( a_ )
    RETURN hbide_convertHtmlDelimiters( hbide_arrayToMemoEx( a_ ) )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_memoToArray( s )
    LOCAL aLine := hb_ATokens( StrTran( RTrim( s ), Chr( 13 ) + Chr( 10 ), _EOL ), _EOL )
@@ -519,12 +464,9 @@ FUNCTION hbide_memoToArray( s )
          EXIT
       ENDIF
    NEXT
-
    ASize( aLine, nNewSize )
-
    RETURN aLine
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isValidPath( cPath, cPathDescr )
 
@@ -542,73 +484,58 @@ FUNCTION hbide_isValidPath( cPath, cPathDescr )
    ENDIF
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isValidText( cSourceFile )
    LOCAL cExt
 
    hb_fNameSplit( cSourceFile, , , @cExt )
-
    RETURN lower( cExt ) $ hbide_setIde():oINI:cTextFileExtensions
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isValidSource( cSourceFile )
    LOCAL cExt
 
    hb_fNameSplit( cSourceFile, , , @cExt )
-
    RETURN lower( cExt ) $ ".c,.cpp,.prg,.res,.rc,.hb"
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isSourcePPO( cSourceFile )
    LOCAL cExt
 
    hb_fNameSplit( cSourceFile, , , @cExt )
-
    RETURN lower( cExt ) == ".ppo"
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isSourcePRG( cSourceFile )
    LOCAL cExt
 
    hb_fNameSplit( cSourceFile, , , @cExt )
-
    RETURN lower( cExt ) == ".prg"
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_sourceType( cSourceFile )
    LOCAL cExt
 
    hb_fNameSplit( cSourceFile, , , @cExt )
-
    RETURN lower( cExt )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_pathNormalized( cPath )
    RETURN strtran( cPath, "\", "/" )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_pathFile( cPath, cFile )
    cPath := iif( right( cPath, 1 ) $ "\/", substr( cPath, 1, Len( cPath ) - 1 ), cPath )
    RETURN hbide_pathToOSPath( iif( empty( cPath ), cFile, cPath + "\" + cFile ) )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_pathStripLastSlash( cPath )
    RETURN iif( right( cPath, 1 ) $ "\/", substr( cPath, 1, Len( cPath ) - 1 ), cPath )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_pathAppendLastSlash( cPath )
    RETURN iif( right( cPath, 1 ) $ "\/", cPath, cPath + hb_ps() )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_pathToOSPath( cPath )
    LOCAL n
@@ -621,22 +548,20 @@ FUNCTION hbide_pathToOSPath( cPath )
    IF ( n := at( ":", cPath ) ) > 0
       cPath := substr( cPath, 1, n - 1 ) + substr( cPath, n )
    ENDIF
-
    RETURN cPath
 
-/*----------------------------------------------------------------------*/
-/*
- * This function fills an array with the list of regular expressions that will
+
+/* This function fills an array with the list of regular expressions that will
  * identify the errors messages retrieved from during the build process.
  * 29/12/2009 - 12:43:26 - vailtom
  */
-#define MSG_TYPE_ERR    1
-#define MSG_TYPE_INFO   2
-#define MSG_TYPE_WARN   3
+#define MSG_TYPE_ERR                              1
+#define MSG_TYPE_INFO                             2
+#define MSG_TYPE_WARN                             3
 
-#define CLR_MSG_ERR     'red'
-#define CLR_MSG_INFO    'brown'
-#define CLR_MSG_WARN    'blue'
+#define CLR_MSG_ERR                               'red'
+#define CLR_MSG_INFO                              'brown'
+#define CLR_MSG_WARN                              'blue'
 
 STATIC FUNCTION hbide_buildRegExpressList( aRegList )
 
@@ -655,11 +580,10 @@ STATIC FUNCTION hbide_buildRegExpressList( aRegList )
    AAdd( aRegList, { MSG_TYPE_INFO, hb_RegexComp( ".*: note.*"                    ) } )
    AAdd( aRegList, { MSG_TYPE_INFO, hb_RegexComp( ".*: In function '.*"           ) } )
    AAdd( aRegList, { MSG_TYPE_INFO, hb_RegexComp( "^(\s*).*\s: see.*"             ) } )
-
    RETURN aRegList
 
-/*----------------------------------------------------------------------*//*
- * Catch source file name & line error from an msg status from compiler result.
+
+/* Catch source file name & line error from an msg status from compiler result.
  * 29/12/2009 - 13:22:29 - vailtom
  */
 FUNCTION hbide_parseFNfromStatusMsg( cText, cFileName, nLine, lValidText )
@@ -684,8 +608,8 @@ FUNCTION hbide_parseFNfromStatusMsg( cText, cFileName, nLine, lValidText )
       RETURN !empty( cFileName )
    ENDIF
 
- * Validate if current text is a error/warning/info message.
- * 29/12/2009 - 22:51:39 - vailtom
+   // Validate if current text is a error/warning/info message.
+   // 29/12/2009 - 22:51:39 - vailtom
    IF lValidText
       nPos := aScan( aRegList, {| reg | !Empty( hb_RegEx( reg[ 2 ], cText ) ) } )
       IF ( nPos <= 0 )
@@ -745,16 +669,14 @@ FUNCTION hbide_parseFNfromStatusMsg( cText, cFileName, nLine, lValidText )
    ENDIF
 
    cFileName := alltrim( cFileName )
-
    RETURN !Empty( cFileName )
 
-/*----------------------------------------------------------------------*/
-/*
- * This function parses compiler result and hightlight errors & warnings using
+
+/* This function parses compiler result and hightlight errors & warnings using
  * regular expressions. (vailtom)
  *
  * More about Qt Color names:
- *  http://www.w3.org/TR/SVG/types.html#ColorKeywords
+ * http://www.w3.org/TR/SVG/types.html#ColorKeywords
  *
  * 28/12/2009 - 16:17:37
  */
@@ -795,13 +717,10 @@ FUNCTION hbide_convertBuildStatusMsgToHtml( cText, oWidget )
             cLine := "<font color=black>" + cLine + "</font>"
          ENDIF
       ENDIF
-
       oWidget:append( cLine )
    NEXT
-
    RETURN cIfError
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_filesToSources( aFiles )
    LOCAL aSrc := {}
@@ -812,10 +731,8 @@ FUNCTION hbide_filesToSources( aFiles )
          aadd( aSrc, s )
       ENDIF
    NEXT
-
    RETURN aSrc
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseKeyValPair( s, cKey, cVal )
    LOCAL n, lYes := .f.
@@ -825,10 +742,8 @@ FUNCTION hbide_parseKeyValPair( s, cKey, cVal )
       cVal := alltrim( substr( s, n + 1 ) )
       lYes := ( !empty( cKey ) .and. !empty( cVal ) )
    ENDIF
-
    RETURN lYes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseFilter( s, cKey, cVal )
    LOCAL n, n1, lYes := .f.
@@ -842,18 +757,16 @@ FUNCTION hbide_parseFilter( s, cKey, cVal )
    ENDIF
    RETURN lYes
 
-/*----------------------------------------------------------------------*/
-/*
- * Return the next untitled filename available.
+
+/* Return the next untitled filename available.
  * 01/01/2010 - 19:40:17 - vailtom
  */
 FUNCTION hbide_getNextUntitled()
    STATIC s_nCount := 0
    RETURN ++s_nCount
 
-/*----------------------------------------------------------------------*/
-/*
- * Return the next TAB_ID or IDE_ID available.
+
+/* Return the next TAB_ID or IDE_ID available.
  * 02/01/2010 - 10:47:16 - vailtom
  */
 FUNCTION hbide_getNextUniqueID()
@@ -864,32 +777,28 @@ FUNCTION hbide_getNextUniqueID()
    ENDIF
    RETURN ++s_nCount
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getNextIDasString( cString )
-
    STATIC hIDs := {=>}
 
    IF ! hb_hHasKey( hIDs, cString )
       hIDs[ cString ] := 0
    ENDIF
-
    RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
 
-/*----------------------------------------------------------------------*/
-/*
- * Check if cFilename has a extension... and add cDefaultExt if not exist.
+
+/* Check if cFilename has a extension... and add cDefaultExt if not exist.
  * 01/01/2010 - 20:48:10 - vailtom
  */
 FUNCTION hbide_checkDefaultExtension( cFileName, cDefaultExt )
    LOCAL cPath, cFile, cExt
+
    hb_fNameSplit( cFileName, @cPath, @cFile, @cExt )
    IF Empty( cExt )
       cExt := cDefaultExt
    ENDIF
    RETURN cPath + hb_ps() + cFile + hb_ps() + cExt
 
-/*----------------------------------------------------------------------*/
 
 function hbide_toString( x, lLineFeed, lInherited, lType, cFile, lForceLineFeed )
    LOCAL s := ''
@@ -951,10 +860,8 @@ function hbide_toString( x, lLineFeed, lInherited, lType, cFile, lForceLineFeed 
    IF !empty( cFile )
       memowrit( cFile, s )
    ENDIF
-
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_help( nOption )
    LOCAL txt_  := {}
@@ -1012,15 +919,12 @@ FUNCTION hbide_help( nOption )
       AAdd( txt_, "<a href='http://harbour-project.org/'>http://harbour-project.org/</a>" )
       EXIT
 
-   END
-
+   ENDSWITCH
    IF !Empty( txt_ )
       MsgBox( hbide_arrayToMemo( txt_ ), tit_ )
    ENDIF
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getUniqueFuncName()
    LOCAL t, b, c, n
@@ -1039,10 +943,8 @@ FUNCTION hbide_getUniqueFuncName()
       ENDIF
    ENDDO
    b += '( '
-
    RETURN b
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_findProjTreeItem( oIde, cNodeText, cType )
    LOCAL oItem, a_
@@ -1055,7 +957,6 @@ FUNCTION hbide_findProjTreeItem( oIde, cNodeText, cType )
    NEXT
    RETURN oItem
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_expandChildren( oIde, oItem )
    LOCAL a_
@@ -1066,10 +967,8 @@ FUNCTION hbide_expandChildren( oIde, oItem )
          a_[ TRE_OITEM ]:expand( .t. )
       ENDIF
    NEXT
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_collapseProjects( oIde )
    LOCAL a_
@@ -1079,10 +978,8 @@ FUNCTION hbide_collapseProjects( oIde )
          a_[ TRE_OITEM ]:expand( .f. )
       ENDIF
    NEXT
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_expandProjects( oIde )
    LOCAL a_
@@ -1092,10 +989,8 @@ FUNCTION hbide_expandProjects( oIde )
          hbide_expandChildren( oIde, a_[ TRE_OITEM ] )
       ENDIF
    NEXT
+   RETURN NIL
 
-   RETURN nil
-
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_buildLinesLabel( nFrom, nTo, nW, nMax )
    LOCAL n, i, s := ""
@@ -1110,10 +1005,8 @@ FUNCTION hbide_buildLinesLabel( nFrom, nTo, nW, nMax )
          s += padl( hb_ntos( nFrom + i ), nW ) + "<br />"
       ENDIF
    NEXT
-
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseMacros( cP )
    LOCAL lHas, n, n1, cMacro
@@ -1134,10 +1027,8 @@ FUNCTION hbide_parseMacros( cP )
          ENDIF
       ENDDO
    ENDIF
-
    RETURN cP
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_macro2value( cMacro )
    LOCAL cVal, cMacroL, oEdit, cFile, cPath, cExt
@@ -1147,7 +1038,7 @@ FUNCTION hbide_macro2value( cMacro )
    cMacroL := lower( cMacro )
 
    oEdit   := oIde:oEM:getEditorCurrent()
-   IF !empty( oEdit )
+   IF ! Empty( oEdit )
       hb_fNameSplit( oEdit:sourceFile, @cPath, @cFile, @cExt )
    ELSE
       cPath := ""; cFile := ""; cExt := ""
@@ -1185,28 +1076,21 @@ FUNCTION hbide_macro2value( cMacro )
       cVal := hb_GetEnv( cMacro )
 
    ENDCASE
-
    RETURN cVal
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getShellCommandsTempFile( aCmd )
-   LOCAL cExt
-   LOCAL fhnd
-   LOCAL cCmdFileName
-   LOCAL cCmdFile
-   LOCAL tmp
+   LOCAL cExt, fhnd, cCmdFileName, cCmdFile, tmp
 
-   #if   defined( __PLATFORM__WINDOWS )
-      cExt      := ".bat"
-   #elif defined( __PLATFORM__OS2 )
-      cExt      := ".cmd"
-   #elif defined( __PLATFORM__UNIX )
-      cExt      := ".sh"
-   #endif
+#if   defined( __PLATFORM__WINDOWS )
+   cExt      := ".bat"
+#elif defined( __PLATFORM__OS2 )
+   cExt      := ".cmd"
+#elif defined( __PLATFORM__UNIX )
+   cExt      := ".sh"
+#endif
 
    IF ! Empty( cExt )
-
       cCmdFile := ""
       FOR EACH tmp IN aCmd
          tmp := hbide_parseMacros( tmp )
@@ -1218,38 +1102,33 @@ FUNCTION hbide_getShellCommandsTempFile( aCmd )
          FClose( fhnd )
       ENDIF
    ENDIF
-
    RETURN cCmdFileName
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getShellCommand()
    LOCAL cShellCmd
 
-   #if   defined( __PLATFORM__WINDOWS )
-      cShellCmd := hb_getenv( "COMSPEC" )
-   #elif defined( __PLATFORM__OS2 )
-      cShellCmd := hb_getenv( "COMSPEC" )
-   #elif defined( __PLATFORM__UNIX )
-      cShellCmd := hb_getenv( "SHELL" )
-   #endif
-
+#if   defined( __PLATFORM__WINDOWS )
+   cShellCmd := hb_getenv( "COMSPEC" )
+#elif defined( __PLATFORM__OS2 )
+   cShellCmd := hb_getenv( "COMSPEC" )
+#elif defined( __PLATFORM__UNIX )
+   cShellCmd := hb_getenv( "SHELL" )
+#endif
    RETURN cShellCmd
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getOS()
    LOCAL cOS
-   #if   defined( __PLATFORM__WINDOWS )
-      cOS := "win"
-   #elif defined( __PLATFORM__OS2 )
-      cOS := "os"
-   #elif defined( __PLATFORM__UNIX )
-      cOS := "nix"
-   #endif
+#if   defined( __PLATFORM__WINDOWS )
+   cOS := "win"
+#elif defined( __PLATFORM__OS2 )
+   cOS := "os"
+#elif defined( __PLATFORM__UNIX )
+   cOS := "nix"
+#endif
    RETURN cOS
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_fetchADate( qParent, cTitle, cPrompt, dDefault )
    LOCAL qDate, oUI, nRet
@@ -1281,10 +1160,8 @@ FUNCTION hbide_fetchADate( qParent, cTitle, cPrompt, dDefault )
       qDate := oUI:editDate:date()
       RETURN stod( strzero( qDate:year(), 4 ) + strzero( qDate:month(),2 ) + strzero( qDate:day(), 2 ) )
    ENDIF
-
    RETURN NIL
 
-/*------------------------------------------------------------------------*/
 
 FUNCTION hbide_fetchAString( qParent, cDefault, cWhat, cTitle )
    LOCAL qGo, cText
@@ -1301,30 +1178,24 @@ FUNCTION hbide_fetchAString( qParent, cDefault, cWhat, cTitle )
    qGo:exec()
    cText := qGo:textValue()
    qGo:setParent( QWidget() )
-
    RETURN cText
 
-/*----------------------------------------------------------------------*/
-/*
- * Harbour Project source code:
+
+/* Harbour Project source code:
  *
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
  * www - http://harbour-project.org
- *
  */
-#define HBIDE_HBP_PTYPE_FILES           "files"
-#define HBIDE_HBP_PTYPE_OPTIONS         "options"
-#define HBIDE_HBP_PTYPE_HBIDEPARAMS     "hbideparams"
+#define HBIDE_HBP_PTYPE_FILES                     "files"
+#define HBIDE_HBP_PTYPE_OPTIONS                   "options"
+#define HBIDE_HBP_PTYPE_HBIDEPARAMS               "hbideparams"
 
 FUNCTION hbide_fetchHbpData( cHBPFileName )
-   LOCAL aParamList
-
-   aParamList := hbide_HBPGetParamList( cHBPFileName )
+   LOCAL aParamList := hbide_HBPGetParamList( cHBPFileName )
 
    RETURN  { hbide_HBPParamListFilter( aParamList, HBIDE_HBP_PTYPE_OPTIONS ), ;
              hbide_HBPParamListFilter( aParamList, HBIDE_HBP_PTYPE_FILES   )  }
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_HBPParamListFilter( aParams, nType )
    LOCAL aArray := {}
@@ -1358,36 +1229,29 @@ FUNCTION hbide_HBPParamListFilter( aParams, nType )
          ENDIF
       ENDCASE
    NEXT
-
    RETURN aArray
 
-/*----------------------------------------------------------------------*/
 
 /* Load entire .hbp files, with empty lines and comments for
-   further processing. [vszakats] */
+   further processing. [vszakats]
+*/
 FUNCTION hbide_HBPGetParamList( cFileName )
    LOCAL aParams := {}
 
    hbide_HBPLoad( aParams, cFileName )
-
    RETURN aParams
 
-/*----------------------------------------------------------------------*/
 
 /* Recursive .hbp/.hbm files are not currently supported.
    It can be added, but it makes updating the options much more
-   complicated. [vszakats] */
-
-#define HBIDE_HBP_EOL Chr( 10 )
+   complicated. [vszakats]
+*/
+#define HBIDE_HBP_EOL                             Chr( 10 )
 
 STATIC PROCEDURE hbide_HBPLoad( aParams, cFileName )
-   LOCAL cFile
-   LOCAL cLine
-   LOCAL cParam
-   LOCAl cParamNQ
+   LOCAL cFile, cLine, cParam, cParamNQ
 
    IF hb_FileExists( cFileName )
-
       cFile := MemoRead( cFileName ) /* NOTE: Intentionally using MemoRead() which handles EOF char. */
 
       IF ! hb_eol() == HBIDE_HBP_EOL
@@ -1424,19 +1288,14 @@ STATIC PROCEDURE hbide_HBPLoad( aParams, cFileName )
          ENDIF
       NEXT
    ENDIF
-
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_HBPStrStripQuote( cString )
    RETURN iif( Left( cString, 1 ) == '"' .AND. Right( cString, 1 ) == '"',;
              SubStr( cString, 2, Len( cString ) - 2 ),;
              cString )
 
-/*----------------------------------------------------------------------*/
-//
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseHbpFilter( s, cFilt, cPath )
    LOCAL n, n1
@@ -1454,19 +1313,15 @@ FUNCTION hbide_parseHbpFilter( s, cFilt, cPath )
       cPath := SubStr( s, 1, n-1 ) + SubStr( s, n+1 )
       RETURN .T.
    ENDIF
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_outputLine( cLine, nOccur )
 
    DEFAULT cLine  TO "-"
    DEFAULT nOccur TO 100
-
    RETURN "<font color=lightgreen>" + replicate( cLine, nOccur ) + "</font>"
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_fetchSubPaths( aPaths, cRootPath, lSubs )
    LOCAL aDir, a_
@@ -1488,16 +1343,13 @@ FUNCTION hbide_fetchSubPaths( aPaths, cRootPath, lSubs )
          ENDIF
       NEXT
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_image( cName )
    DEFAULT cName TO ""
    RETURN hbide_pathToOsPath( ":/resources" + "/" + cName + ".png" )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_uic( cName )
    LOCAL tmp
@@ -1509,7 +1361,6 @@ FUNCTION hbide_uic( cName )
    ENDIF
    RETURN tmp
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_ui( cName )
    LOCAL tmp
@@ -1521,7 +1372,6 @@ FUNCTION hbide_ui( cName )
    ENDIF
    RETURN tmp
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isPrevParent( cRoot, cPath )
    LOCAL cLRoot, cLPath
@@ -1532,20 +1382,16 @@ FUNCTION hbide_isPrevParent( cRoot, cPath )
    IF hb_FileMatch( left( cLPath, Len( cLRoot ) ), cLRoot )
       RETURN .t.
    ENDIF
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_space2amp( cStr )
    RETURN strtran( cStr, " ", chr( 38 ) )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_amp2space( cStr )
    RETURN strtran( cStr, chr( 38 ), " " )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_stripFilter( cSrc )
    LOCAL n, n1
@@ -1559,10 +1405,8 @@ FUNCTION hbide_stripFilter( cSrc )
       ENDIF
       cSrc := substr( cSrc, 1, n - 1 ) + substr( cSrc, n1 + 1 )
    ENDDO
-
    RETURN cSrc
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_stripRoot( cRoot, cPath )
    LOCAL cLRoot, cLPath, cP
@@ -1577,45 +1421,35 @@ FUNCTION hbide_stripRoot( cRoot, cPath )
       cP := substr( cLPath, Len( cRoot ) + 1 )
       RETURN cP
    ENDIF
-
    RETURN cPath
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_syncRoot( cRoot, cPath )
    LOCAL cPth, cFile, cExt
    LOCAL cPathProc := hb_PathJoin( cPath, cRoot )
 
    hb_fNameSplit( cPath, @cPth, @cFile, @cExt )
-
-//HB_TRACE( HB_TR_DEBUG, "hbide_syncRoot( cRoot, cPath )", cPathProc, hbide_pathToOSpath( cPathProc + "/" + cFile + cExt ) )
-
+   //HB_TRACE( HB_TR_DEBUG, "hbide_syncRoot( cRoot, cPath )", cPathProc, hbide_pathToOSpath( cPathProc + "/" + cFile + cExt ) )
    RETURN hbide_pathToOSpath( cPathProc + "/" + cFile + cExt )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_array2cmdParams( aHbp )
    LOCAL cCmd := " "
 
    aeval( aHbp, {|e| cCmd += e + " " } )
-
    RETURN cCmd
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_syncProjPath( cRoot, cSource )
 
    IF left( cSource, 1 ) $ "./\" .OR. substr( cSource, 2, 1 ) == ":"
       RETURN cSource
    ENDIF
-
    IF !empty( cRoot ) .AND. ! ( right( cRoot, 1 ) $ "/\" )
       cRoot += "/"
    ENDIF
-
    RETURN cRoot + cSource
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_popupBrwContextMenu( qTextBrowser, p )
    LOCAL aMenu := {}
@@ -1632,7 +1466,6 @@ FUNCTION hbide_popupBrwContextMenu( qTextBrowser, p )
 
    RETURN hbide_execPopup( aMenu, qTextBrowser:mapToGlobal( QPoint( p ) ), qTextBrowser )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_groupSources( cMode, a_ )
    LOCAL cTyp, s, d_, n
@@ -1674,16 +1507,13 @@ FUNCTION hbide_groupSources( cMode, a_ )
          NEXT
       ENDIF
    ENDIF
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_imageForProjectType( cType )
    cType := left( cType, 8 )
    RETURN iif( cType == "Lib", "fl_lib", iif( cType == "Dll", "fl_dll", "fl_exe" ) )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_imageForFileType( cType )
    cType := lower( cType )
@@ -1718,16 +1548,13 @@ FUNCTION hbide_imageForFileType( cType )
    ENDSWITCH
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_array2string( a_, cDlm )
    LOCAL s := ""
 
    aeval( a_, {|e| s += e + cDlm } )
-
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_nArray2string( a_ )
    LOCAL cString := ""
@@ -1737,10 +1564,8 @@ FUNCTION hbide_nArray2string( a_ )
       cString += hb_ntos( n )
       cString += " "
    NEXT
-
    RETURN cString
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_string2nArray( s )
    LOCAL b_, a_:= {}
@@ -1752,15 +1577,12 @@ FUNCTION hbide_string2nArray( s )
          aadd( a_, val( s ) )
       ENDIF
    NEXT
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_array2rect( a_ )
    RETURN QRect( a_[ 1 ], a_[ 2 ], a_[ 3 ], a_[ 4 ] )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseSourceComponents( cCompositeSource )
    LOCAL a_
@@ -1787,10 +1609,8 @@ FUNCTION hbide_parseSourceComponents( cCompositeSource )
    a_[ 7 ] := hbide_string2nArray( a_[ 7 ] )
    a_[ 8 ] := alltrim( a_[ 8 ] )
    a_[ 9 ] := alltrim( a_[ 9 ] )
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseUserToolbarComponents( cCompositeTool )
    LOCAL a_
@@ -1811,10 +1631,8 @@ FUNCTION hbide_parseUserToolbarComponents( cCompositeTool )
    a_[ 5 ] := alltrim( a_[ 5 ] )
    a_[ 6 ] := alltrim( a_[ 6 ] )
    a_[ 7 ] := alltrim( a_[ 7 ] )
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseToolComponents( cCompositeTool )
    LOCAL a_
@@ -1845,10 +1663,8 @@ FUNCTION hbide_parseToolComponents( cCompositeTool )
    a_[10 ] := alltrim( a_[10 ] )
    a_[11 ] := alltrim( a_[11 ] )
    a_[12 ] := alltrim( a_[12 ] )
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseKeywordsComponents( cStr )
    LOCAL a_
@@ -1859,10 +1675,8 @@ FUNCTION hbide_parseKeywordsComponents( cStr )
    DEFAULT a_[ 2 ] TO ""
    a_[ 1 ] := alltrim( a_[ 1 ] )
    a_[ 2 ] := alltrim( a_[ 2 ] )
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_parseThemeComponent( cComponent )
    LOCAL i, a_, n
@@ -1893,10 +1707,8 @@ FUNCTION hbide_parseThemeComponent( cComponent )
          a_[ i ] := {}
       ENDIF
    NEXT
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_SetWrkFolderLast( cPathFile )
    LOCAL cPth, cOldPath
@@ -1913,7 +1725,6 @@ FUNCTION hbide_SetWrkFolderLast( cPathFile )
    ENDIF
    RETURN cOldPath
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getUI( cUI, qParent )
    LOCAL oUI
@@ -1952,41 +1763,34 @@ FUNCTION hbide_getUI( cUI, qParent )
    ENDIF
    RETURN oUI
 
-/*----------------------------------------------------------------------*/
+
 /* An interface component function which will be called by Reports Manager
    whenever a request is made. Application will supply the required info
-   in this case it is hbIDE. */
-
+   in this case it is hbIDE.
+*/
 FUNCTION app_image( cName )
    RETURN hbide_image( cName )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_isCompilerSource( cSource, cIncList )
    LOCAL cExt, aExt
 
    DEFAULT cIncList TO ".c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp"
 
-   cIncList := lower( cIncList )
-   aExt := hb_aTokens( lower( cIncList ), "," )
+   aExt := hb_aTokens( Lower( cIncList ), "," )
+   cExt := Lower( hb_FNameExt( AllTrim( cSource ) ) )
+   RETURN AScan( aExt, {|e| cExt == e } ) > 0
 
-   cExt := lower( hb_FNameExt( cSource ) )
-
-   RETURN ascan( aExt, {|e| cExt == e } ) > 0
-
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_prepareSourceForHbp( cSource )
 
-   IF ! empty( cSource ) .AND. !( left( cSource,1 ) $ '-#"' ) .AND. ! lower( left( cSource, 5 ) ) == "-3rd="
+   IF ! empty( cSource ) .AND. !( left( cSource,1 ) $ '-#"{' ) .AND. ! lower( left( cSource, 5 ) ) == "-3rd="
       IF ! hbide_isCompilerSource( cSource )
          RETURN "-3rd=hbide_file=" + cSource
       ENDIF
    ENDIF
-
    RETURN cSource
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_synchronizeForHbp( aHbp )
    LOCAL s
@@ -1995,10 +1799,8 @@ FUNCTION hbide_synchronizeForHbp( aHbp )
    FOR EACH s IN aHbp
       aadd( txt_, hbide_prepareSourceForHbp( s ) )
    NEXT
-
    RETURN txt_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setClose( lYes )
    LOCAL yes
@@ -2009,7 +1811,6 @@ FUNCTION hbide_setClose( lYes )
    ENDIF
    RETURN yes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setAdsAvailable( lYes )
    LOCAL yes
@@ -2020,7 +1821,6 @@ FUNCTION hbide_setAdsAvailable( lYes )
    ENDIF
    RETURN yes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getHbxFunctions( cBuffer )
    LOCAL pRegex
@@ -2033,22 +1833,16 @@ FUNCTION hbide_getHbxFunctions( cBuffer )
          AAdd( aDynamic, tmp[ 2 ] )
       NEXT
    ENDIF
-
    RETURN aDynamic
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_identifierImage( cIdentifier )
    LOCAL cImage
 
    cIdentifier := Upper( cIdentifier )
    cImage := iif( "CLAS" $ cIdentifier, "dc_class", iif( "METH" $ cIdentifier, "dc_method", iif( "PROC" $ cIdentifier, "dc_procedure", "dc_function" ) ) )
-
    RETURN hbide_image( cImage )
 
-/*----------------------------------------------------------------------*/
-
-#define __S2A( c )  hb_aTokens( strtran( c, chr( 13 ) ), chr( 10 ) )
 
 FUNCTION hbide_getFuncObjectFromHash( hDoc )
    LOCAL oFunc
@@ -2056,69 +1850,67 @@ FUNCTION hbide_getFuncObjectFromHash( hDoc )
    oFunc := IdeDocFunction():new()
 
    IF "TEMPLATE" $ hDoc
-      oFunc:cTemplate := hDoc[ "TEMPLATE" ]
+      oFunc:cTemplate     :=        hDoc[ "TEMPLATE"     ]
    ENDIF
    IF "FUNCNAME" $ hDoc
-      oFunc:cName := hDoc[ "FUNCNAME" ]
+      oFunc:cName         :=        hDoc[ "FUNCNAME"     ]
    ENDIF
    IF "NAME" $ hDoc
-      oFunc:cName := hDoc[ "NAME" ]
+      oFunc:cName         :=        hDoc[ "NAME"         ]
    ENDIF
    IF "CATEGORY" $ hDoc
-      oFunc:cCategory := hDoc[ "CATEGORY" ]
+      oFunc:cCategory     :=        hDoc[ "CATEGORY"     ]
    ENDIF
    IF "SUBCATEGORY" $ hDoc
-      oFunc:cSubCategory := hDoc[ "SUBCATEGORY" ]
+      oFunc:cSubCategory  :=        hDoc[ "SUBCATEGORY"  ]
    ENDIF
    IF "ONELINER" $ hDoc
-      oFunc:cOneLiner := hDoc[ "ONELINER" ]
+      oFunc:cOneLiner     :=        hDoc[ "ONELINER"     ]
    ENDIF
    IF "SYNTAX" $ hDoc
-      oFunc:aSyntax := __S2A( hDoc[ "SYNTAX" ] )
+      oFunc:aSyntax       := __S2A( hDoc[ "SYNTAX"       ] )
    ENDIF
    IF "ARGUMENTS" $ hDoc
-      oFunc:aArguments := __S2A( hDoc[ "ARGUMENTS" ] )
+      oFunc:aArguments    := __S2A( hDoc[ "ARGUMENTS"    ] )
    ENDIF
    IF "RETURNS" $ hDoc
-      oFunc:aReturns := __S2A( hDoc[ "RETURNS" ] )
+      oFunc:aReturns      := __S2A( hDoc[ "RETURNS"      ] )
    ENDIF
    IF "DESCRIPTION" $ hDoc
-      oFunc:aDescription := __S2A( hDoc[ "DESCRIPTION" ] )
+      oFunc:aDescription  := __S2A( hDoc[ "DESCRIPTION"  ] )
    ENDIF
    IF "EXAMPLES" $ hDoc
-      oFunc:aExamples := __S2A( hDoc[ "EXAMPLES" ] )
+      oFunc:aExamples     := __S2A( hDoc[ "EXAMPLES"     ] )
    ENDIF
    IF "FILES" $ hDoc
-      oFunc:aFiles := __S2A( hDoc[ "FILES" ] )
+      oFunc:aFiles        := __S2A( hDoc[ "FILES"        ] )
    ENDIF
    IF "STATUS" $ hDoc
-      oFunc:cStatus := hDoc[ "STATUS" ]
+      oFunc:cStatus       :=        hDoc[ "STATUS"       ]
    ENDIF
    IF "COMPLIANCE" $ hDoc
-      oFunc:cCompliance := hDoc[ "COMPLIANCE" ]
+      oFunc:cCompliance   :=        hDoc[ "COMPLIANCE"   ]
    ENDIF
    IF "PLATFORMS" $ hDoc
-      oFunc:cPlatForms := hDoc[ "PLATFORMS" ]
+      oFunc:cPlatForms    :=        hDoc[ "PLATFORMS"    ]
    ENDIF
    IF "SEEALSO" $ hDoc
-      oFunc:cSeeAlso := hDoc[ "SEEALSO" ]
+      oFunc:cSeeAlso      :=        hDoc[ "SEEALSO"      ]
    ENDIF
    IF "VERSION" $ hDoc
-      oFunc:cVersion := hDoc[ "VERSION" ]
+      oFunc:cVersion      :=        hDoc[ "VERSION"      ]
    ENDIF
    IF "INHERITS" $ hDoc
-      oFunc:cInherits := hDoc[ "INHERITS" ]
+      oFunc:cInherits     :=        hDoc[ "INHERITS"     ]
    ENDIF
    IF "METHODS" $ hDoc
-      oFunc:aMethods := __S2A( hDoc[ "METHODS" ] )
+      oFunc:aMethods      := __S2A( hDoc[ "METHODS"      ] )
    ENDIF
    IF "EXTERNALLINK" $ hDoc
-      oFunc:cExternalLink := hDoc[ "EXTERNALLINK" ]
+      oFunc:cExternalLink :=        hDoc[ "EXTERNALLINK" ]
    ENDIF
-
    RETURN oFunc
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_fetchASelection( aList )
    LOCAL oSL, oStrList, oStrModel, nDone, cChoice
@@ -2139,14 +1931,10 @@ FUNCTION hbide_fetchASelection( aList )
    oStrModel:setStringList( oStrList )
 
    oSL:listOptions:setModel( oStrModel )
-
    nDone := oSL:exec()
-
    oSL:setParent( QWidget() )
-
    RETURN iif( nDone == 1, cChoice, "" )
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION selectionProc( nMode, p, cChoice, aList, oSL )
    LOCAL qModalIndex
@@ -2165,8 +1953,7 @@ STATIC FUNCTION selectionProc( nMode, p, cChoice, aList, oSL )
       oSL:done( 0 )
 
    ENDCASE
-
-   RETURN Nil
+   RETURN NIL
 
 
 FUNCTION hbide_IsInCommentOrString( cText, nPos )
@@ -2194,7 +1981,6 @@ FUNCTION hbide_IsInCommentOrString( cText, nPos )
          ENDDO
       ENDIF
    ENDIF
-
    RETURN hbide_IsInString( cText, nPos, 1 )
 
 
@@ -2217,10 +2003,8 @@ FUNCTION hbide_IsInString( cText, nPos, nStart, cQuote )
          ENDIF
       ENDIF
    NEXT
-
    RETURN lInString
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
    LOCAL i
@@ -2249,15 +2033,12 @@ FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
       ENDIF
       cText := StrTran( cText, cBraceC, Space( 1 ) + cBraceC )
 
-
       FOR i := nSpaces TO 1 STEP -1
          cText := StrTran( cText, cBraceO + Space( i ) + cBraceC, cBraceO + cBraceC )
       NEXT
    ENDIF
-
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_formatOperators( cText, aOprtrs, nSpaces )
    LOCAL i, cOprtr
@@ -2271,23 +2052,16 @@ FUNCTION hbide_formatOperators( cText, aOprtrs, nSpaces )
       NEXT
       cText := StrTran( cText, cOprtr, Space( 1 ) + cOprtr + Space( 1 ) )
    NEXT
-
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_formatCommas( cText, nSpaces )
    LOCAL i, cOprtr := ","
 
    DEFAULT nSpaces TO 1
 
-   IF .T.
-      FOR i := nSpaces TO 1 STEP -1
-         cText := StrTran( cText, cOprtr + Space( i ), cOprtr )
-      NEXT
-      cText := StrTran( cText, cOprtr, cOprtr + Space( 1 ) )
-   ENDIF
+   FOR i := nSpaces TO 1 STEP -1
+      cText := StrTran( cText, cOprtr + Space( i ), cOprtr )
+   NEXT
+   RETURN StrTran( cText, cOprtr, cOprtr + Space( 1 ) )
 
-   RETURN cText
-
-/*----------------------------------------------------------------------*/

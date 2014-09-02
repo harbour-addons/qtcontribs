@@ -1739,43 +1739,46 @@ METHOD IdeDocks:showSelectedTextToolbar( oEdit )
          RETURN Self
       ENDIF
       IF oEdit:aSelectionInfo[ 1 ] > -1
-         qToolbar:setParent( oEdit:qEdit:viewport() )
          nVPH := oEdit:qEdit:viewport():height()
          nVPW := oEdit:qEdit:viewport():width()
 
-         qToolbar:setOrientation( iif( oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__, Qt_Vertical, Qt_Horizontal ) )
-         qToolbar:adjustSize()
+         WITH OBJECT qToolbar
+            :setParent( oEdit:qEdit:viewport() )
+            :setOrientation( iif( oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__, Qt_Vertical, Qt_Horizontal ) )
+            :adjustSize()
+         ENDWITH
          nTBW := qToolbar:width()
          nTBH := qToolbar:height()
-
-         qRect := oEdit:qEdit:cursorRect()
-         IF oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__
-            nY := qRect:y() - ( nTBH / 2 )
-            IF nY < 0
-               nY := 0
-            ELSEIF nY + nTBH > nVPH
-               nY := nVPH - nTBH
+         IF HB_ISNUMERIC( nTBW ) .AND. nTBW > 0 .AND. HB_ISNUMERIC( nTBH ) .AND. nTBH > 0
+            qRect := oEdit:qEdit:cursorRect()
+            IF oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__
+               nY := qRect:y() - ( nTBH / 2 )
+               IF nY < 0
+                  nY := 0
+               ELSEIF nY + nTBH > nVPH
+                  nY := nVPH - nTBH
+               ENDIF
+               nX := ( Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] ) + 5 ) * oEdit:qEdit:fontMetrics():averageCharWidth()
+               IF nX + qToolbar:width() > nVPW
+                  nX := ( Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] ) - 5 ) * oEdit:qEdit:fontMetrics():averageCharWidth() - nTBW
+               ENDIF
+               qToolbar:move( nX, nY )
+            ELSE
+               nX := qRect:x() - ( nTBW / 2 ) + 10  // arbitrary value
+               IF nX < 0
+                  nX := 0
+               ELSEIF nX + nTBW > nVPW
+                  nX := nVPW - nTBW
+               ENDIF
+               nY := qRect:y() + ( qRect:height() * 3 )
+               IF nY + nTBH >= nVPH
+                  nY := qRect:y() - ( qRect:height() * 4 )
+               ENDIF
+               qToolbar:move( nX, nY )
             ENDIF
-            nX := ( Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] ) + 5 ) * oEdit:qEdit:fontMetrics():averageCharWidth()
-            IF nX + qToolbar:width() > nVPW
-               nX := ( Max( oEdit:aSelectionInfo[ 2 ], oEdit:aSelectionInfo[ 4 ] ) - 5 ) * oEdit:qEdit:fontMetrics():averageCharWidth() - nTBW
-            ENDIF
-            qToolbar:move( nX, nY )
-         ELSE
-            nX := qRect:x() - ( nTBW / 2 ) + 10  // arbitrary value
-            IF nX < 0
-               nX := 0
-            ELSEIF nX + nTBW > nVPW
-               nX := nVPW - nTBW
-            ENDIF
-            nY := qRect:y() + ( qRect:height() * 2 )
-            IF nY + nTBH >= nVPH
-               nY := qRect:y() - ( qRect:height() * 3 )
-            ENDIF
-            qToolbar:move( nX, nY )
+            qToolbar:show()
+            qToolbar:raise()
          ENDIF
-         qToolbar:show()
-         qToolbar:raise()
       ELSE
          qToolbar:hide()
       ENDIF

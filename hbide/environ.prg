@@ -87,7 +87,7 @@ CLASS IdeEnvironments INHERIT IdeObject
    METHOD create( oIDE )
    METHOD destroy()
    METHOD parse( cEnvFile )
-   METHOD prepareBatch( cEnvName )
+   METHOD prepareBatch( cEnvName, lDebug )
    METHOD getNames()                              INLINE ::aNames
    METHOD saveEnv()
    METHOD show()
@@ -217,8 +217,10 @@ METHOD IdeEnvironments:getShellCommands( cEnvName )
 
 /*------------------------------------------------------------------------*/
 
-METHOD IdeEnvironments:prepareBatch( cEnvName )
+METHOD IdeEnvironments:prepareBatch( cEnvName, lDebug )
    LOCAL cPath, n, s, a_, aCmd := {}
+
+   DEFAULT lDebug TO .F.
 
    IF ( n := ascan( ::aEnvrns, {|e_| e_[ 1 ] == cEnvName } ) ) > 0
       FOR EACH a_ IN ::aEnvrns[ n, 2 ]
@@ -236,11 +238,17 @@ METHOD IdeEnvironments:prepareBatch( cEnvName )
          ELSE
             aadd( aCmd, "export PATH=$PATH" )
          ENDIF
+         IF lDebug
+            AAdd( aCmd, "export __HBIDE_DEBUG__=yes" )
+         ENDIF
       #else
          IF ! empty( cPath )
             aadd( aCmd, "SET PATH=" + cPath + "bin" + ";%PATH%" )
          ELSE
             aadd( aCmd, "SET PATH=%PATH%" )
+         ENDIF
+         IF lDebug
+            AAdd( aCmd, "SET __HBIDE_DEBUG__=yes" )
          ENDIF
       #endif
    ENDIF
