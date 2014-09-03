@@ -534,7 +534,7 @@ METHOD IdeDocks:execEvent( nEvent, p, p1 )
 
    SWITCH nEvent
    CASE __dockDebugger_visibilityChanged__
-      IF p; ::oFM:show(); ENDIF
+      IF p; ::oIde:oDebugger:show(); ENDIF
       IF ! p .AND. ! p1:isVisible()
          p1:raise()
       ENDIF

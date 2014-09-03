@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,19 +59,17 @@
  *                               23Nov2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
 #include "xbp.ch"
 #include "inkey.ch"
 #include "hbide.ch"
+#include "hbextcdp.ch"
 
-/*----------------------------------------------------------------------*/
+
 
 #define P_XX( n )                                 ( Int( QApplication():primaryScreen():logicalDotsPerInchY() * n / 96 ) )
-
 #define _T( x )                                   ( mnuNormalizeItem( x ) )
 
 #define __buttonViewTabbed_clicked__              2007
@@ -87,7 +83,7 @@
 #define __buttonViewZoomedIn_clicked__            2016
 #define __buttonViewZoomedOut_clicked__           2017
 
-/*----------------------------------------------------------------------*/
+
 
 CLASS IdeActions INHERIT IdeObject
 
@@ -140,30 +136,22 @@ CLASS IdeActions INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:new( oIde )
 
    hb_hCaseMatch( ::hActions, .f. )
    ::oIde := oIde
-   //::qWidget := QWidget()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:create( oIde )
 
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    ::qWidget := QWidget()
-
    ::buildActions()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeActions:destroy()
    LOCAL qAction
@@ -381,6 +369,10 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "BuildLaunchQt"        , "Build and Launch"             , "buildlaunch"    , ""     , "No", "Yes" } )
    aadd( aAct, { "RebuildQt"            , "Rebuild Project"              , "rebuild"        , ""     , "No", "Yes" } )
    aadd( aAct, { "RebuildLaunchQt"      , "Rebuild and Launch"           , "rebuildlaunch"  , ""     , "No", "Yes" } )
+   aadd( aAct, { "BuildLaunchDebug"     , "Build Debug and Launch"       , "buildlaunch"    , ""     , "No", "Yes" } )
+   aadd( aAct, { "RebuildLaunchDebug"   , "Rebuild Debug and Launch"     , "rebuildlaunch"  , ""     , "No", "Yes" } )
+   aadd( aAct, { "BuildLaunchDebugA"    , "Build Debug and Launch"       , "buildlaunch"    , ""     , "No", "Yes" } )
+   aadd( aAct, { "RebuildLaunchDebugA"  , "Rebuild Debug and Launch"     , "rebuildlaunch"  , ""     , "No", "Yes" } )
 
    aadd( aAct, { "RemoveTabs"           , "Replace Tabs with Spaces"     , "tabstospaces"   , ""     , "No", "Yes" } )
    aadd( aAct, { "Spaces2Tabs"          , "Replace Spaces with Tabs"     , ""               , ""     , "No", "Yes" } )
@@ -694,9 +686,12 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu:addItem( { ::getAction( "Rebuild"             ), {|| oIde:execAction( "Rebuild"            ) } } )
    oSubMenu:addItem( { ::getAction( "RebuildLaunch"       ), {|| oIde:execAction( "RebuildLaunch"      ) } } )
    hbide_menuAddSep( oSubMenu )
+   oSubMenu:addItem( { ::getAction( "BuildLaunchDebugA"   ), {|| oIde:execAction( "BuildLaunchDebug"   ) } } )
+   oSubMenu:addItem( { ::getAction( "RebuildLaunchDebugA" ), {|| oIde:execAction( "RebuildLaunchDebug" ) } } )
+   hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "LaunchProject"       ), {|| oIde:execAction( "LaunchProject"      ) } } )
    hbide_menuAddSep( oSubMenu )
-   oSubMenu:addItem( { ::getAction( "LaunchDebug"         ), {|| oIde:execAction( "LaunchDebug"      ) } } )
+   oSubMenu:addItem( { ::getAction( "LaunchDebug"         ), {|| oIde:execAction( "LaunchDebug"        ) } } )
 
    /*----------------------------------------------------------------------------*/
    /*                                   Setup                                    */
@@ -904,11 +899,8 @@ FUNCTION hbide_mnuFindItem( oIde, cCaption )
          RETURN oItem
       ENDIF
    NEXT
-
    RETURN nil
 
-
-#include "hbextcdp.ch"
 
 STATIC FUNCTION hbide_buildCDPMenu( oIde, oSubMenu )
    LOCAL cdp
@@ -1319,12 +1311,12 @@ METHOD IdeActions:buildToolbarSelectedText()
       :create( "SelectedText_Toolbar" )
       :setObjectName( "ToolbarSelectedText" )
       :setWindowTitle( "Actions on Selected Text" )
-      //:setStyleSheet( "background-color: rgba(230,230,230,255);" )
-      //:setStyleSheet( "background-color: rgba(230,230,255,255);" )
-      :setStyleSheet( "background-color: rgba(255,230,230,255);" )
+      //:setStyleSheet( "background-color: rgba(255,230,230,255); border: 1px solid rgba(255,200,200,255); border-radius: 5px; padding: 1px;" )
+      :setStyleSheet( "background-color: rgba(192,192,192,255); border: 1px solid rgba(150,150,150,255); border-radius: 5px; padding: 1px;" )
       :setMovable( .T. )
       :setFloatable( .T. )
       :setFocusPolicy( Qt_NoFocus )
+      :setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
       :hide()
    ENDWITH
 

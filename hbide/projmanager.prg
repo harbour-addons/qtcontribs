@@ -1,4 +1,4 @@
-/*
+      /*
  * $Id$
  */
 
@@ -504,7 +504,7 @@ CLASS IdeProjManager INHERIT IdeObject
    METHOD buildSource( lExecutable )
    METHOD buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron, lDebug )
    METHOD getCurrentExeName( cProject )
-   METHOD launchDebug( cProject )
+   METHOD launchDebug( cProject, cExe )
    METHOD launchProject( cProject, cExe, cWrkEnviron, lDebug )
    METHOD showOutput( cOutput, mp2, oProcess )
    METHOD finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, lDebug )
@@ -1745,7 +1745,7 @@ METHOD IdeProjManager:buildSource( lExecutable )
 
 
 METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, cWrkEnviron, lDebug )
-   LOCAL cHbpPath, oEdit, cHbpFN, cTmp, cExeHbMk2, aHbp, cCmd, cC, oSource, cCmdParams, cBuf
+   LOCAL cHbpPath, oEdit, cHbpFN, cTmp, cExeHbMk2, aHbp, cCmd, cC, oSource, cCmdParams, cBuf, n, aHbpData
    LOCAL cbRed := "<font color=blue>", ceRed := "</font>"
 
    DEFAULT lLaunch     TO .F.
@@ -1753,11 +1753,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    DEFAULT lPPO        TO .F.
    DEFAULT lViaQt      TO .F.
    DEFAULT cWrkEnviron TO ::cWrkEnvironment
-#if 1
    DEFAULT lDebug      TO .F.
-#else
-   DEFAULT lDebug      TO .T.
-#endif
 
    aHbp                := {}
    ::lPPO              := lPPO
@@ -1792,6 +1788,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
 
    cHbpFN   := hbide_pathFile( ::oProject:location, iif( empty( ::oProject:outputName ), "_temp", ::oProject:outputName ) )
    cHbpPath := cHbpFN + iif( ::lPPO, "_tmp", "" ) + ".hbp"
+   aHbpData := ::pullHbpData( cHbpPath )
 
    IF ! ::lPPO
       IF     ::oProject:type == "Lib"
@@ -1811,11 +1808,6 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    aadd( aHbp, "-width=512"  )
    IF lRebuild
       aadd( aHbp, "-rebuild" )
-   ENDIF
-   IF lDebug
-      aadd( aHbp, "-b"         )
-      aadd( aHbp, "-lhwgdebug" )
-      aadd( aHbp, "-lhbdebug"  )
    ENDIF
    IF ::lPPO
       IF !empty( oEdit := ::oEM:getEditorCurrent() )
@@ -1841,7 +1833,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    ::oDockB2:show()
    ::oOutputResult:oWidget:clear()
 
-   IF .f.
+   IF .F.
       ::oOutputResult:oWidget:append( 'Error saving: ' + cHbpPath )
 
    ELSE
@@ -1856,6 +1848,25 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
       ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
       ::cBatch   := ::oEV:prepareBatch( cWrkEnviron, lDebug )
       aeval( ::oEV:getHbmk2Commands( cWrkEnviron ), {|e| aadd( aHbp, e ) } )
+      IF lDebug
+         aadd( aHbp, "-b"         )
+         aadd( aHbp, "-inc"       )
+         aadd( aHbp, "-lhwgdebug" )
+         IF ( n := AScan( aHbpData[ 2,1 ], {|e| Lower( Left( LTrim( e ), 9 ) ) == "-workdir=" } ) ) == 0
+            AAdd( aHbp, "-workdir=.hbmk/${hb_plat}/${hb_comp}/debug" )
+         ELSE
+            AAdd( aHbp, hbide_pathStripLastSlash( aHbpData[ 2,1,n ] ) + "/" + "debug" )
+         ENDIF
+         IF ( n := AScan( aHbpData[ 2,1 ], {|e| Lower( Left( LTrim( e ), 2 ) ) == "-o" } ) ) == 0
+            AAdd( aHbp, "-o${hb_targetname}" + "_d" )
+         ELSE
+            cC := Trim( aHbpData[ 2,1,n ] )
+            IF ( n := At( ".exe", Lower( cC ) ) ) > 0
+               cC := SubStr( cC, 1, n-1 ) + SubStr( cC, n + 4 )
+            ENDIF
+            AAdd( aHbp, cC + "_d" )
+         ENDIF
+      ENDIF
 
       cExeHbMk2  := ::oINI:getHbmk2File()
       cCmdParams := hbide_array2cmdParams( aHbp )
@@ -2013,64 +2024,69 @@ METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron, lDebug )
       cTmp := "Launching application [ " + cTargetFN + " ]"
 
       IF ::oINI:lExtBuildLaunch
-         ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
-         ::cBatch   := ::oEV:prepareBatch( cWrkEnviron )
-
-         cCmd       := hbide_getShellCommand()
-         cC         := iif( hbide_getOS() == "nix", "", "/C " )
-         IF hb_fileExists( ::cBatch )
-            cBuf := memoread( ::cBatch )
-            cBuf += hb_eol() + iif( hbide_getOS() == "nix", "", "start " ) + cTargetFN + " "
-            IF ! empty( oProject ) .AND. ! empty( oProject:launchParams )
-               cBuf += oProject:launchParams
-            ENDIF
-            cBuf += hb_eol()
-            hb_memowrit( ::cBatch, cBuf )
-         ENDIF
-
-         qStr := QStringList()
-         hb_fNameSplit( cTargetFN, @cPath )
-         IF ! Empty( cC )
-            qStr:append( cC )
-         ENDIF
-         qStr:append( ::cBatch )
-
-         qProcess := QProcess()
-         WITH OBJECT qProcess
-            :setWorkingDirectory( hbide_pathToOSPath( iif( Empty( oProject ), cPath, oProject:wrkDirectory ) ) )
-            :startDetached( cCmd, qStr )
-            :waitForStarted( 3000 )
-         ENDWITH
-         qProcess := NIL
-
-      ELSE                                        /* Kept it just for reference - may be switchable through .ini */
-         qProcess := QProcess()
-         qStr := QStringList()
-         IF !empty( oProject )
-            IF !empty( oProject:launchParams )
-               a_:= hb_ATokens( oProject:launchParams, " " )
-               FOR EACH cParam IN a_
-                  IF ! Empty( cParam )
-                     qStr:append( AllTrim( cParam ) )
-                  ENDIF
-               NEXT
-            ENDIF
-            qProcess:startDetached( cTargetFN, qStr, hbide_pathToOSPath( oProject:wrkDirectory ) )
+         IF lDebug
+            ::launchDebug( cProject, cExe )
          ELSE
+            ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
+            ::cBatch   := ::oEV:prepareBatch( cWrkEnviron )
+
+            cCmd       := hbide_getShellCommand()
+            cC         := iif( hbide_getOS() == "nix", "", "/C " )
+            IF hb_fileExists( ::cBatch )
+               cBuf := memoread( ::cBatch )
+               cBuf += hb_eol() + iif( hbide_getOS() == "nix", "", "start " ) + cTargetFN + " "
+               IF ! empty( oProject ) .AND. ! empty( oProject:launchParams )
+                  cBuf += oProject:launchParams
+               ENDIF
+               cBuf += hb_eol()
+               hb_memowrit( ::cBatch, cBuf )
+            ENDIF
+
+            qStr := QStringList()
             hb_fNameSplit( cTargetFN, @cPath )
-            qProcess:startDetached( cTargetFN, qStr, hbide_pathToOSPath( cPath ) )
+            IF ! Empty( cC )
+               qStr:append( cC )
+            ENDIF
+            qStr:append( ::cBatch )
+
+            qProcess := QProcess()
+            WITH OBJECT qProcess
+               :setWorkingDirectory( hbide_pathToOSPath( iif( Empty( oProject ), cPath, oProject:wrkDirectory ) ) )
+               :startDetached( cCmd, qStr )
+               :waitForStarted( 3000 )
+            ENDWITH
+            qProcess := NIL
+         ENDIF
+      ELSE                                        /* Kept it just for reference - may be switchable through .ini */
+         IF lDebug
+            ::launchDebug( cProject, cExe )
+         ELSE
+            qProcess := QProcess()
+            qStr := QStringList()
+            IF ! Empty( oProject )
+               IF !empty( oProject:launchParams )
+                  a_:= hb_ATokens( oProject:launchParams, " " )
+                  FOR EACH cParam IN a_
+                     IF ! Empty( cParam )
+                        qStr:append( AllTrim( cParam ) )
+                     ENDIF
+                  NEXT
+               ENDIF
+               qProcess:startDetached( cTargetFN, qStr, hbide_pathToOSPath( oProject:wrkDirectory ) )
+            ELSE
+               hb_fNameSplit( cTargetFN, @cPath )
+               qProcess:startDetached( cTargetFN, qStr, hbide_pathToOSPath( cPath ) )
+            ENDIF
          ENDIF
       ENDIF
    ELSE
       cTmp := "Launching application [ " + cTargetFN + " ] ( not applicable )."
-
    ENDIF
    ::oOutputResult:oWidget:append( cTmp )
    RETURN Self
 
 
-METHOD IdeProjManager:launchDebug( cProject )
-   LOCAL cExe
+METHOD IdeProjManager:launchDebug( cProject, cExe )
 
    IF empty( cProject )
       cProject := ::getCurrentProjectTitle()
@@ -2081,18 +2097,22 @@ METHOD IdeProjManager:launchDebug( cProject )
    ENDIF
    ::oDockB2:show()
 
-   ::oIde:oDebugger:stop()
-   ::oIde:oDebugger:clear()
-
-   ::oIde:oDebugger:cCurrentProject := cProject
-   ::oIde:oDebugger:aSources        := ::getSourcesByProjectTitle( cProject )
-   cExe := ::getCurrentExeName( cProject )
+   DEFAULT cExe TO ::getCurrentExeName( cProject )
    IF ! hb_FileExists( cExe )
       ::oOutputResult:oWidget:append( "Launch error: executable not found !" )
       RETURN .F.
    ENDIF
-   ::oOutputResult:oWidget:append( "Launching with Debugger : " + cExe )
-   ::oIde:oDebugger:start( cExe )
+
+   WITH OBJECT ::oIde:oDebugger
+      :stop()
+      :clear()
+      :cCurrentProject := cProject
+      :aSources        := ::getSourcesByProjectTitle( cProject )
+
+      ::oOutputResult:oWidget:append( "Launching with Debugger : " + cExe )
+      :start( cExe )
+   ENDWITH
+   //
    RETURN .T.
 
 

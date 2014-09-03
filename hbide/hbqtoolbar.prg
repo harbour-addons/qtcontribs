@@ -320,6 +320,7 @@ METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDra
    oButton:setIcon( QIcon( cImage ) )
    oButton:setCheckable( lCheckable )
    oButton:setFocusPolicy( Qt_NoFocus )
+   oButton:setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
 
    IF lDragEnabled
       oButton:connect( QEvent_MouseButtonPress  , {|p| ::execEvent( "QEvent_MousePress"  , p, cName ) } )

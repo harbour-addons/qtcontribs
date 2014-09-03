@@ -154,6 +154,8 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD create( oIde )
    METHOD start( cExe )
    METHOD stop()
+   METHOD show()
+   METHOD hide()
    METHOD clear()
    METHOD loadBreakPoints()
    METHOD clearBreakPoints( cPrg )
@@ -257,6 +259,17 @@ METHOD IdeDebugger:clear()
    RETURN .T.
 
 
+METHOD IdeDebugger:hide()
+   ::oIde:oDebuggerDock:oWidget:hide()
+   RETURN Self
+
+
+METHOD IdeDebugger:show()
+   ::oIde:oDebuggerDock:oWidget:show()
+   ::oIde:oDebuggerDock:oWidget:raise()
+   RETURN Self
+
+
 METHOD IdeDebugger:start( cExe )
    LOCAL cPath, cFile, cExt
 
@@ -274,6 +287,8 @@ METHOD IdeDebugger:start( cExe )
    FClose( ::handl1 )
    ::handl2 := FCreate( cExe + ".d2" )
    FClose( ::handl2 )
+
+   ::show()
 
    hb_processOpen( cExe )                         //+ Iif( !Empty( cParams ), cParams, "" ) )
 
@@ -794,19 +809,26 @@ METHOD IdeDebugger:getCurrPrgName()
 
 
 METHOD IdeDebugger:setWindow( cPrgName )
-   LOCAL qCursor, i, oEditor
+   LOCAL qCursor, oSource, cSource, cPath, cName, cExt, cNme, cEtn
+   LOCAL oProject := ::oPM:getProjectByTitle( ::cCurrentProject )
 
-   FOR i := 1 TO Len( ::aTabs )
-      oEditor := ::aTabs[ i, TAB_OEDITOR ]
-      IF Lower( oEditor:cFile ) == Lower( hb_FNameName( cPrgName ) )
-         cPrgName := oEditor:cPath + oEditor:cFile + oEditor:cExt
+   cNme := Lower( hb_FNameName( cPrgName ) )
+   cEtn := Lower( hb_FNameExt( cPrgName ) )
+   FOR EACH oSource IN oProject:hSources
+      hb_FNameSplit( oSource:original, @cPath, @cName, @cExt )
+      IF Lower( cName ) + Lower( cExt ) == cNme + cEtn
+         cSource := cPath + cName + cExt
          EXIT
       ENDIF
-   NEXT i
-   ::oIde:oSM:editSource( cPrgName, 0, 0, 0, NIL, NIL, .F., .T. )
-   qCursor := ::oIde:qCurEdit:textCursor()
-   qCursor:setPosition( 0 )
-   ::oIde:qCurEdit:setTextCursor( qCursor )
+   NEXT
+   IF ! Empty( cSource )
+      ::oIde:oSM:editSource( cSource, 0, 0, 0, NIL, NIL, .F., .T., NIL, NIL, NIL )
+      qCursor := ::oIde:qCurEdit:textCursor()
+      qCursor:setPosition( 0 )
+      ::oIde:qCurEdit:setTextCursor( qCursor )
+   ELSE
+      Alert( "Exact location of source " + cPrgName + " could not been detected." )
+   ENDIF
    RETURN .T.
 
 
@@ -814,11 +836,11 @@ METHOD IdeDebugger:stopDebug()
    IF ::oTimer:isActive()
       ::oTimer:stop()
    ENDIF
-   //IF ::handl1 != -1
+   IF ::handl1 != -1
       FClose( ::handl1 )
       FClose( ::handl2 )
       ::handl1 := -1
-   //ENDIF
+   ENDIF
 
    ::oUI:tableWatchExpressions:setRowCount( 0 )
    ::oUI:tableStack           :setRowCount( 0 )
@@ -832,6 +854,7 @@ METHOD IdeDebugger:stopDebug()
    ::oUI:tableSets            :setRowCount( 0 )
 
    ::oUi:labelStatus:setText( "Exited" )
+   ::hide()
    RETURN NIL
 
 
@@ -1346,7 +1369,7 @@ METHOD IdeDebugger:ui_init()
    ::oUI:tableWatchExpressions:connect( "itemChanged(QTableWidgetItem*)", { | item | ::changeWatch( item ) } )
    ::oUI:tableOpenTables      :connect( "cellActivated(int,int)"        , { | row, col | ::requestRecord( row, col ) } )
 
-   ::oUI                      :connect( QEvent_Close   , {|| ::exitDbg() } )
+   //::oUI                      :connect( QEvent_Close   , {|| ::exitDbg() } )
    ::oUI:tabWidget            :connect( "currentChanged(int)", { |index| ::requestVars( index ) } )
 
    ::oUI:tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )

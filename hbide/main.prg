@@ -768,8 +768,10 @@ METHOD HbIde:execAction( cKey )
    CASE "BuildSource"
    CASE "Build"
    CASE "BuildLaunch"
+   CASE "BuildLaunchDebug"
    CASE "Rebuild"
    CASE "RebuildLaunch"
+   CASE "RebuildLaunchDebug"
    CASE "Compile"
    CASE "CompilePPO"
    CASE "Properties"
@@ -906,21 +908,23 @@ METHOD HbIde:execSourceAction( cKey )
 
 METHOD HbIde:execProjectAction( cKey )
    SWITCH cKey
-   CASE "NewProject"    ; ::oPM:loadProperties( , .t., .t., .t. )      ; EXIT
-   CASE "LoadProject"   ; ::oPM:loadProperties( , .f., .f., .t. )      ; EXIT
-   CASE "LaunchProject" ; ::oPM:launchProject()                        ; EXIT
-   CASE "LaunchDebug"   ; ::oPM:launchDebug()                          ; EXIT
-   CASE "RunAsScript"   ; ::oPM:runAsScript( .t. )                     ; EXIT
-   CASE "BuildSource"   ; ::oPM:buildSource( .t. )                     ; EXIT
-   CASE "Build"         ; ::oPM:buildProject( '', .F., .F. )           ; EXIT
-   CASE "BuildLaunch"   ; ::oPM:buildProject( '', .T., .F. )           ; EXIT
-   CASE "Rebuild"       ; ::oPM:buildProject( '', .F., .T. )           ; EXIT
-   CASE "RebuildLaunch" ; ::oPM:buildProject( '', .T., .T. )           ; EXIT
-   CASE "Compile"       ; ::oPM:buildSource( .f. )                     ; EXIT
-   CASE "CompilePPO"    ; ::oPM:buildProject( '', .F., .F., .T., .T. ) ; EXIT
-   CASE "Properties"    ; ::oPM:getProperties()                        ; EXIT
-   CASE "SelectProject" ; ::oPM:selectCurrentProject()                 ; EXIT
-   CASE "CloseProject"  ; ::oPM:removeProject()                        ; EXIT
+   CASE "NewProject"         ; ::oPM:loadProperties( , .t., .t., .t. )      ; EXIT
+   CASE "LoadProject"        ; ::oPM:loadProperties( , .f., .f., .t. )      ; EXIT
+   CASE "LaunchProject"      ; ::oPM:launchProject()                        ; EXIT
+   CASE "LaunchDebug"        ; ::oPM:launchDebug()                          ; EXIT
+   CASE "RunAsScript"        ; ::oPM:runAsScript( .t. )                     ; EXIT
+   CASE "BuildSource"        ; ::oPM:buildSource( .t. )                     ; EXIT
+   CASE "Build"              ; ::oPM:buildProject( '', .F., .F. )           ; EXIT
+   CASE "BuildLaunch"        ; ::oPM:buildProject( '', .T., .F. )           ; EXIT
+   CASE "BuildLaunchDebug"   ; ::oPM:buildProject( '', .T., .F., NIL, NIL, NIL, .T. ) ; EXIT
+   CASE "Rebuild"            ; ::oPM:buildProject( '', .F., .T. )           ; EXIT
+   CASE "RebuildLaunch"      ; ::oPM:buildProject( '', .T., .T. )           ; EXIT
+   CASE "RebuildLaunchDebug" ; ::oPM:buildProject( '', .T., .T., NIL, NIL, NIL, .T. ) ; EXIT
+   CASE "Compile"            ; ::oPM:buildSource( .f. )                     ; EXIT
+   CASE "CompilePPO"         ; ::oPM:buildProject( '', .F., .F., .T., .T. ) ; EXIT
+   CASE "Properties"         ; ::oPM:getProperties()                        ; EXIT
+   CASE "SelectProject"      ; ::oPM:selectCurrentProject()                 ; EXIT
+   CASE "CloseProject"       ; ::oPM:removeProject()                        ; EXIT
    ENDSWITCH
    RETURN Self
 
@@ -966,7 +970,7 @@ METHOD HbIde:removeProjectTree( aPrj )
    IF empty( oProject:title )
       RETURN Self
    ENDIF
-   nIndex := aScan( ::aProjData, {|e_| e_[ TRE_TYPE ] == "Project Name" .AND. e_[ TRE_ORIGINAL ] == oProject:title } )
+   nIndex := AScan( ::aProjData, {|e_| e_[ TRE_TYPE ] == "Project Name" .AND. e_[ TRE_ORIGINAL ] == oProject:title } )
    IF nIndex > 0
       oParent := ::aProjData[ nIndex, TRE_OITEM ]
       DO WHILE .t.
@@ -1081,7 +1085,7 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
 
    CASE ::aProjData[ n, TRE_TYPE ] == "Source File"
       cSource := AllTrim( hbide_stripFilter( ::aProjData[ n, TRE_ORIGINAL ] ) )
-      IF Left( cSource, 2 ) == ".."               /* Assumed that relative paths for upper folder than .hbp base path start WITH ".." */
+      IF Left( cSource, 2 ) == ".."               /* Assumed that relative paths for upper folder than .hbp base path start with ".." */
          cSource := hbide_pathNormalized( ::oPM:getProjectPathFromTitle( ::aProjData[ n,5 ] ) + cSource )
       ENDIF
       hb_fNameSplit( cSource, , , @cExt )
@@ -1143,15 +1147,19 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
       ENDIF
       aadd( aPops, { ::oAC:getAction( "Properties"      )     , {|| ::oPM:loadProperties( cHbp, .f., .t., .t. ) } } )
       aadd( aPops, { "" } )
-      aadd( aPops, { ::oAC:getAction( "BuildQt"         )     , {|| ::oPM:buildProject( cProjectName, .F., NIL, NIL, .T. ) } } )
-      aadd( aPops, { ::oAC:getAction( "BuildLaunchQt"   )     , {|| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T. ) } } )
-      aadd( aPops, { ::oAC:getAction( "ReBuildQt"       )     , {|| ::oPM:buildProject( cProjectName, .F., .T., NIL, .T. ) } } )
-      aadd( aPops, { ::oAC:getAction( "ReBuildLaunchQt" )     , {|| ::oPM:buildProject( cProjectName, .T., .T., NIL, .T. ) } } )
+      aadd( aPops, { ::oAC:getAction( "BuildQt"         )     , {|| ::oPM:buildProject( cProjectName, .F., NIL, NIL, .T., NIL, .F. ) } } )
+      aadd( aPops, { ::oAC:getAction( "BuildLaunchQt"   )     , {|| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T., NIL, .F. ) } } )
+      aadd( aPops, { ::oAC:getAction( "ReBuildQt"       )     , {|| ::oPM:buildProject( cProjectName, .F., .T., NIL, .T., NIL, .F. ) } } )
+      aadd( aPops, { ::oAC:getAction( "ReBuildLaunchQt" )     , {|| ::oPM:buildProject( cProjectName, .T., .T., NIL, .T., NIL, .F. ) } } )
+      aadd( aPops, { "" } )
+      //
+      aadd( aPops, { ::oAC:getAction( "BuildLaunchDebug")     , {|| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T., NIL, .T. ) } } )
+      aadd( aPops, { ::oAC:getAction( "ReBuildLaunchDebug")   , {|| ::oPM:buildProject( cProjectName, .T., .T., NIL, .T., NIL, .T. ) } } )
       //
       IF ! empty( ::oEV:getNames() )
          aadd( aPops, { "" } )
          FOR EACH s IN ::oEV:getNames()
-            aadd( aEnv, { s                                   , {|x| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T., x ) } } )
+            aadd( aEnv, { s                                   , {|x| ::oPM:buildProject( cProjectName, .T., NIL, NIL, .T., x, .F. ) } } )
          NEXT
          aadd( aPops, { aEnv, "Build and Launch with..." } )
       ENDIF

@@ -16,6 +16,39 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-02 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r345)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r345.
+
+  * hbide/actions.prg
+  * hbide/debugger.prg
+  * hbide/docks.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/main.prg
+  * hbide/projmanager.prg
+    % Facelift to selected-text toolbar.
+
+    + Implemented: debugger protocol in HbIDE's main-stream build engine.
+      POINTS TO NOTE
+      --------------
+      1. You will always construct a project normally as per 
+         production standards.    
+      2. You will never add any debug related switches in the .hbp project file.
+      3. You will only select <Build Debug and Launch> family of options
+         either from the <MainMenu><Build> or via context-menu of project 
+         node in <Projects Tree>.
+      4. HbIDE will post-pend the built executable with "_d" for debug builds.
+      5. HbIDE will create a "debug" sub-folder in the folder pointed-to 
+         by -workdir switch. If no such switch is detedted in .hbp then
+         ".hbmk/${hb_plat}/${hb_comp}/debug" will be used.
+      6. You will never be asked to open the "HbIDE Debugger" dock yourself.
+         Any debug built will open it automatically. The debugger interface 
+         will close itself once <Exit> is clicked.
+      7. HbIDE manages all the complexities of production and debug builds 
+         transparently and auomatically without any conflics.
+
+      WHAT ELSE ? Just enjoy.
+
 2014-09-02 12:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r344)
   * hbide/debugger.prg
   * hbide/docks.prg
