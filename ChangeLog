@@ -16,6 +16,41 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-02 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r346)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r346.
+
+  * hbide/actions.prg
+  * hbide/debugger.prg
+  * hbide/debugger.ui
+  * hbide/projmanager.prg
+    - Removed: postpending "_d" with the ${hb_targetname}. It has side-effects
+      difficult to manage. For example the project will never be able to 
+      resolve sub-projects or library names, etc. Switching from debug to 
+      production executable, make a small change in some of your sources 
+      so that project is linked again. Thi is the only overhead which I 
+      thought of avoiding but ended up in other problems.
+
+    + Implemented: following actions for Watches:
+       1. Paste  : adds a new watch by pasting selected text in active 
+                   editing instance. It equals to clicking on <Add> icon 
+                   and then manually inputting the expression. 
+       2. Add    : as usual adds a new record in Watches browser awaiting 
+                   input for expression.
+       3. Save   : saves the list of Watch expressions into a disk file 
+                   with ".wch" extention and prefixed by project name plus 
+                   "_". Suppose you provide "first" as the name of the 
+                   file in File Selection dialog then saved file will be 
+                   like: debuggedProjectName_first.wch. You can have as many 
+                   sets as you like. If you select an exiting file then that 
+                   will be overwritten with visible expressions.
+       4. Restore: restores expressions off the saved .wch files as above.
+                   Two options are provided while restoring; 
+                   a. Merge loaded expression with existing ones.
+                   b. Clear existing expressions and load from file.
+       5. Delete : as usual deletes the current selected expression.
+       6. Clear  : remove all expressions from the Watches list.
+
 2014-09-02 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r345)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r345.

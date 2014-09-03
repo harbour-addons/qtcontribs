@@ -1,4 +1,4 @@
-/*
+         /*
  * $Id$
  */
 
@@ -186,13 +186,16 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD wait4connection( cStr )
    METHOD ui_init()
    METHOD ui_load()
-   METHOD ui_tableWatch_ins()
-   METHOD ui_tableWatch_del()
+   METHOD watch_ins( lPaste, cExp )
+   METHOD watch_del( lAll )
+   METHOD watch_save()
+   METHOD watch_rest()
    METHOD changeWatch( item )
    METHOD terminateDebug()
    METHOD exitDbg()
    METHOD fineTune( oTable )
    METHOD requestVars( index )
+   METHOD waitState( nSeconds )
 
    ENDCLASS
 
@@ -945,11 +948,13 @@ METHOD IdeDebugger:showVars( arr, n, nVarType )
 
 
 METHOD IdeDebugger:showWatch( arr, n )
-   LOCAL i
-   LOCAL nLen := Val( arr[ n ] )
+   LOCAL nWatch
+   LOCAL nWatches := Val( arr[ n ] )
 
-   FOR i := 1 TO nLen
-      ::oUI:tableWatchExpressions:setItem( ::aWatches[ i,1 ], 1, QTableWidgetItem( Hex2Str( arr[ ++n ] ) ) )
+   FOR nWatch := 1 TO nWatches
+      IF nWatch <= Len( ::aWatches )
+         ::oUI:tableWatchExpressions:setItem( ::aWatches[ nWatch,1 ], 1, QTableWidgetItem( Hex2Str( arr[ ++n ] ) ) )
+      ENDIF
    NEXT
    RETURN NIL
 
@@ -1056,15 +1061,13 @@ METHOD IdeDebugger:wait4connection( cStr )
             ENDIF
          ENDIF
       ENDIF
-
       IF Seconds() - nSec > 5
          ::oOutputResult:oWidget:append( "Waited for " + cStr + ". No answer. May be a bad query." )
          ::oUI:activateWindow()
          ::oTimer:start()
          RETURN .F.
       ENDIF
-      // hb_idleSleep( 0.1 )
-      FOR i := 1 TO 50000                         //hb_idleSleep not works //todo sleep()
+      FOR i := 1 TO 50000
          // empty loop
       NEXT
    ENDDO
@@ -1170,99 +1173,200 @@ METHOD IdeDebugger:ui_load()
    RETURN NIL
 
 
-METHOD IdeDebugger:ui_tableWatch_ins()
-   LOCAL i, item
-
-   FOR i := 1 TO ::oUI:tableWatchExpressions:rowCount()
-      item := ::oUI:tableWatchExpressions:item( i - 1, 0 )
-      IF item == NIL .OR. Empty( item:text() )
-         EXIT
-      ENDIF
-   NEXT
-   IF i > ::oUI:tableWatchExpressions:rowCount()
-      ::oUI:tableWatchExpressions:insertRow( ::oUI:tableWatchExpressions:rowCount() )
-      AAdd( ::aWatches, { ::oUI:tableWatchExpressions:rowCount() - 1, "" } )
-   ENDIF
+METHOD IdeDebugger:waitState( nSeconds )
+   LOCAL nSecs := Seconds()
+   DO WHILE Abs( Seconds() - nSecs ) < nSeconds
+   ENDDO
    RETURN NIL
 
 
-METHOD IdeDebugger:ui_tableWatch_del()
-   LOCAL i
-   LOCAL r := ::oUI:tableWatchExpressions:currentRow()
-   local ri := 0
+METHOD IdeDebugger:watch_rest()
+   LOCAL cFile, aWatches, cWatch, nSel
+
+   IF .T.
+      cFile := hbide_fetchAFile( ::oDlg, "Select a Watches File", { { "Watches", "*.wch" } }, ;
+                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
+      IF ! Empty( cFile ) .AND. hb_FileExists( cFile )
+         aWatches := hbide_readSource( cFile )
+         nSel := Alert( "Merge with existing watches ?", { "Yes", "No" } )
+         QApplication():processEvents()
+         IF nSel != 1
+            ::watch_del( .T. )
+         ENDIF
+         FOR EACH cWatch IN aWatches
+            IF ! Empty( cWatch )
+               ::watch_ins( .T., cWatch )
+               QApplication():processEvents()
+            ENDIF
+         NEXT
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeDebugger:watch_save()
+   LOCAL oTable   := ::oUI:tableWatchExpressions
+   LOCAL nRows    := oTable:rowCount()
+   LOCAL aWatches := {}
+   LOCAL i, cFile, s, cPath, cName, cExt, oItem
+
+   FOR i := 1 TO nRows
+      IF ! Empty( oItem := oTable:item( i-1, 0 ) ) .AND. ! Empty( oItem:text() )
+         AAdd( aWatches, oItem:text() )
+      ENDIF
+   NEXT
+   IF ! Empty( aWatches )
+      cFile := hbide_fetchAFile( ::oDlg, "Select a Watches File", { { "Watches", "*.wch" } }, ;
+                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
+      IF ! Empty( cFile )
+         hb_FNameSplit( cFile, @cPath, @cName, @cExt )
+         IF ! ( Left( cName, Len( ::cCurrentProject ) ) == ::cCurrentProject )
+            cName := ::cCurrentProject + "_" + cName
+            IF Lower( cExt ) != ".wch"
+               cExt := ".wch"
+            ENDIF
+         ENDIF
+         cFile := cPath + cName + cExt
+         s := ""
+         AEval( aWatches, {|e| s += e + Chr( 13 )+Chr( 10 ) } )
+         hb_MemoWrit( cFile, s )
+         IF hb_FileExists( cFile )
+            Alert( "Watches has been saved in " + cFile )
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeDebugger:watch_ins( lPaste, cExp )
+   LOCAL i, oItem, nRow
+   LOCAL oTable := ::oUI:tableWatchExpressions
+
+   DEFAULT lPaste TO .F.
+   IF lPaste
+      DEFAULT cExp TO ::oEM:getSelectedText()
+   ELSE
+      cExp := ""
+   ENDIF
+   IF lPaste .AND. Empty( cExp )
+      RETURN Self
+   ENDIF
+   FOR i := 1 TO oTable:rowCount()
+      oItem := oTable:item( i - 1, 0 )
+      IF oItem == NIL .OR. Empty( oItem:text() )
+         EXIT
+      ENDIF
+   NEXT
+   IF i > oTable:rowCount()
+      oTable:insertRow( oTable:rowCount() )
+      nRow := oTable:rowCount() - 1
+      AAdd( ::aWatches, { nRow, cExp } )
+   ELSE
+      nRow := i - 1
+   ENDIF
+   oTable:setItem( nRow, 0, QTableWidgetItem( cExp ) )
+   ::waitState( 0.25 )
+   RETURN NIL
+
+
+METHOD IdeDebugger:watch_del( lAll )
+   LOCAL i, nn
+   LOCAL oTable := ::oUI:tableWatchExpressions
+   LOCAL nRow   := oTable:currentRow()
+   local ri     := 0
    LOCAL nEmptyNames := 0
 
-   IF r < 0
+   DEFAULT lAll TO .F.
+
+   IF ! lAll .AND. nRow < 0
+      RETURN NIL
+   ELSEIF lAll .AND. oTable:rowCount() == 0
       RETURN NIL
    ENDIF
-
-   FOR i := 0 TO r
-      IF Empty(::aWatches[i+1, 2])
+   FOR i := 0 TO nRow
+      IF Empty( ::aWatches[ i+1, 2 ] )
          nEmptyNames++
       ENDIF
    NEXT
-
-   FOR i := 1 TO Len( ::aWatches )
-      IF ::aWatches[ i,1 ] == r
-         ri := i
-         IF ! Empty( ::aWatches[ i,2 ] )
+   IF lAll
+      DO WHILE ! Empty( ::aWatches )
+         nn := Len( ::aWatches )
+         IF ! Empty( ::aWatches[ nn,2 ] )
+            hb_ADel( ::aWatches, nn, .T. )
             ::setMode( MODE_INPUT )
-            ::doCommand( CMD_WATCH, "del", LTrim( Str( i - nEmptyNames ) ) )
+            ::doCommand( CMD_WATCH, "del", LTrim( Str( nn - nEmptyNames ) ) )
+            ::wait4connection( "b" + LTrim( Str( ::nId1 ) ) )
          ENDIF
+      ENDDO
+      oTable:setRowCount( 0 )
+   ELSE
+      FOR i := 1 TO Len( ::aWatches )
+         IF ::aWatches[ i,1 ] == nRow
+            ri := i
+            IF ! Empty( ::aWatches[ i,2 ] )
+               ::setMode( MODE_INPUT )
+               ::doCommand( CMD_WATCH, "del", LTrim( Str( i - nEmptyNames ) ) )
+            ENDIF
+         ENDIF
+         IF ::aWatches[ i,1 ] > nRow
+            --::aWatches[ i,1 ]
+         ENDIF
+      NEXT
+      IF ri > 0
+         hb_ADel( ::aWatches, ri, .T. )
       ENDIF
-      IF ::aWatches[ i,1 ] > r
-         --::aWatches[ i,1 ]
-      ENDIF
-   NEXT
-   IF ri > 0
-      hb_ADel( ::aWatches, ri, .T. )
+      oTable:removeRow( nRow )
    ENDIF
-   ::oUI:tableWatchExpressions:removeRow( r )
    RETURN NIL
 
 
 METHOD IdeDebugger:changeWatch( item )
-    LOCAL i
-    LOCAL r := 0
-    LOCAL nEmptyNames := 0
+   LOCAL i, xTmp
+   LOCAL r := 0
+   LOCAL nEmptyNames := 0
 
-    IF item:column() == 0
-       ::oTimer:stop()
-       ::nRowWatch := item:Row()
-       FOR i := 0 TO ::nRowWatch
-          IF Empty( ::aWatches[ i+1, 2 ] )
-             nEmptyNames++
-          ENDIF
-       NEXT
-       FOR i := 1 TO Len( ::aWatches )
-          IF ::aWatches[ i, 1 ] == ::nRowWatch
-             IF Empty( item:text() )
-                item:setText( ::aWatches[ i, 2 ] )
-                RETURN NIL
-             ENDIF
-             IF Empty( ::aWatches[ i, 2 ] )
-                ::aWatches[ i, 2 ] := item:text()
-             ELSE
-                r := i
-                ::setMode( MODE_INPUT )
-                ::doCommand( CMD_WATCH, "del", Ltrim( Str( i - nEmptyNames ) ) )
-                ::wait4connection( "b" + LTrim( Str( ::nId1 ) ) )
-             ENDIF
+   IF item:column() == 0
+      ::oTimer:stop()
+      ::nRowWatch := item:Row()
+      FOR i := 0 TO ::nRowWatch
+         IF Empty( ::aWatches[ i+1, 2 ] )
+            nEmptyNames++
          ENDIF
-       NEXT
-       IF ! Empty( item:text() )
-          IF r > 0
-             hb_ADel( ::aWatches, r, .T. )
-             AAdd( ::aWatches, { ::nRowWatch, item:text() } )
-          ENDIF
-          ::setMode( MODE_INPUT )
-          ::doCommand( CMD_WATCH, "add", Str2Hex( item:text() ) )
-       ELSE
-          ::aWatches[ r,2 ] := ""
-       ENDIF
-       ::oTimer:start()
-    ENDIF
-    RETURN NIL
+      NEXT
+
+      FOR i := 1 TO Len( ::aWatches )
+         IF ::aWatches[ i, 1 ] == ::nRowWatch
+            IF Empty( item:text() )
+               item:setText( ::aWatches[ i, 2 ] )
+               RETURN NIL
+            ENDIF
+            IF Empty( ::aWatches[ i, 2 ] )
+               ::aWatches[ i, 2 ] := item:text()
+            ELSE
+               IF ! Empty( xTmp := ::oUI:tableWatchExpressions:item( ::nRowWatch, 1 ) )
+                  r := i
+                  ::setMode( MODE_INPUT )
+                  ::doCommand( CMD_WATCH, "del", Ltrim( Str( i - nEmptyNames ) ) )
+                  ::wait4connection( "b" + LTrim( Str( ::nId1 ) ) )
+               ENDIF
+            ENDIF
+         ENDIF
+      NEXT
+
+      IF ! Empty( item:text() )
+         IF r > 0
+            hb_ADel( ::aWatches, r, .T. )
+            AAdd( ::aWatches, { ::nRowWatch, item:text() } )
+         ENDIF
+         ::setMode( MODE_INPUT )
+         ::doCommand( CMD_WATCH, "add", Str2Hex( item:text() ) )
+      ELSE
+         ::aWatches[ r,2 ] := ""
+      ENDIF
+      ::oTimer:start()
+   ENDIF
+   HB_SYMBOL_UNUSED( xTmp )
+   RETURN NIL
 
 
 METHOD IdeDebugger:terminateDebug()
@@ -1358,18 +1462,20 @@ METHOD IdeDebugger:ui_init()
    ::oUI:tableSets:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( ::oUI:tableSets )
 
-
    ::oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ) } )
    ::oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ) } )
    ::oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ) } )
    ::oUI:btnExit              :connect( "clicked()", { || ::exitDbg() } )
 
-   ::oUI:btnAddExpression     :connect( "clicked()", { || ::ui_tableWatch_ins() } )
-   ::oUI:btnDeleteExpression  :connect( "clicked()", { || ::ui_tableWatch_del() } )
+   ::oUI:btnAddWatch          :connect( "clicked()", { || ::watch_ins() } )
+   ::oUI:btnPasteWatch        :connect( "clicked()", { || ::watch_ins( .T. ) } )
+   ::oUI:btnDeleteWatch       :connect( "clicked()", { || ::watch_del() } )
+   ::oUI:btnClearWatches      :connect( "clicked()", { || ::watch_del( .T. ) } )
+   ::oUI:btnSaveWatches       :connect( "clicked()", { || ::watch_save() } )
+   ::oUI:btnRestWatches       :connect( "clicked()", { || ::watch_rest() } )
+
    ::oUI:tableWatchExpressions:connect( "itemChanged(QTableWidgetItem*)", { | item | ::changeWatch( item ) } )
    ::oUI:tableOpenTables      :connect( "cellActivated(int,int)"        , { | row, col | ::requestRecord( row, col ) } )
-
-   //::oUI                      :connect( QEvent_Close   , {|| ::exitDbg() } )
    ::oUI:tabWidget            :connect( "currentChanged(int)", { |index| ::requestVars( index ) } )
 
    ::oUI:tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
@@ -1378,11 +1484,13 @@ METHOD IdeDebugger:ui_init()
    ::oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
 
    ::oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
+   ::oUI                      :connect( QEvent_Close           , {|| ::exitDbg() } )
    RETURN NIL
 
 
 METHOD IdeDebugger:fineTune( oTable )
    LOCAL i
+
    FOR i := 1 TO oTable:columnCount()
       oTable:horizontalHeader:setSectionResizeMode( i-1, QHeaderView_ResizeToContents )
    NEXT
@@ -1391,8 +1499,6 @@ METHOD IdeDebugger:fineTune( oTable )
    oTable:setEditTriggers( QAbstractItemView_NoEditTriggers )
    oTable:setSelectionBehavior( QAbstractItemView_SelectItems )
    oTable:setSelectionMode( QAbstractItemView_SingleSelection )
-
-   //oTable:horizontalHeader:setStretchLastSection( .T. )
    RETURN Self
 
 

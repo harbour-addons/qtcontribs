@@ -191,6 +191,9 @@
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <property name="leftMargin">
             <number>9</number>
            </property>
@@ -245,9 +248,9 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_8">
+          <layout class="QHBoxLayout" name="horizontalLayout">
            <property name="spacing">
-            <number>0</number>
+            <number>3</number>
            </property>
            <property name="leftMargin">
             <number>0</number>
@@ -255,18 +258,18 @@
            <property name="topMargin">
             <number>0</number>
            </property>
+           <property name="rightMargin">
+            <number>9</number>
+           </property>
            <property name="bottomMargin">
             <number>0</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_4">
-             <property name="topMargin">
-              <number>0</number>
-             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
              <item>
               <widget class="QLabel" name="labelWatchExpressions">
                <property name="text">
-                <string>Watch Expressions</string>
+                <string>Watches</string>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -274,29 +277,146 @@
               </widget>
              </item>
              <item>
-              <widget class="QPushButton" name="btnAddExpression">
-               <property name="text">
-                <string>Add</string>
+              <widget class="QTableWidget" name="tableWatchExpressions">
+               <property name="columnCount">
+                <number>2</number>
                </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QPushButton" name="btnDeleteExpression">
-               <property name="text">
-                <string>Delete</string>
-               </property>
+               <column/>
+               <column/>
               </widget>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QTableWidget" name="tableWatchExpressions">
-             <property name="columnCount">
-              <number>2</number>
-             </property>
-             <column/>
-             <column/>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout_8">
+             <item>
+              <widget class="QToolButton" name="btnPasteWatch">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Paste Selected Text As A Watch</string>
+               </property>
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="hbide.qrc">
+                 <normaloff>:/resources/paste.png</normaloff>:/resources/paste.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="btnAddWatch">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Add New Watch</string>
+               </property>
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="hbide.qrc">
+                 <normaloff>:/resources/dc_plus.png</normaloff>:/resources/dc_plus.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="btnSaveWatches">
+               <property name="toolTip">
+                <string>Save Watches in Disk File</string>
+               </property>
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="hbide.qrc">
+                 <normaloff>:/resources/save.png</normaloff>:/resources/save.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="btnRestWatches">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Restore Saved Watches</string>
+               </property>
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="hbide.qrc">
+                 <normaloff>:/resources/redo.png</normaloff>:/resources/redo.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QToolButton" name="btnDeleteWatch">
+               <property name="toolTip">
+                <string>Delete Selected Watch</string>
+               </property>
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="hbide.qrc">
+                 <normaloff>:/resources/dc_delete.png</normaloff>:/resources/dc_delete.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="btnClearWatches">
+               <property name="focusPolicy">
+                <enum>Qt::NoFocus</enum>
+               </property>
+               <property name="toolTip">
+                <string>Clear All Watches</string>
+               </property>
+               <property name="text">
+                <string>...</string>
+               </property>
+               <property name="icon">
+                <iconset resource="hbide.qrc">
+                 <normaloff>:/resources/clean.png</normaloff>:/resources/clean.png</iconset>
+               </property>
+               <property name="autoRaise">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -684,6 +804,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="hbide.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -690,9 +690,10 @@ METHOD IdeActions:buildMainMenu()
    oSubMenu:addItem( { ::getAction( "RebuildLaunchDebugA" ), {|| oIde:execAction( "RebuildLaunchDebug" ) } } )
    hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "LaunchProject"       ), {|| oIde:execAction( "LaunchProject"      ) } } )
+#if 0
    hbide_menuAddSep( oSubMenu )
    oSubMenu:addItem( { ::getAction( "LaunchDebug"         ), {|| oIde:execAction( "LaunchDebug"        ) } } )
-
+#endif
    /*----------------------------------------------------------------------------*/
    /*                                   Setup                                    */
    /*----------------------------------------------------------------------------*/
@@ -1311,8 +1312,7 @@ METHOD IdeActions:buildToolbarSelectedText()
       :create( "SelectedText_Toolbar" )
       :setObjectName( "ToolbarSelectedText" )
       :setWindowTitle( "Actions on Selected Text" )
-      //:setStyleSheet( "background-color: rgba(255,230,230,255); border: 1px solid rgba(255,200,200,255); border-radius: 5px; padding: 1px;" )
-      :setStyleSheet( "background-color: rgba(192,192,192,255); border: 1px solid rgba(150,150,150,255); border-radius: 5px; padding: 1px;" )
+      :setStyleSheet( "background-color: rgba(232,232,232,255); border: 1px solid rgba(170,170,170,255); border-radius: 5px; padding: 1px;" )
       :setMovable( .T. )
       :setFloatable( .T. )
       :setFocusPolicy( Qt_NoFocus )

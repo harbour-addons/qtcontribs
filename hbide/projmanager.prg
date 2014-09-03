@@ -1857,6 +1857,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
          ELSE
             AAdd( aHbp, hbide_pathStripLastSlash( aHbpData[ 2,1,n ] ) + "/" + "debug" )
          ENDIF
+#if 0                                             // found to be problematic in context of nested projects
          IF ( n := AScan( aHbpData[ 2,1 ], {|e| Lower( Left( LTrim( e ), 2 ) ) == "-o" } ) ) == 0
             AAdd( aHbp, "-o${hb_targetname}" + "_d" )
          ELSE
@@ -1866,6 +1867,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
             ENDIF
             AAdd( aHbp, cC + "_d" )
          ENDIF
+#endif
       ENDIF
 
       cExeHbMk2  := ::oINI:getHbmk2File()
