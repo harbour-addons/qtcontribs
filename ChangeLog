@@ -16,7 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2014-09-02 19:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r346)
+2014-09-03 22:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r347)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r347.
+
+  * hbide/debugger.prg
+  * hbide/debugger.ui
+    + Implimented: copy the debug information contained in various tables 
+       onto clipboard. The info is formatted delimited by comma making it 
+       compatible with MS Excel. The action can be initiated via clicking 
+       on the newly added <Copy to Clipboard> button on top of debugger dock.
+       An image displaying how pasting clipboard in notepad will appear is 
+       also uplaoded on message at QtContrib group.
+
+2014-09-03 16:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r346)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r346.
 

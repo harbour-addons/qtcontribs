@@ -1,4 +1,4 @@
-         /*
+/*
  * $Id$
  */
 
@@ -107,6 +107,7 @@
 #define BUFF_LEN                                  1024
 
 #define cMsgNotSupp                               "Command isn't supported"
+#define C_C                                       " , "
 
 
 CLASS IdeDebugger INHERIT IdeObject
@@ -142,6 +143,7 @@ CLASS IdeDebugger INHERIT IdeObject
 
    DATA   nExitMode                               INIT 2
    DATA   nVerProto                               INIT 0
+   DATA   cLastMessage                            INIT ""
 
    DATA   oUI
    DATA   cCurrentProject
@@ -196,6 +198,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD fineTune( oTable )
    METHOD requestVars( index )
    METHOD waitState( nSeconds )
+   METHOD copyOnClipboard()
 
    ENDCLASS
 
@@ -574,7 +577,8 @@ METHOD IdeDebugger:timerProc()
                      ENDIF
                   ENDDO
                   ::requestSets()
-                  ::oOutputResult:oWidget:append( "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")" )
+                  ::cLastMessage := "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")"
+                  ::oOutputResult:oWidget:append( ::cLastMessage )
 
                   ::ui_load()
                   ::oUI:show()
@@ -982,14 +986,13 @@ METHOD IdeDebugger:showAreas( arr, n )
 
 METHOD IdeDebugger:showRec( arr, n )
    LOCAL i, j
-   LOCAL nFields := Val( arr[ n ] )
+   LOCAL nRows  := Val( arr[ n ] )
+   LOCAL cAlias := Hex2Str( arr[ ++n ] )
+   LOCAL cRec   := Hex2Str( arr[ ++n ] )
 
-   // hwg_Setwindowtext( oInspectDlg:handle, "Record inspector ("+Hex2Str(arr[++n])+", rec."+Hex2Str(arr[++n])+")" )
-   //?Hex2Str(arr[++n])
-   //?Hex2Str(arr[++n])
-   n := n + 2
-   ::oUI:tableCurrentRecord:setRowCount( nFields )
-   FOR i := 1 TO nFields
+   ::oUI:labelCurrentRecord:setText( "Record Inspector [ " + cAlias + " : " + cRec + " ]" )
+   ::oUI:tableCurrentRecord:setRowCount( nRows )
+   FOR i := 1 TO nRows
       FOR j := 1 TO 4
          ::oUI:tableCurrentRecord:setItem( i - 1, j - 1, QTableWidgetItem( Hex2Str( arr[ ++n ] ) ) )
       NEXT
@@ -1040,6 +1043,107 @@ METHOD IdeDebugger:showObject( arr, n )
       ENDIF
    ENDIF
    RETURN NIL
+
+
+METHOD IdeDebugger:copyOnClipboard()
+   LOCAL aData, s
+   LOCAL txt_:={}
+
+   AAdd( txt_, "PROJECT: " + ::cCurrentProject + " [" + DToC( Date() ) + "  " + Time() + "]" )
+   AAdd( txt_, ::cLastMessage )
+   AAdd( txt_, " " )
+   AAdd( txt_, " " )
+
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarLocal ) )
+      AAdd( txt_, "LOCAL VARIABLES" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarPrivate ) )
+      AAdd( txt_, "PRIVATE VARIABLES" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarPublic ) )
+      AAdd( txt_, "PUBLIC VARIABLS" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarStatic ) )
+      AAdd( txt_, "STATIC VARIABLS" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableWatchExpressions ) )
+      AAdd( txt_, "WATCHES" )
+      __formatData( txt_, { "Expression", "Value" }, aData, { 25, 72 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableOpenTables ) )
+      AAdd( txt_, "WORKAREAS" )
+      __formatData( txt_, { "Alias", "Area", "Rdd","Records","CurRec","Bof","Eof","Found","Del","Filter","TagName","FilterCondition" }, ;
+                      aData, { 10,4,8,10,8,3,3,3,3,30,10,30 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableCurrentRecord ) )
+      AAdd( txt_, Upper( ::oUI:labelCurrentRecord:text() ) )
+      __formatData( txt_, { "Name", "Type", "Len", "Value" }, aData, { 10, 4, 4, 73 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableObjectInspector ) )
+      AAdd( txt_, Upper( ::oUI:labelObjectInspector:text() ) )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 20, 4, 70 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableStack ) )
+      AAdd( txt_, "STACK" )
+      __formatData( txt_, { "Source", "Procedure", "Line" }, aData, { 20, 40, 6 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableSets ) )
+      AAdd( txt_, "SETS" )
+      __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
+   ENDIF
+
+   s := ""
+   AEval( txt_, {|e| s += e + Chr( 13 ) + Chr( 10 ) } )
+   QApplication():clipboard():setText( s )
+
+   Alert( "Debug info copied to clipboard successfully!" )
+   RETURN Self
+
+
+STATIC FUNCTION __formatData( txt_, aHdrs, aData, aWidths )
+   LOCAL nCols := Len( aHdrs )
+   LOCAL aRec, j, s
+
+   s := "   "
+   FOR j := 1 TO nCols
+      s += Pad( aHdrs[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
+   NEXT
+   AAdd( txt_, s )
+   FOR EACH aRec IN aData
+      s := "   "
+      FOR j := 1 TO nCols
+         s += Pad( AllTrim( aRec[ j ] ), aWidths[ j ] ) + iif( j == nCols, "", C_C )
+      NEXT
+      AAdd( txt_, s )
+   NEXT
+   AAdd( txt_, " " )
+   AAdd( txt_, " " )
+   RETURN NIL
+
+
+STATIC FUNCTION __pullData( oTable )
+   LOCAL aData := {}
+   LOCAL nRows, nCols, nRow, nCol, oItem, aRec
+
+   nRows  := oTable:rowCount()
+   nCols  := oTable:columnCount()
+   //
+   FOR nRow := 0 TO nRows - 1
+      aRec := {}
+      FOR nCol := 0 TO nCols - 1
+         IF ! Empty( oItem := oTable:item( nRow, nCol ) )
+            AAdd( aRec, StrTran( oItem:text(), ",", ";" ) )
+         ELSE
+            AAdd( aRec, "" )
+         ENDIF
+      NEXT
+      AAdd( aData, aRec )
+   NEXT
+   RETURN aData
 
 
 METHOD IdeDebugger:wait4connection( cStr )
@@ -1465,6 +1569,7 @@ METHOD IdeDebugger:ui_init()
    ::oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ) } )
    ::oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ) } )
    ::oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ) } )
+   ::oUI:btnClipboard         :connect( "clicked()", { || ::copyOnClipboard()       } )
    ::oUI:btnExit              :connect( "clicked()", { || ::exitDbg() } )
 
    ::oUI:btnAddWatch          :connect( "clicked()", { || ::watch_ins() } )
