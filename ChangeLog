@@ -16,6 +16,32 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-04 00:37 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r348)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r348.
+
+  * hbide/debugger.ui
+  * hbide/debugger.prg
+  * hbide/saveload.prg
+  * hbide/setup.ui
+    + Implemented: provision to provide source paths which will be used to 
+       locate source files inside HbIDE debugger if path to such source 
+       could not been located through project file .hbp. Please note that 
+       order of such path entries is very much relevant to this protocol.
+       HOWTO:
+        1. Open <MainMenu><Setup><HbIDE Setup><Projects>.
+        2. Click on <Add> button contained in <Source Paths> groupbox.
+        3. Navigate to the desired folder in folder selection dialog.
+        4. Click "Open". 
+        5. Keep a watch on order of folder selection. Sources will be 
+           opened from first path they are contained in.
+        6. Add as many entries as needed.
+        7. To be sure that HbIDE remembers these settings, exit and 
+           execute it again.
+
+       Play with the debugger. Please report back if you find bugs or 
+       if you need any other feature not there yet.
+
 2014-09-03 22:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r347)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r347.

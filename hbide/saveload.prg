@@ -156,6 +156,9 @@
 #define __listIncludePaths_currentRowChanged__    2078
 #define __buttonIncludePathsAdd_clicked__         2079
 #define __buttonIncludePathsDel_clicked__         2080
+#define __listSourcePaths_currentRowChanged__     2081
+#define __buttonSourcePathsAdd_clicked__          2082
+#define __buttonSourcePathsDel_clicked__          2083
 
 
 /*----------------------------------------------------------------------*/
@@ -225,6 +228,7 @@ CLASS IdeINI INHERIT IdeObject
    DATA   aLogTitle                               INIT  {}
    DATA   aLogSources                             INIT  {}
    DATA   aIncludePaths                           INIT  {}
+   DATA   aSourcePaths                            INIT  {}
 
    DATA   cFontName                               INIT  "Courier New"
    DATA   nPointSize                              INIT  10
@@ -732,6 +736,13 @@ METHOD IdeINI:save( cHbideIni )
    NEXT
    aadd( txt_, " " )
 
+   aadd( txt_, "[SOURCEPATHS]" )
+   aadd( txt_, " " )
+   FOR EACH s IN ::oINI:aSourcePaths
+      aadd( txt_, "sourcepaths_" + hb_ntos( s:__enumIndex() ) + "=" + s )
+   NEXT
+   aadd( txt_, " " )
+
    aadd( txt_, "[LOGTITLE]" )
    aadd( txt_, " " )
    FOR n := 1 TO Len( ::aLogTitle )
@@ -825,6 +836,9 @@ METHOD IdeINI:load( cHbideIni )
                EXIT
             CASE "[INCLUDEPATHS]"
                nPart := "INI_INCLUDEPATHS"
+               EXIT
+            CASE "[SOURCEPATHS]"
+               nPart := "INI_SOURCEPATHS"
                EXIT
             CASE "[LOGTITLE]"
                nPart := "INI_LOGTITLE"
@@ -1057,6 +1071,11 @@ METHOD IdeINI:load( cHbideIni )
                CASE nPart == "INI_INCLUDEPATHS"
                   IF hbide_parseKeyValPair( s, @cKey, @cVal )
                      aadd( ::aIncludePaths, cVal )
+                  ENDIF
+
+               CASE nPart == "INI_SOURCEPATHS"
+                  IF hbide_parseKeyValPair( s, @cKey, @cVal )
+                     aadd( ::aSourcePaths, cVal )
                   ENDIF
 
                CASE nPart == "INI_LOGTITLE"
@@ -1323,6 +1342,7 @@ CLASS IdeSetup INHERIT IdeObject
    METHOD viewIt( cFileName, lSaveAs, lSave, lReadOnly, lApplyHiliter )
    METHOD uiDictionaries()
    METHOD uiIncludePaths()
+   METHOD uiSourcePaths()
 
    ENDCLASS
 
@@ -1481,6 +1501,10 @@ METHOD IdeSetup:connectSlots()
    ::oUI:btnDictColorBack    :connect( "clicked()"               , {| | ::execEvent( __btnDictColorBack_clicked__                       ) } )
    ::oUI:buttonDictAdd       :connect( "clicked()"               , {| | ::execEvent( __buttonDictAdd_clicked__                          ) } )
    ::oUI:buttonDictDelete    :connect( "clicked()"               , {| | ::execEvent( __buttonDictDelete_clicked__                       ) } )
+
+   ::oUI:listSourcePaths     :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listSourcePaths_currentRowChanged__ , i          ) } )
+   ::oUI:btnSourcePathsAdd   :connect( "clicked()"               , {| | ::execEvent( __buttonSourcePathsAdd_clicked__                   ) } )
+   ::oUI:btnSourcePathsDel   :connect( "clicked()"               , {| | ::execEvent( __buttonSourcePathsDel_clicked__                   ) } )
 
    ::oUI:listIncludePaths    :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listIncludePaths_currentRowChanged__, i          ) } )
    ::oUI:btnIncludePathsAdd  :connect( "clicked()"               , {| | ::execEvent( __buttonIncludePathsAdd_clicked__                  ) } )
@@ -1735,6 +1759,7 @@ METHOD IdeSetup:populate()
    ::pushThemesData()
 
    ::uiIncludePaths()
+   ::uiSourcePaths()
 
    RETURN Self
 
@@ -2284,6 +2309,23 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
          ::oUI:listIncludePaths:setCurrentRow( Len( ::oINI:aIncludePaths ) - 1 )
       ENDIF
       EXIT
+   CASE __buttonSourcePathsDel_clicked__
+      p := ::oUI:listSourcePaths:currentRow()
+      IF p >= 0 .AND. p < Len( ::oINI:aSourcePaths )
+         hb_ADel( ::oINI:aSourcePaths, p + 1, .T. )
+         ::uiSourcePaths()
+         ::oUI:listSourcePaths:setCurrentRow( Min( Len( ::oINI:aSourcePaths ) - 1, p ) )
+      ENDIF
+      EXIT
+   CASE __buttonSourcePathsAdd_clicked__
+      cFile := hbide_fetchADir( ::oDlg, "Select a Source Path", ::cLastFileOpenPath )
+      IF ! Empty( cFile )
+         ::oIde:cLastFileOpenPath := cFile
+         AAdd( ::oINI:aSourcePaths, hbide_pathNormalized( hbide_pathAppendLastSlash( cFile ) ) )
+         ::uiSourcePaths()
+         ::oUI:listSourcePaths:setCurrentRow( Len( ::oINI:aSourcePaths ) - 1 )
+      ENDIF
+      EXIT
    ENDSWITCH
 
    RETURN Self
@@ -2307,14 +2349,31 @@ METHOD IdeSetup:uiDictionaries()
 
 METHOD IdeSetup:uiIncludePaths()
    LOCAL cDict, nRow
+   LOCAL oList := ::oUI:listIncludePaths
 
-   nRow := ::oUI:listIncludePaths:currentRow()
-   ::oUI:listIncludePaths:clear()
-   ::oUI:listIncludePaths:setCurrentRow( -1 )
+   nRow := oList:currentRow()
+   oList:clear()
+   oList:setCurrentRow( -1 )
    FOR EACH cDict IN ::oINI:aIncludePaths
-      ::oUI:listIncludePaths:addItem( cDict )
+      oList:addItem( cDict )
    NEXT
-   ::oUI:listIncludePaths:setCurrentRow( Max( nRow, 0 ) )
+   oList:setCurrentRow( Max( nRow, 0 ) )
+
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
+METHOD IdeSetup:uiSourcePaths()
+   LOCAL cDict, nRow
+   LOCAL oList := ::oUI:listSourcePaths
+
+   nRow := oList:currentRow()
+   oList:clear()
+   oList:setCurrentRow( -1 )
+   FOR EACH cDict IN ::oINI:aSourcePaths
+      oList:addItem( cDict )
+   NEXT
+   oList:setCurrentRow( Max( nRow, 0 ) )
 
    RETURN NIL
 

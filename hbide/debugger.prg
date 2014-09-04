@@ -828,6 +828,14 @@ METHOD IdeDebugger:setWindow( cPrgName )
          EXIT
       ENDIF
    NEXT
+   IF Empty( cSource )
+      FOR EACH cPath IN ::oINI:aSourcePaths
+         IF hb_FileExists( hbide_pathToOSPath( cPath + cPrgName ) )
+            cSource := hbide_pathToOSPath( cPath + cPrgName )
+            EXIT
+         ENDIF
+      NEXT
+   ENDIF
    IF ! Empty( cSource )
       ::oIde:oSM:editSource( cSource, 0, 0, 0, NIL, NIL, .F., .T., NIL, NIL, NIL )
       qCursor := ::oIde:qCurEdit:textCursor()

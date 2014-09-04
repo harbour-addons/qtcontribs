@@ -3793,13 +3793,13 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>68</y>
+        <y>48</y>
         <width>331</width>
         <height>137</height>
        </rect>
       </property>
       <property name="title">
-       <string>Include Paths Searched to Open Header Files</string>
+       <string> Include Paths Searched to Open Header Files </string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -3835,6 +3835,64 @@
         <rect>
          <x>244</x>
          <y>50</y>
+         <width>75</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Delete</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_35">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>208</y>
+        <width>331</width>
+        <height>137</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string> Source Paths Used for Debbuger </string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <widget class="QListWidget" name="listSourcePaths">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>225</width>
+         <height>109</height>
+        </rect>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnSourcePathsAdd">
+       <property name="geometry">
+        <rect>
+         <x>244</x>
+         <y>20</y>
+         <width>75</width>
+         <height>24</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Add</string>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="btnSourcePathsDel">
+       <property name="geometry">
+        <rect>
+         <x>244</x>
+         <y>52</y>
          <width>75</width>
          <height>24</height>
         </rect>
