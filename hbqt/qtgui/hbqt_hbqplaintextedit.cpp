@@ -99,6 +99,7 @@ HBQPlainTextEdit::HBQPlainTextEdit( QWidget * parent ) : QPlainTextEdit( parent 
    m_lineAreaBkColor.setNamedColor( "#e4e4e4" );
    m_horzRulerBkColor.setNamedColor( "whitesmoke" );
    m_matchBracesAll         = false;
+   m_debuggedLine           = -1;
 
    spaces                   = 3;
    spacesTab                = "";
@@ -1626,12 +1627,6 @@ void HBQPlainTextEdit::paintEvent( QPaintEvent * event )
             QRect r( 0, top, width, height );
             painter.fillRect( r, brushForBookmark( index ) );
          }
-         index = BreakPointsList.indexOf( blockNumber + 1 );
-         if( index != -1 )
-         {
-            QRect r( 0, top, width, height );
-            painter.fillRect( r, QBrush( QColor( 255, 75, 75 ) ) );
-         }
          else if( curBlock == blockNumber && m_currentLineColor.isValid() )
          {
             if( highlightCurLine == true )
@@ -1641,6 +1636,17 @@ void HBQPlainTextEdit::paintEvent( QPaintEvent * event )
                r.setWidth( width );
                painter.fillRect( r, QBrush( m_currentLineColor ) );
             }
+         }
+         if( blockNumber + 1 == m_debuggedLine )
+         {
+            QRect r( 0, top, width, height );
+            painter.fillRect( r, QBrush( QColor( 0, 255, 0 ) ) );
+            painter.drawRect( 0, top, width, height );
+         }
+         else if( BreakPointsList.indexOf( blockNumber + 1 ) != -1 )
+         {
+            QRect r( 0, top, width, height );
+            painter.fillRect( r, QBrush( QColor( 255, 0, 0 ) ) );
          }
       }
       tblock = tblock.next();

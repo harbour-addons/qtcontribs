@@ -396,7 +396,7 @@ CLASS IdeProject
 
 
 METHOD IdeProject:new( oIDE, aProps )
-   LOCAL b_, a_, oSource, cSource
+   LOCAL b_, a_, oSource, cSource,  aDir, cPath, cExt
 
    IF HB_ISARRAY( aProps ) .AND. !empty( aProps )
       ::aProjProps := aProps
@@ -419,7 +419,7 @@ METHOD IdeProject:new( oIDE, aProps )
 
       ::projPath       := oIde:oPM:getProjectPathFromTitle( ::title )
       IF empty( ::projPath )
-         ::projPath := hb_dirBase() /* In case of new project */
+         ::projPath := hb_dirBase()               /* In case of new project */
       ENDIF
       ::location       := ::projPath
 
@@ -433,10 +433,14 @@ METHOD IdeProject:new( oIDE, aProps )
       FOR EACH cSource IN ::sources
          IF ! ( Left( cSource, 1 ) $ "-$" )
             cSource := hbide_syncProjPath( ::projPath, cSource )
-            oSource := IdeSource():new( cSource )
-            oSource:projPath := ::projPath
-            ::hSources[ oSource:normalized ] := oSource
-            ::hPaths[ oSource:path ] := NIL
+            hb_FNameSplit( cSource, @cPath, , @cExt )
+
+            FOR EACH aDir IN Directory( hbide_pathToOSpath( cSource ) )
+               oSource := IdeSource():new( cPath + aDir[ 1 ] )
+               oSource:projPath := ::projPath
+               ::hSources[ oSource:normalized ] := oSource
+               ::hPaths[ oSource:path ] := NIL
+            NEXT
          ENDIF
       NEXT
    ENDIF

@@ -104,7 +104,7 @@
 #define CMD_SETS                                  19
 #define CMD_ARRAY                                 20
 
-#define BUFF_LEN                                  1024
+#define BUFFER_LEN                                1024
 
 #define cMsgNotSupp                               "Command isn't supported"
 #define C_C                                       " , "
@@ -120,8 +120,8 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   nRowAreas                               INIT -1
    DATA   aSources
    DATA   lDebugging                              INIT .F.
-   DATA   handl1                                  INIT -1
-   DATA   handl2
+   DATA   hRequest                                  INIT -1
+   DATA   hResponse
    DATA   nId1                                    INIT 0
    DATA   nId2                                    INIT -1
 
@@ -151,6 +151,7 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   aTabs
    DATA   oOutputResult
    DATA   cBuffer
+   DATA   lTerminated                             INIT .F.
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -214,11 +215,14 @@ METHOD IdeDebugger:create( oIde )
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
 
-   ::cBuffer         := Space( BUFF_LEN )
+   ::cBuffer         := Space( BUFFER_LEN )
    ::aTabs           := ::oIde:aTabs
    ::oOutputResult   := ::oIde:oOutputResult
-
-   ::oUI := hbqtui_debugger()
+   IF ! Empty( GetEnv( "hbide_debugger_old" ) )
+      ::oUI := hbqtui_debugger()
+   ELSE
+      ::oUI := hbqtui_debugger1()
+   ENDIF
    ::oDebuggerDock:oWidget:setWidget( ::oUI:oWidget )
    ::ui_init()
 
@@ -242,8 +246,8 @@ METHOD IdeDebugger:clear()
    ::nRowAreas              := -1
    ::aSources               := NIL
    ::lDebugging             := .F.
-   ::handl1                 := -1
-   ::handl2                 := NIL
+   ::hRequest                 := -1
+   ::hResponse                 := NIL
    ::nId1                   := 0
    ::nId2                   := -1
    ::cAppName               := NIL
@@ -277,7 +281,7 @@ METHOD IdeDebugger:show()
 
 
 METHOD IdeDebugger:start( cExe )
-   LOCAL cPath, cFile, cExt
+   LOCAL cPath, cFile, cExt, qProcess
 
    ::setMode( MODE_INIT )
 
@@ -286,28 +290,37 @@ METHOD IdeDebugger:start( cExe )
    FErase( cExe + ".d1" )
    FErase( cExe + ".d2" )
 
-   IF ( ::handl1 := FCreate( cExe + ".d1" ) ) == -1
+   IF ( ::hRequest := FCreate( cExe + ".d1" ) ) == -1
       Alert( "Previous instance still active, cannot continue." )
    ENDIF
-   FWrite( ::handl1, "init,!" )
-   FClose( ::handl1 )
-   ::handl2 := FCreate( cExe + ".d2" )
-   FClose( ::handl2 )
+   FWrite( ::hRequest, "init,!" )
+   FClose( ::hRequest )
+   ::hResponse := FCreate( cExe + ".d2" )
+   FClose( ::hResponse )
 
    ::show()
-
-   hb_processOpen( cExe )                         //+ Iif( !Empty( cParams ), cParams, "" ) )
-
+#if 0
+   //hb_processOpen( cExe )                         //+ Iif( !Empty( cParams ), cParams, "" ) )
+   hb_processOpen( cExe, , , , .T. )
+#else
+   qProcess := QProcess()
+   WITH OBJECT qProcess
+      :setWorkingDirectory( hbide_pathToOSPath( cPath ) )
+      :startDetached( cExe )
+      :waitForStarted( 3000 )
+   ENDWITH
+   qProcess := NIL
+#endif
    WITH OBJECT ::oTimer
       :start()
    ENDWITH
 
-   ::handl1 := FOpen( cExe + ".d1", FO_READWRITE + FO_SHARED )
-   ::handl2 := FOpen( cExe + ".d2", FO_READ + FO_SHARED )
-   IF ::handl1 != -1 .AND. ::handl2 != -1
+   ::hRequest := FOpen( cExe + ".d1", FO_READWRITE + FO_SHARED )
+   ::hResponse := FOpen( cExe + ".d2", FO_READ + FO_SHARED )
+   IF ::hRequest != -1 .AND. ::hResponse != -1
       ::cAppName := Lower( cFile + cExt )
    ELSE
-      ::handl1 := ::handl2 := -1
+      ::hRequest := ::hResponse := -1
       hbide_showWarning( "No connection !!" )
       RETURN .F.
    ENDIF
@@ -338,12 +351,7 @@ METHOD IdeDebugger:loadBreakPoints()
       IF Lower( hb_FNameExt( ::aSources[ j ] ) ) $ ".prg,.hb,.c,.cpp"
          FOR i := 1 TO Len( ::aTabs )
             oEditor := ::aTabs[ i, TAB_OEDITOR ]
-#if 1
             IF Lower( hb_FNameName( oEditor:oTab:caption ) ) == Lower( hb_FNameName( ::aSources[ j ] ) )
-#else
-            IF Lower( hb_FNameName( oEditor:cFile + oEditor:cExt ) ) == ;
-                                  Lower( hb_FNameName( ::aSources[ j ] ) + Lower( hb_FNameExt( ::aSources[ j ] ) ) )
-#endif
                cSource := hb_FNameName( ::aSources[ j ] ) + hb_FNameExt( ::aSources[ j ] )
                aBP := hb_ATokens( oEditor:qCoEdit:qEdit:hbGetBreakPoints(), "," )
                AEval( aBP, {|e,i| aBP[ i ] := Val( e ) } )
@@ -575,6 +583,7 @@ METHOD IdeDebugger:timerProc()
                      ELSE
                         EXIT
                      ENDIF
+                     QApplication():processEvents()
                   ENDDO
                   ::requestSets()
                   ::cLastMessage := "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")"
@@ -596,9 +605,9 @@ METHOD IdeDebugger:timerProc()
 METHOD IdeDebugger:dbgRead()
    LOCAL n, s, arr
 
-   FSeek( ::handl2, 0, 0 )
+   FSeek( ::hResponse, 0, 0 )
    s := ""
-   DO WHILE ( n := Fread( ::handl2, @::cBuffer, Len( ::cBuffer ) ) ) > 0
+   DO WHILE ( n := Fread( ::hResponse, @::cBuffer, BUFFER_LEN ) ) > 0
       s += Left( ::cBuffer, n )
       IF ( n := At( ",!", s ) ) > 0
          IF ( arr := hb_aTokens( Left( s, n + 1 ), "," ) ) != NIL .AND. Len( arr ) > 2 .AND. arr[ 1 ] == arr[ Len( arr ) - 1 ]
@@ -607,6 +616,7 @@ METHOD IdeDebugger:dbgRead()
             EXIT
          ENDIF
       ENDIF
+      QApplication():processEvents()
    ENDDO
    RETURN NIL
 
@@ -616,11 +626,11 @@ METHOD IdeDebugger:send( ... )
    LOCAL arr := hb_aParams()
    LOCAL s   := ""
 
-   FSeek( ::handl1, 0, 0 )
+   FSeek( ::hRequest, 0, 0 )
    FOR i := 1 TO Len( arr )
       s += arr[ i ] + ","
    NEXT
-   FWrite( ::handl1, LTrim( Str( ++::nId1 ) ) + "," + s + LTrim( Str( ::nId1 ) ) + ",!" )
+   FWrite( ::hRequest, LTrim( Str( ++::nId1 ) ) + "," + s + LTrim( Str( ::nId1 ) ) + ",!" )
    RETURN NIL
 
 
@@ -795,11 +805,16 @@ METHOD IdeDebugger:setCurrLine( nLine, cName )
    IF ! ::lDebugging
       ::lDebugging := .T.
    ENDIF
+   ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
+
    ::setWindow( cName )
+
+   ::oIde:qCurEdit:hbSetDebuggedLine( nLine )
    qCursor := ::oIde:qCurEdit:textCursor()
 
    qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
    ::oIde:qCurEdit:setTextCursor( qCursor )
+   ::oIde:qCurEdit:centerCursor()
    ::oIde:manageFocusInEditor()
 
    ::oUI:activateWindow()
@@ -848,13 +863,15 @@ METHOD IdeDebugger:setWindow( cPrgName )
 
 
 METHOD IdeDebugger:stopDebug()
+
+   ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
    IF ::oTimer:isActive()
       ::oTimer:stop()
    ENDIF
-   IF ::handl1 != -1
-      FClose( ::handl1 )
-      FClose( ::handl2 )
-      ::handl1 := -1
+   IF ::hRequest != -1
+      FClose( ::hRequest )
+      FClose( ::hResponse )
+      ::hRequest := -1
    ENDIF
 
    ::oUI:tableWatchExpressions:setRowCount( 0 )
@@ -870,6 +887,7 @@ METHOD IdeDebugger:stopDebug()
 
    ::oUi:labelStatus:setText( "Exited" )
    ::hide()
+   ::lTerminated := .T.
    RETURN NIL
 
 
@@ -1155,13 +1173,16 @@ STATIC FUNCTION __pullData( oTable )
 
 
 METHOD IdeDebugger:wait4connection( cStr )
-   LOCAL n, i
+   LOCAL n
    LOCAL nSec := Seconds()
 
    ::oTimer:stop()
    DO WHILE .T.
-      FSeek( ::handl2, 0, 0 )
-      n := Fread( ::handl2, @::cBuffer, Len( ::cBuffer ) )
+      IF ::lTerminated
+         EXIT
+      ENDIF
+      FSeek( ::hResponse, 0, 0 )
+      n := Fread( ::hResponse, @::cBuffer, BUFFER_LEN )
       IF n > 0
          IF cStr == "ok"
             IF At( "err", ::cBuffer ) > 0 .OR. At( "ok", ::cBuffer ) > 0
@@ -1179,9 +1200,8 @@ METHOD IdeDebugger:wait4connection( cStr )
          ::oTimer:start()
          RETURN .F.
       ENDIF
-      FOR i := 1 TO 50000
-         // empty loop
-      NEXT
+      ::waitState( 0.3 )
+      QApplication():processEvents()
    ENDDO
    ::oTimer:start()
    RETURN .T.
@@ -1288,6 +1308,7 @@ METHOD IdeDebugger:ui_load()
 METHOD IdeDebugger:waitState( nSeconds )
    LOCAL nSecs := Seconds()
    DO WHILE Abs( Seconds() - nSecs ) < nSeconds
+      QApplication():processEvents()
    ENDDO
    RETURN NIL
 
@@ -1409,6 +1430,7 @@ METHOD IdeDebugger:watch_del( lAll )
             ::doCommand( CMD_WATCH, "del", LTrim( Str( nn - nEmptyNames ) ) )
             ::wait4connection( "b" + LTrim( Str( ::nId1 ) ) )
          ENDIF
+         QApplication():processEvents()
       ENDDO
       oTable:setRowCount( 0 )
    ELSE
@@ -1489,7 +1511,7 @@ METHOD IdeDebugger:terminateDebug()
 
 METHOD IdeDebugger:exitDbg()
    IF ::nExitMode == 1
-      IF ::handl1 != -1
+      IF ::hRequest != -1
          ::send( "cmd", "exit" )
       ENDIF
    ELSEIF ::nExitMode == 2
@@ -1574,9 +1596,9 @@ METHOD IdeDebugger:ui_init()
    ::oUI:tableSets:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( ::oUI:tableSets )
 
-   ::oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ) } )
-   ::oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ) } )
-   ::oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ) } )
+   ::oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ), ::waitState( 0.2 ) } )
+   ::oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ), ::waitState( 0.2 ) } )
+   ::oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ), ::waitState( 0.2 ) } )
    ::oUI:btnClipboard         :connect( "clicked()", { || ::copyOnClipboard()       } )
    ::oUI:btnExit              :connect( "clicked()", { || ::exitDbg() } )
 

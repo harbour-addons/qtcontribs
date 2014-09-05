@@ -16,6 +16,47 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-04 16:34 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r349)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r349.
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+  * hbqt/qtgui/hbqt_hbqplaintextedit.h
+  * hbqt/qtgui/qth/HBQPlainTextEdit.qth
+    + Added method void hbSetDebbedLine( int line ).
+       Used to highlight the line in editing source where debugger is stopped.
+
+  * hbide/debugger.ui
+  * hbide/debugger1.ui
+    + Added: another tabWidget based debugger interface.
+       By default new interface is active. In case you want to bring back the 
+       old interface, set "hbide_debugger_old=1" environmental variable prior 
+       to executing HbIDE.
+
+  * hbide/hbide.hbp
+    + Added: debugger1.ui
+
+  * hbide/debugger.prg
+  * hbide/main.prg
+  * hbide/projmanager.prg
+    + Implemented: hightlighting the source lin in editing instance where 
+       debugger is stopped at any given point of time. Requested by Francek.
+
+    % The line where debugger is stopped is now always scrolled to center 
+       of the editing instance vertically.
+    
+    + Implemented: expanding the wild cards used in source entries in .hbp 
+       which gets reflected in project node in "Projects Tree".
+       So if an entry like :  c:\dev_source\vouch\*.prg is encountered then 
+       all the .prg(s) deposited in "c:\dev_source\vouch" folder will be 
+       added to the project tree. Requested by Francek.
+
+    + Initialization of debugger where it calls the debugged application is 
+       now done in a detached process. It may ( not sure ) solve problem 
+       reported by Maurizio where custom error handler crashes the application.
+
+    + Many small improvements leading to better debug session.
+
 2014-09-04 00:37 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r348)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r348.

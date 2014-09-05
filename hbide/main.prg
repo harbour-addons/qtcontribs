@@ -1043,7 +1043,7 @@ METHOD HbIde:updateProjectTree( aPrj )
       ENDDO
    ENDIF
    IF empty( oP )
-      oParent:expand( .t. )
+      oParent:expand( .T. )
       oP := oParent:addItem( oProject:title )
       oP:tooltipText := hbide_pathNormalized( ::oPM:getProjectFileNameFromTitle( oProject:title ) )
       aadd( ::aProjData, { oP, "Project Name", oParent, oProject:title, aPrj, oProject } )

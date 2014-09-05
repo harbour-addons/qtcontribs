@@ -114,6 +114,7 @@ public:
    bool           m_matchBracesAll;
    int            m_currentBlockNumber;
    QColor         m_braceHiliteColor;
+   int            m_debuggedLine;
 
    void           paintEvent( QPaintEvent * event );
    void           lineNumberAreaPaintEvent( QPaintEvent * event );
@@ -151,6 +152,7 @@ public:
    void           hbBreakPoints( int block );
    QString	      hbGetBreakPoints();
    void           hbSetBreakPoint( int block );
+   void           hbSetDebuggedLine( int line ) { m_debuggedLine = line; };
 
 signals:
    void	         hbBreakPointSet( int line );
