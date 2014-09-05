@@ -1442,11 +1442,13 @@ FUNCTION hbide_array2cmdParams( aHbp )
 
 FUNCTION hbide_syncProjPath( cRoot, cSource )
 
-   IF left( cSource, 1 ) $ "./\" .OR. substr( cSource, 2, 1 ) == ":"
-      RETURN cSource
-   ENDIF
    IF !empty( cRoot ) .AND. ! ( right( cRoot, 1 ) $ "/\" )
       cRoot += "/"
+   ENDIF
+   IF left( cSource, 2 ) == ".."
+      RETURN cRoot + cSource
+   ELSEIF left( cSource, 1 ) $ "./\" .OR. substr( cSource, 2, 1 ) == ":"
+      RETURN cSource
    ENDIF
    RETURN cRoot + cSource
 
