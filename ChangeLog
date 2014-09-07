@@ -16,6 +16,58 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-07 11:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r351)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r351.
+
+  * debug/dbgconnect.prg
+    % Initialization of debugger is changed to honor only one-way, that is, 
+       when fired from within HbIDE. Originally HwgDebugger is designed to 
+       to be fired either-way, application-to-debugger or debugger-to-app.
+       This fixes race conditions in certain situations.
+
+  * hbide/debugger.ui
+  * hbide/debugger1.ui
+    + added <SwitchUI_1|2> pushbuttons to activate either of the two 
+       interfaces developed in recent days. It is a handy feature to switch 
+       to the view most suitable for a particular purpose. The only point 
+       of note is that interface resfresh completely only on next BP or STEP.
+
+  * hbide/debugger.prg
+  * hbide/edit.prg
+  * hbide/projmanager.prg
+    + Implemented: <F5 GO>, <F10 STEP> and <F8 TOCURS> keyboard navigation.
+       Requested by Maurizio.
+
+    ! Fixed not to show the highlighted row where debugger is stopped 
+      at initialization which was causing great confusion. 
+
+    + Implemented: separation of location of different components of a project;
+       1. Sources - keep sources as and where you already have.
+       2. Project - keep project file .hbp anywhere you want.
+       3. Executable - keep executable anywhere required per production setup.
+       4. Run Executable - from folder as per your production/development setup.
+
+       So, if you have scenario like this ( per my company )
+          Source Folder    - h:\DevAR\dev, h:\DevAR\dev\*source-sub-folders
+          Project Folder   - h:\DevAR\dev
+          Execuable Folder - h:\DevAR\exes ( contains all dlls required )
+          Exe Run Folder   - r:\artest     ( executable must be run from here )
+
+       Then, HbIDE's debugger implimentation now supports it. How:
+       .
+       1. Build your project .hbp as usual as you would do for a normal project.
+       2. Open <Project Properties> dialog.
+       3. Enter folder path from where executable should start in <Start In> 
+          field. In above example it would be "r:\artest".
+       4. Enter parameters needed to execute ( if any ) in <Launch Parameters>
+          field. We do not have to pass with out executable in above example.
+       5. Click on <Build Debugg and Launch> from <MainMenu><Build>.
+
+       Probably, this will cover <Dos 3> error reported by Maurizio.
+       Please test and let me know it debugger is working as intended or 
+       something more is needed. I want to close HbIDE Debugger topic.
+
 2014-09-04 21:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r350)
   * hbide/misc.prg
     ! Fixed regression introduced in last commit. 
