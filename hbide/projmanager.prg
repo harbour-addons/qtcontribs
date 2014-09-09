@@ -2054,7 +2054,7 @@ METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron, lDebug )
             ENDWITH
             qProcess := NIL
          ENDIF
-         FErase( cBatch )
+         //FErase( cBatch )                       /* Seems this breaks the execution on some meachines - clean system temp folder manually and periodically */
       ELSE                                        /* Kept it just for reference - may be switchable through .ini */
          qStr := QStringList()
          IF ! Empty( oProject )

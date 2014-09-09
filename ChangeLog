@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-09 00:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r352)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r352.
+
+  * hbide/debugger.ui
+  * hbide/debugger1.ui
+    + Added: buttons <NextR [F6]> and <Trace [F8]> and shulled others.
+
+  * debug/dbgconnect.prg
+  * debug/debugger.prg
+    ! Fixed: Fearse() calls which invariably erase the files on Linux even 
+       if file is in use by other process. I cannot get this logic, anybody ?
+
+    % Reformatted to make it more readable and understandable.
+
+  * hbide/debugger.prg
+  * hbide/edit.prg
+  * hbide/projmanager.prg
+    + Added and shuffled commands with corresponding buttons, like this:
+       F5 Go, F6 NextR, F7 ToCurs, F8 Step, F10 Trace
+    
 2014-09-07 11:56 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r351)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r351.

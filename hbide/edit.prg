@@ -610,7 +610,7 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
       lCtrl  := hb_bitAnd( kbm, Qt_ControlModifier ) == Qt_ControlModifier
       lShift := hb_bitAnd( kbm, Qt_ShiftModifier   ) == Qt_ShiftModifier
 
-      IF ::oIde:oDebugger:isActive() .AND. ( AScan( { Qt_Key_F5, Qt_Key_F8, Qt_Key_F10 }, key ) > 0 )
+      IF ::oIde:oDebugger:isActive() .AND. ( AScan( { Qt_Key_F5, Qt_Key_F6, Qt_Key_F7, Qt_Key_F8, Qt_Key_F10 }, key ) > 0 )
          ::oIde:oDebugger:manageKey( key )
          RETURN .T.
       ENDIF

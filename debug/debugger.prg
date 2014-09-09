@@ -1,4 +1,4 @@
-   /*
+      /*
  * $Id$
  */
 
@@ -65,10 +65,10 @@
 
 #pragma DEBUGINFO=OFF
 
-#define HB_CLS_NOTOBJECT      /* do not inherit from HBObject calss */
+#define HB_CLS_NOTOBJECT                             /* do not inherit from HBObject calss */
 #include "hbclass.ch"
 
-#include "hbdebug.ch"   /* for "nMode" of __dbgEntry */
+#include "hbdebug.ch"                                /* for "nMode" of __dbgEntry */
 #include "hbmemvar.ch"
 
 #include "inkey.ch"
@@ -76,55 +76,55 @@
 
 
 /* Information structure stored in DATA aCallStack */
-#define CSTACK_MODULE           1  // module name (.prg file)
-#define CSTACK_FUNCTION         2  // function name
-#define CSTACK_LINE             3  // start line
-#define CSTACK_LEVEL            4  // eval stack level of the function
-#define CSTACK_LOCALS           5  // an array with local variables
-#define CSTACK_STATICS          6  // an array with static variables
+#define CSTACK_MODULE                             1  // module name (.prg file)
+#define CSTACK_FUNCTION                           2  // function name
+#define CSTACK_LINE                               3  // start line
+#define CSTACK_LEVEL                              4  // eval stack level of the function
+#define CSTACK_LOCALS                             5  // an array with local variables
+#define CSTACK_STATICS                            6  // an array with static variables
 
 /* Information structure stored in aCallStack[ n ][ CSTACK_LOCALS ]
    { cLocalName, nLocalIndex, "Local", ProcName( 1 ), nLevel } */
-#define VAR_NAME                1
-#define VAR_POS                 2
-#define VAR_TYPE                3
-#define VAR_LEVEL               4  // eval stack level of the function
+#define VAR_NAME                                  1
+#define VAR_POS                                   2
+#define VAR_TYPE                                  3
+#define VAR_LEVEL                                 4  // eval stack level of the function
 
 /* Information structure stored in ::aWatch (watchpoints) */
-#define WP_TYPE                 1  // wp = watchpoint, tr = tracepoint
-#define WP_EXPR                 2  // source of an expression
+#define WP_TYPE                                   1  // wp = watchpoint, tr = tracepoint
+#define WP_EXPR                                   2  // source of an expression
 
 /* Information structure stored in ::aModules */
-#define MODULE_NAME             1
-#define MODULE_STATICS          2
-#define MODULE_GLOBALS          3
-#define MODULE_EXTERNGLOBALS    4
+#define MODULE_NAME                               1
+#define MODULE_STATICS                            2
+#define MODULE_GLOBALS                            3
+#define MODULE_EXTERNGLOBALS                      4
 
-#define CMD_GO                  1
-#define CMD_STEP                2
-#define CMD_TRACE               3
-#define CMD_NEXTR               4
-#define CMD_TOCURS              5
-#define CMD_QUIT                6
-#define CMD_EXIT                7
-#define CMD_BADD                8
-#define CMD_BDEL                9
-#define CMD_CALC               10
-#define CMD_STACK              11
-#define CMD_LOCAL              12
-#define CMD_PRIVATE            13
-#define CMD_PUBLIC             14
-#define CMD_STATIC             15
-#define CMD_WATCH              16
-#define CMD_WADD               17
-#define CMD_WDEL               18
-#define CMD_AREAS              19
-#define CMD_REC                20
-#define CMD_OBJECT             21
-#define CMD_ARRAY              22
-#define CMD_SETS               23
+#define CMD_GO                                    1
+#define CMD_STEP                                  2
+#define CMD_TRACE                                 3
+#define CMD_NEXTR                                 4
+#define CMD_TOCURS                                5
+#define CMD_QUIT                                  6
+#define CMD_EXIT                                  7
+#define CMD_BADD                                  8
+#define CMD_BDEL                                  9
+#define CMD_CALC                                  10
+#define CMD_STACK                                 11
+#define CMD_LOCAL                                 12
+#define CMD_PRIVATE                               13
+#define CMD_PUBLIC                                14
+#define CMD_STATIC                                15
+#define CMD_WATCH                                 16
+#define CMD_WADD                                  17
+#define CMD_WDEL                                  18
+#define CMD_AREAS                                 19
+#define CMD_REC                                   20
+#define CMD_OBJECT                                21
+#define CMD_ARRAY                                 22
+#define CMD_SETS                                  23
 
-#define VAR_MAX_LEN            72
+#define VAR_MAX_LEN                               72
 
 #ifndef __XHARBOUR__
 THREAD STATIC t_oDebugger
@@ -133,44 +133,42 @@ STATIC t_oDebugger
 #endif
 
 #ifdef __XHARBOUR__
-#xtranslate __DBGADDBREAK([<n,...>]) =>  HB_DBG_ADDBREAK(<n>)
-#xtranslate __DBGDELBREAK([<n,...>]) =>  HB_DBG_DELBREAK(<n>)
-#xtranslate __DBGADDWATCH([<n,...>]) =>  HB_DBG_ADDWATCH(<n>)
-#xtranslate __DBGDELWATCH([<n,...>]) =>  HB_DBG_DELWATCH(<n>)
-#xtranslate __DBGISVALIDSTOPLINE([<n,...>]) =>  HB_DBG_ISVALIDSTOPLINE(<n>)
-#xtranslate __DBGSETTOCURSOR([<n,...>]) =>  HB_DBG_SETTOCURSOR(<n>)
-#xtranslate __DBGSETTRACE([<n,...>]) =>  HB_DBG_SETTRACE(<n>)
-#xtranslate __DBGSETNEXTROUTINE([<n,...>]) =>  HB_DBG_SETNEXTROUTINE(<n>)
-#xtranslate __DBGSETCBTRACE([<n,...>]) =>  HB_DBG_SETCBTRACE(<n>)
-#xtranslate __DBGGETEXPRVALUE([<n,...>]) =>  HB_DBG_GETEXPRVALUE(<n>)
-#xtranslate __DBGGETSOURCEFILES([<n,...>]) =>  HB_DBG_GETSOURCEFILES(<n>)
-#xtranslate __DBGSETQUIT([<n,...>]) =>  HB_DBG_SETQUIT(<n>)
-#xtranslate __DBGSETGO([<n,...>]) =>  HB_DBG_SETGO(<n>)
-#xtranslate __DBGSETENTRY([<n,...>]) =>  HB_DBG_SETENTRY(<n>)
+#xtranslate __DBGADDBREAK([<n,...>])              =>  HB_DBG_ADDBREAK(<n>)
+#xtranslate __DBGDELBREAK([<n,...>])              =>  HB_DBG_DELBREAK(<n>)
+#xtranslate __DBGADDWATCH([<n,...>])              =>  HB_DBG_ADDWATCH(<n>)
+#xtranslate __DBGDELWATCH([<n,...>])              =>  HB_DBG_DELWATCH(<n>)
+#xtranslate __DBGISVALIDSTOPLINE([<n,...>])       =>  HB_DBG_ISVALIDSTOPLINE(<n>)
+#xtranslate __DBGSETTOCURSOR([<n,...>])           =>  HB_DBG_SETTOCURSOR(<n>)
+#xtranslate __DBGSETTRACE([<n,...>])              =>  HB_DBG_SETTRACE(<n>)
+#xtranslate __DBGSETNEXTROUTINE([<n,...>])        =>  HB_DBG_SETNEXTROUTINE(<n>)
+#xtranslate __DBGSETCBTRACE([<n,...>])            =>  HB_DBG_SETCBTRACE(<n>)
+#xtranslate __DBGGETEXPRVALUE([<n,...>])          =>  HB_DBG_GETEXPRVALUE(<n>)
+#xtranslate __DBGGETSOURCEFILES([<n,...>])        =>  HB_DBG_GETSOURCEFILES(<n>)
+#xtranslate __DBGSETQUIT([<n,...>])               =>  HB_DBG_SETQUIT(<n>)
+#xtranslate __DBGSETGO([<n,...>])                 =>  HB_DBG_SETGO(<n>)
+#xtranslate __DBGSETENTRY([<n,...>])              =>  HB_DBG_SETENTRY(<n>)
 
-#xtranslate __DBGVMVARLSET([<n,...>]) =>  HB_DBG_VMVARLSET(<n>)
-#xtranslate __DBGVMVARLGET([<n,...>]) =>  HB_DBG_VMVARLGET(<n>)
-#xtranslate __DBGVMVARSGET([<n,...>]) =>  HB_DBG_VMVARSGET(<n>)
-#xtranslate __DBGVMVARSSET([<n,...>]) =>  HB_DBG_VMVARSSET(<n>)
-#xtranslate __DBGVMVARGGET([<n,...>]) =>  HB_DBG_VMVARGGET(<n>)
-#xtranslate __DBGVMVARGSET([<n,...>]) =>  HB_DBG_VMVARGSET(<n>)
-#xtranslate __DBGPROCLEVEL([<n,...>]) =>  HB_DBG_PROCLEVEL(<n>)
-#xtranslate __DBGINVOKEDEBUG([<n,...>]) =>  HB_DBG_INVOKEDEBUG(<n>)
+#xtranslate __DBGVMVARLSET([<n,...>])             =>  HB_DBG_VMVARLSET(<n>)
+#xtranslate __DBGVMVARLGET([<n,...>])             =>  HB_DBG_VMVARLGET(<n>)
+#xtranslate __DBGVMVARSGET([<n,...>])             =>  HB_DBG_VMVARSGET(<n>)
+#xtranslate __DBGVMVARSSET([<n,...>])             =>  HB_DBG_VMVARSSET(<n>)
+#xtranslate __DBGVMVARGGET([<n,...>])             =>  HB_DBG_VMVARGGET(<n>)
+#xtranslate __DBGVMVARGSET([<n,...>])             =>  HB_DBG_VMVARGSET(<n>)
+#xtranslate __DBGPROCLEVEL([<n,...>])             =>  HB_DBG_PROCLEVEL(<n>)
+#xtranslate __DBGINVOKEDEBUG([<n,...>])           =>  HB_DBG_INVOKEDEBUG(<n>)
 
-#xtranslate hb_ntos([<n,...>]) =>  Ltrim(Str((<n>)))
+#xtranslate hb_ntos([<n,...>])                    =>  Ltrim(Str((<n>)))
 #endif
 
 
 PROCEDURE __dbgAltDEntry()
-
    /* do not activate the debugger imediatelly because the module
       where ALTD() was called can have no debugger info - stop
       on first LINE with debugged info
     */
-
    __dbgInvokeDebug( Set( _SET_DEBUG ) )
-
    RETURN
+
 
 /* debugger entry point */
 PROCEDURE __dbgEntry( nMode, uParam1, uParam2, uParam3, uParam4, uParam5 )
@@ -202,35 +200,33 @@ PROCEDURE __dbgEntry( nMode, uParam1, uParam2, uParam3, uParam4, uParam5 )
       t_oDebugger:Activate()
 
    ENDCASE
-
    RETURN
+
 
 CLASS HBDebugger
 
    VAR pInfo
-
    VAR cPrgName
+   VAR aVars                                      INIT {}
+   VAR aBreakPoints                               INIT {}
+   VAR aCallStack                                 INIT {}    // stack of procedures with debug info
+   VAR aProcStack                                 INIT {}    // stack of all procedures
+   VAR nProcLevel                                            // procedure level where the debugger is currently
+   VAR aModules                                   INIT {}    // array of modules with static and GLOBAL variables
+   VAR nWatches                                   INIT 0
 
-   VAR aVars             INIT {}
-   VAR aBreakPoints      INIT {}
-   VAR aCallStack        INIT {}    // stack of procedures with debug info
-   VAR aProcStack        INIT {}    // stack of all procedures
-   VAR nProcLevel                   // procedure level where the debugger is currently
-   VAR aModules          INIT {}    // array of modules with static and GLOBAL variables
-   VAR nWatches          INIT 0
+   VAR nSpeed                                     INIT 0
 
-   VAR nSpeed            INIT 0
-
-   VAR lViewStack        INIT .F.
-   VAR lShowLocals       INIT .F.
-   VAR lShowPrivate      INIT .F.
-   VAR lShowPublic       INIT .F.
-   VAR lShowStatic       INIT .F.
-   VAR lShowWatch        INIT .F.
-   VAR lGo                          // stores if GO was requested
-   VAR lActive           INIT .F.
-   VAR lCBTrace          INIT .T.   // stores if codeblock tracing is allowed
-   VAR lRunAtStartup     INIT .F.
+   VAR lViewStack                                 INIT .F.
+   VAR lShowLocals                                INIT .F.
+   VAR lShowPrivate                               INIT .F.
+   VAR lShowPublic                                INIT .F.
+   VAR lShowStatic                                INIT .F.
+   VAR lShowWatch                                 INIT .F.
+   VAR lGo                                                   // stores if GO was requested
+   VAR lActive                                    INIT .F.
+   VAR lCBTrace                                   INIT .T.   // stores if codeblock tracing is allowed
+   VAR lRunAtStartup                              INIT .F.
 
    METHOD New()
    METHOD Activate()
@@ -250,19 +246,18 @@ CLASS HBDebugger
    METHOD VarGetValue( aVar )
    METHOD VarSetValue( aVar, uValue )
 
-ENDCLASS
+   ENDCLASS
 
 
 METHOD New() CLASS HBDebugger
 
    t_oDebugger := Self
 
-   // Init Debugger Window
    hwg_dbg_New()
 
    ::lGo := ::lRunAtStartup
-
    RETURN Self
+
 
 METHOD Activate() CLASS HBDebugger
 
@@ -272,22 +267,17 @@ METHOD Activate() CLASS HBDebugger
       ::lActive := .T.
    ENDIF
 
-   // show the topmost procedure
-   ::ShowCodeLine( 1 )
+   ::ShowCodeLine( 1 )                            // show the topmost procedure  ?? Is It Necessary ?
    ::HandleEvent()
-
    RETURN NIL
 
 
 METHOD CodeblockTrace()
-
    __dbgSetCBTrace( ::pInfo, ::lCBTrace )
-
    RETURN NIL
 
 
 METHOD GetExprValue( xExpr, lValid ) CLASS HBDebugger
-
    LOCAL xResult
    LOCAL bOldError, oErr
 
@@ -308,7 +298,6 @@ METHOD GetExprValue( xExpr, lValid ) CLASS HBDebugger
       lValid := .F.
    END SEQUENCE
    Errorblock( bOldError )
-
    RETURN xResult
 
 
@@ -317,18 +306,14 @@ METHOD GetSourceFiles() CLASS HBDebugger
 
 
 METHOD Go() CLASS HBDebugger
-
    __dbgSetGo( ::pInfo )
-
    RETURN NIL
 
 
 METHOD HandleEvent() CLASS HBDebugger
-
    LOCAL nKey, p1, p2, p3, xResult, nAt
 
    DO WHILE .T.
-
       nKey := hwg_dbg_Input( @p1, @p2, @p3 )
 
       DO CASE
@@ -458,22 +443,22 @@ METHOD HandleEvent() CLASS HBDebugger
          ENDIF
 
       CASE nKey == CMD_AREAS
-            hwg_dbg_Answer( "valueareas", SendAreas() )
+         hwg_dbg_Answer( "valueareas", SendAreas() )
 
       CASE nKey == CMD_REC
-            hwg_dbg_Answer( "valuerec", SendRec( p1 ) )
+         hwg_dbg_Answer( "valuerec", SendRec( p1 ) )
 
       CASE nKey == CMD_OBJECT
-            hwg_dbg_Answer( "valueobj", SendObject( p1 ) )
+         hwg_dbg_Answer( "valueobj", SendObject( p1 ) )
 
       CASE nKey == CMD_ARRAY
-            hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
+         hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
 
       CASE nKey == CMD_ARRAY
-            hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
+         hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
 
       CASE nKey == CMD_SETS
-            hwg_dbg_Answer( "valuesets", SendSets() )
+         hwg_dbg_Answer( "valuesets", SendSets() )
 
       CASE nKey == CMD_CALC
          IF Left( p1,1 ) == "?"
@@ -483,16 +468,11 @@ METHOD HandleEvent() CLASS HBDebugger
 
       ENDCASE
    ENDDO
-
    RETURN NIL
 
-METHOD LoadCallStack() CLASS HBDebugger
 
-   LOCAL i
-   LOCAL nDebugLevel
-   LOCAL nCurrLevel
-   LOCAL nlevel
-   LOCAL nPos
+METHOD LoadCallStack() CLASS HBDebugger
+   LOCAL i, nDebugLevel, nCurrLevel, nlevel, nPos
 
    ::aProcStack := Array( ::nProcLevel )
 
@@ -512,6 +492,7 @@ METHOD LoadCallStack() CLASS HBDebugger
 
    RETURN NIL
 
+
 METHOD Quit() CLASS HBDebugger
 
    __dbgSetQuit( ::pInfo )
@@ -523,9 +504,7 @@ METHOD Quit() CLASS HBDebugger
 
 
 METHOD ShowCodeLine( nProc ) CLASS HBDebugger
-
-   LOCAL nLine
-   LOCAL cPrgName
+   LOCAL nLine, cPrgName
 
    // we only update the stack window and up a new browse
    // to view the code if we have just broken execution
@@ -557,24 +536,20 @@ METHOD ShowCodeLine( nProc ) CLASS HBDebugger
 
 
 METHOD VarGetInfo( aVar ) CLASS HBDebugger
-
    LOCAL cType := Left( aVar[ VAR_TYPE ], 1 )
    LOCAL uValue := ::VarGetValue( aVar )
 
    DO CASE
    CASE cType == "G" ; RETURN aVar[ VAR_NAME ] + " <Global, " + ValType( uValue ) + ">: " + __dbgValToStr( uValue )
-   CASE cType == "L" ; RETURN aVar[ VAR_NAME ] + " <Local, " + ValType( uValue ) + ">: " + __dbgValToStr( uValue )
+   CASE cType == "L" ; RETURN aVar[ VAR_NAME ] + " <Local, "  + ValType( uValue ) + ">: " + __dbgValToStr( uValue )
    CASE cType == "S" ; RETURN aVar[ VAR_NAME ] + " <Static, " + ValType( uValue ) + ">: " + __dbgValToStr( uValue )
    OTHERWISE         ; RETURN aVar[ VAR_NAME ] + " <" + aVar[ VAR_TYPE ] + ", " + ValType( uValue ) + ">: " + __dbgValToStr( uValue )
    ENDCASE
-
    // ; Never reached
-
    RETURN ""
 
 
 METHOD VarGetValue( aVar ) CLASS HBDebugger
-
    LOCAL cType := Left( aVar[ VAR_TYPE ], 1 )
 
    DO CASE
@@ -583,14 +558,11 @@ METHOD VarGetValue( aVar ) CLASS HBDebugger
    CASE cType == "S" ; RETURN __dbgVMVarSGet( aVar[ VAR_LEVEL ], aVar[ VAR_POS ] )
    OTHERWISE         ; RETURN aVar[ VAR_POS ] // Public or Private
    ENDCASE
-
    // ; Never reached
-
    RETURN NIL
 
 
 METHOD VarSetValue( aVar, uValue ) CLASS HBDebugger
-
    LOCAL nProcLevel
    LOCAL cType := Left( aVar[ VAR_TYPE ], 1 )
 
@@ -610,7 +582,6 @@ METHOD VarSetValue( aVar, uValue ) CLASS HBDebugger
       &( aVar[ VAR_NAME ] ) := uValue
 
    ENDIF
-
    RETURN Self
 
 
@@ -619,8 +590,8 @@ FUNCTION __Dbg()
 
 
 STATIC FUNCTION SendStack()
-Local aStack := t_oDebugger:aProcStack
-Local arr := Array( Len( aStack ) * 3 + 1 ), i, j := 2
+   LOCAL aStack := t_oDebugger:aProcStack
+   LOCAL arr := Array( Len( aStack ) * 3 + 1 ), i, j := 2
 
    arr[1] := Ltrim( Str( Len( aStack ) ) )
    FOR i := 1 TO Len( aStack )
@@ -628,12 +599,12 @@ Local arr := Array( Len( aStack ) * 3 + 1 ), i, j := 2
       arr[j++] := Iif( Empty(aStack[i,CSTACK_FUNCTION]), "Unknown", aStack[i,CSTACK_FUNCTION] )
       arr[j++] := Iif( Empty(aStack[i,CSTACK_LINE]), "", Ltrim(Str( aStack[i,CSTACK_LINE] )) )
    NEXT
-
    RETURN arr
 
+
 STATIC FUNCTION SendLocal()
-Local aVars := t_oDebugger:aProcStack[1,CSTACK_LOCALS]
-Local arr := Array( Len( aVars ) * 3 + 1 ), i, j := 1, xVal
+   LOCAL aVars := t_oDebugger:aProcStack[1,CSTACK_LOCALS]
+   LOCAL arr := Array( Len( aVars ) * 3 + 1 ), i, j := 1, xVal
 
    arr[1] := Ltrim( Str( Len( aVars ) ) )
    FOR i := 1 TO Len( aVars )
@@ -645,12 +616,12 @@ Local arr := Array( Len( aVars ) * 3 + 1 ), i, j := 1, xVal
          arr[j] := Left( arr[j], VAR_MAX_LEN )
       ENDIF
    NEXT
-
    RETURN arr
 
+
 STATIC FUNCTION SendPrivate()
-Local nCount := __mvDbgInfo( HB_MV_PRIVATE )
-Local arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
+   LOCAL nCount := __mvDbgInfo( HB_MV_PRIVATE )
+   LOCAL arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
 
    arr[1] := Ltrim( Str( nCount ) )
    FOR i := 1 TO nCount
@@ -662,12 +633,12 @@ Local arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
          arr[j] := Left( arr[j], VAR_MAX_LEN )
       ENDIF
    NEXT
-
    RETURN arr
 
+
 STATIC FUNCTION SendPublic()
-Local nCount := __mvDbgInfo( HB_MV_PUBLIC )
-Local arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
+   LOCAL nCount := __mvDbgInfo( HB_MV_PUBLIC )
+   LOCAL arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
 
    arr[1] := Ltrim( Str( nCount ) )
    FOR i := 1 TO nCount
@@ -679,12 +650,12 @@ Local arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
          arr[j] := Left( arr[j], VAR_MAX_LEN )
       ENDIF
    NEXT
-
    RETURN arr
 
+
 STATIC FUNCTION SendStatic()
-Local aVars, nAll := 0
-Local arr, i, j := 1, xVal
+   LOCAL aVars, nAll := 0
+   LOCAL arr, i, j := 1, xVal
 
    xVal := t_oDebugger:aProcStack[ 1,CSTACK_MODULE ]
    i := AScan( t_oDebugger:aModules, {|a| hb_FileMatch( a[MODULE_NAME], xVal ) } )
@@ -720,24 +691,24 @@ Local arr, i, j := 1, xVal
          arr[j] := Left( arr[j], VAR_MAX_LEN )
       ENDIF
    NEXT
-
    RETURN arr
 
+
 STATIC FUNCTION SendWatch()
-Local arr := Array( t_oDebugger:nWatches + 1 ), i
+   LOCAL arr := Array( t_oDebugger:nWatches + 1 ), i
 
    arr[1] := Ltrim( Str( t_oDebugger:nWatches ) )
 
    FOR i := 1 TO t_oDebugger:nWatches
       arr[i+1] := __dbgValToStr( t_oDebugger:GetExprValue( i ) )
    NEXT
-
    RETURN arr
+
 
 #define WA_ITEMS  12
 
 STATIC FUNCTION SendAreas()
-Local arr, arr1[512], n, i, nAreas := 0, nAlias
+   LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias
 
    FOR n := 1 TO 512
       IF ( (n)->( Used() ) )
@@ -766,11 +737,11 @@ Local arr, arr1[512], n, i, nAreas := 0, nAlias
       arr[++n] := ordKey()
    NEXT
    Select( nAlias )
-
    RETURN arr
 
+
 STATIC FUNCTION SendRec( cAlias )
-Local af, nCount, arr, i, j := 3
+   LOCAL af, nCount, arr, i, j := 3
 
    IF Empty( cAlias )
       cAlias := Alias()
@@ -794,11 +765,11 @@ Local af, nCount, arr, i, j := 3
          arr[j] := Left( arr[j], VAR_MAX_LEN )
       ENDIF
    NEXT
-
    RETURN arr
 
+
 STATIC FUNCTION SendObject( cObjName )
-Local aVars, aMethods, arr, obj, i, j := 1
+   LOCAL aVars, aMethods, arr, obj, i, j := 1
 
    obj := t_oDebugger:GetExprValue( cObjName )
    IF Valtype( obj ) == "O"
@@ -824,8 +795,8 @@ Local aVars, aMethods, arr, obj, i, j := 1
    ELSE
       Return { "0" }
    ENDIF
-
    RETURN arr
+
 
 STATIC FUNCTION SendArray( cArrName, nFirst, nCount )
    LOCAL arr, arrFrom, xValue, i, j := 3
@@ -855,7 +826,6 @@ STATIC FUNCTION SendArray( cArrName, nFirst, nCount )
    ELSE
       Return { "0", "0", "0" }
    ENDIF
-
    RETURN arr
 
 
@@ -948,9 +918,7 @@ STATIC FUNCTION starts( cLine, cStart )
 
 /* Strip path from filename */
 STATIC FUNCTION strip_path( cFileName )
-
-   LOCAL cName
-   LOCAL cExt
+   LOCAL cName, cExt
 
    IF cFileName == Nil; cFileName := ""; ENDIF
 
@@ -958,8 +926,8 @@ STATIC FUNCTION strip_path( cFileName )
 
    RETURN cName + cExt
 
-FUNCTION __dbgValToStr( uVal )
 
+FUNCTION __dbgValToStr( uVal )
    LOCAL cType := ValType( uVal ), i, s, nLen
 
    DO CASE
@@ -989,22 +957,23 @@ FUNCTION __dbgValToStr( uVal )
 
    RETURN "U"
 
-#ifdef __XHARBOUR__
-#define ALTD_DISABLE   0
-#define ALTD_ENABLE    1
 
-function ALTD( nAction )
-   if pcount() == 0
-      if SET( _SET_DEBUG ) .AND. TYPE( "__DBGALTDENTRY()" ) == "UI"
+#ifdef __XHARBOUR__
+#define ALTD_DISABLE                              0
+#define ALTD_ENABLE                               1
+
+FUNCTION ALTD( nAction )
+   IF pcount() == 0
+      IF SET( _SET_DEBUG ) .AND. TYPE( "__DBGALTDENTRY()" ) == "UI"
          &("__DBGALTDENTRY()")
-      endif
-   elseif valtype( nAction ) == "N"
-      if nAction == ALTD_DISABLE
+      ENDIF
+   ELSEIF valtype( nAction ) == "N"
+      IF nAction == ALTD_DISABLE
          SET( _SET_DEBUG, .F. )
-      elseif nAction == ALTD_ENABLE
+      ELSEIF nAction == ALTD_ENABLE
          SET( _SET_DEBUG, .T. )
-      endif
-   endif
-return nil
+      ENDIF
+   ENDIF
+   RETURN NIL
 #endif
 

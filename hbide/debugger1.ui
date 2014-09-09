@@ -62,12 +62,12 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Go [ F5 ]</string>
+         <string>Go [F5]</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="btnStep">
+       <widget class="QToolButton" name="btnNextR">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -75,7 +75,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Step [ F10 ]</string>
+         <string>NextR [F6]</string>
         </property>
        </widget>
       </item>
@@ -88,7 +88,33 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>To Cursor [ F8 ]</string>
+         <string>ToCursor [F7]</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="btnStep">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Step [F8]</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="btnTrace">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Trace [F10]</string>
         </property>
        </widget>
       </item>
@@ -101,7 +127,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Copy on Clipboard</string>
+         <string>Clipboard</string>
         </property>
        </widget>
       </item>
@@ -114,7 +140,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>SwitchUI_1</string>
+         <string>UI_1</string>
         </property>
        </widget>
       </item>

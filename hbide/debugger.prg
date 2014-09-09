@@ -153,7 +153,7 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   aTabs
    DATA   cBuffer
    DATA   lTerminated                             INIT .F.
-   DATA   cExe
+   DATA   cExe                                    INIT ""
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -202,7 +202,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD requestVars( index )
    METHOD waitState( nSeconds )
    METHOD copyOnClipboard()
-   METHOD isActive()                              INLINE ::lDebugging
+   METHOD isActive()                              INLINE ! ::lTerminated    // ::lDebugging
    METHOD raise()                                 INLINE ::oIde:oDebuggerDock:oWidget:raise()
    METHOD manageKey( nQtKey )
    METHOD switchUI()
@@ -330,7 +330,6 @@ METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
       ::oPM:outputText( "Connected Successfully." )
    ELSE
       ::oPM:outputText( "Not Connected, Debug Terminated !!" )
-      //::oPM:outputText( .. )
       RETURN .F.
    ENDIF
 
@@ -682,9 +681,15 @@ METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2 )
          ::send( "cmd", "to", ::getCurrPrgName(), Ltrim( Str( ::getCurrLine() ) ) )
 
       ELSEIF nCmd == CMD_TRACE
+         ::oPM:outputText( "Command TRACE Issued."   )
+         ::oPM:outputText( "Program Executing..." )
+         ::oUi:labelStatus:setText( "Program Executing..." )
          ::send( "cmd", "trace" )
 
       ELSEIF nCmd == CMD_NEXTR
+         ::oPM:outputText( "Command NEXTR Issued."   )
+         ::oPM:outputText( "Program Executing..." )
+         ::oUi:labelStatus:setText( "Program Executing..." )
          ::send( "cmd", "nextr" )
 
       ELSEIF nCmd == CMD_EXP
@@ -881,7 +886,9 @@ METHOD IdeDebugger:setWindow( cPrgName )
 
 
 METHOD IdeDebugger:stopDebug()
-
+   IF ! ::isActive()
+      RETURN Self
+   ENDIF
    ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
    IF ::oTimer:isActive()
       ::oTimer:stop()
@@ -1640,11 +1647,13 @@ METHOD IdeDebugger:ui_init( oUI )
    ::fineTune( oUI:tableSets )
 
    oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ), ::waitState( 0.2 ) } )
+   oUI:btnNextR             :connect( "clicked()", { || ::doCommand( CMD_NEXTR  ), ::waitState( 0.2 ) } )
    oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ), ::waitState( 0.2 ) } )
    oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ), ::waitState( 0.2 ) } )
+   oUI:btnTrace             :connect( "clicked()", { || ::doCommand( CMD_TRACE  ), ::waitState( 0.2 ) } )
    oUI:btnClipboard         :connect( "clicked()", { || ::copyOnClipboard() } )
    oUI:btnSwitch            :connect( "clicked()", { || ::switchUI()        } )
-   oUI:btnExit              :connect( "clicked()", { || ::exitDbg()         } )
+   oUI:btnExit              :connect( "clicked()", { || ::nExitMode := 2, ::exitDbg()         } )
 
    oUI:btnAddWatch          :connect( "clicked()", { || ::watch_ins()       } )
    oUI:btnPasteWatch        :connect( "clicked()", { || ::watch_ins( .T. )  } )
@@ -1663,13 +1672,13 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
 
    oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
-   oUI                      :connect( QEvent_Close           , {|| ::exitDbg() } )
+   //oUI                      :connect( QEvent_Close           , {|| ::exitDbg() } )
    oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
    RETURN NIL
 
 
 METHOD IdeDebugger:switchUI()
-   IF ::oUI:btnSwitch:text() == "SwitchUI_1"
+   IF ::oUI:btnSwitch:text() == "UI_1"
       ::oUI := ::oUI_1
    ELSE
       ::oUI := ::oUI_2
@@ -1679,8 +1688,7 @@ METHOD IdeDebugger:switchUI()
    ::oDebuggerDock:oWidget:show()
    ::oDebuggerDock:oWidget:raise()
    ::oUI:show()
-
-   ::loadAll()
+   //::loadAll()
    RETURN Self
 
 
@@ -1688,8 +1696,10 @@ METHOD IdeDebugger:manageKey( nQtKey )
    IF ::isActive()
       SWITCH nQtKey
       CASE Qt_Key_F5 ; ::doCommand( CMD_GO     ) ; EXIT
-      CASE Qt_Key_F10; ::doCommand( CMD_STEP   ) ; EXIT
+      CASE Qt_Key_F6 ; ::doCommand( CMD_NEXTR  ) ; EXIT
       CASE Qt_Key_F7 ; ::doCommand( CMD_TOCURS ) ; EXIT
+      CASE Qt_Key_F8 ; ::doCommand( CMD_STEP   ) ; EXIT
+      CASE Qt_Key_F10; ::doCommand( CMD_TRACE  ) ; EXIT
       ENDSWITCH
    ENDIF
    RETURN .F.
