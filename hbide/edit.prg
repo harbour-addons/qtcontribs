@@ -677,6 +677,9 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
          EXIT
       CASE Qt_Key_Return
       CASE Qt_Key_Enter
+         IF lShift
+            RETURN .T.
+         ENDIF
          ::lIndentIt := .t.
          EXIT
       CASE Qt_Key_ParenLeft

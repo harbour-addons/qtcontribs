@@ -16,7 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2014-09-09 00:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r353)
+2014-09-10 12:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r354)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r354.
+
+  * hbide/edit.prg
+    ! Fixed: Qt's undocumented behavior where Shift+Enter was inserting a 
+       new line out of HbQT's engine. Discovered by Juan, thanks.
+
+  * hbqtwidgets/hbqtdbu.prg
+    ! Fixed: opening a corrupted table in HbDBU, which in-turn is reflected
+       in HbIDE DBU, was causing RTE after issueing warning about the 
+       corruption. Discovered by Juan, many thanks.
+
+2014-09-09 18:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r353)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r353.
 

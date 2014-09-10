@@ -1171,12 +1171,12 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
             IF !empty( cTable := hbdbu_fetchAFile( ::oWidget, "Select a Table", "Database File (*.dbf)", ::cWrkFolderLast ) )
                hb_fNameSplit( cTable, @cPath )
                ::cWrkFolderLast := cPath
-               ::oCurPanel:addBrowser( { NIL, cTable } )
-
-               IF HB_ISBLOCK( ::populateTreeBlock )
-                  aPopulate := Eval( ::populateTreeBlock(), hbide_pathToOSPath( cTable ), ::currentDriver(), ::currentConxn() )
-                  IF HB_ISARRAY( aPopulate ) .AND. Len( aPopulate ) >= 6
-                     ::populateTree( aPopulate )
+               IF ::oCurPanel:addBrowser( { NIL, cTable } )
+                  IF HB_ISBLOCK( ::populateTreeBlock )
+                     aPopulate := Eval( ::populateTreeBlock(), hbide_pathToOSPath( cTable ), ::currentDriver(), ::currentConxn() )
+                     IF HB_ISARRAY( aPopulate ) .AND. Len( aPopulate ) >= 6
+                        ::populateTree( aPopulate )
+                     ENDIF
                   ENDIF
                ENDIF
             ENDIF
@@ -2886,13 +2886,13 @@ METHOD HbQtPanelBrowse:prepare()
 METHOD HbQtPanelBrowse:addBrowser( aInfo )
    LOCAL oMdiBrw
    oMdiBrw := HbQtMdiBrowser():new( ::oManager, Self, aInfo ):create()
-   IF empty( oMdiBrw:oBrw )
-      RETURN Self
+   IF Empty( oMdiBrw ) .OR. ! oMdiBrw:lOpened
+      RETURN .F.
    ENDIF
    aadd( ::aBrowsers, { oMdiBrw:nID, oMdiBrw:qMdi, oMdiBrw:qMdi:geometry(), oMdiBrw, NIL } )
    ::oManager:updateIndexMenu( oMdiBrw )
    ::oManager:updateBrwStruct( oMdiBrw )
-   RETURN Self
+   RETURN .T.
 
 
 METHOD HbQtPanelBrowse:activateBrowser()
@@ -3113,7 +3113,7 @@ METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
    ::cConxn     := ::aInfo[ TBL_CONXN  ]
 
    IF ! ::exists()
-      RETURN Self
+      RETURN NIL
    ENDIF
 
    ::cAlias := Upper( ::fetchAlias( cName ) )
@@ -3127,7 +3127,7 @@ METHOD HbQtMdiBrowser:create( oManager, oPanel, aInfo )
 
       IF lMissing .AND. !empty( ::cTable )
          IF ! ( ::lOpened := ::use() )
-            RETURN Self
+            RETURN NIL
          ENDIF
       ENDIF
 
@@ -4184,8 +4184,8 @@ METHOD HbQtMdiBrowser:use()
                lErr := .t.
             ENDIF
          RECOVER USING oErr
-            Alert( { oErr:description, "Error Opening Table" } )
-            RETURN Self
+            lErr := .t.
+            Alert( { "Error Opening " + ::cTable + " !", oErr:description } )
          ENDSEQUENCE
          ErrorBlock( bError )
 
