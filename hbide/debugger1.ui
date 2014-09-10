@@ -62,7 +62,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Go [F5]</string>
+         <string>Go.F5</string>
         </property>
        </widget>
       </item>
@@ -75,7 +75,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>NextR [F6]</string>
+         <string>NextR.F6</string>
         </property>
        </widget>
       </item>
@@ -88,7 +88,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>ToCursor [F7]</string>
+         <string>ToCursor.F7</string>
         </property>
        </widget>
       </item>
@@ -101,7 +101,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Step [F8]</string>
+         <string>Step.F8</string>
         </property>
        </widget>
       </item>
@@ -114,7 +114,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Trace [F10]</string>
+         <string>Trace.F10</string>
         </property>
        </widget>
       </item>
@@ -360,14 +360,38 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QLabel" name="labelObjectInspector">
-               <property name="text">
-                <string>Object Inspector</string>
+              <layout class="QHBoxLayout" name="horizontalLayout_6">
+               <property name="topMargin">
+                <number>0</number>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
+               <item>
+                <widget class="QToolButton" name="btnObjBack">
+                 <property name="toolTip">
+                  <string>Inspect Object One Level Up</string>
+                 </property>
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="hbide.qrc">
+                   <normaloff>:/resources/go-prev.png</normaloff>:/resources/go-prev.png</iconset>
+                 </property>
+                 <property name="autoRaise">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="labelObjectInspector">
+                 <property name="text">
+                  <string>Object Inspector</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QTableWidget" name="tableObjectInspector">

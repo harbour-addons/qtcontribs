@@ -454,9 +454,6 @@ METHOD HandleEvent() CLASS HBDebugger
       CASE nKey == CMD_ARRAY
          hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
 
-      CASE nKey == CMD_ARRAY
-         hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
-
       CASE nKey == CMD_SETS
          hwg_dbg_Answer( "valuesets", SendSets() )
 
@@ -791,7 +788,6 @@ STATIC FUNCTION SendObject( cObjName )
          arr[++j] := ""
          arr[++j] := "Method"
       NEXT
-
    ELSE
       Return { "0" }
    ENDIF

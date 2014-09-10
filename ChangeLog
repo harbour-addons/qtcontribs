@@ -16,6 +16,25 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-09 00:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r353)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r353.
+
+  * hbide/debugger.ui
+  * hbide/debugger1.ui
+    + Added: button <btnObjBack>.
+
+  * debug/debugger.prg
+    % Minor.
+
+  * hbide/debugger.prg
+    + Implemented: drill-down of arrays and objects vai <Object|Array Inspector>
+       and returning one level up upwards. First level is when object inspector 
+       is invoked from <Variables> tabs. Drill-down then is achieved by double-
+       clicking on an array or object entry in <Object Inspector> table. 
+       Returning to one-level-up is achieved by clicking on <Back> button made 
+       active along title-bar of <Object Inspector> widget.
+  
 2014-09-09 00:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r352)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r352.

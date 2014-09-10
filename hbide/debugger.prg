@@ -129,6 +129,7 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   cPrgName                                INIT ""
 
    DATA   cInspectVar                             INIT ""
+   DATA   cInspectTypes                           INIT ""
    DATA   cInspectType                            INIT ""
 
    DATA   aBP                                     INIT {}
@@ -179,12 +180,16 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD setWindow( cPrgName )
    METHOD stopDebug()
    METHOD inspectObject( lClicked )
+   METHOD inspectObjectEx()
+   METHOD manageObjectLevelUp()
    METHOD showStack( arr, n )
    METHOD showVars( arr, n, nVarType )
    METHOD showWatch( arr, n )
    METHOD showAreas( arr, n )
    METHOD requestRecord( row, col )
    METHOD requestSets()
+   METHOD requestVars( index )
+   METHOD requestObject()
    METHOD showRec( arr, n )
    METHOD showObject( arr, n )
    METHOD showSets( arr, n )
@@ -199,7 +204,6 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD terminateDebug()
    METHOD exitDbg()
    METHOD fineTune( oTable )
-   METHOD requestVars( index )
    METHOD waitState( nSeconds )
    METHOD copyOnClipboard()
    METHOD isActive()                              INLINE ! ::lTerminated    // ::lDebugging
@@ -917,11 +921,71 @@ METHOD IdeDebugger:stopDebug()
    RETURN NIL
 
 
+METHOD IdeDebugger:manageObjectLevelUp()
+   LOCAL n, cObject
+
+   IF Len( ::cInspectTypes ) > 1
+      cObject := ::cInspectVar
+
+      IF Right( cObject, 1 ) == "]"
+         n := RAt( "[", cObject )
+      ELSE
+         n := RAt( ":", cObject )
+      ENDIF
+      cObject := SubStr( cObject, 1, n-1 )
+      ::cInspectTypes := SubStr( ::cInspectTypes, 1, Len( ::cInspectTypes ) - 1 )
+
+      ::cInspectVar := cObject
+      ::cInspectType := Right( ::cInspectTypes, 1 )
+
+      ::oUI:btnObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
+      ::requestObject()
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:inspectObjectEx()
+   LOCAL oTable := ::oUI:tableObjectInspector
+   LOCAL nIndex := oTable:currentRow()
+   LOCAL oItem, cType, cObject, cOType
+
+   IF nIndex >= 0
+      IF ! Empty( oItem := oTable:item( nIndex, 1 ) )
+         cType := oItem:text()
+         IF cType $ "A,O"
+            cObject := ::cInspectVar
+            cOType  := ::cInspectType
+            IF cType == "A"
+               IF cOType == "O"
+                  cObject := cObject + ":" + oTable:item( nIndex, 0 ):text()
+               ELSE
+                  cObject := cObject + "[" + hb_ntos( nIndex + 1 ) + "]"
+               ENDIF
+            ELSEIF cType == "O"
+               IF cOType == "A"
+                  cObject := cObject + "[" + hb_ntos( nIndex + 1 ) + "]"
+               ELSE
+                  cObject := cObject + ":" + oTable:item( nIndex, 0 ):text()
+               ENDIF
+            ENDIF
+            ::cInspectVar   := cObject
+            ::cInspectType  := cType
+            ::cInspectTypes += cType
+            ::oUI:btnObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
+            ::requestObject()
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
 METHOD IdeDebugger:inspectObject( lClicked )
    LOCAL index, oTable, nRow, cObjName
    LOCAL cType := ""
 
    IF lClicked
+      ::oUI:btnObjBack:setEnabled( .F. )
+
       index := ::oUI:tabWidget:currentIndex()
       DO CASE
       CASE index = 0
@@ -951,17 +1015,10 @@ METHOD IdeDebugger:inspectObject( lClicked )
       cObjName := oTable:item( nRow, 0 ):text()
       ::cInspectVar := cObjName
       ::cInspectType := cType
+      ::cInspectTypes := cType
    ENDIF
 
-   ::setMode( MODE_INPUT )
-   IF ::cInspectType == "O"
-      ::doCommand( CMD_OBJECT, ::cInspectVar )
-      ::wait4connection( "valueobj" )
-   ELSEIF ::cInspectType == "A"
-      ::doCommand( CMD_ARRAY, ::cInspectVar  )
-      ::wait4connection( "valuearr" )
-   ENDIF
-   ::timerProc()
+   ::requestObject()
    //
    RETURN NIL
 
@@ -1266,6 +1323,26 @@ METHOD IdeDebugger:requestSets()
    ::setMode( MODE_INPUT )
    ::doCommand( CMD_SETS )
    ::wait4connection( "valuesets" )
+   ::timerProc()
+   RETURN NIL
+
+
+METHOD IdeDebugger:requestObject()
+
+   IF ::oUi:labelStatus:text() != "Stopped"
+      RETURN NIL
+   ENDIF
+   IF ! ::isActive()
+      RETURN NIL
+   ENDIF
+   ::setMode( MODE_INPUT )
+   IF ::cInspectType == "O"
+      ::doCommand( CMD_OBJECT, ::cInspectVar )
+      ::wait4connection( "valueobj" )
+   ELSEIF ::cInspectType == "A"
+      ::doCommand( CMD_ARRAY, ::cInspectVar  )
+      ::wait4connection( "valuearr" )
+   ENDIF
    ::timerProc()
    RETURN NIL
 
@@ -1646,6 +1723,9 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableSets:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( oUI:tableSets )
 
+   oUI:btnObjBack           :connect( "clicked()", { || ::manageObjectLevelUp() } )
+   oUI:btnObjBack:setEnabled( .F. )
+
    oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ), ::waitState( 0.2 ) } )
    oUI:btnNextR             :connect( "clicked()", { || ::doCommand( CMD_NEXTR  ), ::waitState( 0.2 ) } )
    oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ), ::waitState( 0.2 ) } )
@@ -1671,6 +1751,8 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableVarPublic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
    oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
 
+   oUI:tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
+
    oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
    //oUI                      :connect( QEvent_Close           , {|| ::exitDbg() } )
    oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
@@ -1688,7 +1770,6 @@ METHOD IdeDebugger:switchUI()
    ::oDebuggerDock:oWidget:show()
    ::oDebuggerDock:oWidget:raise()
    ::oUI:show()
-   //::loadAll()
    RETURN Self
 
 
