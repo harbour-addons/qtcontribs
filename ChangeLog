@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-12 15:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r356)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r356.
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+
+  * hbide/edit.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/main.prg
+    ! Fixed: behavior of Qt_Key_Backspace which got applied even after 
+       active selection. Pointed to by Fernando.
+
+    ! Fixed: behavior of Qt_Key_Tab which was tabbing the entire selection 
+       inclusing the last row also ( stream-selection ). In reality, 
+       last row must never be affected. Pointed-to and justified by 
+       Fernando Athayde.
+
+    ! Fixed: hovering of mouse-cursor over Selection-Text Toolbar was 
+       showing the editor beem cursor instead of arrow cursor.
+       Again brought to notice by Fernando Athayde. Many thanks.
+
 2014-09-11 23:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r355)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r355.

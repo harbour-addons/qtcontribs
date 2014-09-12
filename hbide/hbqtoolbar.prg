@@ -321,6 +321,8 @@ METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDra
    oButton:setCheckable( lCheckable )
    oButton:setFocusPolicy( Qt_NoFocus )
    oButton:setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
+   oButton:setCursor( QCursor( Qt_ArrowCursor ) )
+   oButton:setAutoRaise( .T. )
 
    IF lDragEnabled
       oButton:connect( QEvent_MouseButtonPress  , {|p| ::execEvent( "QEvent_MousePress"  , p, cName ) } )

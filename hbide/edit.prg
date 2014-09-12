@@ -1326,8 +1326,8 @@ METHOD IdeEdit:handleTab( key )
    CASE __selectionMode_stream__
    CASE __selectionMode_line__
       IF nL >= 0    /* Selection is marked */
-      // ::cutBlockContents( Qt_Key_Delete )  /* Other editors DO it like but FOR source code it must be different */
-         FOR i := nT TO nB
+      // ::cutBlockContents( Qt_Key_Delete )  /* Other editors do it like but for source code it must be different */
+         FOR i := nT TO nB - 1
             cLine := ::getLine( i + 1 )
             IF key == Qt_Key_Tab
                cLine := cComment + cLine
@@ -1336,7 +1336,7 @@ METHOD IdeEdit:handleTab( key )
             ENDIF
             hbide_qReplaceLine( qCursor, i, cLine )
          NEXT
-         hbide_qPositionCursor( qCursor, nRow, max( 0, nCol + nOff ) )
+         hbide_qPositionCursor( qCursor, nRow, max( 0, nCol ) )
       ELSE
          IF key == Qt_Key_Tab
             qCursor:insertText( Space( ::nTabSpaces ) )

@@ -1250,22 +1250,15 @@ bool HBQPlainTextEdit::hbKeyPressSelection( QKeyEvent * event )
          {
             columnEnds = columnBegins;
          }
-         event->accept();
-         hbPostSelectionInfo();
-         repaint();
-         return true;
       }
       else   /* selectionMode == selectionMode_stream || selectionMode == selectionMode_line */
       {
          hbCut( Qt::Key_Delete );
-         repaint();
-         hbPostSelectionInfo();
-         if( k == Qt::Key_Delete )
-         {
-            event->accept();
-            return true;
-         }
       }
+      event->accept();
+      hbPostSelectionInfo();
+      repaint();
+      return true;
    }
    else if( ! ctrl && k >= ' ' && k < 127 && columnBegins >= 0 && selectionMode == selectionMode_stream )
    {
