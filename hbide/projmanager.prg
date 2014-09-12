@@ -2093,7 +2093,7 @@ METHOD IdeProjManager:launchDebug( cProject, cExe, cCmd, qStr, cWrkDir )
    ENDIF
    ::oDockB2:show()
 
-   DEFAULT cExe TO ::getCurrentExeName( cProject )
+   DEFAULT cExe TO ::getCurrentExeName( cProject )          // should never happen
    IF ! hb_FileExists( cExe )
       ::outputText( "Launch error: executable not found !" )
       RETURN .F.

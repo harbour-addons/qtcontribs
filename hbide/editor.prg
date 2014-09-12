@@ -1468,6 +1468,7 @@ CLASS IdeEditor INHERIT IdeObject
    METHOD setBreakPoint( cPrg, nLine )
    METHOD extras()
    METHOD manageExtras()
+   METHOD source()                                INLINE ::sourceFile
 
    ENDCLASS
 
@@ -2042,7 +2043,9 @@ METHOD IdeEditor:manageExtras()
          IF ( n1 := At( "</BREAKPOINTS>", ::cExtras ) ) > 0
             cExtras := SubStr( ::cExtras, n + Len( "<BREAKPOINTS>" ), n1 - n - Len( "<BREAKPOINTS>" ) )
             FOR EACH cLine IN hb_ATokens( cExtras, " " )
-               ::qEdit:hbSetBreakPoint( Val( cLine ) )
+               IF ( n := Val( cLine ) ) > 0
+                  ::qEdit:hbSetBreakPoint( n )
+               ENDIF
             NEXT
          ENDIF
       ELSE

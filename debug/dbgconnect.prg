@@ -154,6 +154,10 @@ STATIC FUNCTION hwg_dbg_Send( ... )
    ELSE
       FWrite( handl2, arr[ 1 ] + "," + s + arr[ 1 ] + ",!" )
    ENDIF
+   //
+   FClose( handl2 )
+   handl2 := FOpen( hb_ProgName() + ".d2", FO_READWRITE + FO_SHARED )
+   //
    RETURN NIL
 
 

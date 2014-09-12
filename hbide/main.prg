@@ -367,7 +367,7 @@ CLASS HbIde
    METHOD parseParams()
    METHOD showCodeFregment( oXbp )
    METHOD setCodePage( cCodePage )
-   METHOD showFragment( cCode, cTitle, oIcon )
+   METHOD showFragment( cCode, cTitle, oIcon, cTheme )
    METHOD showHeaderFile( cCode, cTitle, oIcon, lSave )
    METHOD printFragment( oPlainTextEdit )
    METHOD ideAlert( ... )                            INLINE Alert( ... )
@@ -1281,8 +1281,10 @@ METHOD HbIde:showCodeFregment( oXbp )
    RETURN Self
 
 
-METHOD HbIde:showFragment( cCode, cTitle, oIcon )
+METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme )
    LOCAL qWidget, qH
+
+   DEFAULT cTheme TO "Pritpal's Favourite"
 
    WITH OBJECT qWidget := QPlainTextEdit( ::oDlg:oWidget )
       :setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
@@ -1290,7 +1292,7 @@ METHOD HbIde:showFragment( cCode, cTitle, oIcon )
       :setWindowIcon( oIcon )
       :setWordWrapMode( QTextOption_NoWrap )
       :setFont( QFont( "Courier New", 8 ) )
-      qH := ::oTH:setSyntaxHilighting( qWidget, "Pritpal's Favourite", , .F. )
+      qH := ::oTH:setSyntaxHilighting( qWidget, cTheme, , .F. )
       qH:hbSetInitialized( .T. )
       :setPlainText( cCode )
       :setGeometry( iif( Empty( ::qFuncFragmentWindowGeometry ), QRect( 500, 200, 300, 300 ), ::qFuncFragmentWindowGeometry:translated( 10,20 ) ) )

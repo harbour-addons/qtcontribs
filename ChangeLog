@@ -16,6 +16,52 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-11 23:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r355)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r355.
+
+  * debug/dbgconnect.prg
+    + Added code which will be useful for next generation debugger.
+       After each response written in response file, handle is closed 
+       and opened again. This action initiates date-stamp change 
+       on the response file which in turn is being "watched" by the 
+       debugger. For now it facilitates to log so many things in 
+       "Output Console".
+       
+  * hbide/debugger.ui
+  * hbide/debugger1.ui
+    + Added button <btnExpand> in the title area of <Object Inspector>.
+       Clicking on this button automatically drill-down the elements of 
+       type array, formats them, and finally presents the drilled values
+       of entire array ( from the point click is initiated ) in a 
+       stay-on-top simpel editor, just like code-fragments, syntax highlighted
+       and ready to be sent to printing preview. 
+       Expand operation can be performed on the variable of type object also.
+       In this case only array members will be expanded along-with variables 
+       and methods list.
+       WARNING: large arrays may take longer period, so use it with caution.
+
+  * hbide/debugger.prg
+  * hbide/editor.prg
+  * hbide/main.prg
+    % Changed: debugger info copied to clipboard via <Clipboard> button will 
+       fire a stay-on-top widget containing the debug info. This is the same 
+       editor deployed for <btnExpand> output as above. The only difference 
+       is in the highlighter theme which is different in both cases.
+
+    ! Fixed: to honor the break-points in real-world scenario. Till now 
+       BPs were initiated only from editing instances hosting the source 
+       contained in the project. It had a severe side-effect. A project 
+       may contain sub-projects or mere libraries were sources contained
+       in those libraries cannot be determined prehand and it rendered the 
+       whole process ineffective.
+
+       Now clicking on line-number area on any editing instance tried to set 
+       BP on current project being debugger. If the source name is matched 
+       inside debug info retained by the application, it is entertained, 
+       otherwise discarded. So the onus to determine a valid BP is transferred 
+       to Harbour debug engine.
+     
 2014-09-10 12:02 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r354)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r354.

@@ -155,54 +155,72 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   cBuffer
    DATA   lTerminated                             INIT .F.
    DATA   cExe                                    INIT ""
+   DATA   oFileWatcher
+   DATA   lExpanding                              INIT .F.
+   DATA   cLastRequest                            INIT ""
 
    METHOD init( oIde )
    METHOD create( oIde )
    METHOD start( cExe, cCmd, qStr, cWrkDir )
-   METHOD stop()
    METHOD show()
    METHOD hide()
    METHOD clear()
+
+   METHOD stop()
+   METHOD stopDebug()
+   METHOD terminateDebug()
+   METHOD exitDbg()
+
    METHOD loadBreakPoints()
    METHOD clearBreakPoints( cPrg )
    METHOD deleteBreakPoint( cPrg, nLine )
    METHOD toggleBreakPoint( cAns, cLine )
    METHOD addBreakPoint( cPrg, nLine )
-   METHOD timerProc()
-   METHOD dbgRead()
-   METHOD send( ... )
-   METHOD setMode( newMode )
-   METHOD setCurrLine( nLine, cName )
-   METHOD getCurrLine()
-   METHOD getCurrPrgName()
-   METHOD getBP( nLine, cPrg )
-   METHOD doCommand( nCmd, cDop, cDop2 )
-   METHOD setWindow( cPrgName )
-   METHOD stopDebug()
-   METHOD inspectObject( lClicked )
-   METHOD inspectObjectEx()
-   METHOD manageObjectLevelUp()
-   METHOD showStack( arr, n )
-   METHOD showVars( arr, n, nVarType )
-   METHOD showWatch( arr, n )
-   METHOD showAreas( arr, n )
-   METHOD requestRecord( row, col )
-   METHOD requestSets()
-   METHOD requestVars( index )
-   METHOD requestObject()
-   METHOD showRec( arr, n )
-   METHOD showObject( arr, n )
-   METHOD showSets( arr, n )
-   METHOD wait4connection( cStr )
-   METHOD ui_init( oUI )
-   METHOD ui_load()
+
    METHOD watch_ins( lPaste, cExp )
    METHOD watch_del( lAll )
    METHOD watch_save()
    METHOD watch_rest()
    METHOD changeWatch( item )
-   METHOD terminateDebug()
-   METHOD exitDbg()
+
+   METHOD timerProc()
+   METHOD populateResponse( cSource )
+
+   METHOD dbgRead()
+   METHOD setMode( newMode )
+   METHOD doCommand( nCmd, cDop, cDop2 )
+   METHOD send( ... )
+
+   METHOD setCurrLine( nLine, cName )
+   METHOD getCurrLine()
+   METHOD getCurrPrgName()
+   METHOD getBP( nLine, cPrg )
+   METHOD setWindow( cPrgName )
+
+   METHOD inspectObject( lClicked )
+   METHOD inspectObjectEx()
+   METHOD manageObjectLevelUp()
+   METHOD expandObject( nIndent, txt_ )
+   METHOD expandObjectDetail( nIndent, txt_, cOriginVar )
+
+   METHOD requestRecord( row, col )
+   METHOD requestSets()
+   METHOD requestVars( index )
+   METHOD requestObject()
+
+   METHOD showStack( arr, n )
+   METHOD showVars( arr, n, nVarType )
+   METHOD showWatch( arr, n )
+   METHOD showAreas( arr, n )
+   METHOD showRec( arr, n )
+   METHOD showObject( arr, n )
+   METHOD showSets( arr, n )
+
+   METHOD wait4connection( cStr )
+
+   METHOD ui_init( oUI )
+   METHOD ui_load()
+
    METHOD fineTune( oTable )
    METHOD waitState( nSeconds )
    METHOD copyOnClipboard()
@@ -245,6 +263,9 @@ METHOD IdeDebugger:create( oIde )
       :setInterval( 30 )
       :connect( "timeout()",  {|| ::timerProc() } )
    ENDWITH
+   ::oFileWatcher := QFileSystemWatcher()
+   ::oFileWatcher:connect( "fileChanged(QString)", {|cSource| ::populateResponse( cSource ) } )
+   //
    RETURN Self
 
 
@@ -297,6 +318,8 @@ METHOD IdeDebugger:show()
 METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
    LOCAL cPath, cFile, cExt
 
+   ::oFileWatcher:removePath( ::cExe + ".d2" )
+
    ::setMode( MODE_INIT )
 
    hb_fNameSplit( cExe, @cPath, @cFile, @cExt )
@@ -324,6 +347,8 @@ METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
       RETURN .F.
    ENDIF
 
+   ::oFileWatcher:addPath( ::cExe + ".d2" )
+
    ::show()
 
    QProcess():startDetached( cCmd, qStr, cWrkDir )
@@ -342,31 +367,25 @@ METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
    ::lDebugging := .T.
    ::oPM:outputText( "Debug Started." )
    ::doCommand( CMD_GO )
-   //::oIde:qCurEdit:hbSetDebuggedLine( -1 )
+   //
    RETURN .T.
 
 
 METHOD IdeDebugger:loadBreakPoints()
-   LOCAL i, j, oEditor, nBP, aBP, cSource
+   LOCAL i, oEditor, nBP, aBP, cSource
 
    ::oPM:outputText( "Loading breakpoints..." )
-   FOR j := 1 TO Len( ::aSources )
-      IF Lower( hb_FNameExt( ::aSources[ j ] ) ) $ ".prg,.hb,.c,.cpp"
-         FOR i := 1 TO Len( ::aTabs )
-            oEditor := ::aTabs[ i, TAB_OEDITOR ]
-            IF Lower( hb_FNameName( oEditor:oTab:caption ) ) == Lower( hb_FNameName( ::aSources[ j ] ) )
-               cSource := hb_FNameName( ::aSources[ j ] ) + hb_FNameExt( ::aSources[ j ] )
-               aBP := hb_ATokens( oEditor:qCoEdit:qEdit:hbGetBreakPoints(), "," )
-               AEval( aBP, {|e,i| aBP[ i ] := Val( e ) } )
-               FOR EACH nBP IN aBP
-                  IF nBP > 0
-                     AAdd( ::aBPLoad, { nBP, cSource } )
-                  ENDIF
-               NEXT
-            ENDIF
-         NEXT i
-      ENDIF
-   NEXT j
+   FOR i := 1 TO Len( ::aTabs )
+      oEditor := ::aTabs[ i, TAB_OEDITOR ]
+      cSource := Lower( hb_FNameName( oEditor:source() ) + hb_FNameExt( oEditor:source() ) )
+      aBP := hb_ATokens( oEditor:qCoEdit:qEdit:hbGetBreakPoints(), "," )
+      AEval( aBP, {|e,i| aBP[ i ] := Val( e ) } )
+      FOR EACH nBP IN aBP
+         IF nBP > 0
+            AAdd( ::aBPLoad, { nBP, cSource } )
+         ENDIF
+      NEXT
+   NEXT i
    IF ! Empty( ::aBPLoad )
       ::nBPLoad := 1
       ::addBreakPoint( ::aBPLoad[ 1,2 ], ::aBPLoad[ 1,1 ] )
@@ -377,12 +396,19 @@ METHOD IdeDebugger:loadBreakPoints()
    RETURN .T.
 
 
+// Also called from the editor when a line number area is clicked.
+//
 METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
    LOCAL n
 
+   IF nLine <= 0
+      RETURN NIL
+   ENDIF
+#if 0                                             // BP must be available to be loaded any-time
    IF ::nMode != MODE_INPUT .AND. Empty( ::aBPLoad )
       RETURN NIL
    ENDIF
+#endif
    IF ( n := ::getBP( nLine, cPrg ) ) == 0
       ::oPM:outputText( "Setting break point: " + cPrg + ": " + Str( nLine ) )
       ::send( "brp", "add", cPrg, LTrim( Str( nLine ) ) )
@@ -443,19 +469,31 @@ METHOD IdeDebugger:toggleBreakPoint( cAns, cLine )
 
 
 METHOD IdeDebugger:deleteBreakPoint( cPrg, nLine )
-      ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
-      IF ::nMode != MODE_WAIT_ANS
-         ::nAnsType := ANS_BRP
-         ::cPrgBP   := cPrg
-         ::nLineBP  := nLine
-         ::setMode( MODE_WAIT_ANS )
-      ENDIF
+   ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
+   IF ::nMode != MODE_WAIT_ANS
+      ::nAnsType := ANS_BRP
+      ::cPrgBP   := cPrg
+      ::nLineBP  := nLine
+      ::setMode( MODE_WAIT_ANS )
+   ENDIF
    RETURN .T.
 
 
 METHOD IdeDebugger:getBP( nLine, cPrg )
    cPrg := Lower( iif( cPrg == NIL, ::cPrgName, cPrg ) )
    RETURN Ascan( ::aBP, {|a_| a_[ 1 ] == nLine .and. Lower( a_[ 2 ] ) == cPrg } )
+
+
+METHOD IdeDebugger:populateResponse( cSource )
+   LOCAL cText, aInf
+
+   IF cSource == ::cExe + ".d2"
+      cText := hb_MemoRead( cSource )
+      cText := substr( cText, 1, At( ",!", cText ) + 1 )
+      aInf  := hb_ATokens( cText, "," )
+      ::oPM:outputText( "...........RESPONSE[ " + hb_ntos( ::nId1 ) + "." + ::cLastRequest + "] ... " + aInf[ 1 ] + "," + aInf[ 2 ] + "," + ATail( aInf ) )
+   ENDIF
+   RETURN NIL
 
 
 METHOD IdeDebugger:timerProc()
@@ -634,6 +672,7 @@ METHOD IdeDebugger:send( ... )
    FOR i := 1 TO Len( arr )
       s += arr[ i ] + ","
    NEXT
+   ::cLastRequest := arr[ 1 ]
    FWrite( ::hRequest, LTrim( Str( ++::nId1 ) ) + "," + s + LTrim( Str( ::nId1 ) ) + ",!" )
    RETURN NIL
 
@@ -890,9 +929,13 @@ METHOD IdeDebugger:setWindow( cPrgName )
 
 
 METHOD IdeDebugger:stopDebug()
+   ::oFileWatcher:removePath( ::cExe + ".d2" )
+
    IF ! ::isActive()
+      ::hide()
       RETURN Self
    ENDIF
+
    ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
    IF ::oTimer:isActive()
       ::oTimer:stop()
@@ -1142,7 +1185,7 @@ METHOD IdeDebugger:showObject( arr, n )
          ::oUI:labelObjectInspector:setText( "Array Inspector [" + ::cInspectVar + "]" )
          n += 2
          FOR i := 1 TO nLen
-            ::oUI:tableObjectInspector:setItem( i - 1, 0, QTableWidgetItem( "Ele: " + hb_ntos( i ) ) )
+            ::oUI:tableObjectInspector:setItem( i - 1, 0, QTableWidgetItem( "E_" + hb_ntos( i ) ) )
             FOR j := 1 TO 2
                ::oUI:tableObjectInspector:setItem( i - 1, j, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
             NEXT
@@ -1150,108 +1193,6 @@ METHOD IdeDebugger:showObject( arr, n )
       ENDIF
    ENDIF
    RETURN NIL
-
-
-METHOD IdeDebugger:copyOnClipboard()
-   LOCAL aData, s
-   LOCAL txt_:={}
-
-   AAdd( txt_, "PROJECT: " + ::cCurrentProject + " [" + DToC( Date() ) + "  " + Time() + "]" )
-   AAdd( txt_, ::cLastMessage )
-   AAdd( txt_, " " )
-   AAdd( txt_, " " )
-
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarLocal ) )
-      AAdd( txt_, "LOCAL VARIABLES" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarPrivate ) )
-      AAdd( txt_, "PRIVATE VARIABLES" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarPublic ) )
-      AAdd( txt_, "PUBLIC VARIABLS" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarStatic ) )
-      AAdd( txt_, "STATIC VARIABLS" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableWatchExpressions ) )
-      AAdd( txt_, "WATCHES" )
-      __formatData( txt_, { "Expression", "Value" }, aData, { 25, 72 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableOpenTables ) )
-      AAdd( txt_, "WORKAREAS" )
-      __formatData( txt_, { "Alias", "Area", "Rdd","Records","CurRec","Bof","Eof","Found","Del","Filter","TagName","IndexKey" }, ;
-                      aData, { 10,4,8,10,8,3,3,3,3,30,10,30 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableCurrentRecord ) )
-      AAdd( txt_, Upper( ::oUI:labelCurrentRecord:text() ) )
-      __formatData( txt_, { "Name", "Type", "Len", "Value" }, aData, { 10, 4, 4, 73 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableObjectInspector ) )
-      AAdd( txt_, Upper( ::oUI:labelObjectInspector:text() ) )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 20, 4, 70 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableStack ) )
-      AAdd( txt_, "STACK" )
-      __formatData( txt_, { "Source", "Procedure", "Line" }, aData, { 20, 40, 6 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableSets ) )
-      AAdd( txt_, "SETS" )
-      __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
-   ENDIF
-
-   s := ""
-   AEval( txt_, {|e| s += e + Chr( 13 ) + Chr( 10 ) } )
-   QApplication():clipboard():setText( s )
-
-   Alert( "Debug info copied to clipboard successfully!" )
-   RETURN Self
-
-
-STATIC FUNCTION __formatData( txt_, aHdrs, aData, aWidths )
-   LOCAL nCols := Len( aHdrs )
-   LOCAL aRec, j, s
-
-   s := "   "
-   FOR j := 1 TO nCols
-      s += Pad( aHdrs[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
-   NEXT
-   AAdd( txt_, s )
-   FOR EACH aRec IN aData
-      s := "   "
-      FOR j := 1 TO nCols
-         //s += Pad( AllTrim( aRec[ j ] ), aWidths[ j ] ) + iif( j == nCols, "", C_C )
-         s += Pad( aRec[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
-      NEXT
-      AAdd( txt_, s )
-   NEXT
-   AAdd( txt_, " " )
-   AAdd( txt_, " " )
-   RETURN NIL
-
-
-STATIC FUNCTION __pullData( oTable )
-   LOCAL aData := {}
-   LOCAL nRows, nCols, nRow, nCol, oItem, aRec
-
-   nRows  := oTable:rowCount()
-   nCols  := oTable:columnCount()
-   //
-   FOR nRow := 0 TO nRows - 1
-      aRec := {}
-      FOR nCol := 0 TO nCols - 1
-         IF ! Empty( oItem := oTable:item( nRow, nCol ) )
-            AAdd( aRec, StrTran( oItem:text(), ",", ";" ) )
-         ELSE
-            AAdd( aRec, "" )
-         ENDIF
-      NEXT
-      AAdd( aData, aRec )
-   NEXT
-   RETURN aData
 
 
 METHOD IdeDebugger:wait4connection( cStr )
@@ -1723,6 +1664,7 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableSets:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( oUI:tableSets )
 
+   oUI:btnExpand            :connect( "clicked()", { || ::expandObject() } )
    oUI:btnObjBack           :connect( "clicked()", { || ::manageObjectLevelUp() } )
    oUI:btnObjBack:setEnabled( .F. )
 
@@ -1798,6 +1740,183 @@ METHOD IdeDebugger:fineTune( oTable )
    oTable:setSelectionBehavior( QAbstractItemView_SelectItems )
    oTable:setSelectionMode( QAbstractItemView_SingleSelection )
    RETURN Self
+
+
+METHOD IdeDebugger:expandObject( nIndent, txt_ )
+   LOCAL s, cVar
+
+   DEFAULT nIndent TO 0
+   DEFAULT txt_    TO {}
+
+   ::lExpanding := .T.
+   cVar := ::cInspectVar
+
+   ::expandObjectDetail( nIndent, @txt_, iif( ::cInspectType == "O", ::cInspectVar, "" ) )
+
+   IF ! Empty( txt_ )
+      s := ""
+      AEval( txt_, {|e| s += e + Chr( 13 )+Chr( 10 ) } )
+      IF ! Empty( s )
+         ::oIde:showFragment( s, cVar, QIcon( hbide_image( "fullscreen" ) ), "Sand Storm" )
+      ENDIF
+   ENDIF
+   ::lExpanding := .F.
+   RETURN NIL
+
+
+METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
+   LOCAL d_, cVar, cName
+
+   nIndent++
+
+   FOR EACH d_ IN __pullData( ::oUI:tableObjectInspector )
+      IF ! ::isActive()
+         EXIT
+      ENDIF
+
+      AAdd( txt_, Space( nIndent * 2 ) + __formatDataEx( d_, { 10, 1, 89 } ) )
+      IF d_[ 2 ] == "A"
+         cName := d_[ 1 ]
+         cVar := ::cInspectVar
+         IF Left( cName, 2 ) == "E_" .AND. IsDigit( Right( cName,1 ) )
+            cVar := cVar + "[" + hb_ntos( d_:__enumIndex() ) + "]"
+         ELSE
+            cVar := cVar + ":" + cName
+         ENDIF
+         ::cInspectVar  := cVar
+         ::cInspectType := "A"
+         ::cInspectTypes += "A"
+         ::oUI:tableObjectInspector:setRowCount( 0 )
+         QApplication():processEvents()
+         ::setMode( MODE_INPUT )
+         ::doCommand( CMD_ARRAY, cVar  )
+         ::wait4connection( "valuearr" )
+         ::timerProc()
+         ::waitState( 1 )
+         ::expandObjectDetail( nIndent, @txt_, cOriginVar )
+      ELSE
+         IF ! Empty( cOriginVar )
+            ::cInspectVar := cOriginVar
+         ENDIF
+      ENDIF
+   NEXT
+   RETURN NIL
+
+
+METHOD IdeDebugger:copyOnClipboard()
+   LOCAL aData, s
+   LOCAL txt_:={}
+
+   AAdd( txt_, "PROJECT: " + ::cCurrentProject + " [" + DToC( Date() ) + "  " + Time() + "]" )
+   AAdd( txt_, ::cLastMessage )
+   AAdd( txt_, " " )
+   AAdd( txt_, " " )
+
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarLocal ) )
+      AAdd( txt_, "LOCAL VARIABLES" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarPrivate ) )
+      AAdd( txt_, "PRIVATE VARIABLES" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarPublic ) )
+      AAdd( txt_, "PUBLIC VARIABLS" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableVarStatic ) )
+      AAdd( txt_, "STATIC VARIABLS" )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableWatchExpressions ) )
+      AAdd( txt_, "WATCHES" )
+      __formatData( txt_, { "Expression", "Value" }, aData, { 25, 72 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableOpenTables ) )
+      AAdd( txt_, "WORKAREAS" )
+      __formatData( txt_, { "Alias", "Area", "Rdd","Records","CurRec","Bof","Eof","Found","Del","Filter","TagName","IndexKey" }, ;
+                      aData, { 10,4,8,10,8,3,3,3,3,30,10,30 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableCurrentRecord ) )
+      AAdd( txt_, Upper( ::oUI:labelCurrentRecord:text() ) )
+      __formatData( txt_, { "Name", "Type", "Len", "Value" }, aData, { 10, 4, 4, 73 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableObjectInspector ) )
+      AAdd( txt_, Upper( ::oUI:labelObjectInspector:text() ) )
+      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 20, 4, 70 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableStack ) )
+      AAdd( txt_, "STACK" )
+      __formatData( txt_, { "Source", "Procedure", "Line" }, aData, { 20, 40, 6 } )
+   ENDIF
+   IF ! Empty( aData :=__pullData( ::oUI:tableSets ) )
+      AAdd( txt_, "SETS" )
+      __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
+   ENDIF
+
+   s := ""
+   AEval( txt_, {|e| s += e + Chr( 13 ) + Chr( 10 ) } )
+   QApplication():clipboard():setText( s )
+
+   ::oIde:showFragment( s, ;
+              "PROJECT: " + ::cCurrentProject + " [" + DToC( Date() ) + "  " + Time() + "][" + ::cLastMessage + "]", ;
+              QIcon( hbide_image( "fullscreen" ) ), ;
+              "Evening Glamour" )
+   RETURN Self
+
+
+STATIC FUNCTION __formatData( txt_, aHdrs, aData, aWidths )
+   LOCAL nCols := Len( aHdrs )
+   LOCAL aRec, j, s
+
+   s := "   "
+   FOR j := 1 TO nCols
+      s += Pad( aHdrs[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
+   NEXT
+   AAdd( txt_, s )
+   FOR EACH aRec IN aData
+      s := "   "
+      FOR j := 1 TO nCols
+         //s += Pad( AllTrim( aRec[ j ] ), aWidths[ j ] ) + iif( j == nCols, "", C_C )
+         s += Pad( aRec[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
+      NEXT
+      AAdd( txt_, s )
+   NEXT
+   AAdd( txt_, " " )
+   AAdd( txt_, " " )
+   RETURN NIL
+
+
+STATIC FUNCTION __formatDataEx( aData, aWidths )
+   LOCAL nCols := Len( aWidths )
+   LOCAL j, s
+
+   s := ""
+   FOR j := 1 TO nCols
+      s += Pad( aData[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
+   NEXT
+   RETURN s
+
+
+STATIC FUNCTION __pullData( oTable )
+   LOCAL aData := {}
+   LOCAL nRows, nCols, nRow, nCol, oItem, aRec
+
+   nRows  := oTable:rowCount()
+   nCols  := oTable:columnCount()
+   //
+   FOR nRow := 0 TO nRows - 1
+      aRec := {}
+      FOR nCol := 0 TO nCols - 1
+         IF ! Empty( oItem := oTable:item( nRow, nCol ) )
+            AAdd( aRec, StrTran( oItem:text(), ",", ";" ) )
+         ELSE
+            AAdd( aRec, "" )
+         ENDIF
+      NEXT
+      AAdd( aData, aRec )
+   NEXT
+   RETURN aData
 
 
 STATIC FUNCTION Int2Hex( n )
