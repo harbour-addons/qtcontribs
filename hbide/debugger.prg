@@ -72,6 +72,7 @@
 #define MODE_WAIT_ANS                             3
 #define MODE_WAIT_BR                              4
 
+#define ANS_CMD                                   0
 #define ANS_BRP                                   1
 #define ANS_CALC                                  2
 #define ANS_STACK                                 3
@@ -82,6 +83,7 @@
 #define ANS_OBJECT                                8
 #define ANS_SETS                                  9
 #define ANS_ARRAY                                 10
+#define ANS_QUIT                                  21
 
 #define CMD_QUIT                                  1
 #define CMD_GO                                    2
@@ -103,6 +105,29 @@
 #define CMD_TERMINATE                             18
 #define CMD_SETS                                  19
 #define CMD_ARRAY                                 20
+#define CMD_BRP                                   21
+
+#define WAIT_CMD_INIT                             30
+#define WAIT_CMD_QUIT                             0.1
+#define WAIT_CMD_GO                               3
+#define WAIT_CMD_STEP                             3
+#define WAIT_CMD_TRACE                            3
+#define WAIT_CMD_NEXTR                            3
+#define WAIT_CMD_TOCURS                           3
+#define WAIT_CMD_EXIT                             0.1
+#define WAIT_CMD_STACK                            2
+#define WAIT_CMD_EXP                              1
+#define WAIT_CMD_LOCAL                            1
+#define WAIT_CMD_STATIC                           1
+#define WAIT_CMD_PRIV                             4
+#define WAIT_CMD_PUBL                             4
+#define WAIT_CMD_WATCH                            1
+#define WAIT_CMD_AREA                             3
+#define WAIT_CMD_REC                              3
+#define WAIT_CMD_OBJECT                           3
+#define WAIT_CMD_SETS                             2
+#define WAIT_CMD_ARRAY                            2
+#define WAIT_CMD_BRP                              1
 
 #define BUFFER_LEN                                1024
 
@@ -150,14 +175,19 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   oUI_1
    DATA   oUI_2
    DATA   cCurrentProject
-   DATA   oTimer
    DATA   aTabs
    DATA   cBuffer
    DATA   lTerminated                             INIT .F.
+   DATA   lStarted                                INIT .F.
    DATA   cExe                                    INIT ""
    DATA   oFileWatcher
    DATA   lExpanding                              INIT .F.
    DATA   cLastRequest                            INIT ""
+   DATA   cLastResponse                           INIT ""
+   DATA   hRequests                               INIT {=>}
+   DATA   hResponses                              INIT {=>}
+   DATA   lInRequest                              INIT .F.
+   DATA   nOutput                                 INIT 0
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -166,9 +196,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD hide()
    METHOD clear()
 
-   METHOD stop()
    METHOD stopDebug()
-   METHOD terminateDebug()
    METHOD exitDbg()
 
    METHOD loadBreakPoints()
@@ -183,13 +211,11 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD watch_rest()
    METHOD changeWatch( item )
 
-   METHOD timerProc()
-   METHOD populateResponse( cSource )
+   METHOD populateResponse( arr )
 
-   METHOD dbgRead()
-   METHOD setMode( newMode )
-   METHOD doCommand( nCmd, cDop, cDop2 )
-   METHOD send( ... )
+   METHOD readResponse( cSource )
+   METHOD doCommand( nCmd, cDop, cDop2, cDop3 )
+   METHOD sendRequest( ... )
 
    METHOD setCurrLine( nLine, cName )
    METHOD getCurrLine()
@@ -204,7 +230,6 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD expandObjectDetail( nIndent, txt_, cOriginVar )
 
    METHOD requestRecord( row, col )
-   METHOD requestSets()
    METHOD requestVars( index )
    METHOD requestObject()
 
@@ -216,19 +241,19 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD showObject( arr, n )
    METHOD showSets( arr, n )
 
-   METHOD wait4connection( cStr )
-
    METHOD ui_init( oUI )
    METHOD ui_load()
 
    METHOD fineTune( oTable )
    METHOD waitState( nSeconds )
    METHOD copyOnClipboard()
-   METHOD isActive()                              INLINE ! ::lTerminated    // ::lDebugging
+   METHOD isActive()                              INLINE ! ::lTerminated
    METHOD raise()                                 INLINE ::oIde:oDebuggerDock:oWidget:raise()
    METHOD manageKey( nQtKey )
    METHOD switchUI()
-   METHOD loadAll()
+   METHOD matureShakehand()
+   METHOD getRequestType( cId )
+   METHOD processEvents()                         INLINE QApplication():processEvents()
 
    ENDCLASS
 
@@ -244,6 +269,8 @@ METHOD IdeDebugger:create( oIde )
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
 
+   ::clear()
+
    ::cBuffer       := Space( BUFFER_LEN )
    ::aTabs         := ::oIde:aTabs
    ::oUI_1         := hbqtui_debugger()
@@ -258,25 +285,18 @@ METHOD IdeDebugger:create( oIde )
    ENDIF
    ::oDebuggerDock:oWidget:setWidget( ::oUI:oWidget )
 
-   ::oTimer := QTimer()
-   WITH OBJECT ::oTimer
-      :setInterval( 30 )
-      :connect( "timeout()",  {|| ::timerProc() } )
-   ENDWITH
    ::oFileWatcher := QFileSystemWatcher()
-   ::oFileWatcher:connect( "fileChanged(QString)", {|cSource| ::populateResponse( cSource ) } )
+   ::oFileWatcher:connect( "fileChanged(QString)", {|cSource| ::readResponse( cSource ) } )
    //
    RETURN Self
-
-
-METHOD IdeDebugger:stop()
-   RETURN .T.
 
 
 METHOD IdeDebugger:clear()
 
    ::nRequestedVarsIndex    := 0
    ::lLoaded                := .F.
+   ::lStarted               := .F.
+   ::lTerminated            := .F.
    ::nRowWatch              := NIL
    ::nRowAreas              := -1
    ::aSources               := NIL
@@ -300,7 +320,17 @@ METHOD IdeDebugger:clear()
    ::nBPLoad                := NIL
    ::nExitMode              := 2
    ::nVerProto              := 0
+   ::cLastRequest           := ""
+   ::cLastResponse          := ""
+   ::lInRequest             := .F.
+   ::nOutput                := 0
+
+   ::hRequests              := {=>}
+   ::hResponses             := {=>}
    //
+   hb_HKeepOrder( ::hRequests , .T. )
+   hb_HKeepOrder( ::hResponses, .T. )
+
    RETURN .T.
 
 
@@ -315,16 +345,26 @@ METHOD IdeDebugger:show()
    RETURN Self
 
 
+METHOD IdeDebugger:waitState( nSeconds )
+   LOCAL nSecs := Seconds()
+   DO WHILE Abs( Seconds() - nSecs ) < nSeconds
+      ::processEvents()
+      IF ! ::lInRequest
+         EXIT
+      ENDIF
+   ENDDO
+   RETURN NIL
+
+
 METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
    LOCAL cPath, cFile, cExt
 
    ::oFileWatcher:removePath( ::cExe + ".d2" )
 
-   ::setMode( MODE_INIT )
-
    hb_fNameSplit( cExe, @cPath, @cFile, @cExt )
    cWrkDir := hbide_pathToOSPath( iif( Empty( cWrkDir ), cPath, cWrkDir ) )
 
+   ::cAppName := Lower( cFile + cExt )
    ::cExe := cExe
 
    FErase( cExe + ".d1" )
@@ -339,36 +379,401 @@ METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
 
    ::hRequest := FOpen( cExe + ".d1", FO_READWRITE + FO_SHARED )
    ::hResponse := FOpen( cExe + ".d2", FO_READ + FO_SHARED )
-   IF ::hRequest != -1 .AND. ::hResponse != -1
-      ::cAppName := Lower( cFile + cExt )
-   ELSE
+   IF ::hRequest == -1 .OR. ::hResponse == -1
+      FClose( ::hResponse )
+      FClose( ::hRequest )
+      FErase( cExe + ".d1" )
+      FErase( cExe + ".d2" )
       ::hRequest := ::hResponse := -1
-      hbide_showWarning( "No connection !!" )
+      hbide_showWarning( "No Feasible Connection !!" )
       RETURN .F.
    ENDIF
 
    ::oFileWatcher:addPath( ::cExe + ".d2" )
-
    ::show()
 
    QProcess():startDetached( cCmd, qStr, cWrkDir )
-   ::waitState( 3 )                               // duration can be controlled by user
+   ::lInRequest := .T.
+   ::waitState( WAIT_CMD_INIT )                               // duration can be controlled by user
 
-   ::oTimer:start()
-   IF ::wait4connection( "ver" )
-      ::oPM:outputText( "Connected Successfully." )
-   ELSE
-      ::oPM:outputText( "Not Connected, Debug Terminated !!" )
-      RETURN .F.
+   RETURN .T.
+
+
+METHOD IdeDebugger:matureShakehand()
+   ::lStarted := .T.
+   ::lDebugging := .T.
+   ::oPM:outputText( "Connected Successfully." )
+   ::oPM:outputText( "Debug Started." )
+   ::loadBreakPoints()
+   ::doCommand( CMD_GO )
+   RETURN NIL
+
+
+METHOD IdeDebugger:readResponse( cSource )
+   LOCAL cText, arr
+
+   IF cSource == ::cExe + ".d2"
+      ::processEvents()
+      cText := hb_MemoRead( cSource )
+      cText := substr( cText, 1, At( ",!", cText ) + 1 )
+      arr   := hb_ATokens( cText, "," )
+      ::oPM:outputText( "...........RESPONSE[ " + hb_ntos( ::nId1 ) + "." + ::cLastRequest + "] ... " + ;
+                                                            arr[ 1 ] + "," + arr[ 2 ] + "," + ATail( arr ) )
+      ::hResponses[ arr[ 1 ] ] := arr
+      ::lInRequest := .F.
+      ::populateResponse( arr )
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:sendRequest( ... )
+   LOCAL i, s, arr
+
+   IF ::lStarted
+      arr := hb_aParams()
+
+      FSeek( ::hRequest, 0, 0 )
+      s := ""
+      FOR i := 1 TO Len( arr )
+         s += arr[ i ] + ","
+      NEXT
+      ::cLastRequest := arr[ 1 ]
+
+      ::lInRequest := .T.
+      ::nId1++
+      FWrite( ::hRequest, LTrim( Str( ::nId1 ) ) + "," + s + LTrim( Str( ::nId1 ) ) + ",!" )
+
+      ::hRequests[ hb_ntos( ::nId1 ) ] := { arr, ::nAnsType, .F. }
+      ::oPM:outputText( "REQUEST[" + hb_ntos( ::nId1 ) + "]..." + arr[ 1 ] + "," + arr[ 2 ] )
+      ::processEvents()
+   ENDIF
+   //
+   RETURN NIL
+
+
+METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3 )
+   LOCAL oCursor
+
+   IF ! ::lStarted
+      RETURN NIL
+   ENDIF
+   IF ::oUi:labelStatus:text() != "Stopped"
+      RETURN NIL
+   ENDIF
+   IF ! ::isActive()
+      RETURN NIL
+   ENDIF
+#if 0                                             // An important piece of code . but does not workf because of recursion.
+   DO WHILE ::lInRequest
+      ::processEvents()
+      IF ! ::isActive()
+         RETURN NIL
+      ENDIF
+      RETURN NIL
+   ENDDO
+#endif
+
+   SWITCH nCmd
+   CASE CMD_GO
+      ::nAnsType := ANS_CMD
+      ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
+      oCursor := ::oIde:qCurEdit:textCursor()
+      oCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, 1 )
+      ::oIde:qCurEdit:setTextCursor( oCursor )
+      QApplication():processEvents()
+      oCursor := ::oIde:qCurEdit:textCursor()
+      oCursor:movePosition( QTextCursor_Up, QTextCursor_MoveAnchor, 1 )
+      ::oIde:qCurEdit:setTextCursor( oCursor )
+      QApplication():processEvents()
+
+      ::oPM:outputText( "Command GO Issued."   )
+      ::oPM:outputText( "Program Executing..." )
+      ::oUi:labelStatus:setText( "Program Executing..." )
+      ::sendRequest( "cmd", "go" )
+      ::waitState( WAIT_CMD_GO )
+      EXIT
+   CASE CMD_STEP
+      ::nAnsType := ANS_CMD
+      ::oPM:outputText( "Command STEP Issued." )
+      ::oPM:outputText( "Program Executing..." )
+      ::oUi:labelStatus:setText( "Program Executing..." )
+      ::sendRequest( "cmd", "step" )
+      ::waitState( WAIT_CMD_STEP )
+      EXIT
+   CASE CMD_TOCURS
+      ::nAnsType := ANS_CMD
+      ::oPM:outputText( "Command TOCURS Issued." )
+      ::oPM:outputText( "Program Executing..." )
+      ::oUi:labelStatus:setText( "Program Executing..." )
+      ::sendRequest( "cmd", "to", ::getCurrPrgName(), Ltrim( Str( ::getCurrLine() ) ) )
+      ::waitState( WAIT_CMD_TOCURS )
+      EXIT
+   CASE CMD_TRACE
+      ::nAnsType := ANS_CMD
+      ::oPM:outputText( "Command TRACE Issued."   )
+      ::oPM:outputText( "Program Executing..." )
+      ::oUi:labelStatus:setText( "Program Executing..." )
+      ::sendRequest( "cmd", "trace" )
+      ::waitState( WAIT_CMD_TRACE )
+      EXIT
+   CASE CMD_NEXTR
+      ::nAnsType := ANS_CMD
+      ::oPM:outputText( "Command NEXTR Issued."   )
+      ::oPM:outputText( "Program Executing..." )
+      ::oUi:labelStatus:setText( "Program Executing..." )
+      ::sendRequest( "cmd", "nextr" )
+      ::waitState( WAIT_CMD_NEXTR )
+      EXIT
+   CASE CMD_EXP
+      ::nAnsType := ANS_CALC
+      ::sendRequest( "exp", cDop )
+      ::waitState( WAIT_CMD_EXP )
+      EXIT
+   CASE CMD_STACK
+      ::nAnsType := ANS_STACK
+      ::sendRequest( "view", "stack", cDop )
+      ::waitState( WAIT_CMD_STACK )
+      EXIT
+   CASE CMD_LOCAL
+      ::nAnsType := ANS_LOCAL
+      ::sendRequest( "view", "local", cDop )
+      ::waitState( WAIT_CMD_LOCAL )
+      EXIT
+   CASE CMD_PRIV
+      ::nAnsType := ANS_LOCAL
+      ::sendRequest( "view", "priv", cDop )
+      ::waitState( WAIT_CMD_PRIV )
+      EXIT
+   CASE CMD_PUBL
+      ::nAnsType := ANS_LOCAL
+      ::sendRequest( "view", "publ", cDop )
+      ::waitState( WAIT_CMD_PUBL )
+      EXIT
+   CASE CMD_STATIC
+      ::nAnsType := ANS_LOCAL
+      ::sendRequest( "view", "static", cDop )
+      ::waitState( WAIT_CMD_STATIC )
+      EXIT
+   CASE CMD_WATCH
+      ::nAnsType := ANS_WATCH
+      IF Empty( cDop2 )
+         ::sendRequest( "view", "watch", cDop )
+      ELSE
+         ::sendRequest( "watch", cDop, cDop2 )
+      ENDIF
+      ::waitState( WAIT_CMD_WATCH )
+      EXIT
+   CASE CMD_AREA
+      ::nAnsType := ANS_AREAS
+      ::sendRequest( "view", "areas" )
+      ::waitState( WAIT_CMD_AREA )
+      EXIT
+   CASE CMD_SETS
+      ::nAnsType := ANS_SETS
+      ::sendRequest( "view", "sets" )
+      ::waitState( WAIT_CMD_SETS )
+      EXIT
+   CASE CMD_REC
+      ::nAnsType := ANS_REC
+      ::sendRequest( "insp", "rec", cDop )
+      ::waitState( WAIT_CMD_REC )
+      EXIT
+   CASE CMD_OBJECT
+      ::nAnsType := ANS_OBJECT
+      ::sendRequest( "insp", "obj", cDop )
+      ::waitState( WAIT_CMD_OBJECT )
+      EXIT
+   CASE CMD_ARRAY
+      ::nAnsType := ANS_ARRAY
+      ::sendRequest( "insp", "arr", cDop, "", "" )
+      ::waitState( WAIT_CMD_ARRAY )
+      EXIT
+   CASE CMD_BRP
+      ::nAnsType := ANS_BRP
+      ::sendRequest( "brp", cDop, cDop2, cDop3 )
+      ::waitState( WAIT_CMD_BRP )
+      EXIT
+   CASE CMD_QUIT
+      ::nAnsType := ANS_QUIT
+      ::sendRequest( "cmd", "quit" )
+      ::waitState( WAIT_CMD_QUIT )
+      ::stopDebug()
+      EXIT
+   ENDSWITCH
+   RETURN NIL
+
+
+METHOD IdeDebugger:getRequestType( cId )
+   LOCAL cReq
+
+   IF Left( cID, 1 ) == "b"
+      cReq := SubStr( cId, 2 )
+      IF hb_HHasKey( ::hRequests, cReq )
+         IF ! ::hRequests[ cReq ][ 3 ]
+            ::hRequests[ cReq ][ 3 ] := .T.
+            RETURN ::hRequests[ cReq ][ 2 ]
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN -1
+
+
+METHOD IdeDebugger:populateResponse( arr )
+   LOCAL n
+
+   IF Empty( arr )
+      RETURN NIL
+   ENDIF
+   IF arr[ 1 ] == "quit"
+      RETURN ::stopDebug()
    ENDIF
 
-   ::timerProc()
-   ::loadBreakPoints()
-   ::lDebugging := .T.
-   ::oPM:outputText( "Debug Started." )
-   ::doCommand( CMD_GO )
-   //
-   RETURN .T.
+   IF Left( arr[ 1 ], 1 ) == "b" // .AND. ( n := Val( SubStr( arr[ 1 ], 2 ) ) ) == ::nId1
+      SWITCH ::getRequestType( arr[ 1 ] )
+      CASE ANS_CALC
+         IF arr[ 2 ] == "value"
+            IF ! Empty( ::cInspectVar )
+               IF Substr( Hex2Str( arr[ 3 ] ), 2, 1 ) == "O"
+                  ::nMode := MODE_INPUT
+                  ::inspectObject( .F. )
+                  RETURN NIL
+               ELSE
+                  ::oUI:tableObjectInspector:setRowCount( 0 )
+                  hbide_showWarning( ::cInspectVar + " isn't an object" )
+                  ::oUI:activateWindow()
+               ENDIF
+            ENDIF
+         ELSE
+            ::oPM:outputText( "-- BAD ANSWER --" )
+         ENDIF
+         EXIT
+      CASE ANS_BRP
+         IF arr[ 2 ] == "err"
+            ::oPM:outputText( "-- BAD LINE --" )
+            ::toggleBreakPoint( "line", Str( ::nLineBP ) )
+         ELSE
+            ::oPM:outputText( "Ok" )
+            ::toggleBreakPoint( arr[ 2 ], arr[ 3 ] )
+         ENDIF
+
+         IF ! Empty( ::aBPLoad )
+            IF ++::nBPLoad <= Len( ::aBPLoad )
+               ::addBreakPoint( ::aBPLoad[ ::nBPLoad,2 ], ::aBPLoad[ ::nBPLoad,1 ] )
+               RETURN NIL
+            ELSE
+               ::aBPLoad := {}
+               ::oPM:outputText( "Breakpoints loaded." )
+            ENDIF
+         ENDIF
+         EXIT
+      CASE ANS_STACK
+         IF arr[ 2 ] == "stack"
+            ::showStack( arr, 3 )
+         ENDIF
+         EXIT
+      CASE ANS_LOCAL
+         IF arr[ 2 ] == "valuelocal"
+            ::showVars( arr, 3, 1 )
+         ELSEIF arr[ 2 ] == "valuepriv"
+            ::showVars( arr, 3, 2 )
+         ELSEIF arr[ 2 ] == "valuepubl"
+            ::showVars( arr, 3, 3 )
+         ELSEIF arr[ 2 ] == "valuestatic"
+            ::showVars( arr, 3, 4 )
+         ENDIF
+         EXIT
+      CASE ANS_WATCH
+         IF arr[ 2 ] == "valuewatch"
+            ::showWatch( arr, 3 )
+         ENDIF
+         EXIT
+      CASE ANS_AREAS
+         IF arr[ 2 ] == "valueareas"
+            ::showAreas( arr, 3 )
+         ENDIF
+         EXIT
+      CASE ANS_SETS
+         IF arr[ 2 ] == "valuesets"
+            ::showSets( arr, 3 )
+         ENDIF
+         EXIT
+      CASE ANS_REC
+         IF arr[ 2 ] == "valuerec"
+            ::showRec( arr, 3 )
+         ENDIF
+         EXIT
+      CASE ANS_OBJECT
+         IF arr[ 2 ] == "valueobj"
+            ::showObject( arr, 3 )
+         ENDIF
+         EXIT
+      CASE ANS_ARRAY
+         IF arr[ 2 ] == "valuearr"
+            ::showObject( arr, 3 )
+         ENDIF
+         EXIT
+      ENDSWITCH
+
+   ELSEIF Left( arr[ 1 ], 1 ) == "a" // .AND. ( n := Val( SubStr( arr[ 1 ], 2 ) ) ) > ::nId2
+      n := Val( SubStr( arr[ 1 ], 2 ) )
+
+      ::nId2 := n
+      IF arr[2] == "."
+         ::oPM:outputText( "-- BAD LINE --" )
+      ELSE
+         ::oPM:outputText( "Program Stopped..." )
+         ::oUi:labelStatus:setText( "Stopped" )
+
+         ::cPrgName := arr[ 2 ]
+         ::setCurrLine( ::nCurrLine := Val( arr[ 3 ] ), ::cPrgName )
+
+         n := 4
+         DO WHILE .T.
+            IF arr[ n ] == "ver"
+               ::nVerProto := Val( arr[ n+1 ] )
+               n += 2
+            ELSEIF arr[ n ] == "stack"
+               ::showStack( arr, n+1 )
+               n += 2 + Val( arr[ n+1 ] ) * 3
+            ELSEIF arr[ n ] == "valuelocal"
+               ::showVars( arr, n+1, 1 )
+               n += 2 + Val( arr[ n+1 ] ) * 3
+            ELSEIF arr[ n ] == "valuepriv"
+               ::showVars( arr, n+1, 2 )
+               n += 2 + Val( arr[ n+1 ] ) * 3
+            ELSEIF arr[ n ] == "valuepubl"
+               ::showVars( arr, n+1, 3 )
+               n += 2 + Val( arr[ n+1 ] ) * 3
+            ELSEIF arr[ n ] == "valuestatic"
+               ::showVars( arr, n+1, 4 )
+               n += 2 + Val( arr[ n+1 ] ) * 3
+            ELSEIF arr[ n ] == "valuewatch"
+               ::showWatch( arr, n+1 )
+               n += 2 + Val( arr[ n+1 ] )
+            ELSE
+               EXIT
+            ENDIF
+            QApplication():processEvents()
+         ENDDO
+
+         ::cLastMessage := "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")"
+         ::oPM:outputText( ::cLastMessage )
+
+         ::ui_load()
+         ::oUI:show()
+         ::oUI:activateWindow()
+         IF arr[ 4 ] == "ver"
+            ::matureShakehand()
+         ENDIF
+      ENDIF
+
+   ELSEIF Left( arr[ 1 ], 1 ) == "e"
+      ::oPM:outputText( "Unrecognized Command!" )
+
+   ENDIF
+   ::processEvents()
+
+   RETURN NIL
 
 
 METHOD IdeDebugger:loadBreakPoints()
@@ -390,9 +795,6 @@ METHOD IdeDebugger:loadBreakPoints()
       ::nBPLoad := 1
       ::addBreakPoint( ::aBPLoad[ 1,2 ], ::aBPLoad[ 1,1 ] )
    ENDIF
-   WHILE ! Empty( ::aBPLoad )
-      ::timerProc()
-   ENDDO
    RETURN .T.
 
 
@@ -404,26 +806,17 @@ METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
    IF nLine <= 0
       RETURN NIL
    ENDIF
-#if 0                                             // BP must be available to be loaded any-time
-   IF ::nMode != MODE_INPUT .AND. Empty( ::aBPLoad )
-      RETURN NIL
-   ENDIF
-#endif
    IF ( n := ::getBP( nLine, cPrg ) ) == 0
       ::oPM:outputText( "Setting break point: " + cPrg + ": " + Str( nLine ) )
-      ::send( "brp", "add", cPrg, LTrim( Str( nLine ) ) )
+      ::doCommand( CMD_BRP, "add", cPrg, LTrim( Str( nLine ) ) )
       AAdd( ::aBP, { nLine, cPrg } )
    ELSE
       ::oPM:outputText( "Deleting break point: " + cPrg + ": " + Str( nLine ) )
-      ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
+      ::doCommand( CMD_BRP, "del", cPrg, LTrim( Str( nLine ) ) )
       hb_ADel( ::aBP, n, .T. )
    ENDIF
-   IF ::nMode != MODE_WAIT_ANS
-      ::nAnsType := ANS_BRP
-      ::cPrgBP   := cPrg
-      ::nLineBP  := nLine
-      ::setMode( MODE_WAIT_ANS )
-   ENDIF
+   ::cPrgBP   := cPrg
+   ::nLineBP  := nLine
    RETURN NIL
 
 
@@ -436,7 +829,6 @@ METHOD IdeDebugger:clearBreakPoints( cPrg )
    FOR n := 1 TO Len( ::aBP )
       IF ( Empty( cPrg ) .OR. cPrg == ::aBP[ n,2 ] ) .AND. ::aBP[ n,1 ] <> 0
          ::deleteBreakPoint( ::aBP[ n,2 ], ::aBP[ n,1 ] )
-         ::wait4connection( "ok" )
       ENDIF
    NEXT
    RETURN .T.
@@ -464,405 +856,19 @@ METHOD IdeDebugger:toggleBreakPoint( cAns, cLine )
          ::aBP[ i,1 ] := 0
       ENDIF
    ENDIF
-   //::setCurrLine(nLine, ::cPrgName)
    RETURN NIL
 
 
 METHOD IdeDebugger:deleteBreakPoint( cPrg, nLine )
-   ::send( "brp", "del", cPrg, LTrim( Str( nLine ) ) )
-   IF ::nMode != MODE_WAIT_ANS
-      ::nAnsType := ANS_BRP
-      ::cPrgBP   := cPrg
-      ::nLineBP  := nLine
-      ::setMode( MODE_WAIT_ANS )
-   ENDIF
+   ::doCommand( CMD_BRP, "del", cPrg, LTrim( Str( nLine ) ) )
+   ::cPrgBP   := cPrg
+   ::nLineBP  := nLine
    RETURN .T.
 
 
 METHOD IdeDebugger:getBP( nLine, cPrg )
    cPrg := Lower( iif( cPrg == NIL, ::cPrgName, cPrg ) )
    RETURN Ascan( ::aBP, {|a_| a_[ 1 ] == nLine .and. Lower( a_[ 2 ] ) == cPrg } )
-
-
-METHOD IdeDebugger:populateResponse( cSource )
-   LOCAL cText, aInf
-
-   IF cSource == ::cExe + ".d2"
-      cText := hb_MemoRead( cSource )
-      cText := substr( cText, 1, At( ",!", cText ) + 1 )
-      aInf  := hb_ATokens( cText, "," )
-      ::oPM:outputText( "...........RESPONSE[ " + hb_ntos( ::nId1 ) + "." + ::cLastRequest + "] ... " + aInf[ 1 ] + "," + aInf[ 2 ] + "," + ATail( aInf ) )
-   ENDIF
-   RETURN NIL
-
-
-METHOD IdeDebugger:timerProc()
-   LOCAL n, arr
-   STATIC nLastSec := 0
-
-   IF ::nMode != MODE_INPUT
-      IF ! Empty( arr := ::dbgRead() )
-         IF arr[ 1 ] == "quit"
-            ::setMode( MODE_INIT )
-            ::stopDebug()
-            RETURN NIL
-         ENDIF
-         IF ::nMode == MODE_WAIT_ANS
-            IF Left( arr[ 1 ], 1 ) == "b" .AND. ( n := Val( SubStr( arr[ 1 ], 2 ) ) ) == ::nId1
-               IF ::nAnsType == ANS_CALC
-                  IF arr[ 2 ] == "value"
-                     IF ! Empty( ::cInspectVar )
-                        IF Substr( Hex2Str( arr[ 3 ] ), 2, 1 ) == "O"
-                           ::nMode := MODE_INPUT
-                           ::inspectObject( .F. )
-                           RETURN NIL
-                        ELSE
-                           ::oUI:tableObjectInspector:setRowCount( 0 )
-                           hbide_showWarning( ::cInspectVar + " isn't an object" )
-                           ::oUI:activateWindow()
-                        ENDIF
-                     ELSE
-                        //???  ::SetResult( Hex2Str( arr[3] ) )
-                     ENDIF
-                  ELSE
-                     ::oPM:outputText( "-- BAD ANSWER --" )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_BRP
-                  IF arr[ 2 ] == "err"
-                     ::oPM:outputText( "-- BAD LINE --" )
-                     ::toggleBreakPoint( "line", Str( ::nLineBP ) )
-                  ELSE
-                     ::oPM:outputText( "Ok" )
-                     ::toggleBreakPoint( arr[ 2 ], arr[ 3 ] )
-                  ENDIF
-
-                  IF ! Empty( ::aBPLoad )
-                     IF ++::nBPLoad <= Len( ::aBPLoad )
-                        ::addBreakPoint( ::aBPLoad[ ::nBPLoad,2 ], ::aBPLoad[ ::nBPLoad,1 ] )
-                        RETURN NIL
-                     ELSE
-                        ::aBPLoad := {}
-                        ::oPM:outputText( "Breakpoints loaded." )
-                     ENDIF
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_STACK
-                  IF arr[ 2 ] == "stack"
-                     ::showStack( arr, 3 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_LOCAL
-                  IF arr[ 2 ] == "valuelocal"
-                     ::showVars( arr, 3, 1 )
-                  ELSEIF arr[ 2 ] == "valuepriv"
-                     ::showVars( arr, 3, 2 )
-                  ELSEIF arr[ 2 ] == "valuepubl"
-                     ::showVars( arr, 3, 3 )
-                  ELSEIF arr[ 2 ] == "valuestatic"
-                     ::showVars( arr, 3, 4 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_WATCH
-                  IF arr[ 2 ] == "valuewatch"
-                     ::showWatch( arr, 3 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_AREAS
-                  IF arr[ 2 ] == "valueareas"
-                     ::showAreas( arr, 3 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_SETS
-                  IF arr[ 2 ] == "valuesets"
-                     ::showSets( arr, 3 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_REC
-                  IF arr[ 2 ] == "valuerec"
-                     ::showRec( arr, 3 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_OBJECT
-                  IF arr[ 2 ] == "valueobj"
-                     ::showObject( arr, 3 )
-                  ENDIF
-               ELSEIF ::nAnsType == ANS_ARRAY
-                  IF arr[ 2 ] == "valuearr"
-                     ::showObject( arr, 3 )
-                  ENDIF
-               ENDIF
-               ::setMode( MODE_INPUT )
-            ENDIF
-         ELSE
-            IF Left( arr[ 1 ], 1 ) == "a" .AND. ( n := Val( SubStr( arr[ 1 ], 2 ) ) ) > ::nId2
-               ::nId2 := n
-               IF arr[2] == "."
-                  ::oPM:outputText( "-- BAD LINE --" )
-               ELSE
-                  IF ! ( ::cPrgName == arr[ 2 ] )
-                     ::cPrgName := arr[ 2 ]
-                     // ::setPath( ::cPaths, ::cPrgName )
-                  ENDIF
-                  ::oPM:outputText( "Program Stopped..." )
-                  ::oUi:labelStatus:setText( "Stopped" )
-                  ::setCurrLine( ::nCurrLine := Val( arr[ 3 ] ), ::cPrgName )
-                  n := 4
-                  DO WHILE .T.
-                     IF arr[ n ] == "ver"
-                        ::nVerProto := Val( arr[ n+1 ] )
-                        n += 2
-                     ELSEIF arr[ n ] == "stack"
-                        ::showStack( arr, n+1 )
-                        n += 2 + Val( arr[ n+1 ] ) * 3
-                     ELSEIF arr[ n ] == "valuelocal"
-                        ::showVars( arr, n+1, 1 )
-                        n += 2 + Val( arr[ n+1 ] ) * 3
-                     ELSEIF arr[ n ] == "valuepriv"
-                        ::showVars( arr, n+1, 2 )
-                        n += 2 + Val( arr[ n+1 ] ) * 3
-                     ELSEIF arr[ n ] == "valuepubl"
-                        ::showVars( arr, n+1, 3 )
-                        n += 2 + Val( arr[ n+1 ] ) * 3
-                     ELSEIF arr[ n ] == "valuestatic"
-                        ::showVars( arr, n+1, 4 )
-                        n += 2 + Val( arr[ n+1 ] ) * 3
-                     ELSEIF arr[ n ] == "valuewatch"
-                        ::showWatch( arr, n+1 )
-                        n += 2 + Val( arr[ n+1 ] )
-                     ELSE
-                        EXIT
-                     ENDIF
-                     QApplication():processEvents()
-                  ENDDO
-                  ::requestSets()
-                  ::cLastMessage := "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")"
-                  ::oPM:outputText( ::cLastMessage )
-
-                  ::ui_load()
-                  ::oUI:show()
-                  ::oUI:activateWindow()
-               ENDIF
-               ::setMode( MODE_INPUT )
-               nLastSec := Seconds()
-            ENDIF
-         ENDIF
-      ENDIF
-   ENDIF
-   RETURN NIL
-
-
-METHOD IdeDebugger:dbgRead()
-   LOCAL n, s, arr
-
-   FSeek( ::hResponse, 0, 0 )
-   s := ""
-   DO WHILE ( n := Fread( ::hResponse, @::cBuffer, BUFFER_LEN ) ) > 0
-      s += Left( ::cBuffer, n )
-      IF ( n := At( ",!", s ) ) > 0
-         IF ( arr := hb_aTokens( Left( s, n + 1 ), "," ) ) != NIL .AND. Len( arr ) > 2 .AND. arr[ 1 ] == arr[ Len( arr ) - 1 ]
-            RETURN arr
-         ELSE
-            EXIT
-         ENDIF
-      ENDIF
-      QApplication():processEvents()
-   ENDDO
-   RETURN NIL
-
-
-METHOD IdeDebugger:send( ... )
-   LOCAL i
-   LOCAL arr := hb_aParams()
-   LOCAL s   := ""
-
-   FSeek( ::hRequest, 0, 0 )
-   FOR i := 1 TO Len( arr )
-      s += arr[ i ] + ","
-   NEXT
-   ::cLastRequest := arr[ 1 ]
-   FWrite( ::hRequest, LTrim( Str( ++::nId1 ) ) + "," + s + LTrim( Str( ::nId1 ) ) + ",!" )
-   RETURN NIL
-
-
-METHOD IdeDebugger:setMode( newMode )
-   ::nMode := newMode
-   IF newMode == MODE_INPUT
-   ELSE
-      IF newMode == MODE_WAIT_ANS .OR. newMode == MODE_WAIT_BR
-         IF newMode == MODE_WAIT_BR
-            ::nCurrLine := 0
-         ENDIF
-      ELSEIF newMode == MODE_INIT
-         ::lDebugging := .F.
-      ENDIF
-   ENDIF
-   RETURN NIL
-
-
-METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2 )
-   LOCAL oCursor
-   IF ::nMode == MODE_INPUT
-      IF nCmd == CMD_GO
-         ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
-         oCursor := ::oIde:qCurEdit:textCursor()
-         oCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, 1 )
-         ::oIde:qCurEdit:setTextCursor( oCursor )
-         QApplication():processEvents()
-         oCursor := ::oIde:qCurEdit:textCursor()
-         oCursor:movePosition( QTextCursor_Up, QTextCursor_MoveAnchor, 1 )
-         ::oIde:qCurEdit:setTextCursor( oCursor )
-         QApplication():processEvents()
-
-         ::oPM:outputText( "Command GO Issued."   )
-         ::oPM:outputText( "Program Executing..." )
-         ::oUi:labelStatus:setText( "Program Executing..." )
-         ::send( "cmd", "go" )
-
-      ELSEIF nCmd == CMD_STEP
-         ::oPM:outputText( "Command STEP Issued." )
-         ::oPM:outputText( "Program Executing..." )
-         ::oUi:labelStatus:setText( "Program Executing..." )
-         ::send( "cmd", "step" )
-
-      ELSEIF nCmd == CMD_TOCURS
-         ::oPM:outputText( "Command TOCURS Issued." )
-         ::oPM:outputText( "Program Executing..." )
-         ::oUi:labelStatus:setText( "Program Executing..." )
-         ::send( "cmd", "to", ::getCurrPrgName(), Ltrim( Str( ::getCurrLine() ) ) )
-
-      ELSEIF nCmd == CMD_TRACE
-         ::oPM:outputText( "Command TRACE Issued."   )
-         ::oPM:outputText( "Program Executing..." )
-         ::oUi:labelStatus:setText( "Program Executing..." )
-         ::send( "cmd", "trace" )
-
-      ELSEIF nCmd == CMD_NEXTR
-         ::oPM:outputText( "Command NEXTR Issued."   )
-         ::oPM:outputText( "Program Executing..." )
-         ::oUi:labelStatus:setText( "Program Executing..." )
-         ::send( "cmd", "nextr" )
-
-      ELSEIF nCmd == CMD_EXP
-         ::send( "exp", cDop )
-         ::nAnsType := ANS_CALC
-         ::setMode( MODE_WAIT_ANS )
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_STACK
-         ::send( "view", "stack", cDop )
-         ::nAnsType := ANS_STACK
-         ::setMode( MODE_WAIT_ANS )
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_LOCAL
-         ::send( "view", "local", cDop )
-         ::nAnsType := ANS_LOCAL
-         ::setMode( MODE_WAIT_ANS )
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_PRIV
-         IF ::nVerProto > 1
-            ::send( "view", "priv", cDop )
-            ::nAnsType := ANS_LOCAL
-            ::setMode( MODE_WAIT_ANS )
-         ELSE
-            hbide_showWarning( cMsgNotSupp )
-            ::oUI:activateWindow()
-         ENDIF
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_PUBL
-         IF ::nVerProto > 1
-            ::send( "view", "publ", cDop )
-            ::nAnsType := ANS_LOCAL
-            ::setMode( MODE_WAIT_ANS )
-         ELSE
-            hbide_showWarning( cMsgNotSupp )
-            ::oUI:activateWindow()
-         ENDIF
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_STATIC
-         IF ::nVerProto > 1
-            ::send( "view", "static", cDop )
-            ::nAnsType := ANS_LOCAL
-            ::setMode( MODE_WAIT_ANS )
-         ELSE
-            hbide_showWarning( cMsgNotSupp )
-            ::oUI:activateWindow()
-         ENDIF
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_WATCH
-         IF Empty( cDop2 )
-            ::send( "view", "watch", cDop )
-         ELSE
-            ::send( "watch", cDop, cDop2 )
-         ENDIF
-         ::nAnsType := ANS_WATCH
-         ::setMode( MODE_WAIT_ANS )
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_AREA
-         ::send( "view", "areas" )
-         ::nAnsType := ANS_AREAS
-         ::setMode( MODE_WAIT_ANS )
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_SETS
-         ::send( "view", "sets" )
-         ::nAnsType := ANS_SETS
-         ::setMode( MODE_WAIT_ANS )
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_REC
-         IF ::nVerProto > 1
-            ::send( "insp", "rec", cDop )
-            ::nAnsType := ANS_REC
-            ::setMode( MODE_WAIT_ANS )
-         ELSE
-            hbide_showWarning( cMsgNotSupp )
-            ::oUI:activateWindow()
-         ENDIF
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_OBJECT
-         IF ::nVerProto > 1
-            ::send( "insp", "obj", cDop )
-            ::nAnsType := ANS_OBJECT
-            ::setMode( MODE_WAIT_ANS )
-         ELSE
-            hbide_showWarning( cMsgNotSupp )
-            ::oUI:activateWindow()
-         ENDIF
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_ARRAY
-         IF ::nVerProto > 1
-            ::send( "insp", "arr", cDop, "", "" )
-            ::nAnsType := ANS_ARRAY
-            ::setMode( MODE_WAIT_ANS )
-         ELSE
-            hbide_showWarning( cMsgNotSupp )
-            ::oUI:activateWindow()
-         ENDIF
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_QUIT
-         ::nExitMode := 2
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_EXIT
-         ::nExitMode := 1
-         RETURN NIL
-
-      ELSEIF nCmd == CMD_TERMINATE
-         ::send( "cmd", "quit" )
-         ::lDebugging := .F.
-         ::stopDebug()
-
-      ENDIF
-
-      ::setMode( MODE_WAIT_BR )
-
-   ELSEIF nCmd == CMD_EXIT
-      ::nExitMode := 1
-
-   ENDIF
-   RETURN NIL
 
 
 METHOD IdeDebugger:setCurrLine( nLine, cName )
@@ -935,11 +941,8 @@ METHOD IdeDebugger:stopDebug()
       ::hide()
       RETURN Self
    ENDIF
-
+   ::lDebugging := .F.
    ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
-   IF ::oTimer:isActive()
-      ::oTimer:stop()
-   ENDIF
    FClose( ::hRequest )
    FClose( ::hResponse )
    ::hRequest := ::hResponse := -1
@@ -962,6 +965,18 @@ METHOD IdeDebugger:stopDebug()
    ::hide()
    ::lTerminated := .T.
    RETURN NIL
+
+
+METHOD IdeDebugger:exitDbg()
+   IF ::nExitMode == 1
+      IF ::hRequest != -1
+         ::doCommand( CMD_EXIT, "exit" )
+      ENDIF
+   ELSEIF ::nExitMode == 2
+      ::doCommand( CMD_QUIT, "quit" )
+   ENDIF
+   ::stopDebug()
+   RETURN .T.
 
 
 METHOD IdeDebugger:manageObjectLevelUp()
@@ -1082,7 +1097,6 @@ METHOD IdeDebugger:showStack( arr, n )
 METHOD IdeDebugger:showVars( arr, n, nVarType )
    LOCAL nLen := Val( arr[n] )
    LOCAL i, oTable
-   //::oUI:tabWidget:setCurrentIndex(nVarType)
 
    DO CASE
    CASE nVarType = 1
@@ -1111,6 +1125,7 @@ METHOD IdeDebugger:showWatch( arr, n )
       IF nWatch <= Len( ::aWatches )
          ::oUI:tableWatchExpressions:setItem( ::aWatches[ nWatch,1 ], 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
       ENDIF
+      ::processEvents()
    NEXT
    RETURN NIL
 
@@ -1125,6 +1140,7 @@ METHOD IdeDebugger:showAreas( arr, n )
       FOR j := 1 TO nAItems
          ::oUI:tableOpenTables:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
       NEXT
+      ::processEvents()
    NEXT
    IF nAreas == 0
       ::oUI:tableCurrentRecord:setRowCount( 0 )
@@ -1147,6 +1163,7 @@ METHOD IdeDebugger:showRec( arr, n )
       FOR j := 1 TO 4
          ::oUI:tableCurrentRecord:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
       NEXT
+      ::processEvents()
    NEXT
    RETURN NIL
 
@@ -1159,6 +1176,7 @@ METHOD IdeDebugger:showSets( arr, n )
    FOR i := 1 TO nSets
       FOR j := 1 TO 2
          ::oUI:tableSets:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
+         ::processEvents()
       NEXT
    NEXT
    RETURN NIL
@@ -1180,6 +1198,7 @@ METHOD IdeDebugger:showObject( arr, n )
             FOR j := 1 TO 3
                ::oUI:tableObjectInspector:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
             NEXT
+            ::processEvents()
          NEXT
       ELSEIF ::cInspectType == "A"
          ::oUI:labelObjectInspector:setText( "Array Inspector [" + ::cInspectVar + "]" )
@@ -1189,45 +1208,11 @@ METHOD IdeDebugger:showObject( arr, n )
             FOR j := 1 TO 2
                ::oUI:tableObjectInspector:setItem( i - 1, j, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
             NEXT
+            ::processEvents()
          NEXT
       ENDIF
    ENDIF
    RETURN NIL
-
-
-METHOD IdeDebugger:wait4connection( cStr )
-   LOCAL n
-   LOCAL nSec := Seconds()
-
-   ::oTimer:stop()
-   DO WHILE .T.
-      IF ::lTerminated
-         EXIT
-      ENDIF
-      FSeek( ::hResponse, 0, 0 )
-      n := Fread( ::hResponse, @::cBuffer, BUFFER_LEN )
-      IF n > 0
-         IF cStr == "ok"
-            IF At( "err", ::cBuffer ) > 0 .OR. At( "ok", ::cBuffer ) > 0
-               EXIT
-            ENDIF
-         ELSE
-            IF At( cStr, ::cBuffer ) > 0
-               EXIT
-            ENDIF
-         ENDIF
-      ENDIF
-      IF Seconds() - nSec > 5
-         ::oPM:outputText( "Waited for " + cStr + ". No answer. May be a bad query." )
-         ::oUI:activateWindow()
-         ::oTimer:start()
-         RETURN .F.
-      ENDIF
-      ::waitState( 0.3 )
-      QApplication():processEvents()
-   ENDDO
-   ::oTimer:start()
-   RETURN .T.
 
 
 METHOD IdeDebugger:requestRecord( row, col )
@@ -1236,8 +1221,8 @@ METHOD IdeDebugger:requestRecord( row, col )
    IF ::oUi:labelStatus:text() != "Stopped"
       RETURN NIL
    ENDIF
-
    HB_SYMBOL_UNUSED( col )
+
    IF row == ::nRowAreas
       RETURN NIL
    ELSE
@@ -1249,42 +1234,17 @@ METHOD IdeDebugger:requestRecord( row, col )
    ELSE
       cAlias = item:text()
    ENDIF
-   ::setMode( MODE_INPUT )
    ::doCommand( CMD_REC, cAlias )
-   ::wait4connection( "valuerec" )
-   ::timerProc()
-   RETURN NIL
-
-
-METHOD IdeDebugger:requestSets()
-
-   IF ::oUi:labelStatus:text() != "Stopped"
-      RETURN NIL
-   ENDIF
-   ::setMode( MODE_INPUT )
-   ::doCommand( CMD_SETS )
-   ::wait4connection( "valuesets" )
-   ::timerProc()
    RETURN NIL
 
 
 METHOD IdeDebugger:requestObject()
 
-   IF ::oUi:labelStatus:text() != "Stopped"
-      RETURN NIL
-   ENDIF
-   IF ! ::isActive()
-      RETURN NIL
-   ENDIF
-   ::setMode( MODE_INPUT )
    IF ::cInspectType == "O"
       ::doCommand( CMD_OBJECT, ::cInspectVar )
-      ::wait4connection( "valueobj" )
    ELSEIF ::cInspectType == "A"
       ::doCommand( CMD_ARRAY, ::cInspectVar  )
-      ::wait4connection( "valuearr" )
    ENDIF
-   ::timerProc()
    RETURN NIL
 
 
@@ -1294,89 +1254,50 @@ METHOD IdeDebugger:requestVars( index )
       RETURN NIL
    ENDIF
    ::nRequestedVarsIndex := index
-   ::setMode( MODE_INPUT )
-
    DO CASE
    CASE index == 0
-      ::doCommand( CMD_LOCAL, "on" )
-      ::wait4connection( "valuelocal" )
+      IF ::oUI:tableVarLocal:rowCount() == 0
+         ::doCommand( CMD_LOCAL, "on" )
+      ENDIF
    CASE index == 1
-      ::doCommand( CMD_PRIV, "on" )
-      ::wait4connection( "valuepriv" )
+      IF ::oUI:tableVarPrivate:rowCount() == 0
+         ::doCommand( CMD_PRIV, "on" )
+      ENDIF
    CASE index == 2
-      ::doCommand( CMD_PUBL, "on" )
-      ::wait4connection( "valuepubl" )
+      IF ::oUI:tableVarPublic:rowCount() == 0
+         ::doCommand( CMD_PUBL, "on" )
+      ENDIF
    CASE index == 3
-      ::doCommand( CMD_STATIC, "on" )
-      ::wait4connection( "valuestatic" )
+      IF ::oUI:tableVarStatic:rowCount() == 0
+         ::doCommand( CMD_STATIC, "on" )
+      ENDIF
    ENDCASE
-   ::timerProc()
+   //
    RETURN NIL
-
-
-METHOD IdeDebugger:loadAll()
-   IF ! ::isActive()
-      RETURN Self
-   ENDIF
-
-   ::setMode( MODE_INPUT )
-   ::doCommand( CMD_STACK, "on" )
-   ::wait4connection( "stack" )
-   ::timerProc()
-
-   ::setMode( MODE_INPUT )
-   ::doCommand( CMD_AREA )
-   ::wait4connection( "valueareas" )
-   ::timerProc()
-
-   ::requestVars( ::oUI:tabWidget:currentIndex() )
-   ::requestSets()
-   //::requestRecord()
-
-   ::doCommand( CMD_WATCH, "on" )
-   ::timerProc()
-   RETURN Self
 
 
 METHOD IdeDebugger:ui_load()
+   //
    IF ! ::isActive()
       RETURN Self
    ENDIF
+   ::oUI:tabWidget:setCurrentIndex( 0 )
 
-   IF ! ::lLoaded
-      ::setMode( MODE_INPUT )
-      ::doCommand( CMD_STACK, "on" )
-      ::wait4connection( "stack" )
-      ::timerProc()
+   ::oUI:tableVarLocal:setRowCount( 0 )
+   ::oUI:tableVarPrivate:setRowCount( 0 )
+   ::oUI:tableVarStatic:setRowCount( 0 )
+   ::oUI:tableVarPublic:setRowCount( 0 )
 
-      ::requestVars( ::oUI:tabWidget:currentIndex() )
-
-      ::lLoaded := .T.
-   ELSE
-      IF ::nRequestedVarsIndex != ::oUI:tabWidget:currentIndex()
-         ::requestVars( ::oUI:tabWidget:currentIndex() )
-      ENDIF
-   ENDIF
-
-   ::setMode( MODE_INPUT )
+   ::doCommand( CMD_SETS )
+   ::doCommand( CMD_STACK, "on" )
+   ::doCommand( CMD_WATCH, "on" )
    ::doCommand( CMD_AREA )
-   ::wait4connection( "valueareas" )
-   ::timerProc()
-
+   ::requestVars( 0 )                             // Only Locals
    IF ! Empty( ::cInspectVar )
       ::inspectObject( .F. )
    ENDIF
-
-   ::doCommand( CMD_WATCH, "on" )
    ::nRowAreas := -1
-   RETURN NIL
-
-
-METHOD IdeDebugger:waitState( nSeconds )
-   LOCAL nSecs := Seconds()
-   DO WHILE Abs( Seconds() - nSecs ) < nSeconds
-      QApplication():processEvents()
-   ENDDO
+   //
    RETURN NIL
 
 
@@ -1493,11 +1414,9 @@ METHOD IdeDebugger:watch_del( lAll )
          nn := Len( ::aWatches )
          IF ! Empty( ::aWatches[ nn,2 ] )
             hb_ADel( ::aWatches, nn, .T. )
-            ::setMode( MODE_INPUT )
             ::doCommand( CMD_WATCH, "del", LTrim( Str( nn - nEmptyNames ) ) )
-            ::wait4connection( "b" + LTrim( Str( ::nId1 ) ) )
          ENDIF
-         QApplication():processEvents()
+         ::processEvents()
       ENDDO
       oTable:setRowCount( 0 )
    ELSE
@@ -1505,7 +1424,6 @@ METHOD IdeDebugger:watch_del( lAll )
          IF ::aWatches[ i,1 ] == nRow
             ri := i
             IF ! Empty( ::aWatches[ i,2 ] )
-               ::setMode( MODE_INPUT )
                ::doCommand( CMD_WATCH, "del", LTrim( Str( i - nEmptyNames ) ) )
             ENDIF
          ENDIF
@@ -1527,7 +1445,6 @@ METHOD IdeDebugger:changeWatch( item )
    LOCAL nEmptyNames := 0
 
    IF item:column() == 0
-      ::oTimer:stop()
       ::nRowWatch := item:Row()
       FOR i := 0 TO ::nRowWatch
          IF Empty( ::aWatches[ i+1, 2 ] )
@@ -1546,9 +1463,7 @@ METHOD IdeDebugger:changeWatch( item )
             ELSE
                IF ! Empty( xTmp := ::oUI:tableWatchExpressions:item( ::nRowWatch, 1 ) )
                   r := i
-                  ::setMode( MODE_INPUT )
                   ::doCommand( CMD_WATCH, "del", Ltrim( Str( i - nEmptyNames ) ) )
-                  ::wait4connection( "b" + LTrim( Str( ::nId1 ) ) )
                ENDIF
             ENDIF
          ENDIF
@@ -1559,34 +1474,13 @@ METHOD IdeDebugger:changeWatch( item )
             hb_ADel( ::aWatches, r, .T. )
             AAdd( ::aWatches, { ::nRowWatch, item:text() } )
          ENDIF
-         ::setMode( MODE_INPUT )
          ::doCommand( CMD_WATCH, "add", Str2Hex( item:text() ) )
       ELSE
          ::aWatches[ r,2 ] := ""
       ENDIF
-      ::oTimer:start()
    ENDIF
    HB_SYMBOL_UNUSED( xTmp )
    RETURN NIL
-
-
-METHOD IdeDebugger:terminateDebug()
-   ::SetMode( MODE_INPUT )
-   ::doCommand( CMD_TERMINATE )
-   RETURN NIL
-
-
-METHOD IdeDebugger:exitDbg()
-   IF ::nExitMode == 1
-      IF ::hRequest != -1
-         ::send( "cmd", "exit" )
-      ENDIF
-   ELSEIF ::nExitMode == 2
-      ::send( "cmd", "quit" )
-   ENDIF
-   ::lDebugging := .F.
-   ::stopDebug()
-   RETURN .T.
 
 
 METHOD IdeDebugger:ui_init( oUI )
@@ -1696,7 +1590,6 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
 
    oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
-   //oUI                      :connect( QEvent_Close           , {|| ::exitDbg() } )
    oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
    RETURN NIL
 
@@ -1783,16 +1676,12 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
          ELSE
             cVar := cVar + ":" + cName
          ENDIF
-         ::cInspectVar  := cVar
-         ::cInspectType := "A"
+         ::cInspectVar   := cVar
+         ::cInspectType  := "A"
          ::cInspectTypes += "A"
          ::oUI:tableObjectInspector:setRowCount( 0 )
-         QApplication():processEvents()
-         ::setMode( MODE_INPUT )
+         ::processEvents()
          ::doCommand( CMD_ARRAY, cVar  )
-         ::wait4connection( "valuearr" )
-         ::timerProc()
-         ::waitState( 1 )
          ::expandObjectDetail( nIndent, @txt_, cOriginVar )
       ELSE
          IF ! Empty( cOriginVar )
@@ -1877,7 +1766,6 @@ STATIC FUNCTION __formatData( txt_, aHdrs, aData, aWidths )
    FOR EACH aRec IN aData
       s := "   "
       FOR j := 1 TO nCols
-         //s += Pad( AllTrim( aRec[ j ] ), aWidths[ j ] ) + iif( j == nCols, "", C_C )
          s += Pad( aRec[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
       NEXT
       AAdd( txt_, s )

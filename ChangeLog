@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-14 12:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r357)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r357.
+
+  * debug/dbgconnect.prg
+    % Minor.
+
+  * hbide/debugger.prg
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+    + Implemented: Text lines dumped in <Output Console> are now prefixed 
+       with Seconds() with 3 decimal places. The ideas is to have a 
+       generic profiler which serves two purposes:
+        1. Identified each line with a number useful to ask support 
+           questions in context of this identifier.
+        2. To measure the time taken in between two actions.
+
+    + Restructured the whole engine how debugger and application communicates.
+       In console mode debugger mechanism there is only one way ( at a time )
+       to transfer control from debugger to application or vice-versa.
+       But in a GUI debugger it is not possible. The actions are initiated 
+       independently by the debugger and application which are suseptible to 
+       dead-lock type situations more often. I have tried to overcome 
+       this problem and have been successful greatly. Ultimately, you will 
+       be the better judge to tell how good it is behaving.
+
+       This exercise has resulted in a faster execution also.
+
 2014-09-12 15:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r356)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r356.

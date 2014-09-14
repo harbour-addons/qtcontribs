@@ -695,16 +695,11 @@ FUNCTION hbide_convertBuildStatusMsgToHtml( cText, oWidget )
    cText := StrTran( cText, "  ", " " )
 
    /* Convert some chars to valid HTML chars */
-   DO WHILE "<" $ cText
-      cText := StrTran( cText, "<", "&lt;" )
-   ENDDO
-   DO WHILE ">" $ cText
-      cText := StrTran( cText, ">", "&gt;" )
-   ENDDO
+   cText := StrTran( cText, "<", "&lt;" )
+   cText := StrTran( cText, ">", "&gt;" )
    aLines := hb_aTokens( cText, Chr( 10 ) )
 
    FOR EACH cLine IN aLines
-
       IF !Empty( cLine )
          IF ( nPos := aScan( aRegList, {| reg | !Empty( hb_RegEx( reg[ 2 ], cLine ) ) } ) ) > 0
             IF aRegList[ nPos,1 ] == MSG_TYPE_ERR
@@ -717,10 +712,13 @@ FUNCTION hbide_convertBuildStatusMsgToHtml( cText, oWidget )
             cLine := "<font color=black>" + cLine + "</font>"
          ENDIF
       ENDIF
-      oWidget:append( cLine )
+      oWidget:append( hbide_iterate( cLine ) )
    NEXT
    RETURN cIfError
 
+
+FUNCTION hbide_iterate( cLine )
+   RETURN "<font color=green>" + "[" + StrZero( Seconds(), 9, 3 ) + "] </font>" + cLine
 
 FUNCTION hbide_filesToSources( aFiles )
    LOCAL aSrc := {}

@@ -1705,13 +1705,13 @@ METHOD IdeProjManager:buildSource( lExecutable )
    ::oDockB2:show()
    ::oOutputResult:oWidget:clear()
 
-   ::oOutputResult:oWidget:append( hbide_outputLine() )
+   ::outputText( hbide_outputLine() )
    cTmp := "Project [ " + oEdit:sourceFile              + " ]    " + ;
            "Launch [ "  + iif( ::lLaunch, 'Yes', 'No' ) + " ]    " + ;
            "Rebuild [ " + iif( lRebuild , 'Yes', 'No' ) + " ]    " + ;
            "Started [ " + time() + " ]"
-   ::oOutputResult:oWidget:append( cTmp )
-   ::oOutputResult:oWidget:append( hbide_outputLine() )
+   ::outputText( cTmp )
+   ::outputText( hbide_outputLine() )
 
    ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
    ::cBatch   := ::oEV:prepareBatch( ::cWrkEnvironment )
@@ -1839,16 +1839,16 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    ::oOutputResult:oWidget:clear()
 
    IF .F.
-      ::oOutputResult:oWidget:append( 'Error saving: ' + cHbpPath )
+      ::outputText( 'Error saving: ' + cHbpPath )
 
    ELSE
-      ::oOutputResult:oWidget:append( hbide_outputLine() )
+      ::outputText( hbide_outputLine() )
       cTmp := "Project [ " + cProject                     + " ]    " + ;
               "Launch [ "  + iif( lLaunch , 'Yes', 'No' ) + " ]    " + ;
               "Rebuild [ " + iif( lRebuild, 'Yes', 'No' ) + " ]    " + ;
               "Started [ " + time() + " ]"
-      ::oOutputResult:oWidget:append( cTmp )
-      ::oOutputResult:oWidget:append( hbide_outputLine() )
+      ::outputText( cTmp )
+      ::outputText( hbide_outputLine() )
 
       ::oIDE:oEV := IdeEnvironments():new():create( ::oIDE )
       cBatch   := ::oEV:prepareBatch( cWrkEnviron, lDebug )
@@ -1953,7 +1953,6 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, l
       hb_fNameSplit( cExe, @cTmp )
       hbide_setProjectOutputPath( cTmp )
    ENDIF
-
 
    IF ::lLaunch
       ::outputText( " " )
@@ -2100,7 +2099,6 @@ METHOD IdeProjManager:launchDebug( cProject, cExe, cCmd, qStr, cWrkDir )
    ENDIF
 
    WITH OBJECT ::oIde:oDebugger
-      :stop()
       :clear()
       :cCurrentProject := cProject
       :aSources := ::getSourcesByProjectTitle( cProject )
@@ -2152,7 +2150,7 @@ METHOD IdeProjManager:runAsScript()
 
 
 METHOD IdeProjManager:outputText( cText )
-   ::oOutputResult:oWidget:append( "<font color=black>" + cText + "</font>" )
+   ::oOutputResult:oWidget:append( hbide_iterate( "<font color=black>" + cText + "</font>" ) )
    ::oOutputResult:oWidget:ensureCursorVisible()
    QApplication():processEvents()
    RETURN Self

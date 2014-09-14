@@ -111,8 +111,6 @@ FUNCTION hwg_dbg_New()
          IF ( i := FRead( handl1, @cBuffer, BUFER_LEN ) ) > 0 .AND. Left( cBuffer,4 ) == "init"
             handl2 := FOpen( cFile + ".d2", FO_READWRITE + FO_SHARED )
             IF handl2 != -1
-//               nId1 := -1
-//               nId2 := 0
                lDebugRun := .T.
                RETURN NIL
             ENDIF
