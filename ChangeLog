@@ -16,6 +16,41 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-14 21:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r358)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r358.
+
+  * hbdbu/dbu.prg
+  * hbqtwidgets/hbqtdbu.prg
+    + Implemented to consume HbDBu specific table-info string in the format:
+        Main,C:\harbour\tests\test.dbf,TEST,DBFCDX,0,500,2,0 0 300 504,21,1,,,,
+            =>
+        View TableName Alias Driver Order Record ... 
+      on the command line needed to fire the component via debugger's 
+      WorkAreas table (Read Below).
+
+  * debug/debugger.prg
+    + implemented to return more information about the work areas. 
+
+  * hbide/debugger.prg
+  * hbide/projmanager.prg
+    ! Fixed: two regressions reported by Itamar, thanks.
+
+    + Implemented tooltip on <Alias> field of <WorkAreas> table depicting 
+      some more information about this workarea:
+       1. TABLE_PATH  - c:\harbour\tests\test.dbf
+       2. INDEX_PATH  - c:\harbour\tests\test.cdx
+       3. ORD_TAG_EXP - 1 : LAST : test->last
+       4. <INDEXES>
+          [ 1 : LAST ] test->last
+          ...
+          ...
+          </INDEXES>
+
+    + Implemented opening the selected workarea in <WorkAreas> in either 
+      IdeDBU or HbDBU. The feature can be activated from context-menu presented
+      by right-clicking on <Alias> field of selected work-area.
+
 2014-09-14 12:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r357)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r357.

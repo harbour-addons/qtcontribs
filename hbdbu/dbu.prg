@@ -300,7 +300,10 @@ METHOD DbuMGR:create()
 
    /* Process command line params */
    FOR EACH cParam IN ::aParams
-      IF ".dbu" $ Lower( cParam )
+      IF Len( hb_ATokens( cParam, "," ) ) > 0
+         ::oDBU:openATable( cParam )
+
+      ELSEIF ".dbu" $ Lower( cParam )
          ::getPath( cParam )
          lDbu := .T.
 

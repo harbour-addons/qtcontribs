@@ -2101,7 +2101,6 @@ METHOD IdeProjManager:launchDebug( cProject, cExe, cCmd, qStr, cWrkDir )
    WITH OBJECT ::oIde:oDebugger
       :clear()
       :cCurrentProject := cProject
-      :aSources := ::getSourcesByProjectTitle( cProject )
       ::outputText( "Launching with Debugger : " + cExe )
       :start( cExe, cCmd, qStr, cWrkDir )
    ENDWITH

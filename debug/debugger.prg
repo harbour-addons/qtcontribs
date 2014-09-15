@@ -73,6 +73,7 @@
 
 #include "inkey.ch"
 #include "set.ch"
+#include "dbinfo.ch"
 
 
 /* Information structure stored in DATA aCallStack */
@@ -702,10 +703,10 @@ STATIC FUNCTION SendWatch()
    RETURN arr
 
 
-#define WA_ITEMS  12
+#define WA_ITEMS  13
 
 STATIC FUNCTION SendAreas()
-   LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias
+   LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias, s, j, cKey
 
    FOR n := 1 TO 512
       IF ( (n)->( Used() ) )
@@ -732,6 +733,23 @@ STATIC FUNCTION SendAreas()
       arr[++n] := dbFilter()
       arr[++n] := ordName()
       arr[++n] := ordKey()
+      //
+      s := "TABLE_PATH[ "   + dbInfo( DBI_FULLPATH ) + " ]"
+      s += "|INDEX_PATH[ " + dbOrderInfo( DBOI_FULLPATH ) + " ]"
+      s += "|ORD_TAG_EXP[ " + hb_ntos( ordNumber() ) + " : " + ordName() + " : " + ordKey() + " ]"
+      s += "|<INDEXES>|"
+      FOR j := 1 to 50
+         IF ( cKey := IndexKey( j ) ) == ""
+            EXIT
+         ENDIF
+         s += "[ " + hb_ntos( j ) + " : " + OrdName( j ) + " ] " + cKey + "|"
+      NEXT
+      IF Right( s, 1 ) == "|"
+         s := SubStr( s, 1, Len( s ) - 1 )
+      ENDIF
+      s += "|</INDEXES>"
+      //
+      arr[++n] := s
    NEXT
    Select( nAlias )
    RETURN arr

@@ -141,16 +141,15 @@ CLASS IdeDebugger INHERIT IdeObject
 
    DATA   nRequestedVarsIndex                     INIT 0
    DATA   lLoaded                                 INIT .F.
-   DATA   nRowWatch
+   DATA   nRowWatch                               INIT -1
    DATA   nRowAreas                               INIT -1
-   DATA   aSources
    DATA   lDebugging                              INIT .F.
    DATA   hRequest                                INIT -1
    DATA   hResponse                               INIT -1
    DATA   nId1                                    INIT 0
    DATA   nId2                                    INIT -1
 
-   DATA   cAppName
+   DATA   cAppName                                INIT ""
    DATA   cPrgName                                INIT ""
 
    DATA   cInspectVar                             INIT ""
@@ -161,9 +160,9 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   aWatches                                INIT {}
    DATA   nCurrLine                               INIT 0
    DATA   nMode                                   INIT MODE_INPUT
-   DATA   nAnsType
-   DATA   cPrgBP
-   DATA   nLineBP
+   DATA   nAnsType                                INIT 0
+   DATA   cPrgBP                                  INIT ""
+   DATA   nLineBP                                 INIT -1
    DATA   aBPLoad                                 INIT {}
    DATA   nBPLoad
 
@@ -174,7 +173,7 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   oUI
    DATA   oUI_1
    DATA   oUI_2
-   DATA   cCurrentProject
+   DATA   cCurrentProject                         INIT ""
    DATA   aTabs
    DATA   cBuffer
    DATA   lTerminated                             INIT .F.
@@ -188,6 +187,7 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   hResponses                              INIT {=>}
    DATA   lInRequest                              INIT .F.
    DATA   nOutput                                 INIT 0
+   DATA   oAreaMenu
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -254,6 +254,8 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD matureShakehand()
    METHOD getRequestType( cId )
    METHOD processEvents()                         INLINE QApplication():processEvents()
+   METHOD manageAreasContextManu( oPoint )
+   METHOD openTableInIdeDBU( cTable, lByHbDBU )
 
    ENDCLASS
 
@@ -297,15 +299,14 @@ METHOD IdeDebugger:clear()
    ::lLoaded                := .F.
    ::lStarted               := .F.
    ::lTerminated            := .F.
-   ::nRowWatch              := NIL
+   ::nRowWatch              := -1
    ::nRowAreas              := -1
-   ::aSources               := NIL
    ::lDebugging             := .F.
    ::hRequest               := -1
-   ::hResponse              := NIL
+   ::hResponse              := 0
    ::nId1                   := 0
    ::nId2                   := -1
-   ::cAppName               := NIL
+   ::cAppName               := ""
    ::cPrgName               := ""
    ::cInspectVar            := ""
    ::cInspectType           := ""
@@ -314,10 +315,10 @@ METHOD IdeDebugger:clear()
    ::nCurrLine              := 0
    ::nMode                  := MODE_INPUT
    ::nAnsType               := NIL
-   ::cPrgBP                 := NIL
-   ::nLineBP                := NIL
+   ::cPrgBP                 := ""
+   ::nLineBP                := -1
    ::aBPLoad                := {}
-   ::nBPLoad                := NIL
+   ::nBPLoad                := 0
    ::nExitMode              := 2
    ::nVerProto              := 0
    ::cLastRequest           := ""
@@ -1131,14 +1132,20 @@ METHOD IdeDebugger:showWatch( arr, n )
 
 
 METHOD IdeDebugger:showAreas( arr, n )
-   LOCAL i, j
+   LOCAL i, j, cData
    LOCAL nAreas := Val( arr[ n ] )
    LOCAL nAItems := Val( Hex2Str( arr[ ++n ] ) )
 
    ::oUI:tableOpenTables:setRowCount( nAreas )
    FOR i := 1 TO nAreas
       FOR j := 1 TO nAItems
-         ::oUI:tableOpenTables:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
+         cData := AllTrim( Hex2Str( arr[ ++n ] ) )
+         IF j == 13
+            ::oUI:tableOpenTables:item( i - 1, 0 ):setTooltip( StrTran( cData, "|", Chr( 10 ) ) )
+            ::oUI:tableOpenTables:item( i - 1, 0 ):setWhatsThis( cData )
+         ELSE
+            ::oUI:tableOpenTables:setItem( i - 1, j - 1, QTableWidgetItem( cData ) )
+         ENDIF
       NEXT
       ::processEvents()
    NEXT
@@ -1518,27 +1525,29 @@ METHOD IdeDebugger:ui_init( oUI )
    ::fineTune( oUI:tableVarStatic  )
 
    WITH OBJECT oHeaders := QStringList()
-      :append( "Alias"          )
-      :append( "Area"           )
-      :append( "Rdd"            )
-      :append( "Records"        )
-      :append( "Current"        )
-      :append( "Bof"            )
-      :append( "Eof"            )
-      :append( "Found"          )
-      :append( "Del"            )
-      :append( "Filter"         )
-      :append( "TagName"        )
-      :append( "IndexCondition" )
+      :append( "Alias"           )
+      :append( "Area"            )
+      :append( "Rdd"             )
+      :append( "Records"         )
+      :append( "Current"         )
+      :append( "Bof"             )
+      :append( "Eof"             )
+      :append( "Found"           )
+      :append( "Del"             )
+      :append( "Filter"          )
+      :append( "TagName"         )
+      :append( "IndexExpression" )
    ENDWITH
    oUI:tableOpenTables:setHorizontalHeaderLabels( oHeaders )
+   oUI:tableOpenTables:setContextMenuPolicy( Qt_CustomContextMenu )
+   oUI:tableOpenTables:connect( "customContextMenuRequested(QPoint)", {|oPoint| ::manageAreasContextManu( oPoint ) } )
    ::fineTune( oUI:tableOpenTables )
 
    WITH OBJECT oHeaders := QStringList()
       :append( "FieldName" )
-      :append( "Typ"   )
-      :append( "Len"   )
-      :append( "Value" )
+      :append( "Typ"       )
+      :append( "Len"       )
+      :append( "Value"     )
    ENDWITH
    oUI:tableCurrentRecord:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( oUI:tableCurrentRecord )
@@ -1591,6 +1600,55 @@ METHOD IdeDebugger:ui_init( oUI )
 
    oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
    oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
+   RETURN NIL
+
+
+METHOD IdeDebugger:manageAreasContextManu( oPoint )
+   LOCAL oItem, cInfo, n, cTable, cDrv, cAlias, cOrd, cRec
+   LOCAL aPops := {}
+
+   IF Empty( oItem := ::oUI:tableOpenTables:itemAt( oPoint ) )
+      RETURN NIL
+   ENDIF
+   IF oItem:column() > 0
+      RETURN NIL
+   ENDIF
+   cInfo := oItem:whatsThis()
+   IF ( n := At( "TABLE_PATH[ ", cInfo ) ) == 0
+      RETURN NIL
+   ENDIF
+   cInfo  := SubStr( cInfo, n + Len( "TABLE_PATH[ " ) )
+   n      := At( " ]|", cInfo )
+   cTable := SubStr( cInfo, 1, n - 1 )
+   n      := At( "ORD_TAG_EXP[ ", cInfo )
+   cInfo  := SubStr( cInfo, n + Len( "ORD_TAG_EXP[ " ) )
+   cOrd   := SubStr( cInfo, 1, At( ":", cInfo ) - 2 )
+   cAlias := StrTran( oItem:text(), "*" )
+   cDrv   := ::oUI:tableOpenTables:item( oItem:Row(), 2 ):text()
+   cRec   := ::oUI:tableOpenTables:item( oItem:Row(), 4 ):text()
+
+   // Main,C:\harbour\tests\test.dbf,TEST,DBFCDX,0,500,2,0 0 300 504,21,1,,,,
+   cTable := "Main," + cTable + "," + cAlias + "," + cDrv + "," + cOrd + "," + cRec + ","
+   cTable := StrTran( cTable, " ", "" )
+
+   aadd( aPops, { "Open in IdeDBU"  , {|| ::openTableInIdeDBU( cTable, .F. ) } } )
+   aadd( aPops, { "" } )
+   aadd( aPops, { "Open in HbDBU"   , {|| ::openTableInIdeDBU( cTable, .T. ) } } )
+
+   hbide_execPopup( aPops, ::oUI:tableOpenTables:mapToGlobal( oPoint ) )
+
+   RETURN oItem
+
+
+METHOD IdeDebugger:openTableInIdeDBU( cTable, lByHbDBU )
+
+   IF lByHbDBU
+      hb_processRun( hb_DirBase() + "hbdbu " + cTable )
+   ELSE
+      ::oIde:oBM:oDbu:openATable( cTable )
+      ::oIde:oParts:setStack( IDE_PART_DBU )
+   ENDIF
+
    RETURN NIL
 
 

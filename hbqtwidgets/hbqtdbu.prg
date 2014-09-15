@@ -1797,12 +1797,19 @@ METHOD HbQtDBU:createTable( cDriver, cConxn, aStruct, aIndexes )
 
 
 METHOD HbQtDBU:openATable( cDBF )
+   LOCAL aInfo := hb_ATokens( cDbf, "," )
 
-   ::oCurPanel:addBrowser( { NIL, ;
+   IF Len( aInfo ) == 1
+      ::oCurPanel:addBrowser( { NIL, ;
                              cDBF, ;
                              NIL, ;
                              iif( ! ( ::qRddCombo:currentText() $ "DBFCDX,DBFNTX,DBFNSX" ), "DBFCDX", ::qRddCombo:currentText() ) } )
+   ELSE
+      ::oCurPanel:addBrowser( aInfo )
+   ENDIF
+
    RETURN Self
+
 
 METHOD HbQtDBU:open( aDbfs )
    LOCAL aInfo, cTable
