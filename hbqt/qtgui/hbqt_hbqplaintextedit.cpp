@@ -1954,8 +1954,17 @@ void HBQPlainTextEdit::lineNumberAreaMouseEvent( QMouseEvent *e )
       {
           QTextCursor cursor = cursorForPosition( QPoint( 0, e->pos().y() ) );
           int line = cursor.blockNumber() + 1;
-          hbBreakPoints( line );
-          repaint();
+
+          cursor.movePosition( QTextCursor::EndOfLine, QTextCursor::KeepAnchor );
+          QString text( cursor.selectedText().trimmed().toUpper() );
+          if ( text.isNull() || text.isEmpty() || text.startsWith( "/" ) || text.startsWith( "*" ) )
+          {
+          }
+          else
+          {
+             hbBreakPoints( line );
+             repaint();
+          }
       }
    }
 }
@@ -1992,7 +2001,7 @@ void HBQPlainTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
          painter.drawText( 0, top, lineNumberArea->width()-2, fontHeight, Qt::AlignRight, QString::number( iNumber ) );
          if( index != -1 )
          {
-            QIcon icon( QString::fromLatin1( ":/resources/b_20.png" ) );
+            QIcon icon( QString::fromLatin1( ":/resources/b_1.png" ) );
             const QRect r( 0, top, lineNumberArea->width() - 2, fontHeight );
             icon.paint( &painter, r );
          }

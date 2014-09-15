@@ -16,6 +16,21 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-15 12:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r359)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r359.
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+    ! Fixed: not to set BreakPoint if line is empty or starts with "/" or "*".
+    % Changed: the icon painted over line-number of line set for break-point.
+       
+  * debug/debugger.prg
+    ! Fixed: regression where HbOrderInfo( DBOI_FULLPATH ) is returning NIL 
+       instead of empty string if index-file path could not been determined.
+       I believe this happens for certain RDDs. I tested DBFCDX which returns
+       index-file path as empty string in this situation. Needs to be reported 
+       to harbour-devel. Reported by Ash, thanks.
+
 2014-09-14 21:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r358)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r358.

@@ -706,7 +706,7 @@ STATIC FUNCTION SendWatch()
 #define WA_ITEMS  13
 
 STATIC FUNCTION SendAreas()
-   LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias, s, j, cKey
+   LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias, s, j, cKey, cIdxPath
 
    FOR n := 1 TO 512
       IF ( (n)->( Used() ) )
@@ -734,8 +734,11 @@ STATIC FUNCTION SendAreas()
       arr[++n] := ordName()
       arr[++n] := ordKey()
       //
-      s := "TABLE_PATH[ "   + dbInfo( DBI_FULLPATH ) + " ]"
-      s += "|INDEX_PATH[ " + dbOrderInfo( DBOI_FULLPATH ) + " ]"
+      IF Empty( cIdxPath := dbOrderInfo( DBOI_FULLPATH ) )
+         cIdxPath := ""
+      ENDIF
+      s := "TABLE_PATH[ " + dbInfo( DBI_FULLPATH ) + " ]"
+      s += "|INDEX_PATH[ " + cIdxPath + " ]"
       s += "|ORD_TAG_EXP[ " + hb_ntos( ordNumber() ) + " : " + ordName() + " : " + ordKey() + " ]"
       s += "|<INDEXES>|"
       FOR j := 1 to 50
