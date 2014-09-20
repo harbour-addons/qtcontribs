@@ -1,11 +1,33 @@
+/*
+ * $Id$
+ */
+
 #include "hbapi.h"
 #include "hbapiitm.h"
 
 #ifdef __XHARBOUR__
+#if defined(__XHARBOUR_VERYOLD__)
+
+#include <windows.h>
+
+HB_EXTERN_BEGIN
+extern HB_EXPORT void hb_releaseCPU( BOOL );
+HB_EXTERN_END
+
+void hb_releaseCPU( BOOL bIndefinite )
+{
+   HB_SYMBOL_UNUSED( bIndefinite );
+   Sleep( 20 );
+}
+
+#else
+
 HB_FUNC( HB_RELEASECPU )
 {
    hb_releaseCPU(0);
 }
+
+#endif
 #endif
 
 

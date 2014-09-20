@@ -59,7 +59,7 @@ int insertTab ( int index, QWidget * page, const QIcon & icon, const QString & l
 bool isMovable () const
 bool isTabEnabled ( int index ) const
 void removeTab ( int index )
-void setCornerWidget ( QWidget * widget, Qt::Corner corner = Qt::TopRightCorner )
+void setCornerWidget ( QWidget * widget, Qt::Corner corner = Qt::TopRightCorner ) [*D=1*]
 void setDocumentMode ( bool set )
 void setElideMode ( Qt::TextElideMode )
 void setIconSize ( const QSize & size )

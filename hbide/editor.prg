@@ -2061,7 +2061,7 @@ METHOD IdeEditor:extras()
 
 
 METHOD IdeEditor:setBreakPoint( cPrg, nLine )
-   IF ! Empty( ::oIde:oDebugger )
+   IF ! Empty( ::oIde:oDebugger ) .AND. ::oIde:oDebugger:isActive()
       ::oIde:oDebugger:addBreakPoint( cPrg, nLine )
    ENDIF
    RETURN Nil

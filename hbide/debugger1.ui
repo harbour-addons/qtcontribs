@@ -132,19 +132,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="btnSwitch">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>UI_1</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="btnExit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -217,9 +204,9 @@
               </widget>
              </item>
              <item>
-              <widget class="QTabWidget" name="tabWidget">
+              <widget class="QTabWidget" name="tabWidgetVariables">
                <property name="currentIndex">
-                <number>0</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="tabVarLocal">
                 <attribute name="title">
@@ -244,8 +231,10 @@
                  <item>
                   <widget class="QTableWidget" name="tableVarLocal">
                    <property name="columnCount">
-                    <number>3</number>
+                    <number>5</number>
                    </property>
+                   <column/>
+                   <column/>
                    <column/>
                    <column/>
                    <column/>
@@ -276,8 +265,10 @@
                  <item>
                   <widget class="QTableWidget" name="tableVarPrivate">
                    <property name="columnCount">
-                    <number>3</number>
+                    <number>5</number>
                    </property>
+                   <column/>
+                   <column/>
                    <column/>
                    <column/>
                    <column/>
@@ -305,8 +296,10 @@
                  <item>
                   <widget class="QTableWidget" name="tableVarPublic">
                    <property name="columnCount">
-                    <number>3</number>
+                    <number>5</number>
                    </property>
+                   <column/>
+                   <column/>
                    <column/>
                    <column/>
                    <column/>
@@ -334,8 +327,10 @@
                  <item>
                   <widget class="QTableWidget" name="tableVarStatic">
                    <property name="columnCount">
-                    <number>3</number>
+                    <number>5</number>
                    </property>
+                   <column/>
+                   <column/>
                    <column/>
                    <column/>
                    <column/>
@@ -504,17 +499,41 @@
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_19">
              <property name="topMargin">
-              <number>10</number>
+              <number>0</number>
              </property>
              <item>
-              <widget class="QLabel" name="labelCurrentRecord">
-               <property name="text">
-                <string>Current Record</string>
+              <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <property name="topMargin">
+                <number>0</number>
                </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
+               <item>
+                <widget class="QLabel" name="labelCurrentRecord">
+                 <property name="text">
+                  <string>Current Record</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="btnStructure">
+                 <property name="toolTip">
+                  <string>Copy Structure to Clipboard</string>
+                 </property>
+                 <property name="text">
+                  <string>...</string>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="hbide.qrc">
+                   <normaloff>:/resources/clipboard.png</normaloff>:/resources/clipboard.png</iconset>
+                 </property>
+                 <property name="autoRaise">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
              <item>
               <widget class="QTableWidget" name="tableCurrentRecord">
@@ -525,7 +544,7 @@
                 <enum>QAbstractItemView::SingleSelection</enum>
                </property>
                <property name="columnCount">
-                <number>4</number>
+                <number>5</number>
                </property>
                <attribute name="horizontalHeaderStretchLastSection">
                 <bool>false</bool>
@@ -533,6 +552,7 @@
                <attribute name="verticalHeaderStretchLastSection">
                 <bool>false</bool>
                </attribute>
+               <column/>
                <column/>
                <column/>
                <column/>

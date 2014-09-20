@@ -277,7 +277,7 @@
               <enum>QAbstractItemView::SingleSelection</enum>
              </property>
              <property name="columnCount">
-              <number>4</number>
+              <number>5</number>
              </property>
              <attribute name="horizontalHeaderStretchLastSection">
               <bool>false</bool>
@@ -285,6 +285,7 @@
              <attribute name="verticalHeaderStretchLastSection">
               <bool>false</bool>
              </attribute>
+             <column/>
              <column/>
              <column/>
              <column/>
@@ -554,7 +555,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QTabWidget" name="tabWidget">
+            <widget class="QTabWidget" name="tabWidgetVariables">
              <property name="currentIndex">
               <number>0</number>
              </property>

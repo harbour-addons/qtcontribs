@@ -68,6 +68,7 @@
 #define HB_CLS_NOTOBJECT                             /* do not inherit from HBObject calss */
 #include "hbclass.ch"
 
+#include "common.ch"
 #include "hbdebug.ch"                                /* for "nMode" of __dbgEntry */
 #include "hbmemvar.ch"
 
@@ -124,6 +125,7 @@
 #define CMD_OBJECT                                21
 #define CMD_ARRAY                                 22
 #define CMD_SETS                                  23
+#define CMD_SETVAR                                24
 
 #define VAR_MAX_LEN                               72
 
@@ -312,10 +314,10 @@ METHOD Go() CLASS HBDebugger
 
 
 METHOD HandleEvent() CLASS HBDebugger
-   LOCAL nKey, p1, p2, p3, xResult, nAt
+   LOCAL nKey, p1, p2, p3, p4, p5, nAt
 
    DO WHILE .T.
-      nKey := hwg_dbg_Input( @p1, @p2, @p3 )
+      nKey := hwg_dbg_Input( @p1, @p2, @p3, @p4, @p5 )
 
       DO CASE
       CASE nKey == CMD_QUIT
@@ -455,6 +457,9 @@ METHOD HandleEvent() CLASS HBDebugger
       CASE nKey == CMD_ARRAY
          hwg_dbg_Answer( "valuearr", SendArray( p1,Val(p2),Val(p3) ) )
 
+      CASE nKey == CMD_SETVAR
+         hwg_dbg_Answer( "result", SendSetVariable( p1, p2, p3, p4, p5 ) )
+
       CASE nKey == CMD_SETS
          hwg_dbg_Answer( "valuesets", SendSets() )
 
@@ -516,6 +521,7 @@ METHOD ShowCodeLine( nProc ) CLASS HBDebugger
       ENDIF
 
       IF ! Empty( cPrgName )
+#if 0
          hwg_dbg_SetActiveLine( cPrgName, nLine, ;
                Iif( ::lViewStack, SendStack(), Nil ),  ;
                Iif( ::lShowLocals, SendLocal(), ;
@@ -527,6 +533,9 @@ METHOD ShowCodeLine( nProc ) CLASS HBDebugger
                   Iif( ::lShowPrivate, 2, ;
                      Iif( ::lShowPublic, 3, ;
                         Iif( ::lShowStatic, 4, Nil ) ) ) ) )
+#else
+         hwg_dbg_SetActiveLine( cPrgName, nLine, NIL, NIL, NIL, NIL )
+#endif
       ENDIF
    ENDIF
 
@@ -593,22 +602,24 @@ STATIC FUNCTION SendStack()
 
    arr[1] := Ltrim( Str( Len( aStack ) ) )
    FOR i := 1 TO Len( aStack )
-      arr[j++] := Iif( Empty(aStack[i,CSTACK_MODULE]), "", aStack[i,CSTACK_MODULE] )
+      arr[j++] := Iif( Empty(aStack[i,CSTACK_MODULE])  , ""       , aStack[i,CSTACK_MODULE] )
       arr[j++] := Iif( Empty(aStack[i,CSTACK_FUNCTION]), "Unknown", aStack[i,CSTACK_FUNCTION] )
-      arr[j++] := Iif( Empty(aStack[i,CSTACK_LINE]), "", Ltrim(Str( aStack[i,CSTACK_LINE] )) )
+      arr[j++] := Iif( Empty(aStack[i,CSTACK_LINE])    , ""       , Ltrim(Str( aStack[i,CSTACK_LINE] )) )
    NEXT
    RETURN arr
 
 
 STATIC FUNCTION SendLocal()
    LOCAL aVars := t_oDebugger:aProcStack[1,CSTACK_LOCALS]
-   LOCAL arr := Array( Len( aVars ) * 3 + 1 ), i, j := 1, xVal
+   LOCAL arr := Array( Len( aVars ) * 5 + 1 ), i, j := 1, xVal
 
    arr[1] := Ltrim( Str( Len( aVars ) ) )
    FOR i := 1 TO Len( aVars )
       arr[++j] := aVars[ i,VAR_NAME ]
-      xVal := __dbgvmVarLGet( __dbgprocLevel() - aVars[i,VAR_LEVEL], aVars[i,VAR_POS] )
+      xVal     := __dbgvmVarLGet( __dbgProcLevel() - aVars[i,VAR_LEVEL], aVars[i,VAR_POS] )
       arr[++j] := Valtype( xVal )
+      arr[++j] := __dbgValToStr( aVars[i,VAR_LEVEL] )
+      arr[++j] := __dbgValToStr( aVars[i,VAR_POS] )
       arr[++j] := __dbgValToStr( xVal )
       IF Len( arr[j] ) > VAR_MAX_LEN
          arr[j] := Left( arr[j], VAR_MAX_LEN )
@@ -617,15 +628,78 @@ STATIC FUNCTION SendLocal()
    RETURN arr
 
 
+STATIC FUNCTION SendSetVariable( cName, cTyp, cLvl, cPos, cValue )
+   LOCAL nProcLevel, uValue, aVarS
+   LOCAL aVar   := { cName, Val( cPos ), cTyp, Val( cLvl ) }
+   LOCAL cType  := Left( aVar[ VAR_TYPE ], 1 )
+   LOCAL cT     := Right( aVar[ VAR_TYPE ], 1 )
+
+   uValue := iif( cT == "N", Val( cValue ), iif( cT == "D", SToD( cValue ), iif( cT == "L", cValue == "T", cValue ) ) )
+
+   IF cType == "G"
+      __dbgVMVarGSet( aVar[ VAR_LEVEL ], aVar[ VAR_POS ], uValue )
+   ELSEIF cType == "L"
+      nProcLevel := __dbgProcLevel() - aVar[ VAR_LEVEL ]   // skip debugger stack
+      __dbgVMVarLSet( nProcLevel, aVar[ VAR_POS ], uValue )
+   ELSEIF cType == "S"
+      aVarS := __dbgFetchStatics()
+      __dbgVMVarSSet( aVarS[ aVar[ VAR_LEVEL ], VAR_LEVEL ], aVar[ VAR_POS ], uValue )
+   ELSE                                                    // Public or Private
+      &( aVar[ VAR_NAME ] ) := uValue
+   ENDIF
+   RETURN { "ok" }
+
+
+STATIC FUNCTION SendStatic()
+   LOCAL aVarS, arr, i, j, xVal, nAll
+
+   aVarS  := __dbgFetchStatics()
+   nAll   := Len( aVarS )
+   arr    := Array( nAll * 5 + 1 )
+   arr[1] := Ltrim( Str( nAll ) )
+
+   j     := 1
+   FOR i := 1 TO nAll
+      arr[++j] := aVars[ i,VAR_NAME ]
+      xVal     := __dbgVMVarSGet( aVarS[ i,VAR_LEVEL ], aVarS[ i,VAR_POS ] )
+      arr[++j] := Valtype( xVal )
+      arr[++j] := __dbgValToStr( i )
+      arr[++j] := __dbgValToStr( aVarS[ i,VAR_POS ] )
+      arr[++j] := __dbgValToStr( xVal )
+      IF Len( arr[j] ) > VAR_MAX_LEN
+         arr[j] := Left( arr[j], VAR_MAX_LEN )
+      ENDIF
+   NEXT
+   RETURN arr
+
+
+STATIC FUNCTION __dbgFetchStatics( nProcStack )
+   LOCAL xVal, aVarS, nModule
+
+   DEFAULT nProcStack TO 1
+
+   xVal := t_oDebugger:aProcStack[ nProcStack, CSTACK_MODULE ]
+   nModule := AScan( t_oDebugger:aModules, {|a| __dbgFileMatch( a[ MODULE_NAME ], xVal ) } )
+   IF nModule > 0
+      aVarS := t_oDebugger:aModules[ nModule, MODULE_STATICS ]
+   ELSE
+      aVarS := {}
+   ENDIF
+   AEval( t_oDebugger:aProcStack[ nProcStack, CSTACK_STATICS ], {|e_| AAdd( aVarS, e_ ) } )
+   RETURN aVarS
+
+
 STATIC FUNCTION SendPrivate()
    LOCAL nCount := __mvDbgInfo( HB_MV_PRIVATE )
-   LOCAL arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
+   LOCAL arr := Array( nCount * 5 + 1 ), cName, xValue, i, j := 1
 
    arr[1] := Ltrim( Str( nCount ) )
    FOR i := 1 TO nCount
       xValue := __mvDbgInfo( HB_MV_PRIVATE, i, @cName )
       arr[++j] := cName
       arr[++j] := Valtype( xValue )
+      arr[++j] := __dbgValToStr( i )
+      arr[++j] := __dbgValToStr( i )
       arr[++j] := __dbgValToStr( xValue )
       IF Len( arr[j] ) > VAR_MAX_LEN
          arr[j] := Left( arr[j], VAR_MAX_LEN )
@@ -635,56 +709,19 @@ STATIC FUNCTION SendPrivate()
 
 
 STATIC FUNCTION SendPublic()
+   LOCAL cName, xValue, i
+   LOCAL j := 1
    LOCAL nCount := __mvDbgInfo( HB_MV_PUBLIC )
-   LOCAL arr := Array( nCount * 3 + 1 ), cName, xValue, i, j := 1
+   LOCAL arr := Array( nCount * 5 + 1 )
 
    arr[1] := Ltrim( Str( nCount ) )
    FOR i := 1 TO nCount
       xValue := __mvDbgInfo( HB_MV_PUBLIC, i, @cName )
       arr[++j] := cName
       arr[++j] := Valtype( xValue )
+      arr[++j] := __dbgValToStr( i )
+      arr[++j] := __dbgValToStr( i )
       arr[++j] := __dbgValToStr( xValue )
-      IF Len( arr[j] ) > VAR_MAX_LEN
-         arr[j] := Left( arr[j], VAR_MAX_LEN )
-      ENDIF
-   NEXT
-   RETURN arr
-
-
-STATIC FUNCTION SendStatic()
-   LOCAL aVars, nAll := 0
-   LOCAL arr, i, j := 1, xVal
-
-   xVal := t_oDebugger:aProcStack[ 1,CSTACK_MODULE ]
-   i := AScan( t_oDebugger:aModules, {|a| hb_FileMatch( a[MODULE_NAME], xVal ) } )
-   IF i > 0
-      aVars := t_oDebugger:aModules[ i,MODULE_STATICS ]
-      nAll := Len( aVars )
-   ENDIF
-
-   nAll += Len( t_oDebugger:aProcStack[1,CSTACK_STATICS] )
-   arr := Array( nAll * 3 + 1 )
-
-   arr[1] := Ltrim( Str( nAll ) )
-
-   IF !Empty( aVars )
-      FOR i := 1 TO Len( aVars )
-         arr[++j] := aVars[ i,VAR_NAME ]
-         xVal := __dbgVMVarSGet( aVarS[ i,VAR_LEVEL ], aVarS[ i,VAR_POS ] )
-         arr[++j] := Valtype( xVal )
-         arr[++j] := __dbgValToStr( xVal )
-         IF Len( arr[j] ) > VAR_MAX_LEN
-            arr[j] := Left( arr[j], VAR_MAX_LEN )
-         ENDIF
-      NEXT
-   ENDIF
-
-   aVars := t_oDebugger:aProcStack[1,CSTACK_STATICS]
-   FOR i := 1 TO Len( aVars )
-      arr[++j] := aVars[ i,VAR_NAME ]
-      xVal := __dbgVMVarSGet( aVarS[ i,VAR_LEVEL ], aVarS[ i,VAR_POS ] )
-      arr[++j] := Valtype( xVal )
-      arr[++j] := __dbgValToStr( xVal )
       IF Len( arr[j] ) > VAR_MAX_LEN
          arr[j] := Left( arr[j], VAR_MAX_LEN )
       ENDIF
@@ -707,6 +744,7 @@ STATIC FUNCTION SendWatch()
 
 STATIC FUNCTION SendAreas()
    LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias, s, j, cKey, cIdxPath
+   LOCAL bError, nAt
 
    FOR n := 1 TO 512
       IF ( (n)->( Used() ) )
@@ -715,47 +753,81 @@ STATIC FUNCTION SendAreas()
    NEXT
 
    nAlias := Select()
-   arr := Array( 2 + nAreas * WA_ITEMS )
+   arr := AFill( Array( 2 + nAreas * WA_ITEMS ), "" )
    arr[1] := hb_ntos( nAreas )
    arr[2] := hb_ntos( WA_ITEMS )
+
+   bError := ErrorBlock( {|oErr| Break( oErr ) } )
+
    n := 2
    FOR i := 1 TO nAreas
+      nAt := n
       Select( arr1[i] )
-      arr[++n] := Iif( arr1[i]==nAlias, "*", "" ) + Alias()
-      arr[++n] := hb_ntos( arr1[i] )
-      arr[++n] := rddname()
-      arr[++n] := hb_ntos( Reccount() )
-      arr[++n] := hb_ntos( Recno() )
-      arr[++n] := Iif( Bof(), "Yes", "No" )
-      arr[++n] := Iif( Eof(), "Yes", "No" )
-      arr[++n] := Iif( Found(), "Yes", "No" )
-      arr[++n] := Iif( Deleted(), "Yes", "No" )
-      arr[++n] := dbFilter()
-      arr[++n] := ordName()
-      arr[++n] := ordKey()
-      //
-      IF Empty( cIdxPath := dbOrderInfo( DBOI_FULLPATH ) )
-         cIdxPath := ""
-      ENDIF
-      s := "TABLE_PATH[ " + dbInfo( DBI_FULLPATH ) + " ]"
-      s += "|INDEX_PATH[ " + cIdxPath + " ]"
-      s += "|ORD_TAG_EXP[ " + hb_ntos( ordNumber() ) + " : " + ordName() + " : " + ordKey() + " ]"
-      s += "|<INDEXES>|"
-      FOR j := 1 to 50
-         IF ( cKey := IndexKey( j ) ) == ""
-            EXIT
+      BEGIN SEQUENCE
+         arr[++n] := Iif( arr1[i]==nAlias, "*", "" ) + Alias()
+         arr[++n] := hb_ntos( arr1[i] )
+         arr[++n] := rddname()
+         arr[++n] := hb_ntos( LastRec() )         //arr[++n] := hb_ntos( Reccount() )
+         arr[++n] := hb_ntos( Recno() )
+         arr[++n] := Iif( Bof(), "Yes", "No" )
+         arr[++n] := Iif( Eof(), "Yes", "No" )
+         arr[++n] := Iif( Found(), "Yes", "No" )
+         arr[++n] := Iif( Deleted(), "Yes", "No" )
+         arr[++n] := dbFilter()
+         arr[++n] := ordName()
+         arr[++n] := ordKey()
+         //
+         IF Empty( cIdxPath := dbOrderInfo( DBOI_FULLPATH ) )
+            cIdxPath := ""
          ENDIF
-         s += "[ " + hb_ntos( j ) + " : " + OrdName( j ) + " ] " + cKey + "|"
-      NEXT
-      IF Right( s, 1 ) == "|"
-         s := SubStr( s, 1, Len( s ) - 1 )
-      ENDIF
-      s += "|</INDEXES>"
-      //
-      arr[++n] := s
+         s :=       __colorize( "TABLE_PATH" )  + "[ " + dbInfo( DBI_FULLPATH ) + " ]"
+         s += "|" + __colorize( "INDEX_PATH" )  + "[ " + cIdxPath + " ]"
+         s += "|" + __colorize( "ORD_TAG_EXP" ) + "[ " + hb_ntos( ordNumber() ) + " : " + ordName() + " : " + ordKey() + " ]"
+         s += "|" + __colorize( "<INDEXES>" )   + "|"
+         FOR j := 1 to 50
+            IF ( cKey := IndexKey( j ) ) == ""
+               EXIT
+            ENDIF
+            s += "[ " + hb_ntos( j ) + " : " + OrdName( j ) + " ]" + cKey + "|"
+         NEXT
+         IF Right( s, 1 ) == "|"
+            s := SubStr( s, 1, Len( s ) - 1 )
+         ENDIF
+         s += "|" + __colorize( "</INDEXES>" )
+
+         arr[++n] := s
+      RECOVER
+         arr[++nAt] := Alias()
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         n := nAt + WA_ITEMS
+      END SEQUENCE
    NEXT
+   ErrorBlock( bError )
+
    Select( nAlias )
    RETURN arr
+
+
+#if 1
+STATIC FUNCTION __colorize( cStr )
+   RETURN cStr
+#else
+STATIC FUNCTION __colorize( cStr, cColor, lBold )
+   DEFAULT cColor TO "red"
+   DEFAULT lBold  TO .F.
+   RETURN "<font color=" + cColor + ">" + iif( lBold, "<b>", "" ) + cStr + iif( lBold, "</b>", "" ) + "</font>"
+#endif
 
 
 STATIC FUNCTION SendRec( cAlias )
@@ -764,12 +836,12 @@ STATIC FUNCTION SendRec( cAlias )
    IF Empty( cAlias )
       cAlias := Alias()
    ENDIF
-   IF Empty( cAlias ) .OR. ( i := Select( cAlias ) ) == 0
+   IF Empty( cAlias ) .OR. Select( cAlias ) == 0
       Return { "0", "", "0" }
    ENDIF
    af := (cAlias)->(dbStruct())
    nCount := Len( af )
-   arr := Array( nCount * 4 + 3 )
+   arr := Array( nCount * 5 + 3 )
 
    arr[1] := Ltrim( Str( nCount ) )
    arr[2] := cAlias
@@ -778,6 +850,7 @@ STATIC FUNCTION SendRec( cAlias )
       arr[++j] := af[i,1]
       arr[++j] := af[i,2]
       arr[++j] := Ltrim( Str( af[i,3] ) )
+      arr[++j] := Ltrim( Str( af[i,4] ) )
       arr[++j] := __dbgValToStr( (cAlias)->( FieldGet(i) ) )
       IF Len( arr[j] ) > VAR_MAX_LEN
          arr[j] := Left( arr[j], VAR_MAX_LEN )
@@ -816,7 +889,7 @@ STATIC FUNCTION SendObject( cObjName )
 
 
 STATIC FUNCTION SendArray( cArrName, nFirst, nCount )
-   LOCAL arr, arrFrom, xValue, i, j := 3
+   LOCAL arr, arrFrom, i, j := 3
 
    arrFrom := t_oDebugger:GetExprValue( cArrName )
    IF Valtype( arrFrom ) == "A"
@@ -847,7 +920,7 @@ STATIC FUNCTION SendArray( cArrName, nFirst, nCount )
 
 
 STATIC FUNCTION SendSets()
-   LOCAL i, n, arr, aValues
+   LOCAL i, n, arr
    LOCAL aSets := {}
 
    AAdd( aSets, { "001 _SET_EXACT        ",  1   } )
@@ -928,11 +1001,14 @@ STATIC FUNCTION SendSets()
    RETURN arr
 
 
+#if 0
 /* Check if a string starts with another string */
 STATIC FUNCTION starts( cLine, cStart )
    RETURN cStart == Left( cLine, Len( cStart ) )
+#endif
 
 
+#if 0
 /* Strip path from filename */
 STATIC FUNCTION strip_path( cFileName )
    LOCAL cName, cExt
@@ -942,6 +1018,7 @@ STATIC FUNCTION strip_path( cFileName )
    hb_FNameSplit( cFileName, NIL, @cName, @cExt )
 
    RETURN cName + cExt
+#endif
 
 
 FUNCTION __dbgValToStr( uVal )
@@ -992,5 +1069,13 @@ FUNCTION ALTD( nAction )
       ENDIF
    ENDIF
    RETURN NIL
+#endif
+
+
+STATIC FUNCTION __dbgFileMatch( cStr, cPattern )
+#ifdef __XHARBOUR__
+   RETURN WildMatch( Upper( cPattern ), Upper( cStr ), .T. )
+#else
+   RETURN hb_FileMatch( cStr, cPattern )
 #endif
 

@@ -16,6 +16,106 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-19 17:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r360)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r360.
+
+  * debug/dbgconnect.prg
+  * debug/dbgdop.c
+  * debug/debugger.prg
+    + Added more constructs to honor HbIDE implementation.
+    % Changed behavior of some components how these should interact with HbIDE.
+    + Added code to supprt xHarbour projects.
+
+  * debug/hwgdebug.hbp
+    + Added commented-out switch to turn-on for very old xHatbour builds.
+
+  + hbide/resources/clipboard.png
+    + Added new image.
+
+  * hbide/hbide.qrc
+    + Added: clipboard.png.
+
+  * hbide/debugger.ui
+    % Scheduled to be removed from build.
+
+  * hbide/debugger1.ui
+    + Added: few more control to have better debugging experience.
+    - Deleted: switching between two ui's. Original ui is deprecated.
+
+  * hbide/debugger.prg
+  * hbide/editor.prg
+  * hbide/projmanager.prg
+    + Implemented: to pull only the components currently being viewed inside 
+       user-interface. For example, if current tab is <WorkAreas> then only 
+       workareas related info will be requested from the application. Navigating
+       the tabs will pull related info. The info will be pulled once only 
+       for each tab until application is suspended after another STOP. 
+       In that case all info will be deleted and fresh info downloaded for 
+       the tab in view.
+
+       The above implementation has boosted-up the debugging speed per GUI 
+       context where populating controls are a big overhead. Also it help 
+       to remain responsive in very large applications written in sephagetti 
+       style with hundereds of public/private variables hanging around all the
+       time. This has increased HbIDE's acceptance many fold.
+
+    + Added: <Download All> button at the right-side corner of main tabs.
+       This can be clicked to download info for all components in all tabs.
+       But probably you may seldom need to click it in real sessions.
+
+    + Added: <Copy Strucure> icon on the right-side corner of 
+       <Record Inspector> component which is clubbed in <WorkAreas> tab.
+       This copies to the clipboard something like this:
+          LOCAL aStruct := { { "FIRST"   , "C",   20,  0 },;
+                             { "LAST"    , "C",   20,  0 },;
+                             { "HIREDATE", "D",    8,  0 },;
+                             { "MARRIED" , "L",    1,  0 },;
+                             { "AGE"     , "N",    2,  0 },;
+                             { "SALARY"  , "N",    6,  2 },;
+                             { "NOTES"   , "C",   70,  0 } }
+       The intent is to provide a mechanism where structure info could be 
+       consumed as a variable directly in the source code.
+
+    + Implemented: to change value of vriables.
+       Double-click on <Value> column in miscallaneous variables tab.
+       If the variable is of type C,D,N,L, then ui will allow to edit it. The 
+       changed value will be applied instantly in the application. Resumed 
+       execution will honor its value. Note that variables of type character 
+       are always displayed inside double-quotes. You must not overwrite 
+       them when editing.
+
+    + Implemented: a way to send any information from within the application
+       to be published in HbIDE's <Output Console> similar like any debugging 
+       tool. You can call it <IdeTrace>. We will refer it by this name onwards.
+       It is on top of the debugger protocol. It is a very powerful mechanism
+       to measure the performance of your code based on inserting it at 
+       crucial points in source code. As <Output Console> prefixes every message 
+       with time in seconds, which can become the basis of judging the 
+       performance of your code. You will add something like this lines:
+          #ifdef __HBIDE_DEBUG__
+             IdeTrace( { "This is real-time push!", "This is another push!!" } )
+          #endif
+          #ifdef __HBIDE_DEBUG__
+             IdeTrace( xVariable )
+          #endif
+          #ifdef __HBIDE_DEBUG__
+             IdeTrace( "Customer info is missing" )
+             IdeTrace( { 6030, "Nevada Ave", ctod( "" ), .T. } )
+          #endif
+       Any type of variable is accepted, either an array of variables or literals.
+       You need not to #define __HBIDE_DEBUG__, HbIDE's build system automatically
+       defines it for debug builds. You can keep above debug points intact 
+       for all types of builds.
+ 
+       Backdrop: as you know I had zero knowledge how Harbour debugger works,
+                 I struggled at times to understand how the flow of request/response 
+                 behaves. For this I had to devise a mechanism where I could know
+                 what is happening at the back-end. After it got implemented, 
+                 I realized how powerful it could be. Not only for debugging info,
+                 but also for measuring performance between two execution points.
+                 This simulates Qt creator's debugger protocol to an extent. 
+                 
 2014-09-15 12:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r359)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r359.

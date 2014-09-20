@@ -1857,6 +1857,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
          aadd( aHbp, "-b"         )
          aadd( aHbp, "-inc"       )
          aadd( aHbp, "-lhwgdebug" )
+         aadd( aHbp, "-D__HBIDE_DEBUG__" )
          IF ( n := AScan( aHbpData[ 2,1 ], {|e| Lower( Left( LTrim( e ), 9 ) ) == "-workdir=" } ) ) == 0
             AAdd( aHbp, "-workdir=.hbmk/${hb_plat}/${hb_comp}/debug" )
          ELSE

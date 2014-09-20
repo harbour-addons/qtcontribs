@@ -74,7 +74,7 @@
 
 #define ANS_CMD                                   0
 #define ANS_BRP                                   1
-#define ANS_CALC                                  2
+#define ANS_EXP                                  2
 #define ANS_STACK                                 3
 #define ANS_LOCAL                                 4
 #define ANS_WATCH                                 5
@@ -83,6 +83,7 @@
 #define ANS_OBJECT                                8
 #define ANS_SETS                                  9
 #define ANS_ARRAY                                 10
+#define ANS_SETVAR                                11
 #define ANS_QUIT                                  21
 
 #define CMD_QUIT                                  1
@@ -106,33 +107,42 @@
 #define CMD_SETS                                  19
 #define CMD_ARRAY                                 20
 #define CMD_BRP                                   21
+#define CMD_SETVAR                                22
 
-#define WAIT_CMD_INIT                             30
-#define WAIT_CMD_QUIT                             0.1
+#define WAIT_CMD_INIT                             60
+#define WAIT_CMD_QUIT                             1
 #define WAIT_CMD_GO                               3
 #define WAIT_CMD_STEP                             3
 #define WAIT_CMD_TRACE                            3
 #define WAIT_CMD_NEXTR                            3
 #define WAIT_CMD_TOCURS                           3
-#define WAIT_CMD_EXIT                             0.1
-#define WAIT_CMD_STACK                            2
-#define WAIT_CMD_EXP                              1
-#define WAIT_CMD_LOCAL                            1
-#define WAIT_CMD_STATIC                           1
-#define WAIT_CMD_PRIV                             4
-#define WAIT_CMD_PUBL                             4
-#define WAIT_CMD_WATCH                            1
-#define WAIT_CMD_AREA                             3
-#define WAIT_CMD_REC                              3
-#define WAIT_CMD_OBJECT                           3
-#define WAIT_CMD_SETS                             2
-#define WAIT_CMD_ARRAY                            2
-#define WAIT_CMD_BRP                              1
+#define WAIT_CMD_EXIT                             3
+#define WAIT_CMD_STACK                            30
+#define WAIT_CMD_EXP                              30
+#define WAIT_CMD_LOCAL                            30
+#define WAIT_CMD_STATIC                           30
+#define WAIT_CMD_PRIV                             30
+#define WAIT_CMD_PUBL                             30
+#define WAIT_CMD_WATCH                            30
+#define WAIT_CMD_AREA                             60
+#define WAIT_CMD_REC                              30
+#define WAIT_CMD_OBJECT                           30
+#define WAIT_CMD_SETS                             30
+#define WAIT_CMD_ARRAY                            30
+#define WAIT_CMD_BRP                              30
+#define WAIT_CMD_SETVAR                           30
 
 #define BUFFER_LEN                                1024
 
 #define cMsgNotSupp                               "Command isn't supported"
 #define C_C                                       " , "
+
+
+#define MAIN_TAB_VARIABLES                        0
+#define MAIN_TAB_WORKAREAS                        1
+#define MAIN_TAB_WATCHES                          2
+#define MAIN_TAB_STACK                            3
+#define MAIN_TAB_SETS                             4
 
 
 CLASS IdeDebugger INHERIT IdeObject
@@ -171,8 +181,6 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   cLastMessage                            INIT ""
 
    DATA   oUI
-   DATA   oUI_1
-   DATA   oUI_2
    DATA   cCurrentProject                         INIT ""
    DATA   aTabs
    DATA   cBuffer
@@ -188,6 +196,7 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   lInRequest                              INIT .F.
    DATA   nOutput                                 INIT 0
    DATA   oAreaMenu
+   DATA   btnLoadAll
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -214,7 +223,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD populateResponse( arr )
 
    METHOD readResponse( cSource )
-   METHOD doCommand( nCmd, cDop, cDop2, cDop3 )
+   METHOD doCommand( nCmd, cDop, cDop2, cDop3, cDop4, cDop5 )
    METHOD sendRequest( ... )
 
    METHOD setCurrLine( nLine, cName )
@@ -223,6 +232,8 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD getBP( nLine, cPrg )
    METHOD setWindow( cPrgName )
 
+   METHOD editVariable( oItem )
+   METHOD editVariableEx( oItem )
    METHOD inspectObject( lClicked )
    METHOD inspectObjectEx()
    METHOD manageObjectLevelUp()
@@ -243,6 +254,7 @@ CLASS IdeDebugger INHERIT IdeObject
 
    METHOD ui_init( oUI )
    METHOD ui_load()
+   METHOD ui_loadAll()
 
    METHOD fineTune( oTable )
    METHOD waitState( nSeconds )
@@ -250,12 +262,15 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD isActive()                              INLINE ! ::lTerminated
    METHOD raise()                                 INLINE ::oIde:oDebuggerDock:oWidget:raise()
    METHOD manageKey( nQtKey )
-   METHOD switchUI()
    METHOD matureShakehand()
    METHOD getRequestType( cId )
    METHOD processEvents()                         INLINE QApplication():processEvents()
    METHOD manageAreasContextManu( oPoint )
    METHOD openTableInIdeDBU( cTable, lByHbDBU )
+   METHOD manageTabMain( index )
+   METHOD copyStructToClipboard()
+   METHOD isStopped()                             INLINE ::oUi:labelStatus:text() == "Stopped"
+   METHOD manageTableVariablesClicked( oItem, cVariables )
 
    ENDCLASS
 
@@ -275,16 +290,9 @@ METHOD IdeDebugger:create( oIde )
 
    ::cBuffer       := Space( BUFFER_LEN )
    ::aTabs         := ::oIde:aTabs
-   ::oUI_1         := hbqtui_debugger()
-   ::oUI_2         := hbqtui_debugger1()
-   ::ui_init( ::oUI_1 )
-   ::ui_init( ::oUI_2 )
+   ::oUI           := hbqtui_debugger1()
+   ::ui_init( ::oUI )
 
-   IF ! Empty( GetEnv( "hbide_debugger_old" ) )
-      ::oUI := ::oUI_1
-   ELSE
-      ::oUI := ::oUI_2
-   ENDIF
    ::oDebuggerDock:oWidget:setWidget( ::oUI:oWidget )
 
    ::oFileWatcher := QFileSystemWatcher()
@@ -411,7 +419,7 @@ METHOD IdeDebugger:matureShakehand()
 
 
 METHOD IdeDebugger:readResponse( cSource )
-   LOCAL cText, arr
+   LOCAL cText, arr, i
 
    IF cSource == ::cExe + ".d2"
       ::processEvents()
@@ -420,6 +428,12 @@ METHOD IdeDebugger:readResponse( cSource )
       arr   := hb_ATokens( cText, "," )
       ::oPM:outputText( "...........RESPONSE[ " + hb_ntos( ::nId1 ) + "." + ::cLastRequest + "] ... " + ;
                                                             arr[ 1 ] + "," + arr[ 2 ] + "," + ATail( arr ) )
+      IF Left( arr[ 1 ], 1 ) == "m"
+         FOR i := 3 TO Len( arr ) - 2
+            ::oPM:outputText( Hex2Str( arr[ i ] ) )
+         NEXT
+         RETURN NIL
+      ENDIF
       ::hResponses[ arr[ 1 ] ] := arr
       ::lInRequest := .F.
       ::populateResponse( arr )
@@ -452,7 +466,7 @@ METHOD IdeDebugger:sendRequest( ... )
    RETURN NIL
 
 
-METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3 )
+METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3, cDop4, cDop5 )
    LOCAL oCursor
 
    IF ! ::lStarted
@@ -464,15 +478,8 @@ METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3 )
    IF ! ::isActive()
       RETURN NIL
    ENDIF
-#if 0                                             // An important piece of code . but does not workf because of recursion.
-   DO WHILE ::lInRequest
-      ::processEvents()
-      IF ! ::isActive()
-         RETURN NIL
-      ENDIF
-      RETURN NIL
-   ENDDO
-#endif
+
+   DEFAULT cDop TO ""
 
    SWITCH nCmd
    CASE CMD_GO
@@ -525,8 +532,13 @@ METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3 )
       ::sendRequest( "cmd", "nextr" )
       ::waitState( WAIT_CMD_NEXTR )
       EXIT
+   CASE CMD_SETVAR
+      ::nAnsType := ANS_SETVAR
+      ::sendRequest( "set", cDop, cDop2, cDop3, cDop4, cDop5 )
+      ::waitState( WAIT_CMD_SETVAR )
+      EXIT
    CASE CMD_EXP
-      ::nAnsType := ANS_CALC
+      ::nAnsType := ANS_EXP
       ::sendRequest( "exp", cDop )
       ::waitState( WAIT_CMD_EXP )
       EXIT
@@ -629,13 +641,13 @@ METHOD IdeDebugger:populateResponse( arr )
       RETURN ::stopDebug()
    ENDIF
 
-   IF Left( arr[ 1 ], 1 ) == "b" // .AND. ( n := Val( SubStr( arr[ 1 ], 2 ) ) ) == ::nId1
+   IF Left( arr[ 1 ], 1 ) == "b"
       SWITCH ::getRequestType( arr[ 1 ] )
-      CASE ANS_CALC
+      //
+      CASE ANS_EXP                               // using as setting a variable
          IF arr[ 2 ] == "value"
             IF ! Empty( ::cInspectVar )
                IF Substr( Hex2Str( arr[ 3 ] ), 2, 1 ) == "O"
-                  ::nMode := MODE_INPUT
                   ::inspectObject( .F. )
                   RETURN NIL
                ELSE
@@ -644,6 +656,15 @@ METHOD IdeDebugger:populateResponse( arr )
                   ::oUI:activateWindow()
                ENDIF
             ENDIF
+            // value should be the same as sent
+            ::oPM:outputText( Hex2Str( arr[ 3 ] ) )
+         ELSE
+            ::oPM:outputText( "-- BAD ANSWER --" )
+         ENDIF
+         EXIT
+      CASE ANS_SETVAR
+         IF arr[ 2 ] == "result"
+            ::oPM:outputText( arr[ 3 ] )
          ELSE
             ::oPM:outputText( "-- BAD ANSWER --" )
          ENDIF
@@ -715,7 +736,7 @@ METHOD IdeDebugger:populateResponse( arr )
          EXIT
       ENDSWITCH
 
-   ELSEIF Left( arr[ 1 ], 1 ) == "a" // .AND. ( n := Val( SubStr( arr[ 1 ], 2 ) ) ) > ::nId2
+   ELSEIF Left( arr[ 1 ], 1 ) == "a"
       n := Val( SubStr( arr[ 1 ], 2 ) )
 
       ::nId2 := n
@@ -725,42 +746,13 @@ METHOD IdeDebugger:populateResponse( arr )
          ::oPM:outputText( "Program Stopped..." )
          ::oUi:labelStatus:setText( "Stopped" )
 
+         ::ui_load()
+
          ::cPrgName := arr[ 2 ]
          ::setCurrLine( ::nCurrLine := Val( arr[ 3 ] ), ::cPrgName )
-
-         n := 4
-         DO WHILE .T.
-            IF arr[ n ] == "ver"
-               ::nVerProto := Val( arr[ n+1 ] )
-               n += 2
-            ELSEIF arr[ n ] == "stack"
-               ::showStack( arr, n+1 )
-               n += 2 + Val( arr[ n+1 ] ) * 3
-            ELSEIF arr[ n ] == "valuelocal"
-               ::showVars( arr, n+1, 1 )
-               n += 2 + Val( arr[ n+1 ] ) * 3
-            ELSEIF arr[ n ] == "valuepriv"
-               ::showVars( arr, n+1, 2 )
-               n += 2 + Val( arr[ n+1 ] ) * 3
-            ELSEIF arr[ n ] == "valuepubl"
-               ::showVars( arr, n+1, 3 )
-               n += 2 + Val( arr[ n+1 ] ) * 3
-            ELSEIF arr[ n ] == "valuestatic"
-               ::showVars( arr, n+1, 4 )
-               n += 2 + Val( arr[ n+1 ] ) * 3
-            ELSEIF arr[ n ] == "valuewatch"
-               ::showWatch( arr, n+1 )
-               n += 2 + Val( arr[ n+1 ] )
-            ELSE
-               EXIT
-            ENDIF
-            QApplication():processEvents()
-         ENDDO
-
          ::cLastMessage := "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")"
          ::oPM:outputText( ::cLastMessage )
 
-         ::ui_load()
          ::oUI:show()
          ::oUI:activateWindow()
          IF arr[ 4 ] == "ver"
@@ -1038,6 +1030,153 @@ METHOD IdeDebugger:inspectObjectEx()
    RETURN NIL
 
 
+METHOD IdeDebugger:manageTableVariablesClicked( oItem, cVariables )
+   LOCAL oTable
+
+   IF Empty( oItem )
+      RETURN NIL
+   ENDIF
+   IF oItem:column() == 0
+      ::inspectObject( .T. )
+   ELSEIF oItem:column() == 4
+      SWITCH cVariables
+      CASE "Local"   ; oTable := ::oUI:tableVarLocal  ; EXIT
+      CASE "Static"  ; oTable := ::oUI:tableVarStatic ; EXIT
+      CASE "Public"  ; oTable := ::oUI:tableVarPublic ; EXIT
+      CASE "Private" ; oTable := ::oUI:tableVarPrivate; EXIT
+      ENDSWITCH
+      IF oTable:item( oItem:Row(),1 ):text() $ "C,N,L,D"
+         oTable:setCurrentItem( oItem )
+         oTable:editItem( oItem )
+      ENDIF
+      //::editVariable( oItem )
+   ENDIF
+   HB_SYMBOL_UNUSED( cVariables )
+   RETURN NIL
+
+
+METHOD IdeDebugger:editVariableEx( oItem )
+   LOCAL oTable, nIndex, cVar, cVal, xVal, nRow, cType, cVType, cT
+
+   IF Empty( oItem )
+      RETURN NIL
+   ENDIF
+   nIndex := ::oUI:tabWidgetVariables:currentIndex()
+   DO CASE
+   CASE nIndex == 0
+      oTable := ::oUI:tableVarLocal
+      cVType := "Local"
+   CASE nIndex == 1
+      oTable := ::oUI:tableVarPrivate
+      cVType := "Private"
+   CASE nIndex == 2
+      oTable := ::oUI:tableVarPublic
+      cVType := "Public"
+   CASE nIndex == 3
+      oTable := ::oUI:tableVarStatic
+      cVType := "Static"
+   ENDCASE
+   IF oTable:rowCount() == 0
+      RETURN NIL
+   ENDIF
+
+   nRow := oItem:row()
+   cType := oTable:item( nRow, 1 ):text()
+   IF cType $ "C,N,D,L"
+      cVar := oTable:item( nRow, 0 ):text()
+      cVal := oItem:text()
+      xVal := iif( cType == "N", Val( cVal ), iif( cType == "D", CToD( cVal ), iif( cType == "L", iif( "T" $ Upper( cVal ), .T., .F. ), cVal ) ) )
+      cT   := ValType( xVal )
+      IF cT == "C"
+         xVal := Trim( xVal )
+         oItem:setText( xVal )
+         xVal := StrTran( Trim( xVal ), '"' )
+      ELSEIF cT == "N"
+         oItem:setText( LTrim( Str( xVal ) ) )
+      ELSEIF cT == "D"
+         oItem:setText( DToC( xVal ) )
+      ELSEIF cT == "L"
+         oItem:setText( iif( xVal, ".T.", ".F." ) )
+      ENDIF
+      cVal := iif( cT == "N", LTrim( Str( xVal ) ), iif( cT == "D", DToS( xVal ), iif( cT == "L", iif( xVal, "T", "F" ), xVal ) ) )
+
+      ::doCommand( CMD_SETVAR, ;
+                              Str2Hex( cVar ), ;
+                              Str2Hex( cVType + ":" + cType ), ;
+                              Str2Hex( oTable:item( nRow, 2 ):text() ), ;
+                              Str2Hex( oTable:item( nRow, 3 ):text() ), ;
+                              Str2Hex( cVal ) )
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:editVariable( oItem )
+   LOCAL oTable, nIndex, cVar, cVal, xVal, nRow, cType, cVType, cT, cPic, nWid, n
+
+   IF Empty( oItem )
+      RETURN NIL
+   ENDIF
+   nIndex := ::oUI:tabWidgetVariables:currentIndex()
+   DO CASE
+   CASE nIndex == 0
+      oTable := ::oUI:tableVarLocal
+      cVType := "Local"
+   CASE nIndex == 1
+      oTable := ::oUI:tableVarPrivate
+      cVType := "Private"
+   CASE nIndex == 2
+      oTable := ::oUI:tableVarPublic
+      cVType := "Public"
+   CASE nIndex == 3
+      oTable := ::oUI:tableVarStatic
+      cVType := "Static"
+   ENDCASE
+   IF oTable:rowCount() == 0
+      RETURN NIL
+   ENDIF
+
+   nRow := oItem:row()
+   cType := oTable:item( nRow, 1 ):text()
+   IF cType $ "C,N,D,L"
+      cVar := oTable:item( nRow, 0 ):text()
+      cVal := oItem:text()
+      xVal := iif( cType == "N", Val( cVal ), iif( cType == "D", CToD( cVal ), iif( cType == "L", iif( "T" $ Upper( cVal ), .T., .F. ), cVal ) ) )
+      cT   := ValType( xVal )
+      nWid := Len( cVal )
+      IF cT == "C"
+         xVal := Pad( xVal, nWid * 2 )
+      ELSEIF cT == "N"
+         IF ( n := At( ".", cVal ) ) > 0
+            nWid := Len( SubStr( cVal, n + 1 ) )
+         ELSE
+            nWid := 0
+         ENDIF
+         cPic := "@Z 999999999999" + iif( nWid > 0, "." + Replicate( "9", nWid ), "" )
+      ENDIF
+      xVal := HbQtBulkGet( xVal, cVar, cPic )
+      IF cT == "C"
+         xVal := Trim( xVal )
+         oItem:setText( xVal )
+         xVal := StrTran( Trim( xVal ), '"' )
+      ELSEIF cT == "N"
+         oItem:setText( LTrim( Str( xVal ) ) )
+      ELSEIF cT == "D"
+         oItem:setText( DToC( xVal ) )
+      ELSEIF cT == "L"
+         oItem:setText( iif( xVal, ".T.", ".F." ) )
+      ENDIF
+      cVal := iif( cT == "N", LTrim( Str( xVal ) ), iif( cT == "D", DToS( xVal ), iif( cT == "L", iif( xVal, "T", "F" ), xVal ) ) )
+
+      ::doCommand( CMD_SETVAR, ;
+                              Str2Hex( cVar ), ;
+                              Str2Hex( cVType + ":" + cType ), ;
+                              Str2Hex( oTable:item( nRow, 2 ):text() ), ;
+                              Str2Hex( oTable:item( nRow, 3 ):text() ), ;
+                              Str2Hex( cVal ) )
+   ENDIF
+   RETURN NIL
+
+
 METHOD IdeDebugger:inspectObject( lClicked )
    LOCAL index, oTable, nRow, cObjName
    LOCAL cType := ""
@@ -1045,7 +1184,7 @@ METHOD IdeDebugger:inspectObject( lClicked )
    IF lClicked
       ::oUI:btnObjBack:setEnabled( .F. )
 
-      index := ::oUI:tabWidget:currentIndex()
+      index := ::oUI:tabWidgetVariables:currentIndex()
       DO CASE
       CASE index = 0
          oTable := ::oUI:tableVarLocal
@@ -1091,6 +1230,7 @@ METHOD IdeDebugger:showStack( arr, n )
       ::oUI:tableStack:setItem( i - 1, 0, QTableWidgetItem( AllTrim( arr[ ++n ] ) ) )
       ::oUI:tableStack:setItem( i - 1, 1, QTableWidgetItem( AllTrim( arr[ ++n ] ) ) )
       ::oUI:tableStack:setItem( i - 1, 2, QTableWidgetItem( AllTrim( arr[ ++n ] ) ) )
+      ::processEvents()
    NEXT
    RETURN NIL
 
@@ -1114,6 +1254,9 @@ METHOD IdeDebugger:showVars( arr, n, nVarType )
       oTable:setItem( i-1, 0, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
       oTable:setItem( i-1, 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
       oTable:setItem( i-1, 2, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
+      oTable:setItem( i-1, 3, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
+      oTable:setItem( i-1, 4, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
+      ::processEvents()
    NEXT
    RETURN NIL
 
@@ -1136,10 +1279,15 @@ METHOD IdeDebugger:showAreas( arr, n )
    LOCAL nAreas := Val( arr[ n ] )
    LOCAL nAItems := Val( Hex2Str( arr[ ++n ] ) )
 
+   ::oPM:outputText( " Number of Areas : " + hb_ntos( nAreas ) )
+
    ::oUI:tableOpenTables:setRowCount( nAreas )
    FOR i := 1 TO nAreas
       FOR j := 1 TO nAItems
          cData := AllTrim( Hex2Str( arr[ ++n ] ) )
+         IF j == 1
+            ::oPM:outputText( cData )
+         ENDIF
          IF j == 13
             ::oUI:tableOpenTables:item( i - 1, 0 ):setTooltip( StrTran( cData, "|", Chr( 10 ) ) )
             ::oUI:tableOpenTables:item( i - 1, 0 ):setWhatsThis( cData )
@@ -1149,12 +1297,6 @@ METHOD IdeDebugger:showAreas( arr, n )
       NEXT
       ::processEvents()
    NEXT
-   IF nAreas == 0
-      ::oUI:tableCurrentRecord:setRowCount( 0 )
-   ELSE
-      ::oUI:tableOpenTables:setCurrentCell( 0, 0 )
-      ::requestRecord( 0, 0 )
-   ENDIF
    RETURN NIL
 
 
@@ -1167,7 +1309,7 @@ METHOD IdeDebugger:showRec( arr, n )
    ::oUI:labelCurrentRecord:setText( "Record Inspector [ " + cAlias + " : " + cRec + " ]" )
    ::oUI:tableCurrentRecord:setRowCount( nRows )
    FOR i := 1 TO nRows
-      FOR j := 1 TO 4
+      FOR j := 1 TO 5
          ::oUI:tableCurrentRecord:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
       NEXT
       ::processEvents()
@@ -1284,27 +1426,87 @@ METHOD IdeDebugger:requestVars( index )
 
 
 METHOD IdeDebugger:ui_load()
-   //
+   LOCAL i
+
    IF ! ::isActive()
       RETURN Self
    ENDIF
-   ::oUI:tabWidget:setCurrentIndex( 0 )
+
+   ::cInspectVar  := ""
+   ::cInspectType := ""
+
+   ::oUI:labelObjectInspector:setText( "Object Inspector" )
+   ::oUI:labelOpenTables:setText( "Record Inspector" )
 
    ::oUI:tableVarLocal:setRowCount( 0 )
    ::oUI:tableVarPrivate:setRowCount( 0 )
    ::oUI:tableVarStatic:setRowCount( 0 )
    ::oUI:tableVarPublic:setRowCount( 0 )
-
-   ::doCommand( CMD_SETS )
-   ::doCommand( CMD_STACK, "on" )
-   ::doCommand( CMD_WATCH, "on" )
-   ::doCommand( CMD_AREA )
-   ::requestVars( 0 )                             // Only Locals
-   IF ! Empty( ::cInspectVar )
-      ::inspectObject( .F. )
-   ENDIF
-   ::nRowAreas := -1
+   ::oUI:tableObjectInspector:setRowCount( 0 )
    //
+   ::oUI:tableOpenTables:setRowCount( 0 )
+   ::oUI:tableCurrentRecord:setRowCount( 0 )
+   IF ::oUI:tableWatchExpressions:rowCount() > 0
+      FOR i := 1 TO ::oUI:tableWatchExpressions:rowCount()
+         ::oUI:tableWatchExpressions:item( i-1, 1 ):setText( "" )
+         ::oUI:tableWatchExpressions:item( i-1, 2 ):setText( "" )
+         ::processEvents()
+      NEXT
+   ENDIF
+   //
+   ::oUI:tableStack:setRowCount( 0 )
+   //
+   ::oUI:tableSets:setRowCount( 0 )
+
+   ::processEvents()
+
+   ::manageTabMain( Max( 0, ::oUI:tabWidgetMain:currentIndex() ) )
+
+   ::nRowAreas := -1
+   RETURN NIL
+
+
+METHOD IdeDebugger:ui_loadAll()
+
+   IF ::isStopped()
+      ::manageTabMain( 0 )
+      ::manageTabMain( 1 )
+      ::manageTabMain( 2 )
+      ::manageTabMain( 3 )
+      ::manageTabMain( 4 )
+      ::requestVars( 0 )
+      ::requestVars( 1 )
+      ::requestVars( 2 )
+      ::requestVars( 3 )
+      ::requestObject()
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:manageTabMain( index )
+   SWITCH index
+   CASE MAIN_TAB_VARIABLES
+      ::requestVars( Max( 0, ::oUI:tabWidgetVariables:currentIndex() ) )
+      EXIT
+   CASE MAIN_TAB_WORKAREAS
+      IF ::oUI:tableOpenTables:rowCount() == 0
+         ::doCommand( CMD_AREA )
+      ENDIF
+      EXIT
+   CASE MAIN_TAB_WATCHES
+      ::doCommand( CMD_WATCH, "on" )
+      EXIT
+   CASE MAIN_TAB_STACK
+      IF ::oUI:tableStack:rowCount() == 0
+         ::doCommand( CMD_STACK, "on" )
+      ENDIF
+      EXIT
+   CASE MAIN_TAB_SETS
+      IF ::oUI:tableSets:rowCount() == 0
+         ::doCommand( CMD_SETS )
+      ENDIF
+      EXIT
+   ENDSWITCH
    RETURN NIL
 
 
@@ -1493,6 +1695,17 @@ METHOD IdeDebugger:changeWatch( item )
 METHOD IdeDebugger:ui_init( oUI )
    LOCAL oHeaders
 
+   oUI:tabWidgetMain:setCurrentIndex( 0 )
+   oUI:tabWidgetVariables:setCurrentIndex( 0 )
+
+   WITH OBJECT ::btnLoadAll := QToolButton()
+      :setIcon( QIcon( hbide_image( "go-jump" ) ) )
+      :setTooltip( "Downlaod All Info" )
+      :setAutoRaise( .T. )
+      :connect( "clicked()", {|| ::ui_LoadAll() } )
+   ENDWITH
+   oUI:tabWidgetMain:setCornerWidget( ::btnLoadAll )
+
    WITH OBJECT oHeaders := QStringList()
       :append( "Expression" )
       :append( "Value"      )
@@ -1512,6 +1725,8 @@ METHOD IdeDebugger:ui_init( oUI )
    WITH OBJECT oHeaders := QStringList()
       :append( "Name"  )
       :append( "Typ"   )
+      :append( "Lvl"   )
+      :append( "Pos"   )
       :append( "Value" )
    ENDWITH
    oUI:tableVarLocal  :setHorizontalHeaderLabels( oHeaders )
@@ -1544,10 +1759,11 @@ METHOD IdeDebugger:ui_init( oUI )
    ::fineTune( oUI:tableOpenTables )
 
    WITH OBJECT oHeaders := QStringList()
-      :append( "FieldName" )
-      :append( "Typ"       )
-      :append( "Len"       )
-      :append( "Value"     )
+      :append( "Field" )
+      :append( "Typ"   )
+      :append( "Len"   )
+      :append( "Dec"   )
+      :append( "Value" )
    ENDWITH
    oUI:tableCurrentRecord:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( oUI:tableCurrentRecord )
@@ -1567,6 +1783,7 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableSets:setHorizontalHeaderLabels( oHeaders )
    ::fineTune( oUI:tableSets )
 
+   oUI:btnStructure         :connect( "clicked()", { || ::copyStructToClipboard() } )
    oUI:btnExpand            :connect( "clicked()", { || ::expandObject() } )
    oUI:btnObjBack           :connect( "clicked()", { || ::manageObjectLevelUp() } )
    oUI:btnObjBack:setEnabled( .F. )
@@ -1577,7 +1794,6 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ), ::waitState( 0.2 ) } )
    oUI:btnTrace             :connect( "clicked()", { || ::doCommand( CMD_TRACE  ), ::waitState( 0.2 ) } )
    oUI:btnClipboard         :connect( "clicked()", { || ::copyOnClipboard() } )
-   oUI:btnSwitch            :connect( "clicked()", { || ::switchUI()        } )
    oUI:btnExit              :connect( "clicked()", { || ::nExitMode := 2, ::exitDbg()         } )
 
    oUI:btnAddWatch          :connect( "clicked()", { || ::watch_ins()       } )
@@ -1587,19 +1803,22 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:btnSaveWatches       :connect( "clicked()", { || ::watch_save()      } )
    oUI:btnRestWatches       :connect( "clicked()", { || ::watch_rest()      } )
 
-   oUI:tableWatchExpressions:connect( "itemChanged(QTableWidgetItem*)", {| item | ::changeWatch( item )           } )
-   oUI:tableOpenTables      :connect( "cellActivated(int,int)"        , {| row, col | ::requestRecord( row, col ) } )
-   oUI:tabWidget            :connect( "currentChanged(int)"           , {|index| ::requestVars( index )           } )
-
-   oUI:tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
-   oUI:tableVarPrivate      :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
-   oUI:tableVarPublic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
-   oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObject( .T. ) } )
+   oUI:tableWatchExpressions:connect( "itemChanged(QTableWidgetItem*)"      , {| oItem | ::changeWatch( oItem )         } )
+   oUI:tableOpenTables      :connect( "cellActivated(int,int)"              , {| row, col | ::requestRecord( row, col ) } )
+   oUI:tabWidgetVariables   :connect( "currentChanged(int)"                 , {| nIndex | ::requestVars( nIndex )       } )
+   oUI:tabWidgetMain        :connect( "currentChanged(int)"                 , {| nIndex | ::manageTabMain( nIndex )     } )
+   oUI:tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Local"   ) } )
+   oUI:tableVarPrivate      :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Private" ) } )
+   oUI:tableVarPublic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Public"  ) } )
+   oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Static"  ) } )
 
    oUI:tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
 
    oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
    oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
+
+   oUI:tableVarLocal        :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+
    RETURN NIL
 
 
@@ -1650,20 +1869,6 @@ METHOD IdeDebugger:openTableInIdeDBU( cTable, lByHbDBU )
    ENDIF
 
    RETURN NIL
-
-
-METHOD IdeDebugger:switchUI()
-   IF ::oUI:btnSwitch:text() == "UI_1"
-      ::oUI := ::oUI_1
-   ELSE
-      ::oUI := ::oUI_2
-   ENDIF
-   ::oDebuggerDock:oWidget:setWidget( ::oUI:oWidget )
-   ::oDebuggerDock:oWidget:hide()
-   ::oDebuggerDock:oWidget:show()
-   ::oDebuggerDock:oWidget:raise()
-   ::oUI:show()
-   RETURN Self
 
 
 METHOD IdeDebugger:manageKey( nQtKey )
@@ -1748,6 +1953,36 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
       ENDIF
    NEXT
    RETURN NIL
+
+
+METHOD IdeDebugger:copyStructToClipboard()
+   LOCAL aStruct, i, cTmp
+
+   IF ::oUI:tableCurrentRecord:rowCount() == 0
+      RETURN NIL
+   ENDIF
+   aStruct := {}
+   FOR i := 1 TO ::oUI:tableCurrentRecord:rowCount()
+      AAdd( aStruct, { ::oUI:tableCurrentRecord:item( i - 1, 0 ):text(), ;
+                       ::oUI:tableCurrentRecord:item( i - 1, 1 ):text(), ;
+                       Val( ::oUI:tableCurrentRecord:item( i - 1, 2 ):text() ), ;
+                       Val( ::oUI:tableCurrentRecord:item( i - 1, 4 ):text() ) } )
+   NEXT
+   IF ! empty( aStruct )
+      i := 0
+      aeval( aStruct, {|e_| iif( Len( e_[ 1 ] ) > i, i := len( e_[ 1 ] ), NIL ) } )
+      i += 2
+
+      cTmp := "   LOCAL aStruct := {"
+      aeval( aStruct, {|e_,n| cTmp += iif( n == 1, ' { ', space( 20 ) + '  { ' ) + ;
+                                 pad( '"' + e_[ 1 ] + '"', i ) + ', "' + e_[ 2 ] + '", ' + ;
+                                     str( e_[ 3 ], 4, 0 ) + ', ' + ;
+                                         str( e_[ 4 ], 2, 0 ) + ' }' + ;
+                                             iif( Len( aStruct ) == n, " }", ",;" ) + hb_eol() } )
+      QApplication():clipboard():setText( cTmp )
+   ENDIF
+
+   RETURN cTmp
 
 
 METHOD IdeDebugger:copyOnClipboard()

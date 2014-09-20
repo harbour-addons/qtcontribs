@@ -2,11 +2,20 @@
 # $Id$
 #
 
+-3rd=hbide_version=1.0
+-3rd=hbide_type=Lib
+-3rd=hbide_title=hwgdebug
+-3rd=hbide_output=hwgdebug
+
 -inc
 
 -hblib
 
--n -q0 -w -es2
+-n 
+-q0 
+-w3
+-es2
+
 
 -o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
 
@@ -17,5 +26,11 @@
 -cflag=-DHWG_USE_POINTER_ITEM
 "{unix}-cflag=`pkg-config --cflags gtk+-2.0`"
 
+# Comment out the following line if you are using very old xHarbour around 2007.
+#-cflag=-D__XHARBOUR_VERYOLD__
+
+
 *.c
 *.prg
+
+ 

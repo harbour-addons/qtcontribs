@@ -84,6 +84,7 @@
 #define CMD_OBJECT                                21
 #define CMD_ARRAY                                 22
 #define CMD_SETS                                  23
+#define CMD_SETVAR                                24
 
 #define BUFER_LEN                                 1024
 
@@ -97,18 +98,17 @@
 
 
 STATIC lDebugRun := .F., handl1, handl2, cBuffer
-STATIC nId1 := -1, nId2 := 0
+STATIC nId1 := -1, nId2 := 0, nId3 := 0
 
 
 FUNCTION hwg_dbg_New()
-   LOCAL i
    LOCAL cFile := hb_Progname()
 
    cBuffer := Space( BUFER_LEN )
 
    IF File( cFile + ".d1" ) .AND. File( cFile + ".d2" )
       IF ( handl1 := FOpen( cFile + ".d1", FO_READ + FO_SHARED ) ) != -1
-         IF ( i := FRead( handl1, @cBuffer, BUFER_LEN ) ) > 0 .AND. Left( cBuffer,4 ) == "init"
+         IF FRead( handl1, @cBuffer, BUFER_LEN ) > 0 .AND. Left( cBuffer,4 ) == "init"
             handl2 := FOpen( cFile + ".d2", FO_READWRITE + FO_SHARED )
             IF handl2 != -1
                lDebugRun := .T.
@@ -194,12 +194,33 @@ FUNCTION hwg_dbg_SetActiveLine( cPrgName, nLine, aStack, aVars, aWatch, nVarType
    RETURN NIL
 
 
+FUNCTION IdeTrace( xMessage )
+   LOCAL i, nLen
+   LOCAL s := "message"
+
+   IF !lDebugRun ; RETURN NIL; ENDIF
+
+   IF ValType( xMessage ) == "C"
+      xMessage := { xMessage }
+   ENDIF
+   nLen := Len( xMessage )
+   FOR i := 1 TO nLen
+      s += "," + Str2Hex( __dbgValToStr( xMessage[ i ] ) )
+   NEXT
+   hwg_dbg_Send( "m" + Ltrim( Str( ++nId3 ) ), s )
+   FOR i := 1 TO 5
+      hb_ReleaseCPU()
+   NEXT
+   RETURN NIL
+
+
 FUNCTION hwg_dbg_Wait( nWait )
+   HB_SYMBOL_UNUSED( nWait )
    IF !lDebugRun ; RETURN NIL; ENDIF
    RETURN NIL
 
 
-FUNCTION hwg_dbg_Input( p1, p2, p3 )
+FUNCTION hwg_dbg_Input( p1, p2, p3, p4, p5 )
    LOCAL n, cmd, arr
 
    IF !lDebugRun ; RETURN CMD_GO; ENDIF
@@ -249,6 +270,13 @@ FUNCTION hwg_dbg_Input( p1, p2, p3 )
             ELSEIF arr[ 2 ] == "exp"
                p1 := Hex2Str( arr[ 3 ] )
                RETURN CMD_CALC
+            ELSEIF arr[ 2 ] == "set"
+               p1 := Hex2Str( arr[ 3 ] )
+               p2 := Hex2Str( arr[ 4 ] )
+               p3 := Hex2Str( arr[ 5 ] )
+               p4 := Hex2Str( arr[ 6 ] )
+               p5 := Hex2Str( arr[ 7 ] )
+               RETURN CMD_SETVAR
             ELSEIF arr[ 2 ] == "view"
                IF arr[ 3 ] == "stack"
                   p1 := arr[ 4 ]
@@ -321,6 +349,7 @@ FUNCTION hwg_dbg_Answer( ... )
 
 FUNCTION hwg_dbg_Msg( cMessage )
 
+   HB_SYMBOL_UNUSED( cMessage )
    IF !lDebugRun ; RETURN NIL; ENDIF
 
    RETURN NIL
