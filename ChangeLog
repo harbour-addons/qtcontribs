@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-20 17:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r361)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r361.
+
+  * hbide/debugger.prg
+    ! Fixed regression not to crash while clicking on <Sets> label.
+
+  * hbide/main.prg
+    ! Fixed to close the debuuger ig one has been active at the time 
+       HbIDE is <Exit>ed.
+
 2014-09-19 17:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r360)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r360.

@@ -201,6 +201,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD init( oIde )
    METHOD create( oIde )
    METHOD start( cExe, cCmd, qStr, cWrkDir )
+   METHOD quit()
    METHOD show()
    METHOD hide()
    METHOD clear()
@@ -341,6 +342,13 @@ METHOD IdeDebugger:clear()
    hb_HKeepOrder( ::hResponses, .T. )
 
    RETURN .T.
+
+
+METHOD IdeDebugger:quit()
+   IF ::isActive()
+      ::doCommand( CMD_QUIT )
+   ENDIF
+   RETURN NIL
 
 
 METHOD IdeDebugger:hide()
@@ -1807,17 +1815,21 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tableOpenTables      :connect( "cellActivated(int,int)"              , {| row, col | ::requestRecord( row, col ) } )
    oUI:tabWidgetVariables   :connect( "currentChanged(int)"                 , {| nIndex | ::requestVars( nIndex )       } )
    oUI:tabWidgetMain        :connect( "currentChanged(int)"                 , {| nIndex | ::manageTabMain( nIndex )     } )
+
+   oUI:tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
+
+   oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
+
+   // Variables Tab
    oUI:tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Local"   ) } )
    oUI:tableVarPrivate      :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Private" ) } )
    oUI:tableVarPublic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Public"  ) } )
    oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Static"  ) } )
 
-   oUI:tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
-
-   oUI:labelSets            :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::requestSets(), NIL ) } )
-   oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
-
    oUI:tableVarLocal        :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+   oUI:tableVarPrivate      :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+   oUI:tableVarPublic       :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+   oUI:tableVarStatic       :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
 
    RETURN NIL
 

@@ -635,6 +635,7 @@ METHOD HbIde:create( aParams )
          IF nEvent == xbeP_Close .AND. oXbp == ::oDlg
             IF hbide_setClose()
                ::lQuitting := .t.
+               ::oDebugger:quit()
                ::oINI:save()
                ::oSM:closeAllSources( .f. /* can not cancel */ )
                EXIT
