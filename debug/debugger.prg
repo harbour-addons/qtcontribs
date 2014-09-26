@@ -740,7 +740,7 @@ STATIC FUNCTION SendWatch()
    RETURN arr
 
 
-#define WA_ITEMS  13
+#define WA_ITEMS  16
 
 STATIC FUNCTION SendAreas()
    LOCAL arr, arr1[512], n, i, nAreas := 0, nAlias, s, j, cKey, cIdxPath
@@ -764,26 +764,25 @@ STATIC FUNCTION SendAreas()
       nAt := n
       Select( arr1[i] )
       BEGIN SEQUENCE
-         arr[++n] := Iif( arr1[i]==nAlias, "*", "" ) + Alias()
-         arr[++n] := hb_ntos( arr1[i] )
-         arr[++n] := rddname()
-         arr[++n] := hb_ntos( LastRec() )         //arr[++n] := hb_ntos( Reccount() )
-         arr[++n] := hb_ntos( Recno() )
-         arr[++n] := Iif( Bof(), "Yes", "No" )
-         arr[++n] := Iif( Eof(), "Yes", "No" )
-         arr[++n] := Iif( Found(), "Yes", "No" )
-         arr[++n] := Iif( Deleted(), "Yes", "No" )
-         arr[++n] := dbFilter()
-         arr[++n] := ordName()
-         arr[++n] := ordKey()
-         //
+         arr[++n] := Iif( arr1[i]==nAlias, "*", "" ) + Alias()  // 1
+         arr[++n] := hb_ntos( arr1[i] )                         // 2
+         arr[++n] := rddname()                                  // 3
+         arr[++n] := hb_ntos( LastRec() )                       // 4
+         arr[++n] := hb_ntos( Recno() )                         // 5
+         arr[++n] := Iif( Bof(), "Yes", "No" )                  // 6
+         arr[++n] := Iif( Eof(), "Yes", "No" )                  // 7
+         arr[++n] := Iif( Found(), "Yes", "No" )                // 8
+         arr[++n] := Iif( Deleted(), "Yes", "No" )              // 9
+         arr[++n] := hb_ntos( ordNumber() )                     // 10
+         arr[++n] := ordName()                                  // 11
+         arr[++n] := ordKey()                                   // 12
+         arr[++n] := dbFilter()                                 // 13
+         arr[++n] := dbInfo( DBI_FULLPATH )                     // 14
          IF Empty( cIdxPath := dbOrderInfo( DBOI_FULLPATH ) )
             cIdxPath := ""
          ENDIF
-         s :=       __colorize( "TABLE_PATH" )  + "[ " + dbInfo( DBI_FULLPATH ) + " ]"
-         s += "|" + __colorize( "INDEX_PATH" )  + "[ " + cIdxPath + " ]"
-         s += "|" + __colorize( "ORD_TAG_EXP" ) + "[ " + hb_ntos( ordNumber() ) + " : " + ordName() + " : " + ordKey() + " ]"
-         s += "|" + __colorize( "<INDEXES>" )   + "|"
+         arr[++n] := cIdxPath                                   // 15
+         s := ""
          FOR j := 1 to 50
             IF ( cKey := IndexKey( j ) ) == ""
                EXIT
@@ -793,11 +792,12 @@ STATIC FUNCTION SendAreas()
          IF Right( s, 1 ) == "|"
             s := SubStr( s, 1, Len( s ) - 1 )
          ENDIF
-         s += "|" + __colorize( "</INDEXES>" )
-
-         arr[++n] := s
+         arr[++n] := s                                          // 16
       RECOVER
          arr[++nAt] := Alias()
+         arr[++nAt] := ""
+         arr[++nAt] := ""
+         arr[++nAt] := ""
          arr[++nAt] := ""
          arr[++nAt] := ""
          arr[++nAt] := ""

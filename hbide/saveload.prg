@@ -171,6 +171,8 @@ CLASS IdeINI INHERIT IdeObject
 
    DATA   aINI                                    INIT  {}
 
+   DATA   cDebuggerState                          INIT  ""
+
    DATA   cMainWindowGeometry                     INIT  ""
    DATA   cGotoDialogGeometry                     INIT  ""
    DATA   cFindDialogGeometry                     INIT  ""
@@ -579,6 +581,7 @@ METHOD IdeINI:save( cHbideIni )
    AAdd( txt_, "TabAddClose"               + "=" +   iif( ::lTabAddClose           , "YES", "NO" )      )
    aadd( txt_, "ToolWindowColumns"         + "=" +   hb_ntos( ::nToolWindowColumns )                    )
    aadd( txt_, "ExtBuildLaunch"            + "=" +   iif( ::lExtBuildLaunch        , "YES", "NO" )      )
+   aadd( txt_, "DebuggerState"             + "=" +   ::oIde:oDebugger:getUIState()                      )
 
    aadd( txt_, "" )
    aadd( txt_, "[PROJECTS]" )
@@ -971,6 +974,7 @@ METHOD IdeINI:load( cHbideIni )
                      CASE "TabAddClose"                 ; ::lTabAddClose                      := !( cVal == "NO" ) ; EXIT
                      CASE "ToolWindowColumns"           ; ::nToolWindowColumns                := val( cVal )       ; EXIT
                      CASE "ExtBuildLaunch"              ; ::lExtBuildLaunch                   := !( cVal == "NO" ) ; EXIT
+                     CASE "DebuggerState"               ; ::cDebuggerState                    := cVal              ; EXIT
 
                      ENDSWITCH
                   ENDIF

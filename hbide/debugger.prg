@@ -1,4 +1,4 @@
-/*
+                  /*
  * $Id$
  */
 
@@ -65,6 +65,7 @@
 #include "hbqtgui.ch"
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
+#include "inkey.ch"
 
 
 #define MODE_INPUT                                1
@@ -144,6 +145,9 @@
 #define MAIN_TAB_STACK                            3
 #define MAIN_TAB_SETS                             4
 
+#define __DBG_BROWSER__
+#define __UI_TABLES__
+
 
 CLASS IdeDebugger INHERIT IdeObject
 
@@ -168,6 +172,7 @@ CLASS IdeDebugger INHERIT IdeObject
 
    DATA   aBP                                     INIT {}
    DATA   aWatches                                INIT {}
+   DATA   aNWatches                               INIT {}
    DATA   nCurrLine                               INIT 0
    DATA   nMode                                   INIT MODE_INPUT
    DATA   nAnsType                                INIT 0
@@ -197,6 +202,12 @@ CLASS IdeDebugger INHERIT IdeObject
    DATA   nOutput                                 INIT 0
    DATA   oAreaMenu
    DATA   btnLoadAll
+   DATA   lVariableInEdit                         INIT .F.
+
+   //  Browser Implementation
+   //
+   DATA   hBrowsers                               INIT {=>}
+   DATA   cActiveBrowser                          INIT ""
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -215,7 +226,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD toggleBreakPoint( cAns, cLine )
    METHOD addBreakPoint( cPrg, nLine )
 
-   METHOD watch_ins( lPaste, cExp )
+   METHOD watch_ins( lPaste, cWatch )
    METHOD watch_del( lAll )
    METHOD watch_save()
    METHOD watch_rest()
@@ -272,6 +283,17 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD copyStructToClipboard()
    METHOD isStopped()                             INLINE ::oUi:labelStatus:text() == "Stopped"
    METHOD manageTableVariablesClicked( oItem, cVariables )
+   METHOD buildBrowsers()
+   METHOD buildMdiBrowse( cTitle, aFields, aData )
+   METHOD updateData( hBrowse, aData )
+   METHOD emptyBrowsers()
+   METHOD emptyBrowser( hBrowser )
+   METHOD execMdiEvent( cEvent, p1 )
+   METHOD manageNavigation( cBrowse, nKey, aXY, oBrw )
+   METHOD isUIBrowsers()                          INLINE ( ::oUI:stackedWidget:currentIndex() == 0 )
+   METHOD getUIState()
+   METHOD restUIState( cState )
+   METHOD setTitle( hBrowser )
 
    ENDCLASS
 
@@ -287,11 +309,14 @@ METHOD IdeDebugger:create( oIde )
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
 
+   hb_HCaseMatch( ::hBrowsers, .F. )
+   hb_HKeepOrder( ::hBrowsers, .T. )
+
    ::clear()
 
-   ::cBuffer       := Space( BUFFER_LEN )
-   ::aTabs         := ::oIde:aTabs
-   ::oUI           := hbqtui_debugger1()
+   ::cBuffer  := Space( BUFFER_LEN )
+   ::aTabs    := ::oIde:aTabs
+   ::oUI      := hbqtui_debugger2()
    ::ui_init( ::oUI )
 
    ::oDebuggerDock:oWidget:setWidget( ::oUI:oWidget )
@@ -334,13 +359,13 @@ METHOD IdeDebugger:clear()
    ::cLastResponse          := ""
    ::lInRequest             := .F.
    ::nOutput                := 0
+   ::lVariableInEdit        := .F.
 
    ::hRequests              := {=>}
    ::hResponses             := {=>}
    //
    hb_HKeepOrder( ::hRequests , .T. )
    hb_HKeepOrder( ::hResponses, .T. )
-
    RETURN .T.
 
 
@@ -997,6 +1022,8 @@ METHOD IdeDebugger:manageObjectLevelUp()
       ::cInspectVar := cObject
       ::cInspectType := Right( ::cInspectTypes, 1 )
 
+      ::oUI:btnSubsObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
+
       ::oUI:btnObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
       ::requestObject()
    ENDIF
@@ -1055,6 +1082,7 @@ METHOD IdeDebugger:manageTableVariablesClicked( oItem, cVariables )
       ENDSWITCH
       IF oTable:item( oItem:Row(),1 ):text() $ "C,N,L,D"
          oTable:setCurrentItem( oItem )
+         ::lVariableInEdit := .T.
          oTable:editItem( oItem )
       ENDIF
       //::editVariable( oItem )
@@ -1069,6 +1097,10 @@ METHOD IdeDebugger:editVariableEx( oItem )
    IF Empty( oItem )
       RETURN NIL
    ENDIF
+   IF ! ::lVariableInEdit
+      RETURN NIL
+   ENDIF
+   ::lVariableInEdit := .F.
    nIndex := ::oUI:tabWidgetVariables:currentIndex()
    DO CASE
    CASE nIndex == 0
@@ -1115,6 +1147,7 @@ METHOD IdeDebugger:editVariableEx( oItem )
                               Str2Hex( oTable:item( nRow, 3 ):text() ), ;
                               Str2Hex( cVal ) )
    ENDIF
+
    RETURN NIL
 
 
@@ -1229,126 +1262,164 @@ METHOD IdeDebugger:inspectObject( lClicked )
    RETURN NIL
 
 
-METHOD IdeDebugger:showStack( arr, n )
-   LOCAL i
-   LOCAL nLen := Val( arr[ n ] )
+STATIC FUNCTION __pullRecords( arr, n, nRecs, nFields, lHex )
+   LOCAL i, j, d_
+   LOCAL aRecs := {}
 
-   ::oUI:tableStack:setRowCount( nLen )
-   FOR i := 1 TO nLen
-      ::oUI:tableStack:setItem( i - 1, 0, QTableWidgetItem( AllTrim( arr[ ++n ] ) ) )
-      ::oUI:tableStack:setItem( i - 1, 1, QTableWidgetItem( AllTrim( arr[ ++n ] ) ) )
-      ::oUI:tableStack:setItem( i - 1, 2, QTableWidgetItem( AllTrim( arr[ ++n ] ) ) )
-      ::processEvents()
+   DEFAULT lHex TO .T.
+
+   FOR i := 1 TO nRecs
+      d_:= Array( nFields )
+      FOR j := 1 TO nFields
+         d_[ j ] := AllTrim( iif( lHex, Hex2Str( arr[ ++n ] ), arr[ ++n ] ) )
+      NEXT
+      AAdd( aRecs, d_ )
    NEXT
+   RETURN aRecs
+
+
+STATIC FUNCTION __updateTable( oTable, aRecs, nFields )
+   LOCAL i, j, nRecs
+
+   IF oTable:isVisible()
+      nRecs := Len( aRecs )
+      oTable:setRowCount( nRecs )
+      FOR i := 1 TO nRecs
+         FOR j := 1 TO nFields
+            oTable:setItem( i - 1, j - 1, QTableWidgetItem( aRecs[ i, j ] ) )
+         NEXT
+         QApplication():processEvents()
+      NEXT
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:showStack( arr, n )
+   LOCAL aRecs
+   LOCAL nRecs := Val( arr[ n ] )
+   LOCAL nFields := 3
+
+   IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields, .F. ) )
+      ::updateData( ::hBrowsers[ "Stack" ], aRecs )
+      __updateTable( ::oUI:tableStack, aRecs, nFields )
+   ENDIF
    RETURN NIL
 
 
 METHOD IdeDebugger:showVars( arr, n, nVarType )
-   LOCAL nLen := Val( arr[n] )
-   LOCAL i, oTable
+   LOCAL aRecs
+   LOCAL nRecs   := Val( arr[ n ] )
+   LOCAL nFields := 5
+   LOCAL aTbl    := { ::oUI:tableVarLocal, ::oUI:tableVarPrivate, ::oUI:tableVarPublic, ::oUI:tableVarStatic }
 
-   DO CASE
-   CASE nVarType = 1
-      oTable := ::oUI:tableVarLocal
-   CASE nVarType = 2
-      oTable := ::oUI:tableVarPrivate
-   CASE nVarType = 3
-      oTable := ::oUI:tableVarPublic
-   CASE nVarType = 4
-      oTable := ::oUI:tableVarStatic
-   ENDCASE
-   oTable:setRowCount( nLen )
-   FOR i := 1 TO nLen
-      oTable:setItem( i-1, 0, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-      oTable:setItem( i-1, 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-      oTable:setItem( i-1, 2, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-      oTable:setItem( i-1, 3, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-      oTable:setItem( i-1, 4, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-      ::processEvents()
-   NEXT
+   IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
+      DO CASE
+      CASE nVarType = 1 ; ::updateData( ::hBrowsers[ "Locals"   ], aRecs, nFields )
+      CASE nVarType = 2 ; ::updateData( ::hBrowsers[ "Privates" ], aRecs, nFields )
+      CASE nVarType = 3 ; ::updateData( ::hBrowsers[ "Publics"  ], aRecs, nFields )
+      CASE nVarType = 4 ; ::updateData( ::hBrowsers[ "Statics"  ], aRecs, nFields )
+      ENDCASE
+
+      __updateTable( aTbl[ nVarType ], aRecs, nFields )
+   ENDIF
    RETURN NIL
 
 
 METHOD IdeDebugger:showWatch( arr, n )
-   LOCAL nWatch
-   LOCAL nWatches := Val( arr[ n ] )
+   LOCAL nWatch, cVal, d_, i
+   LOCAL aRecs := {}
+   LOCAL nRecs := Val( arr[ n ] )
 
-   FOR nWatch := 1 TO nWatches
-      IF nWatch <= Len( ::aWatches )
-         ::oUI:tableWatchExpressions:setItem( ::aWatches[ nWatch,1 ], 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
+   IF ::oUI:tableWatchExpressions:isVisible()
+      FOR nWatch := 1 TO nRecs
+         IF nWatch <= Len( ::aWatches )
+            cVal := AllTrim( Hex2Str( arr[ ++n ] ) )
+            AAdd( aRecs, { ::aWatches[ nWatch,2 ], cVal } )
+
+            ::oUI:tableWatchExpressions:setItem( ::aWatches[ nWatch,1 ], 1, QTableWidgetItem( cVal ) )
+         ENDIF
+         ::processEvents()
+      NEXT
+   ELSE
+      IF Empty( ::aNWatches )
+         ::emptyBrowser( ::hBrowsers[ "Watches" ] )
+      ELSE
+         d_:= __pullRecords( arr, n, nRecs, 1 )
+         IF ! Empty( d_ )
+            FOR i := 1 TO Len( d_ )
+               IF i <= Len( ::aNWatches )
+                  AAdd( aRecs, { ::aNWatches[ i ], d_[ i,1 ] } )
+               ENDIF
+            NEXT
+            IF ! Empty( aRecs )
+               ::updateData( ::hBrowsers[ "Watches" ], aRecs )
+            ENDIF
+         ENDIF
       ENDIF
-      ::processEvents()
-   NEXT
+   ENDIF
    RETURN NIL
 
 
 METHOD IdeDebugger:showAreas( arr, n )
-   LOCAL i, j, cData
-   LOCAL nAreas := Val( arr[ n ] )
-   LOCAL nAItems := Val( Hex2Str( arr[ ++n ] ) )
+   LOCAL aRecs
+   LOCAL nRecs   := Val( arr[ n ] )
+   LOCAL nFields := Val( Hex2Str( arr[ ++n ] ) )
 
-   ::oPM:outputText( " Number of Areas : " + hb_ntos( nAreas ) )
-
-   ::oUI:tableOpenTables:setRowCount( nAreas )
-   FOR i := 1 TO nAreas
-      FOR j := 1 TO nAItems
-         cData := AllTrim( Hex2Str( arr[ ++n ] ) )
-         IF j == 1
-            ::oPM:outputText( cData )
-         ENDIF
-         IF j == 13
-            ::oUI:tableOpenTables:item( i - 1, 0 ):setTooltip( StrTran( cData, "|", Chr( 10 ) ) )
-            ::oUI:tableOpenTables:item( i - 1, 0 ):setWhatsThis( cData )
-         ELSE
-            ::oUI:tableOpenTables:setItem( i - 1, j - 1, QTableWidgetItem( cData ) )
-         ENDIF
-      NEXT
-      ::processEvents()
-   NEXT
+   IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
+      ::updateData( ::hBrowsers[ "Areas" ], aRecs )
+      __updateTable( ::oUI:tableOpenTables, aRecs, nFields )
+   ENDIF
    RETURN NIL
 
 
 METHOD IdeDebugger:showRec( arr, n )
-   LOCAL i, j
-   LOCAL nRows  := Val( arr[ n ] )
-   LOCAL cAlias := Hex2Str( arr[ ++n ] )
-   LOCAL cRec   := Hex2Str( arr[ ++n ] )
+   LOCAL aRecs
+   LOCAL nRecs   := Val( arr[ n ] )
+   LOCAL nFields := 5
+   LOCAL cAlias  := Trim( Hex2Str( arr[ ++n ] ) )
+   LOCAL cRec    := Hex2Str( arr[ ++n ] )
 
-   ::oUI:labelCurrentRecord:setText( "Record Inspector [ " + cAlias + " : " + cRec + " ]" )
-   ::oUI:tableCurrentRecord:setRowCount( nRows )
-   FOR i := 1 TO nRows
-      FOR j := 1 TO 5
-         ::oUI:tableCurrentRecord:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-      NEXT
-      ::processEvents()
-   NEXT
+   IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
+      ::hBrowsers[ "Record" ][ "ttl" ] := "[" + cAlias + ":" + cRec + "]"
+      ::setTitle( ::hBrowsers[ "Record" ] )
+      ::updateData( ::hBrowsers[ "Record" ], aRecs )
+      ::oUI:labelCurrentRecord:setText( "Record Inspector [ " + cAlias + " : " + cRec + " ]" )
+      __updateTable( ::oUI:tableCurrentRecord, aRecs, nFields )
+   ELSE
+      ::hBrowsers[ "Record" ][ "ttl" ] := ""
+   ENDIF
    RETURN NIL
 
 
 METHOD IdeDebugger:showSets( arr, n )
-   LOCAL i, j
-   LOCAL nSets := Val( arr[ n ] )
+   LOCAL aRecs
+   LOCAL nRecs   := Val( arr[ n ] )
+   LOCAL nFields := 2
 
-   ::oUI:tableSets:setRowCount( nSets )
-   FOR i := 1 TO nSets
-      FOR j := 1 TO 2
-         ::oUI:tableSets:setItem( i - 1, j - 1, QTableWidgetItem( AllTrim( Hex2Str( arr[ ++n ] ) ) ) )
-         ::processEvents()
-      NEXT
-   NEXT
+   IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
+      ::updateData( ::hBrowsers[ "Sets" ], aRecs )
+      __updateTable( ::oUI:tableSets, aRecs, nFields )
+   ENDIF
    RETURN NIL
 
 
 METHOD IdeDebugger:showObject( arr, n )
-   LOCAL i, j
+   LOCAL i, j, d_, dat_
    LOCAL nLen := Val( arr[ n ] )
 
-   ::oUI:tableObjectInspector:setRowCount( nLen )
    IF nLen == 0
+      ::oUI:tableObjectInspector:setRowCount( nLen )
       ::oUI:labelObjectInspector:setText( "Object Inspector" )
       ::cInspectVar := ""
       ::cInspectType := ""
-   ELSE
+
+      ::hBrowsers[ "Objects" ][ "ttl" ] := ""
+      ::setTitle( ::hBrowsers[ "Objects" ] )
+      ::updateData( ::hBrowsers[ "Objects" ], { ::hBrowsers[ "Objects" ][ "bln" ] } )
+      RETURN NIL
+   ENDIF
+   IF ::oUI:tableObjectInspector:isVisible()
+      ::oUI:tableObjectInspector:setRowCount( nLen )
       IF ::cInspectType == "O"
          ::oUI:labelObjectInspector:setText( "Object Inspector [" + ::cInspectVar + "]" )
          FOR i := 1 TO nLen
@@ -1367,6 +1438,26 @@ METHOD IdeDebugger:showObject( arr, n )
             NEXT
             ::processEvents()
          NEXT
+      ENDIF
+   ELSE
+      IF ::cInspectType == "O"
+         ::hBrowsers[ "Objects" ][ "ttl" ] := "[Object - " + ::cInspectVar + "]"
+         ::setTitle( ::hBrowsers[ "Objects" ] )
+         dat_:= __pullRecords( arr, n, nLen, 3 )
+      ELSEIF ::cInspectType == "A"
+         ::hBrowsers[ "Objects" ][ "ttl" ] := "[Array - " + ::cInspectVar + "]"
+         ::setTitle( ::hBrowsers[ "Objects" ] )
+         n += 2
+         d_  := __pullRecords( arr, n, nLen, 2 )
+         dat_:= {}
+         FOR i := 1 TO Len( d_ )
+            AAdd( dat_, { "E_" + hb_ntos( i ), d_[ i,1 ], d_[ i,2 ] } )
+         NEXT
+      ENDIF
+      IF ! Empty( dat_ )
+         ::updateData( ::hBrowsers[ "Objects" ], dat_ )
+      ELSE
+         ::updateData( ::hBrowsers[ "Objects" ], { ::hBrowsers[ "Objects" ][ "bln" ] } )
       ENDIF
    ENDIF
    RETURN NIL
@@ -1440,6 +1531,11 @@ METHOD IdeDebugger:ui_load()
       RETURN Self
    ENDIF
 
+   ::emptyBrowsers()
+
+   ::hBrowsers[ "Record" ][ "ttl" ] := ""
+   ::setTitle( ::hBrowsers[ "Record" ] )
+
    ::cInspectVar  := ""
    ::cInspectType := ""
 
@@ -1468,7 +1564,8 @@ METHOD IdeDebugger:ui_load()
 
    ::processEvents()
 
-   ::manageTabMain( Max( 0, ::oUI:tabWidgetMain:currentIndex() ) )
+   //::manageTabMain( Max( 0, ::oUI:tabWidgetMain:currentIndex() ) )
+   ::ui_loadAll()
 
    ::nRowAreas := -1
    RETURN NIL
@@ -1518,43 +1615,23 @@ METHOD IdeDebugger:manageTabMain( index )
    RETURN NIL
 
 
-METHOD IdeDebugger:watch_rest()
-   LOCAL cFile, aWatches, cWatch, nSel
-
-   IF .T.
-      cFile := hbide_fetchAFile( ::oDlg, "Select a Watches File", { { "Watches", "*.wch" } }, ;
-                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
-      IF ! Empty( cFile ) .AND. hb_FileExists( cFile )
-         aWatches := hbide_readSource( cFile )
-         nSel := Alert( "Merge with existing watches ?", { "Yes", "No" } )
-         QApplication():processEvents()
-         IF nSel != 1
-            ::watch_del( .T. )
-         ENDIF
-         FOR EACH cWatch IN aWatches
-            IF ! Empty( cWatch )
-               ::watch_ins( .T., cWatch )
-               QApplication():processEvents()
-            ENDIF
-         NEXT
-      ENDIF
-   ENDIF
-   RETURN Self
-
-
 METHOD IdeDebugger:watch_save()
+   LOCAL i, cFile, s, cPath, cName, cExt, oItem
    LOCAL oTable   := ::oUI:tableWatchExpressions
    LOCAL nRows    := oTable:rowCount()
    LOCAL aWatches := {}
-   LOCAL i, cFile, s, cPath, cName, cExt, oItem
 
-   FOR i := 1 TO nRows
-      IF ! Empty( oItem := oTable:item( i-1, 0 ) ) .AND. ! Empty( oItem:text() )
-         AAdd( aWatches, oItem:text() )
-      ENDIF
-   NEXT
+   IF ::oUI:tableWatchExpressions:isVisible()
+      FOR i := 1 TO nRows
+         IF ! Empty( oItem := oTable:item( i-1, 0 ) ) .AND. ! Empty( oItem:text() )
+            AAdd( aWatches, oItem:text() )
+         ENDIF
+      NEXT
+   ELSE
+      aWatches := ::aNWatches
+   ENDIF
    IF ! Empty( aWatches )
-      cFile := hbide_fetchAFile( ::oDlg, "Select a Watches File", { { "Watches", "*.wch" } }, ;
+      cFile := hbide_fetchAFile( ::oDlg, "Select IdeDebugger Watches File", { { "IdeDebugger Watches", "*.wch" } }, ;
                                       ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
       IF ! Empty( cFile )
          hb_FNameSplit( cFile, @cPath, @cName, @cExt )
@@ -1576,34 +1653,83 @@ METHOD IdeDebugger:watch_save()
    RETURN Self
 
 
-METHOD IdeDebugger:watch_ins( lPaste, cExp )
+METHOD IdeDebugger:watch_rest()
+   LOCAL i, cFile, aWatches, cWatch, nSel
+
+   cFile := hbide_fetchAFile( ::oDlg, "Select a Watches File", { { "Watches", "*.wch" } }, ;
+                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
+   IF ! Empty( cFile ) .AND. hb_FileExists( cFile )
+      aWatches := hbide_readSource( cFile )
+      nSel := Alert( "Merge with existing watches ?", { "Yes", "No" } )
+      QApplication():processEvents()
+   ENDIF
+
+   IF ::oUI:tableWatchExpressions:isVisible()
+      IF nSel != 1
+         ::watch_del( .T. )
+      ENDIF
+      FOR EACH cWatch IN aWatches
+         IF ! Empty( cWatch )
+            ::watch_ins( .T., cWatch )
+            QApplication():processEvents()
+         ENDIF
+      NEXT
+   ELSE
+      IF nSel != 1
+         FOR i := Len( ::aNWatches ) TO 1 STEP -1
+            ::doCommand( CMD_WATCH, "del", LTrim( Str( i ) ) )
+         NEXT
+         ::aNWatches := {}
+         ::emptyBrowser( ::hBrowsers[ "Watches" ] )
+      ENDIF
+      FOR EACH cWatch IN aWatches
+         IF ! Empty( cWatch )
+            AAdd( ::aNWatches, cWatch )
+            ::doCommand( CMD_WATCH, "add", Str2Hex( cWatch ) )
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeDebugger:watch_ins( lPaste, cWatch )
    LOCAL i, oItem, nRow
    LOCAL oTable := ::oUI:tableWatchExpressions
 
    DEFAULT lPaste TO .F.
    IF lPaste
-      DEFAULT cExp TO ::oEM:getSelectedText()
+      DEFAULT cWatch TO ::oEM:getSelectedText()
    ELSE
-      cExp := ""
+      cWatch := ""
    ENDIF
-   IF lPaste .AND. Empty( cExp )
+   IF lPaste .AND. Empty( cWatch )
       RETURN Self
    ENDIF
-   FOR i := 1 TO oTable:rowCount()
-      oItem := oTable:item( i - 1, 0 )
-      IF oItem == NIL .OR. Empty( oItem:text() )
-         EXIT
+   IF ::oUI:tableWatchExpressions:isVisible()
+      FOR i := 1 TO oTable:rowCount()
+         oItem := oTable:item( i - 1, 0 )
+         IF oItem == NIL .OR. Empty( oItem:text() )
+            EXIT
+         ENDIF
+      NEXT
+      IF i > oTable:rowCount()
+         oTable:insertRow( oTable:rowCount() )
+         nRow := oTable:rowCount() - 1
+         AAdd( ::aWatches, { nRow, cWatch } )
+      ELSE
+         nRow := i - 1
       ENDIF
-   NEXT
-   IF i > oTable:rowCount()
-      oTable:insertRow( oTable:rowCount() )
-      nRow := oTable:rowCount() - 1
-      AAdd( ::aWatches, { nRow, cExp } )
+      oTable:setItem( nRow, 0, QTableWidgetItem( cWatch ) )
+      ::waitState( 0.25 )
    ELSE
-      nRow := i - 1
+      IF Empty( cWatch )
+         cWatch := AllTrim( HbQtBulkGet( Space( 240 ), "Watch Exp ?", "@S50" ) )
+      ENDIF
+      IF ! Empty( cWatch )
+         AAdd( ::aNWatches, cWatch )
+         ::doCommand( CMD_WATCH, "add", Str2Hex( cWatch ) )
+      ENDIF
    ENDIF
-   oTable:setItem( nRow, 0, QTableWidgetItem( cExp ) )
-   ::waitState( 0.25 )
    RETURN NIL
 
 
@@ -1616,42 +1742,60 @@ METHOD IdeDebugger:watch_del( lAll )
 
    DEFAULT lAll TO .F.
 
-   IF ! lAll .AND. nRow < 0
-      RETURN NIL
-   ELSEIF lAll .AND. oTable:rowCount() == 0
-      RETURN NIL
-   ENDIF
-   FOR i := 0 TO nRow
-      IF Empty( ::aWatches[ i+1, 2 ] )
-         nEmptyNames++
+   IF ::oUI:tableWatchExpressions:isVisible()
+      IF ! lAll .AND. nRow < 0
+         RETURN NIL
+      ELSEIF lAll .AND. oTable:rowCount() == 0
+         RETURN NIL
       ENDIF
-   NEXT
-   IF lAll
-      DO WHILE ! Empty( ::aWatches )
-         nn := Len( ::aWatches )
-         IF ! Empty( ::aWatches[ nn,2 ] )
-            hb_ADel( ::aWatches, nn, .T. )
-            ::doCommand( CMD_WATCH, "del", LTrim( Str( nn - nEmptyNames ) ) )
-         ENDIF
-         ::processEvents()
-      ENDDO
-      oTable:setRowCount( 0 )
-   ELSE
-      FOR i := 1 TO Len( ::aWatches )
-         IF ::aWatches[ i,1 ] == nRow
-            ri := i
-            IF ! Empty( ::aWatches[ i,2 ] )
-               ::doCommand( CMD_WATCH, "del", LTrim( Str( i - nEmptyNames ) ) )
-            ENDIF
-         ENDIF
-         IF ::aWatches[ i,1 ] > nRow
-            --::aWatches[ i,1 ]
+      FOR i := 0 TO nRow
+         IF Empty( ::aWatches[ i+1, 2 ] )
+            nEmptyNames++
          ENDIF
       NEXT
-      IF ri > 0
-         hb_ADel( ::aWatches, ri, .T. )
+      IF lAll
+         DO WHILE ! Empty( ::aWatches )
+            nn := Len( ::aWatches )
+            IF ! Empty( ::aWatches[ nn,2 ] )
+               hb_ADel( ::aWatches, nn, .T. )
+               ::doCommand( CMD_WATCH, "del", LTrim( Str( nn - nEmptyNames ) ) )
+            ENDIF
+            ::processEvents()
+         ENDDO
+         oTable:setRowCount( 0 )
+      ELSE
+         FOR i := 1 TO Len( ::aWatches )
+            IF ::aWatches[ i,1 ] == nRow
+               ri := i
+               IF ! Empty( ::aWatches[ i,2 ] )
+                  ::doCommand( CMD_WATCH, "del", LTrim( Str( i - nEmptyNames ) ) )
+               ENDIF
+            ENDIF
+            IF ::aWatches[ i,1 ] > nRow
+               --::aWatches[ i,1 ]
+            ENDIF
+         NEXT
+         IF ri > 0
+            hb_ADel( ::aWatches, ri, .T. )
+         ENDIF
+         oTable:removeRow( nRow )
       ENDIF
-      oTable:removeRow( nRow )
+   ELSE
+      IF lAll
+         FOR nRow := Len( ::aNWatches ) TO 1 STEP -1
+            ::doCommand( CMD_WATCH, "del", LTrim( Str( nRow ) ) )
+         NEXT
+         ::aNWatches := {}
+         ::emptyBrowser( ::hBrowsers[ "Watches" ] )
+      ELSE
+         IF ( nRow := ::hBrowsers[ "Watches" ][ "rec" ] ) > 0
+            IF ! Empty( ::hBrowsers[ "Watches" ][ "dat" ][ nRow, 1 ] )
+               hb_ADel( ::aNWatches, nRow, .T. )
+               ::doCommand( CMD_WATCH, "del", LTrim( Str( nRow ) ) )
+            ENDIF
+         ENDIF
+      ENDIF
+
    ENDIF
    RETURN NIL
 
@@ -1702,6 +1846,9 @@ METHOD IdeDebugger:changeWatch( item )
 
 METHOD IdeDebugger:ui_init( oUI )
    LOCAL oHeaders
+
+   oUI:stackedWidget:setCurrentIndex( 0 )
+   ::buildBrowsers()
 
    oUI:tabWidgetMain:setCurrentIndex( 0 )
    oUI:tabWidgetVariables:setCurrentIndex( 0 )
@@ -1757,9 +1904,13 @@ METHOD IdeDebugger:ui_init( oUI )
       :append( "Eof"             )
       :append( "Found"           )
       :append( "Del"             )
+      :append( "Ord"             )
+      :append( "OrdName"         )
+      :append( "OrdExpression"   )
       :append( "Filter"          )
-      :append( "TagName"         )
-      :append( "IndexExpression" )
+      :append( "TablePath"       )
+      :append( "IndexPath"       )
+      :append( "AllIndexes"      )
    ENDWITH
    oUI:tableOpenTables:setHorizontalHeaderLabels( oHeaders )
    oUI:tableOpenTables:setContextMenuPolicy( Qt_CustomContextMenu )
@@ -1802,6 +1953,7 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ), ::waitState( 0.2 ) } )
    oUI:btnTrace             :connect( "clicked()", { || ::doCommand( CMD_TRACE  ), ::waitState( 0.2 ) } )
    oUI:btnClipboard         :connect( "clicked()", { || ::copyOnClipboard() } )
+   oUI:btnToggleUI          :connect( "clicked()", { || ::oUI:stackedWidget:setCurrentIndex( iif( ::isUIBrowsers(), 1, 0 ) ) } )
    oUI:btnExit              :connect( "clicked()", { || ::nExitMode := 2, ::exitDbg()         } )
 
    oUI:btnAddWatch          :connect( "clicked()", { || ::watch_ins()       } )
@@ -1872,14 +2024,27 @@ METHOD IdeDebugger:manageAreasContextManu( oPoint )
 
 
 METHOD IdeDebugger:openTableInIdeDBU( cTable, lByHbDBU )
+   LOCAL aRecs, aRec
 
-   IF lByHbDBU
-      hb_processRun( hb_DirBase() + "hbdbu " + cTable )
+   IF ::isUIBrowsers()
+      aRecs := ::hBrowsers[ "Areas" ][ "dat" ]
+      aRec  := aRecs[ ::hBrowsers[ "Areas" ][ "rec" ] ]
+      IF ! Empty( aRec[ 1 ] )
+         // Main,C:\harbour\tests\test.dbf,TEST,DBFCDX,0,500,2,0 0 300 504,21,1,,,,
+         cTable := "Main," + Trim( aRec[ 14 ] ) + "," + StrTran( Trim( aRec[ 1 ] ), "*" ) + "," + ;
+                        Trim( aRec[ 3 ] ) + "," + Trim( aRec[ 10 ] ) + "," + Trim( aRec[ 5 ] ) + ","
+         cTable := StrTran( cTable, " ", "" )
+         ::oIde:oBM:oDbu:openATable( cTable )
+         ::oIde:oParts:setStack( IDE_PART_DBU )
+      ENDIF
    ELSE
-      ::oIde:oBM:oDbu:openATable( cTable )
-      ::oIde:oParts:setStack( IDE_PART_DBU )
+      IF lByHbDBU
+         hb_processRun( hb_DirBase() + "hbdbu " + cTable )
+      ELSE
+         ::oIde:oBM:oDbu:openATable( cTable )
+         ::oIde:oParts:setStack( IDE_PART_DBU )
+      ENDIF
    ENDIF
-
    RETURN NIL
 
 
@@ -1911,40 +2076,67 @@ METHOD IdeDebugger:fineTune( oTable )
 
 
 METHOD IdeDebugger:expandObject( nIndent, txt_ )
-   LOCAL s, cVar
+   LOCAL s, cVar, cType, cTypes, cText, aRec, aRecs
 
    DEFAULT nIndent TO 0
    DEFAULT txt_    TO {}
 
    ::lExpanding := .T.
-   cVar := ::cInspectVar
+   cVar   := ::cInspectVar
+   cType  := ::cInspectType
+   cTypes := ::cInspectTypes
 
    ::expandObjectDetail( nIndent, @txt_, iif( ::cInspectType == "O", ::cInspectVar, "" ) )
 
    IF ! Empty( txt_ )
-      s := ""
-      AEval( txt_, {|e| s += e + Chr( 13 )+Chr( 10 ) } )
-      IF ! Empty( s )
-         ::oIde:showFragment( s, cVar, QIcon( hbide_image( "fullscreen" ) ), "Sand Storm" )
+      IF ::isUIBrowsers
+         aRecs := {}
+         FOR EACH cText IN txt_
+            aRec := hb_ATokens( SubStr( cText, 3 ), "," )
+            AEval( aRec, {|e,i| aRec[ i ] := iif( i == 1, Trim( e ), AllTrim( e ) ) } )
+            AAdd( aRecs, aRec )
+         NEXT
+         ::updateData( ::hBrowsers[ "Expanded" ], aRecs )
+      ELSE
+         s := ""
+         AEval( txt_, {|e| s += e + Chr( 13 )+Chr( 10 ) } )
+         IF ! Empty( s )
+            ::oIde:showFragment( s, cVar, QIcon( hbide_image( "fullscreen" ) ), "Sand Storm" )
+         ENDIF
       ENDIF
    ENDIF
    ::lExpanding := .F.
+
+   ::cInspectVar   := cVar
+   ::cInspectType  := cType
+   ::cInspectTypes := cTypes
+   ::requestObject()
+
    RETURN NIL
 
 
 METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
-   LOCAL d_, cVar, cName
+   LOCAL d_, cVar, cName, dat_, cSaveVar, cSaveType, cSaveTypes
 
    nIndent++
 
-   FOR EACH d_ IN __pullData( ::oUI:tableObjectInspector )
+   IF ::isUIBrowsers()
+      dat_:= __pullBrowserData( ::hBrowsers[ "Objects" ] )
+   ELSE
+      dat_:= __pullData( ::oUI:tableObjectInspector )
+   ENDIF
+   FOR EACH d_ IN dat_
       IF ! ::isActive()
          EXIT
       ENDIF
 
       AAdd( txt_, Space( nIndent * 2 ) + __formatDataEx( d_, { 10, 1, 89 } ) )
-      IF d_[ 2 ] == "A"
-         cName := d_[ 1 ]
+      IF Trim( d_[ 2 ] ) == "A"
+         cSaveVar := ::cInspectVar
+         cSaveType := ::cInspectType
+         cSaveTypes := ::cInspectTypes
+
+         cName := AllTrim( d_[ 1 ] )
          cVar := ::cInspectVar
          IF Left( cName, 2 ) == "E_" .AND. IsDigit( Right( cName,1 ) )
             cVar := cVar + "[" + hb_ntos( d_:__enumIndex() ) + "]"
@@ -1954,10 +2146,18 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
          ::cInspectVar   := cVar
          ::cInspectType  := "A"
          ::cInspectTypes += "A"
-         ::oUI:tableObjectInspector:setRowCount( 0 )
-         ::processEvents()
+
+         IF ! ::isUIBrowsers()
+            ::oUI:tableObjectInspector:setRowCount( 0 )
+            ::processEvents()
+         ENDIF
+
          ::doCommand( CMD_ARRAY, cVar  )
          ::expandObjectDetail( nIndent, @txt_, cOriginVar )
+
+         ::cInspectVar   := cSaveVar
+         ::cInspectType  := cSaveType
+         ::cInspectTypes := cSaveTypes
       ELSE
          IF ! Empty( cOriginVar )
             ::cInspectVar := cOriginVar
@@ -1970,28 +2170,47 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
 METHOD IdeDebugger:copyStructToClipboard()
    LOCAL aStruct, i, cTmp
 
-   IF ::oUI:tableCurrentRecord:rowCount() == 0
-      RETURN NIL
-   ENDIF
-   aStruct := {}
-   FOR i := 1 TO ::oUI:tableCurrentRecord:rowCount()
-      AAdd( aStruct, { ::oUI:tableCurrentRecord:item( i - 1, 0 ):text(), ;
-                       ::oUI:tableCurrentRecord:item( i - 1, 1 ):text(), ;
-                       Val( ::oUI:tableCurrentRecord:item( i - 1, 2 ):text() ), ;
-                       Val( ::oUI:tableCurrentRecord:item( i - 1, 4 ):text() ) } )
-   NEXT
-   IF ! empty( aStruct )
-      i := 0
-      aeval( aStruct, {|e_| iif( Len( e_[ 1 ] ) > i, i := len( e_[ 1 ] ), NIL ) } )
-      i += 2
+   IF ::oUI:tableCurrentRecord:isVisible()
+      IF ::oUI:tableCurrentRecord:rowCount() == 0
+         RETURN NIL
+      ENDIF
+      aStruct := {}
+      FOR i := 1 TO ::oUI:tableCurrentRecord:rowCount()
+         AAdd( aStruct, { ::oUI:tableCurrentRecord:item( i - 1, 0 ):text(), ;
+                          ::oUI:tableCurrentRecord:item( i - 1, 1 ):text(), ;
+                          Val( ::oUI:tableCurrentRecord:item( i - 1, 2 ):text() ), ;
+                          Val( ::oUI:tableCurrentRecord:item( i - 1, 4 ):text() ) } )
+      NEXT
+      IF ! empty( aStruct )
+         i := 0
+         aeval( aStruct, {|e_| iif( Len( e_[ 1 ] ) > i, i := len( e_[ 1 ] ), NIL ) } )
+         i += 2
+
+         cTmp := "   LOCAL aStruct := {"
+         aeval( aStruct, {|e_,n| cTmp += iif( n == 1, ' { ', space( 20 ) + '  { ' ) + ;
+                                    pad( '"' + e_[ 1 ] + '"', i ) + ', "' + e_[ 2 ] + '", ' + ;
+                                        str( e_[ 3 ], 4, 0 ) + ', ' + ;
+                                            str( e_[ 4 ], 2, 0 ) + ' }' + ;
+                                                iif( Len( aStruct ) == n, " }", ",;" ) + hb_eol() } )
+         QApplication():clipboard():setText( cTmp )
+         Alert( "Structure Copied to Clipboard!" )
+      ENDIF
+   ELSE
+      aStruct := ::hBrowsers[ "Record" ][ "dat" ]
+      IF Empty( aStruct[ 1,1 ] )
+         RETURN NIL
+      ENDIF
+
+      i := Len( aStruct[ 1, 1 ] ) + 2
 
       cTmp := "   LOCAL aStruct := {"
       aeval( aStruct, {|e_,n| cTmp += iif( n == 1, ' { ', space( 20 ) + '  { ' ) + ;
-                                 pad( '"' + e_[ 1 ] + '"', i ) + ', "' + e_[ 2 ] + '", ' + ;
-                                     str( e_[ 3 ], 4, 0 ) + ', ' + ;
-                                         str( e_[ 4 ], 2, 0 ) + ' }' + ;
+                                 pad( '"' + Trim( e_[ 1 ] ) + '"', i ) + ', "' + e_[ 2 ] + '", ' + ;
+                                     PadL( Trim( e_[ 3 ] ), 4 ) + ', ' + ;
+                                         PadL( Trim( e_[ 4 ] ), 2 ) + ' }' + ;
                                              iif( Len( aStruct ) == n, " }", ",;" ) + hb_eol() } )
       QApplication():clipboard():setText( cTmp )
+      Alert( "Structure Copied to Clipboard!" )
    ENDIF
 
    RETURN cTmp
@@ -2006,46 +2225,90 @@ METHOD IdeDebugger:copyOnClipboard()
    AAdd( txt_, " " )
    AAdd( txt_, " " )
 
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarLocal ) )
-      AAdd( txt_, "LOCAL VARIABLES" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarPrivate ) )
-      AAdd( txt_, "PRIVATE VARIABLES" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarPublic ) )
-      AAdd( txt_, "PUBLIC VARIABLS" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableVarStatic ) )
-      AAdd( txt_, "STATIC VARIABLS" )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableWatchExpressions ) )
-      AAdd( txt_, "WATCHES" )
-      __formatData( txt_, { "Expression", "Value" }, aData, { 25, 72 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableOpenTables ) )
-      AAdd( txt_, "WORKAREAS" )
-      __formatData( txt_, { "Alias", "Area", "Rdd","Records","CurRec","Bof","Eof","Found","Del","Filter","TagName","IndexKey" }, ;
-                      aData, { 10,4,8,10,8,3,3,3,3,30,10,30 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableCurrentRecord ) )
-      AAdd( txt_, Upper( ::oUI:labelCurrentRecord:text() ) )
-      __formatData( txt_, { "Name", "Type", "Len", "Value" }, aData, { 10, 4, 4, 73 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableObjectInspector ) )
-      AAdd( txt_, Upper( ::oUI:labelObjectInspector:text() ) )
-      __formatData( txt_, { "Name", "Type", "Value" }, aData, { 20, 4, 70 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableStack ) )
-      AAdd( txt_, "STACK" )
-      __formatData( txt_, { "Source", "Procedure", "Line" }, aData, { 20, 40, 6 } )
-   ENDIF
-   IF ! Empty( aData :=__pullData( ::oUI:tableSets ) )
-      AAdd( txt_, "SETS" )
-      __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
+   IF ::isUIBrowsers()
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Locals" ] ) )
+         AAdd( txt_, "LOCAL VARIABLES" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Privates" ] ) )
+         AAdd( txt_, "PRIVATE VARIABLES" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Publics" ] ) )
+         AAdd( txt_, "PUBLIC VARIABLS" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Statics" ] ) )
+         AAdd( txt_, "STATIC VARIABLS" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Watches" ] ) )
+         AAdd( txt_, "WATCHES" )
+         __formatData( txt_, { "Expression", "Value" }, aData, { 25, 72 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Areas" ] ) )
+         AAdd( txt_, "WORKAREAS" )
+         __formatData( txt_, { "Alias", "Area", "Rdd","Records","CurRec","Bof","Eof","Found","Del","Filter","TagName","IndexKey" }, ;
+                         aData, { 10,4,8,10,8,3,3,3,3,30,10,30 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Record" ] ) )
+         AAdd( txt_, Upper( ::oUI:labelCurrentRecord:text() ) )
+         __formatData( txt_, { "Name", "Type", "Len", "Value" }, aData, { 10, 4, 4, 73 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Objects" ] ) )
+         AAdd( txt_, Upper( ::oUI:labelObjectInspector:text() ) )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 20, 4, 70 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Stack" ] ) )
+         AAdd( txt_, "STACK" )
+         __formatData( txt_, { "Source", "Procedure", "Line" }, aData, { 20, 40, 6 } )
+      ENDIF
+      IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Sets" ] ) )
+         AAdd( txt_, "SETS" )
+         __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
+      ENDIF
+   ELSE
+      IF ! Empty( aData :=__pullData( ::oUI:tableVarLocal ) )
+         AAdd( txt_, "LOCAL VARIABLES" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableVarPrivate ) )
+         AAdd( txt_, "PRIVATE VARIABLES" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableVarPublic ) )
+         AAdd( txt_, "PUBLIC VARIABLS" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableVarStatic ) )
+         AAdd( txt_, "STATIC VARIABLS" )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 10, 4, 80 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableWatchExpressions ) )
+         AAdd( txt_, "WATCHES" )
+         __formatData( txt_, { "Expression", "Value" }, aData, { 25, 72 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableOpenTables ) )
+         AAdd( txt_, "WORKAREAS" )
+         __formatData( txt_, { "Alias", "Area", "Rdd","Records","CurRec","Bof","Eof","Found","Del","Filter","TagName","IndexKey" }, ;
+                         aData, { 10,4,8,10,8,3,3,3,3,30,10,30 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableCurrentRecord ) )
+         AAdd( txt_, Upper( ::oUI:labelCurrentRecord:text() ) )
+         __formatData( txt_, { "Name", "Type", "Len", "Value" }, aData, { 10, 4, 4, 73 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableObjectInspector ) )
+         AAdd( txt_, Upper( ::oUI:labelObjectInspector:text() ) )
+         __formatData( txt_, { "Name", "Type", "Value" }, aData, { 20, 4, 70 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableStack ) )
+         AAdd( txt_, "STACK" )
+         __formatData( txt_, { "Source", "Procedure", "Line" }, aData, { 20, 40, 6 } )
+      ENDIF
+      IF ! Empty( aData :=__pullData( ::oUI:tableSets ) )
+         AAdd( txt_, "SETS" )
+         __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
+      ENDIF
    ENDIF
 
    s := ""
@@ -2089,6 +2352,23 @@ STATIC FUNCTION __formatDataEx( aData, aWidths )
       s += Pad( aData[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
    NEXT
    RETURN s
+
+
+STATIC FUNCTION __pullBrowserData( hBrowser )
+   LOCAL aData, aRec, dat_, cVal
+   LOCAL nFields := Len( hBrowser[ "dat" ][ 1 ] )
+
+   aData := {}
+   FOR EACH dat_ IN hBrowser[ "dat" ]
+      IF ! Empty( dat_[ 1 ] )
+         aRec := Array( nFields )
+         FOR EACH cVal IN dat_
+            aRec[ cVal:__enumIndex() ] := StrTran( cVal, ",", ";" )
+         NEXT
+         AAdd( aData, aRec )
+      ENDIF
+   NEXT
+   RETURN aData
 
 
 STATIC FUNCTION __pullData( oTable )
@@ -2164,4 +2444,510 @@ STATIC FUNCTION Hex2Int( stroka )
       res += i - 48
    ENDIF
    RETURN res
+
+
+METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
+   LOCAL oSub, oList, oWnd, i, hBrowser, cFile, hInfo, aInfo, oRect
+   LOCAL oMdiArea := ::oUI:mdiBrowsers
+
+   SWITCH cEvent
+   CASE "showSubsCascaded"
+      oSub := oMdiArea:activeSubWindow()
+      oMdiArea:cascadeSubWindows()
+      oMdiArea:setActiveSubWindow( oSub )
+      EXIT
+   CASE "showSubsTiled"
+      oSub := oMdiArea:activeSubWindow()
+      oMdiArea:tileSubWindows()
+      oMdiArea:setActiveSubWindow( oSub )
+      EXIT
+   CASE "showSubsMaximized"
+      oSub := oMdiArea:activeSubWindow()
+      oList := oMdiArea:subWindowList()
+      FOR i := 1 TO oList:size()
+         oWnd := oList:At( i-1 )
+         oWnd:setWindowState( Qt_WindowMaximized )
+         oWnd:resize( oWnd:width() + 1, oWnd:height() + 1 )
+         oWnd:resize( oWnd:width() - 1, oWnd:height() - 1 )
+      NEXT
+      oMdiArea:setActiveSubWindow( oSub )
+      EXIT
+   CASE "subWindowsRest"
+      ::restUIState( ::oINI:cDebuggerState )
+      EXIT
+   CASE "subWindowsSave"
+      oSub := oMdiArea:activeSubWindow()
+      hInfo := {=>}
+      hb_HKeepOrder( hInfo, .T. )
+      FOR EACH hBrowser IN ::hBrowsers
+         oRect := hBrowser[ "mdi" ]:frameGeometry()
+         hInfo[ hBrowser[ "id" ] ] := { iif( hBrowser[ "mdi" ]:isMinimized(), 1, iif( hBrowser[ "mdi" ]:isMaximized(), 2, 0 ) ), ;
+                                        oRect:x(), oRect:y(), oRect:width(), oRect:height, oSub:whatsThis() }
+      NEXT
+      cFile := hbide_fetchAFile( ::oDlg, "Select a Debbuger View", { { "Debugger Views", "*.dvw" } }, ;
+                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "dvw", .F. )
+      IF ! Empty( cFile )
+         IF hb_FileExists( cFile )
+            IF Alert( cFile + " : already exists!", { "Overwrite","Cancel" } ) != 1
+               RETURN NIL
+            ENDIF
+         ENDIF
+         hb_MemoWrit( cFile, hb_Serialize( hInfo ) )
+      ENDIF
+      EXIT
+   CASE "subWindowsLoad"
+      cFile := hbide_fetchAFile( ::oDlg, "Select a Debbuger View", { { "Debugger Views", "*.dvw" } }, ;
+                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "dvw", .F. )
+      IF ! Empty( cFile ) .AND. hb_FileExists( cFile )
+         hInfo := hb_Deserialize( hb_MemoRead( cFile ) )
+         IF HB_ISHASH( hInfo )
+            FOR EACH aInfo IN hInfo
+               hBrowser := ::hBrowsers[ aInfo:__enumKey() ]
+               IF HB_ISHASH( hBrowser )
+                  IF aInfo[ 1 ] > 0
+                     IF aInfo[ 1 ] == 1
+                        hBrowser[ "mdi" ]:showMinimized()
+                     ELSE
+                        hBrowser[ "mdi" ]:showMaximized()
+                     ENDIF
+                  ELSE
+                     hBrowser[ "mdi" ]:showNormal()
+                     hBrowser[ "mdi" ]:move( aInfo[ 2 ], aInfo[ 3 ] )
+                     hBrowser[ "mdi" ]:resize( aInfo[ 4 ], aInfo[ 5 ] )
+                     hBrowser[ "mdi" ]:resize( hBrowser[ "mdi" ]:width()+1, hBrowser[ "mdi" ]:height()+1 )
+                     hBrowser[ "mdi" ]:resize( hBrowser[ "mdi" ]:width()-1, hBrowser[ "mdi" ]:height()-1 )
+                  ENDIF
+               ENDIF
+               oMdiArea:setActiveSubWindow( ::hBrowsers[ aInfo[ 6 ] ][ "mdi" ] )
+            NEXT
+         ENDIF
+      ENDIF
+      EXIT
+   CASE "subWindowsPrint"
+      IF ! Empty( oSub := oMdiArea:activeSubWindow() )
+         ::hBrowsers[ oSub:whatsThis() ][ "brw" ]:print()
+      ENDIF
+      EXIT
+   CASE "subWindowActivated"
+      oSub := p1
+      ::cActiveBrowser := oSub:whatsThis()
+
+      ::oUI:btnSubsWatchSelText:setEnabled( oSub:whatsThis() == "Watches" )
+      ::oUI:btnSubsWatchAdd    :setEnabled( oSub:whatsThis() == "Watches" )
+      ::oUI:btnSubsWatchSave   :setEnabled( oSub:whatsThis() == "Watches" )
+      ::oUI:btnSubsWatchLoad   :setEnabled( oSub:whatsThis() == "Watches" )
+      ::oUI:btnSubsWatchDel    :setEnabled( oSub:whatsThis() == "Watches" )
+      ::oUI:btnSubsWatchClear  :setEnabled( oSub:whatsThis() == "Watches" )
+
+      ::oUI:btnSubsDbu         :setEnabled( oSub:whatsThis() == "Areas"   )
+      ::oUI:btnSubsCopyStruct  :setEnabled( oSub:whatsThis() == "Record"  )
+
+      ::oUI:btnSubsObjBack     :setEnabled( oSub:whatsThis() == "Objects" )
+      ::oUI:btnSubsObjExpand   :setEnabled( oSub:whatsThis() == "Objects" )
+      EXIT
+   ENDSWITCH
+   RETURN NIL
+
+
+METHOD IdeDebugger:restUIState( cState )
+   LOCAL aState := hb_ATokens( cState, "|" )
+   LOCAL i, a_, oSub
+
+   IF Len( aState ) >= 10
+      FOR i := 2 TO Len( aState )
+         a_:= hb_ATokens( aState[ i ], "," )
+         IF Len( a_ ) >= 6
+            oSub := ::hBrowsers[ a_[ 1 ] ][ "mdi" ]
+            IF     a_[ 2 ] == "0"
+               oSub:showNormal()
+               oSub:move( Val( a_[ 3 ] ), Val( a_[ 4 ] ) )
+               oSub:resize( Val( a_[ 5 ] ), Val( a_[ 6 ] ) )
+            ELSEIF a_[ 2 ] == "1"
+               oSub:showMinimized()
+            ELSEIF a_[ 2 ] == "2"
+               oSub:showMaximized()
+            ENDIF
+         ENDIF
+      NEXT
+      IF hb_HHasKey( ::hBrowsers, aState[ 1 ] )
+         ::oUI:mdiBrowsers:setActiveSubWindow( ::hBrowsers[ aState[ 1 ] ][ "mdi" ] )
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:getUIState()
+   LOCAL hBrowser, oRect
+   LOCAL cState := ""
+
+   FOR EACH hBrowser IN ::hBrowsers
+      oRect := hBrowser[ "mdi" ]:frameGeometry()
+
+      cState += ::cActiveBrowser + "|"
+      cState += hBrowser[ "id" ] + "," + ;
+                iif( hBrowser[ "mdi" ]:isMinimized(), "1", iif( hBrowser[ "mdi" ]:isMaximized(), "2", "0" ) ) + "," + ;
+                hb_ntos( oRect:x() )     + "," + ;
+                hb_ntos( oRect:y() )     + "," + ;
+                hb_ntos( oRect:width() ) + "," + ;
+                hb_ntos( oRect:height )  + "|"
+   NEXT
+   cState := SubStr( cState, 1, Len( cState ) - 1 )
+   RETURN cState
+
+
+METHOD IdeDebugger:buildBrowsers()
+
+   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+
+   WITH OBJECT ::oUI:mdiBrowsers
+      :setOption( QMdiArea_DontMaximizeSubWindowOnActivation, .T. )
+      :setViewMode( QMdiArea_TabbedView )
+      :setActivationOrder( QMdiArea_CreationOrder )
+      :connect( "subWindowActivated(QMdiSubWindow*)", {|oSub| ::execMdiEvent( "subWindowActivated", oSub ) } )
+   ENDWITH
+
+   ::oUI:btnSubsTile        :connect( "clicked()", {|| ::execMdiEvent( "showSubsTiled" )     } )
+   ::oUI:btnSubsCascade     :connect( "clicked()", {|| ::execMdiEvent( "showSubsCascaded" )  } )
+   ::oUI:btnSubsMaximized   :connect( "clicked()", {|| ::execMdiEvent( "showSubsMaximized" ) } )
+   ::oUI:btnSubsRest        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsRest"  )   } )
+   ::oUI:btnSubsSave        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsSave"  )   } )
+   ::oUI:btnSubsLoad        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsLoad"  )   } )
+   ::oUI:btnSubsPrint       :connect( "clicked()", {|| ::execMdiEvent( "subWindowsPrint" )   } )
+
+   ::oUI:btnSubsWatchDel    :connect( "clicked()", {|| ::watch_del( .F. ) } )
+   ::oUI:btnSubsWatchClear  :connect( "clicked()", {|| ::watch_del( .T. ) } )
+   ::oUI:btnSubsWatchLoad   :connect( "clicked()", {|| ::watch_rest()     } )
+   ::oUI:btnSubsWatchSave   :connect( "clicked()", {|| ::watch_save()     } )
+   ::oUI:btnSubsWatchAdd    :connect( "clicked()", {|| ::watch_ins( .F. ) } )
+   ::oUI:btnSubsWatchSelText:connect( "clicked()", {|| ::watch_ins( .T. ) } )
+
+   ::oUI:btnSubsDbu         :connect( "clicked()", {|| ::openTableInIdeDBU( "", .F. ) } )
+   ::oUI:btnSubsCopyStruct  :connect( "clicked()", {|| ::copyStructToClipboard() } )
+
+   ::oUI:btnSubsObjBack     :connect( "clicked()", {|| ::manageObjectLevelUp() } )
+   ::oUI:btnSubsObjExpand   :connect( "clicked()", {|| ::expandObject() } )
+
+   ::hBrowsers[ "Locals"  ] := ::buildMdiBrowse( "Locals"  , { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
+   ::hBrowsers[ "Privates"] := ::buildMdiBrowse( "Privates", { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
+   ::hBrowsers[ "Publics" ] := ::buildMdiBrowse( "Publics" , { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
+   ::hBrowsers[ "Statics" ] := ::buildMdiBrowse( "Statics" , { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
+
+   ::hBrowsers[ "Sets"    ] := ::buildMdiBrowse( "Sets"    , { "Set"   , "Value" }                     , { 15,20 } )
+   ::hBrowsers[ "Stack"   ] := ::buildMdiBrowse( "Stack"   , { "Source", "Procedure", "Line" }         , { 10,20,5 } )
+   ::hBrowsers[ "Areas"   ] := ::buildMdiBrowse( "Areas"   , { "Alias" , "Area", "Rdd", "Records", "Current", "Bof", "Eof", "Found", "Del", ;
+                                                               "Ord","Tag","OrdExpression","Filter","TablePath","IndexPath","AllIndexes" }, ;
+                                                               { 10,4,6,8,8,3,3,3,3,3,8,10,10,10,10,10 } )
+   ::hBrowsers[ "Record"  ] := ::buildMdiBrowse( "Record"  , { "Field", "Typ", "Len", "Dec", "Value" } , { 10,3,3,3,20 } )
+   ::hBrowsers[ "Watches" ] := ::buildMdiBrowse( "Watches" , { "Expression", "Value" }                 , { 20,20 } )
+
+   ::hBrowsers[ "Objects" ] := ::buildMdiBrowse( "Objects" , { "Name", "Typ", "Value" }                , { 10,3,20 } )
+   ::hBrowsers[ "Expanded"] := ::buildMdiBrowse( "Expanded", { "Name", "Typ", "Value" }                , { 10,3,20 } )
+
+   ::hBrowsers[ "Areas"   ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Areas"   , nKey, aXY, oBrw ) }
+   ::hBrowsers[ "Locals"  ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Locals"  , nKey, aXY, oBrw ) }
+   ::hBrowsers[ "Privates"][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Privates", nKey, aXY, oBrw ) }
+   ::hBrowsers[ "Publics" ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Publics" , nKey, aXY, oBrw ) }
+   ::hBrowsers[ "Statics" ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Statics" , nKey, aXY, oBrw ) }
+   ::hBrowsers[ "Objects" ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Objects" , nKey, aXY, oBrw ) }
+
+   IF Empty( ::oINI:cDebuggerState )
+      ::oUI:mdiBrowsers:tileSubWindows()
+   ELSE
+      ::restUIState( ::oINI:cDebuggerState )
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeDebugger:buildMdiBrowse( cTitle, aFields, aData )
+   LOCAL cField
+   LOCAL hBrowse := {=>}
+   LOCAL aIcons := { 1,2,3,6,9,8,10,12,16,4,13 }
+   LOCAL dat_:= {}
+
+   STATIC nIcon := 0
+
+   AEval( aData, {|n| AAdd( dat_, Space( n ) ) } )
+
+   WITH OBJECT hBrowse[ "mdi" ] := QMdiSubWindow()
+      :setWindowFlags( Qt_CustomizeWindowHint + Qt_WindowTitleHint + Qt_WindowMinimizeButtonHint + Qt_WindowMaximizeButtonHint )
+      :setWindowIcon( QIcon( hbide_image( "b_" + hb_ntos( aIcons[ ++nIcon ] ) ) ) )
+      :setWhatsThis( cTitle )
+      :resize( 350, 200 )
+      :connect( QEvent_Close , {|oEvent| oEvent:ignore(), .F. } )
+   ENDWITH
+   ::oUI:mdiBrowsers:addSubWindow( hBrowse[ "mdi" ] )
+   hBrowse[ "mdi" ]:hide()
+   hBrowse[ "mdi" ]:show()
+
+   hBrowse[ "id"  ] := cTitle
+   hBrowse[ "rec" ] := 1
+   hBrowse[ "dat" ] := {}
+   hBrowse[ "bln" ] := dat_
+   hBrowse[ "ttl" ] := ""
+
+  ::updateData( hBrowse, { hBrowse[ "bln" ] } )
+
+   WITH OBJECT hBrowse[ "brw" ] := HbQtBrowseNew( 0, 0, 5, 30 )
+      :colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
+
+      :goTopBlock    := {|| hBrowse[ "rec" ] := 1 }
+      :goBottomBlock := {|| hBrowse[ "rec" ] := Len( hBrowse[ "dat" ] ) }
+      :skipBlock     := {| nSkip, nPos | nPos := hBrowse[ "rec" ], ;
+                             hBrowse[ "rec" ] := iif( nSkip > 0, Min( Len( hBrowse[ "dat" ] ), hBrowse[ "rec" ] + nSkip ), ;
+                                Max( 1, hBrowse[ "rec" ] + nSkip ) ), hBrowse[ "rec" ] - nPos }
+
+      :goPosBlock    := {|n| hBrowse[ "rec" ] := Max( 1, n ) }
+      :phyPosBlock   := {|n| hBrowse[ "rec" ] := Max( 1, n ) }
+      :firstPosBlock := {|| 1 }
+      :lastPosBlock  := {|| Len( hBrowse[ "dat" ] ) }
+
+      :addColumn( HbQtColumnNew( "Sr", {|| hBrowse[ "rec" ] } ) )
+      :getColumn( 1 ):width   := 2
+      :getColumn( 1 ):picture := "@Z 99"
+
+      FOR EACH cField IN aFields
+         :addColumn( HbQtColumnNew( cField, __fetchBlock( hBrowse, cField:__enumIndex() ) ) )
+      NEXT
+      :Configure()
+
+      :freeze              := 1
+      :editEnabled         := .F.
+      :horizontalScrollbar := .T.
+      :verticalScrollbar   := .T.
+   ENDWITH
+
+   hBrowse[ "mdi" ] : setWidget( hBrowse[ "brw" ]:oWidget )
+   ::setTitle( hBrowse )
+   ::oUI:mdiBrowsers:addSubWindow( hBrowse[ "mdi" ] )
+   RETURN hBrowse
+
+
+METHOD IdeDebugger:setTitle( hBrowser )
+   hBrowser[ "mdi" ]:setWindowTitle( hBrowser[ "id" ] + " [ " + hb_ntos( Len( hBrowser[ "dat" ] ) ) + " ] " + hBrowser[ "ttl" ] )
+   RETURN NIL
+
+
+METHOD IdeDebugger:updateData( hBrowse, aData )
+   LOCAL i, a_, nLen
+
+   IF hb_HHasKey( hBrowse, "brw" ) .AND. HB_ISOBJECT( hBrowse[ "brw" ] )
+      hBrowse[ "brw" ]:gotop()
+      hBrowse[ "brw" ]:forceStable()
+   ENDIF
+
+   DO WHILE Len( hBrowse[ "dat" ] ) > 0
+      hb_ADel( hBrowse[ "dat" ], 1, .T. )
+   ENDDO
+   IF HB_ISARRAY( aData )
+      FOR EACH a_ IN aData
+         AAdd( hBrowse[ "dat" ], a_ )
+      NEXT
+   ENDIF
+   IF hb_HHasKey( hBrowse, "brw" ) .AND. HB_ISOBJECT( hBrowse[ "brw" ] )
+      hBrowse[ "rec" ] := 1
+      hBrowse[ "brw" ]:getColumn( 1 ):width := iif( Len( aData ) < 100, 2, iif( Len( aData ) < 1000, 3, 4 ) )
+      hBrowse[ "brw" ]:getColumn( 1 ):picture := "@Z " + Replicate( "9", hBrowse[ "brw" ]:getColumn( 1 ):width )
+      FOR i := 1 TO Len( aData[ 1 ] )
+         nLen := 0
+         AEval( aData, {|e_| nLen := Max( nLen, Len( e_[ i ] ) ) } )
+         AEval( aData, {|e_| e_[ i ] := Pad( e_[ i ], nLen ) } )
+      NEXT
+      hBrowse[ "brw" ]:configure()
+      hBrowse[ "brw" ]:forceStable()
+      hBrowse[ "brw" ]:gotop()
+      hBrowse[ "brw" ]:refreshAll()
+   ENDIF
+   IF Empty( hBrowse[ "dat" ][ 1,1 ] )
+      hBrowse[ "ttl" ] := ""
+   ENDIF
+   ::setTitle( hBrowse )
+   RETURN NIL
+
+
+METHOD IdeDebugger:emptyBrowser( hBrowser )
+   ::updateData( hBrowser, { AClone( hBrowser[ "bln" ] ) } )
+   RETURN NIL
+
+
+METHOD IdeDebugger:emptyBrowsers()
+   LOCAL hBrowser
+   FOR EACH hBrowser IN ::hBrowsers
+      ::emptyBrowser( hBrowser )
+   NEXT
+   RETURN NIL
+
+
+STATIC FUNCTION __fetchBlock( hBrowse, nField )
+   hBrowse[ "rec" ] := Max( 1, hBrowse[ "rec" ] )
+   RETURN {|| hBrowse[ "dat" ][ hBrowse[ "rec" ], nField ] }
+
+
+STATIC FUNCTION __isRowEmpty( oBrw, aXY, oModelIndex )
+   oModelIndex := oBrw:widget():indexAt( QPoint( aXY[ 1 ], aXY[ 2 ] ) )
+   IF oModelIndex:isValid()
+      IF ! Empty( oModelIndex:data():toString() )
+         RETURN .F.
+      ENDIF
+   ENDIF
+   RETURN .T.
+
+
+METHOD IdeDebugger:manageNavigation( cBrowse, nKey, aXY, oBrw )
+   LOCAL oModelIndex, nRow, nCol, cAlias, cOldVal, cValue, cVType, cType, dat_
+   LOCAL cObject, cOType
+
+   SWITCH nKey
+   CASE K_LDBLCLK
+      SWITCH cBrowse
+      CASE "Areas"
+         IF !__isRowEmpty( oBrw, aXY, @oModelIndex )
+            IF ( nCol := oModelIndex:column() + 1 ) == 2
+               nRow := ::hBrowsers[ "Areas" ][ "rec" ]
+               cAlias := StrTran( ::hBrowsers[ "Areas" ][ "dat" ][ nRow, nCol - 1 ], "*" )
+               ::doCommand( CMD_REC, cAlias )
+            ENDIF
+         ENDIF
+         EXIT
+      CASE "Publics"
+      CASE "Privates"
+      CASE "Locals"
+      CASE "Statics"
+         IF !__isRowEmpty( oBrw, aXY, @oModelIndex )
+            IF ( oModelIndex:column() + 1 ) == 6
+               nRow  := ::hBrowsers[ cBrowse ][ "rec" ]
+               dat_  := ::hBrowsers[ cBrowse ][ "dat" ][ nRow ]
+               cType := Trim( dat_[ 2 ] )
+               IF cType $ "C,N,D,L"
+                  cOldVal := dat_[ 5 ]
+                  IF ! Empty( cValue := oBrw:editCell() )
+                     cValue := Pad( cValue, Len( cOldVal ) )
+                     ::hBrowsers[ cBrowse ][ "dat" ][ nRow, 5 ] := cValue
+                     oBrw:refreshAll()
+                     cVType := SubStr( cBrowse, 1, Len( cBrowse ) - 1 )
+                     ::doCommand( CMD_SETVAR, ;
+                              Str2Hex( Trim( dat_[ 1 ] ) ), ;
+                              Str2Hex( cVType + ":" + cType ), ;
+                              Str2Hex( Trim( dat_[ 3 ] ) ), ;
+                              Str2Hex( Trim( dat_[ 4 ] ) ), ;
+                              Str2Hex( StrTran( Trim( cValue ), '"' ) ) )
+                  ENDIF
+               ENDIF
+            ELSEIF ( oModelIndex:column() + 1 ) == 2
+               nRow  := ::hBrowsers[ cBrowse ][ "rec" ]
+               dat_  := ::hBrowsers[ cBrowse ][ "dat" ][ nRow ]
+               cType := Trim( dat_[ 2 ] )
+               IF cType $ "O,A"
+                  ::emptyBrowser( ::hBrowsers[ "Expanded" ] )
+                  ::cInspectVar   := dat_[ 1 ]
+                  ::cInspectType  := cType
+                  ::cInspectTypes := cType
+                  ::oUI:btnSubsObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
+                  ::requestObject()
+               ENDIF
+            ENDIF
+         ENDIF
+         EXIT
+      CASE "Objects"
+         IF !__isRowEmpty( oBrw, aXY, @oModelIndex )
+            nRow  := ::hBrowsers[ cBrowse ][ "rec" ]
+            dat_  := ::hBrowsers[ cBrowse ][ "dat" ][ nRow ]
+            cType := Trim( dat_[ 2 ] )
+            IF cType $ "O,A"
+               cObject := ::cInspectVar
+               cOType  := ::cInspectType
+               IF cType == "A"
+                  IF cOType == "O"
+                     cObject := cObject + ":" + dat_[ 1 ]
+                  ELSE
+                     cObject := cObject + "[" + hb_ntos( nRow ) + "]"
+                  ENDIF
+               ELSEIF cType == "O"
+                  IF cOType == "A"
+                     cObject := cObject + "[" + hb_ntos( nRow ) + "]"
+                  ELSE
+                     cObject := cObject + ":" + dat_[ 1 ]
+                  ENDIF
+               ENDIF
+               ::cInspectVar   := cObject
+               ::cInspectType  := cType
+               ::cInspectTypes += cType
+               ::oUI:btnSubsObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
+               ::requestObject()
+            ENDIF
+         ENDIF
+         EXIT
+      CASE "X"
+         EXIT
+      ENDSWITCH
+      EXIT
+
+   CASE K_ENTER
+      SWITCH cBrowse
+      CASE "Areas"
+         IF oBrw:colPos() == 2
+            nRow := ::hBrowsers[ "Areas" ][ "rec" ]
+            IF ! Empty( cAlias := ::hBrowsers[ "Areas" ][ "dat" ][ nRow, 1 ] )
+               ::doCommand( CMD_REC, StrTran( Trim( cAlias ), "*" ) )
+            ENDIF
+         ENDIF
+         EXIT
+      CASE "Publics"
+      CASE "Privates"
+      CASE "Locals"
+      CASE "Statics"
+         IF oBrw:colPos() == 6
+            nRow  := ::hBrowsers[ cBrowse ][ "rec" ]
+            IF ! Empty( ::hBrowsers[ cBrowse ][ "dat" ][ nRow, 1 ] )
+               dat_  := ::hBrowsers[ cBrowse ][ "dat" ][ nRow ]
+               cType := Trim( dat_[ 2 ] )
+               IF cType $ "C,N,D,L"
+                  cOldVal := dat_[ 5 ]
+                  IF ! Empty( cValue := oBrw:editCell() )
+                     cValue := Pad( cValue, Len( cOldVal ) )
+                     ::hBrowsers[ cBrowse ][ "dat" ][ nRow, 5 ] := cValue
+                     oBrw:refreshAll()
+                     cVType := SubStr( cBrowse, 1, Len( cBrowse ) - 1 )
+                     ::doCommand( CMD_SETVAR, ;
+                              Str2Hex( Trim( dat_[ 1 ] ) ), ;
+                              Str2Hex( cVType + ":" + cType ), ;
+                              Str2Hex( Trim( dat_[ 3 ] ) ), ;
+                              Str2Hex( Trim( dat_[ 4 ] ) ), ;
+                              Str2Hex( StrTran( Trim( cValue ), '"' ) ) )
+                  ENDIF
+               ENDIF
+            ENDIF
+         ENDIF
+         EXIT
+      CASE "Objects"
+         nRow  := ::hBrowsers[ cBrowse ][ "rec" ]
+         dat_  := ::hBrowsers[ cBrowse ][ "dat" ][ nRow ]
+         cType := Trim( dat_[ 2 ] )
+         IF cType $ "O,A"
+            cObject := ::cInspectVar
+            cOType  := ::cInspectType
+            IF cType == "A"
+               IF cOType == "O"
+                  cObject := cObject + ":" + dat_[ 1 ]
+               ELSE
+                  cObject := cObject + "[" + hb_ntos( nRow ) + "]"
+               ENDIF
+            ELSEIF cType == "O"
+               IF cOType == "A"
+                  cObject := cObject + "[" + hb_ntos( nRow ) + "]"
+               ELSE
+                  cObject := cObject + ":" + dat_[ 1 ]
+               ENDIF
+            ENDIF
+            ::cInspectVar   := cObject
+            ::cInspectType  := cType
+            ::cInspectTypes += cType
+            ::oUI:btnSubsObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
+            ::requestObject()
+         ENDIF
+         EXIT
+      ENDSWITCH
+      EXIT
+   ENDSWITCH
+   RETURN NIL
+
 

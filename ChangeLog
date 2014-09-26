@@ -16,6 +16,74 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-26 01:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r362)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r362.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    % Changed the 2nd argument to callback in :navigationBlock to send 
+       { nX,nY } mapped to window where the clicks originated instead of 
+       global nX,nY position. It simplifies a lot of operations.
+
+  * debug/dbgconnect.prg
+  * debug/dbgdop.c
+    ! Fixed to be compiled with xHarbour.
+
+  * debug/debugger.prg
+    + Added: additional fields in SendAreas() where more info is added 
+       about the tables, like order, fullpath, indexpath, index info.
+       comprising 
+
+  + hbide/debugger2.ui
+    + Added MDI compliant debugger interface. 
+  * hbide/hbide.hbp
+    + Added debugger2.ui.
+
+  * hbide/debugger.prg
+  * hbide/saveload.prg
+    + Implemented MDI interface to display/exploit debug elements taking 
+       use of HbQtBrowse() as the prime component. Besides offering seemless
+       freedom to organize and view debug elements, this new protocol is 
+       extremely fast as near as console-mode implementation.
+
+       WHY THIS CHANGE: My employers "Curacao" deploys extremely big and 
+                        complex application for its business operations 
+                        in-development since 1987 gradually ported to 
+                        xHarbour from Clipper. This is fondly called "AR".
+                        AR is written in the then prevailing coding style 
+                        which is termed as "sephaghatti" with hundreds, 
+                        nay thousands, of public and private variables 
+                        embedded inside macros. When I executed it via 
+                        IdeDebugger, it took ages to refresh after every 
+                        STEP, just rendering IdeDebugger useless and hence 
+                        unacceptable to the management. I explored the 
+                        bottlenecks and soon discovered that populating 
+                        QTableWidget()'s items was killing it. Communication
+                        of debugger and application was just in-time.
+                        At one BP debugger UI took many minutes to populate
+                        2577 public variables... Simply too much.
+
+       AND THE OUTCOME: After switching to HbQtBrowse() the exchange is 
+                        instant. No time-lag. And happily management has 
+                        accepted HbIDE and hence IdeDebugger to be deployed 
+                        for all fellow developers, at least for debugging 
+                        purposes. 
+
+      OTHER BENEFITS: 1 Complete freedome to organize the various elements 
+                        to suit the taste and/or need by aspect of debugging.
+    
+                      2 Feature to Save/Load such organized unlimited "views"
+                        even in the same session.
+
+                      3 Drilling-down any multi-dimentional ragged arrays 
+                        to last element and view it all-together.
+
+                      4 Preview and Print indivisual elements for future 
+                        reference or for cross verification.
+
+      ; Attached image ( separately ) with QtContribs group message will 
+        help grasp the true essense of this new interface.
+  
 2014-09-20 17:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r361)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r361.

@@ -214,8 +214,7 @@ FUNCTION IdeTrace( xMessage )
    RETURN NIL
 
 
-FUNCTION hwg_dbg_Wait( nWait )
-   HB_SYMBOL_UNUSED( nWait )
+FUNCTION hwg_dbg_Wait( /*nWait*/ )
    IF !lDebugRun ; RETURN NIL; ENDIF
    RETURN NIL
 
@@ -244,6 +243,8 @@ FUNCTION hwg_dbg_Input( p1, p2, p3, p4, p5 )
                   p2 := Val( arr[ 5 ] )
                   RETURN CMD_TOCURS
                ELSEIF cmd == "quit"
+                  FClose( handl1 )
+                  FClose( handl2 )
                   RETURN CMD_QUIT
                ELSEIF cmd == "exit"
                   lDebugRun := .F.
@@ -335,7 +336,7 @@ FUNCTION hwg_dbg_Answer( ... )
             s += Iif( j>1.AND.lConvert, Str2Hex( arr[ i,j ] ), arr[ i,j ] ) + ","
          NEXT
       ELSE
-         IF arr[ i ] == "value" .AND. i < Len( arr )
+         IF arr[ i ] $ "value" .AND. i < Len( arr )
             s += arr[ i ] + "," + Str2Hex( arr[ ++i ] ) + ","
          ELSE
             s += arr[ i ] + ","
@@ -347,11 +348,8 @@ FUNCTION hwg_dbg_Answer( ... )
    RETURN NIL
 
 
-FUNCTION hwg_dbg_Msg( cMessage )
-
-   HB_SYMBOL_UNUSED( cMessage )
+FUNCTION hwg_dbg_Msg( /*cMessage*/ )
    IF !lDebugRun ; RETURN NIL; ENDIF
-
    RETURN NIL
 
 

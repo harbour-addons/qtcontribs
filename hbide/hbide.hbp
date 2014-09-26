@@ -101,6 +101,7 @@ functionsmap.ui
 selectsources.ui
 debugger.ui
 debugger1.ui
+debugger2.ui
 
 hbide.qrc
 settings.qrc

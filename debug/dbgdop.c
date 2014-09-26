@@ -20,8 +20,6 @@ void hb_releaseCPU( BOOL bIndefinite )
    Sleep( 20 );
 }
 
-#else
-
 HB_FUNC( HB_RELEASECPU )
 {
    hb_releaseCPU(0);

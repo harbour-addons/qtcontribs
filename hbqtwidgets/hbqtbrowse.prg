@@ -1452,13 +1452,13 @@ METHOD HbQtBrowse:manageMouseDblClick( oMouseEvent )
    IF HB_ISBLOCK( ::bNavigationBlock )
       SWITCH oMouseEvent:button()
       CASE Qt_LeftButton
-         Eval( ::bNavigationBlock, K_LDBLCLK, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_LDBLCLK, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_RightButton
-         Eval( ::bNavigationBlock, K_RDBLCLK, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_RDBLCLK, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_MidButton
-         Eval( ::bNavigationBlock, K_MDBLCLK, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_MDBLCLK, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       ENDSWITCH
    ENDIF
@@ -1486,9 +1486,9 @@ METHOD HbQtBrowse:manageMouseWheel( oWheelEvent )
 
    IF oWheelEvent:orientation() == Qt_Vertical .AND. HB_ISBLOCK( ::bNavigationBlock )
       IF oWheelEvent:delta() > 0
-         Eval( ::bNavigationBlock, K_MWBACKWARD, { oWheelEvent:globalX(), oWheelEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_MWBACKWARD, { oWheelEvent:x(), oWheelEvent:y() }, Self )
       ELSE
-         Eval( ::bNavigationBlock, K_MWFORWARD , { oWheelEvent:globalX(), oWheelEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_MWFORWARD , { oWheelEvent:x(), oWheelEvent:y() }, Self )
       ENDIF
    ENDIF
 
@@ -1507,13 +1507,13 @@ METHOD HbQtBrowse:manageMousePress( oMouseEvent )
    IF HB_ISBLOCK( ::bNavigationBlock )
       SWITCH oMouseEvent:button()
       CASE Qt_LeftButton
-         Eval( ::bNavigationBlock, K_LBUTTONDOWN, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_LBUTTONDOWN, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_RightButton
-         Eval( ::bNavigationBlock, K_RBUTTONDOWN, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_RBUTTONDOWN, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_MidButton
-         Eval( ::bNavigationBlock, K_MBUTTONDOWN, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_MBUTTONDOWN, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       ENDSWITCH
    ENDIF
@@ -1528,13 +1528,13 @@ METHOD HbQtBrowse:manageMouseRelease( oMouseEvent )
    IF HB_ISBLOCK( ::bNavigationBlock )
       SWITCH oMouseEvent:button()
       CASE Qt_LeftButton
-         Eval( ::bNavigationBlock, K_LBUTTONUP, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_LBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_RightButton
-         Eval( ::bNavigationBlock, K_MBUTTONUP, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_MBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_MidButton
-         Eval( ::bNavigationBlock, K_MBUTTONUP, { oMouseEvent:globalX(), oMouseEvent:globalY() }, Self )
+         Eval( ::bNavigationBlock, K_MBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       ENDSWITCH
    ENDIF
@@ -4145,10 +4145,6 @@ METHOD HbQtBrowse:printReport( oPrinter )
          nT := ::drawTitle( oPainter, aTitle, nT, nRH, nCols, nPage, nML, aX, nF, aLen, nPxlX, nPxlW, nM, nAW, nLeading )
          n := 0
       ENDIF
-      ::down()
-      IF ::hitBottom
-         EXIT
-      ENDIF
       FOR i := 1 TO nF
          oPainter:fillRect( nML + ( ( nM + aX[ i ] ) * nAW ), nT-nRH+nLeading, aLen[ i ] * nAW, nRH, ;
                               __hbqtHbColorToQtValue( ::colorValue( ::cellColor( ::rowPos, i )[ 1 ] ), Qt_BackgroundRole ) )
@@ -4157,6 +4153,10 @@ METHOD HbQtBrowse:printReport( oPrinter )
       NEXT
       n++
       nT += nRH
+      ::down()
+      IF ::hitBottom
+         EXIT
+      ENDIF
    ENDDO
    IF nT < nH
       oPainter:setPen( ::oPenBlack )
