@@ -697,7 +697,12 @@ STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
             s := AllTrim( StrTran( s, cCls, "",, 1 ) )
             IF ( n := At( "(", s ) ) > 0
                cNam := SubStr( s, 1, n - 1 )
+#if 0
                AAdd( aWidgets, { cCls, cNam, cCls + "()", cCls + SubStr( s, n ) } )
+#else
+               cCmd := hbqtui_setObjects( s, aWidgets )
+               AAdd( aWidgets, { cCls, cNam, cCls + "()", cCls +  SubStr( cCmd, n ) } )
+#endif
             ELSE
                cNam := s
                AAdd( aWidgets, { cCls, cNam, cCls + "()", cCls + "()" } )
@@ -856,7 +861,11 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
          cCmd := StrTran( HBQTUI_STRIP_SQ( cCmd ), "\" )
          hbqtui_stripFront( @cCmd, '"' )
          hbqtui_stripRear( @cCmd, '"' )
+#if 0
          cCmd := "'" + cCmd + "'"
+#else
+         cCmd := "'" + StrTran( cCmd, '""', '' ) + "'"
+#endif
          AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  setStyleSheet( " + cCmd + " )" )
 
       ELSEIF "setText(" $ cCmd

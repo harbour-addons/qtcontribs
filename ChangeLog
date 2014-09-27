@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-27 13:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r364)
+  * hbqt/hbmk2_qt.hb
+    ! Fixed: to honor correctly :setStyleSheet() and parsing of Q*Gradient()
+       calls in .ui. Patch submitted by Francek, thanks.
+
 2014-09-27 11:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r363)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r363.
