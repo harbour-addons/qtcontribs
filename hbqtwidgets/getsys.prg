@@ -1117,6 +1117,11 @@ METHOD HbQtGet:preValidate()
 
    IF HB_ISBLOCK( ::preBlock )
       lWhen := Eval( ::preBlock, Self )
+
+      IF ! lWhen
+         ::display()
+      ENDIF
+
       __GetListLast( ::oGetList )
    ENDIF
 

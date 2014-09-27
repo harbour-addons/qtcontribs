@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-09-27 11:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r363)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump to r363.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed: to display changed variable if WHEN clasuse returns FLASE.
+       Reported by Dusan Majkic, thanks.
+
 2014-09-26 01:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r362)
   * hbqt/qtgui/hbqt_version.ch
     % Version bump to r362.
