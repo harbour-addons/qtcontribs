@@ -1,4 +1,4 @@
-                  /*
+                        /*
  * $Id$
  */
 
@@ -294,6 +294,7 @@ CLASS IdeDebugger INHERIT IdeObject
    METHOD getUIState()
    METHOD restUIState( cState )
    METHOD setTitle( hBrowser )
+   METHOD resizeSubWindows()
 
    ENDCLASS
 
@@ -903,18 +904,21 @@ METHOD IdeDebugger:setCurrLine( nLine, cName )
    IF ! ::lDebugging
       ::lDebugging := .T.
    ENDIF
-   ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
+   IF ! Empty( ::oIde:qCurEdit )
+      ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
+   ENDIF
 
    ::setWindow( cName )
 
-   ::oIde:qCurEdit:hbSetDebuggedLine( nLine )
-   qCursor := ::oIde:qCurEdit:textCursor()
+   IF ! Empty( ::oIde:qCurEdit )
+      ::oIde:qCurEdit:hbSetDebuggedLine( nLine )
+      qCursor := ::oIde:qCurEdit:textCursor()
 
-   qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
-   ::oIde:qCurEdit:setTextCursor( qCursor )
-   ::oIde:qCurEdit:centerCursor()
+      qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
+      ::oIde:qCurEdit:setTextCursor( qCursor )
+      ::oIde:qCurEdit:centerCursor()
+   ENDIF
    ::oIde:manageFocusInEditor()
-
    ::oUI:activateWindow()
    RETURN NIL
 
@@ -1616,22 +1620,31 @@ METHOD IdeDebugger:manageTabMain( index )
 
 
 METHOD IdeDebugger:watch_save()
-   LOCAL i, cFile, s, cPath, cName, cExt, oItem
+   LOCAL i, cFile, s, cPath, cName, cExt, oItem, aWatch
    LOCAL oTable   := ::oUI:tableWatchExpressions
    LOCAL nRows    := oTable:rowCount()
    LOCAL aWatches := {}
 
-   IF ::oUI:tableWatchExpressions:isVisible()
-      FOR i := 1 TO nRows
-         IF ! Empty( oItem := oTable:item( i-1, 0 ) ) .AND. ! Empty( oItem:text() )
-            AAdd( aWatches, oItem:text() )
-         ENDIF
-      NEXT
+   IF ::isUIBrowsers()
+      IF ! Empty( ::hBrowsers[ "Watches" ][ "dat" ][1,1] )
+         FOR EACH aWatch IN ::hBrowsers[ "Watches" ][ "dat" ]
+            AAdd( aWatches, aWatch[ 1 ] )
+         NEXT
+      ENDIF
    ELSE
-      aWatches := ::aNWatches
+      IF ::oUI:tableWatchExpressions:isVisible()
+         FOR i := 1 TO nRows
+            IF ! Empty( oItem := oTable:item( i-1, 0 ) ) .AND. ! Empty( oItem:text() )
+               AAdd( aWatches, oItem:text() )
+            ENDIF
+         NEXT
+      ELSE
+         aWatches := ::aNWatches
+      ENDIF
    ENDIF
+   // how to get the BP from application ?
    IF ! Empty( aWatches )
-      cFile := hbide_fetchAFile( ::oDlg, "Select IdeDebugger Watches File", { { "IdeDebugger Watches", "*.wch" } }, ;
+      cFile := hbide_fetchAFile( ::oDlg, "Select IdeDebugger Watches|BP File", { { "IdeDebugger Watches|BP", "*.wch" } }, ;
                                       ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
       IF ! Empty( cFile )
          hb_FNameSplit( cFile, @cPath, @cName, @cExt )
@@ -1642,11 +1655,12 @@ METHOD IdeDebugger:watch_save()
             ENDIF
          ENDIF
          cFile := cPath + cName + cExt
-         s := ""
+         s := "<WATCHES>" +  Chr( 13 )+Chr( 10 )
          AEval( aWatches, {|e| s += e + Chr( 13 )+Chr( 10 ) } )
+         s += "</WATCHES>"
          hb_MemoWrit( cFile, s )
          IF hb_FileExists( cFile )
-            Alert( "Watches has been saved in " + cFile )
+            Alert( "Watches|BP has been saved in " + cFile )
          ENDIF
       ENDIF
    ENDIF
@@ -1654,12 +1668,28 @@ METHOD IdeDebugger:watch_save()
 
 
 METHOD IdeDebugger:watch_rest()
-   LOCAL i, cFile, aWatches, cWatch, nSel
+   LOCAL i, cFile, aWatches, cWatch, nSel, d_, lInit
 
-   cFile := hbide_fetchAFile( ::oDlg, "Select a Watches File", { { "Watches", "*.wch" } }, ;
+   cFile := hbide_fetchAFile( ::oDlg, "Select a Watches|BP File", { { "Watches|BP", "*.wch" } }, ;
                                       ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
    IF ! Empty( cFile ) .AND. hb_FileExists( cFile )
-      aWatches := hbide_readSource( cFile )
+      d_:= hbide_readSource( cFile )
+      aWatches := {}
+      lInit := .F.
+      FOR EACH cWatch IN d_
+         IF cWatch == "<WATCHES>"
+            lInit := .T.
+            LOOP
+         ELSEIF cWatch == "</WATCHES>"
+            EXIT
+         ENDIF
+         IF lInit
+            AAdd( aWatches, cWatch )
+         ENDIF
+      NEXT
+      IF Len( aWatches ) == 0
+         RETURN Self
+      ENDIF
       nSel := Alert( "Merge with existing watches ?", { "Yes", "No" } )
       QApplication():processEvents()
    ENDIF
@@ -2455,11 +2485,13 @@ METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
       oSub := oMdiArea:activeSubWindow()
       oMdiArea:cascadeSubWindows()
       oMdiArea:setActiveSubWindow( oSub )
+      ::resizeSubWindows()
       EXIT
    CASE "showSubsTiled"
       oSub := oMdiArea:activeSubWindow()
       oMdiArea:tileSubWindows()
       oMdiArea:setActiveSubWindow( oSub )
+      ::resizeSubWindows()
       EXIT
    CASE "showSubsMaximized"
       oSub := oMdiArea:activeSubWindow()
@@ -2471,9 +2503,11 @@ METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
          oWnd:resize( oWnd:width() - 1, oWnd:height() - 1 )
       NEXT
       oMdiArea:setActiveSubWindow( oSub )
+      ::resizeSubWindows()
       EXIT
    CASE "subWindowsRest"
       ::restUIState( ::oINI:cDebuggerState )
+      ::resizeSubWindows()
       EXIT
    CASE "subWindowsSave"
       oSub := oMdiArea:activeSubWindow()
@@ -2548,6 +2582,16 @@ METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
    ENDSWITCH
    RETURN NIL
 
+
+METHOD IdeDebugger:resizeSubWindows()
+   LOCAL hBrowser
+   FOR EACH hBrowser IN ::hBrowsers
+      IF HB_ISHASH( hBrowser )
+         hBrowser[ "mdi" ]:resize( hBrowser[ "mdi" ]:width()+1, hBrowser[ "mdi" ]:height()+1 )
+         hBrowser[ "mdi" ]:resize( hBrowser[ "mdi" ]:width()-1, hBrowser[ "mdi" ]:height()-1 )
+      ENDIF
+   NEXT
+   RETURN NIL
 
 METHOD IdeDebugger:restUIState( cState )
    LOCAL aState := hb_ATokens( cState, "|" )

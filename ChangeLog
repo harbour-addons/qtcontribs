@@ -16,6 +16,36 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-10-02 16:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r365)
+  * hbqt/hbmk2_qt.hb
+    + Improved patch to define SIGNAL/SLOTS at design time, supplied by Francek.
+
+  * hbide/main.prg
+  * hbide/actions.prg
+    + Added: main-toolbar icon <SaveState> to update hbide.ini and settings.ide
+       with current state of HbIDE. The action is exactly the same which 
+       is taken at normal exit of HbIDE. It is useful to save state of HbIDE
+       intermediately after adding/removing sources/projects, by reorgnizing 
+       various components/widgets. It saves you time in case a RTE is generated
+       and HbIDE is terminated without saving the latest state.         
+
+  * hbide/edit.prg
+    % Changed: Goto Line <CTRL+G> action now positions the cursor in the mid of
+       editing instance window.
+
+  * hbide/projmanager.prg
+    % Changed: <Opening an Existing Project> now opens the File Open dialog 
+       at the last folder visited.
+
+  * hbide/debugger.prg
+    ! Fixed: correctly measure the browsers rows when 
+       <Tiled>|<Cascaded>|<FullScreen> actions are carried. Before some rows,
+       depending upon the resized coordinates, were displayed unsynchronized.
+
+    % Changed: the way <Watches> were being saved in the .wch files. Now 
+       watches entries are embedded under <WATCHES>/</WATCHES> block.
+       This opens up to use a single file to store many other info. 
+
 2014-09-27 13:42 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r364)
   * hbqt/hbmk2_qt.hb
     ! Fixed: to honor correctly :setStyleSheet() and parsing of Q*Gradient()

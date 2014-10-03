@@ -601,8 +601,7 @@ METHOD IdeProjManager:getProperties()
 
 
 METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
-   LOCAL nAlready, cProjPath
-   LOCAL cPath, cName, cExt
+   LOCAL nAlready, cProjPath, cPath, cName, cExt, aTypes
 
    DEFAULT cProjFileName TO ""
    DEFAULT lNew          TO .F.
@@ -622,9 +621,16 @@ METHOD IdeProjManager:loadProperties( cProjFileName, lNew, lFetch, lUpdateTree )
       lFetch := .t.
    ELSE
       IF empty( cProjFileName )
-         cProjFileName := hbide_fetchAFile( ::oDlg, "Open Project...", { { "Harbour Make Projects", "*.hbp" } , ;
-                                                                         { "xMate Projects"       , "*.xhp" } , ;
-                                                                         { "xBuild Projects"      , "*.xbp" } } )
+         aTypes := { { "Harbour Make Projects", "*.hbp" } , ;
+                     { "xMate Projects"       , "*.xhp" } , ;
+                     { "xBuild Projects"      , "*.xbp" } }
+
+         IF Empty( cProjFileName := hbide_fetchAFile( ::oDlg, "Open Project...", aTypes, ::oIde:cLastFileOpenPath ) )
+            RETURN Self
+         ENDIF
+         hb_FNameSplit( cProjFileName, @cPath )
+         ::oIde:cLastFileOpenPath := cPath
+
          cProjFileName := ::synchronizeAlienProject( cProjFileName )
          ::oDockPT:show()
       ENDIF

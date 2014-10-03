@@ -1148,7 +1148,7 @@ STATIC FUNCTION hbqtui_isSupportedMethodCall( cString, aMethodCalls )
 
    RETURN 0
 
-
+#if 0
 STATIC FUNCTION hbqtui_qobject_connect( cString )
    LOCAL cCall
    LOCAL n, n2, n4
@@ -1167,7 +1167,39 @@ STATIC FUNCTION hbqtui_qobject_connect( cString )
             '"'  + SubStr( aPar[ 4 ], n4 + 1, Len( aPar[ 4 ] ) - n4 - 1 ) + '" ) '
 
    RETURN cCall
+#else
+STATIC FUNCTION hbqtui_qobject_connect( cString )
+   LOCAL cCall, cCall1, cCall2
+   LOCAL cSig, cSnd, cRcv
+   LOCAL cSlot1, cSlot2, cSlotName
+   LOCAL aPar
 
+   cString := AllTrim( StrTran( cString, "QObject_connect", "" ) )
+
+   aPar := hb_ATokens( SubStr( cString, 2, Len( cString ) - 2 ), "," )
+
+   cSig := aPar[ 2 ]
+   getSigSlot( @cSig, "SIGNAL(" )
+   cSlot1 := aPar[ 4 ]
+   getSigSlot( @cSlot1, "SLOT(" )
+
+   cSnd := AllTrim( aPar[ 1 ] )
+   cRcv := AllTrim( aPar[ 3 ] )
+   cCall1 := hb_StrFormat( 'hbqt_connect( ::%s, "%s", ::%s, "%s" )', cSnd, cSig, cRcv, cSlot1 )
+
+   cSlot2 := StrTran( cSlot1, "()", "( Self )" )
+   cCall2 := hb_StrFormat( 'hbqt_connect( ::%s, "%s", {|| %s } )', cSnd, cSig, cSlot2 )
+
+   cSlotName := StrTran( cSlot1, "()", "" )
+   cCall := hb_StrFormat( 'IF __objHasMsg( ::%s, "%s" ) ; %s ; ELSE ; %s ; ENDIF', cRcv, cSlotName, cCall1, cCall2 )
+   RETURN cCall
+
+
+STATIC PROCEDURE getSigSlot( cStr, cSigOrSl )
+   hbqtui_stripFront( @cStr, cSigOrSl )
+   hbqtui_stripRear( @cStr, ")" )
+   RETURN
+#endif
 
 STATIC FUNCTION hbqtui_qwidget_settaborder( cString )
    LOCAL aPar

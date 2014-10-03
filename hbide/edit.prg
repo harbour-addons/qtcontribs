@@ -2387,7 +2387,7 @@ METHOD IdeEdit:goto( nLine )
    qCursor:movePosition( QTextCursor_Start )
    qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
    ::qEdit:setTextCursor( qCursor )
-
+   ::qEdit:centerCursor()
    RETURN Self
 
 /*----------------------------------------------------------------------*/

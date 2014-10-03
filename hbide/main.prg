@@ -109,6 +109,7 @@ FUNCTION Main( ... )
    hb_cdpSelect( "UTF8EX" )
    SET EPOCH TO 1950
 
+   hb_SetEnv( "__HBIDE__", hb_dirBase() )
 
    #ifdef HB_IDE_DISTRO
       LOCAL cBse := hb_dirBase() + ".."
@@ -303,7 +304,7 @@ CLASS HbIde
    DATA   oOpenedSources
    DATA   resPath                                 INIT   ":/resources" + hb_ps()
    DATA   pathSep                                 INIT   hb_ps()
-   DATA   cLastFileOpenPath                       INIT   hb_DirBase() + "projects"
+   DATA   cLastFileOpenPath                       INIT   hb_DirBase() + "projects" + hb_ps()
    DATA   cProcessInfo
    DATA   cIniThemes
    DATA   cSeparator                              INIT   "/*" + replicate( "-", 70 ) + "*/"
@@ -742,6 +743,7 @@ METHOD HbIde:execAction( cKey )
 
    SWITCH cKey
    CASE "Hide"                 ; ::oINI:showHideDocks()       ; EXIT
+   CASE "SaveState"            ; ::oINI:save()                ; EXIT
    CASE "ToggleStatusBar"
       IF ::lStatusBarVisible
          ::oSBar:oWidget:hide()
