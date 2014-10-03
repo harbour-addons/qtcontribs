@@ -621,7 +621,7 @@ STATIC FUNCTION uic_to_prg( hbmk, cFileNameSrc, cFileNameDst, cName )
 /* ----------------------------------------------------------------------- */
 
 #define HBQTUI_STRINGIFY( cStr )    '"' + cStr + '"'
-#define HBQTUI_PAD_30( cStr )       PadR( cStr, Max( Len( cStr ), 35 ) )
+#define HBQTUI_PAD_35( cStr )       PadR( cStr, Max( Len( cStr ), 35 ) )
 #define HBQTUI_STRIP_SQ( cStr )     StrTran( StrTran( StrTran( StrTran( cStr, "[", " " ), "]", " " ), "\n", " " ), Chr( 10 ), " " )
 
 STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
@@ -850,10 +850,10 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
       cCmd := StrTran( cCmd, "false", ".F." )
 
       IF "setToolTip(" $ cCmd
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
 
       ELSEIF "setPlainText(" $ cCmd
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + cCmd )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  " + cCmd )
 
       ELSEIF "setStyleSheet(" $ cCmd
          hbqtui_stripFront( @cCmd, "(" )
@@ -866,18 +866,18 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
 #else
          cCmd := "'" + StrTran( cCmd, '""', '' ) + "'"
 #endif
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  setStyleSheet( " + cCmd + " )" )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  setStyleSheet( " + cCmd + " )" )
 
       ELSEIF "setText(" $ cCmd
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + StrTran( hbqtui_pullTranslate( cCmd ), '\n""', "\n " ) )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  " + StrTran( hbqtui_pullTranslate( cCmd ), '\n""', "\n " ) )
 
       ELSEIF "setWhatsThis(" $ cCmd
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  " + hbqtui_pullTranslate( cCmd ) )
 
       ELSEIF "setShortcut(" $ cCmd
          cCmd := hbqtui_pullTranslate( cCmd )
          cCmd := "setShortcut(QKeySequence(" + SubStr( cCmd, 13, Len( cCmd ) - 12 ) + ")"
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + cCmd )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  " + cCmd )
 
       ELSEIF cCmd == "pPtr"
          /* Nothing TO DO */
@@ -885,7 +885,7 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
       ELSE
          cCmd := hbqtui_hashToObj( hbqtui_setObjects( cCmd, aWidgets ) )
          cCmd := StrTran( cCmd, "->", ":" )
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( cNam ) + ":  " + cCmd )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( cNam ) + ":  " + cCmd )
 
       ENDIF
    NEXT
@@ -895,7 +895,7 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
 #if 0
    FOR EACH item IN aWidgets
       IF item[ 1 ] == "QAction"
-         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_30( item[ 2 ] ) + ":  connect( " + '"triggered()", {|| ::' + item[ 2 ] + "_triggered() } )" )
+         AAdd( aLinesPRG, "   ::" + HBQTUI_PAD_35( item[ 2 ] ) + ":  connect( " + '"triggered()", {|| ::' + item[ 2 ] + "_triggered() } )" )
       ENDIF
    NEXT
 #endif
