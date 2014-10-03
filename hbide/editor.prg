@@ -2101,7 +2101,9 @@ METHOD IdeEditor:applyTheme( cTheme )
       ENDIF
       IF ::oTH:contains( cTheme )
          ::cTheme := cTheme
-         ::oTH:changeSyntaxHilighting( ::qEdit, @::cTheme, ::qHiliter )
+         IF HB_ISOBJECT( ::qHiliter )
+            ::oTH:changeSyntaxHilighting( ::qEdit, @::cTheme, ::qHiliter )
+         ENDIF
       ENDIF
    ENDIF
    RETURN Self

@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-10-03 16:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r367)
+  * hbide/editor.prg
+    ! Fixed: RTE on clicking on <Apply All> in <Themes Editor>.
+       Repoted by Itamar, thanks.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: ( a kind of, regression may surface in other form ), RTE when 
+       parent containing the HbQtBrowse object has not been initiated 
+       somehow. Reported by Massimo, thanks.
+
 2014-10-03 15:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r366)
   * hbqt/hbmk2_qt.hb
     % Cosmetic change:  HBQTUI_PAD_30 => HBQTUI_PAD_35.

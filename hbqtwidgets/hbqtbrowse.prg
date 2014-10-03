@@ -91,7 +91,7 @@
 
 #define ISFROZEN( n )                             ( ascan( ::aLeftFrozen, n ) > 0 .OR. ascan( ::aRightFrozen, n ) > 0 )
 
-
+#if 0
 STATIC PROCEDURE _GENLIMITRTE( cDesc )
    LOCAL oError := ErrorNew()
 
@@ -111,7 +111,7 @@ STATIC PROCEDURE _GENLIMITRTE( cDesc )
    __errInHandler()
 
    RETURN
-
+#endif
 
 STATIC FUNCTION _SKIP_RESULT( xResult )
 
@@ -892,7 +892,8 @@ METHOD HbQtBrowse:refreshWindow()
                 ::oTableView:horizontalHeader():height()
 
       IF nViewH <= 0
-         _GENLIMITRTE( "Viewport has 0 height" )
+         //_GENLIMITRTE( "Viewport has 0 height" )  // do not generate error just switch to 1 row browser
+         nViewH := 1
       ENDIF
       ::nRowsInView := Max( 1, Int( nViewH / ::nCellHeight ) )
       IF ( nViewH % ::nCellHeight ) > ( ::nCellHeight / 2 )
