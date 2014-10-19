@@ -55,6 +55,11 @@
 #include "hbqtstd.ch"
 #include "inkey.ch"
 #include "hbtrace.ch"
+#include "common.ch"
+
+
+#define P_X( n )                                  ( LTrim( Str( ::oApp:primaryScreen():logicalDotsPerInchY() * n / 96, 10, 0 ) ) + "px;" )
+#define P_XX( n )                                 ( Int( ::oApp:primaryScreen():logicalDotsPerInchY() * n / 96 ) )
 
 
 THREAD STATIC t_sets := {=>}
@@ -379,4 +384,18 @@ FUNCTION __hbqtSetLastKey( nKey )
       s_nKey := nKey
    ENDIF
    RETURN l_nKey
+
+
+FUNCTION __hbqtPixelsByDPI( nPixels, nBase, lDeviceRatio )
+   LOCAL nDpi := QApplication():primaryScreen():logicalDotsPerInchY()
+
+   DEFAULT nBase        TO 96
+   DEFAULT lDeviceRatio TO .T.
+
+   RETURN Int( ( nDpi * nPixels / nBase ) * QApplication():primaryScreen():devicePixelRatio() )
+
+
+FUNCTION __hbqtCssPX( nPixels, nBase, lDeviceRatio )
+   RETURN LTrim( Str( __hbqtPixelsByDPI( nPixels, nBase, lDeviceRatio ) ) ) + "px;"
+
 

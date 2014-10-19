@@ -153,5 +153,43 @@
     <file>resources/memo.png</file>
     <file>resources/save-env.png</file>
     <file>resources/rest-env.png</file>
+    <file>resources/prv_fit-best.png</file>
+    <file>resources/prv_fit-width.png</file>
+    <file>resources/prv_landscape.png</file>
+    <file>resources/prv_left-4.png</file>
+    <file>resources/prv_leftall-4.png</file>
+    <file>resources/prv_page_double.png</file>
+    <file>resources/prv_page_four.png</file>
+    <file>resources/prv_page_one.png</file>
+    <file>resources/prv_page-setup.png</file>
+    <file>resources/prv_portrait.png</file>
+    <file>resources/prv_printer.png</file>
+    <file>resources/prv_right-4.png</file>
+    <file>resources/prv_rightall-4.png</file>
+    <file>resources/prv_save-1.png</file>
+    <file>resources/prv_undo.png</file>
+    <file>resources/prv_zoom-in.png</file>
+    <file>resources/prv_zoom-out.png</file>
+    <file>resources/prv_zoom-1.png</file>
+    <file>resources/prv_zoom-out-1.png</file>
+    <file>resources/prv_zoom-in-1.png</file>
+    <file>resources/prv_zoom-original.png</file>
+    <file>resources/prv_grid.png</file>
+    <file>resources/prv_save-doc.png</file>
+    <file>resources/prv_printer-1.png</file>
+    <file>resources/prv_objects.png</file>
+    <file>resources/prv_image.png</file>
+    <file>resources/prv_charts.png</file>
+    <file>resources/prv_gradient.png</file>
+    <file>resources/prv_barcode.png</file>
+    <file>resources/prv_text.png</file>
+    <file>resources/prv_printpreview.png</file>
+    <file>resources/app_side_contract.png</file>
+    <file>resources/app_side_expand.png</file>
+    <file>resources/splitter-h.png</file>
+    <file>resources/splitter-v.png</file>
+    <file>resources/down-1.png</file>
+    <file>resources/up-1.png</file>
+    <file>resources/menu.png</file>
   </qresource>
 </RCC>

@@ -2,6 +2,11 @@
 # $Id$
 #
 
+-3rd=hbide_version=1.0
+-3rd=hbide_type=Lib
+-3rd=hbide_title=hbqtwidgets
+-3rd=hbide_output=hbqtwidgets
+
 -hblib
 
 -w3 
@@ -18,7 +23,7 @@ hbqt.hbc
 -instfile=inc:hbqtstd.ch
 -instfile=inc:hbqtwidgets.hbx
 
-hbqtwidgets.hbx
+-3rd=hbide_file=hbqtwidgets.hbx
 
 getsys.prg
 getlist.prg
@@ -33,6 +38,7 @@ calculator.prg
 alert.prg
 
 toolbar.prg
+toolbarex.prg
 statusbar.prg
 menues.prg
 treeview.prg
@@ -41,10 +47,16 @@ misc.prg
 charts.prg
 dashboard.prg
 
+visualizer.prg
+visualitems.prg
+previewer.prg
+properties.prg
+
 hbqtwidgets.qrc
 
 scroll.ui
-
+visualizer.ui
 
 $hb_pkg_install.hbm
 
+ 

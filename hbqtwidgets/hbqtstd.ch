@@ -295,5 +295,6 @@
 
    #define DBRD_ATTRB_TEXT_NOVRBLS                   6
 
+   #define HBQT_P_XX( n )                            ( Int( QApplication():primaryScreen():logicalDotsPerInchY() * n / 96 ) )
 
 #endif

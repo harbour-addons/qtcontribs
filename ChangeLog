@@ -16,6 +16,119 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-10-19 16:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r370)
+  + hbqtwidgets/resources/app_side_contract.png
+  + hbqtwidgets/resources/app_side_expand.png
+  + hbqtwidgets/resources/application_side_contract.png
+  + hbqtwidgets/resources/application_side_expand.png
+  + hbqtwidgets/resources/down-1.png
+  + hbqtwidgets/resources/menu.png
+  + hbqtwidgets/resources/prv_barcode.png
+  + hbqtwidgets/resources/prv_charts.png
+  + hbqtwidgets/resources/prv_fit-best.png
+  + hbqtwidgets/resources/prv_fit-width.png
+  + hbqtwidgets/resources/prv_gradient.png
+  + hbqtwidgets/resources/prv_grid.png
+  + hbqtwidgets/resources/prv_image.png
+  + hbqtwidgets/resources/prv_landscape.png
+  + hbqtwidgets/resources/prv_left-4.png
+  + hbqtwidgets/resources/prv_leftall-4.png
+  + hbqtwidgets/resources/prv_objects.png
+  + hbqtwidgets/resources/prv_page-setup.png
+  + hbqtwidgets/resources/prv_page_double.png
+  + hbqtwidgets/resources/prv_page_four.png
+  + hbqtwidgets/resources/prv_page_one.png
+  + hbqtwidgets/resources/prv_portrait.png
+  + hbqtwidgets/resources/prv_printer-1.png
+  + hbqtwidgets/resources/prv_printer.png
+  + hbqtwidgets/resources/prv_printpreview.png
+  + hbqtwidgets/resources/prv_right-4.png
+  + hbqtwidgets/resources/prv_rightall-4.png
+  + hbqtwidgets/resources/prv_save-1.png
+  + hbqtwidgets/resources/prv_save-doc.png
+  + hbqtwidgets/resources/prv_text.png
+  + hbqtwidgets/resources/prv_undo.png
+  + hbqtwidgets/resources/prv_zoom-1.png
+  + hbqtwidgets/resources/prv_zoom-in-1.png
+  + hbqtwidgets/resources/prv_zoom-in.png
+  + hbqtwidgets/resources/prv_zoom-original.png
+  + hbqtwidgets/resources/prv_zoom-out-1.png
+  + hbqtwidgets/resources/prv_zoom-out.png
+  + hbqtwidgets/resources/splitter-h.png
+  + hbqtwidgets/resources/splitter-v.png
+  + hbqtwidgets/resources/up-1.png
+
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added more images as above.
+    
+  * hbqtwidgets/hbqtstd.ch
+    + Added more constants to manage classes explained below.
+
+  * hbqtwidgets/misc.prg
+  + hbqtwidgets/toolbarex.prg
+  + hbqtwidgets/visualitems.prg
+  + hbqtwidgets/visualizer.prg
+  + hbqtwidgets/previewer.prg
+  + hbqtwidgets/properties.prg
+
+  + hbqtwidgets/visualizer.ui
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added more sources and uis as above.
+
+    This commit implements following classes extremely useful for 
+    desktop as-well-as mobile business applications. Now onwards 
+    the primary focus will reamin on the development of re-usable 
+    and platform independent components for faster development-to-market
+    experience. All these classes I have pulled from my production 
+    applications and re-tuned to be useable as COM objects.
+
+    Some of these classes are still in development but I am committing 
+    them as is to keep track of the changes as well as in anticipation 
+    of your feedback.
+
+    1. CLASS HbQtScrollableToolbar  [ Status - Usable ]
+        This class implements a scrollable toolbar which can contain 
+        n number of buttons and is usable on any type of device. Toolbar 
+        also shows up left-right visual indicators if buttons scroll 
+        past the either-side. The look can be controlled by provided 
+        methods. Height and width of the buttons, of icons and the 
+        gap between buttons is also adjustable. Both, horizontal 
+        and vertical orinetations are supported. Toolbars expect 
+        QHBoxLayout | QVBoxLayout as its parents.
+
+    2. CLASS HbQtPrintPreview        [ Status - Usable ]
+        This class extends the QPrintPreviewWidget with all the eliments
+        embedded, as per QPrintPreviewDialog(), but as a components 
+        ready to be consumed by a QHBoxLayout or QVBoxLayout. QDilogs
+        fare badly on mobile environments so I had a need to have it 
+        as a widget with additional elements. Still a couple of methods,
+        for real-extended use, are still on my drawing-board. Stay tuned.
+
+    3. CLASS HbQtPropertiesManager   [ Status - Under Development ]
+       CLASS HbQtPropertySheet
+       CLASS HbQtProperty
+        This group of classes is responsible to manage the PropertySheet 
+        interface similar like Qt Creator and all other visual tools.
+        But here this component may be used for a variety of business 
+        needs. For example, implimenting the data-entry screens based 
+        on PropertySheet. I am sensing how big usage this interface 
+        can provide so every care will be taken to honor Clipper variable
+        types. 
+
+    4. CLASS HbQtVisualizer         [ Status - Under Development ]
+       CLASS HbQtVisualItems
+        These classes implement a COM like embeddable components to manage 
+        a variety of business needs VISUALLY. It is the same code base 
+        I started as IdeReports which is a part of HbIDE ( though totally 
+        non-functional ) via HbXBP engine. Now it is in the process of 
+        heavy changes and different vision of usability than it was 
+        thought-of at origin. Because it is a MUST requirement for my 
+        production development, I hope it will reach its maturity soon.
+
+  + hbqtwidgets/tests/demovisualizer.prg
+    + Demo application demonstrating all above components in action.
+
 2014-10-19 13:18 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r369)
   * hbqt/qtcore/hbqt.h
     % Moved MSVC related defines before Harbour headers.
