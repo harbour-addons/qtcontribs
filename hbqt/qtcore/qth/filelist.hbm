@@ -19,6 +19,8 @@ QBuffer.qth
 QByteArray.qth
 QChar.qth
 QChildEvent.qth
+QCommandLineOption.qth
+QCommandLineParser.qth
 QCoreApplication.qth
 QDataStream.qth
 QDate.qth
@@ -61,6 +63,9 @@ QPropertyAnimation.qth
 QRect.qth
 QRectF.qth
 QRegExp.qth
+QRegularExpression.qth
+QRegularExpressionMatch.qth
+QRegularExpressionMatchIterator.qth
 QResource.qth
 QSequentialAnimationGroup.qth
 QSettings.qth

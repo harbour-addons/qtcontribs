@@ -1,0 +1,75 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050200
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QCommandLineOption>
+
+
+/*
+ * QCommandLineOption(const QString & name)
+ * QCommandLineOption(const QStringList & names)
+ * QCommandLineOption(const QString & name, const QString & description, const QString & valueName = QString(), const QString & defaultValue = QString())
+ * QCommandLineOption(const QStringList & names, const QString & description, const QString & valueName = QString(), const QString & defaultValue = QString())
+ * QCommandLineOption(const QCommandLineOption & other)
+ * ~QCommandLineOption()
+ */
+HB_FUNC( QT_QCOMMANDLINEOPTION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QCommandLineOption" ) )
+   {
+      __HB_RETPTRGC__( new QCommandLineOption( *hbqt_par_QCommandLineOption( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QStringList" ) )
+   {
+      __HB_RETPTRGC__( new QCommandLineOption( *hbqt_par_QStringList( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QCommandLineOption( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QStringList   defaultValues() const
+QString       description() const
+QStringList   names() const
+void          setDefaultValue(const QString & defaultValue)
+void          setDefaultValues(const QStringList & defaultValues)
+void          setDescription(const QString & description)
+void          setValueName(const QString & valueName)
+void          swap(QCommandLineOption & other)
+QString       valueName() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

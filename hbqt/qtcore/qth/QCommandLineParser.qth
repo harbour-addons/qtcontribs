@@ -1,0 +1,71 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050200
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QCommandLineParser>
+
+
+/*
+ * QCommandLineParser()
+ * ~QCommandLineParser()
+ */
+HB_FUNC( QT_QCOMMANDLINEPARSER )
+{
+   __HB_RETPTRGC__( new QCommandLineParser() );
+}
+</CODE>
+
+<ENUMS>
+enum SingleDashWordOptionMode { ParseAsCompactedShortOptions, ParseAsLongOptions }
+</ENUMS>
+
+<PROTOS>
+QCommandLineOption   addHelpOption()
+bool                 addOption(const QCommandLineOption & option)
+bool                 addOptions(const QList<QCommandLineOption> & options)   [*V=0x050400*]
+void                 addPositionalArgument(const QString & name, const QString & description, const QString & syntax = QString())
+QCommandLineOption   addVersionOption()
+QString              applicationDescription() const
+void                 clearPositionalArguments()
+QString              errorText() const
+QString              helpText() const
+bool                 isSet(const QString & name) const
+bool                 isSet(const QCommandLineOption & option) const
+QStringList          optionNames() const
+bool                 parse(const QStringList & arguments)
+QStringList          positionalArguments() const
+void                 process(const QStringList & arguments)
+void                 process(const QCoreApplication & app)
+void                 setApplicationDescription(const QString & description)
+void                 setSingleDashWordOptionMode(SingleDashWordOptionMode singleDashWordOptionMode)
+void                 showHelp(int exitCode = 0)
+void                 showVersion()                                           [*V=0x050400*]
+QStringList          unknownOptionNames() const
+QString              value(const QString & optionName) const
+QString              value(const QCommandLineOption & option) const
+QStringList          values(const QString & optionName) const
+QStringList          values(const QCommandLineOption & option) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

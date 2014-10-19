@@ -1,0 +1,61 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x040900
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QRegularExpressionMatchIterator>
+
+
+/*
+ * QRegularExpressionMatchIterator()
+ * QRegularExpressionMatchIterator(const QRegularExpressionMatchIterator & iterator)
+ * ~QRegularExpressionMatchIterator()
+ */
+HB_FUNC( QT_QREGULAREXPRESSIONMATCHITERATOR )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QRegularExpressionMatchIterator" ) )
+   {
+      __HB_RETPTRGC__( new QRegularExpressionMatchIterator( *hbqt_par_QRegularExpressionMatchIterator( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QRegularExpressionMatchIterator() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   hasNext() const
+bool   isValid() const
+QRegularExpression::MatchOptions   matchOptions() const
+QRegularExpression::MatchType   matchType() const
+QRegularExpressionMatch   next()
+QRegularExpressionMatch   peekNext() const
+QRegularExpression   regularExpression() const
+void   swap(QRegularExpressionMatchIterator & other)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

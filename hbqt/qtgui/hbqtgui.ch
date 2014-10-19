@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2011 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -365,7 +365,52 @@
 #define QMessageBox_Abort                         0x00040000   // An "Abort" button defined with the RejectRole.
 #define QMessageBox_Retry                         0x00080000   // A "Retry" button defined with the AcceptRole.
 #define QMessageBox_Ignore                        0x00100000   // An "Ignore" button defined with the AcceptRole.
-#define QMessageBox_NoButton                      0x00000000   // An invalid button.
+#define QMessageBox_NoButton                      0x00000000        // An invalid button.
+
+#define Qt_NoButton                               0x00000000   // The button state does not refer to any button (see QMouseEvent_button()).
+#define Qt_AllButtons                             0x07ffffff        // This value corresponds to a mask of all possible mouse buttons. Use to set the 'acceptedButtons' property of a mouseArea to accept ALL mouse buttons.
+#define Qt_LeftButton                             0x00000001        // The left button is pressed, or an event refers to the left button. (The left button may be the right button on left-handed mice.)
+#define Qt_RightButton                            0x00000002        // The right button.
+#define Qt_MidButton                              0x00000004        // The middle button.
+#define Qt_MiddleButton                           Qt_MidButton      // The middle button.
+#define Qt_BackButton                             0x00000008        // The 'Back' button. (Typically present on the 'thumb' side of a mouse with extra buttons. This is NOT the tilt wheel.)
+#define Qt_XButton1                               Qt_BackButton     // The 'Back' Button.
+#define Qt_ExtraButton1                           Qt_XButton1       // The 'Back' Button.
+#define Qt_ForwardButton                          0x00000010        // The 'Forward' Button. (Typically present beside the 'Back' button, and also pressed by the thumb.)
+#define Qt_XButton2                               Qt_ForwardButton  // The 'Forward Button.
+#define Qt_ExtraButton2                           Qt_ForwardButton  // The 'Forward' Button.
+#define Qt_TaskButton                             0x00000020        // The 'Task' Button.
+#define Qt_ExtraButton3                           Qt_TaskButton     // The 'Task' Button.
+#define Qt_ExtraButton4                           0x00000040        // The 7th non-wheel Mouse Button.
+#define Qt_ExtraButton5                           0x00000080        // The 8th non-wheel Mouse Button.
+#define Qt_ExtraButton6                           0x00000100        // The 9th non-wheel Mouse Button.
+#define Qt_ExtraButton7                           0x00000200        // The 10th non-wheel Mouse Button.
+#define Qt_ExtraButton8                           0x00000400        // The 11th non-wheel Mouse Button.
+#define Qt_ExtraButton9                           0x00000800        // The 12th non-wheel Mouse Button.
+#define Qt_ExtraButton10                          0x00001000        // The 13th non-wheel Mouse Button.
+#define Qt_ExtraButton11                          0x00002000        // The 14th non-wheel Mouse Button.
+#define Qt_ExtraButton12                          0x00004000        // The 15th non-wheel Mouse Button.
+#define Qt_ExtraButton13                          0x00008000        // The 16th non-wheel Mouse Button.
+#define Qt_ExtraButton14                          0x00010000        // The 17th non-wheel Mouse Button.
+#define Qt_ExtraButton15                          0x00020000        // The 18th non-wheel Mouse Button.
+#define Qt_ExtraButton16                          0x00040000        // The 19th non-wheel Mouse Button.
+#define Qt_ExtraButton17                          0x00080000        // The 20th non-wheel Mouse Button.
+#define Qt_ExtraButton18                          0x00100000        // The 21st non-wheel Mouse Button.
+#define Qt_ExtraButton19                          0x00200000        // The 22nd non-wheel Mouse Button.
+#define Qt_ExtraButton20                          0x00400000        // The 23rd non-wheel Mouse Button.
+#define Qt_ExtraButton21                          0x00800000        // The 24th non-wheel Mouse Button.
+#define Qt_ExtraButton22                          0x01000000        // The 25th non-wheel Mouse Button.
+#define Qt_ExtraButton23                          0x02000000        // The 26th non-wheel Mouse Button.
+#define Qt_ExtraButton24                          0x04000000        // The 27th non-wheel Mouse Button.
+
+//enum Qt::MouseEventFlag
+//This enum provides additional information concerning a QMouseEvent.
+#define Qt_MouseEventCreatedDoubleClick           0x01        // Indicates that Qt has created a MouseButtonDblClick event from this event. The flag is set in the causing MouseButtonPress, and not in the resulting MouseButtonDblCLick.
+
+//enum Qt::MouseEventSource
+#define Qt_MouseEventNotSynthesized               0           // The most common value. On platforms where such information is available this value indicates that the event was generated in response to a genuine mouse event in the system.
+#define Qt_MouseEventSynthesizedBySystem          1           // Indicates that the mouse event was synthesized from a touch event by the platform.
+#define Qt_MouseEventSynthesizedByQt              2           // Indicates that the mouse event was synthesized from an unhandled touch event by Qt.
 
 #define Qt_AlignLeft                              0x0001      // Aligns with the left edge.
 #define Qt_AlignRight                             0x0002      // Aligns with the right edge.
@@ -1182,8 +1227,6 @@
 #define Qt_MatchWildcard                          5    // Performs string-based matching using a string with wildcards as the search term.
 #define Qt_MatchWrap                              32   // Perform a search that wraps around, so that when the search reaches the last item in the model, it begins again at the first item and continues until all items have been examined.
 #define Qt_MatchRecursive                         64   // Searches the entire hierarchy.
-// The MatchFlags type is a typedef for QFlags<MatchFlag>. It stores an OR combination of MatchFlag values.
-// See also QString_compare() and QRegExp.
 
 // enum #define Qt_Modifier
 // This enum provides shorter names for the keyboard modifier keys supported by Qt.
@@ -1194,20 +1237,6 @@
 #define Qt_CTRL                                   Qt_ControlModifier   // The Ctrl keys.
 #define Qt_ALT                                    Qt_AltModifier       // The normal Alt keys, but not keys like AltGr.
 #define Qt_UNICODE_ACCEL                          0x00000000           // The shortcut is specified as a Unicode code point, not as a Qt Key.
-// See also KeyboardModifier and MouseButton.
-
-// enum #define Qt_MouseButton
-// flags #define Qt_MouseButtons
-// This enum type describes the different mouse buttons.
-//
-#define Qt_NoButton                               0x00000000   // The button state does not refer to any button (see QMouseEvent_button()).
-#define Qt_LeftButton                             0x00000001   // The left button is pressed, or an event refers to the left button. (The left button may be the right button on left-handed mice.)
-#define Qt_RightButton                            0x00000002   // The right button.
-#define Qt_MidButton                              0x00000004   // The middle button.
-#define Qt_XButton1                               0x00000008   // The first X button.
-#define Qt_XButton2                               0x00000010   // The second X button.
-// The MouseButtons type is a typedef for QFlags<MouseButton>. It stores an OR combination of MouseButton values.
-// See also KeyboardModifier and Modifier.
 
 // enum #define Qt_Orientation
 // flags #define Qt_Orientations
@@ -1215,8 +1244,6 @@
 //
 #define Qt_Horizontal                             0x1
 #define Qt_Vertical                               0x2
-// Orientation is used with QScrollBar for example.
-// The Orientations type is a typedef for QFlags<Orientation>. It stores an OR combination of Orientation values.
 
 // enum #define Qt_PenCapStyle
 // This enum type defines the pen cap styles supported by Qt, i.e. the line end caps that can be drawn using QPainter.
@@ -1224,7 +1251,6 @@
 #define Qt_FlatCap                                0x00  // a square line end that does not cover the end point of the line.
 #define Qt_SquareCap                              0x10  // a square line end that covers the end point and extends beyond it by half the line width.
 #define Qt_RoundCap                               0x20  // a rounded line end.
-// See also QPen.
 
 // enum #define Qt_PenJoinStyle
 // This enum type defines the pen join styles supported by Qt, i.e. which joins between two connected lines can be drawn using QPainter.
@@ -1233,7 +1259,6 @@
 #define Qt_BevelJoin                              0x40  // The triangular notch between the two lines is filled.
 #define Qt_RoundJoin                              0x80  // A circular arc between the two lines is filled.
 #define Qt_SvgMiterJoin                           0x100 // A miter join corresponding to the definition of a miter join in the SVG 1.2 Tiny specification.
-// See also QPen.
 
 // enum #define Qt_PenStyle
 // This enum type defines the pen styles that can be drawn using QPainter. The styles are:
@@ -1245,7 +1270,6 @@
 #define Qt_DashDotLine                            4     // Alternate dots and dashes.
 #define Qt_DashDotDotLine                         5     // One dash, two dots, one dash, two dots.
 #define Qt_CustomDashLine                         6     // A custom pattern defined using QPainterPathStroker_setDashPattern().
-// See also QPen.
 
 // enum #define Qt_ScrollBarPolicy
 // This enum type describes the various modes of QAbstractScrollArea's scroll bars.
@@ -1253,7 +1277,6 @@
 #define Qt_ScrollBarAsNeeded                      0     // QAbstractScrollArea shows a scroll bar when the content is too large to fit and not otherwise. This is the default.
 #define Qt_ScrollBarAlwaysOff                     1     // QAbstractScrollArea never shows a scroll bar.
 #define Qt_ScrollBarAlwaysOn                      2     // QAbstractScrollArea always shows a scroll bar.
-// The modes for the horizontal and vertical scroll bars are independent.)
 
 // enum #define Qt_ShortcutContext
 // For a QEvent_Shortcut event to occur, the shortcut's key sequence must be entered by the user in a context where the shortcut is active. The possible contexts are these:
@@ -1270,7 +1293,6 @@
 #define Qt_PreferredSize                          1     // is used to specify the preferred size of a graphics layout item.
 #define Qt_MaximumSize                            2     // is used to specify the maximum size of a graphics layout item.
 #define Qt_MinimumDescent                         3     // is used to specify the minimum descent of a text string in a graphics layout item.
-// See also QGraphicsLayoutItem_sizeHint().
 
 // enum #define Qt_SizeMode
 // This enum is used by QPainter_drawRoundedRect() and QPainterPath_addRoundedRect() functions to specify the radii of rectangle corners with respect to the dimensions of the bounding rectangles specified.
@@ -1292,7 +1314,6 @@
 #define Qt_ElideMiddle                            2     // The ellipsis should appear in the middle of the text.
 #define Qt_ElideNone                              3     // Ellipsis should NOT appear in the text.
 // #define Qt_ElideMiddle is normally the most appropriate choice for URLs (e.g., "http://www.qtsof...ovingto/beijing/"), whereas #define Qt_ElideRight is appropriate for other strings (e.g., "Deploying Applications on Ma...").
-// See also QAbstractItemView_textElideMode, QFontMetrics_elidedText(), AlignmentFlag, and QTabBar_elideMode.
 
 // enum #define Qt_TextFlag
 // This enum type is used to define some modifier flags. Some of these flags only make sense in the context of printing:
@@ -1331,7 +1352,6 @@
 #define Qt_TextEditable                           16    // The text is fully editable.
 #define Qt_TextEditorInteraction                  hb_bitOR( Qt_TextSelectableByMouse, Qt_TextSelectableByKeyboard, Qt_TextEditable )             // The default for a text editor.
 #define Qt_TextBrowserInteraction                 hb_bitOR( Qt_TextSelectableByMouse, Qt_LinksAccessibleByMouse, Qt_LinksAccessibleByKeyboard )  // The default for QTextBrowser.
-// The TextInteractionFlags type is a typedef for QFlags<TextInteractionFlag>. It stores an OR combination of TextInteractionFlag values.
 
 // enum #define Qt_TimeSpec
 //
@@ -1348,7 +1368,6 @@
 #define Qt_BottomToolBarArea                      0x8
 #define Qt_AllToolBarAreas                        hb_bitOR( Qt_LeftToolBarArea, Qt_RightToolBarArea, Qt_TopToolBarArea, Qt_BottomToolBarArea )
 #define Qt_NoToolBarArea                          0
-// The ToolBarAreas type is a typedef for QFlags<ToolBarArea>. It stores an OR combination of ToolBarArea values.
 
 // enum #define Qt_ToolButtonStyle
 // The style of the tool button, describing how the button's text and icon should be displayed.
@@ -1364,7 +1383,6 @@
 //
 #define Qt_FastTransformation                     0     // The transformation is performed quickly, with no smoothing.
 #define Qt_SmoothTransformation                   1     // The resulting image is transformed using bilinear filtering.
-// See also QImage_scaled().
 
 // enum #define Qt_UIEffect
 // This enum describes the available UI effects.
@@ -1377,7 +1395,6 @@
 #define Qt_UI_AnimateTooltip                      4     // Show tooltip animations.
 #define Qt_UI_FadeTooltip                         5     // Show tooltip fading effects.
 #define Qt_UI_AnimateToolBox                      6     // Reserved
-// See also QApplication_setEffectEnabled() and QApplication_setDesktopSettingsAware().
 
 // enum #define Qt_WhiteSpaceMode
 // This enum describes the types of whitespace mode that are used by the QTextDocument class to meet the requirements of different kinds of textual information.
@@ -1385,7 +1402,6 @@
 #define Qt_WhiteSpaceNormal                       0     // The whitespace mode used to display normal word wrapped text in paragraphs.
 #define Qt_WhiteSpacePre                          1     // A preformatted text mode in which whitespace is reproduced exactly.
 #define Qt_WhiteSpaceNoWrap                       2
-// This enum is defined in the <QTextDocument> header file.
 
 // enum #define Qt_WidgetAttribute
 // This enum type is used to specify various widget attributes. Attributes are set and cleared with QWidget_setAttribute(), and queried with QWidget_testAttribute(), although some have special convenience functions which are mentioned below.
@@ -4987,6 +5003,33 @@
 #define Qt_TouchPointMoved                                   0x02   // The touch point moved.
 #define Qt_TouchPointStationary                              0x04   // The touch point did not move.
 #define Qt_TouchPointReleased                                0x08   // The touch point was released.
+
+//enum QRegularExpression::MatchOption
+//flags QRegularExpression::MatchOptions
+#define QRegularExpression_NoMatchOption                       0x0000   // No match options are set.
+#define QRegularExpression_AnchoredMatchOption                 0x0001   // The match is constrained to start exactly at the offset passed to match() in order to be successful, even if the pattern string does not contain any metacharacter that anchors the match at that point.
+#define QRegularExpression_DontCheckSubjectStringMatchOption   0x0002   // The subject string is not checked for UTF-16 validity before attempting a match. Use this option with extreme caution, as attempting to match an invalid string may crash the program and/or constitute a security issue. This enum value has been introduced in Qt 5.4.
+
+//enum QRegularExpression::MatchType
+//The MatchType enum defines the type of the match that should be attempted against the subject string.
+#define QRegularExpression_NormalMatch                       0   // A normal match is done.
+#define QRegularExpression_PartialPreferCompleteMatch        1   // The pattern string is matched partially against the subject string. If a partial match is found, then it is recorded, and other matching alternatives are tried as usual. If a complete match is then found, then it's preferred to the partial match; in this case only the complete match is reported. If instead no complete match is found (but only the partial one), then the partial one is reported.
+#define QRegularExpression_PartialPreferFirstMatch           2   // The pattern string is matched partially against the subject string. If a partial match is found, then matching stops and the partial match is reported. In this case, other matching alternatives (potentially leading to a complete match) are not tried. Moreover, this match type assumes that the subject string only a substring of a larger text, and that (in this text) there are other characters beyond the end of the subject string. This can lead to surprising results; see the discussion in the partial matching section for more details.
+#define QRegularExpression_NoMatch                           3   // No matching is done. This value is returned as the match type by a default constructed QRegularExpressionMatch or QRegularExpressionMatchIterator. Using this match type is not very useful for the user, as no matching ever happens. This enum value has been introduced in Qt 5.1.
+
+//enum QRegularExpression::PatternOption
+//flags QRegularExpression::PatternOptions
+#define QRegularExpression_NoPatternOption                   0x0000   // No pattern options are set.
+#define QRegularExpression_CaseInsensitiveOption             0x0001   // The pattern should match against the subject string in a case insensitive way. This option corresponds to the /i modifier in Perl regular expressions.
+#define QRegularExpression_DotMatchesEverythingOption        0x0002   // The dot metacharacter (.) in the pattern string is allowed to match any character in the subject string, including newlines (normally, the dot does not match newlines). This option corresponds to the /s modifier in Perl regular expressions.
+#define QRegularExpression_MultilineOption                   0x0004   // The caret (^) and the dollar ($) metacharacters in the pattern string are allowed to match, respectively, immediately after and immediately before any newline in the subject string, as well as at the very beginning and at the very end of the subject string. This option corresponds to the /m modifier in Perl regular expressions.
+#define QRegularExpression_ExtendedPatternSyntaxOption       0x0008   // Any whitespace in the pattern string which is not escaped and outside a character class is ignored. Moreover, an unescaped sharp (#) outside a character class causes all the following characters, until the first newline (included), to be ignored. This can be used to increase the readability of a pattern string as well as put comments inside regular expressions; this is particulary useful if the pattern string is loaded from a file or written by the user, because in C++ code it is always possible to use the rules for string literals to put comments outside the pattern string. This option corresponds to the /x modifier in Perl regular expressions.
+#define QRegularExpression_InvertedGreedinessOption          0x0010   // The greediness of the quantifiers is inverted: *, +, ?, {m,n}, etc. become lazy, while their lazy versions (*?, +?, ??, {m,n}?, etc.) become greedy. There is no equivalent for this option in Perl regular expressions.
+#define QRegularExpression_DontCaptureOption                 0x0020   // The non-named capturing groups do not capture substrings; named capturing groups still work as intended, as well as the implicit capturing group number 0 corresponding to the entire match. There is no equivalent for this option in Perl regular expressions.
+#define QRegularExpression_UseUnicodePropertiesOption        0x0040   // The meaning of the \w, \d, etc., character classes, as well as the meaning of their counterparts (\W, \D, etc.), is changed from matching ASCII characters only to matching any character with the corresponding Unicode property. For instance, \d is changed to match any character with the Unicode Nd (decimal digit) property; \w to match any character with either the Unicode L (letter) or N (digit) property, plus underscore, and so on. This option corresponds to the /u modifier in Perl regular expressions.
+#define QRegularExpression_OptimizeOnFirstUsageOption        0x0080   // The regular expression will be optimized (and possibly JIT-compiled) on its first usage, instead of after a certain (undefined) number of usages. See also optimize(). This enum value has been introduced in Qt 5.4.
+#define QRegularExpression_DontAutomaticallyOptimizeOption   0x0100   // Regular expressions are automatically optimized after a certain number of usages; setting this option prevents such optimizations, therefore avoiding possible unpredictable spikes in CPU and memory usage. If both this option and the OptimizeOnFirstUsageOption option are set, then this option takes precedence. Note: this option will still let the regular expression to be optimized by manually calling optimize(). This enum value has been introduced in Qt 5.4.
+
 
 #endif
 

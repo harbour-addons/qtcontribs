@@ -1,0 +1,58 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+QObject     =
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtWidget/QSplitterHandle>
+
+
+/*
+ * QSplitterHandle(Qt::Orientation orientation, QSplitter * parent)
+ * ~QSplitterHandle()
+ */
+HB_FUNC( QT_QSPLITTERHANDLE )
+{
+   if( hb_pcount() == 2 && HB_ISNUM( 1 ) && hbqt_par_isDerivedFrom( 2, "QSplitter" ) )
+   {
+      __HB_RETPTRGC__( new QSplitterHandle( ( Qt::Orientation ) hb_parni( 1 ), hbqt_par_QSplitter( 2 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   opaqueResize() const
+Qt::Orientation   orientation() const
+void   setOrientation(Qt::Orientation orientation)
+QSplitter *   splitter() const
+
+virtual QSize   sizeHint() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

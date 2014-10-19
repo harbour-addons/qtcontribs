@@ -16,6 +16,22 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-10-19 12:58 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r368)
+  + hbqt/qtcore/qth/QCommandLineOption.qth
+  + hbqt/qtcore/qth/QCommandLineParser.qth
+  + hbqt/qtcore/qth/QRegularExpression.qth
+  + hbqt/qtcore/qth/QRegularExpressionMatch.qth
+  + hbqt/qtcore/qth/QRegularExpressionMatchIterator.qth
+  * hbqt/qtcore/qth/filelist.hbm
+    + Added: above classes.
+
+  + hbqt/qtgui/qth/QSplitterHandle.qth
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added: above classes.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added more constants referenced in above classes.
+
 2014-10-03 16:46 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r367)
   * hbide/editor.prg
     ! Fixed: RTE on clicking on <Apply All> in <Themes Editor>.

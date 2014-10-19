@@ -1,0 +1,72 @@
+/*
+ * $Id: QAudioDeviceInfo.qth 34 2012-10-13 21:57:41Z bedipritpal $
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x040900
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QRegularExpressionMatch>
+
+
+/*
+ * QRegularExpressionMatch()
+ * QRegularExpressionMatch(const QRegularExpressionMatch & match)
+ * ~QRegularExpressionMatch()
+ */
+HB_FUNC( QT_QREGULAREXPRESSIONMATCH )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QRegularExpressionMatch" ) )
+   {
+      __HB_RETPTRGC__( new QRegularExpressionMatch( *hbqt_par_QRegularExpressionMatch( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QRegularExpressionMatch() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString              captured(int nth = 0) const
+QString              captured(const QString & name) const
+int                  capturedEnd(int nth = 0) const
+int                  capturedEnd(const QString & name) const
+int                  capturedLength(int nth = 0) const
+int                  capturedLength(const QString & name) const
+QStringRef           capturedRef(int nth = 0) const
+QStringRef           capturedRef(const QString & name) const
+int                  capturedStart(int nth = 0) const
+int                  capturedStart(const QString & name) const
+QStringList          capturedTexts() const
+bool                 hasMatch() const
+bool                 hasPartialMatch() const
+bool                 isValid() const
+int                  lastCapturedIndex() const
+QRegularExpression::MatchOptions   matchOptions() const
+QRegularExpression::MatchType      matchType() const
+QRegularExpression   regularExpression() const
+void                 swap(QRegularExpressionMatch & other)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
