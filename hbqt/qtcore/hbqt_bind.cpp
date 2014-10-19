@@ -644,12 +644,14 @@ void hbqt_bindDestroyQtObject( void * qtObject, QObject * qObject )
          {
             qObject->removeEventFilter( hbqt_bindGetThreadData()->pReceiverEvents );
          }
+#if QT_VERSION <= 0x050300
          if( ( bind->iFlags & HBQT_BIT_QOBJECT ) && ( bind->hbObject ) )
          {
             PHB_ITEM hbObject = hb_arrayFromId( NULL, bind->hbObject );
             hbqt_bindDelEvents( hbObject );
             hbqt_bindDelSlots( hbObject );
          }
+#endif
          hbqt_bindRemoveBind( bind );
       }
    }
@@ -671,12 +673,14 @@ static void hbqt_bindDestroyQtObjectA( void * qtObject, QObject * qObject )
          {
             qObject->removeEventFilter( hbqt_bindGetThreadData()->pReceiverEvents );
          }
+#if QT_VERSION <= 0x050300
          if( ( bind->iFlags & HBQT_BIT_QOBJECT ) && ( bind->hbObject ) )
          {
             PHB_ITEM hbObject = hb_arrayFromId( NULL, bind->hbObject );
             hbqt_bindDelEvents( hbObject );
             hbqt_bindDelSlots( hbObject );
          }
+#endif
          int iFlags = bind->iFlags;
          PHBQT_DEL_FUNC pDelFunc = bind->pDelFunc;
          hbqt_bindRemoveBind( bind );
@@ -1091,6 +1095,15 @@ HB_FUNC( __HBQT_DESTROY )
    PHB_ITEM pObject = hb_stackSelfItem();
    if( pObject )
       hbqt_bindDestroyHbObject( pObject );
+}
+
+HB_FUNC( __HBQT_DELETE )
+{
+   PHB_ITEM pObject = hb_param( 1, HB_IT_OBJECT );
+   if( pObject )
+   {
+      hbqt_bindDestroyHbObject( pObject );
+   }
 }
 
 HB_FUNC( __HBQT_FINDCHILD )

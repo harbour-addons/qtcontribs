@@ -64,6 +64,9 @@
 
 #include "hbqt_hbqgraphicsscene.h"
 
+#include <QtGui/QPageLayout>
+
+
 HBQGraphicsScene::HBQGraphicsScene( QObject * parent ) : QGraphicsScene( parent )
 {
    block          = 0;
@@ -73,10 +76,10 @@ HBQGraphicsScene::HBQGraphicsScene( QObject * parent ) : QGraphicsScene( parent 
    m_paperBorder  = 0;
    m_pageBorder   = 0;
    m_showGrid     = false;
-   m_pageSize     = QPrinter::A4;
+   m_pageSize     = QPrinter::Letter;
    m_orientation  = QPrinter::Portrait;
 
-   setPageSize( QPrinter::A4 );
+   setPageSize( QPrinter::Letter );
    setOrientation( QPrinter::Portrait );
 
    QFont m_font = QFont( "Serif" );
@@ -95,12 +98,27 @@ HBQGraphicsScene::~HBQGraphicsScene()
    }
 }
 
+void HBQGraphicsScene::hbClearBlock()
+{
+   if( block )
+   {
+      hb_itemRelease( block );
+      block = NULL;
+   }
+}
+
 void HBQGraphicsScene::hbSetBlock( PHB_ITEM b )
 {
+   if( block )
+   {
+      hb_itemRelease( block );
+      block = NULL;
+   }
+
    if( b )
    {
       block = hb_itemNew( b );
-      // hb_gcUnlock( block );
+      hb_gcUnlock( block );
 
       QDesktopWidget *  qWid  = new QDesktopWidget();
 
@@ -128,12 +146,14 @@ void HBQGraphicsScene::setGeometry( QRectF rect )
 void HBQGraphicsScene::updatePageRect()
 {
    QPrinter p;
+   QPageSize ps( ( QPageSize::PageSizeId ) pageSize() );
+   QPageLayout oPageLayout( ps, ( QPageLayout::Orientation ) orientation(), QMarginsF( 10,10,10,10 ), QPageLayout::Millimeter );
 
+   oPageLayout.setMode( QPageLayout::StandardMode );
+
+   p.setPageLayout( oPageLayout );
    p.setOutputFormat( QPrinter::PdfFormat );
-   p.setOrientation( ( QPrinter::Orientation ) orientation() );
-   p.setPageSize( ( QPrinter::PageSize ) pageSize() );
-   p.setFullPage( true );
-   setSceneRect( 0, 0, p.paperRect( QPrinter::Millimeter ).width() / UNIT, p.paperRect( QPrinter::Millimeter ).height() / UNIT );
+   setSceneRect( 0, 0, p.pageRect( QPrinter::Millimeter ).width() / UNIT, p.pageRect( QPrinter::Millimeter ).height() / UNIT );
 }
 
 int HBQGraphicsScene::pageSize()
@@ -145,7 +165,9 @@ void HBQGraphicsScene::setPageSize( int pageSize )
    m_pageSize  = pageSize;
    updatePageRect();
    m_paperRect = sceneRect();
-   setGeometry( QRect( 10 / UNIT, 10 / UNIT, sceneRect().width() - 10 / UNIT * 2, sceneRect().height() - 10 / UNIT * 2 ) );
+   //setGeometry( QRect( -10 / UNIT, -10 / UNIT, sceneRect().width() + 10 / UNIT * 2, sceneRect().height() + 10 / UNIT * 2 ) );
+   //setGeometry( QRect( 0, 0, sceneRect().width(), sceneRect().height() ) );
+   setGeometry( sceneRect() );
 }
 
 QRectF HBQGraphicsScene::paperRect()
@@ -416,6 +438,21 @@ void HBQGraphicsScene::keyPressEvent( QKeyEvent * keyEvent )
    }
 }
 
+void HBQGraphicsScene::drawBackground( QPainter * painter, const QRectF & rect )
+{
+   if( block )
+   {
+      PHB_ITEM p1 = hb_itemPutNI( NULL, 21201 );
+      PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) painter, "HB_QPAINTER", NULL, 0 );
+      PHB_ITEM p3 = hbqt_bindGetHbObject( NULL, new QRectF( rect ), "HB_QRECTF", NULL, 0 );
+      hb_vmEvalBlockV( block, 3, p1, p2, p3 );
+      hb_itemRelease( p1 );
+      hb_itemRelease( p2 );
+      hb_itemRelease( p3 );
+   }
+   QGraphicsScene::drawBackground( painter, rect );
+}
+
 /*----------------------------------------------------------------------*/
 /*                             Drag & Drop                              */
 /*----------------------------------------------------------------------*/
@@ -525,7 +562,10 @@ void HBQGraphicsScene::dropEvent( QGraphicsSceneDragDropEvent * event )
          hb_itemRelease( p2 );
       }
    }
-   QGraphicsScene::dropEvent( event );
+   else
+   {
+      QGraphicsScene::dropEvent( event );
+   }
 }
 
 /*----------------------------------------------------------------------*/
@@ -551,8 +591,8 @@ void HBQGraphicsScene::drawBorder()
    m_paperBorder = addRect( m_paperRect );
 
    p.setStyle( Qt::SolidLine );
-   p.setColor( QColor( 0, 0, 255 ) );
-   p.setWidth( 4 );
+   p.setColor( QColor( 255, 255, 255 ) );
+   p.setWidth( 0 );
    m_pageBorder = addRect( geometry() );
    m_pageBorder->setPen( p );
 
@@ -576,12 +616,24 @@ void HBQGraphicsScene::drawBorder()
          QGraphicsLineItem * line = new QGraphicsLineItem( m_paperBorder );
          line->setPen( n % 2 == 0 ? p : p1 );
          line->setLine( i, 0, i, height() );
+         if( n % 2 == 0 )
+         {
+            QGraphicsTextItem * text = new QGraphicsTextItem( QString::number( i * UNIT ), m_paperBorder );
+            text->setPos( i - 15, 0.0 );
+            text->setFont( QFont( "Ariel", 12 ) );
+         }
       }
       for( int i = 0, n = 0; i < height(); i += ( 5.0 / UNIT ), n++ )
       {
          QGraphicsLineItem * line = new QGraphicsLineItem( m_paperBorder );
          line->setPen( n % 2 == 0 ? p : p1 );
          line->setLine( 0, i, width(), i );
+         if( n % 2 == 0 )
+         {
+            QGraphicsTextItem * text = new QGraphicsTextItem( QString::number( i * UNIT ), m_paperBorder );
+            text->setPos( 0.0, i - 15 );
+            text->setFont( QFont( "Ariel", 12 ) );
+         }
       }
    }
    m_pageBorder->setZValue( -1 );
@@ -670,9 +722,9 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
       return;
 
    QPen p;
-   p.setWidth( 3 );
-   p.setColor( Qt::cyan );
-   p.setStyle( Qt::DotLine );
+   p.setWidth( 5 );
+   p.setColor( Qt::red );
+   p.setStyle( Qt::DashDotLine );
 
    foreach( QGraphicsItem * it, items() )
    {

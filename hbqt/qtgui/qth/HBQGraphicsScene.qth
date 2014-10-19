@@ -47,6 +47,7 @@ HB_FUNC( QT_HBQGRAPHICSSCENE )
 
 <PROTOS>
    void                     hbSetBlock( PHB_ITEM block )
+   void                     hbClearBlock()
 
    virtual int              pageSize()
    virtual void             setPageSize( int pageSize )

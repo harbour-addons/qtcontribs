@@ -49,6 +49,7 @@ HB_FUNC( QT_HBQGRAPHICSITEM )
 
 <PROTOS>
    void           hbSetBlock( PHB_ITEM block )
+   void           hbClearBlock()
 
    QRectF         boundingRect() const
    virtual void   paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0 )

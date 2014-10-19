@@ -55,6 +55,13 @@
 #ifndef __HBQT_H
 #define __HBQT_H
 
+#if defined( _MSC_VER )
+#  define NOMINMAX                  // DISABLE min/max MACROS
+#  if _MSC_VER <= 1600              // <= VS 2010 (VC10)
+#    pragma warning (disable: 4481) // disable warning C4481: nonstandard extension used: override specifier 'override'
+#  endif
+#endif
+
 #include "hbapi.h"
 #include "hbapistr.h"
 #include "hbthread.h"
@@ -64,13 +71,6 @@
 #  define INCL_BASE
 #  define INCL_PM
 #  include <os2.h>
-#endif
-
-#if defined( _MSC_VER )
-#  define NOMINMAX                  // DISABLE min/max MACROS
-#  if _MSC_VER <= 1600              // <= VS 2010 (VC10)
-#    pragma warning (disable: 4481) // disable warning C4481: nonstandard extension used: override specifier 'override'
-#  endif
 #endif
 
 #include <QtCore/qglobal.h>

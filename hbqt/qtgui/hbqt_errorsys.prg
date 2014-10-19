@@ -216,7 +216,7 @@ STATIC PROCEDURE hbqt_messageBox( cMsg, cInfo, cTitle, nIcon )
       ENDIF
       oMB:setIcon( nIcon )
       oMB:setWindowTitle( cTitle )
-
+      oMB:setStyleSheet( "background-color: white;" )
       oMB:exec()
 
    ELSE

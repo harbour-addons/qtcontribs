@@ -106,6 +106,7 @@ public:
    PHB_ITEM                 block;
 
    void                     hbSetBlock( PHB_ITEM b );
+   void                     hbClearBlock();
 
    virtual int              pageSize();
    virtual void             setPageSize( int pageSize );
@@ -142,6 +143,8 @@ protected:
    virtual void             dropEvent( QGraphicsSceneDragDropEvent * event );
 
    virtual void             updatePageRect();
+
+   virtual void             drawBackground(QPainter * painter, const QRectF & rect);
 
 signals:
    void                     itemSelected( QObject * thisObject, QPointF cursorPos );

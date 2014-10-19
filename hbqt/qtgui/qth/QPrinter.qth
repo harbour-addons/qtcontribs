@@ -14,8 +14,8 @@
 <CLASS>
 QObject     = no
 Inherit     = QPaintDevice
-Type        = 
-New         = 
+Type        =
+New         =
 </CLASS>
 
 <CODE>
@@ -59,67 +59,63 @@ enum Unit { Millimeter, Point, Inch, Pica, ..., DevicePixel }
 </ENUMS>
 
 <PROTOS>
-bool abort ()
-bool collateCopies () const
-ColorMode colorMode () const
-QString creator () const
-QString docName () const
-bool doubleSidedPrinting () const
-DuplexMode duplex () const
-bool fontEmbeddingEnabled () const
-int fromPage () const
-bool fullPage () const
-void getPageMargins ( qreal * left, qreal * top, qreal * right, qreal * bottom, Unit unit ) const
-bool isValid () const
-bool newPage ()
-int numCopies () const
-Orientation orientation () const
-QString outputFileName () const
-OutputFormat outputFormat () const
-PageOrder pageOrder () const
-QRect pageRect () const
-QRectF pageRect ( Unit unit ) const
-virtual QPaintEngine * paintEngine () const
-QRect paperRect () const
-QRectF paperRect ( Unit unit ) const
-PaperSize paperSize () const
-QSizeF paperSize ( Unit unit ) const
-PaperSource paperSource () const
-QPrintEngine * printEngine () const
-QString printProgram () const
-PrintRange printRange () const
-QString printerName () const
-// QString printerSelectionOption () const
-PrinterState printerState () const
-int resolution () const
-void setCollateCopies ( bool collate )
-void setColorMode ( ColorMode newColorMode )
-void setCreator ( const QString & creator )
-void setDocName ( const QString & name )
-void setDoubleSidedPrinting ( bool doubleSided )
-void setDuplex ( DuplexMode duplex )
-void setFontEmbeddingEnabled ( bool enable )
-void setFromTo ( int from, int to )
-void setFullPage ( bool fp )
-void setNumCopies ( int numCopies )
-void setOrientation ( Orientation orientation )
-void setOutputFileName ( const QString & fileName )
-void setOutputFormat ( OutputFormat format )
-void setPageMargins ( qreal left, qreal top, qreal right, qreal bottom, Unit unit )
-void setPageOrder ( PageOrder pageOrder )
-void setPaperSize ( PaperSize newPaperSize )
-void setPaperSize ( const QSizeF & paperSize, Unit unit )
-void setPaperSource ( PaperSource source )
-void setPrintProgram ( const QString & printProg )
-void setPrintRange ( PrintRange range )
-void setPrinterName ( const QString & name )
-// void setPrinterSelectionOption ( const QString & option )
-void setResolution ( int dpi )
-// void setWinPageSize ( int pageSize )
-// QList<PaperSource> supportedPaperSources () const
-QList<int> supportedResolutions () const
-int toPage () const
-// int winPageSize () const
+bool   abort()
+bool   collateCopies() const
+ColorMode   colorMode() const
+int   copyCount() const
+QString   creator() const
+QString   docName() const
+bool   doubleSidedPrinting() const
+DuplexMode   duplex() const
+bool   fontEmbeddingEnabled() const
+int   fromPage() const
+bool   fullPage() const
+bool   isValid() const
+QString   outputFileName() const
+OutputFormat   outputFormat() const
+QPageLayout   pageLayout() const
+PageOrder   pageOrder() const
+QRectF   pageRect(Unit unit) const
+QRectF   paperRect(Unit unit) const
+PaperSource   paperSource() const
+QPrintEngine *   printEngine() const
+QString   printProgram() const
+PrintRange   printRange() const
+QString   printerName() const
+QString   printerSelectionOption() const
+PrinterState   printerState() const
+int   resolution() const
+void   setCollateCopies(bool collate)
+void   setColorMode(ColorMode newColorMode)
+void   setCopyCount(int count)
+void   setCreator(const QString & creator)
+void   setDocName(const QString & name)
+void   setDoubleSidedPrinting(bool doubleSided)
+void   setDuplex(DuplexMode duplex)
+void   setFontEmbeddingEnabled(bool enable)
+void   setFromTo(int from, int to)
+void   setFullPage(bool fp)
+void   setOutputFileName(const QString & fileName)
+void   setOutputFormat(OutputFormat format)
+bool   setPageLayout(const QPageLayout & newLayout)
+bool   setPageMargins(const QMarginsF & margins)
+bool   setPageMargins(const QMarginsF & margins, QPageLayout::Unit units)
+void   setPageOrder(PageOrder pageOrder)
+bool   setPageOrientation(QPageLayout::Orientation orientation)
+bool   setPageSize(const QPageSize & pageSize)
+void   setPaperSource(PaperSource source)
+void   setPrintProgram(const QString & printProg)
+void   setPrintRange(PrintRange range)
+void   setPrinterName(const QString & name)
+void   setPrinterSelectionOption(const QString & option)
+void   setResolution(int dpi)
+QList<QPrinter::PaperSource>   supportedPaperSources() const
+QList<int>   supportedResolutions() const
+bool   supportsMultipleCopies() const
+int   toPage() const
+
+virtual bool   newPage()
+virtual QPaintEngine *   paintEngine() const
 </PROTOS>
 
 <SLOTS>

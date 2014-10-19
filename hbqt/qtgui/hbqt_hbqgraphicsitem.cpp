@@ -126,6 +126,15 @@ HBQGraphicsItem::~HBQGraphicsItem()
    }
 }
 
+void HBQGraphicsItem::hbClearBlock()
+{
+   if( block )
+   {
+      hb_itemRelease( block );
+      block = NULL;
+   }
+}
+
 void HBQGraphicsItem::hbSetBlock( PHB_ITEM b )
 {
    if( b )

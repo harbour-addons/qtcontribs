@@ -5,7 +5,7 @@
 /*
  * Harbour Qt wrapper generator control file
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://www.harbour-project.org
  *
  * See COPYING for licensing terms.
@@ -14,9 +14,9 @@
 <CLASS>
 QObject     = no
 Inherit     = QGraphicsSceneEvent
-Type        = 
-New         = 
-Constructor = 
+Type        =
+New         =
+Constructor =
 </CLASS>
 
 <CODE>
@@ -44,6 +44,7 @@ QPointF buttonDownPos ( Qt::MouseButton button ) const
 QPointF buttonDownScenePos ( Qt::MouseButton button ) const
 QPoint buttonDownScreenPos ( Qt::MouseButton button ) const
 Qt::MouseButtons buttons () const
+Qt::MouseEventFlags flags() const            [*V=0x050400*]
 QPointF lastPos () const
 QPointF lastScenePos () const
 QPoint lastScreenPos () const
@@ -51,6 +52,7 @@ Qt::KeyboardModifiers modifiers () const
 QPointF pos () const
 QPointF scenePos () const
 QPoint screenPos () const
+Qt::MouseEventSource source() const          [*V=0x050400*]
 </PROTOS>
 
 <SLOTS>

@@ -207,6 +207,7 @@ protected:
 
 public slots:
    void           hbSetBlock( PHB_ITEM block );
+   void           hbClearBlock();
 
    QPen           pen();
    void           setPen( const QPen & pen );
