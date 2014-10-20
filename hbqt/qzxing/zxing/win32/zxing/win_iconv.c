@@ -761,6 +761,7 @@ win_iconv_open(rec_iconv_t *cd, const char *tocode, const char *fromcode)
 static int
 win_iconv_close(iconv_t cd)
 {
+    cd = cd; 
     return 0;
 }
 
@@ -1255,6 +1256,9 @@ find_imported_module_by_funcname(HMODULE hModule, const char *funcname)
 static int
 sbcs_mblen(csconv_t *cv, const uchar *buf, int bufsize)
 {
+    cv = cv;
+    buf = buf;
+    bufsize = bufsize;
     return 1;
 }
 
@@ -1294,6 +1298,8 @@ utf8_mblen(csconv_t *cv, const uchar *buf, int bufsize)
 {
     int len = 0;
 
+    cv = cv;
+
     if (buf[0] < 0x80) len = 1;
     else if ((buf[0] & 0xE0) == 0xC0) len = 2;
     else if ((buf[0] & 0xF0) == 0xE0) len = 3;
@@ -1311,6 +1317,8 @@ utf8_mblen(csconv_t *cv, const uchar *buf, int bufsize)
 static int
 eucjp_mblen(csconv_t *cv, const uchar *buf, int bufsize)
 {
+    cv = cv;
+
     if (buf[0] < 0x80) /* ASCII */
         return 1;
     else if (buf[0] == 0x8E) /* JIS X 0201 */
@@ -1542,7 +1550,7 @@ static int
 utf32_mbtowc(csconv_t *cv, const uchar *buf, int bufsize, ushort *wbuf, int *wbufsize)
 {
     int codepage = cv->codepage;
-    uint wc;
+    uint wc = 0;
 
     /* swap endian: 12000 <-> 12001 */
     if (cv->mode & UNICODE_MODE_SWAPPED)
@@ -1768,7 +1776,7 @@ iso2022jp_mbtowc(csconv_t *cv, const uchar *buf, int bufsize, ushort *wbuf, int 
         return seterror(EILSEQ);
 
     /* reset the mode for informal sequence */
-    if (cv->mode != ISO2022_MODE(cs, shift))
+    if (cv->mode != ( DWORD ) ISO2022_MODE(cs, shift))
         cv->mode = ISO2022_MODE(cs, shift);
 
     return len;
@@ -1839,7 +1847,7 @@ iso2022jp_wctomb(csconv_t *cv, ushort *wbuf, int wbufsize, uchar *buf, int bufsi
     else if (tmpsize < esc_len + len)
         return seterror(EILSEQ);
 
-    if (cv->mode == ISO2022_MODE(cs, shift))
+    if (cv->mode == ( DWORD ) ISO2022_MODE(cs, shift))
     {
         /* remove escape sequence */
         if (esc_len != 0)

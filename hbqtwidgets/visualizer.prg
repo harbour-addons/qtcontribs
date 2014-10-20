@@ -169,7 +169,7 @@ CLASS HbQtVisualizer
    DATA   oHLayToolbar
    DATA   oVLayToolbar
    DATA   oToolbar
-   DATA   oToolbarL
+   DATA   oToolbarObjects
    DATA   oToolbarAlign
    DATA   oStackWSpace
    DATA   qStatus
@@ -303,6 +303,10 @@ CLASS HbQtVisualizer
    METHOD execMenuShapes()
 
    METHOD setBackgroundImage( oPixmap )           INLINE ::oPixmapBackground := oPixmap
+
+   METHOD splitter()                              INLINE ::oSplitter
+   METHOD toolbarTop()                            INLINE ::oToolbar
+   METHOD toolbarObjects()                        INLINE ::oToolbarObjects
 
    ENDCLASS
 
@@ -1260,14 +1264,14 @@ METHOD HbQtVisualizer:getNextID( cType )
 
 METHOD HbQtVisualizer:buildToolbarLeft( oLayout )
 
-   WITH OBJECT ::oToolbarL := HbQtScrollableToolbar():new()
+   WITH OBJECT ::oToolbarObjects := HbQtScrollableToolbar():new()
       :setIndicatorsRGB( { 255,0,0 } )
       :setButtonHeight( 50 )
       :setButtonWidth( 50 )
       :create( oLayout )
    ENDWITH
 
-   WITH OBJECT ::oToolbarL
+   WITH OBJECT ::oToolbarObjects
       :addToolbarButton( "Shapes"  , "Shapes"  , "prv_objects" , {|| ::execEvent( __buttonShapes_clicked__ ) }, .F., .F. )
       :addToolbarButton( "Text"    , "Text"    , "prv_text"    , {|| ::execEvent( __buttonNew_clicked__    ) }, .t., .T. )
       // these should be user defined ? how ??
@@ -1289,7 +1293,7 @@ METHOD HbQtVisualizer:buildToolbar( oLayout )
       :create( oLayout )
    ENDWITH
    WITH OBJECT ::oToolbar
-      :addToolbarButton( "ShowObjects", "Show Objects Toolbar", "menu"             , {|| iif( ::oToolbarL:oWidget:isVisible(), ::oToolbarL:oWidget:hide(), ::oToolbarL:oWidget:show() ) } )
+      :addToolbarButton( "ShowObjects", "Show Objects Toolbar", "menu"             , {|| iif( ::oToolbarObjects:oWidget:isVisible(), ::oToolbarObjects:oWidget:hide(), ::oToolbarObjects:oWidget:show() ) } )
       :addToolbarButton( "Save"     , "Save"                  , "prv_save-doc"     , {|| ::saveReport()                                } )
       :addToolbarButton( "Print"    , "Print"                 , "prv_printpreview" , {|| ::oUI:tabBaseMain:setCurrentIndex( TAB_MAIN_PRINTPREVIEW ) } )
       :addToolbarButton( "Portrait" , "Portrait Orientation"  , "r-portrait"       , {|| ::oScene:setOrientation( QPrinter_Portrait  ) }, .F., .F.      )

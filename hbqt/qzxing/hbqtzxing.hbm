@@ -18,6 +18,7 @@
 -cflag=-DZXING_ICONV_CONST
 -cflag=-DDISABLE_LIBRARY_FEATURES
 
+{msvc}-cflag=-EHsc
 
 qth/filelist.hbm
 

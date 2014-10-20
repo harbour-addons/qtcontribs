@@ -16,6 +16,24 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-10-20 12:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r371)
+  * hbqt/qzxing/hbqtzxing.hbm
+    + Added {msvc}-cflag=-EHsc 
+       Forwarded by Ronaldo, thanks.
+
+  * hbqt/qzxing/zxing/win32/zxing/win_iconv.c
+    ! Pacified warnings.
+
+  * hbqtwidgets/visualizer.prg
+    + Exposed Visualizer's splitter via HbQtVisualizer:splitter().
+                           top toolbar via HbQtVisualizer:toolbarTop()
+                           left toolbar via HbQtVisualizer:toolbarObjects()
+
+  * hbqtwidgets/tests/demovisualizer.prg
+    + added code to demonstrate how a style sheet be applied to entire 
+       application to scale objects on different devices and apply 
+       visuals. 
+
 2014-10-19 16:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r370)
   + hbqtwidgets/resources/app_side_contract.png
   + hbqtwidgets/resources/app_side_expand.png
