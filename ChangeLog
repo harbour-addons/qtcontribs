@@ -16,6 +16,45 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-10-21 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r373)
+  * hbide/main.prg
+    % Minor.
+
+  * hbqt/qtcore/hbqt_bind.cpp
+    + Applied new patch provided by Francesco.
+
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+    + Added more actions for the double-click and context menu handelling.
+
+  * hbqt/qzxing/hbqtzxing.hbm
+  * hbqt/qzxing/QZXing_global.h
+  * hbqt/qzxing/zxing/zxing/common/detector/MonochromeRectangleDetector.cpp
+  * hbqt/qzxing/zxing/zxing/datamatrix/detector/DataMatrixDetector.cpp
+  * hbqt/qzxing/zxing/zxing/oned/Code128Reader.cpp
+  * hbqt/qzxing/zxing/zxing/oned/Code39Reader.cpp
+  * hbqt/qzxing/zxing/zxing/oned/OneDReader.cpp
+  * hbqt/qzxing/zxing/zxing/pdf417/detector/PDF417Detector.cpp
+  * hbqt/qzxing/zxing/zxing/qrcode/detector/QRDetector.cpp
+  + hbqt/qzxing/zxing_vc13_patch.h
+    + Applied patch provided by Francek which let it compile on 
+       MSVC 13 and above.
+
+  * hbqtwidgets/visualizer.prg
+
+  * hbxbp/reports.prg
+    ! Separated to run under HbXBP protocol.
+       Scheduled to be depricated once HbQtVisualizer() is matured.
+
+  * hbxbp/toolbar.prg
+    ! Fixed to honor icon draggings.
+
+  * qtcontribs.hbp
+    ! Nornmalized per latest fix in hbmk2 where '-stop' was not working.
+
+  * debug/hwgdebug.hbp
+    ! Made not to be compilable under Android.
+
 2014-10-21 00:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r372)
   * hbqt/qzxing/hbqtzxing.hbm
     + Applied patch provided by Francek (Untested).

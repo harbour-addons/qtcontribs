@@ -522,9 +522,7 @@ METHOD HbIde:create( aParams )
    ::oDebugger := IdeDebugger():new():create( Self )
 
    /* Reports Manager */
-   ::oRM := HbpReports():new()
-   ::oRM:qtObject := ::oParts:oStackReports
-   ::oRM:create( ::oDlg, , {0,0}, {640,400}, , .T. )
+   ::oRM := HbpReports():new():create( ::oParts:oStackReports )
 
    /* Code Formatter Manager */
    ::oFmt := IdeFormat():new():create( Self )

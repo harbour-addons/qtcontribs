@@ -292,10 +292,10 @@ METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nS
          oButton:setIcon( cCaption[ 3 ] )
          oButton:setCheckable( cCaption[ 5 ] )
          IF cCaption[ 6 ]
-            oButton:connect( QEvent_MouseButtonPress  , {|p| ::execSlot( "QEvent_MousePress"  , p, oButton ) } )
-            oButton:connect( QEvent_MouseButtonRelease, {|p| ::execSlot( "QEvent_MouseRelease", p, oButton ) } )
-            oButton:connect( QEvent_MouseMove         , {|p| ::execSlot( "QEvent_MouseMove"   , p, oButton ) } )
-            oButton:connect( QEvent_Enter             , {|p| ::execSlot( "QEvent_MouseEnter"  , p, oButton ) } )
+            oButton:connect( QEvent_MouseButtonPress  , {|p| ::execSlot( "QEvent_MousePress"  , p, oButton ), .T. } )
+            oButton:connect( QEvent_MouseButtonRelease, {|p| ::execSlot( "QEvent_MouseRelease", p, oButton ), .T. } )
+            oButton:connect( QEvent_MouseMove         , {|p| ::execSlot( "QEvent_MouseMove"   , p, oButton ), .T. } )
+            oButton:connect( QEvent_Enter             , {|p| ::execSlot( "QEvent_MouseEnter"  , p, oButton ), .T. } )
          ENDIF
 
       ELSEIF isObject
@@ -334,7 +334,7 @@ METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nS
 /*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:execSlot( cSlot, p, p1 )
-   LOCAL qEvent, qRC
+   LOCAL qEvent, qRC, qMime, qDrag, qByte, qPix
 
    qEvent := p
 
@@ -350,30 +350,27 @@ METHOD XbpToolbar:execSlot( cSlot, p, p1 )
    CASE "QEvent_MouseMove"
       qRC := QRect( ::qPos:x() - 5, ::qPos:y() - 5, 10, 10 ):normalized()
       IF qRC:contains( qEvent:pos() )
-         ::qByte := QByteArray( p1:objectName() )
+         qByte := QByteArray( p1:objectName() )
+         qPix  := p1:icon():pixmap( 16,16 )
 
-         ::qMime := QMimeData()
-         ::qMime:setData( "application/x-toolbaricon", ::qByte )
-         ::qMime:setHtml( p1:objectName() )
-
-         ::qPix  := p1:icon():pixmap( 16,16 )
-
-         ::qDrag := QDrag( SetAppWindow():oWidget )
-         ::qDrag:setMimeData( ::qMime )
-         ::qDrag:setPixmap( ::qPix )
-         ::qDrag:setHotSpot( QPoint( 15,15 ) )
-         ::qDrag:setDragCursor( ::qPix, Qt_CopyAction + Qt_IgnoreAction )
-         ::qDropAction := ::qDrag:exec( Qt_CopyAction + Qt_IgnoreAction )  /* Why this is not terminated GPF's */
-
-         ::qDrag := NIL
+         WITH OBJECT qMime := QMimeData()
+            :setData( "application/x-toolbaricon", qByte )
+            :setHtml( p1:objectName() )
+         ENDWITH
+         WITH OBJECT qDrag := QDrag( ::oWidget )
+            :setMimeData( qMime )
+            :setPixmap( qPix )
+            :setHotSpot( QPoint( 15,15 ) )
+            :setDragCursor( qPix, Qt_CopyAction + Qt_IgnoreAction )
+         ENDWITH
+         qDrag:exec( Qt_CopyAction + Qt_IgnoreAction )
+         qDrag:setParent( QWidget() )
+         qDrag := NIL
          ::qPos  := NIL
-         p1:setChecked( .f. )
-         p1:setWindowState( 0 )
       ENDIF
       EXIT
 
    CASE "QEvent_MouseRelease"
-      ::qDrag := NIL
       EXIT
 
    CASE "QEvent_MousePress"
@@ -381,7 +378,6 @@ METHOD XbpToolbar:execSlot( cSlot, p, p1 )
       EXIT
 
    ENDSWITCH
-
    RETURN NIL
 
 /*----------------------------------------------------------------------*/

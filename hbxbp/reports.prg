@@ -149,11 +149,12 @@ STATIC hIDs := {=>}
 
 /*----------------------------------------------------------------------*/
 
-CLASS HbpReports INHERIT XbpWindow
+CLASS HbpReports 
 
    DATA   lRegistered                             INIT .F.
 
    DATA   oWidget
+   DATA   oParent
    DATA   qLayout
    DATA   qToolbar
    DATA   qToolbarL
@@ -244,14 +245,11 @@ CLASS HbpReports INHERIT XbpWindow
    DATA   qAct
    DATA   qShapesMenu
    DATA   aShapesAct                              INIT array( NUM_SHAPES )
+   DATA   lShowGrid                               INIT .F.
 
-   METHOD init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-   METHOD create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-   METHOD configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )  VIRTUAL
-   METHOD destroy()                               VIRTUAL
-   METHOD execSlot( nSlot, p )                    VIRTUAL
-   METHOD handleEvent( nEvent, mp1, mp2 )         VIRTUAL
-   METHOD setStyleSheet( ... )                    VIRTUAL
+   METHOD init( oParent )
+   METHOD create( oParent )
+   METHOD destroy()
 
    METHOD execEvent( nEvent, p, p1, p2 )
 
@@ -291,36 +289,43 @@ CLASS HbpReports INHERIT XbpWindow
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpReports:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
+METHOD HbpReports:init( oParent )
 
    IF ! ::lRegistered
       ::lRegistered := .T.
       QResource():registerResource_1( hbqtres_xbp() )
    ENDIF
 
-   ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
+   DEFAULT oParent TO ::oParent
+   ::oParent := oParent
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
-METHOD HbpReports:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
+METHOD HbpReports:create( oParent )
    LOCAL oLayout
 
-   ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
+   DEFAULT oParent TO ::oParent
+   ::oParent := oParent
 
-   IF HB_ISOBJECT( ::qtObject )
-      ::oWidget := QWidget( ::qtObject )
-      oLayout := ::qtObject:layout()
-      SWITCH __objGetClsName( oLayout )
-      CASE "QVBOXLAYOUT"
-      CASE "QHBOXLAYOUT"
+   IF HB_ISOBJECT( oParent )
+      ::oWidget := QWidget( oParent )
+      IF Empty( oLayout := oParent:layout() )
+         oLayout := QHBoxLayout()
+         ::oParent:setLayout( oLayout )
          oLayout:addWidget( ::oWidget )
-         EXIT
-      CASE "QGRIDLAYOUT"
-         oLayout:addWidget( ::oWidget, 0, 0, 1, 1 )
-         EXIT
-      ENDSWITCH
+      ELSE
+         SWITCH __objGetClsName( oLayout )
+         CASE "QVBOXLAYOUT"
+         CASE "QHBOXLAYOUT"
+            oLayout:addWidget( ::oWidget )
+            EXIT
+         CASE "QGRIDLAYOUT"
+            oLayout:addWidget( ::oWidget, 0, 0, 1, 1 )
+            EXIT
+         ENDSWITCH
+      ENDIF
    ELSE
       ::oWidget := QWidget()
    ENDIF
@@ -356,47 +361,68 @@ METHOD HbpReports:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    /* Document manipulation interface */
    ::buildDesignReport()
+   ::loadReport()
+   ::zoom( HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG )
+   ::qScene:setOrientation( QPrinter_Landscape )
 
    ::qTabBar:setCurrentIndex( 2 )
-
-
-   IF ::visible
-      ::show()
-   ENDIF
-   IF HB_ISOBJECT( oParent )
-      ::oParent:AddChild( SELF )
-      ::postCreate()
-   ENDIF
 
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
+METHOD HbpReports:destroy()
+
+   ::qScene:hbClearBlock()
+   ::hItems := NIL
+#if 0
+   FOR EACH obj IN ::hItems
+      obj:destroy()
+      obj := NIL
+   NEXT
+#endif
+   ::qScene := NIL
+   ::oWidget:setParent( QWidget() )
+   ::oWidget := NIL
+   RETURN NIL
+
+/*----------------------------------------------------------------------*/
+
 METHOD HbpReports:buildDesignReport()
 
-   ::qLayoutD := QHBoxLayout( ::qWidget3 )
-   ::qLayoutD:setContentsMargins( 0,0,0,0 )
-   ::qLayoutD:setSpacing( 1 )
+   WITH OBJECT ::qLayoutD := QHBoxLayout( ::qWidget3 )
+      :setContentsMargins( 0,0,0,0 )
+      :setSpacing( 1 )
+   ENDWITH
    ::qWidget3:setLayout( ::qLayoutD )
 
-   ::qSpliter := QSplitter()
-   ::qSpliter:setOrientation( Qt_Horizontal )
-
+   WITH OBJECT ::qSpliter := QSplitter()
+      :setOrientation( Qt_Horizontal )
+   ENDWITH
    ::qLayoutD:addWidget( ::qSpliter )
 
-   ::qFrameL := QFrame()
+   WITH OBJECT ::qFrameL := QFrame()
+      :setMinimumWidth( 100 )
+   ENDWITH
    ::qSpliter:addWidget( ::qFrameL )
 
-   ::qScene := HBQGraphicsScene()
-   ::qScene:hbSetBlock( {|p,p1,p2| ::execEvent( __graphicsScene_block__, p, p1, p2 ) } )
-
-   ::qView := QGraphicsView( ::qDesign )
-   ::qView:setMouseTracking( .t. )
-   ::qView:setScene( ::qScene )
-   //
+   WITH OBJECT ::qScene := HBQGraphicsScene()
+      :hbSetBlock( {|p,p1,p2| ::execEvent( __graphicsScene_block__, p, p1, p2 ) } )
+      :setLeftMagnet( .t. )
+      :setTopMagnet( .t. )
+      :setRightMagnet( .t. )
+      :setBottomMagnet( .t. )
+      :setPageSize( QPrinter_A4 )
+   ENDWITH
+   WITH OBJECT ::qView := QGraphicsView( ::qDesign )
+      :setMouseTracking( .t. )
+      :setScene( ::qScene )
+   ENDWITH
    ::qSpliter:addWidget( ::qView )
 
-   ::qFrameR := QFrame()
+   WITH OBJECT ::qFrameR := QFrame()
+      :setMinimumWidth( 100 )
+   ENDWITH
    ::qSpliter:addWidget( ::qFrameR )
 
    ::qLayL := QVBoxLayout()
@@ -415,10 +441,6 @@ METHOD HbpReports:buildDesignReport()
    ::qSplR:setOrientation( Qt_Vertical )
    ::qLayR:addWidget( ::qSplR )
 
-   ::qFrameL:setMinimumWidth( 100 )
-   ::qFrameR:setMinimumWidth( 100 )
-
-
    ::qTabL0 := QTabWidget()
    ::qSplL:addWidget( ::qTabL0 )
    /* Left Pane Objects Page */
@@ -431,13 +453,14 @@ METHOD HbpReports:buildDesignReport()
    ::qPageL02 := QWidget()
    ::qTabL0:addTab( ::qPageL02, "Else" )
    /* Left pane Properties Treeview */
-   ::qTreeObjects := QTreeWidget()
+   WITH OBJECT ::qTreeObjects := QTreeWidget()
+      :setHeaderHidden( .t. )
+      :setObjectName( "ObjectsTree" )
+      :setIconSize( QSize( 12,12 ) )
+      :setIndentation( 12 )
+      :connect( "itemClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeObjects_clicked__, p, p1 ) } )
+   ENDWITH
    ::qPageL01Lay:addWidget( ::qTreeObjects )
-   ::qTreeObjects:setHeaderHidden( .t. )
-   ::qTreeObjects:setObjectName( "ObjectsTree" )
-   ::qTreeObjects:setIconSize( QSize( 12,12 ) )
-   ::qTreeObjects:setIndentation( 12 )
-   ::qTreeObjects:connect( "itemClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeObjects_clicked__, p, p1 ) } )
 
    ::qTabL1 := QTabWidget()
    ::qSplL:addWidget( ::qTabL1 )
@@ -451,16 +474,17 @@ METHOD HbpReports:buildDesignReport()
    ::qPageL12 := QWidget()
    ::qTabL1:addTab( ::qPageL12, "Events" )
    /* Left pane Properties Treeview */
-   ::qTreeProp := QTreeWidget()
+   WITH OBJECT ::qTreeProp := QTreeWidget()
+      :setHeaderHidden( .t. )
+      :setObjectName( "PropertiesTree" )
+   ENDWITH
    ::qPageL11Lay:addWidget( ::qTreeProp )
-   ::qTreeProp:setHeaderHidden( .t. )
-   ::qTreeProp:setObjectName( "PropertiesTree" )
 
-
-   ::qEditDesc := QTextEdit()
+   WITH OBJECT ::qEditDesc := QTextEdit()
+      :setPlainText( "Interface implemented is just a proof of concept, no promises yet, please." )
+      :setMaximumHeight( 120 )
+   ENDWITH
    ::qSplL:addWidget( ::qEditDesc )
-   ::qEditDesc:setPlainText( "Interface implemented is just a proof of concept, no promises yet, please." )
-   ::qEditDesc:setMaximumHeight( 120 )
 
    ::qTabR1 := QTabWidget()
    ::qSplR:addWidget( ::qTabR1 )
@@ -471,44 +495,49 @@ METHOD HbpReports:buildDesignReport()
    ::qPageR13 := QWidget()
    ::qTabR1:addTab( ::qPageR13, "Functions" )
 
-   ::qPageR11Lay := QVBoxLayout()
+   WITH OBJECT ::qPageR11Lay := QVBoxLayout()
+      :setContentsMargins( 0,0,0,0 )
+   ENDWITH
    ::qPageR11:setLayout( ::qPageR11Lay )
-   ::qPageR11Lay:setContentsMargins( 0,0,0,0 )
 
-   ::qTreeData := QTreeWidget()
+   WITH OBJECT ::qTreeData := QTreeWidget()
+      :setHeaderHidden( .t. )
+      :setObjectName( "DataTree" )
+      :setDragEnabled( .t. )
+   ENDWITH
    ::qPageR11Lay:addWidget( ::qTreeData )
-   ::qTreeData:setHeaderHidden( .t. )
-   ::qTreeData:setObjectName( "DataTree" )
-   ::qTreeData:setDragEnabled( .t. )
 
-   ::loadReport()
-
-   ::qScene:setPageSize( QPrinter_A4 )
-   ::zoom( HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG )
    ::qToolbarAlign:setItemChecked( "Grid", ::qScene:showGrid() )
-   //
-   ::qScene:setLeftMagnet( .t. )
-   ::qScene:setTopMagnet( .t. )
-   ::qScene:setRightMagnet( .t. )
-   ::qScene:setBottomMagnet( .t. )
-
    ::qLayoutD:setStretch( 1,1 )
 
+   ::qSpliter:setStretchFactor( 0, 0 )
+   ::qSpliter:setStretchFactor( 1, 2 )
+   ::qSpliter:setStretchFactor( 2, 0 )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
 
 METHOD HbpReports:execEvent( nEvent, p, p1, p2 )
-   LOCAL qMime, i, qList, cFile, nArea, aStruct, cAlias, cPath, qRC, qIcon, cType
+   LOCAL qMime, qDrag, qByte, qPix, i, qList, cFile, nArea, aStruct, cAlias, cPath, qRC, qIcon, cType
+#if 0
+   LOCAL oPainter, oScnR, oPixmap
+#endif
 
    SWITCH nEvent
    CASE __graphicsScene_block__
       DO CASE
+      CASE p == 21201                             // drawBackground( oPainter, oRectF ) with an example
+#if 0
+         oPainter := p1
+         oScnR := ::qScene:sceneRect()
+         oPixmap:= QPixmap( Hbp_image( "harbour" ) )
+         oPainter:drawPixmap( QPoint( oScnR:x(), oScnR:y() ), oPixmap:scaled( oScnR:width(), oScnR:height(), Qt_KeepAspectRatio ) )
+#endif
       CASE p == 21001
          ::nScreenDpiX := p1
          ::nScreenDpiY := p2
 
-      CASE p == 21107    // Left button pressed nowhere on an item
+      CASE p == 21107                             // Left button pressed nowhere on an item
          IF ! empty( ::qCurGraphicsItem )
             ::qCurGraphicsItem := NIL
             ::qTreeObjects:setCurrentItem( QTreeWidgetItem() )
@@ -518,11 +547,9 @@ METHOD HbpReports:execEvent( nEvent, p, p1, p2 )
          ::contextMenuScene( p1 )
 
       CASE p == QEvent_GraphicsSceneDragEnter
-HB_TRACE( HB_TR_DEBUG, "QEvent_GraphicsSceneDragEnter", valtype( p1 ), p1 )
          p1:acceptProposedAction()
 
       CASE p == QEvent_GraphicsSceneDragMove
-HB_TRACE( HB_TR_DEBUG, "QEvent_GraphicsSceneDragMove", valtype( p1 ), p1 )
          p1:acceptProposedAction()
 
       CASE p == QEvent_GraphicsSceneDragLeave
@@ -576,10 +603,7 @@ HB_TRACE( HB_TR_DEBUG, "QEvent_GraphicsSceneDragMove", valtype( p1 ), p1 )
                ENDIF
             NEXT
          ENDIF
-
          p1:acceptProposedAction()
-         p1:accept()
-HB_TRACE( HB_TR_DEBUG, "QEvent_GraphicsSceneDrop", 1000, p1:dropAction() )
       ENDCASE
       EXIT
 
@@ -607,36 +631,29 @@ HB_TRACE( HB_TR_DEBUG, "QEvent_GraphicsSceneDrop", 1000, p1:dropAction() )
       IF empty( ::qPos ) .OR. empty( ::qAct )
          EXIT
       ENDIF
-
       qRC := QRect( ::qPos:x() - 5, ::qPos:y() - 5, 10, 10 ):normalized()
-
       IF qRC:contains( p:pos() )
          qIcon := QIcon( ::qAct:icon() )
-
-         ::qByte := QByteArray( ::qAct:text() )
-
-         ::qMime := QMimeData()
-         ::qMime:setData( "application/x-menuitem", ::qByte )
-         ::qMime:setHtml( ::qAct:text() )
-
-         ::qPix  := qIcon:pixmap( 16,16 )
-
-         ::qDrag := QDrag( hbide_setIde():oDlg:oWidget )
-         ::qDrag:setMimeData( ::qMime )
-         ::qDrag:setPixmap( ::qPix )
-         ::qDrag:setHotSpot( QPoint( 15,15 ) )
-         ::qDrag:setDragCursor( ::qPix, Qt_MoveAction )
-
-         ::qDropAction := ::qDrag:exec( Qt_MoveAction )
+         qPix  := qIcon:pixmap( 16,16 )
+         qByte := QByteArray( ::qAct:text() )
+         WITH OBJECT qMime := QMimeData()
+            :setData( "application/x-menuitem", qByte )
+            :setHtml( ::qAct:text() )
+         ENDWITH
+         WITH OBJECT qDrag := QDrag( ::oWidget )
+            :setMimeData( qMime )
+            :setPixmap( qPix )
+            :setHotSpot( QPoint( 15,15 ) )
+            :setDragCursor( qPix, Qt_MoveAction )
+            :exec( Qt_MoveAction )
+         ENDWITH
+         qDrag:setParent( QWidget() )
+         qDrag := NIL
+         ::qPos  := NIL
+         ::qAct  := NIL
       ENDIF
-      ::qDrag := NIL
-      ::qPos  := NIL
-      ::qAct  := NIL
       EXIT
    CASE __QEvent_MouseReleaseMenu__
-      ::qDrag := NIL
-      ::qPos  := NIL
-      ::qAct  := NIL
       EXIT
    CASE __QEvent_MousePressMenu__
       ::qPos := p:pos()
@@ -680,7 +697,8 @@ HB_TRACE( HB_TR_DEBUG, "QEvent_GraphicsSceneDrop", 1000, p1:dropAction() )
       ::printPreview()
       EXIT
    CASE __buttonGrid_clicked__
-      ::qScene:setShowGrid( ::qToolbarAlign:setItemChecked( "Grid" ) )
+      ::lShowGrid := ! ::lShowGrid
+      ::qScene:setShowGrid( ::lShowGrid )
       EXIT
    CASE __buttonZoom_clicked__
       DO CASE
@@ -774,7 +792,6 @@ METHOD HbpReports:saveReport( lSaveAs )
          IF empty( cExt )
             cFile += ".hqr"
          ENDIF
-
          ::cSaved := cFile
       ELSE
          lSave := .f.
@@ -914,8 +931,8 @@ METHOD HbpReports:loadReport( xData )
          ::cSaved := xData
          cBuffer  := hb_utf8tostr( hb_memoread( xData ) )
 
-         IF !empty( ::qParent )
-            ::qParent:setWindowTitle( "HbReportsManager : " + ::cSaved )
+         IF !empty( ::oParent )
+            ::oParent:setWindowTitle( "HbReportsManager : " + ::cSaved )
          ENDIF
       ELSE
          ::cSaved := ""
@@ -1618,7 +1635,8 @@ METHOD HbpReports:printReport( qPrinter )
    qPainter := QPainter()
    qPainter:begin( qPrinter )
 
-   qPainter:setWindow( ::qScene:paperRect() )
+   qRectF := ::qScene:paperRect()
+   qPainter:setWindow( qRectF:x(), qRectF:y(), qRectF:width(), qRectF:height() )
    qPainter:setViewPort( 0, 0, qPrinter:width(), qPrinter:height() )
    FOR EACH a_ IN ::aObjects
       IF hb_hHasKey( ::hItems, a_[ 3 ] )
@@ -1687,6 +1705,7 @@ CLASS HqrGraphicsItem
    METHOD execEvent( cEvent, p, p1, p2 )
    METHOD contextMenu( p1, p2 )
    METHOD update()
+   METHOD destroy()
 
    ACCESS text()                                  INLINE ::setText()
    ACCESS textFlags()                             INLINE ::setTextFlags()
@@ -1854,6 +1873,12 @@ METHOD HqrGraphicsItem:new( oRM, cParent, cType, cName, aPos, aGeometry )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
+
+METHOD HqrGraphicsItem:destroy()
+   ::oWidget:hbClearBlock()
+   ::oWidget := NIL
+   RETURN NIL
+
 
 METHOD HqrGraphicsItem:onError( ... )
    LOCAL cMsg := __GetMessage()
@@ -2718,7 +2743,7 @@ METHOD HqrGraphicsItem:drawChart( qPainter, qRect )
       x += barWidth + m_barsIdentation
    NEXT
 
-   #if 0  /* Legend */
+#if 0  /* Legend */
    qPainter:fillRect( qRect, ::brush() )
    qPainter:drawRect( qRect )
    qPainter:translate( qRect:topLeft() )
@@ -2731,7 +2756,7 @@ METHOD HqrGraphicsItem:drawChart( qPainter, qRect )
                                                                             Qt_AlignVCenter + Qt_AlignLeft, cv[ 1 ] )
       y += vstep + 1 / UNIT
    }
-   #endif
+#endif
 
    RETURN Self
 

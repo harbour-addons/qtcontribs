@@ -1,7 +1,6 @@
 #ifndef QZXING_GLOBAL_H
 #define QZXING_GLOBAL_H
 
-//#include <QtCore>
 #include <QtCore/qglobal.h>
 
 #if defined(QZXING_LIBRARY)

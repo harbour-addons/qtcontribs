@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id$
  */
 
@@ -87,6 +87,8 @@ HBQGraphicsScene::HBQGraphicsScene( QObject * parent ) : QGraphicsScene( parent 
    m_font.setStyleStrategy( QFont::PreferMatch );
    m_font.setStyleStrategy( QFont::ForceOutline );
    setFont( m_font );
+
+   mousePressTime.setHMS( 0,0,0,1 );
 }
 
 HBQGraphicsScene::~HBQGraphicsScene()
@@ -208,6 +210,8 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
    HBQGraphicsItem * item = NULL;
 
+   mousePressTime = QTime( 0,0,0,1 );
+
    if( itemAt( mouseEvent->scenePos(), QTransform() ) )
    {
       item = dynamic_cast< HBQGraphicsItem * >( itemAt( mouseEvent->scenePos(), QTransform() ) );
@@ -266,10 +270,42 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
    }
 }
 
+void HBQGraphicsScene::mousePressTimer()
+{
+   if( mousePressTime.msec() != 1 )
+   {
+      if( block )
+      {
+#if 1
+         //QGraphicsSceneMouseEvent * event = new QGraphicsSceneMouseEvent( QEvent::GraphicsSceneMouseRelease );
+         QMouseEvent * event = new QMouseEvent( QEvent::MouseButtonRelease, QPoint( mousePressPos.x(), mousePressPos.y() ), Qt::LeftButton, 0, 0 );
+         QCoreApplication::postEvent( this, event );
+
+         QCoreApplication::processEvents( 0 );
+
+         PHB_ITEM p1 = hb_itemPutNI( NULL, 21141 );
+         PHB_ITEM p2 = hb_itemPutND( NULL, mousePressPos.x() );
+         PHB_ITEM p3 = hb_itemPutND( NULL, mousePressPos.y() );
+         hb_vmEvalBlockV( block, 3, p1, p2, p3 );
+         hb_itemRelease( p1 );
+         hb_itemRelease( p2 );
+         hb_itemRelease( p3 );
+
+#else
+         QGraphicsSceneEvent * event = new QGraphicsSceneEvent( QEvent::GraphicsSceneContextMenu );
+         QCoreApplication::postEvent( this, event );
+#endif
+      }
+   }
+}
+
 void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {
-   QPointF mousePos( event->buttonDownScenePos( Qt::LeftButton ).x(), event->buttonDownScenePos( Qt::LeftButton ).y() );
+   mousePressTime = QTime::currentTime();
+   mousePressPos = event->screenPos();
+   QTimer::singleShot( 1500, this, SLOT(mousePressTimer()) );
 
+   QPointF mousePos( event->buttonDownScenePos( Qt::LeftButton ).x(), event->buttonDownScenePos( Qt::LeftButton ).y() );
    movingItem = itemAt( mousePos.x(), mousePos.y(), QTransform() );
 
    if( movingItem != 0 && event->button() == Qt::LeftButton )
@@ -290,7 +326,6 @@ void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
             emit itemSelected( this, event->scenePos() );
          }
       }
-
       HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos(), QTransform() ) );
       if( ! item )
       {
@@ -306,6 +341,8 @@ void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
 
 void HBQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
+   mousePressTime = QTime( 0,0,0,1 );
+
    foreach( QGraphicsItem * item, m_gideLines )
    removeItem( item );
 
@@ -320,6 +357,21 @@ void HBQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
       movingItem = 0;
    }
    QGraphicsScene::mouseReleaseEvent( event );
+}
+
+void HBQGraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
+{
+   if( block )
+   {
+      PHB_ITEM p1 = hb_itemPutNI( NULL, 21131 );
+      PHB_ITEM p2 = hb_itemPutND( NULL, event->scenePos().x() );
+      PHB_ITEM p3 = hb_itemPutND( NULL, event->scenePos().y() );
+      hb_vmEvalBlockV( block, 3, p1, p2, p3 );
+      hb_itemRelease( p1 );
+      hb_itemRelease( p2 );
+      hb_itemRelease( p3 );
+   }
+   QGraphicsScene::mouseDoubleClickEvent( event );
 }
 
 /*----------------------------------------------------------------------*/

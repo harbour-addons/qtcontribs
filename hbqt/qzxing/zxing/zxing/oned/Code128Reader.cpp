@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include "zxing_vc13_patch.h"
 #include <zxing/ZXing.h>
 #include <zxing/oned/Code128Reader.h>
 #include <zxing/oned/OneDResultPoint.h>

@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+#include "zxing_vc13_patch.h"
 #include <zxing/qrcode/detector/Detector.h>
 #include <zxing/qrcode/detector/FinderPatternFinder.h>
 #include <zxing/qrcode/detector/FinderPattern.h>

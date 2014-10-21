@@ -108,6 +108,7 @@ static PHB_DYNS s_dynsym___SLOTS   = NULL;
 static PHB_DYNS s_dynsym_SETSLOTS  = NULL;
 static PHB_DYNS s_dynsym___EVENTS  = NULL;
 static PHB_DYNS s_dynsym_SETEVENTS = NULL;
+static PHB_DYNS s_dynsym_DISCONNECT = NULL;
 
 static PHB_BIND_DATA s_bindData = NULL;
 #define hbqt_bindGetData()       ( ( ( PHB_BIND_DATA ) &s_bindData )->s_hbqt_binds )
@@ -282,12 +283,13 @@ static void hbqt_bind_init( void * cargo )
 
    hbqt_bindGetData() = NULL;
 
-   s_dynsym_NEW       = hb_dynsymGetCase( "NEW" );
-   s_dynsym___HEVENTS = hb_dynsymGetCase( "__HEVENTS" );
-   s_dynsym___SLOTS   = hb_dynsymGetCase( "__SLOTS" );
-   s_dynsym_SETSLOTS  = hb_dynsymGetCase( "SETSLOTS" );
-   s_dynsym___EVENTS  = hb_dynsymGetCase( "__EVENTS" );
-   s_dynsym_SETEVENTS = hb_dynsymGetCase( "SETEVENTS" );
+   s_dynsym_NEW        = hb_dynsymGetCase( "NEW" );
+   s_dynsym___HEVENTS  = hb_dynsymGetCase( "__HEVENTS" );
+   s_dynsym___SLOTS    = hb_dynsymGetCase( "__SLOTS" );
+   s_dynsym_SETSLOTS   = hb_dynsymGetCase( "SETSLOTS" );
+   s_dynsym___EVENTS   = hb_dynsymGetCase( "__EVENTS" );
+   s_dynsym_SETEVENTS  = hb_dynsymGetCase( "SETEVENTS" );
+   s_dynsym_DISCONNECT = hb_dynsymGetCase( "DISCONNECT" );
 }
 
 static void hbqt_bind_exit( void * cargo )
@@ -586,6 +588,11 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
          if( isQObject )
          {
             HB_TRACE( HB_TR_DEBUG, ( ".........HARBOUR_DESTROY_BEGINS( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
+#if QT_VERSION <= 0x050300
+            hb_vmPushDynSym( s_dynsym_DISCONNECT );
+            hb_vmPush( pObject );
+            hb_vmSend( 0 );
+#endif
          }
          if( iFlags & HBQT_BIT_OWNER )
          {
@@ -647,9 +654,9 @@ void hbqt_bindDestroyQtObject( void * qtObject, QObject * qObject )
 #if QT_VERSION <= 0x050300
          if( ( bind->iFlags & HBQT_BIT_QOBJECT ) && ( bind->hbObject ) )
          {
-            PHB_ITEM hbObject = hb_arrayFromId( NULL, bind->hbObject );
-            hbqt_bindDelEvents( hbObject );
-            hbqt_bindDelSlots( hbObject );
+            hb_vmPushDynSym( s_dynsym_DISCONNECT );
+            hb_vmPush( hb_arrayFromId( NULL, bind->hbObject ) );
+            hb_vmSend( 0 );
          }
 #endif
          hbqt_bindRemoveBind( bind );
@@ -676,9 +683,9 @@ static void hbqt_bindDestroyQtObjectA( void * qtObject, QObject * qObject )
 #if QT_VERSION <= 0x050300
          if( ( bind->iFlags & HBQT_BIT_QOBJECT ) && ( bind->hbObject ) )
          {
-            PHB_ITEM hbObject = hb_arrayFromId( NULL, bind->hbObject );
-            hbqt_bindDelEvents( hbObject );
-            hbqt_bindDelSlots( hbObject );
+            hb_vmPushDynSym( s_dynsym_DISCONNECT );
+            hb_vmPush( hb_arrayFromId( NULL, bind->hbObject ) );
+            hb_vmSend( 0 );
          }
 #endif
          int iFlags = bind->iFlags;

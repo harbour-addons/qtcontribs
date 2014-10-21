@@ -224,14 +224,14 @@ CLASS HbQtVisualizer
    DATA   qHRuler
    DATA   qVRuler
    DATA   qPort
-   DATA   qView
+   DATA   oGraphicsView
    DATA   oScene
 
    DATA   aStatusPnls                             INIT {}
    DATA   aItems                                  INIT {}
    DATA   hItems                                  INIT {=>}
    DATA   hObjTree                                INIT {=>}
-   DATA   qCurGraphicsItem
+   DATA   oCurGraphicsItem
 
    DATA   aPages                                  INIT {}
    DATA   aSources                                INIT {}
@@ -263,6 +263,7 @@ CLASS HbQtVisualizer
 
    DATA   oHbQtVisualBackground
    DATA   oPixmapBackground
+   DATA   lDoubleClickZoom                        INIT .F.
 
    METHOD init( oParent )
    METHOD create( oParent )
@@ -285,7 +286,7 @@ CLASS HbQtVisualizer
    METHOD getImageOfType( cType )
    METHOD updateObjectsTree( cType, cParent, cName, cSubType )
    METHOD contextMenuItem( p1, p2 )
-   METHOD contextMenuScene( p1 )
+   METHOD contextMenuScene( oPoint )
    METHOD addSource( cAlias, aStruct )
    METHOD clear()
    METHOD buildReportStream()
@@ -431,12 +432,12 @@ METHOD HbQtVisualizer:buildDesignReport()
       :setBottomMagnet( .t. )
       :setPageSize( QPrinter_Letter )
    ENDWITH
-   WITH OBJECT ::qView := QGraphicsView( ::qDesign )
+   WITH OBJECT ::oGraphicsView := QGraphicsView( ::qDesign )
       :setMouseTracking( .t. )
       :setScene( ::oScene )
       :setContentsMargins( 20,20,20,20 )
    ENDWITH
-   ::oSplitter:addWidget( ::qView )
+   ::oSplitter:addWidget( ::oGraphicsView )
 
    WITH OBJECT ::oFrameR := QFrame()
       //:setMaximumWidth( 250 )
@@ -594,7 +595,7 @@ METHOD HbQtVisualizer:buildPropertySheets()
 
 
 METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
-   LOCAL qMime, qDrag, qByte, qPix, qRC, qIcon, cType
+   LOCAL qMime, qDrag, qByte, qPix, qRC, qIcon, cType, i
    LOCAL oPainter, oRectF
 
    SWITCH nEvent
@@ -616,13 +617,29 @@ METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
          ::nScreenDpiY := p2
 
       CASE p == 21107    // Left button pressed nowhere on an item
-         IF ! empty( ::qCurGraphicsItem )
-            ::qCurGraphicsItem := NIL
+         IF ! empty( ::oCurGraphicsItem )
+            ::oCurGraphicsItem := NIL
             ::oTreeObjects:setCurrentItem( QTreeWidgetItem() )
          ENDIF
 
+      CASE p == 21131    // double-click
+         IF ::lDoubleClickZoom
+            FOR i := 1 TO 9
+               ::oGraphicsView:scale( 0.9, 0.9 )
+            NEXT
+         ELSE
+            FOR i := 1 TO 10
+               ::oGraphicsView:scale( 1.1, 1.1 )
+            NEXT
+         ENDIF
+         ::lDoubleClickZoom := ! ::lDoubleClickZoom
+         ::oGraphicsView:centerOn( p1, p2 )
+
+      CASE p == 21141    // right-click simulated
+         ::contextMenuScene( QPoint( p1, p2 ) )
+
       CASE p == QEvent_GraphicsSceneContextMenu
-         ::contextMenuScene( p1 )
+         ::contextMenuScene( p1:screenPos() )
 
       CASE p == QEvent_GraphicsSceneDragEnter
          p1:acceptProposedAction()
@@ -721,13 +738,13 @@ METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
       ::execMenuShapes()
       EXIT
    CASE __buttonRotateL_clicked__
-      IF !empty( ::qCurGraphicsItem )
-         ::qCurGraphicsItem:rotate( -10 )
+      IF !empty( ::oCurGraphicsItem )
+         ::oCurGraphicsItem:rotate( -10 )
       ENDIF
       EXIT
    CASE __buttonRotateR_clicked__
-      IF !empty( ::qCurGraphicsItem )
-         ::qCurGraphicsItem:rotate( 10 )
+      IF !empty( ::oCurGraphicsItem )
+         ::oCurGraphicsItem:rotate( 10 )
       ENDIF
       EXIT
    CASE __buttonToBack_clicked__
@@ -769,7 +786,7 @@ METHOD HbQtVisualizer:objectDeleted( oHbQtVisualItem )
       hb_HDel( ::hItems, cName )
       QApplication():processEvents()
    ENDIF
-   ::qCurGraphicsItem := NIL
+   ::oCurGraphicsItem := NIL
    RETURN Self
 
 
@@ -777,10 +794,10 @@ METHOD HbQtVisualizer:objectSelected( oHbQtVisualItem )
    LOCAL cName := oHbQtVisualItem:cName
 
    IF hb_hHasKey( ::hObjTree, cName )
-      ::qCurGraphicsItem := ::hItems[ cName ]
+      ::oCurGraphicsItem := ::hItems[ cName ]
       ::oTreeObjects:setCurrentItem( ::hObjTree[ cName ] )
    ELSE
-      ::qCurGraphicsItem := NIL
+      ::oCurGraphicsItem := NIL
    ENDIF
    RETURN Self
 
@@ -1174,32 +1191,32 @@ METHOD HbQtVisualizer:updateObjectsTree( cType, cParent, cName, cSubType )
 METHOD HbQtVisualizer:zoom( nMode )
    SWITCH nMode
    CASE HBQT_GRAPHICSVIEW_ZOOM_IN
-      ::qView:scale( 1.1, 1.1 )
+      ::oGraphicsView:scale( 1.1, 1.1 )
       EXIT
    CASE HBQT_GRAPHICSVIEW_ZOOM_OUT
-      ::qView:scale( 0.9, 0.9 )
+      ::oGraphicsView:scale( 0.9, 0.9 )
       EXIT
    CASE HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG
-      ::qView:resetMatrix()
-      ::qView:scale( ::nScreenDpiX / 25.4 / 10.0, ::nScreenDpiY / 25.4 / 10.0 )
-      ::qView:centerOn( 0.0, 0.0 )
+      ::oGraphicsView:resetMatrix()
+      ::oGraphicsView:scale( ::nScreenDpiX / 25.4 / 10.0, ::nScreenDpiY / 25.4 / 10.0 )
+      ::oGraphicsView:centerOn( 0.0, 0.0 )
       EXIT
    CASE HBQT_GRAPHICSVIEW_ZOOM_ORIGINAL
-      ::qView:resetMatrix()
-      ::qView:centerOn( 0.0, 0.0 )
+      ::oGraphicsView:resetMatrix()
+      ::oGraphicsView:centerOn( 0.0, 0.0 )
       EXIT
    ENDSWITCH
    RETURN sELF
 
 
-METHOD HbQtVisualizer:contextMenuScene( p1 )
+METHOD HbQtVisualizer:contextMenuScene( oPoint )
    LOCAL qMenu, qAct, aAct := {}
 
-   qMenu := QMenu( ::qView )
+   qMenu := QMenu( ::oGraphicsView )
    aadd( aAct, qMenu:addAction( "Refresh"  ) )
    aadd( aAct, qMenu:addAction( "Zoom+" ) )
 
-   IF ! empty( qAct := qMenu:exec( p1:screenPos() ) )
+   IF ! empty( qAct := qMenu:exec( oPoint ) )
       SWITCH qAct:text()
       CASE "Refresh"
          EXIT
@@ -1349,7 +1366,7 @@ METHOD HbQtVisualizer:printPreview( oPrinter )
    NEXT
 #endif
 
-   WITH OBJECT oDlg := QPrintPreviewDialog( oPrinter, ::qView )
+   WITH OBJECT oDlg := QPrintPreviewDialog( oPrinter, ::oGraphicsView )
       :setWindowTitle( "HBReportGenerator : " + iif( !empty( ::cSaved ), ::cSaved, "Untitled" ) )
       :move( 20, 20 )
       :resize( 400, 600 )

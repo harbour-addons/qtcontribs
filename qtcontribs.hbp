@@ -33,6 +33,8 @@ hbqt/qtbluetooth/hbqtbluetooth.hbp
 hbqt/qtqml/hbqtqml.hbp
 hbqt/qtquick/hbqtquick.hbp
 hbqt/qtsensors/hbqtsensors.hbp
+hbqt/qtwebkit/hbqtwebkit.hbp
+hbqt/qtdesigner/hbqtdesigner.hbp
 hbqt/qzxing/hbqtzxing.hbp
 
 
@@ -51,10 +53,3 @@ hbide/hbide.hbp
 #
 hbdbu/hbdbu.hbp
 
-#    These modules are not supported on android 
-#    and I found no way to stop builds for android so placing at the end 
-#    to avoid another .hbp. This will show some errors at the end of 
-#    android builds...
-#
-hbqt/qtwebkit/hbqtwebkit.hbp
-hbqt/qtdesigner/hbqtdesigner.hbp

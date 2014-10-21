@@ -54,6 +54,9 @@
 #define HBQT_HBQGRAPHICSSCENE_H
 
 #include <QtCore/QList>
+#include <QtCore/QTime>
+#include <QtCore/QTimer>
+#include <QtCore/QCoreApplication>
 
 #include <QtGui/QCursor>
 #include <QtGui/QKeyEvent>
@@ -128,12 +131,14 @@ public slots:
    virtual void             setBottomMagnet( bool magneted );
    virtual void             setHorizontalMagnet( bool magneted );
    virtual void             setVerticalMagnet( bool magneted );
+   void                     mousePressTimer();
 
 protected:
    virtual void             contextMenuEvent( QGraphicsSceneContextMenuEvent * event );
    virtual void             mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent );
    virtual void             mousePressEvent( QGraphicsSceneMouseEvent *event );
    virtual void             mouseReleaseEvent( QGraphicsSceneMouseEvent * mouseEvent );
+   virtual void             mouseDoubleClickEvent( QGraphicsSceneMouseEvent * mouseEvent );
    virtual void             keyPressEvent( QKeyEvent * keyEvent );
    virtual void             keyReleaseEvent( QKeyEvent * keyEvent );
 
@@ -166,6 +171,8 @@ private:
    bool                     m_showGrid;
    QGraphicsItem *          movingItem;
    QPointF                  mouseOldPos;
+   QTime                    mousePressTime;
+   QPointF                  mousePressPos;
 };
 
 #endif

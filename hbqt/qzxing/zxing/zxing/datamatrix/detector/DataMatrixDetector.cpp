@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+#include "zxing_vc13_patch.h"
 #include <map>
 #include <zxing/ResultPoint.h>
 #include <zxing/common/GridSampler.h>

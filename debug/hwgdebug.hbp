@@ -7,6 +7,8 @@
 -3rd=hbide_title=hwgdebug
 -3rd=hbide_output=hwgdebug
 
+{android}-stop='HwgDebug is not available for Android...'
+
 -inc
 
 -hblib

@@ -13,12 +13,17 @@
 -i./zxing/zxing/pdf417
 -i./zing/bigint
 -i./zxing/win32/zxing
+{msvc}-i./zxing/win32/zxing/msvc
 
 -cflag=-DQZXING_LIBRARY
 -cflag=-DZXING_ICONV_CONST
 -cflag=-DDISABLE_LIBRARY_FEATURES
 
 {msvc}-cflag=-EHsc
+{msvc}-cflag=-wd4512
+{msvc}-cflag=-wd4245 
+{msvc}-cflag=-FI./zxing/win32/zxing/msvc/stdint.h 
+{msvc}-cflag=-FI./zxing/win32/zxing/iconv.h
 
 qth/filelist.hbm
 
@@ -132,8 +137,6 @@ zxing/bigint/BigIntegerAlgorithms.cc
 zxing/bigint/BigInteger.cc
 {win}zxing/win32/zxing/win_iconv.c
 
-
-{win&msvc}-i./zxing/win32/zxing/msvc
 
 hbqt_hbqzxing.h
 imagehandler.h

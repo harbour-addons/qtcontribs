@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include "zxing_vc13_patch.h"
 #include <limits>
 #include <zxing/pdf417/detector/Detector.h>
 #include <zxing/pdf417/detector/LinesSampler.h>

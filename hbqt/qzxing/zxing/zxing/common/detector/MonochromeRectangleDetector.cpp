@@ -19,6 +19,7 @@
  * limitations under the License.
  */
 
+#include "zxing_vc13_patch.h"
 #include <zxing/NotFoundException.h>
 #include <zxing/common/detector/MonochromeRectangleDetector.h>
 #include <sstream>

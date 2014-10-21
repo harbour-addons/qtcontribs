@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include "zxing_vc13_patch.h"
 #include "Code39Reader.h"
 #include <zxing/oned/OneDResultPoint.h>
 #include <zxing/common/Array.h>
