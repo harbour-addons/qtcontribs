@@ -130,8 +130,10 @@ zxing/bigint/BigUnsigned.cc
 zxing/bigint/BigIntegerUtils.cc
 zxing/bigint/BigIntegerAlgorithms.cc
 zxing/bigint/BigInteger.cc
-{win&mingw}zxing/win32/zxing/win_iconv.c
+{win}zxing/win32/zxing/win_iconv.c
 
+
+{win&msvc}-i./zxing/win32/zxing/msvc
 
 hbqt_hbqzxing.h
 imagehandler.h
