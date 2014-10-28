@@ -42,6 +42,7 @@ HB_FUNC( QT_QWIDGET )
 
 <ENUMS>
 enum RenderFlag { DrawWindowBackground, DrawChildren, IgnoreMask }
+flags RenderFlags
 # From QPaintDevice : Parent Class
 enum PaintDeviceMetric { PdmWidth, PdmHeight, PdmWidthMM, PdmHeightMM, ..., PdmPhysicalDpiY }
 </ENUMS>
@@ -100,7 +101,7 @@ bool hasFocus () const
 bool hasMouseTracking () const
 int height () const
 virtual int heightForWidth ( int w ) const
-// QInputContext * inputContext ()
+Qt::InputMethodHints inputMethodHints() const                  [*V=0x040600*]
 virtual QVariant inputMethodQuery ( Qt::InputMethodQuery query ) const
 void insertAction ( QAction * before, QAction * action )
 void insertActions ( QAction * before, QList<QAction *> actions )
@@ -148,6 +149,7 @@ virtual QPaintEngine * paintEngine () const
 const QPalette & palette () const
 QWidget * parentWidget () const
 QPoint pos () const
+QWidget * previousInFocusChain() const                     [*V=0x040600*]
 QRect rect () const
 # non-portable
 // virtual void releaseDC ( HDC hdc ) const
@@ -156,7 +158,9 @@ void releaseMouse ()
 void releaseShortcut ( int id )
 void removeAction ( QAction * action )
 //void render ( QPaintDevice * target, const QPoint & targetOffset = QPoint(), const QRegion & sourceRegion = QRegion(), RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) )
+void render ( QPaintDevice * target, const QPoint & targetOffset = QPoint(), const QRegion & sourceRegion = QRegion() )
 //void render ( QPainter * painter, const QPoint & targetOffset = QPoint(), const QRegion & sourceRegion = QRegion(), RenderFlags renderFlags = RenderFlags( DrawWindowBackground | DrawChildren ) )
+void render ( QPainter * painter, const QPoint & targetOffset = QPoint(), const QRegion & sourceRegion = QRegion() )
 
 void repaint ( int x, int y, int w, int h )
 void repaint ( const QRect & rect )
@@ -244,6 +248,7 @@ void setSizePolicy ( QSizePolicy::Policy horizontal, QSizePolicy::Policy vertica
 void setStatusTip ( const QString & )
 void setStyle ( QStyle * style )
 void setToolTip ( const QString & )
+void setToolTipDuration(int msec)                       [*V=0x050200*]
 void setUpdatesEnabled ( bool enable )
 void setWhatsThis ( const QString & )
 void setWindowFilePath ( const QString & filePath )
@@ -265,6 +270,7 @@ QStyle * style () const
 QString styleSheet () const
 bool testAttribute ( Qt::WidgetAttribute attribute ) const
 QString toolTip () const
+int toolTipDuration() const                                   [*V=0x050200*]
 bool underMouse () const
 void unsetCursor ()
 void unsetLayoutDirection ()
