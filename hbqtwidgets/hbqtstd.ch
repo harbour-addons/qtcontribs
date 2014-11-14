@@ -297,4 +297,13 @@
 
    #define HBQT_P_XX( n )                            ( Int( QApplication():primaryScreen():logicalDotsPerInchY() * n / 96 ) )
 
+   #define __STATE_AREA_NONE__                       0
+   #define __STATE_AREA_TOPLEFT__                    1
+   #define __STATE_AREA_TOPRIGHT__                   2
+   #define __STATE_AREA_BOTTOMRIGHT__                3
+   #define __STATE_AREA_BOTTOMLEFT__                 4
+   #define __STATE_AREA_CENTER__                     5
+   //
+   #define __STATE_AREA_MAXIMUM__                    5
+
 #endif

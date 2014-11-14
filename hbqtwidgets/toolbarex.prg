@@ -81,10 +81,12 @@ CLASS HbQtScrollableToolbar
    DATA   oPos
 
    DATA   aToolButtons                            INIT   {}
+   DATA   hButtons                                INIT __hbqtStandardHash()
 
    DATA   nOrientation                            INIT   Qt_Horizontal                   // before :create()
    ACCESS orientation()                           INLINE ::nOrientation
    METHOD setOrientation( nOrient )               INLINE ::nOrientation := nOrient
+   ACCESS isVertical()                            INLINE ( ::nOrientation == Qt_Vertical )
 
    DATA   nAlignment                                                                     // before :create()
    ACCESS alignment()                             INLINE ::nAlignment
@@ -123,14 +125,19 @@ CLASS HbQtScrollableToolbar
    METHOD configure()
    METHOD destroy()                               VIRTUAL
 
+   METHOD adjustSize()
    METHOD manageToolbar()
 
    METHOD addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise )
+   METHOD addSeparator( cName )
    METHOD manageIconDrag( oEvent, oButton )
 
-   ACCESS isVertical()                            INLINE ( ::nOrientation == Qt_Vertical )
-
+   METHOD findButton( cName )
+   METHOD swapImage( cName, oPixmap )
    METHOD setState( cName, nState )
+   METHOD click( cName )
+   METHOD setEnabled( cName, lEnable )
+   METHOD setHidden( cName, lYes )
 
    METHOD hide()                                  INLINE ::oWidget:hide()
    METHOD show()                                  INLINE ::oWidget:show()
@@ -140,6 +147,8 @@ CLASS HbQtScrollableToolbar
 METHOD HbQtScrollableToolbar:init( oParent )
    DEFAULT oParent  TO ::oParent
    ::oParent := oParent
+
+   ::hButtons := __hbqtStandardHash()
    RETURN Self
 
 
@@ -195,8 +204,9 @@ METHOD HbQtScrollableToolbar:create( oParent )
          :setGridSize( QSize( ::nButtonWidth + ::nGap, ::nButtonHeight ) )
          :setMaximumHeight( ::nButtonHeight )
       ENDIF
+      :setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
    ENDWITH
-   QScroller():scroller( ::oWidget ):grabGesture( ::oWidget, QScroller_LeftMouseButtonGesture )
+   __hbqtApplyStandardScroller( ::oWidget )
 
    ::oFirstIndicator := QLabel()
    ::oLastIndicator  := QLabel()
@@ -236,8 +246,287 @@ METHOD HbQtScrollableToolbar:create( oParent )
    RETURN Self
 
 
+METHOD HbQtScrollableToolbar:findButton( cName )
+   IF ! Empty( cName ) .AND. hb_HHasKey( ::hButtons, cName )
+      RETURN ::hButtons[ cName ][ 1 ]
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtScrollableToolbar:swapImage( cName, oPixmap )
+   LOCAL oToolButton
+   IF ! Empty( oToolButton := ::findButton( cName ) )
+      IF HB_ISOBJECT( oPixmap )
+         oToolButton:setIcon( oPixmap )
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:setEnabled( cName, lEnable )
+   LOCAL oToolButton
+   IF ! Empty( oToolButton := ::findButton( cName ) )
+      oToolButton:setEnabled( lEnable )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:click( cName )
+   LOCAL oToolButton
+   IF ! Empty( oToolButton := ::findButton( cName ) )
+      oToolButton:click()
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:setState( cName, nState )
+   LOCAL oldState, oToolButton
+
+   IF ! Empty( oToolButton := ::findButton( cName ) )
+      SWITCH nState
+      CASE 1                                      // __HBQT_TBBUTTON_STATE_TOGGLE__
+         IF oToolButton:isCheckable()
+            oldState := oToolButton:isChecked()
+            oToolButton:toggle()
+         ENDIF
+         EXIT
+      CASE 2                                      // __HBQT_TBBUTTON_STATE_TOGGLEIFCHECKED__
+         IF ( oldState := oToolButton:isChecked() )
+            oToolButton:toggle()
+         ENDIF
+         EXIT
+      CASE 3
+         EXIT
+      ENDSWITCH
+   ENDIF
+   RETURN oldState
+
+
+METHOD HbQtScrollableToolbar:setHidden( cName, lYes )
+   LOCAL oItem
+   IF hb_HHasKey( ::hButtons, cName )
+      WITH OBJECT oItem := ::hButtons[ cName ][ 2 ]
+         :setWhatsThis( iif( lYes, "Y", "N" ) )
+         :setHidden( lYes )
+      ENDWITH
+   ENDIF
+   HB_SYMBOL_UNUSED( oItem )
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:adjustSize()
+   LOCAL oRect, aBtns, nButtons := 0
+
+   FOR EACH aBtns IN ::hButtons
+      nButtons += iif( aBtns[ 2 ]:whatsThis() == "Y", 0, 1 )
+   NEXT
+   IF ::isVertical()
+      ::oWidget:setMaximumHeight( ::oWidget:gridSize():height() * nButtons + ::nGap * nButtons )
+   // ::oWidget:setMinimumHeight( ::oWidget:gridSize():height() * nButtons + ::nGap * nButtons )
+   ELSE
+      ::oWidget:setMaximumWidth( ::oWidget:gridSize():width() * nButtons + ::nGap * nButtons )
+   // ::oWidget:setMinimumWidth( ::oWidget:gridSize():width() * nButtons + ::nGap * nButtons )
+   ENDIF
+   WITH OBJECT ::oLayout
+      oRect := :geometry()
+      IF ::isVertical()
+         oRect:setWidth( ::nButtonWidth )
+         oRect:setHeight( ::oWidget:gridSize():height() * nButtons + ::nGap * nButtons )
+      ELSE
+         oRect:setHeight( ::nButtonHeight )
+         oRect:setWidth( ::oWidget:gridSize():width() * nButtons + ::nGap * nButtons )
+      ENDIF
+      :setGeometry( oRect )
+      IF ::nAlignment != NIL
+         :setAlignment( ::nAlignment )
+      ENDIF
+   ENDWITH
+
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:manageToolbar()
+   LOCAL i, oRect, oFirstVis, oLastVis
+
+   IF Empty( ::aToolButtons )
+      RETURN Self
+   ENDIF
+   FOR i := 1 TO Len( ::aToolButtons )
+      IF ::aToolButtons[ i,2 ]:whatsThis() == "N"
+         oFirstVis := ::aToolButtons[ i, 2 ]
+         EXIT
+      ENDIF
+   NEXT
+   FOR i := Len( ::aToolButtons ) TO 1 STEP -1
+      IF ::aToolButtons[ i,2 ]:whatsThis() == "N"
+         oLastVis := ::aToolButtons[ i, 2 ]
+         EXIT
+      ENDIF
+   NEXT
+
+   IF ::isVertical()
+      oRect := ::oWidget:visualItemRect( oFirstVis )
+      IF oRect:y() < 0
+         ::oFirstIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
+         ::oFirstIndicator:show()
+      ELSE
+         ::oFirstIndicator:setStyleSheet( " " )
+         ::oFirstIndicator:hide()
+      ENDIF
+      oRect := ::oWidget:visualItemRect( oLastVis )
+      IF oRect:y() + oRect:height() > ::oWidget:viewport():height()
+         ::oLastIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
+         ::oLastIndicator:show()
+      ELSE
+         ::oLastIndicator:setStyleSheet( " " )
+         ::oLastIndicator:hide()
+      ENDIF
+   ELSE
+      oRect := ::oWidget:visualItemRect( oFirstVis )
+      IF oRect:x() < 0
+         ::oFirstIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
+         ::oFirstIndicator:show()
+      ELSE
+         ::oFirstIndicator:setStyleSheet( " " )
+         ::oFirstIndicator:hide()
+      ENDIF
+      oRect := ::oWidget:visualItemRect( oLastVis )
+      IF oRect:x() + oRect:width() > ::oWidget:viewport():width()
+         ::oLastIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
+         ::oLastIndicator:show()
+      ELSE
+         ::oLastIndicator:setStyleSheet( " " )
+         ::oLastIndicator:hide()
+      ENDIF
+   ENDIF
+   ::oLayout:update()
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:addSeparator( cName )
+   LOCAL oToolBtn, oItm
+
+   WITH OBJECT oToolBtn := QToolButton()
+      :setIconSize( QSize( ::nImageWidth, ::nImageHeight ) )
+      :setMaximumWidth( ::nButtonWidth )
+      :setMinimumWidth( ::nButtonWidth )
+      :setMaximumHeight( ::nButtonHeight )
+      :setMinimumHeight( ::nButtonHeight )
+      :setAutoRaise( .T. )
+      :setEnabled( .F. )
+   ENDWITH
+   oItm := QListWidgetItem()
+   oItm:setSizeHint( oToolBtn:sizeHint() )
+   oItm:setWhatsThis( "N" )
+   ::oWidget:addItem( oItm )
+   ::oWidget:setItemWidget( oItm, oToolBtn )
+
+   ::hButtons[ cName ] := { oToolBtn, oItm }
+   AAdd( ::aToolButtons, { oToolBtn, oItm, cName } )
+   oItm:setData( Qt_UserRole, QVariant( Len( ::aToolButtons ) ) )
+
+   ::adjustSize()
+   RETURN Self
+
+
+METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise )
+   LOCAL oToolBtn, oItm, cName
+
+   IF HB_ISARRAY( xCaption )
+      ASize( xCaption, 8 )
+
+      cName       := xCaption[ 1 ]
+      cTooltip    := xCaption[ 2 ]
+      xButton     := xCaption[ 3 ]
+      bBlock      := xCaption[ 4 ]
+      lCheckable  := xCaption[ 5 ]
+      lDraggable  := xCaption[ 6 ]
+      lAutoRepeat := xCaption[ 7 ]
+      lNoAutoRaise:= xCaption[ 8 ]
+   ELSE
+      cName := xCaption
+   ENDIF
+
+   DEFAULT cTooltip     TO cName
+   DEFAULT lCheckable   TO .F.
+   DEFAULT lAutoRepeat  TO .F.
+   DEFAULT lDraggable   TO .F.
+   DEFAULT lNoAutoRaise TO .F.
+
+   WITH OBJECT oToolBtn := QToolButton()
+      //:setToolButtonStyle( Qt_ToolButtonTextUnderIcon )
+      :setIconSize( QSize( ::nImageWidth, ::nImageHeight ) )
+      :setMaximumWidth( ::nButtonWidth )
+      :setMinimumWidth( ::nButtonWidth )
+      :setMaximumHeight( ::nButtonHeight )
+      :setMinimumHeight( ::nButtonHeight )
+      //
+      :setObjectName( cName )
+      :setTooltip( cTooltip )
+      IF ! Empty( xButton )
+         IF HB_ISOBJECT( xButton ) .AND. __objDerivedFrom( xButton, "QICON" )
+            :setIcon( xButton )
+         ELSEIF HB_ISSTRING( xButton )
+            IF ( "." $ xButton )
+               :setIcon( QIcon( xButton ) )
+            ELSE
+               :setIcon( QIcon( __hbqtImage( xButton ) ) )
+            ENDIF
+         ENDIF
+      ENDIF
+      :setText( cName )
+
+      :setCheckable( lCheckable )
+      :setAutoRepeat( lAutoRepeat )
+      :setAutoRaise( ! lNoAutoRaise )
+
+      :connect( "clicked(bool)", bBlock )
+      IF lDraggable
+         :connect( QEvent_MouseButtonPress, {|oEvent| ::oPos := oEvent:pos() } )
+         :connect( QEvent_MouseMove       , {|oEvent| ::manageIconDrag( oEvent, oToolBtn ) } )
+      ENDIF
+   ENDWITH
+
+   oItm := QListWidgetItem()
+   oItm:setSizeHint( oToolBtn:sizeHint() )
+   oItm:setWhatsThis( "N" )
+   ::oWidget:addItem( oItm )
+   ::oWidget:setItemWidget( oItm, oToolBtn )
+
+   ::hButtons[ cName ] := { oToolBtn, oItm }
+   AAdd( ::aToolButtons, { oToolBtn, oItm, cName } )
+   oItm:setData( Qt_UserRole, QVariant( Len( ::aToolButtons ) ) )
+
+   ::adjustSize()
+   RETURN oToolBtn
+
+
+METHOD HbQtScrollableToolbar:manageIconDrag( oEvent, oButton )
+   LOCAL qrC, qByte, qPix, qMime, oDrag
+
+   qRC := QRect( ::oPos:x() - 5, ::oPos:y() - 5, 10, 10 ):normalized()
+   IF qRC:contains( oEvent:pos() )
+      qByte := QByteArray( oButton:objectName() )
+      qPix  := oButton:icon():pixmap( 32,32 )
+      WITH OBJECT qMime := QMimeData()
+         :setData( "application/x-toolbaricon", qByte )
+         :setHtml( oButton:objectName() )
+      ENDWITH
+      WITH OBJECT oDrag := QDrag( ::oWidget )
+         :setMimeData( qMime )
+         :setPixmap( qPix )
+         :setHotSpot( QPoint( 15,15 ) )
+         :setDragCursor( qPix, Qt_CopyAction + Qt_IgnoreAction )
+      ENDWITH
+      oDrag:exec( Qt_CopyAction + Qt_IgnoreAction )
+      oDrag:setParent( QWidget() )
+      oDrag := NIL
+      ::oPos := QPoint()
+   ENDIF
+   RETURN Self
+
+
 METHOD HbQtScrollableToolbar:configure()
-//   LOCAL oRect
 
    IF ::isVertical()
       WITH OBJECT ::oFirstIndicator
@@ -268,186 +557,6 @@ METHOD HbQtScrollableToolbar:configure()
    ENDIF
 
    ::manageToolbar()
-
-#if 0
-   WITH OBJECT ::oLayout
-      oRect := :geometry()
-      IF ::isVertical()
-         oRect:setWidth( ::nButtonWidth )
-      ELSE
-         oRect:setHeight( ::nButtonHeight )
-      ENDIF
-      :setGeometry( oRect )
-      IF ::nAlignment != NIL
-         :setAlignment( ::nAlignment )
-      ENDIF
-   ENDWITH
-#endif
    RETURN Self
 
-
-METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise )
-   LOCAL oToolBtn, oItm, cText
-
-   IF HB_ISARRAY( xCaption )
-      ASize( xCaption, 8 )
-      //
-      cText       := xCaption[ 1 ]
-      cTooltip    := xCaption[ 2 ]
-      xButton     := xCaption[ 3 ]
-      bBlock      := xCaption[ 4 ]
-      lCheckable  := xCaption[ 5 ]
-      lDraggable  := xCaption[ 6 ]
-      lAutoRepeat := xCaption[ 7 ]
-      lNoAutoRaise:= xCaption[ 8 ]
-   ELSE
-      cText := xCaption
-   ENDIF
-
-   DEFAULT cTooltip     TO cText
-   DEFAULT lCheckable   TO .F.
-   DEFAULT lAutoRepeat  TO .F.
-   DEFAULT lDraggable   TO .F.
-   DEFAULT lNoAutoRaise TO .F.
-
-   WITH OBJECT oToolBtn := QToolButton()
-      :setIconSize( QSize( ::nImageWidth, ::nImageHeight ) )
-      :setMaximumWidth( ::nButtonWidth )
-      :setMinimumWidth( ::nButtonWidth )
-      :setMaximumHeight( ::nButtonHeight )
-      :setMinimumHeight( ::nButtonHeight )
-      //
-      :setObjectName( cText )
-      :setTooltip( cTooltip )
-      IF ! Empty( xButton )
-         IF HB_ISOBJECT( xButton ) .AND. __objDerivedFrom( xButton, "QICON" )
-            :setIcon( xButton )
-         ELSEIF HB_ISSTRING( xButton )
-            IF ( "." $ xButton )
-               :setIcon( QIcon( xButton ) )
-            ELSE
-               :setIcon( QIcon( __hbqtImage( xButton ) ) )
-            ENDIF
-         ELSE
-            :setText( cText )
-         ENDIF
-      ELSE
-         :setText( cText )
-      ENDIF
-
-      :setCheckable( lCheckable )
-      :setAutoRepeat( lAutoRepeat )
-      :setAutoRaise( ! lNoAutoRaise )
-
-      :connect( "clicked()", bBlock )
-      IF lDraggable
-         :connect( QEvent_MouseButtonPress, {|oEvent| ::oPos := oEvent:pos() } )
-         :connect( QEvent_MouseMove       , {|oEvent| ::manageIconDrag( oEvent, oToolBtn ) } )
-      ENDIF
-   ENDWITH
-
-   oItm := QListWidgetItem()
-   oItm:setSizeHint( oToolBtn:sizeHint() )
-   ::oWidget:addItem( oItm )
-   ::oWidget:setItemWidget( oItm, oToolBtn )
-
-   AAdd( ::aToolButtons, { oToolBtn, oItm } )
-   oItm:setData( Qt_UserRole, QVariant( Len( ::aToolButtons ) ) )
-   RETURN oToolBtn
-
-
-METHOD HbQtScrollableToolbar:setState( cName, nState )
-   HB_SYMBOL_UNUSED( cName + nState )
-   RETURN Self
-
-
-METHOD HbQtScrollableToolbar:manageToolbar()
-   LOCAL i, oRect
-
-   IF Empty( ::aToolButtons )
-      RETURN Self
-   ENDIF
-
-   IF ::isVertical()
-      FOR i := 1 TO Len( ::aToolButtons )
-         IF ! ::aToolButtons[ i,2 ]:isHidden()
-            EXIT
-         ENDIF
-      NEXT
-      oRect := ::oWidget:visualItemRect( ::aToolButtons[ i,2 ] )
-      IF oRect:y() < 0
-         ::oFirstIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
-         ::oFirstIndicator:show()
-      ELSE
-         ::oFirstIndicator:setStyleSheet( " " )
-         ::oFirstIndicator:hide()
-      ENDIF
-      FOR i := Len( ::aToolButtons ) TO 1 STEP -1
-         IF ! ::aToolButtons[ i,2 ]:isHidden()
-            EXIT
-         ENDIF
-      NEXT
-      oRect := ::oWidget:visualItemRect( ::aToolButtons[ i,2 ] )
-      IF oRect:y() + oRect:height() > ::oWidget:viewport():height()
-         ::oLastIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
-         ::oFirstIndicator:show()
-      ELSE
-         ::oLastIndicator:setStyleSheet( " " )
-         ::oLastIndicator:hide()
-      ENDIF
-   ELSE
-      FOR i := 1 TO Len( ::aToolButtons )
-         IF ! ::aToolButtons[ i,2 ]:isHidden()
-            EXIT
-         ENDIF
-      NEXT
-      oRect := ::oWidget:visualItemRect( ::aToolButtons[ i,2 ] )
-      IF oRect:x() < 0
-         ::oFirstIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
-         ::oFirstIndicator:show()
-      ELSE
-         ::oFirstIndicator:setStyleSheet( " " )
-         ::oFirstIndicator:hide()
-      ENDIF
-      FOR i := Len( ::aToolButtons ) TO 1 STEP -1
-         IF ! ::aToolButtons[ i,2 ]:isHidden()
-            EXIT
-         ENDIF
-      NEXT
-      oRect := ::oWidget:visualItemRect( ::aToolButtons[ i,2 ] )
-      IF oRect:x() + oRect:width() > ::oWidget:viewport():width()
-         ::oLastIndicator:setStyleSheet( "background-color: " + __hbqtRgbStringFromRGB( ::aRGB ) +  ";" )
-         ::oLastIndicator:show()
-      ELSE
-         ::oLastIndicator:setStyleSheet( " " )
-         ::oLastIndicator:hide()
-      ENDIF
-   ENDIF
-   ::oLayout:update()
-   RETURN Self
-
-
-METHOD HbQtScrollableToolbar:manageIconDrag( oEvent, oButton )
-   LOCAL qrC, qByte, qPix, qMime, qDrag
-
-   qRC := QRect( ::oPos:x() - 5, ::oPos:y() - 5, 10, 10 ):normalized()
-   IF qRC:contains( oEvent:pos() )
-      qByte := QByteArray( oButton:objectName() )
-      qPix  := oButton:icon():pixmap( 16,16 )
-      WITH OBJECT qMime := QMimeData()
-         :setData( "application/x-toolbaricon", qByte )
-         :setHtml( oButton:objectName() )
-      ENDWITH
-      WITH OBJECT qDrag := QDrag( ::oWidget )
-         :setMimeData( qMime )
-         :setPixmap( qPix )
-         :setHotSpot( QPoint( 15,15 ) )
-         :setDragCursor( qPix, Qt_CopyAction + Qt_IgnoreAction )
-      ENDWITH
-      qDrag:exec( Qt_CopyAction + Qt_IgnoreAction )
-      qDrag:setParent( QWidget() )
-      qDrag := NIL
-      ::oPos := NIL
-   ENDIF
-   RETURN Self
 

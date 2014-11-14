@@ -159,8 +159,19 @@ HB_FUNC( QT_QVARIANT )
       hb_strfree( pText01 );
    }
    else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
-   {
-      __HB_RETPTRGC__( new QVariant( hb_parni( 1 ) ) );
+   {  
+      if ( hb_param( 1, HB_IT_DOUBLE ) != NULL )
+      {
+          __HB_RETPTRGC__( new QVariant( ( double ) hb_parnd( 1 ) ) );
+      }  
+      else if (hb_param( 1, HB_IT_LONG ) != NULL )
+      {  
+          __HB_RETPTRGC__( new QVariant( ( qlonglong ) hb_parnl( 1 ) ) );
+      } 
+      else
+      {       
+          __HB_RETPTRGC__( new QVariant( hb_parni( 1 ) ) );
+      }
    }
    else if( hb_pcount() == 1 && HB_ISLOG( 1 ) )
    {

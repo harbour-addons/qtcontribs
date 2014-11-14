@@ -5030,6 +5030,11 @@
 #define QRegularExpression_OptimizeOnFirstUsageOption        0x0080   // The regular expression will be optimized (and possibly JIT-compiled) on its first usage, instead of after a certain (undefined) number of usages. See also optimize(). This enum value has been introduced in Qt 5.4.
 #define QRegularExpression_DontAutomaticallyOptimizeOption   0x0100   // Regular expressions are automatically optimized after a certain number of usages; setting this option prevents such optimizations, therefore avoiding possible unpredictable spikes in CPU and memory usage. If both this option and the OptimizeOnFirstUsageOption option are set, then this option takes precedence. Note: this option will still let the regular expression to be optimized by manually calling optimize(). This enum value has been introduced in Qt 5.4.
 
+#define Qt_PrimaryOrientation                                0x00000000   // The display's primary orientation.
+#define Qt_LandscapeOrientation                              0x00000002   // Landscape orientation, display width is greater than display height.
+#define Qt_PortraitOrientation                               0x00000001   // Portrait orientation, display height is greater than display width, rotated 90 degree clockwise relative to landscape.
+#define Qt_InvertedLandscapeOrientation                      0x00000008   // Inverted landscape orientation, rotated 180 degrees relative to landscape.
+#define Qt_InvertedPortraitOrientation                       0x00000004   // Inverted portrait orientation, rotated 180 degrees relative to portrait.
 
 #endif
 

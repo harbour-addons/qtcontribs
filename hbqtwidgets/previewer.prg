@@ -128,6 +128,7 @@ CLASS HbQtPrintPreview
 
    METHOD setOptions( xOption, xValue )
 
+   ACCESS toolbar()                               INLINE ::oToolbar
    ENDCLASS
 
 

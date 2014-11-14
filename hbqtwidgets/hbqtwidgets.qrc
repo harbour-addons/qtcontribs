@@ -96,6 +96,7 @@
     <file>resources/rp_ellipse.png</file>
     <file>resources/rp_shapes.png</file>
     <file>resources/harbour.png</file>
+    <file>resources/harbour-b.png</file>
     <file>resources/text.png</file>
     <file>resources/go-top.png</file>
     <file>resources/go-bottom.png</file>
@@ -191,5 +192,58 @@
     <file>resources/down-1.png</file>
     <file>resources/up-1.png</file>
     <file>resources/menu.png</file>
+    <file>resources/lock.png</file>
+    <file>resources/menu-1.png</file>
+    <file>resources/rotate-image.png</file>
+    <file>resources/rotate-marker.png</file>
+    <file>resources/rotate-1.png</file>
+    <file>resources/delete.png</file>
+    <file>resources/save-4.png</file>
+    <file>resources/delete-state.png</file>
+    <file>resources/text-object.png</file>
+    <file>resources/edit-object.png</file>
+    <file>resources/z-diamond.png</file>
+    <file>resources/z-rectangle.png</file>
+    <file>resources/z-roundedrect.png</file>
+    <file>resources/z-ellipse.png</file>
+    <file>resources/z-linev.png</file>
+    <file>resources/z-lineh.png</file>
+    <file>resources/z-linedl.png</file>
+    <file>resources/z-linedr.png</file>
+    <file>resources/z-triangle.png</file>
+    <file>resources/z-triangleb.png</file>
+    <file>resources/z-trianglel.png</file>
+    <file>resources/z-triangler.png</file>
+    <file>resources/z-barcode.png</file>
+    <file>resources/rotate-3.png</file>
+    <file>resources/rotatel-3.png</file>
+    <file>resources/grid-1.png</file>
+    <file>resources/grid-4.png</file>
+    <file>resources/delete-state-1.png</file>
+    <file>resources/del-state-1.png</file>
+    <file>resources/leftanglearrow.png</file>
+    <file>resources/leftanglearrow-1.png</file>
+    <file>resources/rightanglearrow.png</file>
+    <file>resources/rightanglearrow-1.png</file>
+    <file>resources/arrow-left-1.png</file>
+    <file>resources/arrow-right-1.png</file>
+    <file>resources/communication.png</file>
+    <file>resources/save-5.png</file>
+    <file>resources/branch-open.png</file>
+    <file>resources/branch-closed.png</file>
+    <file>resources/preview-1.png</file>
+    <file>resources/arrow-rgt.png</file>
+    <file>resources/arrow-top-left.png</file>
+    <file>resources/arrow-top-right.png</file>
+    <file>resources/arrow-up.png</file>
+    <file>resources/arrow-bottom-left.png</file>
+    <file>resources/arrow-bottom-right.png</file>
+    <file>resources/arrow-contract.png</file>
+    <file>resources/arrow-down.png</file>
+    <file>resources/arrow-expand.png</file>
+    <file>resources/arrow-lft.png</file>
+    <file>resources/resize.png</file>
+    <file>resources/mover.png</file>
+    <file>resources/prv_objects-1.png</file>
   </qresource>
 </RCC>

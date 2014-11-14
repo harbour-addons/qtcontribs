@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -56,16 +56,22 @@
 #include "hbqt.h"
 
 #if QT_VERSION <= 0x040900
+#include <QtGui/QGraphicsObject>
 #include <QtGui/QGraphicsItem>
 #include <QtGui/QStyleOptionGraphicsItem>
 #include <QtGui/QGraphicsScene>
 #include <QtGui/QGraphicsSceneMouseEvent>
-#include <QtGui/QPainter>
 #include <QtGui/QWidget>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QDesktopWidget>
+#include <QtGui/QGestureEvent>
+#include <QtGui/QGesture>
+#include <QtGui/QTapAndHoldGesture>
+#include <QtGui/QPinchGesture>
+#include <QtGui/QSwipeGesture>
+#include <QtGui/QTapGesture>
 #else
-#include <QtGui/QPainter>
+#include <QtWidgets/QGraphicsObject>
 #include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QStyleOptionGraphicsItem>
 #include <QtWidgets/QGraphicsScene>
@@ -73,10 +79,20 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QTreeWidget>
 #include <QtWidgets/QDesktopWidget>
+#include <QtWidgets/QGestureEvent>
+#include <QtWidgets/QGesture>
+#include <QtWidgets/QTapAndHoldGesture>
+#include <QtWidgets/QPinchGesture>
+#include <QtWidgets/QSwipeGesture>
+#include <QtWidgets/QTapGesture>
 #endif
+
+#include <QtGui/QPainter>
+
 #include <QtCore/QModelIndex>
 #include <QtCore/QEvent>
 #include <QtCore/QMimeData>
+#include <QtCore/QDebug>
 
 #define UNIT                                      0.1
 
@@ -129,6 +145,9 @@
 
 #define hbqt_screen_heightMM (((double)QDesktopWidget().screen()->height() / (double)QDesktopWidget().screen()->physicalDpiY() )*25.4)
 #define hbqt_screen_widthMM  (((double)QDesktopWidget().screen()->width()  / (double)QDesktopWidget().screen()->physicalDpiX() )*25.4)
+
+bool __hbqGraphicsAllowResizeInPlace();
+bool __hbqGraphicsAllowMovement();
 
 
 class HBQGraphicsItem : public QGraphicsItem
@@ -191,6 +210,8 @@ private:
    QColor         generateNextColor();
    QRectF         adjustOption( QPainter * painter, const QStyleOptionGraphicsItem * option );
 
+   bool           m_isLocked;
+
 protected:
    void           dragEnterEvent( QGraphicsSceneDragDropEvent * event );
    void           dragLeaveEvent( QGraphicsSceneDragDropEvent * event );
@@ -203,11 +224,12 @@ protected:
    void           mouseReleaseEvent( QGraphicsSceneMouseEvent * event );
    void           mouseMoveEvent( QGraphicsSceneMouseEvent * event );
    void           contextMenuEvent( QGraphicsSceneContextMenuEvent * event );
-
+   void           keyPressEvent( QKeyEvent * event );
 
 public slots:
    void           hbSetBlock( PHB_ITEM block );
    void           hbClearBlock();
+   void           hbSetLocked( bool locked );
 
    QPen           pen();
    void           setPen( const QPen & pen );

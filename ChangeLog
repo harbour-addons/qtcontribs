@@ -16,6 +16,126 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-14 14:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r375)
+  * hbide/edit.prg
+    ! Fixed: CTRL and ALT parts of Qt_Key_Tab were not being distinguished.
+
+  * hbqt/qtcore/hbqt_bind.cpp
+    ! Removed: some code clubbed under #if 0.
+
+  * hbqt/qtcore/qth/QVariant.qth
+    + Expanded: constructor taking care of Integer, Double or LongLong 
+       numeric values. Patch provided by Francek, thanks.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QScreen specific contstants.
+
+  * hbqt/qtgui/qth/HBQGraphicsItem.qth
+  * hbqt/qtgui/qth/QComboBox.qth
+  * hbqt/qtgui/qth/QGraphicsItem.qth
+  * hbqt/qtgui/qth/QGraphicsObject.qth
+  * hbqt/qtgui/qth/QListWidgetItem.qth
+  * hbqt/qtgui/qth/QTreeWidgetItem.qth
+    + Additions of new methods etc.
+
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+    + Structural changes and code reorganization.
+
+  + hbqtwidgets/resources/arrow-bottom-left.png
+  + hbqtwidgets/resources/arrow-bottom-right.png
+  + hbqtwidgets/resources/arrow-contract.png
+  + hbqtwidgets/resources/arrow-down.png
+  + hbqtwidgets/resources/arrow-expand.png
+  + hbqtwidgets/resources/arrow-left-1.png
+  + hbqtwidgets/resources/arrow-lft.png
+  + hbqtwidgets/resources/arrow-rgt.png
+  + hbqtwidgets/resources/arrow-right-1.png
+  + hbqtwidgets/resources/arrow-top-left.png
+  + hbqtwidgets/resources/arrow-top-right.png
+  + hbqtwidgets/resources/arrow-up.png
+  + hbqtwidgets/resources/branch-closed.png
+  + hbqtwidgets/resources/branch-open.png
+  + hbqtwidgets/resources/communication.png
+  + hbqtwidgets/resources/del-state-1.png
+  + hbqtwidgets/resources/delete-state-1.png
+  + hbqtwidgets/resources/delete-state.png
+  + hbqtwidgets/resources/delete.png
+  + hbqtwidgets/resources/edit-object.png
+  + hbqtwidgets/resources/grid-1.png
+  + hbqtwidgets/resources/grid-4.png
+  + hbqtwidgets/resources/harbour-b.png
+  + hbqtwidgets/resources/leftanglearrow-1.png
+  + hbqtwidgets/resources/leftanglearrow.png
+  + hbqtwidgets/resources/lock.png
+  + hbqtwidgets/resources/menu-1.png
+  + hbqtwidgets/resources/mover.png
+  + hbqtwidgets/resources/panel-1.png
+  + hbqtwidgets/resources/preview-1.png
+  + hbqtwidgets/resources/prv_objects-1.png
+  + hbqtwidgets/resources/resize.png
+  + hbqtwidgets/resources/rightanglearrow-1.png
+  + hbqtwidgets/resources/rightanglearrow.png
+  + hbqtwidgets/resources/rotate-1.png
+  + hbqtwidgets/resources/rotate-3.png
+  + hbqtwidgets/resources/rotate-image.png
+  + hbqtwidgets/resources/rotate-marker.png
+  + hbqtwidgets/resources/rotatel-3.png
+  + hbqtwidgets/resources/save-4.png
+  + hbqtwidgets/resources/save-5.png
+  + hbqtwidgets/resources/text-object.png
+  + hbqtwidgets/resources/z-barcode.png
+  + hbqtwidgets/resources/z-diamond.png
+  + hbqtwidgets/resources/z-ellipse.png
+  + hbqtwidgets/resources/z-linedl.png
+  + hbqtwidgets/resources/z-linedr.png
+  + hbqtwidgets/resources/z-lineh.png
+  + hbqtwidgets/resources/z-linev.png
+  + hbqtwidgets/resources/z-rectangle.png
+  + hbqtwidgets/resources/z-roundedrect.png
+  + hbqtwidgets/resources/z-triangle.png
+  + hbqtwidgets/resources/z-triangleb.png
+  + hbqtwidgets/resources/z-trianglel.png
+  + hbqtwidgets/resources/z-triangler.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added many more images.
+
+  * hbqtwidgets/alert.prg
+    % Minor.
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: __STATE_AREA_* constants used in HbQtVisualizer.
+
+  * hbqtwidgets/misc.prg
+    + Added many general urpose functions used in HbQtVisualizer framework.
+
+  * hbqtwidgets/previewer.prg
+  * hbqtwidgets/properties.prg
+  * hbqtwidgets/toolbarex.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+  * hbqtwidgets/visualizer.ui
+    + Many, many changes, difficult to summarize.
+
+  + hbqtwidgets/tests/demovisualizer.prg
+    + Added code to supply parameters to HbQtVisualizer framework from the 
+       application which demonstrate how this framework can be exploited 
+       for variety of purposes.
+
+  ; WARNING : HbQtVisualizer Framework is undergoing a substantial 
+              uplift. A lot has been done, but a lot more needs to be done
+              before it should be used in production environment. This 
+              development is triggedred by my company's needs to carry 
+              a variety of tasks through it, especially to manage IT 
+              inventory scattered in different locations. This framework 
+              will mature to a large extent, stay tuned.
+
+              Today's commit is done because I was loosing grip of changes
+              after every successful feature implemention only and also 
+              because now it is on a level you can play with it.
+
 2014-10-27 16:58 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r374)
   * hbqt/qtgui/qth/QWidget.qth
     + Added few more methods introduced in later then 4.5 Qt versions.

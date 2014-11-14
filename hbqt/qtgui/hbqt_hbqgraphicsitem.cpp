@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -115,6 +115,7 @@ HBQGraphicsItem::HBQGraphicsItem( int type, QGraphicsItem * parent ) : QGraphics
    m_showGrid           = true;
    m_legendColorRectWidth = 5 / UNIT;
 
+   m_isLocked           = false;
 }
 
 HBQGraphicsItem::~HBQGraphicsItem()
@@ -142,6 +143,12 @@ void HBQGraphicsItem::hbSetBlock( PHB_ITEM b )
       block = hb_itemNew( b );
       // hb_gcUnlock( block );
    }
+}
+
+void HBQGraphicsItem::hbSetLocked( bool locked )
+{
+   m_isLocked = locked;
+   update();
 }
 
 QString HBQGraphicsItem::objectType()
@@ -202,7 +209,6 @@ void HBQGraphicsItem::setFont( const QFont & font )
    update();
 }
 
-/*        TEXT     */
 QString HBQGraphicsItem::text()
 {
    return QString_text;
@@ -230,7 +236,6 @@ void HBQGraphicsItem::setTextFlags( int textFlags )
    update();
 }
 
-/*        LINE     */
 int HBQGraphicsItem::lineStyle()
 {
    return iLineStyle;
@@ -241,7 +246,6 @@ void HBQGraphicsItem::setLineStyle( int lineStyle )
    update();
 }
 
-/*        PIE       */
 int HBQGraphicsItem::startAngle()
 {
    return iStartAngle;
@@ -261,7 +265,6 @@ void HBQGraphicsItem::setSpanAngle( int spanAngle )
    update();
 }
 
-/*        GEOMETRY      */
 qreal HBQGraphicsItem::width() const
 {
    return dWidth;
@@ -291,21 +294,24 @@ void HBQGraphicsItem::setGeometry( const QRectF & rect )
    setHeight( rect.height() );
 }
 
-/*       OPACITY      */
 int HBQGraphicsItem::opacity()
 {
    return iOpacity;
 }
 void HBQGraphicsItem::setOpacity( const int opacity )
 {
-   if( opacity < 0 ){
+   if( opacity < 0 )
+   {
       iOpacity = 0;
    }
-   else {
-      if( opacity > 100 ){
+   else
+   {
+      if( opacity > 100 )
+      {
          iOpacity = 100;
       }
-      else {
+      else
+      {
          iOpacity = opacity;
       }
    }
@@ -420,7 +426,9 @@ int HBQGraphicsItem::barsIdentation()
 void HBQGraphicsItem::setBarsIdentation(int barsIdentation)
 {
    if( barsIdentation < 1 )
+   {
       barsIdentation = 1;
+   }
    m_barsIdentation = barsIdentation;
    update();
 }
@@ -452,9 +460,13 @@ qreal HBQGraphicsItem::toColorFactor()
 void HBQGraphicsItem::setToColorFactor( qreal toColorFactor )
 {
    if( toColorFactor > 10 )
+   {
       toColorFactor = 10;
+   }
    if( toColorFactor < 0.1 )
+   {
       toColorFactor = 0.1;
+   }
    m_toColorFactor = toColorFactor;
    update();
 }
@@ -482,25 +494,25 @@ void HBQGraphicsItem::setBarValues( const QStringList & barValues )
 void HBQGraphicsItem::setLegendColorRectWidth( int legendColorRectWidth )
 {
    if( legendColorRectWidth < 1 )
+   {
       legendColorRectWidth = 1;
+   }
    m_legendColorRectWidth = legendColorRectWidth;
    update();
 }
 
-/*----------------------------------------------------------------------*/
-/*                            Mouse Events                              */
-/*----------------------------------------------------------------------*/
-
 void HBQGraphicsItem::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 {
-   if( block ){
-      PHB_ITEM p1 = hb_itemPutNI( NULL, QEvent::GraphicsSceneContextMenu );
+   if( block  && hb_vmRequestReenter() )
+   {
+      PHB_ITEM p1 = hb_itemPutNI( NULL, 22101 );
       PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENECONTEXTMENUEVENT", NULL, 0 );
       PHB_ITEM p3 = hb_itemPutC( NULL, objectName().toLatin1().data() );
       hb_vmEvalBlockV( block, 3, p1, p2, p3 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
       hb_itemRelease( p3 );
+      hb_vmRequestRestore();
    }
    QGraphicsItem::contextMenuEvent( event );
 }
@@ -508,43 +520,40 @@ void HBQGraphicsItem::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 void HBQGraphicsItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {
    QRectF_geometry = geometry();
-#if 0  /* Control via user interaction - bring to front - push to back */
-   foreach( QGraphicsItem * item, scene()->items() )
-   {
-      if( item->zValue() == 1 ){
-         item->setZValue( 0 );
-      }
-   }
-   setZValue( 1 );
-   if( objectType() == ( QString ) "Page" ){
-      setZValue( 0 );
-   }
-#endif
 
-   if( event->buttons() == Qt::LeftButton ){
-      iResizeMode = determineResizeMode( event->pos() );
+   if( event->buttons() == Qt::LeftButton )
+   {
+      if( __hbqGraphicsAllowResizeInPlace() )
+         iResizeMode = determineResizeMode( event->pos() );
+      else
+         iResizeMode = RESIZE_MODE_FIXED;
    }
-   else {
+   else
+   {
       iResizeMode = RESIZE_MODE_FIXED;
    }
 
-   if( iResizeMode == RESIZE_MODE_FIXED ){
+   if( iResizeMode == RESIZE_MODE_FIXED )
+   {
       setCursor( QCursor( Qt::ClosedHandCursor ) );
    }
-   if( objectType() == ( QString ) "Page" ){
+   if( objectType() == ( QString ) "Page" )
+   {
       setCursor( QCursor( Qt::ArrowCursor ) );
    }
 
    QGraphicsItem::mousePressEvent( event );
 
-   if( event->buttons() == Qt::LeftButton ){
-      /* emit( itemSelected( this, event->pos() ) ); */
-      if( block ){
-         PHB_ITEM p1 = hb_itemPutNI( NULL, 21101 );
+   if( event->buttons() == Qt::LeftButton )
+   {
+      if( block && hb_vmRequestReenter() )
+      {
+         PHB_ITEM p1 = hb_itemPutNI( NULL, 22102 );
          PHB_ITEM p2 = hb_itemPutC( NULL, objectName().toLatin1().data() );
          hb_vmEvalBlockV( block, 2, p1, p2 );
          hb_itemRelease( p1 );
          hb_itemRelease( p2 );
+         hb_vmRequestRestore();
       }
    }
 }
@@ -552,55 +561,76 @@ void HBQGraphicsItem::mousePressEvent( QGraphicsSceneMouseEvent * event )
 void HBQGraphicsItem::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
    QGraphicsItem::mouseReleaseEvent( event );
+
    iResizeMode = RESIZE_MODE_FIXED;
 
-   QRectF nGeometry = geometry();
-   if( nGeometry != QRectF_geometry ){
-      /* emit( geometryChanged( this, nGeometry, QRectF_geometry ) ); */
-      if( block ){
-         /* Inform geometry is changed */
+   if( geometry() != QRectF_geometry ){
+      if( block && hb_vmRequestReenter() )
+      {
+         PHB_ITEM p1 = hb_itemPutNI( NULL, 22103 );
+         PHB_ITEM p2 = hb_itemPutC( NULL, objectName().toLatin1().data() );
+         hb_vmEvalBlockV( block, 2, p1, p2 );
+         hb_itemRelease( p1 );
+         hb_itemRelease( p2 );
+         hb_vmRequestRestore();
       }
    }
 }
 
+void HBQGraphicsItem::keyPressEvent( QKeyEvent * event )
+{
+   QGraphicsItem::keyPressEvent( event );
+}
+
 void HBQGraphicsItem::mouseMoveEvent( QGraphicsSceneMouseEvent * event )
 {
-   if( event->buttons() == Qt::LeftButton )
+   if( event->buttons() == Qt::LeftButton && ! m_isLocked )
    {
-      if( iResizeMode == RESIZE_MODE_FIXED ){
-         setPos( pos() + QPoint( ( int ) ( event->scenePos().x() - event->lastScenePos().x() ),
-                                 ( int ) ( event->scenePos().y() - event->lastScenePos().y() ) ) );
+      if( iResizeMode == RESIZE_MODE_FIXED )
+      {
+         if( __hbqGraphicsAllowMovement() )
+         {
+            setPos( pos() + QPoint( ( int ) ( event->scenePos().x() - event->lastScenePos().x() ),
+                                    ( int ) ( event->scenePos().y() - event->lastScenePos().y() ) ) );
+         }
       }
       else
       {
-         if( iResizeMode & RESIZE_MODE_LEFT ){
+         if( iResizeMode & RESIZE_MODE_LEFT )
+         {
             setPos( pos().x() + event->scenePos().x() - event->lastScenePos().x(), pos().y() );
             setWidth( width() + event->lastScenePos().x() - event->scenePos().x() );
          }
-         if( iResizeMode & RESIZE_MODE_TOP ){
+         if( iResizeMode & RESIZE_MODE_TOP )
+         {
             setPos( pos().x(), pos().y() + event->scenePos().y() - event->lastScenePos().y() );
             setHeight( height() + event->lastScenePos().y() - event->scenePos().y() );
          }
-         if( iResizeMode & RESIZE_MODE_RIGHT ){
+         if( iResizeMode & RESIZE_MODE_RIGHT )
+         {
             scene()->invalidate( geometry() );
             setWidth( ( int ) ( width() + event->scenePos().x() - event->lastScenePos().x() ) );
          }
-         if( iResizeMode & RESIZE_MODE_BOTTOM ){
+         if( iResizeMode & RESIZE_MODE_BOTTOM )
+         {
             scene()->invalidate( geometry() );
             setHeight( ( int ) ( height() + event->scenePos().y() - event->lastScenePos().y() ) );
          }
-         if( width() < 5 ){
+         if( width() < 5 )
+         {
             setWidth( 5 );
          }
-         if( height() < 5 ){
+         if( height() < 5 )
+         {
             setHeight( 5 );
          }
       }
    }
    else
    {
-      QGraphicsItem::mouseMoveEvent( event );
+      //QGraphicsItem::mouseMoveEvent( event );
    }
+   QGraphicsItem::mouseMoveEvent( event );
 }
 
 void HBQGraphicsItem::hoverEnterEvent( QGraphicsSceneHoverEvent * event )
@@ -618,40 +648,40 @@ int HBQGraphicsItem::determineResizeMode( const QPointF & pos )
    QRectF bottomRect( 0, height() - iResizeHandle, width(), iResizeHandle );
    QRectF rightRect( width() - iResizeHandle, 0, width(), height() );
 
-   if( resizeModes & RESIZE_MODE_LEFT && leftRect.contains( pos ) ){
+   if( resizeModes & RESIZE_MODE_LEFT && leftRect.contains( pos ) )
+   {
       mode |= RESIZE_MODE_LEFT;
    }
-   if( resizeModes & RESIZE_MODE_TOP && topRect.contains( pos ) ){
+   if( resizeModes & RESIZE_MODE_TOP && topRect.contains( pos ) )
+   {
       mode |= RESIZE_MODE_TOP;
    }
-   if( resizeModes & RESIZE_MODE_RIGHT && rightRect.contains( pos ) ){
+   if( resizeModes & RESIZE_MODE_RIGHT && rightRect.contains( pos ) )
+   {
       mode |= RESIZE_MODE_RIGHT;
    }
-   if( resizeModes & RESIZE_MODE_BOTTOM && bottomRect.contains( pos ) ){
+   if( resizeModes & RESIZE_MODE_BOTTOM && bottomRect.contains( pos ) )
+   {
       mode |= RESIZE_MODE_BOTTOM;
    }
    if( resizeModes & RESIZE_MODE_FIXEDPOS ){
       mode |= RESIZE_MODE_FIXEDPOS;
    }
-
    return mode;
 }
-/*----------------------------------------------------------------------*/
-/*                             Drag Events                              */
-/*----------------------------------------------------------------------*/
 
 void HBQGraphicsItem::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
 {
    HB_TRACE( HB_TR_DEBUG, ( "dragEnterEvent( QGraphicsSceneDragDropEvent * event )" ) );
    if( block )
    {
-      #if 0
+#if 0
       PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDragEnter );
       PHB_ITEM p2 = hb_itemPutPtr( NULL, event );
       hb_vmEvalBlockV( block, 2, p1, p2 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
-      #endif
+#endif
    }
    QGraphicsItem::dragEnterEvent( event );
 }
@@ -659,13 +689,13 @@ void HBQGraphicsItem::dragLeaveEvent( QGraphicsSceneDragDropEvent * event )
 {
    if( block )
    {
-      #if 0
+#if 0
       PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDragLeave );
       PHB_ITEM p2 = hb_itemPutPtr( NULL, event );
       hb_vmEvalBlockV( block, 2, p1, p2 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
-      #endif
+#endif
    }
    QGraphicsItem::dragLeaveEvent( event );
 }
@@ -673,13 +703,13 @@ void HBQGraphicsItem::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 {
    if( block )
    {
-      #if 0
+#if 0
       PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDragMove );
       PHB_ITEM p2 = hb_itemPutPtr( NULL, event );
       hb_vmEvalBlockV( block, 2, p1, p2 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
-      #endif
+#endif
    }
    QGraphicsItem::dragMoveEvent( event );
 }
@@ -687,7 +717,7 @@ void HBQGraphicsItem::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
    if( block )
    {
-      #if 0
+#if 0
       const QMimeData * mime = event->mimeData();
 
       if( mime->hasFormat( ( QString ) "application/x-qabstractitemmodeldatalist" ) )
@@ -727,20 +757,15 @@ void HBQGraphicsItem::dropEvent( QGraphicsSceneDragDropEvent * event )
          hb_itemRelease( p1 );
          hb_itemRelease( p2 );
       }
-      #endif
+#endif
    }
    QGraphicsItem::dropEvent( event );
 }
-
-/*----------------------------------------------------------------------*/
-/*                              Painting                                */
-/*----------------------------------------------------------------------*/
 
 QRectF HBQGraphicsItem::boundingRect() const
 {
    return QRectF( 0, 0, width(), height() );
 }
-/*----------------------------------------------------------------------*/
 
 void HBQGraphicsItem::prepare( QPainter * painter )
 {
@@ -775,24 +800,24 @@ void HBQGraphicsItem::prepare( QPainter * painter )
    break;
    }
 }
-/*----------------------------------------------------------------------*/
 
 void HBQGraphicsItem::paint( QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * /* widget */ )
 {
-   if( block )
+   if( block && hb_vmRequestReenter() )
    {
       QRectF rect = ( option->type == QStyleOption::SO_GraphicsItem ) ? boundingRect() : option->exposedRect;
 
-      PHB_ITEM p1 = hb_itemPutNI( NULL, 21017 );
+      PHB_ITEM p1 = hb_itemPutNI( NULL, 22104 );
       PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) painter, "HB_QPAINTER", NULL, 0 );
       PHB_ITEM p3 = hbqt_bindGetHbObject( NULL, ( void * ) &rect, "HB_QRECTF", NULL, 0 );
       hb_vmEvalBlockV( block, 3, p1, p2, p3 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
       hb_itemRelease( p3 );
+
+      hb_vmRequestRestore();
    }
 }
-/*----------------------------------------------------------------------*/
 
 QRectF HBQGraphicsItem::adjustRect( QRectF & rect )
 {
@@ -800,7 +825,6 @@ QRectF HBQGraphicsItem::adjustRect( QRectF & rect )
    rect = rect.adjusted( penwidth, penwidth, -penwidth, -penwidth );
    return rect;
 }
-/*----------------------------------------------------------------------*/
 
 QRectF HBQGraphicsItem::adjustOption( QPainter * painter, const QStyleOptionGraphicsItem * option )
 {
@@ -812,6 +836,5 @@ QRectF HBQGraphicsItem::adjustOption( QPainter * painter, const QStyleOptionGrap
 
    return rect;
 }
-/*----------------------------------------------------------------------*/
 
 #endif

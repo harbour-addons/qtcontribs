@@ -399,3 +399,131 @@ FUNCTION __hbqtCssPX( nPixels, nBase, lDeviceRatio )
    RETURN LTrim( Str( __hbqtPixelsByDPI( nPixels, nBase, lDeviceRatio ) ) ) + "px;"
 
 
+FUNCTION __hbqtStandardHash()
+   LOCAL hHash := {=>}
+   hb_HKeepOrder( hHash, .T. )
+   hb_HCaseMatch( hHash, .F. )
+   RETURN hHash
+
+
+FUNCTION __hbqtLoadPixmapFromBuffer( cBuffer, cFormat )
+   LOCAL oPixmap := QPixmap()
+   DEFAULT cFormat TO "PNG"
+   oPixmap:loadFromData( cBuffer, Len( cBuffer ), cFormat )
+   RETURN oPixmap
+
+
+FUNCTION __hbqtLoadResourceAsBase64String( cResource )
+   LOCAL cBuffer, oB, oFile
+
+   oFile := QFile( ":/hbqt/resources/" + cResource )
+   IF oFile:open( QIODevice_ReadOnly )
+      oB := oFile:readAll()
+      cBuffer := oB:toBase64():data()
+      oFile:close()
+   ELSE
+      cBuffer := ""
+   ENDIF
+   RETURN cBuffer
+
+
+FUNCTION __hbqtRgbaCssStr( aRgb )
+   RETURN "rgba(" + hb_ntos( aRgb[ 1 ] ) + "," +  hb_ntos( aRgb[ 2 ] ) + "," + hb_ntos( aRgb[ 3 ] ) + ",255)"
+
+
+FUNCTION __hbqtRgbaCssStrDarker( aRgb, nFactor )
+   LOCAL oColor := QColor( aRgb[ 1 ], aRgb[ 2 ], aRgb[ 3 ] ):darker( nFactor )
+   RETURN "rgba(" + hb_ntos( oColor:red() ) + "," +  hb_ntos( oColor:green() ) + "," + hb_ntos( oColor:blue() ) + ",255)"
+
+
+FUNCTION __hbqtUndoStandardScroller( oScrollableWidget )
+   QScroller():scroller( oScrollableWidget ):ungrabGesture( oScrollableWidget )
+   RETURN NIL
+
+
+FUNCTION __hbqtApplyStandardScroller( oScrollableWidget )
+   LOCAL oScrollerProperties
+   LOCAL oScroller := QScroller():scroller( oScrollableWidget )
+
+   WITH OBJECT oScrollerProperties := oScroller:scrollerProperties()
+      :setScrollMetric( QScrollerProperties_OvershootDragDistanceFactor  , QVariant( 0 ) )
+      :setScrollMetric( QScrollerProperties_OvershootScrollDistanceFactor, QVariant( 0 ) )
+   ENDWITH
+   oScroller:setScrollerProperties( oScrollerProperties )
+   oScroller:grabGesture( oScrollableWidget, QScroller_LeftMouseButtonGesture )
+   RETURN oScroller                               // in case to finetune other properties
+
+
+FUNCTION __hbqtGradientBrush( oColorStart, oColorStop, nType )
+   LOCAL oGrad
+
+   DEFAULT nType TO 0
+
+   SWITCH nType
+   CASE 0                              // default left-right {0,0},{1,0}
+      oGrad := QLinearGradient( 0, 0, 100, 100 )
+      EXIT
+   CASE 1                              // top-down
+      oGrad := QLinearGradient()
+      EXIT
+   ENDSWITCH
+
+   WITH OBJECT oGrad
+      :setColorAt( 0, oColorStart )
+      :setColorAt( 1, oColorStop  )
+   ENDWITH
+   RETURN QBrush( oGrad )
+
+
+FUNCTION __hbqtTreeViewStyleSheet()
+   LOCAL aCSS := {}
+   LOCAL cCSS := ""
+   LOCAL cColorTreeBranch := "rgba( 255, 255, 220, 255 );"
+
+   AAdd( aCSS, 'QTreeView {' )
+   AAdd( aCSS, '    paint-alternating-row-colors-for-empty-area: true;' )
+   AAdd( aCSS, '    show-decoration-selected: 1;' )
+   AAdd( aCSS, '    font-size: '                 + __hbqtCssPX( 16 ) )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::item { ' )
+   AAdd( aCSS, '    min-height: '                + __hbqtCssPX( 40 ) )
+   AAdd( aCSS, '    border-right: 0.5px ; border-style: solid ; border-color: lightgray ;' )
+   AAdd( aCSS, '    border-bottom: 0.5px ; border-style: solid ; border-color: lightgray ;' )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::branch:has-children {' )
+   AAdd( aCSS, '    background: ' + cColorTreeBranch )
+   AAdd( aCSS, '    border-color: ' + cColorTreeBranch )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::item:has-children {' )
+   AAdd( aCSS, '    background: ' + cColorTreeBranch )
+   AAdd( aCSS, '    color: black;' )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::branch:has-children:!has-siblings:closed,' )
+   AAdd( aCSS, 'QTreeView::branch:closed:has-children:has-siblings {' )
+   AAdd( aCSS, '    border-image: none;' )
+   AAdd( aCSS, '    border-bottom: 0.5px ; border-style: solid ; border-color: lightgray ;' )
+   AAdd( aCSS, '    image: url(:/hbqt/resources/branch-closed.png);' )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::branch:open:has-children:!has-siblings,' )
+   AAdd( aCSS, 'QTreeView::branch:open:has-children:has-siblings  {' )
+   AAdd( aCSS, '    border-image: none;' )
+   AAdd( aCSS, '    border-bottom: 0.5px ; border-style: solid ; border-color: lightgray ;' )
+   AAdd( aCSS, '    image: url(:/hbqt/resources/branch-open.png);' )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::item:selected:!active {' )
+   AAdd( aCSS, '    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 yellow, stop: 1 red);' )
+   AAdd( aCSS, '    color: black;' )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::item:pressed {' )
+   AAdd( aCSS, '    background: white;' )
+   AAdd( aCSS, '    color: black;' )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, 'QTreeView::item:selected:active {' )
+   AAdd( aCSS, '    background: white;' )
+   AAdd( aCSS, '    color: black;' )
+   AAdd( aCSS, '}' )
+
+   AEval( aCSS, {|e| cCSS += e + Chr( 13 )+Chr( 10 ) } )
+
+   RETURN cCSS
+

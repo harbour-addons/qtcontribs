@@ -57,6 +57,8 @@
 #include <QtCore/QTime>
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QUrl>
+#include <QtMultiMedia/QSoundEffect>
 
 #include <QtGui/QCursor>
 #include <QtGui/QKeyEvent>
@@ -131,7 +133,6 @@ public slots:
    virtual void             setBottomMagnet( bool magneted );
    virtual void             setHorizontalMagnet( bool magneted );
    virtual void             setVerticalMagnet( bool magneted );
-   void                     mousePressTimer();
 
 protected:
    virtual void             contextMenuEvent( QGraphicsSceneContextMenuEvent * event );
@@ -171,8 +172,6 @@ private:
    bool                     m_showGrid;
    QGraphicsItem *          movingItem;
    QPointF                  mouseOldPos;
-   QTime                    mousePressTime;
-   QPointF                  mousePressPos;
 };
 
 #endif

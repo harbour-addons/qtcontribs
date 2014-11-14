@@ -588,11 +588,6 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
          if( isQObject )
          {
             HB_TRACE( HB_TR_DEBUG, ( ".........HARBOUR_DESTROY_BEGINS( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
-#if QT_VERSION <= 0x050300
-            hb_vmPushDynSym( s_dynsym_DISCONNECT );
-            hb_vmPush( pObject );
-            hb_vmSend( 0 );
-#endif
          }
          if( iFlags & HBQT_BIT_OWNER )
          {

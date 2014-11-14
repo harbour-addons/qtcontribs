@@ -108,6 +108,7 @@ QAbstractItemView * view () const
 void clear ()
 void clearEditText ()
 void setCurrentIndex ( int index )
+void setCurrentText(const QString & text)
 void setEditText ( const QString & text )
 </SLOTS>
 

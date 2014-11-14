@@ -618,9 +618,12 @@ METHOD IdeEdit:execKeyEvent( nMode, nEvent, p, p1, p2 )
       SWITCH key                            /* On top of any user defined action be executed - QPlainTextEdit's default keys */
       CASE Qt_Key_Tab
       CASE Qt_Key_Backtab
-         p:accept()
-         ::handleTab( key )
-         RETURN .T.
+         IF ! lAlt .AND. ! lCtrl
+            p:accept()
+            ::handleTab( key )
+            RETURN .T.
+         ENDIF
+         EXIT
       CASE Qt_Key_Right
          IF lAlt
             p:accept()

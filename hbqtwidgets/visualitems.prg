@@ -76,6 +76,11 @@
 
 #define HBQT_GRAPHICSITEM_SELECTED                1
 #define HBQT_GRAPHICSITEM_DELETED                 2
+#define HBQT_GRAPHICSITEM_GEOMETRYCHANGED         3
+
+
+//#xTranslate HBQGraphicsItem( <x> )          =>    HBQGraphicsObject( <x> )
+
 
 
 CLASS HbQtVisualItem
@@ -83,49 +88,94 @@ CLASS HbQtVisualItem
    DATA   oWidget
    DATA   cType                                   INIT ""
    DATA   cName                                   INIT ""
+
+   DATA   qPen
+   DATA   nPenWidth                               INIT 1
+   DATA   cPenColor                               INIT "#000000"
+   DATA   cPenStyle                               INIT "SolidLine"
+   DATA   cCapStyle                               INIT "FlatCap"
+   DATA   cJoinStyle                              INIT "BevelJoin"
+   DATA   nMiterLimit                             INIT 0
+   METHOD setPenProperties( cProperty, xValue )
+
+   DATA   qBrush
+   DATA   cBrushStyle                             INIT "NoBrush"
+   DATA   cBrushColor                             INIT "#ffffff"
+   DATA   cBrushTexture                           INIT ""
+   METHOD setBrushProperties( cProperty, xValue )
+
+   DATA   qBgBrush
+   DATA   cBBrushStyle                            INIT "NoBrush"
+   DATA   cBBrushColor                            INIT "#ffffff"
+   DATA   cBBrushTexture                          INIT ""
+   METHOD setBBrushProperties( cProperty, xValue )
+
+   DATA   nPointSize                              INIT 3.5
+   DATA   cFontFamily                             INIT "Arial"
+   DATA   cFontStyle                              INIT "Normal"
+   DATA   cFontSize                               INIT "3.5"
+   METHOD setFontProperties( cProperty, xValue )
+
+   DATA   cBackgroundMode                         INIT "TransparentMode"
+   DATA   nOpacity                                INIT 100
+
    DATA   nX                                      INIT 0
    DATA   nY                                      INIT 0
    DATA   aPos                                    INIT {}
    DATA   aGeometry                               INIT {}
    DATA   cText                                   INIT ""
-   DATA   qPen
-   DATA   qBrush
+
    DATA   qGBrush
-   DATA   qBgBrush
    DATA   qPixmap
    DATA   qFont
-   DATA   xData
    DATA   qGeometry
    DATA   nBarcodeType                            INIT HQR_BARCODE_3OF9
    DATA   nTextFlags                              INIT Qt_AlignCenter
-   DATA   nBorderWidth                            INIT 0
-   DATA   nLineStyle                              INIT HBQT_GRAPHICSITEM_LINE_HORIZONTAL
-   DATA   nBackgroundMode                         INIT Qt_TransparentMode
-   DATA   nOpacity                                INIT 100
-   DATA   nWidth                                  INIT 300
-   DATA   nHeight                                 INIT 300
+   DATA   nWidth                                  INIT 100
+   DATA   nHeight                                 INIT 100
    DATA   nStartAngle                             INIT 30
    DATA   nSpanAngle                              INIT 120
-   DATA   nLineType                               INIT HBQT_GRAPHICSITEM_LINE_HORIZONTAL
-   DATA   nPointSize                              INIT 3.5
+   DATA   xData
 
-   METHOD init( cType, cName, aPos, aGeometry )
-   METHOD create( cType, cName, aPos, aGeometry )
-   METHOD execEvent( cEvent, p, p1, p2 )
-   METHOD contextMenu( p1, p2 )
+   DATA   nBorderWidth                            INIT 0
+   DATA   nLineType                               INIT HBQT_GRAPHICSITEM_LINE_HORIZONTAL
+   DATA   nLineStyle                              INIT HBQT_GRAPHICSITEM_LINE_HORIZONTAL
+
+   DATA   lLocked                                 INIT .F.
+   ACCESS isLocked()                              INLINE ::lLocked
+   DATA   oDraw
+
+   METHOD init( cType, cName, aPos, aGeometry, nWidth, nHeight )
+   METHOD create( cType, cName, aPos, aGeometry, nWidth, nHeight )
    METHOD update()
    METHOD destroy()
+   ACCESS name()                                  INLINE ::cName
+   ACCESS type()                                  INLINE ::cType
+   ACCESS defWidth()                              INLINE ::nWidth
+   ACCESS defHeight()                             INLINE ::nHeight
+
+   METHOD execEvent( cEvent, p, p1, p2 )
+   METHOD contextMenu( p1, p2 )
+   METHOD rotate( nAngle )                        INLINE ::oWidget:setRotation( ::oWidget:rotation() + nAngle )
+
+   DATA   oState
+   METHOD setState( oState )                      INLINE ::oState := oState, ::update()
+   ACCESS state()                                 INLINE ::oState
+
+   METHOD select()                                INLINE ::oWidget:setSelected( .T. ), ::update()
+   METHOD unSelect()                              INLINE ::oWidget:setSelected( .F. ), ::update()
+   METHOD toggleLock()
 
    ACCESS text()                                  INLINE ::setText()
+
    ACCESS textFlags()                             INLINE ::setTextFlags()
    ACCESS pen()                                   INLINE ::setPen()
    ACCESS brush()                                 INLINE ::setBrush()
    ACCESS backgroundBrush()                       INLINE ::setBackgroundBrush()
    ACCESS font()                                  INLINE ::setFont()
-   ACCESS barcodeType()                           INLINE ::setBarcodeType()
+   ACCESS borderWidth()                           INLINE ::setBorderWidth()
    ACCESS gradient()                              INLINE ::setBrush()
    ACCESS pixmap()                                INLINE ::setPixmap()
-   ACCESS borderWidth()                           INLINE ::setBorderWidth()
    ACCESS lineStyle()                             INLINE ::setLineStyle()
    ACCESS backgroundMode()                        INLINE ::setBackgroundMode()
    ACCESS opacity()                               INLINE ::setOpacity()
@@ -134,6 +184,7 @@ CLASS HbQtVisualItem
    ACCESS geometry()                              INLINE ::setGeometry()
    ACCESS pos()                                   INLINE ::setPos()
    ACCESS lineType()                              INLINE ::setLineType()
+   ACCESS barcodeType()                           INLINE ::setBarcodeType()
 
    METHOD setText( ... )                          SETGET
    METHOD setPen( ... )                           SETGET
@@ -143,7 +194,6 @@ CLASS HbQtVisualItem
    METHOD setGradient( ... )                      SETGET
    METHOD setPixmap( ... )                        SETGET
    METHOD setTextFlags( ... )                     SETGET
-   METHOD setBarcodeType( ... )                   SETGET
    METHOD setBorderWidth( ... )                   SETGET
    METHOD setLineStyle( ... )                     SETGET
    METHOD setBackgroundMode( ... )                SETGET
@@ -153,35 +203,35 @@ CLASS HbQtVisualItem
    METHOD setGeometry( ... )                      SETGET
    METHOD setPos( ... )                           SETGET
    METHOD setLineType( ... )                      SETGET
+   METHOD setBarcodeType( ... )                   SETGET
 
    METHOD drawOnPrinter( oPainter )
-   METHOD draw( oPainter, oRectF, lDrawSelection )
    METHOD setupPainter( oPainter, lDrawSelection )
-   METHOD drawBarcode( oPainter, oRectF )
-   METHOD drawImage( oPainter, oRectF )
+   METHOD draw( oPainter, oRectF, lDrawSelection )
    METHOD drawChart( oPainter, oRect )
-   METHOD drawText( oPainter, oRectF )
+   METHOD drawText( oPainter, oRectF, lDrawSelection )
    METHOD drawField( oPainter, oRectF )
    METHOD drawGradient( oPainter, oRectF )
-   METHOD drawLine( oPainter, oRect )
-   METHOD drawRect( oPainter, oRectF )
-   METHOD drawRoundRect( oPainter, oRectF )
-   METHOD drawEllipse( oPainter, oRectF )
-   METHOD drawPie( oPainter, oRectF )
-   METHOD drawArc( oPainter, oRectF )
-   METHOD drawChord( oPainter, oRectF )
-   METHOD drawDiamond( oPainter, oRectF )
-   METHOD drawTriangle( oPainter, oRectF )
+
    METHOD drawSelection( oPainter, oRect )
 
    DATA   bAction
    METHOD actionsBlock( bBlock )                  SETGET
 
+   METHOD getProperties()
+
+   DATA   hData                                   INIT __hbqtStandardHash()
+   METHOD setData( hData )
+   METHOD setDataValue( cField, xValue )
+   METHOD setDataValues( xData )
+   METHOD getData()
+   METHOD getDataEx()
+
    ERROR  HANDLER OnError( ... )
    ENDCLASS
 
 
-METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry )
+METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight )
 
    HB_TRACE( HB_TR_DEBUG, "HbQtVisualItem:new" )
 
@@ -189,16 +239,21 @@ METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry )
    DEFAULT cName     TO ::cName
    DEFAULT aPos      TO ::aPos
    DEFAULT aGeometry TO ::aGeometry
+   DEFAULT nWidth    TO ::nWidth
+   DEFAULT nHeight   TO ::nHeight
 
    ::cType     := cType
    ::cName     := cName
    ::aPos      := aPos
    ::aGeometry := aGeometry
+   ::nWidth    := nWidth
+   ::nHeight   := nHeight
 
+   ::oDraw := HbQtVisualItemDraw():new()
    RETURN Self
 
 
-METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry )
+METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight )
 
    HB_TRACE( HB_TR_DEBUG, "HbQtVisualItem:new" )
 
@@ -206,13 +261,18 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry )
    DEFAULT cName     TO ::cName
    DEFAULT aPos      TO ::aPos
    DEFAULT aGeometry TO ::aGeometry
+   DEFAULT nWidth    TO ::nWidth
+   DEFAULT nHeight   TO ::nHeight
 
    ::cType     := cType
    ::cName     := cName
    ::aPos      := aPos
    ::aGeometry := aGeometry
+   ::nWidth    := nWidth
+   ::nHeight   := nHeight
 
    SWITCH cType
+   CASE "Marker"
    CASE "Image"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_PICTURE )
       EXIT
@@ -235,7 +295,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry )
    CASE "Rectangle"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_RECT )
       EXIT
-   CASE "RoundRect"
+   CASE "RoundedRect"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_ROUNDRECT )
       EXIT
    CASE "Ellipse"
@@ -248,12 +308,10 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry )
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_CHORD )
       EXIT
    CASE "LineH"
-      ::nWidth := 300 ;  ::nHeight := 50
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_LINE )
       ::nLineType := HBQT_GRAPHICSITEM_LINE_HORIZONTAL
       EXIT
    CASE "LineV"
-      ::nWidth := 50  ;  ::nHeight := 300
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_LINE )
       ::nLineType := HBQT_GRAPHICSITEM_LINE_VERTICAL
       EXIT
@@ -319,52 +377,381 @@ METHOD HbQtVisualItem:execEvent( cEvent, p, p1, p2 )
 
    DO CASE
    CASE cEvent == "graphicsItem_block"
-      DO CASE
-      CASE p == 21101
+      SWITCH p
+      CASE 22101                                  // right-click context menu
+         ::contextMenu( p1:screenPos():x(), p1:screenPos():y() )
+         ::select()
+         EXIT
+      CASE 22102                                  // left-click item selected
          IF HB_ISBLOCK( ::actionsBlock() )
             Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_SELECTED )
          ENDIF
-
-      CASE p == 21017
+         EXIT
+      CASE 22103                                  // geometry changed
+         IF HB_ISBLOCK( ::actionsBlock() )
+            Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_GEOMETRYCHANGED )
+         ENDIF
+         EXIT
+      CASE 22104
          ::draw( p1, p2 )
-
-      CASE p == QEvent_GraphicsSceneContextMenu
-         ::contextMenu( p1, p2 )
-
-      ENDCASE
+         EXIT
+      ENDSWITCH
    ENDCASE
    RETURN Self
 
 
 METHOD HbQtVisualItem:contextMenu( p1, p2 )
+#if 0
    LOCAL oMenu, oAct
 
-   HB_SYMBOL_UNUSED( p2 )
-
    WITH OBJECT oMenu := QMenu()
-      :addAction( "Cut"  )
+      :addAction( iif( ::lLocked, "Unlock", "Lock" ) )
       :addSeparator()
-      :addAction( "Copy" )
-
-      IF ! empty( oAct := :exec( p1:screenPos() ) )
+      IF ! ::lLocked
+         :addAction( "Delete" )
+         :addSeparator()
+      ENDIF
+      IF ! empty( oAct := :exec( QPoint( p1, p2 ) ) )
          SWITCH oAct:text()
-         CASE "Cut"
+         CASE "Delete"
             IF HB_ISBLOCK( ::actionsBlock() )
                Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_DELETED )
             ENDIF
             EXIT
-         CASE "Copy"
+         CASE "Lock"
+         CASE "Unlock"
+            ::toggleLock()
             EXIT
          ENDSWITCH
       ENDIF
+      __hbqt_Delete( oMenu )
    ENDWITH
-   HB_SYMBOL_UNUSED( oMenu )
+#endif
+   HB_SYMBOL_UNUSED( p1 + p2 )
    RETURN NIL
+
+
+METHOD HbQtVisualItem:toggleLock()
+   ::lLocked := ! ::lLocked
+   ::oWidget:hbSetLocked( ::lLocked )
+   RETURN Self
 
 
 METHOD HbQtVisualItem:update()
    ::oWidget:update()
    RETURN Self
+
+
+METHOD HbQtVisualItem:getDataEx()
+   RETURN ::hData
+
+
+METHOD HbQtVisualItem:getData()
+   LOCAL hTmp
+   LOCAL hData := __hbqtStandardHash()
+
+   FOR EACH hTmp IN ::hData
+      hData[ hTmp:__enumKey() ] := hTmp[ "Value" ]
+   NEXT
+   RETURN hData
+
+
+METHOD HbQtVisualItem:setData( hData )
+   IF HB_ISHASH( hData )
+      ::hData := hb_HClone( hData )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setDataValue( cField, xValue )
+
+   IF ! Empty( cField ) .AND. hb_HHasKey( ::hData, cField )
+//Alert( {cField,xValue} )
+      ::hData[ cField ][ "Value" ] := xValue
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setDataValues( xData )
+   LOCAL xTmp
+
+   IF HB_ISARRAY( xData )
+      FOR EACH xTmp IN xData
+         IF hb_HHasKey( ::hData, xTmp[ 1 ] )
+            ::hData[ xTmp[ 1 ] ][ "Value" ] := xTmp[ 2 ]
+         ENDIF
+      NEXT
+   ELSEIF HB_ISHASH( xData )
+      FOR EACH xTmp IN xData
+         IF hb_HHasKey( xTmp, "Field" ) .AND. hb_HHasKey( xTmp, "Value" )
+            ::hData[ xTmp[ "Field" ] ][ "Value" ] := xTmp[ "Value" ]
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:getProperties()
+   LOCAL hProp := {=>}
+   LOCAL oRect := ::geometry()
+
+   hb_HCaseMatch( hProp, .F. )
+   hb_HKeepOrder( hProp, .T. )
+
+   hProp[ "objectName"     ] := ::name()
+
+   hProp[ "x"              ] := oRect:x()
+   hProp[ "y"              ] := oRect:y()
+   hProp[ "width"          ] := oRect:width()
+   hProp[ "height"         ] := oRect:height()
+
+   hProp[ "penColor"       ] := ::cPenColor
+   hProp[ "penStyle"       ] := ::cPenStyle
+   hProp[ "capStyle"       ] := ::cCapStyle
+   hProp[ "joinStyle"      ] := ::cJoinStyle
+   hProp[ "miterLimit"     ] := ::nMiterLimit
+   hProp[ "penWidth"       ] := ::nPenWidth
+
+   hProp[ "brushStyle"     ] := ::cBrushStyle
+   hProp[ "brushColor"     ] := ::cBrushColor
+   hProp[ "brushTexture"   ] := ::cBrushTexture
+
+   hProp[ "bBrushStyle"    ] := ::cBBrushStyle
+   hProp[ "bBrushColor"    ] := ::cBBrushColor
+   hProp[ "bBrushTexture"  ] := ::cBBrushTexture
+
+   hProp[ "backgroundMode" ] := ::cBackgroundMode
+   hProp[ "opacity"        ] := ::nOpacity
+   hProp[ "text"           ] := ::cText
+   hProp[ "fontFamily"     ] := ::cFontFamily
+   hProp[ "fontStyle"      ] := ::cFontStyle
+   hProp[ "fontSize"       ] := ::cFontSize
+
+   RETURN hProp
+
+
+FUNCTION __hbqtStyleConvert( cProperty, cStyle )
+   STATIC hBrushStyles
+   STATIC hPenStyles
+   STATIC hCapStyles
+   STATIC hJoinStyles
+
+   IF Empty( hBrushStyles )
+      hBrushStyles := __hbqtStandardHash()
+      hPenStyles   := __hbqtStandardHash()
+      hCapStyles   := __hbqtStandardHash()
+      hJoinStyles  := __hbqtStandardHash()
+
+      hBrushStyles[ "NoBrush"                ] := Qt_NoBrush
+      hBrushStyles[ "SolidPattern"           ] := Qt_SolidPattern
+      hBrushStyles[ "Dense1Pattern"          ] := Qt_Dense1Pattern
+      hBrushStyles[ "Dense2Pattern"          ] := Qt_Dense2Pattern
+      hBrushStyles[ "Dense3Pattern"          ] := Qt_Dense3Pattern
+      hBrushStyles[ "Dense4Pattern"          ] := Qt_Dense4Pattern
+      hBrushStyles[ "Dense5Pattern"          ] := Qt_Dense5Pattern
+      hBrushStyles[ "Dense6Pattern"          ] := Qt_Dense6Pattern
+      hBrushStyles[ "Dense7Pattern"          ] := Qt_Dense7Pattern
+      hBrushStyles[ "HorPattern"             ] := Qt_HorPattern
+      hBrushStyles[ "VerPattern"             ] := Qt_VerPattern
+      hBrushStyles[ "CrossPattern"           ] := Qt_CrossPattern
+      hBrushStyles[ "BDiagPattern"           ] := Qt_BDiagPattern
+      hBrushStyles[ "FDiagPattern"           ] := Qt_FDiagPattern
+      hBrushStyles[ "DiagCrossPattern"       ] := Qt_DiagCrossPattern
+      hBrushStyles[ "LinearGradientPattern"  ] := Qt_LinearGradientPattern
+      hBrushStyles[ "ConicalGradientPattern" ] := Qt_ConicalGradientPattern
+      hBrushStyles[ "RadialGradientPattern"  ] := Qt_RadialGradientPattern
+      hBrushStyles[ "TexturePattern"         ] := Qt_TexturePattern
+
+      hPenStyles[ "NoPen"          ] := Qt_NoPen
+      hPenStyles[ "SolidLine"      ] := Qt_SolidLine
+      hPenStyles[ "DashLine"       ] := Qt_DashLine
+      hPenStyles[ "DotLine"        ] := Qt_DotLine
+      hPenStyles[ "DashDotLine"    ] := Qt_DashDotLine
+      hPenStyles[ "DashDotDotLine" ] := Qt_DashDotDotLine
+
+      hCapStyles[ "FlatCap"        ] := Qt_FlatCap
+      hCapStyles[ "RoundCap"       ] := Qt_RoundCap
+      hCapStyles[ "SquareCap"      ] := Qt_SquareCap
+
+      hJoinStyles[ "BevelJoin"     ] := Qt_BevelJoin
+      hJoinStyles[ "MiterJoin"     ] := Qt_MiterJoin
+      hJoinStyles[ "RoundJoin"     ] := Qt_RoundJoin
+      hJoinStyles[ "SvgMiterJoin"  ] := Qt_SvgMiterJoin
+   ENDIF
+
+   SWITCH Lower( cProperty )
+   CASE "penstyle"  ; RETURN iif( hb_HHasKey( hPenStyles, cStyle ), hPenStyles[ cStyle ], Qt_SolidLine )
+   CASE "capstyle"  ; RETURN iif( hb_HHasKey( hCapStyles, cStyle ), hCapStyles[ cStyle ], Qt_FlatCap )
+   CASE "joinstyle" ; RETURN iif( hb_HHasKey( hJoinStyles, cStyle ), hJoinStyles[ cStyle ], Qt_BevelJoin )
+   CASE "brushstyle"; RETURN iif( hb_HHasKey( hBrushStyles, cStyle ), hBrushStyles[ cStyle ], Qt_NoBrush )
+   ENDSWITCH
+   RETURN ""
+
+
+METHOD HbQtVisualItem:setPenProperties( cProperty, xValue )
+   LOCAL oPen := ::setPen()
+
+   SWITCH Lower( cProperty )
+   CASE "pencolor"
+      IF HB_ISSTRING( xValue )
+         ::cPenColor := xValue
+         oPen:setColor( QColor( xValue ) )
+      ENDIF
+      EXIT
+   CASE "penwidth"
+      ::nPenWidth := iif( HB_ISNUMERIC( xValue ), xValue, ::nPenWidth )
+      oPen:setWidth( ::nPenWidth )
+      EXIT
+   CASE "penstyle"
+      IF HB_ISSTRING( xValue )
+         ::cPenStyle := xValue
+         oPen:setStyle( __hbqtStyleConvert( cProperty, ::cPenStyle ) )
+      ENDIF
+      EXIT
+   CASE "capstyle"
+      IF HB_ISSTRING( xValue )
+         ::cCapStyle := xValue
+         oPen:setCapStyle( __hbqtStyleConvert( cProperty, ::cCapStyle ) )
+      ENDIF
+      EXIT
+   CASE "joinstyle"
+      IF HB_ISSTRING( xValue )
+         ::cJoinStyle := xValue
+         oPen:setJoinStyle( __hbqtStyleConvert( cProperty, ::cJoinStyle ) )
+      ENDIF
+      EXIT
+   ENDSWITCH
+   ::update()
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setBrushProperties( cProperty, xValue )
+   LOCAL oBrush := ::setBrush()
+
+   SWITCH Lower( cProperty )
+   CASE "brushcolor"
+      IF HB_ISSTRING( xValue )
+         ::cBrushColor := xValue
+         oBrush:setColor( QColor( xValue ) )
+      ENDIF
+      EXIT
+   CASE "brushstyle"
+      IF HB_ISSTRING( xValue )
+         ::cBrushStyle := xValue
+         oBrush:setStyle( __hbqtStyleConvert( "brushstyle", xValue ) )
+      ENDIF
+   ENDSWITCH
+   ::update()
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setBBrushProperties( cProperty, xValue )
+   LOCAL oBrush := ::backgroundBrush()
+
+   SWITCH Lower( cProperty )
+   CASE "bbrushcolor"
+      IF HB_ISSTRING( xValue )
+         ::cBBrushColor := xValue
+         oBrush:setColor( QColor( xValue ) )
+      ENDIF
+      EXIT
+   CASE "bbrushstyle"
+      IF HB_ISSTRING( xValue )
+         ::cBBrushStyle := xValue
+         oBrush:setStyle( __hbqtStyleConvert( "brushstyle", xValue ) )
+      ENDIF
+   ENDSWITCH
+   ::update()
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setFontProperties( cProperty, xValue )
+   SWITCH Lower( cProperty )
+   CASE "fontfamily"
+      ::cFontFamily := xValue
+      EXIT
+   CASE "fontstyle"
+      ::cFontStyle := xValue
+      EXIT
+   CASE "fontsize"
+      ::cFontSize := xValue
+      EXIT
+   ENDSWITCH
+   ::qFont := NIL
+   ::setFont()
+   ::update()
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setPen( ... )
+   LOCAL a_:= hb_aParams()
+   SWITCH Len( a_ )
+   CASE 0
+      IF empty( ::qPen )
+         WITH OBJECT ::qPen := QPen()
+            :setStyle( __hbqtStyleConvert( "penstyle", ::cPenStyle ) )
+            :setCapStyle( __hbqtStyleConvert( "capstyle", ::cCapStyle ) )
+            :setJoinStyle( __hbqtStyleConvert( "joinstyle", ::cJoinStyle ) )
+            :setWidth( ::nPenWidth )
+            :setColor( QColor( ::cPenColor ) )
+         ENDWITH
+      ENDIF
+      RETURN ::qPen
+   OTHERWISE
+      IF HB_ISOBJECT( a_[ 1 ] )
+         ::qPen := a_[ 1 ]
+      ELSE
+         ::qPen := QPen( ... )
+      ENDIF
+      ::update()
+   ENDSWITCH
+   RETURN ::qPen
+
+
+METHOD HbQtVisualItem:setBrush( ... )
+   LOCAL a_:= hb_aParams()
+   SWITCH Len( a_ )
+   CASE 0
+      IF empty( ::qBrush )
+         WITH OBJECT ::qBrush := QBrush()
+            :SetColor( QColor( ::cBrushColor ) )
+            :setStyle( __hbqtStyleConvert( "brushstyle", ::cBrushStyle ) )
+         ENDWITH
+      ENDIF
+      EXIT
+   OTHERWISE
+      IF HB_ISOBJECT( a_[ 1 ] )
+         ::qBrush := a_[ 1 ]
+      ELSE
+         ::qBrush := QBrush( ... )
+      ENDIF
+      ::update()
+      EXIT
+   ENDSWITCH
+   RETURN ::qBrush
+
+
+METHOD HbQtVisualItem:setBackgroundBrush( ... )
+   LOCAL a_:= hb_aParams()
+   SWITCH Len( a_ )
+   CASE 0
+      IF empty( ::qBgBrush )
+         WITH OBJECT ::qBgBrush := QBrush()
+            :setColor( QColor( ::cBBrushColor ) )
+            :setStyle( __hbqtStyleConvert( "brushstyle", ::cBBrushStyle ) )
+         ENDWITH
+      ENDIF
+      EXIT
+   OTHERWISE
+      IF HB_ISOBJECT( a_[ 1 ] )
+         ::qBgBrush := a_[ 1 ]
+      ELSE
+         ::qBgBrush := QBrush( ... )
+      ENDIF
+      ::update()
+      EXIT
+   ENDSWITCH
+   RETURN ::qBgBrush
 
 
 METHOD HbQtVisualItem:setText( ... )
@@ -394,75 +781,23 @@ METHOD HbQtVisualItem:setTextFlags( ... )
    RETURN ::nTextFlags
 
 
-METHOD HbQtVisualItem:setPen( ... )
-   LOCAL a_:= hb_aParams()
-   SWITCH Len( a_ )
-   CASE 0
-      IF empty( ::qPen )
-         ::qPen := QPen( Qt_black )
-         ::qPen:setStyle( Qt_SolidLine )
-      ENDIF
-      RETURN ::qPen
-   OTHERWISE
-      IF HB_ISOBJECT( a_[ 1 ] )
-         ::qPen := a_[ 1 ]
-      ELSE
-         ::qPen := QPen( ... )
-      ENDIF
-      ::update()
-   ENDSWITCH
-   RETURN ::qPen
-
-
-METHOD HbQtVisualItem:setBrush( ... )
-   LOCAL a_:= hb_aParams()
-   SWITCH Len( a_ )
-   CASE 0
-      IF empty( ::qBrush )
-         ::qBrush := QBrush()
-      ENDIF
-      EXIT
-   OTHERWISE
-      IF HB_ISOBJECT( a_[ 1 ] )
-         ::qBrush := a_[ 1 ]
-      ELSE
-         ::qBrush := QBrush( ... )
-      ENDIF
-      ::update()
-      EXIT
-   ENDSWITCH
-   RETURN ::qBrush
-
-
-METHOD HbQtVisualItem:setBackgroundBrush( ... )
-   LOCAL a_:= hb_aParams()
-   SWITCH Len( a_ )
-   CASE 0
-      IF empty( ::qBgBrush )
-         ::qBgBrush := QBrush()
-      ENDIF
-      EXIT
-   OTHERWISE
-      IF HB_ISOBJECT( a_[ 1 ] )
-         ::qBgBrush := a_[ 1 ]
-      ELSE
-         ::qBgBrush := QBrush( ... )
-      ENDIF
-      ::update()
-      EXIT
-   ENDSWITCH
-   RETURN ::qBgBrush
-
-
 METHOD HbQtVisualItem:setFont( ... )
    LOCAL a_:= hb_aParams()
    SWITCH Len( a_ )
    CASE 0
       IF empty( ::qFont )
-         ::qFont := QFont( "Serif" )
-         ::qFont:setPointSizeF( ::nPointSize )
-         ::qFont:setStyleStrategy( QFont_PreferMatch )
-         ::qFont:setStyleStrategy( QFont_ForceOutline )
+         WITH OBJECT ::qFont := QFont()
+            :setFamily( ::cFontFamily )
+            :setPointSizeF( Val( ::cFontSize ) )
+            :setStyleStrategy( QFont_PreferMatch )
+            :setStyleStrategy( QFont_ForceOutline )
+            SWITCH ::cFontStyle
+            CASE "Normal" ; ; EXIT
+            CASE "Italic" ; :setItalic( .T. ); EXIT
+            CASE "Bold"   ; :setBold( .T. ); EXIT
+            CASE "Bold Italic" ; :setItalic( .T. ); :setBold( .T. ); EXIT
+            ENDSWITCH
+         ENDWITH
       ENDIF
       EXIT
    OTHERWISE
@@ -645,13 +980,11 @@ METHOD HbQtVisualItem:setBackgroundMode( ... )
    CASE 0
       EXIT
    OTHERWISE
-      IF HB_ISNUMERIC( a_[ 1 ] )
-         ::nBackgroundMode := a_[ 1 ]
-      ENDIF
+      ::cBackgroundMode := a_[ 1 ]
       ::update()
       EXIT
    ENDSWITCH
-   RETURN ::nBackgroundMode
+   RETURN ::cBackgroundMode
 
 
 METHOD HbQtVisualItem:setOpacity( ... )
@@ -684,30 +1017,12 @@ METHOD HbQtVisualItem:setLineType( ... )
    RETURN ::nLineType
 
 
-METHOD HbQtVisualItem:setupPainter( oPainter, lDrawSelection )
-   LOCAL qFont := ::font()
-
-   qFont:setPixelSize( iif( lDrawSelection, ::nPointSize / UNIT, TO_MMS( ::nPointSize / UNIT ) ) )
-   WITH OBJECT oPainter
-      :setPen( ::pen() )
-      :setBrush( ::brush() )
-      :setFont( qFont )
-      :setBackgroundMode( ::backgroundMode() )
-      :setBackground( ::backgroundBrush() )
-      :setOpacity( ::opacity() / 100.0 )
-      :setRenderHint( QPainter_TextAntialiasing )
-   ENDWITH
-   RETURN Self
-
-
 METHOD HbQtVisualItem:drawSelection( oPainter, oRect )
-   LOCAL a, p, lt, rt, lb, rb
+   LOCAL a, p, lt, rt, lb, rb, nW, nH
    LOCAL drawSelectionBorder := .t.
    LOCAL iResizeHandle := 2 / UNIT
-   LOCAL nW, nH
 
    oPainter:save()
-
    nW := oRect:width() ; nH := oRect:height()
 
    IF ::oWidget:isSelected()
@@ -753,10 +1068,12 @@ METHOD HbQtVisualItem:drawSelection( oPainter, oRect )
          p := QPen()
          p:setStyle( Qt_DashDotDotLine )
          p:setBrush( a )
+
          oPainter:setPen( p )
          oPainter:drawRect( oRect )
       ELSE
          WITH OBJECT oPainter
+            :setBrush( QBrush() )
             :setPen( "QColor", QColor( 0, 0, 0, 100 ) )
             :drawLine( 0 , 0 , 0                 , 2*iResizeHandle    )
             :drawLine( 0 , 0 , 2*iResizeHandle   , 0                  )
@@ -770,6 +1087,23 @@ METHOD HbQtVisualItem:drawSelection( oPainter, oRect )
       ENDIF
    ENDIF
    oPainter:restore()
+
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setupPainter( oPainter, lDrawSelection )
+   LOCAL qFont := ::font()
+
+   qFont:setPixelSize( iif( lDrawSelection, ::nPointSize / UNIT, TO_MMS( ::nPointSize / UNIT ) ) )
+   WITH OBJECT oPainter
+      :setPen( ::pen() )
+      :setBrush( ::brush() )
+      :setOpacity( ::opacity() / 100.0 )
+      :setBackgroundMode( iif( ::backgroundMode() == "OpaqueMode", Qt_OpaqueMode, Qt_TransparentMode ) )
+      :setBackground( ::backgroundBrush() )
+      :setRenderHint( QPainter_TextAntialiasing )
+      :setFont( qFont )
+   ENDWITH
    RETURN Self
 
 
@@ -790,241 +1124,68 @@ METHOD HbQtVisualItem:drawOnPrinter( oPainter )
 
 METHOD HbQtVisualItem:draw( oPainter, oRectF, lDrawSelection )
 
-   DEFAULT lDrawSelection TO .t.
-
-   ::setupPainter( oPainter, lDrawSelection )
+   DEFAULT lDrawSelection TO .T.
 
    SWITCH ::cType
-   CASE "Barcode"    ;   ::drawBarcode( oPainter, oRectF )      ;    EXIT
-   CASE "Image"      ;   ::drawImage( oPainter, oRectF )        ;    EXIT
-   CASE "Chart"      ;   ::drawChart( oPainter, oRectF )        ;    EXIT
-   CASE "Gradient"   ;   ::drawGradient( oPainter, oRectF )     ;    EXIT
-   CASE "Text"       ;   ::drawText( oPainter, oRectF )         ;    EXIT
-   CASE "Field"      ;   ::drawField( oPainter, oRectF )        ;    EXIT
-   CASE "Rectangle"  ;   ::drawRect( oPainter, oRectF )         ;    EXIT
-   CASE "RoundRect"  ;   ::drawRoundRect( oPainter, oRectF )    ;    EXIT
-   CASE "Ellipse"    ;   ::drawEllipse( oPainter, oRectF )      ;    EXIT
-   CASE "LineH"      ;   ::drawLine( oPainter, oRectF )         ;    EXIT
-   CASE "LineV"      ;   ::drawLine( oPainter, oRectF )         ;    EXIT
-   CASE "LineDR"     ;   ::drawLine( oPainter, oRectF )         ;    EXIT
-   CASE "LineDL"     ;   ::drawLine( oPainter, oRectF )         ;    EXIT
-   CASE "Arc"        ;   ::drawArc( oPainter, oRectF )          ;    EXIT
-   CASE "Chord"      ;   ::drawChord( oPainter, oRectF )        ;    EXIT
-   CASE "Diamond"    ;   ::drawDiamond( oPainter, oRectF )      ;    EXIT
-   CASE "Triangle"   ;   ::drawTriangle( oPainter, oRectF )     ;    EXIT
+   CASE "Barcode" ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), ::text()   ) ; EXIT
+   CASE "Marker"  ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), ::pixmap() ) ; EXIT
+   CASE "Image"   ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), ::pixmap() ) ; EXIT
+   CASE "Chart"   ; ::drawChart( oPainter, oRectF )        ;    EXIT
+   CASE "Gradient"; ::drawGradient( oPainter, oRectF )     ;    EXIT
+   CASE "Text"    ; ::drawText( oPainter, oRectF, lDrawSelection ) ;    EXIT
+   CASE "Field"   ; ::drawField( oPainter, oRectF )        ;    EXIT
+   OTHERWISE
+      ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush() )
+      EXIT
    ENDSWITCH
 
    IF lDrawSelection
       ::drawSelection( oPainter, oRectF )
    ENDIF
+   IF HB_ISOBJECT( ::oState )
+      ::state():draw( oPainter, oRectF )
+   ENDIF
+   IF ::lLocked
+      ::oDraw:Lock( oPainter, oRectF )
+   ENDIF
    RETURN Self
 
 
-METHOD HbQtVisualItem:drawRect( oPainter, oRectF )
-   oPainter:drawRect( oRectF )
-   RETURN Self
+METHOD HbQtVisualItem:drawText( oPainter, oRectF, lDrawSelection )
+   LOCAL oFont
 
+   WITH OBJECT oFont := QFont()
+      :setFamily( ::cFontFamily )
+      :setPixelSize( iif( lDrawSelection, Val( ::cFontSize ) / UNIT, TO_MMS( Val( ::cFontSize ) / UNIT ) ) )
+      :setStyleStrategy( QFont_PreferMatch )
+      :setStyleStrategy( QFont_ForceOutline )
+      SWITCH ::cFontStyle
+      CASE "Italic"      ; :setItalic( .T. ); EXIT
+      CASE "Bold"        ; :setBold( .T. )  ; EXIT
+      CASE "Bold Italic" ; :setItalic( .T. ); :setBold( .T. ); EXIT
+      ENDSWITCH
+   ENDWITH
 
-METHOD HbQtVisualItem:drawRoundRect( oPainter, oRectF )
-   oPainter:drawRoundedRect( oRectF, 10/UNIT, 10/UNIT )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawEllipse( oPainter, oRectF )
-   oPainter:drawEllipse( oRectF )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawLine( oPainter, oRect )
-
-   SWITCH ::lineType()
-   CASE HBQT_GRAPHICSITEM_LINE_VERTICAL
-      oPainter:drawLine( oRect:x() + oRect:width() / 2, oRect:y(), oRect:x() +  oRect:width() / 2, oRect:y() + oRect:height() )
-      EXIT
-   CASE HBQT_GRAPHICSITEM_LINE_HORIZONTAL
-      oPainter:drawLine( oRect:x(), oRect:y() + oRect:height() / 2, oRect:x() + oRect:width(), oRect:y() + oRect:height() / 2 )
-      EXIT
-   CASE HBQT_GRAPHICSITEM_LINE_BACKWARDDIAGONAL
-      oPainter:drawLine( oRect:right(), oRect:y(), oRect:x(), oRect:bottom() )
-      EXIT
-   CASE HBQT_GRAPHICSITEM_LINE_FORWARDDIAGONAL
-      oPainter:drawLine( QPointF( oRect:x(), oRect:y() ), QPointF( oRect:right(), oRect:bottom() ) )
-      EXIT
-   ENDSWITCH
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawPie( oPainter, oRectF )
-   oPainter:drawPie( oRectF, ::nStartAngle * 16, ::nSpanAngle * 16 )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawDiamond( oPainter, oRectF )
-   LOCAL p := QPainterPath()
-   LOCAL x := oRectF:x(), y := oRectF:y(), w := oRectF:width(), h := oRectF:height()
-
-   p:moveTo( x, y + h / 2 )
-   p:lineTo( x + w / 2, y )
-   p:lineTo( x + w, y + h / 2 )
-   p:lineTo( x + w / 2, y + h )
-   p:lineTo( x, y + h / 2 )
-
-   oPainter:drawPath( p )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawTriangle( oPainter, oRectF )
-   LOCAL p := QPainterPath()
-
-   p:moveTo( oRectF:x(), oRectF:y() + oRectF:height() )
-   p:lineTo( oRectF:x() + oRectF:width() / 2, oRectF:y() )
-   p:lineTo( oRectF:x() + oRectF:width(), oRectF:y() + oRectF:height() )
-   p:lineTo( oRectF:x(), oRectF:y() + oRectF:height() )
-
-   oPainter:drawPath( p )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawArc( oPainter, oRectF )
-   oPainter:drawArc( oRectF, ::nStartAngle * 16, ::nSpanAngle * 16 )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawChord( oPainter, oRectF )
-   oPainter:drawChord( oRectF, ::nStartAngle * 16, ::nSpanAngle * 16 )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawText( oPainter, oRectF )
-   oPainter:drawText( oRectF, ::textFlags(), ::text() )
+   WITH OBJECT oPainter
+      :save()
+      :setPen( ::pen() )
+      :setBrush( ::brush() )
+      :setOpacity( ::opacity() / 100.0 )
+      :setBackgroundMode( iif( ::backgroundMode() == "OpaqueMode", Qt_OpaqueMode, Qt_TransparentMode ) )
+      :fillRect( oRectF, ::backgroundBrush() )
+      :setFont( oFont )
+      :drawText( oRectF, ::textFlags(), ::text() )
+      :restore()
+   ENDWITH
    RETURN Self
 
 
 METHOD HbQtVisualItem:drawField( oPainter, oRectF )
-   oPainter:drawText( oRectF, ::textFlags(), ::text() )
-   RETURN Self
+   RETURN ::drawText( oPainter, oRectF )
 
 
 METHOD HbQtVisualItem:drawGradient( oPainter, oRectF )
    oPainter:drawRect( oRectF )
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawBarcode( oPainter, oRectF )
-   LOCAL rc, w, x, i, cCode
-
-   rc    := oRectF:adjusted( 5, 5, -10, -10 )
-   cCode := fetchBarString( ::text() )
-   w     := rc:width() / Len( cCode )
-   x     := 0.0
-
-   FOR i := 1 TO Len( cCode )
-      IF substr( cCode, i, 1 ) == "1"
-         oPainter:fillRect( QRectF( rc:x() + x, rc:y(), w, rc:height() ), QColor( Qt_black ) )
-      ELSE
-         oPainter:fillRect( QRectF( rc:x() + x, rc:y(), w, rc:height() ), QColor( Qt_white ) )
-      ENDIF
-      x += w
-   NEXT
-   RETURN Self
-
-
-METHOD HbQtVisualItem:drawImage( oPainter, oRectF )
-   LOCAL qPix, image, rc, img, point
-   LOCAL drawTextType := HBQT_GRAPHICSITEM_TEXT_DRAW_ABOVE
-   LOCAL paintType    := HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO
-   LOCAL borderWidth  := 0
-   LOCAL borderColor  := 0, pen, textH, sw, sh, cx, cy, cw, ch, textColor := 0
-   LOCAL cText        := "Picture"
-   LOCAL qObj         := ::oWidget
-
-   rc    := oRectF:adjusted( 1, 1, -2, -2 )
-
-   textH := 0
-   sw    := 0
-   sh    := 0
-
-   IF drawTextType == HBQT_GRAPHICSITEM_TEXT_DRAW_ABOVE .OR. ::drawTextType == HBQT_GRAPHICSITEM_TEXT_DRAW_BELOW
-      textH := oPainter:font():pixelSize()
-   ENDIF
-
-   qPix  := ::pixmap()
-   image := qPix:toImage()
-
-   IF image:isNull()
-      oPainter:drawRect( oRectF )
-   ELSE
-      img   := QImage( 0, 0 )
-      point := oRectF:topLeft()
-      cx    := 0; cy := 0; cw := qPix:width(); ch := qPix:height()
-
-      SWITCH paintType
-      CASE HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO
-         img := QImage( image:scaled( rc:width(), rc:height() - textH, Qt_KeepAspectRatio, Qt_SmoothTransformation ) )
-         EXIT
-      CASE HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_IGNORE_ASPECT_RATIO
-         img := QImage( image:scaled( rc:width(), rc:height() - textH, Qt_IgnoreAspectRatio, Qt_SmoothTransformation ) )
-         EXIT
-      CASE HBQT_GRAPHICSITEM_CENTER_PICTURE_TO_ITEM
-         point:setX( point:x() + ( rc:width() - image:width() ) / 2 )
-         point:setY( point:y() + ( rc:height() - image:height() - textH ) / 2 )
-         IF point:x() < 0
-            cx := abs( point:x() )
-            cw -= 2 * cx
-            point:setX( 0 )
-         ENDIF
-         IF point:y() < 0
-            cy := abs( point:y() )
-            ch -= 2 * cy
-            point:setY( 0 )
-         ENDIF
-         img := QImage( image:copy( cx, cy, cw, ch ) )
-         EXIT
-      CASE HBQT_GRAPHICSITEM_RESIZE_ITEM_TO_PICTURE
-         img := image
-         sw := img:width() - qObj:width()
-         sh := img:height() - ( qObj:height() - textH )
-         EXIT
-      ENDSWITCH
-
-      IF drawTextType == HBQT_GRAPHICSITEM_TEXT_DRAW_ABOVE
-         point:setY( point:y() + textH )
-      ENDIF
-
-      oPainter:drawImage( point, img )
-   ENDIF
-   oPainter:setPen( QPen( textColor ) )
-
-   SWITCH drawTextType
-   CASE HBQT_GRAPHICSITEM_TEXT_DRAW_TOP
-      oPainter:drawText( rc, Qt_AlignTop + Qt_AlignHCenter, cText )
-      EXIT
-   CASE HBQT_GRAPHICSITEM_TEXT_DRAW_BOTTOM
-      oPainter:drawText( rc, Qt_AlignBottom + Qt_AlignHCenter, cText )
-      EXIT
-   CASE HBQT_GRAPHICSITEM_TEXT_DRAW_ABOVE
-      oPainter:drawText( rc, Qt_AlignTop + Qt_AlignHCenter, cText )
-      EXIT
-   CASE HBQT_GRAPHICSITEM_TEXT_DRAW_BELOW
-      oPainter:drawText( rc, Qt_AlignBottom + Qt_AlignHCenter, cText )
-      EXIT
-   ENDSWITCH
-
-   IF !empty( sw ) .OR. !empty( sh )
-      qObj:setWidth( qObj:width() + sw )
-      qObj:setHeight( qObj:height() + sh )
-   ENDIF
-
-   IF borderWidth > 0
-      pen := QPen()
-      pen:setWidth( borderWidth )
-      pen:setColor( borderColor )
-      pen:setJoinStyle( Qt_MiterJoin )
-      oPainter:setPen( pen )
-      oPainter:setBrush( QBrush( Qt_NoBrush ) )
-      oPainter:drawRect( rc:x() + borderWidth / 2, rc:y() + borderWidth / 2, ;
-                         rc:width() - borderWidth, rc:height() - borderWidth )
-   ENDIF
    RETURN Self
 
 
@@ -1269,4 +1430,462 @@ STATIC FUNCTION rmgr_array2String( aArray )
    NEXT
    RETURN s
 */
+
+//--------------------------------------------------------------------//
+//                      CLASS HbQtVisualItemState
+//--------------------------------------------------------------------//
+
+CLASS HbQtVisualItemState
+
+   DATA   nArea                                   INIT __STATE_AREA_NONE__
+   DATA   cType                                   INIT "Rectangle"
+   DATA   nOffsetX                                INIT 0
+   DATA   nOffsetY                                INIT 0
+   DATA   xImage
+   DATA   oPen
+   DATA   oBrush
+   DATA   oPixmap
+
+   DATA   oDraw                                   INIT HbQtVisualItemDraw():new()
+
+   METHOD init( hState )
+
+   ACCESS area()                                  INLINE ::setArea()
+   METHOD setArea( nArea )                        SETGET
+   ACCESS image()                                 INLINE ::setImage()
+   METHOD setImage( xImage )                      SETGET
+   METHOD type()                                  INLINE ::setType()
+   METHOD setType( cType )                        SETGET
+
+   DATA   bStateChanged
+   METHOD stateChangedBlock( bBlock )             SETGET
+   METHOD stateChanged()
+
+   METHOD pixmap( nWidth, nHeight )
+   METHOD draw( oPainter, oRectF )
+
+   ENDCLASS
+
+
+METHOD HbQtVisualItemState:init( hState )
+   LOCAL oPen, oBrush, nArea, cShape
+
+   IF HB_ISHASH( hState )
+      IF hb_HHasKey( hState, "BorderStyle" ) .AND. hState[ "BorderStyle" ] > Qt_NoPen
+         WITH OBJECT oPen := QPen( hState[ "BorderStyle" ] )
+            IF hb_HHasKey( hState, "BorderWidth" ) .AND. hState[ "BorderWidth" ] > 0
+               oPen:setWidth( hState[ "BorderWidth" ] )
+            ELSE
+               oPen:setWidth( 1 )
+            ENDIF
+            IF hb_HHasKey( hState, "BorderColor" ) .AND. HB_ISSTRING( hState[ "BorderColor" ] )
+               oPen:SetColor( QColor( hState[ "BorderColor" ] ) )
+            ENDIF
+         ENDWITH
+      ENDIF
+      IF hb_HHasKey( hState, "Style" ) .AND. hState[ "Style" ] > Qt_NoBrush
+         oBrush := QBrush( hState[ "Style" ] )
+         IF hb_HHasKey( hState, "Color" ) .AND. HB_ISSTRING( hState[ "Color" ] )
+            oBrush:SetColor( QColor(  hState[ "Color" ] ) )
+         ENDIF
+      ENDIF
+      IF hb_HHasKey( hState, "Area" ) .AND. hState[ "Area" ] > 0
+         nArea := hState[ "Area" ]
+      ELSE
+         nArea := __STATE_AREA_TOPLEFT__
+      ENDIF
+      IF nArea > __STATE_AREA_MAXIMUM__
+         nArea := __STATE_AREA_TOPLEFT__
+      ENDIF
+      IF hb_HHasKey( hState, "Shape" ) .AND. HB_ISSTRING( hState[ "Shape" ] )
+         cShape := hState[ "Shape" ]
+      ELSE
+         cShape := "Rectangle"
+      ENDIF
+      IF hb_HHasKey( hState, "Image" )
+         ::xImage := hState[ "Image" ]
+      ENDIF
+      IF hb_HHasKey( hState, "OffsetX" ) .AND. HB_ISNUMERIC( hState[ "OffsetX" ] )
+         ::nOffsetX := hState[ "OffsetX" ]
+      ENDIF
+      IF hb_HHasKey( hState, "OffsetY" ) .AND. HB_ISNUMERIC( hState[ "OffsetY" ] )
+         ::nOffsetY := hState[ "OffsetY" ]
+      ENDIF
+   ENDIF
+   IF ! Empty( nArea )
+      ::nArea := nArea
+   ENDIF
+   IF ! Empty( cShape )
+      ::cType := cShape
+   ENDIF
+   IF Empty( oPen )
+      oPen := QPen( Qt_SolidLine )
+   ENDIF
+   ::oPen := oPen
+   IF Empty( oBrush )
+      oBrush := QBrush( Qt_NoBrush )
+   ENDIF
+   ::oBrush := oBrush
+
+   ::oDraw := HbQtVisualItemDraw():new()
+
+   RETURN Self
+
+
+METHOD HbQtVisualItemState:pixmap( nWidth, nHeight )
+   LOCAL oPixmap, oPainter, oRectF
+
+   WITH OBJECT oPixmap := QPixmap( nWidth, nHeight )
+      :fill( QColor( 255,255,255,0 ) )
+   ENDWITH
+   WITH OBJECT oPainter := QPainter()
+      IF :begin( oPixmap )
+         :drawRect( QRectF( 0, 0, nWidth-1, nHeight-1 ) )
+         oRectF := __hbqtRectByArea( QRect( 0, 0, nWidth, nHeight ), ::nArea, ::nOffsetX, ::nOffsetY )
+         ::oDraw:drawShape( oPainter, oRectF, ::cType, ::oPen, ::oBrush )
+         :end()
+      ENDIF
+   ENDWITH
+   ::oPixmap := oPixmap
+   RETURN oPixmap
+
+
+METHOD HbQtVisualItemState:draw( oPainter, oRectF )
+   LOCAL oRF, nX, nY, nW, nH, nHalfW, nHalfH, nOffX, nOffY
+
+   IF ::nArea > __STATE_AREA_NONE__
+      nX     := oRectF:x()
+      nY     := oRectF:y()
+      nW     := oRectF:width()
+      nH     := oRectF:height()
+      nHalfW := nW/2
+      nHalfH := nH/2
+      nOffX  := ::nOffsetX
+      nOffY  := ::nOffsetY
+
+      SWITCH ::nArea
+      CASE __STATE_AREA_TOPLEFT__     ; oRF := QRectF( nX + nOffX           , nY + nOffY           , nHalfW, nHalfH ) ; EXIT
+      CASE __STATE_AREA_TOPRIGHT__    ; oRF := QRectF( nX + nOffX + nHalfW  , nY + nOffY           , nHalfW, nHalfH ) ; EXIT
+      CASE __STATE_AREA_BOTTOMRIGHT__ ; oRF := QRectF( nX + nOffX + nHalfW  , nY + nOffY + nHalfH  , nHalfW, nHalfH ) ; EXIT
+      CASE __STATE_AREA_BOTTOMLEFT__  ; oRF := QRectF( nX + nOffX           , nY + nOffY + nHalfH  , nHalfW, nHalfH ) ; EXIT
+      CASE __STATE_AREA_CENTER__      ; oRF := QRectF( nX + nOffX + nHalfW/2, nY + nOffY + nHalfH/2, nHalfW, nHalfH ) ; EXIT
+      ENDSWITCH
+
+      ::oDraw:drawShape( oPainter, oRF, ::cType, ::oPen, ::oBrush )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItemState:stateChanged()
+   IF HB_ISBLOCK( ::stateChangedBlock() )
+      Eval( ::stateChangedBlock(), Self )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItemState:stateChangedBlock( bBlock )
+   LOCAL oldBlock := ::bStateChanged
+   IF HB_ISBLOCK( bBlock )
+      ::bStateChanged := bBlock
+   ENDIF
+   RETURN oldBlock
+
+
+METHOD HbQtVisualItemState:setArea( nArea )
+   LOCAL oldArea := ::nArea
+   IF HB_ISNUMERIC( nArea ) .AND. nArea >= __STATE_AREA_NONE__ .AND. nArea <= __STATE_AREA_MAXIMUM__
+      ::nArea := nArea
+      ::stateChanged()
+   ENDIF
+   RETURN oldArea
+
+
+METHOD HbQtVisualItemState:setType( cType )
+   LOCAL oldType := ::cType
+   IF HB_ISSTRING( cType )
+      ::cType := cType
+      ::stateChanged()
+   ENDIF
+   RETURN oldType
+
+
+METHOD HbQtVisualItemState:setImage( xImage )
+   LOCAL oldImage := ::xImage
+   IF PCount() == 1
+      ::xImage := NIL                                // clear qt object if it has been QImage, etc.
+      ::xImage := xImage
+      ::stateChanged()
+   ENDIF
+   RETURN oldImage
+
+
+STATIC FUNCTION __hbqtRectByArea( oRectF, nArea, nOffX, nOffY )
+   LOCAL oRF, nX, nY, nW, nH, nHalfW, nHalfH
+
+   IF nArea > __STATE_AREA_NONE__
+      nX     := oRectF:x()
+      nY     := oRectF:y()
+      nW     := oRectF:width()
+      nH     := oRectF:height()
+      nHalfW := nW/2
+      nHalfH := nH/2
+
+      SWITCH nArea
+      CASE __STATE_AREA_TOPLEFT__     ; oRF := QRectF( nX + nOffX           , nY + nOffY           , nHalfW-1, nHalfH-1 ) ; EXIT
+      CASE __STATE_AREA_TOPRIGHT__    ; oRF := QRectF( nX + nOffX + nHalfW  , nY + nOffY           , nHalfW-1, nHalfH-1 ) ; EXIT
+      CASE __STATE_AREA_BOTTOMRIGHT__ ; oRF := QRectF( nX + nOffX + nHalfW  , nY + nOffY + nHalfH  , nHalfW-1, nHalfH-1 ) ; EXIT
+      CASE __STATE_AREA_BOTTOMLEFT__  ; oRF := QRectF( nX + nOffX           , nY + nOffY + nHalfH  , nHalfW-1, nHalfH-1 ) ; EXIT
+      CASE __STATE_AREA_CENTER__      ; oRF := QRectF( nX + nOffX + nHalfW/2, nY + nOffY + nHalfH/2, nHalfW-1, nHalfH-1 ) ; EXIT
+      ENDSWITCH
+   ENDIF
+   RETURN oRF
+
+//--------------------------------------------------------------------//
+//         CLASS HbQtVisualItemDraw( oPainter, oRectF, cWhat )
+//--------------------------------------------------------------------//
+
+CLASS HbQtVisualItemDraw
+
+   DATA   oBrush
+   DATA   oPen
+   DATA   oLock
+   DATA   nStartAngle                             INIT 30
+   DATA   nSpanAngle                              INIT 120
+
+   METHOD init()
+   METHOD drawShape( oPainter, oRectF, cShape, oPen, oBrush, xCargo )
+   METHOD lock( oPainter, oRectF )
+
+   PROTECTED:
+
+   METHOD setOptions( oPainter, oPen, oBrush )
+
+   METHOD diamond( oPainter, oRectF )
+   METHOD rectangle( oPainter, oRectF )
+   METHOD triangle( oPainter, oRectF )
+   METHOD roundedRect( oPainter, oRectF )
+   METHOD ellipse( oPainter, oRectF )
+   METHOD arc( oPainter, oRectF )
+   METHOD pie( oPainter, oRectF )
+   METHOD chord( oPainter, oRectF )
+   METHOD line( oPainter, oRectF, nLineType )
+   METHOD barcode( oPainter, oRectF, oLineColor, oBGColor, cText )
+   METHOD image( oPainter, oRectF, oPixmap )
+
+   ENDCLASS
+
+
+METHOD HbQtVisualItemDraw:init()
+   ::oPen   := QPen( Qt_NoPen )
+   ::oBrush := QBrush( Qt_NoBrush )
+   ::oLock  := QPixmap( __hbqtImage( "lock" ) ):toImage()
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:setOptions( oPainter, oPen, oBrush )
+   DEFAULT oPen TO ::oPen
+   DEFAULT oBrush TO ::oBrush
+   WITH OBJECT oPainter
+      :setPen( oPen )
+      :setBrush( oBrush )
+   ENDWITH
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:drawShape( oPainter, oRectF, cShape, oPen, oBrush, xCargo )
+
+   oPainter:save()
+
+   ::setOptions( oPainter, oPen, oBrush )
+
+   SWITCH Lower( cShape )
+   CASE "barcode"     ; ::barcode( oPainter, oRectF, oPen:color(), oBrush:color(), xCargo ) ; EXIT
+   CASE "marker"      ; ::image( oPainter, oRectF, xCargo   ) ; EXIT
+   CASE "image"       ; ::image( oPainter, oRectF, xCargo   ) ; EXIT
+   CASE "rectangle"   ; ::rectangle( oPainter, oRectF       ) ; EXIT
+   CASE "ellipse"     ; ::ellipse( oPainter, oRectF         ) ; EXIT
+   CASE "roundedrect" ; ::roundedRect( oPainter, oRectF     ) ; EXIT
+   CASE "diamond"     ; ::diamond( oPainter, oRectF         ) ; EXIT
+   CASE "triangle"    ; ::triangle( oPainter, oRectF        ) ; EXIT
+   CASE "arc"         ; ::arc( oPainter, oRectF             ) ; EXIT
+   CASE "pie"         ; ::pie( oPainter, oRectF             ) ; EXIT
+   CASE "chord"       ; ::chord( oPainter, oRectF           ) ; EXIT
+   CASE "linev"       ; ::line( oPainter, oRectF, HBQT_GRAPHICSITEM_LINE_VERTICAL         ) ; EXIT
+   CASE "lineh"       ; ::line( oPainter, oRectF, HBQT_GRAPHICSITEM_LINE_HORIZONTAL       ) ; EXIT
+   CASE "linedl"      ; ::line( oPainter, oRectF, HBQT_GRAPHICSITEM_LINE_FORWARDDIAGONAL  ) ; EXIT
+   CASE "linedr"      ; ::line( oPainter, oRectF, HBQT_GRAPHICSITEM_LINE_BACKWARDDIAGONAL ) ; EXIT
+   ENDSWITCH
+
+   oPainter:restore()
+   HB_SYMBOL_UNUSED( xCargo )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:lock( oPainter, oRectF )
+   LOCAL nX := oRectF:x(), nY := oRectF:y(), nW := oRectF:width()/4, nH := oRectF:height()/4
+   oPainter:drawImage( QRectF( nX + nW * 3, nY  + nH * 3, nW, nH ), ::oLock:scaled( nW, nH ) )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:ellipse( oPainter, oRectF )
+   oPainter:drawEllipse( oRectF )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:rectangle( oPainter, oRectF )
+   oPainter:drawRect( oRectF )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:roundedRect( oPainter, oRectF )
+   LOCAL nW := oRectF:width() / 30
+   LOCAL nH := oRectF:height() / 30
+
+   oPainter:drawRoundedRect( oRectF, nW/UNIT, nH/UNIT )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:diamond( oPainter, oRectF )
+   LOCAL oPath
+   LOCAL nX := oRectF:x(), nY := oRectF:y(), nW := oRectF:width(), nH := oRectF:height()
+
+   WITH OBJECT oPath := QPainterPath()
+      :moveTo( nX         , nY + nH / 2 )
+      :lineTo( nX + nW / 2, nY          )
+      :lineTo( nX + nW    , nY + nH / 2 )
+      :lineTo( nX + nW / 2, nY + nH     )
+      :lineTo( nX         , nY + nH / 2 )
+   ENDWITH
+   oPainter:drawPath( oPath )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:triangle( oPainter, oRectF )
+   LOCAL oPath
+   LOCAL nX := oRectF:x(), nY := oRectF:y(), nW := oRectF:width(), nH := oRectF:height()
+
+   WITH OBJECT oPath := QPainterPath()
+      :moveTo( nX         , nY + nH )
+      :lineTo( nX + nW / 2, nY      )
+      :lineTo( nX + nW    , nY + nH )
+      :lineTo( nX         , nY + nH )
+   ENDWITH
+   oPainter:drawPath( oPath )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:line( oPainter, oRectF, nLineType )
+
+   SWITCH nLineType
+   CASE HBQT_GRAPHICSITEM_LINE_VERTICAL
+      oPainter:drawLine( oRectF:x() + oRectF:width() / 2, oRectF:y(), oRectF:x() +  oRectF:width() / 2, oRectF:y() + oRectF:height() )
+      EXIT
+   CASE HBQT_GRAPHICSITEM_LINE_HORIZONTAL
+      oPainter:drawLine( oRectF:x(), oRectF:y() + oRectF:height() / 2, oRectF:x() + oRectF:width(), oRectF:y() + oRectF:height() / 2 )
+      EXIT
+   CASE HBQT_GRAPHICSITEM_LINE_BACKWARDDIAGONAL
+      oPainter:drawLine( oRectF:right(), oRectF:y(), oRectF:x(), oRectF:bottom() )
+      EXIT
+   CASE HBQT_GRAPHICSITEM_LINE_FORWARDDIAGONAL
+      oPainter:drawLine( QPointF( oRectF:x(), oRectF:y() ), QPointF( oRectF:right(), oRectF:bottom() ) )
+      EXIT
+   ENDSWITCH
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:pie( oPainter, oRectF )
+   oPainter:drawPie( oRectF, ::nStartAngle * 16, ::nSpanAngle * 16 )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:arc( oPainter, oRectF )
+   oPainter:drawArc( oRectF, ::nStartAngle * 16, ::nSpanAngle * 16 )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:chord( oPainter, oRectF )
+   oPainter:drawChord( oRectF, ::nStartAngle * 16, ::nSpanAngle * 16 )
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:barcode( oPainter, oRectF, oLineColor, oBGColor, cText )
+   LOCAL rc, w, x, i, cCode
+
+   rc    := oRectF:adjusted( 5, 5, -5, -5 )
+   cCode := fetchBarString( cText )
+   w     := rc:width() / Len( cCode )
+   x     := 0.0
+
+   oPainter:fillRect( oRectF, oBGColor )
+   FOR i := 1 TO Len( cCode )
+      IF substr( cCode, i, 1 ) == "1"
+         oPainter:fillRect( QRectF( rc:x() + x, rc:y(), w, rc:height() ), oLineColor )
+      ENDIF
+      x += w
+   NEXT
+   RETURN Self
+
+
+METHOD HbQtVisualItemDraw:image( oPainter, oRectF, oPixmap )
+   LOCAL image, rc, img, point, pen, cx, cy, cw, ch
+   LOCAL paintType    := HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO
+   LOCAL borderWidth  := 0
+   LOCAL borderColor  := 0
+
+   rc    := oRectF:adjusted( 1, 1, -2, -2 )
+   image := oPixmap:toImage()
+
+   IF image:isNull()
+      oPainter:drawRect( oRectF )
+
+   ELSE
+      img   := QImage( 0, 0 )
+      point := oRectF:topLeft()
+      cx    := 0
+      cy    := 0
+      cw    := oPixmap:width()
+      ch    := oPixmap:height()
+
+      SWITCH paintType
+      CASE HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO
+         img := QImage( image:scaled( rc:width(), rc:height(), Qt_KeepAspectRatio, Qt_SmoothTransformation ) )
+         EXIT
+      CASE HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_IGNORE_ASPECT_RATIO
+         img := QImage( image:scaled( rc:width(), rc:height(), Qt_IgnoreAspectRatio, Qt_SmoothTransformation ) )
+         EXIT
+      CASE HBQT_GRAPHICSITEM_CENTER_PICTURE_TO_ITEM
+         point:setX( point:x() + ( rc:width() - image:width() ) / 2 )
+         point:setY( point:y() + ( rc:height() - image:height() ) / 2 )
+         IF point:x() < 0
+            cx := abs( point:x() )
+            cw -= 2 * cx
+            point:setX( 0 )
+         ENDIF
+         IF point:y() < 0
+            cy := abs( point:y() )
+            ch -= 2 * cy
+            point:setY( 0 )
+         ENDIF
+         img := QImage( image:copy( cx, cy, cw, ch ) )
+         EXIT
+      CASE HBQT_GRAPHICSITEM_RESIZE_ITEM_TO_PICTURE
+         img := image
+         EXIT
+      ENDSWITCH
+
+      oPainter:drawImage( point, img )
+   ENDIF
+
+   IF borderWidth > 0
+      pen := QPen()
+      pen:setWidth( borderWidth )
+      pen:setColor( borderColor )
+      pen:setJoinStyle( Qt_MiterJoin )
+      oPainter:setPen( pen )
+      oPainter:setBrush( QBrush( Qt_NoBrush ) )
+      oPainter:drawRect( rc:x() + borderWidth / 2, rc:y() + borderWidth / 2, ;
+                         rc:width() - borderWidth, rc:height() - borderWidth )
+   ENDIF
+   RETURN Self
+
 

@@ -66,6 +66,37 @@
 
 #include <QtGui/QPageLayout>
 
+static bool bAllowResizing = true;
+static bool bAllowMovement = true;
+
+
+bool __hbqGraphicsAllowResizeInPlace()
+{
+   return bAllowResizing;
+}
+HB_FUNC( __HBQGRAPHICS_ALLOWRESIZEINPLACE )
+{
+   bool bOldSetting = bAllowResizing;
+   if( hb_pcount() == 1 && HB_ISLOG( 1 ) )
+   {
+      bAllowResizing = hb_parl( 1 );
+   }
+   hb_retl( bOldSetting );
+}
+
+bool __hbqGraphicsAllowMovement()
+{
+   return bAllowMovement;
+}
+HB_FUNC( __HBQGRAPHICS_ALLOWMOVEMENT )
+{
+   bool bOldSetting = bAllowMovement;
+   if( hb_pcount() == 1 && HB_ISLOG( 1 ) )
+   {
+      bAllowMovement = hb_parl( 1 );
+   }
+   hb_retl( bOldSetting );
+}
 
 HBQGraphicsScene::HBQGraphicsScene( QObject * parent ) : QGraphicsScene( parent )
 {
@@ -77,18 +108,16 @@ HBQGraphicsScene::HBQGraphicsScene( QObject * parent ) : QGraphicsScene( parent 
    m_pageBorder   = 0;
    m_showGrid     = false;
    m_pageSize     = QPrinter::Letter;
-   m_orientation  = QPrinter::Portrait;
+   m_orientation  = QPrinter::Landscape;
 
-   setPageSize( QPrinter::Letter );
-   setOrientation( QPrinter::Portrait );
+   setPageSize( m_pageSize );
+   setOrientation( m_orientation );
 
    QFont m_font = QFont( "Serif" );
    m_font.setPointSizeF( 3.5 );
    m_font.setStyleStrategy( QFont::PreferMatch );
    m_font.setStyleStrategy( QFont::ForceOutline );
    setFont( m_font );
-
-   mousePressTime.setHMS( 0,0,0,1 );
 }
 
 HBQGraphicsScene::~HBQGraphicsScene()
@@ -117,7 +146,7 @@ void HBQGraphicsScene::hbSetBlock( PHB_ITEM b )
       block = NULL;
    }
 
-   if( b )
+   if( b && hb_vmRequestReenter() )
    {
       block = hb_itemNew( b );
       hb_gcUnlock( block );
@@ -131,7 +160,18 @@ void HBQGraphicsScene::hbSetBlock( PHB_ITEM b )
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
       hb_itemRelease( p3 );
+
+      hb_vmRequestRestore();
    }
+}
+
+QRectF HBQGraphicsScene::paperRect()
+{
+   return m_paperRect;
+}
+void HBQGraphicsScene::setPaperRect( QRectF paperRect )
+{
+   m_paperRect = paperRect;
 }
 
 QRectF HBQGraphicsScene::geometry()
@@ -164,21 +204,12 @@ int HBQGraphicsScene::pageSize()
 }
 void HBQGraphicsScene::setPageSize( int pageSize )
 {
-   m_pageSize  = pageSize;
+   m_pageSize = pageSize;
    updatePageRect();
    m_paperRect = sceneRect();
    //setGeometry( QRect( -10 / UNIT, -10 / UNIT, sceneRect().width() + 10 / UNIT * 2, sceneRect().height() + 10 / UNIT * 2 ) );
    //setGeometry( QRect( 0, 0, sceneRect().width(), sceneRect().height() ) );
    setGeometry( sceneRect() );
-}
-
-QRectF HBQGraphicsScene::paperRect()
-{
-   return m_paperRect;
-}
-void HBQGraphicsScene::setPaperRect( QRectF paperRect )
-{
-   m_paperRect = paperRect;
 }
 
 int HBQGraphicsScene::orientation()
@@ -187,10 +218,11 @@ int HBQGraphicsScene::orientation()
 }
 void HBQGraphicsScene::setOrientation( int orientation )
 {
-   m_orientation  = orientation;
+   m_orientation = orientation;
    updatePageRect();
-   m_paperRect    = sceneRect();
-   setGeometry( QRect( 10 / UNIT, 10 / UNIT, sceneRect().width() - 10 / UNIT * 2, sceneRect().height() - 10 / UNIT * 2 ) );
+   m_paperRect = sceneRect();
+   //setGeometry( QRect( 10 / UNIT, 10 / UNIT, sceneRect().width() - 10 / UNIT * 2, sceneRect().height() - 10 / UNIT * 2 ) );
+   setGeometry( m_paperRect );
 }
 
 int HBQGraphicsScene::magnetArea()
@@ -210,8 +242,6 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
 {
    HBQGraphicsItem * item = NULL;
 
-   mousePressTime = QTime( 0,0,0,1 );
-
    if( itemAt( mouseEvent->scenePos(), QTransform() ) )
    {
       item = dynamic_cast< HBQGraphicsItem * >( itemAt( mouseEvent->scenePos(), QTransform() ) );
@@ -222,8 +252,9 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
       {
          item->setCursor( QCursor( Qt::ArrowCursor ) );
       }
-      else
+      else if( __hbqGraphicsAllowResizeInPlace() )
       {
+
          int pc = item->determineResizeMode( item->mapFromScene( mouseEvent->scenePos() ) );
 
          if( RESIZE_MODE_FIXED != pc )
@@ -251,6 +282,10 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
             }
          }
       }
+      else
+      {
+          item->setCursor( QCursor( Qt::OpenHandCursor ) );
+      }
    }
 
    QGraphicsScene::mouseMoveEvent( mouseEvent );
@@ -270,44 +305,10 @@ void HBQGraphicsScene::mouseMoveEvent( QGraphicsSceneMouseEvent * mouseEvent )
    }
 }
 
-void HBQGraphicsScene::mousePressTimer()
-{
-   if( mousePressTime.msec() != 1 )
-   {
-      if( block )
-      {
-#if 1
-         //QGraphicsSceneMouseEvent * event = new QGraphicsSceneMouseEvent( QEvent::GraphicsSceneMouseRelease );
-         QMouseEvent * event = new QMouseEvent( QEvent::MouseButtonRelease, QPoint( mousePressPos.x(), mousePressPos.y() ), Qt::LeftButton, 0, 0 );
-         QCoreApplication::postEvent( this, event );
-
-         QCoreApplication::processEvents( 0 );
-
-         PHB_ITEM p1 = hb_itemPutNI( NULL, 21141 );
-         PHB_ITEM p2 = hb_itemPutND( NULL, mousePressPos.x() );
-         PHB_ITEM p3 = hb_itemPutND( NULL, mousePressPos.y() );
-         hb_vmEvalBlockV( block, 3, p1, p2, p3 );
-         hb_itemRelease( p1 );
-         hb_itemRelease( p2 );
-         hb_itemRelease( p3 );
-
-#else
-         QGraphicsSceneEvent * event = new QGraphicsSceneEvent( QEvent::GraphicsSceneContextMenu );
-         QCoreApplication::postEvent( this, event );
-#endif
-      }
-   }
-}
-
 void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
 {
-   mousePressTime = QTime::currentTime();
-   mousePressPos = event->screenPos();
-   QTimer::singleShot( 1500, this, SLOT(mousePressTimer()) );
-
    QPointF mousePos( event->buttonDownScenePos( Qt::LeftButton ).x(), event->buttonDownScenePos( Qt::LeftButton ).y() );
    movingItem = itemAt( mousePos.x(), mousePos.y(), QTransform() );
-
    if( movingItem != 0 && event->button() == Qt::LeftButton )
       mouseOldPos = movingItem->pos();
 
@@ -329,11 +330,17 @@ void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
       HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos(), QTransform() ) );
       if( ! item )
       {
-         if( block )
+         if( block && hb_vmRequestReenter() )
          {
             PHB_ITEM p1 = hb_itemPutNI( NULL, 21107 );
-            hb_vmEvalBlockV( block, 1, p1 );
+            PHB_ITEM p2 = hb_itemPutND( NULL, event->scenePos().x() );
+            PHB_ITEM p3 = hb_itemPutND( NULL, event->scenePos().y() );
+            hb_vmEvalBlockV( block, 3, p1, p2, p3 );
             hb_itemRelease( p1 );
+            hb_itemRelease( p2 );
+            hb_itemRelease( p3 );
+
+            hb_vmRequestRestore();
          }
       }
    }
@@ -341,11 +348,8 @@ void HBQGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent * event )
 
 void HBQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 {
-   mousePressTime = QTime( 0,0,0,1 );
-
    foreach( QGraphicsItem * item, m_gideLines )
    removeItem( item );
-
    m_gideLines.clear();
 
    if( movingItem != 0 && event->button() == Qt::LeftButton )
@@ -361,7 +365,9 @@ void HBQGraphicsScene::mouseReleaseEvent( QGraphicsSceneMouseEvent * event )
 
 void HBQGraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
 {
-   if( block )
+   QGraphicsScene::mouseDoubleClickEvent( event );
+
+   if( block && hb_vmRequestReenter() )
    {
       PHB_ITEM p1 = hb_itemPutNI( NULL, 21131 );
       PHB_ITEM p2 = hb_itemPutND( NULL, event->scenePos().x() );
@@ -370,8 +376,9 @@ void HBQGraphicsScene::mouseDoubleClickEvent( QGraphicsSceneMouseEvent * event )
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
       hb_itemRelease( p3 );
+
+      hb_vmRequestRestore();
    }
-   QGraphicsScene::mouseDoubleClickEvent( event );
 }
 
 /*----------------------------------------------------------------------*/
@@ -492,7 +499,7 @@ void HBQGraphicsScene::keyPressEvent( QKeyEvent * keyEvent )
 
 void HBQGraphicsScene::drawBackground( QPainter * painter, const QRectF & rect )
 {
-   if( block )
+   if( block && hb_vmRequestReenter() )
    {
       PHB_ITEM p1 = hb_itemPutNI( NULL, 21201 );
       PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) painter, "HB_QPAINTER", NULL, 0 );
@@ -501,6 +508,8 @@ void HBQGraphicsScene::drawBackground( QPainter * painter, const QRectF & rect )
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
       hb_itemRelease( p3 );
+
+      hb_vmRequestRestore();
    }
    QGraphicsScene::drawBackground( painter, rect );
 }
@@ -512,16 +521,17 @@ void HBQGraphicsScene::drawBackground( QPainter * painter, const QRectF & rect )
 void HBQGraphicsScene::contextMenuEvent( QGraphicsSceneContextMenuEvent * event )
 {
    HBQGraphicsItem * item = dynamic_cast< HBQGraphicsItem * >( itemAt( event->scenePos(), QTransform() ) );
-
    if( ! item )
    {
-      if( block )
+      if( block && hb_vmRequestReenter() )
       {
          PHB_ITEM p1 = hb_itemPutNI( NULL, QEvent::GraphicsSceneContextMenu );
          PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENECONTEXTMENUEVENT", NULL, 0 );
          hb_vmEvalBlockV( block, 2, p1, p2 );
          hb_itemRelease( p1 );
          hb_itemRelease( p2 );
+
+         hb_vmRequestRestore();
       }
    }
    QGraphicsScene::contextMenuEvent( event );
@@ -529,13 +539,15 @@ void HBQGraphicsScene::contextMenuEvent( QGraphicsSceneContextMenuEvent * event 
 
 void HBQGraphicsScene::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
 {
-   if( block )
+   if( block && hb_vmRequestReenter() )
    {
       PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDragEnter );
       PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENEDRAGDROPEVENT", NULL, 0 );
       hb_vmEvalBlockV( block, 2, p1, p2 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
+
+      hb_vmRequestRestore();
    }
    else
    {
@@ -544,13 +556,15 @@ void HBQGraphicsScene::dragEnterEvent( QGraphicsSceneDragDropEvent * event )
 }
 void HBQGraphicsScene::dragLeaveEvent( QGraphicsSceneDragDropEvent * event )
 {
-   if( block )
+   if( block && hb_vmRequestReenter() )
    {
       PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDragLeave );
       PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENEDRAGDROPEVENT", NULL, 0 );
       hb_vmEvalBlockV( block, 2, p1, p2 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
+
+      hb_vmRequestRestore();
    }
    else
    {
@@ -559,13 +573,15 @@ void HBQGraphicsScene::dragLeaveEvent( QGraphicsSceneDragDropEvent * event )
 }
 void HBQGraphicsScene::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 {
-   if( block )
+   if( block && hb_vmRequestReenter() )
    {
       PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDragMove );
       PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENEDRAGDROPEVENT", NULL, 0 );
       hb_vmEvalBlockV( block, 2, p1, p2 );
       hb_itemRelease( p1 );
       hb_itemRelease( p2 );
+
+      hb_vmRequestRestore();
    }
    else
    {
@@ -574,18 +590,18 @@ void HBQGraphicsScene::dragMoveEvent( QGraphicsSceneDragDropEvent * event )
 }
 void HBQGraphicsScene::dropEvent( QGraphicsSceneDragDropEvent * event )
 {
-   if( block )
+   if( block && hb_vmRequestReenter() )
    {
       const QMimeData * mime = event->mimeData();
 
       if( mime->hasFormat( ( QString ) "application/x-qabstractitemmodeldatalist" ) )
       {
-         PHB_ITEM          p1       = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDrop );
-         PHB_ITEM          p2       = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENEDRAGDROPEVENT", NULL, 0 );
-         PHB_ITEM          p3       = hb_itemNew( NULL );
+         PHB_ITEM p1 = hb_itemPutNI( NULL, ( int ) QEvent::GraphicsSceneDrop );
+         PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, ( void * ) event, "HB_QGRAPHICSSCENEDRAGDROPEVENT", NULL, 0 );
+         PHB_ITEM p3 = hb_itemNew( NULL );
 
-         QTreeWidget *     tree     = dynamic_cast< QTreeWidget * >( event->source() );
-         QTreeWidgetItem * curItem  = dynamic_cast< QTreeWidgetItem * >( tree->currentItem() );
+         QTreeWidget * tree = dynamic_cast< QTreeWidget * >( event->source() );
+         QTreeWidgetItem * curItem = dynamic_cast< QTreeWidgetItem * >( tree->currentItem() );
          if( tree->indexOfTopLevelItem( curItem ) == -1 )
          {
             QTreeWidgetItem * parent = dynamic_cast< QTreeWidgetItem * >( curItem->parent() );
@@ -613,6 +629,7 @@ void HBQGraphicsScene::dropEvent( QGraphicsSceneDragDropEvent * event )
          hb_itemRelease( p1 );
          hb_itemRelease( p2 );
       }
+      hb_vmRequestRestore();
    }
    else
    {
@@ -642,7 +659,8 @@ void HBQGraphicsScene::drawBorder()
 
    m_paperBorder = addRect( m_paperRect );
 
-   p.setStyle( Qt::SolidLine );
+   //p.setStyle( Qt::SolidLine );
+   p.setStyle( Qt::NoPen );
    p.setColor( QColor( 255, 255, 255 ) );
    p.setWidth( 0 );
    m_pageBorder = addRect( geometry() );
