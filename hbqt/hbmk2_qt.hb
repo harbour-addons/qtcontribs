@@ -2235,16 +2235,19 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
 
    AAdd( txt_, "HB_FUNC_STATIC( " + Upper( oMtd:cHBFunc ) + " )" )
    AAdd( txt_, "{" )
+   IF ! empty( oMtd:cDefine )
+      AAdd( txt_, oMtd:cDefine )
+   ENDIF
    IF ! empty( oMtd:cVersion )
       IF Left( oMtd:cVersion, 1 ) == "-"
-         AAdd( txt_, "   #if QT_VERSION <= " + SubStr( oMtd:cVersion, 2 ) )
+         AAdd( txt_, "#if QT_VERSION <= " + SubStr( oMtd:cVersion, 2 ) )
       ELSE
-         AAdd( txt_, "   #if QT_VERSION >= " + oMtd:cVersion )
+         AAdd( txt_, "#if QT_VERSION >= " + oMtd:cVersion )
       ENDIF
    ELSEIF ::lQtVerLessThan
-      AAdd( txt_, "   #if QT_VERSION <= " + ::cQtVerLessThan )
+      AAdd( txt_, "#if QT_VERSION <= " + ::cQtVerLessThan )
    ELSEIF ::cQtVer > "0x040500"
-      AAdd( txt_, "   #if QT_VERSION >= " + ::cQtVer )
+      AAdd( txt_, "#if QT_VERSION >= " + ::cQtVer )
    ENDIF
 
    /* If method is manually written in .qth - no more processing */
@@ -2402,7 +2405,10 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
 
    AAdd( txt_, "   }" )
    IF ! empty( oMtd:cVersion ) .OR. ::cQtVer > "0x040500" .OR. ::lQtVerLessThan
-      AAdd( txt_, "   #endif" )
+      AAdd( txt_, "#endif" )
+   ENDIF
+   IF ! empty( oMtd:cDefine )
+      AAdd( txt_, "#endif" )
    ENDIF
    AAdd( txt_, "}" )              // HB_FUNC()
    AAdd( txt_, "" )
@@ -2625,7 +2631,8 @@ METHOD HbQtSource:parseProto( cProto, fBody_ )
                CASE "R"
                   oMtd:nDetachRet := val( cVal )
                   EXIT
-               CASE "xxx"
+               CASE "F"
+                  oMtd:cDefine := cVal
                   EXIT
                ENDSWITCH
             ENDIF
@@ -3137,6 +3144,7 @@ CREATE CLASS HbqtMethod
    VAR    nDetach                                 INIT 0
    VAR    nAttach                                 INIT 0
    VAR    cVersion                                INIT ""
+   VAR    cDefine                                 INIT ""
    VAR    nDetachRet                              INIT -1
 
    VAR    cFun                                    INIT ""

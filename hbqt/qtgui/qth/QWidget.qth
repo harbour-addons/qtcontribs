@@ -49,8 +49,8 @@ enum PaintDeviceMetric { PdmWidth, PdmHeight, PdmWidthMM, PdmHeightMM, ..., PdmP
 
 <PROTOS>
 bool acceptDrops () const
-QString accessibleDescription () const
-QString accessibleName () const
+QString accessibleDescription () const           [*F=#ifndef QT_NO_ACCESSIBILITY*]
+QString accessibleName () const                  [*F=#ifndef QT_NO_ACCESSIBILITY*]
 QList<QAction *> actions () const
 void activateWindow ()
 void addAction ( QAction * action )
@@ -176,8 +176,8 @@ void scroll ( int dx, int dy )
 void scroll ( int dx, int dy, const QRect & r )
 
 void setAcceptDrops ( bool on )
-void setAccessibleDescription ( const QString & description )
-void setAccessibleName ( const QString & name )
+void setAccessibleDescription ( const QString & description )            [*F=#ifndef QT_NO_ACCESSIBILITY*]
+void setAccessibleName ( const QString & name )                          [*F=#ifndef QT_NO_ACCESSIBILITY*]
 void setAttribute ( Qt::WidgetAttribute attribute, bool on = true )
 void setAutoFillBackground ( bool enabled )
 void setBackgroundRole ( QPalette::ColorRole role )
