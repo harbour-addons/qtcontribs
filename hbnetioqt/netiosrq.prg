@@ -60,6 +60,12 @@ PROCEDURE Main( ... )
    LOCAL nPort := _NETIOMGM_PORT_DEF
    LOCAL cPassword := ""
 
+   AppSys()
+
+   IF Empty( hb_AParams() )
+      HB_Usage()
+      RETURN
+   ENDIF
    FOR EACH cParam IN { ... }
       DO CASE
       CASE Lower( Left( cParam, 6 ) ) == "-addr="
@@ -211,12 +217,12 @@ METHOD NetIOMgmtClient:create( cIP, nPort, cPassword )
                                             hb_ntos( int( nPort ) ) + "]"
 
       ::oDlg            := XbpDialog():new( , , { 20,20 }, { 870,300 } )
+      ::oDlg:icon       := ":/harbour.png"
       ::oDlg:title      := ::cTitle
       ::oDlg:taskList   := .T.
       ::oDlg:close      := {|| ::confirmExit() }
       ::oDlg:create()
       ::oDlg:drawingArea:setFontCompoundName( "10.Ariel" )
-      ::oDlg:setWindowIcon( ":/harbour.png" )
 
       ::buildToolBar()
 
@@ -748,13 +754,13 @@ METHOD NetIOMgmtClient:buildSystemTray()
    IF empty( ::oSys )
       ::oSys := QSystemTrayIcon( ::oDlg:oWidget )
       IF ( ::lSystemTrayAvailable := ::oSys:isSystemTrayAvailable() )
-         ::oSys:setIcon( ":/harbour.png" )
+         ::oSys:setIcon( QIcon( ":/harbour.png" ) )
          ::oSys:connect( "activated(QSystemTrayIcon::ActivationReason)", {|p| ::execEvent( "qSystemTrayIcon_activated", p ) } )
 
          ::oSysMenu := QMenu()
-         ::qAct1 := ::oSysMenu:addAction( ":/fullscreen.png", "&Show" )
+         ::qAct1 := ::oSysMenu:addAction( QIcon( ":/fullscreen.png" ), "&Show" )
          ::oSysMenu:addSeparator()
-         ::qAct2 := ::oSysMenu:addAction( ":/exit.png", "&Exit" )
+         ::qAct2 := ::oSysMenu:addAction( QIcon( ":/exit.png" ), "&Exit" )
 
          ::qAct1:connect( "triggered(bool)", {|| ::execEvent( "qSystemTrayIcon_show"  ) } )
          ::qAct2:connect( "triggered(bool)", {|| ::execEvent( "qSystemTrayIcon_close" ) } )
@@ -830,10 +836,10 @@ STATIC FUNCTION AppSys()
 
 /*----------------------------------------------------------------------*/
 
-STATIC PROCEDURE HB_Logo()
+PROCEDURE HB_Logo()
 
    MsgBox( "Harbour NETIO Server Management Console " + StrTran( Version(), "Harbour " ) + hb_eol() +;
-           "Copyright (c) 2009-2012, Pritpal Bedi, Viktor Szakats" + hb_eol() + ;
+           "Copyright (c) 2009-2014, Pritpal Bedi, Viktor Szakats" + hb_eol() + ;
            "http://harbour-project.org/" + hb_eol() +;
            hb_eol() )
 
@@ -859,7 +865,7 @@ STATIC PROCEDURE HB_Usage()
    AAdd( aMsg,               "  -help|--help       this help"                                                          )
 
    cMsg := ""
-   aeval( aMsg, {|e| cMsg += e + chr( 10 ) } )
+   aeval( aMsg, {|e| cMsg += iif( Empty( e ), "", e ) + chr( 10 ) } )
    MsgBox( cMsg )
 
    RETURN

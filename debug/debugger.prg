@@ -818,7 +818,7 @@ STATIC FUNCTION SendAreas()
    Select( nAlias )
    RETURN arr
 
-
+#if 0
 #if 1
 STATIC FUNCTION __colorize( cStr )
    RETURN cStr
@@ -828,7 +828,7 @@ STATIC FUNCTION __colorize( cStr, cColor, lBold )
    DEFAULT lBold  TO .F.
    RETURN "<font color=" + cColor + ">" + iif( lBold, "<b>", "" ) + cStr + iif( lBold, "</b>", "" ) + "</font>"
 #endif
-
+#endif
 
 STATIC FUNCTION SendRec( cAlias )
    LOCAL af, nCount, arr, i, j := 3

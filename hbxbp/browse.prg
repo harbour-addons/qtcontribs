@@ -667,7 +667,7 @@ METHOD XbpBrowse:buildLeftFreeze()
    ::oLeftFooterView:setHighlightSections( .F. )
    ::oLeftFooterView:setMinimumHeight( 20 )
    ::oLeftFooterView:setMaximumHeight( 20 )
-   ::oLeftFooterView:setResizeMode( QHeaderView_Fixed )
+   ::oLeftFooterView:setSectionResizeMode( QHeaderView_Fixed )
    ::oLeftFooterView:setFocusPolicy( Qt_NoFocus )
    //
    ::oLeftFooterModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 152, t, role, x, y ) } )
@@ -711,7 +711,7 @@ METHOD XbpBrowse:buildRightFreeze()
    ::oRightFooterView:setHighlightSections( .F. )
    ::oRightFooterView:setMinimumHeight( 20 )
    ::oRightFooterView:setMaximumHeight( 20 )
-   ::oRightFooterView:setResizeMode( QHeaderView_Fixed )
+   ::oRightFooterView:setSectionResizeMode( QHeaderView_Fixed )
    ::oRightFooterView:setFocusPolicy( Qt_NoFocus )
    //
    ::oRightFooterModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 162, t, role, x, y ) } )
@@ -778,7 +778,7 @@ METHOD XbpBrowse:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::oFooterView:setHighlightSections( .F. )
    ::oFooterView:setMinimumHeight( 20 )
    ::oFooterView:setMaximumHeight( 20 )
-   ::oFooterView:setResizeMode( QHeaderView_Fixed )
+   ::oFooterView:setSectionResizeMode( QHeaderView_Fixed )
    ::oFooterView:setFocusPolicy( Qt_NoFocus )
    //
    ::oFooterModel := HBQAbstractItemModel( {|t,role,x,y| ::supplyInfo( 142, t, role, x, y ) } )
@@ -1843,14 +1843,14 @@ METHOD XbpBrowse:doConfigure()
       ::setCellHeight( nMaxCellH )
 
       /* Implement Column Resizing Mode */
-      ::oHeaderView:setResizeMode( iif( ::lSizeCols, QHeaderView_Interactive, QHeaderView_Fixed ) )
-      ::oFooterView:setResizeMode( QHeaderView_Fixed )
+      ::oHeaderView:setSectionResizeMode( iif( ::lSizeCols, QHeaderView_Interactive, QHeaderView_Fixed ) )
+      ::oFooterView:setSectionResizeMode( QHeaderView_Fixed )
       //
-      ::oLeftHeaderView:setResizeMode( QHeaderView_Fixed )
-      ::oLeftFooterView:setResizeMode( QHeaderView_Fixed )
+      ::oLeftHeaderView:setSectionResizeMode( QHeaderView_Fixed )
+      ::oLeftFooterView:setSectionResizeMode( QHeaderView_Fixed )
       //
-      ::oRightHeaderView:setResizeMode( QHeaderView_Fixed )
-      ::oRightFooterView:setResizeMode( QHeaderView_Fixed )
+      ::oRightHeaderView:setSectionResizeMode( QHeaderView_Fixed )
+      ::oRightFooterView:setSectionResizeMode( QHeaderView_Fixed )
 
       /* Set column widths */
       oFontMetrics := QFontMetrics( ::oTableView:font() )

@@ -5,7 +5,7 @@
 /*
  * Harbour Qt wrapper generator control file
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://www.harbour-project.org
  *
  * See COPYING for licensing terms.
@@ -49,8 +49,8 @@ enum PaintDeviceMetric { PdmWidth, PdmHeight, PdmWidthMM, PdmHeightMM, ..., PdmP
 
 <PROTOS>
 bool acceptDrops () const
-// QString accessibleDescription () const
-// QString accessibleName () const
+QString accessibleDescription () const
+QString accessibleName () const
 QList<QAction *> actions () const
 void activateWindow ()
 void addAction ( QAction * action )
@@ -95,8 +95,8 @@ void grabMouse ()
 void grabMouse ( const QCursor & cursor )
 
 int grabShortcut ( const QKeySequence & key, Qt::ShortcutContext context = Qt::WindowShortcut )
-// QGraphicsProxyWidget * graphicsProxyWidget () const
-// bool hasEditFocus () const
+QGraphicsProxyWidget * graphicsProxyWidget () const
+//bool hasEditFocus () const
 bool hasFocus () const
 bool hasMouseTracking () const
 int height () const
@@ -176,8 +176,8 @@ void scroll ( int dx, int dy )
 void scroll ( int dx, int dy, const QRect & r )
 
 void setAcceptDrops ( bool on )
-// void setAccessibleDescription ( const QString & description )
-// void setAccessibleName ( const QString & name )
+void setAccessibleDescription ( const QString & description )
+void setAccessibleName ( const QString & name )
 void setAttribute ( Qt::WidgetAttribute attribute, bool on = true )
 void setAutoFillBackground ( bool enabled )
 void setBackgroundRole ( QPalette::ColorRole role )
@@ -189,7 +189,7 @@ void setContentsMargins ( int left, int top, int right, int bottom )
 void setContentsMargins ( const QMargins & margins )             [*V=0x040600*]
 void setContextMenuPolicy ( Qt::ContextMenuPolicy policy )
 void setCursor ( const QCursor & )
-// void setEditFocus ( bool enable )
+//void setEditFocus ( bool enable )
 void setFixedHeight ( int h )
 
 void setFixedSize ( const QSize & s )
@@ -259,7 +259,7 @@ void setWindowModality ( Qt::WindowModality windowModality )
 void setWindowOpacity ( qreal level )
 void setWindowRole ( const QString & role )
 void setWindowState ( Qt::WindowStates windowState )
-// void setWindowSurface ( QWindowSurface * surface )
+//void setWindowSurface ( QWindowSurface * surface )
 QSize size () const
 virtual QSize sizeHint () const
 QSize sizeIncrement () const
@@ -295,7 +295,7 @@ Qt::WindowModality windowModality () const
 qreal windowOpacity () const
 QString windowRole () const
 Qt::WindowStates windowState () const
-// QWindowSurface * windowSurface () const   (preliminary)
+//QWindowSurface * windowSurface () const   (preliminary)
 QString windowTitle () const
 Qt::WindowType windowType () const
 int x () const

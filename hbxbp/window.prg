@@ -267,9 +267,9 @@ CLASS XbpWindow  INHERIT  XbpPartHandler
    METHOD   postCreate()
 
    ACCESS   pParent                               INLINE iif( empty( ::oParent ), NIL, ::oParent:oWidget )
+   METHOD   setStyleSheet( cAttr, cCSS )
 
    PROTECTED:
-   METHOD   setStyleSheet( cAttr, cCSS )
    METHOD   getCSS( nAttr, xValue )
 
    ENDCLASS

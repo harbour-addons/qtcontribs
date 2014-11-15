@@ -16,6 +16,22 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-15 13:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r376)
+  * debug/debugger.prg
+    % Commented-out one not-used static function.
+
+  * hbnetioqt/netiosrq.prg
+    ! Fixed to be compiled and running with current QtContribs.
+
+  * hbqt/qtgui/qth/QWidget.qth
+    + Reintroduced some commented-out methods, not tested on Linux.
+
+  * hbxbp/browse.prg
+    ! Fixed depricated Qt methods.
+
+  * hbxbp/window.prg
+    ! Shifted method setStyleSheet from PRTECTED section to PUBLIC.
+
 2014-11-14 14:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r375)
   * hbide/edit.prg
     ! Fixed: CTRL and ALT parts of Qt_Key_Tab were not being distinguished.
