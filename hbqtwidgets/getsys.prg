@@ -1118,7 +1118,7 @@ METHOD HbQtGet:preValidate()
    IF HB_ISBLOCK( ::preBlock )
       lWhen := Eval( ::preBlock, Self )
 
-      IF ! lWhen
+      IF HB_ISLOGICAL( lWhen ) .AND. ! lWhen
          ::display()
       ENDIF
 

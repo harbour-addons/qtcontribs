@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-18 18:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r378)
+  * hbqtwidgets/dashboard.prg
+    + Introduced a hack where QMdiArea was not behaving properly.
+       May be regression of Qt version change, but not sure.
+  * hbqtwidgets/getsys.prg
+    ! Fixed: :preValidate() implementation was broken under certain circumstances.
+
 2014-11-15 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r377)
   * hbqt/qtgui/qth/QWidget.qth
     ! Guarded Accessibility methods against #ifndef QT_NO_ACCESSIBILITY.

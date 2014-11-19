@@ -700,6 +700,7 @@ METHOD HbQtDashboard:createObject( cName, cAttrbs )
          IF ! Empty( oDashObj := ::oActivePanel:addObject( aObject ) )
             Eval( ::objectsBlock, "Configure", iif( Empty( oDashObj:oHbQtWidget ), oDashObj:oWidget, oDashObj:oHbQtWidget ), aObject )
          ENDIF
+         Alert( "Created", , , 0.05 )         // a hack - need to be investigated deeper
       ENDIF
    ENDIF
 
@@ -714,6 +715,7 @@ METHOD HbQtDashboard:addObject( cType )         /* Click on Toolbar Icon */
          aObject := Eval( ::objectsBlock, "New", cType )
          IF HB_ISARRAY( aObject ) .AND. Len( aObject ) >= 5
             ::oActivePanel:addObject( aObject )    /* No Configuration Required */
+            Alert( "Created", , , 0.05 )         // a hack - need to be investigated deeper
          ENDIF
       ENDIF
    ENDIF
@@ -925,8 +927,8 @@ METHOD HbQtPanel:addObject( aObject )
    LOCAL oDashObj := HbQtDashboardObject():new( Self, aObject ):create()
 
    IF ! Empty( oDashObj )
-      ::oWidget:addSubWindow( oDashObj:subWindow() )
       ::oActiveWindow := oDashObj:subWindow()
+      ::oWidget:addSubWindow( ::oActiveWindow )
 
       ::hSubWindows[ oDashObj:title() ] := oDashObj
 
@@ -938,7 +940,6 @@ METHOD HbQtPanel:addObject( aObject )
                                                         RETURN .F.
                                                    } )
    ENDIF
-
    RETURN oDashObj
 
 
@@ -1678,7 +1679,7 @@ METHOD HbQtDashboardObject:buildBanner()
 
 
 METHOD HbQtDashboardObject:buildBrowser()
-   LOCAL oBrowse, aAttrb, xVrb, cType, nIndex
+   LOCAL oBrowse, aAttrb, xVrb, cType, nIndex, oCol
 
    IF ! HB_ISARRAY( ::aAttrbs ) .OR. Empty( ::aAttrbs )
       ::aAttrbs := {}
@@ -1703,7 +1704,10 @@ METHOD HbQtDashboardObject:buildBrowser()
       :phyPosBlock   := {| | oBrowse:cargo[ 2 ] * 100 / Len( oBrowse:cargo[ 1 ] ) }
 
       FOR EACH aAttrb IN ::attributes()
-         :AddColumn( HbQtColumnNew( aAttrb[ 2 ], {|| oBrowse:cargo[ 1 ][ oBrowse:cargo[ 2 ], __getColumnNumber( aAttrb[ 1 ] ) ] } ) )
+         :AddColumn( oCol := HbQtColumnNew( aAttrb[ 2 ], {|| oBrowse:cargo[ 1 ][ oBrowse:cargo[ 2 ], __getColumnNumber( aAttrb[ 1 ] ) ] } ) )
+         IF Len( aAttrb ) >= 6 .AND. HB_ISSTRING( aAttrb[ 6 ] )
+            oCol:picture := aAttrb[ 6 ]
+         ENDIF
       NEXT
       :Configure()
 
