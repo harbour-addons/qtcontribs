@@ -16,6 +16,20 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-19 13:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r379)
+  * hbqt/qtcore/qth/QCoreApplication.qth
+    ! Disabled: QApplication():quit() method. It does nothing now.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    ! Adopted: GtQTC code belonging to QApplication() initialization.
+       This is Przemek's tip, thanks.
+       It makes it possible to call HbQt components from GtQTC based 
+       console applications and vice-versa.
+
+    ; W A R N I N G - Incompatible. Any application using 
+                      QApplication():quit() should be fixed to use 
+                      other methods.
+
 2014-11-18 18:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r378)
   * hbqtwidgets/dashboard.prg
     + Introduced a hack where QMdiArea was not behaving properly.

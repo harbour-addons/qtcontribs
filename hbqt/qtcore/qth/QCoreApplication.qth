@@ -167,7 +167,9 @@ QString translate ( const char * context, const char * sourceText, const char * 
 </PROTOS>
 
 <SLOTS>
-void quit ()
+void quit (){
+   ;
+}
 </SLOTS>
 
 <SIGNALS>

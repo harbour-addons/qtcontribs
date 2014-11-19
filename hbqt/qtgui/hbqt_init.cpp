@@ -877,7 +877,7 @@ static void hbqt_registerCallbacks( void )
 
 /*----------------------------------------------------------------------*/
 
-static QApplication * s_app = NULL;
+static QApplication * s_qtapp = NULL;
 static HB_BOOL fIsQuitting = HB_FALSE;
 
 HB_FUNC_EXTERN( __HBQTCORE );
@@ -893,9 +893,50 @@ HB_EXTERN_END
 
 QApplication * __hbqtgui_app( void )
 {
-   return s_app;
+   return s_qtapp;
 }
 
+static void hbqt_lib_quit( void * cargo )
+{
+   HB_SYMBOL_UNUSED( cargo );
+
+   s_qtapp->quit();
+   delete s_qtapp;
+   s_qtapp = NULL;
+}
+
+static void hbqt_lib_init( void * cargo )
+{
+   HB_SYMBOL_UNUSED( cargo );
+
+   if( ! s_qtapp )
+   {
+      s_qtapp = qApp;
+      if( ! s_qtapp )
+      {
+         static char ** s_argv;
+         static int s_argc;
+
+         s_argc = hb_cmdargARGC();
+         s_argv = hb_cmdargARGV();
+
+         s_qtapp = new QApplication( s_argc, s_argv );
+         if( ! s_qtapp )
+            hb_errInternal( 10001, "QT initialization error.", NULL, NULL );
+
+         hb_vmAtQuit( hbqt_lib_quit, NULL );
+         hb_cmdargInit( s_argc, s_argv );
+      }
+   }
+   hbqt_registerCallbacks();
+
+#if QT_VERSION <= 0x040900
+   QTextCodec::setCodecForTr( QTextCodec::codecForName( "UTF-8" ) );
+   QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
+#endif
+}
+
+#if 0
 static void hbqt_lib_init( void * cargo )
 {
    static int s_argc;
@@ -924,13 +965,13 @@ static void hbqt_lib_init( void * cargo )
    s_argc = hb_cmdargARGC();
    s_argv = hb_cmdargARGV();
 
-   s_app = new QApplication( s_argc, s_argv );
+   s_qtapp = new QApplication( s_argc, s_argv );
 
-   if( ! s_app )
+   if( ! s_qtapp )
       hb_errInternal( 11001, "hbqt_lib_init(): HBQTGUI Initilization Error.", NULL, NULL );
 
    hb_cmdargInit( s_argc, s_argv );
-   HB_TRACE( HB_TR_DEBUG, ( "hbqt_lib_init %p", s_app ) );
+   HB_TRACE( HB_TR_DEBUG, ( "hbqt_lib_init %p", s_qtapp ) );
 
    hbqt_registerCallbacks();
 #if QT_VERSION <= 0x040900
@@ -938,6 +979,7 @@ static void hbqt_lib_init( void * cargo )
    QTextCodec::setCodecForCStrings( QTextCodec::codecForName( "UTF-8" ) );
 #endif
 }
+#endif
 
 static void hbqt_lib_exit( void * cargo )
 {
