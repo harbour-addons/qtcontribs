@@ -31,7 +31,7 @@ FUNCTION MyQtWidget()
    LOCAL oWnd
    LOCAL lDone := .f.
 
-   oWnd := QWidget()
+   oWnd := QPlainTextEdit()
    oWnd:show()
    oWnd:connect( QEvent_Close, {|| lDone := .t. } )
 

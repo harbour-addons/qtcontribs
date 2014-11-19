@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-19 15:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r380)
+  * hbqt/tests/qt_in_gt.prg
+    % Changed: QWidget() => QPlainTextEdit().
+       It makes the demo more comprehensive as user can do something in it.
+
+  + hbqt/tests/gt_in_qt.prg
+    + Added: another app to demonstrate how to execute a GT window
+       from within a HbQt window. Both windows remain active and can 
+       be switched back and forth. Note, only one GT window can remain 
+       active at a time in ST applications.
+
 2014-11-19 13:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r379)
   * hbqt/qtcore/qth/QCoreApplication.qth
     ! Disabled: QApplication():quit() method. It does nothing now.
