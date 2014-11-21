@@ -68,15 +68,8 @@ FUNCTION hbmk_plugin_qt( hbmk )
 
       cVer := qt_version_detect( hbmk, "uic", "UIC_BIN" )
       cVer := StrTran( cVer, hb_eol() )
-      IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )              /* To honor Qt 5.0.1 */
-         hbmk_OutStd( hbmk, ".............................." + cVer )
-         IF " 5." $ cVer
-            hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
-         ELSE
-            hb_SetEnv( "HB_QT_MAJOR_VER", "4" )
-         ENDIF
-      ENDIF
-
+      hbmk_OutStd( hbmk, ".............................." + cVer )
+      hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
 
       IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )
          cTmp1 := MemoRead( "ChangeLog" )
@@ -91,11 +84,7 @@ FUNCTION hbmk_plugin_qt( hbmk )
          cTmp += "#ifndef __HBQT_VERSION_CH" + hb_eol()
          cTmp += "   #define __HBQT_VERSION_CH" + hb_eol()
          cTmp += " " + hb_eol()
-         IF GetEnv( "HB_QT_MAJOR_VER" ) == "5"
-            cTmp += "#define __HB_QT_MAJOR_VERSION_5__        " + '"' + cVer + '"' + hb_eol()
-         ELSE
-            cTmp += "#define __HB_QT_MAJOR_VERSION_4__        " + '"' + cVer + '"' + hb_eol()
-         ENDIF
+         cTmp += "#define __HB_QT_MAJOR_VERSION_5__        " + '"' + cVer + '"' + hb_eol()
          cTmp += "#define __HBQT_REVISION__                " + '"' + cTmp1 + '"' + hb_eol()
          cTmp += " " + hb_eol()
          cTmp += "#endif" + hb_eol()

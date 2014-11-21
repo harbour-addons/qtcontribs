@@ -16,6 +16,7 @@ libs=../qtnetwork/hbqtnetwork.hbc
 {!HB_STATIC_QT&(allwin|os2)}libs=Qt5Bluetooth
 {!HB_STATIC_QT&(linux|beos|symbian)}libs=QtBluetooth
 {!HB_STATIC_QT&darwin}frameworks=QtBluetooth
+
 {HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}s${_HB_DYNSUFF}
 {HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 {HB_STATIC_QT&(allwin|linux|beos)}libs=QtBluetooth

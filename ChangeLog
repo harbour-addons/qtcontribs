@@ -16,6 +16,30 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-21 12:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r381)
+  * hbqt/qtbluetooth/hbqtbluetooth.hbc
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtdeclarative/hbqtdeclarative.hbc
+  * hbqt/qtdesigner/hbqtdesigner.hbc
+  * hbqt/qtgui/hbqtgui.hbc
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+  * hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbc
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+  * hbqt/qtopengl/hbqtopengl.hbc
+  * hbqt/qtpositioning/hbqtpositioning.hbc
+  * hbqt/qtqml/hbqtqml.hbc
+  * hbqt/qtquick/hbqtquick.hbc
+  * hbqt/qtscript/hbqtscript.hbc
+  * hbqt/qtsensors/hbqtsensors.hbc
+  * hbqt/qtsql/hbqtsql.hbc
+  * hbqt/qtsvg/hbqtsvg.hbc
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+  * hbqt/qtwebsockets/hbqtwebsockets.hbc
+  * hbqt/qtxml/hbqtxml.hbc
+  * hbqt/qzxing/hbqtzxing.hbc
+  * hbqt/hbmk2_qt.hb
+    % Removed: Qt4 build dependancies. HbQt no longer is supports it.
+
 2014-11-19 15:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r380)
   * hbqt/tests/qt_in_gt.prg
     % Changed: QWidget() => QPlainTextEdit().
