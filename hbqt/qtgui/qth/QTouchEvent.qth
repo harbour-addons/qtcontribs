@@ -1,0 +1,103 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QInputEvent
+QObject     = no
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QTouchEvent>
+#include <QtCore/QRectF>
+
+extern HB_EXPORT void hbqt_del_QRectF( void * pObj, int iFlags );
+
+/*
+ * QTouchEvent(QEvent::Type eventType, QTouchDevice * device = 0, Qt::KeyboardModifiers modifiers = Qt::NoModifier, Qt::TouchPointStates touchPointStates = 0, const QList<QTouchEvent::TouchPoint> & touchPoints = QList<QTouchEvent::TouchPoint> ())
+ * ~QTouchEvent()
+ */
+HB_FUNC( QT_QTOUCHEVENT )
+{
+   if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QTouchEvent( ( QEvent::Type ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+class TouchPoint
+</ENUMS>
+
+<PROTOS>
+QTouchDevice * device() const
+QObject * target() const
+Qt::TouchPointStates touchPointStates() const
+//const QList<QTouchEvent::TouchPoint> & touchPoints() const{
+const QList< void * > touchPoints(){
+   QTouchEvent * p = ( QTouchEvent * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      PHB_SYMB pClassFunc = hb_dynsymGetSymbol( "HBQTTOUCHCLASS" );
+      if( ! pClassFunc )
+      {
+         hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+         return;
+      }
+      PHB_DYNS s_dynsym_oRect = hb_dynsymGetCase( "ORECT" );
+
+      QList<PHB_ITEM> * qList = new QList< PHB_ITEM >;
+      QList<QTouchEvent::TouchPoint> qL = p->touchPoints();
+      int i;
+      for( i = 0; i < qL.size(); i++ )
+      {
+         hb_vmPushSymbol( pClassFunc );
+         hb_vmPushNil();
+         hb_vmDo( 0 );
+
+         if( HB_IS_OBJECT( hb_stackReturnItem() ) && hb_vmRequestQuery() == 0 )
+         {
+            QTouchEvent::TouchPoint touch( qL.at( i ) );
+
+            PHB_ITEM pObject = hb_stackReturnItem();
+            PHB_ITEM pRectF = hbqt_bindGetHbObject( NULL, new QRectF( touch.rect() ), "HB_QRECTF", hbqt_del_QRectF, HBQT_BIT_NONE | HBQT_BIT_OWNER );
+
+            hb_vmPushDynSym( s_dynsym_oRect );
+            hb_vmPush( pObject );
+            hb_vmSend( 0 );
+            if( hb_stackReturnItem() && hb_vmRequestQuery() == 0 )
+            {
+               hb_itemPutPtr( hb_stackReturnItem(), pRectF );
+               hb_stackPop();
+            }
+            qList->append( pObject );
+         }
+      }
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, qList, "HB_QLIST", hbqt_del_QList, HBQT_BIT_OWNER ) );
+   }
+}
+QWindow * window() const
+</PROTOS>
+
+<SLOTS>
+// just to add some declarations
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

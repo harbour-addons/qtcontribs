@@ -141,8 +141,19 @@ void HBQGraphicsItem::hbSetBlock( PHB_ITEM b )
    if( b )
    {
       block = hb_itemNew( b );
-      // hb_gcUnlock( block );
    }
+}
+
+QGraphicsPixmapItem * HBQGraphicsItem::toPixmapItem()
+{
+#if 0
+   QGraphicsPixmapItem * item = static_cast<QGraphicsPixmapItem *>( this );
+   return item;
+#else
+   QGraphicsPixmapItem * item = reinterpret_cast<QGraphicsPixmapItem *>( this );
+   return item;
+   //return reinterpret_cast<QGraphicsPixmapItem *>( this );
+#endif
 }
 
 void HBQGraphicsItem::hbSetLocked( bool locked )

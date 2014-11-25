@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+QObject     = Yes
+Version     = 0x050400
+</CLASS>
+
+
+<CODE>
+#include <QtWidgets/QOpenGLWidget>
+
+
+/*
+ * QOpenGLWidget(QWidget * parent = 0, Qt::WindowFlags f = 0)
+ * ~QOpenGLWidget()
+ */
+HB_FUNC( QT_QOPENGLWIDGET )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QOpenGLWidget( hbqt_par_QWidget( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QWidget" ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QOpenGLWidget( hbqt_par_QWidget( 1 ), ( Qt::WindowFlags ) hb_parni( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QOpenGLWidget() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QOpenGLContext * context() const
+GLuint defaultFramebufferObject() const
+void doneCurrent()
+QSurfaceFormat format() const
+QImage grabFramebuffer()
+bool isValid() const
+void makeCurrent()
+void setFormat(const QSurfaceFormat & format)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void aboutToCompose()
+void aboutToResize()
+void frameSwapped()
+void resized()
+</SIGNALS>

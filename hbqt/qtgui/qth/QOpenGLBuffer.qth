@@ -1,0 +1,80 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = no
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QOpenGLBuffer>
+
+
+/*
+ * QOpenGLBuffer()
+ * QOpenGLBuffer(QOpenGLBuffer::Type type)
+ * QOpenGLBuffer(const QOpenGLBuffer & other)
+ * ~QOpenGLBuffer()
+ */
+HB_FUNC( QT_QOPENGLBUFFER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOpenGLBuffer" ) )
+   {
+      __HB_RETPTRGC__( new QOpenGLBuffer( *hbqt_par_QOpenGLBuffer( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QOpenGLBuffer( ( QOpenGLBuffer::Type ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QOpenGLBuffer() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum Access { ReadOnly, WriteOnly, ReadWrite }
+enum RangeAccessFlag { RangeRead, RangeWrite, RangeInvalidate, RangeInvalidateBuffer, RangeFlushExplicit, RangeUnsynchronized }
+flags RangeAccessFlags
+enum Type { VertexBuffer, IndexBuffer, PixelPackBuffer, PixelUnpackBuffer }
+enum UsagePattern { StreamDraw, StreamRead, StreamCopy, StaticDraw, ..., DynamicCopy }
+</ENUMS>
+
+<PROTOS>
+void allocate(const void * data, int count)
+void allocate(int count)
+bool bind()
+GLuint bufferId() const
+bool create()
+void destroy()
+bool isCreated() const
+void * map(QOpenGLBuffer::Access access)
+//void * mapRange(int offset, int count, QOpenGLBuffer::RangeAccessFlags access)
+bool read(int offset, void * data, int count)
+void release()
+void setUsagePattern(QOpenGLBuffer::UsagePattern value)
+int size() const
+QOpenGLBuffer::Type type() const
+bool unmap()
+QOpenGLBuffer::UsagePattern usagePattern() const
+void write(int offset, const void * data, int count)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

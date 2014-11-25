@@ -51,6 +51,7 @@ visualizer.prg
 visualitems.prg
 previewer.prg
 properties.prg
+slidinglist.prg
 
 hbqtwidgets.qrc
 

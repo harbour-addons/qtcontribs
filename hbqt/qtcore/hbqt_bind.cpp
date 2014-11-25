@@ -829,6 +829,33 @@ PHB_ITEM hbqt_bindGetHbObjectByQtObject( void * qtObject )
    return pObject;
 }
 
+void hbqt_bindSwapQtObject( PHB_ITEM pSrcObject, PHB_ITEM pSwpObject )
+{
+   HB_TRACE( HB_TR_DEBUG, ( "hbqt_bindSwapQtObject()" ) );
+
+   void * hbSrcObject = hb_arrayId( pSrcObject );
+   void * hbSwpObject = hb_arrayId( pSwpObject );
+
+   if( hbSrcObject && hbSwpObject )
+   {
+      PHBQT_BIND bindSrc = hbqt_bindGetBindByHbObject( hbSrcObject );
+      if( bindSrc != NULL )
+      {
+         PHBQT_BIND bindSwp = hbqt_bindGetBindByHbObject( hbSwpObject );
+         if( bindSwp != NULL )
+         {
+            bindSrc->qtObject = bindSwp->qtObject;
+            bindSrc->pDelFunc = bindSwp->pDelFunc;
+            bindSrc->iFlags = bindSwp->iFlags;
+            bindSrc->fEventFilterInstalled = bindSwp->fEventFilterInstalled;
+
+            bindSwp->qtObject = NULL;
+            hbqt_bindRemoveBind( bindSwp );
+         }
+      }
+   }
+}
+
 void * hbqt_bindGetQtObject( PHB_ITEM pObject )
 {
    HB_TRACE( HB_TR_DEBUG, ( "hbqt_bindGetQtObject()" ) );

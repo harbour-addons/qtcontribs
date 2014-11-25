@@ -139,6 +139,7 @@ QInputDialog.qth
 QInputEvent.qth
 QInputMethod.qth
 QInputMethodEvent.qth
+QInputMethodQueryEvent.qth
 QIntValidator.qth
 QItemDelegate.qth
 # QItemEditorCreator.qth
@@ -167,6 +168,8 @@ QMessageBox.qth
 QMouseEvent.qth
 QMoveEvent.qth
 QMovie.qth
+QOpenGLBuffer.qth
+QOpenGLWidget.qth
 QPageLayout.qth
 QPageSetupDialog.qth
 QPageSize.qth
@@ -199,6 +202,8 @@ QRegion.qth
 QResizeEvent.qth
 QScrollArea.qth
 QScrollBar.qth
+QScrollEvent.qth
+QScrollPrepareEvent.qth
 QScrollerProperties.qth
 QScroller.qth
 QSessionManager.qth
@@ -288,6 +293,7 @@ QToolBar.qth
 QToolBox.qth
 QToolButton.qth
 QToolTip.qth
+QTouchEvent.qth
 QTransform.qth
 QTreeView.qth
 QTreeWidget.qth

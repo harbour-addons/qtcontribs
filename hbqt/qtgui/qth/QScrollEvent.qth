@@ -1,0 +1,56 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QEvent
+QObject     = No
+Version     = 0x040800
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QScrollEvent>
+
+
+/*
+ * QScrollEvent(const QPointF & contentPos, const QPointF & overshootDistance, ScrollState scrollState)
+ * ~QScrollEvent()
+ */
+HB_FUNC( QT_QSCROLLEVENT )
+{
+   if( hb_pcount() == 3 && hbqt_par_isDerivedFrom( 1, "QPointF" )  && hbqt_par_isDerivedFrom( 2, "QPointF" ) && HB_ISNUM( 3 ) )
+   {
+      __HB_RETPTRGC__( new QScrollEvent( *hbqt_par_QPointF( 1 ), *hbqt_par_QPointF( 2 ), ( QScrollEvent::ScrollState ) hb_parni( 3 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum ScrollState { ScrollStarted, ScrollUpdated, ScrollFinished }
+</ENUMS>
+
+<PROTOS>
+QPointF contentPos() const
+QPointF overshootDistance() const
+ScrollState scrollState() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1484,6 +1484,11 @@
 #define Qt_WA_X11NetWmWindowTypeCombo             115   // Adds _NET_WM_WINDOW_TYPE_COMBO to the window's _NET_WM_WINDOW_TYPE X11 window property. See http://standards.freedesktop.org/wm-spec/ for more details. This attribute has no effect on non-X11 platforms. Note: Qt automatically sets this attribute for the QComboBox pop-up.
 #define Qt_WA_X11NetWmWindowTypeDND               116   // Adds _NET_WM_WINDOW_TYPE_DND to the window's _NET_WM_WINDOW_TYPE X11 window property. See http://standards.freedesktop.org/wm-spec/ for more details. This attribute has no effect on non-X11 platforms. Note: Qt automatically sets this attribute on the feedback widget used during a drag.
 #define Qt_WA_MacFrameworkScaled                  117   // Enables resolution independence aware mode on Mac when using Carbon. This attribute has no effect on Cocoa. The attribute is off by default and can be enabled on a per-window basis.
+#define Qt_WA_AcceptTouchEvents                   121	  // Allows touch events (see QTouchEvent) to be sent to the widget. Must be set on all widgets that can handle touch events. Without this attribute set, events from a touch device will be sent as mouse events.
+#define Qt_WA_TouchPadAcceptSingleTouchEvents     123	  // Allows touchpad single touch events to be sent to the widget.
+#define Qt_WA_X11DoNotAcceptFocus                 126	  // Asks the window manager to not give focus to this top level window. This attribute has no effect on non-X11 platforms.
+#define Qt_WA_AlwaysStackOnTop                    128	  // Since Qt 5.4, this value forces QOpenGLWidget and QQuickWidget to be drawn last, on top of other widgets. Ignored for other type of widgets. Setting this attribute breaks the stacking order, but allows having a semi-transparent OpenGL widget with other widgets visible underneath. It is strongly recommended to call update() on the widget's top-level window after enabling or disabling this attribute.
+
 
 // enum #define Qt_WindowFrameSection
 // This enum is used to describe parts of a window frame. It is returned by QGraphicsWidget_windowFrameSectionAt() to describe what section of the window frame is under the mouse.
@@ -5035,6 +5040,37 @@
 #define Qt_PortraitOrientation                               0x00000001   // Portrait orientation, display height is greater than display width, rotated 90 degree clockwise relative to landscape.
 #define Qt_InvertedLandscapeOrientation                      0x00000008   // Inverted landscape orientation, rotated 180 degrees relative to landscape.
 #define Qt_InvertedPortraitOrientation                       0x00000004   // Inverted portrait orientation, rotated 180 degrees relative to portrait.
+
+#define QOpenGLBuffer_ReadOnly                               0x88B8   // The buffer will be mapped for reading only.
+#define QOpenGLBuffer_WriteOnly                              0x88B9   // The buffer will be mapped for writing only.
+#define QOpenGLBuffer_ReadWrite                              0x88BA   // The buffer will be mapped for reading and writing.
+                                                                      //
+#define QOpenGLBuffer_RangeRead                              0x0001   // The buffer will be mapped for reading.
+#define QOpenGLBuffer_RangeWrite                             0x0002   // The buffer will be mapped for writing.
+#define QOpenGLBuffer_RangeInvalidate                        0x0004   // Discard the previous contents of the specified range.
+#define QOpenGLBuffer_RangeInvalidateBuffer                  0x0008   // Discard the previous contents of the entire buffer.
+#define QOpenGLBuffer_RangeFlushExplicit                     0x0010   // Indicates that modifications are to be flushed explicitly via glFlushMappedBufferRange.
+#define QOpenGLBuffer_RangeUnsynchronized                    0x0020   // Indicates that pending operations should not be synchronized before returning from mapRange().
+                                                                      //
+#define QOpenGLBuffer_VertexBuffer                           0x8892   // Vertex buffer object for use when specifying vertex arrays.
+#define QOpenGLBuffer_IndexBuffer                            0x8893   // Index buffer object for use with glDrawElements().
+#define QOpenGLBuffer_PixelPackBuffer                        0x88EB   // Pixel pack buffer object for reading pixel data from the OpenGL server (for example, with glReadPixels()). Not supported under OpenGL/ES.
+#define QOpenGLBuffer_PixelUnpackBuffer                      0x88EC   // Pixel unpack buffer object for writing pixel data to the OpenGL server (for example, with glTexImage2D()). Not supported under OpenGL/ES.
+                                                                      //
+#define QOpenGLBuffer_StreamDraw                             0x88E0   // The data will be set once and used a few times for drawing operations. Under OpenGL/ES 1.1 this is identical to StaticDraw.
+#define QOpenGLBuffer_StreamRead                             0x88E1   // The data will be set once and used a few times for reading data back from the OpenGL server. Not supported under OpenGL/ES.
+#define QOpenGLBuffer_StreamCopy                             0x88E2   // The data will be set once and used a few times for reading data back from the OpenGL server for use in further drawing operations. Not supported under OpenGL/ES.
+#define QOpenGLBuffer_StaticDraw                             0x88E4   // The data will be set once and used many times for drawing operations.
+#define QOpenGLBuffer_StaticRead                             0x88E5   // The data will be set once and used many times for reading data back from the OpenGL server. Not supported under OpenGL/ES.
+#define QOpenGLBuffer_StaticCopy                             0x88E6   // The data will be set once and used many times for reading data back from the OpenGL server for use in further drawing operations. Not supported under OpenGL/ES.
+#define QOpenGLBuffer_DynamicDraw                            0x88E8   // The data will be modified repeatedly and used many times for drawing operations.
+#define QOpenGLBuffer_DynamicRead                            0x88E9   // The data will be modified repeatedly and used many times for reading data back from the OpenGL server. Not supported under OpenGL/ES.
+#define QOpenGLBuffer_DynamicCopy                            0x88EA   // The data will be modified repeatedly and used many times for reading data back from the OpenGL server for use in further drawing operations. Not supported under OpenGL/ES.
+
+#define QScrollEvent_ScrollStarted                           0        // Set for the first scroll event of a scroll activity.
+#define QScrollEvent_ScrollUpdated                           1        // Set for all but the first and the last scroll event of a scroll activity.
+#define QScrollEvent_ScrollFinished                          2        // Set for the last scroll event of a scroll activity.
+
 
 #endif
 

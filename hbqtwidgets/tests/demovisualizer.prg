@@ -19,6 +19,8 @@
 FUNCTION Main()
    LOCAL oWnd, oDa, oLay, oVisualizer, oRect
 
+   hbqt_errorsys()
+
    QApplication():setStyleSheet( __styleSheet() )
 
    oWnd := QMainWindow()
@@ -44,10 +46,6 @@ FUNCTION Main()
 
    oWnd:show()
 
-#ifndef __ANDROID__
-   oVisualizer:setSplitterSizes( 200, 200 )
-#endif
-
    QApplication():exec()
 
    HB_SYMBOL_UNUSED( oRect + oVisualizer )
@@ -59,7 +57,7 @@ STATIC FUNCTION __styleSheet()
    LOCAL aCSS := {}
 
    AAdd( aCSS, 'QListWidget{' )
-   AAdd( aCSS, '   background-color: lightgray;' )
+   AAdd( aCSS, '   background-color: rgb(210,210,210);' )
    AAdd( aCSS, '}' )
    AAdd( aCSS, 'QSplitter{' )
    AAdd( aCSS, '   min-height: '                 + __hbqtCssPX( 10 ) )
@@ -77,10 +75,11 @@ STATIC FUNCTION __styleSheet()
 FUNCTION buildVisualizer( oDA )
    LOCAL oVisualizer
 
-#ifdef __MOBILE__
-   __hbqGraphics_AllowResizeInPlace( .F. )
-#endif
    WITH OBJECT oVisualizer := HbQtVisualizer():new():create( oDA )
+#ifndef __MOBILE__
+      __hbqGraphics_AllowResizeInPlace( .F. )
+      :setSplitterSizes( 210, 210 )
+#endif
       :visualsListBlock    := {|| supplyVisualsList() }
       :visualsVerListBlock := {|cRefID| supplyVisualsVersions( cRefID ) }
       :visualsLoadBlock    := {|cRefID,nVer| supplyVisualsData( cRefID, nVer ) }
@@ -101,11 +100,12 @@ FUNCTION supplyVisualsData( cRefID, nVer )
 
 FUNCTION supplyVisualsList()
    LOCAL hVisuals, hList, hState, hStates, aMarker, aMarkers, hMarkers, hMarker, hField, hStruct
+   LOCAL nVer := 1
 
    hList := __hbqtStandardHash()
    //
-   hList[ "LA-FL-01" ] := __loadVisualDef( "LA-FL-01" )
-   hList[ "LA-FL-02" ] := __loadVisualDef( "LA-FL-02" )
+   hList[ "LA-FL-01" ] := __loadVisualDef( "LA-FL-01", nVer, .F. )
+   hList[ "LA-FL-02" ] := __loadVisualDef( "LA-FL-02", nVer, .F. )
 
    IF .T.
       hStates := __hbqtStandardHash()
@@ -216,7 +216,7 @@ FUNCTION supplyVisualsList()
    RETURN hVisuals
 
 
-STATIC FUNCTION __loadVisualDef( cVisual )
+STATIC FUNCTION __loadVisualDef( cVisual, nVer, lAll )
    LOCAL hVisual
 
    hVisual := __hbqtStandardHash()
@@ -224,23 +224,31 @@ STATIC FUNCTION __loadVisualDef( cVisual )
    SWITCH Upper( cVisual )
    CASE "LA-FL-01"
       hVisual[ "RefID"   ] := cVisual
-      hVisual[ "Version" ] := 1
+      hVisual[ "Version" ] := nVer
       hVisual[ "Label"   ] := "LA GF Systems"
       hVisual[ "Purpose" ] := "Displays placement of computer systems."
       hVisual[ "Icon"    ] := __hbqtLoadResourceAsBase64String( "cube-2.png" )
       hVisual[ "Group"   ] := ""
-      hVisual[ "Editable"] := .T.
-      hVisual[ "Markers" ] := __loadMarkersDef( hVisual[ "RefID" ] )
+      IF lAll
+         hVisual[ "Editable"] := .T.
+         hVisual[ "Markers" ] := __loadMarkersDef( hVisual[ "RefID" ] )
+         hVisual[ "ImageID" ] := "MP-LAFR01"
+         hVisual[ "Image"   ] := __hbqtLoadResourceAsBase64String( "harbour-b.png" )
+      ENDIF
       EXIT
    CASE "LA-FL-02"
       hVisual[ "RefID"   ] := cVisual
-      hVisual[ "Version" ] := 1
+      hVisual[ "Version" ] := nVer
       hVisual[ "Label"   ] := "LA FF Racks"
       hVisual[ "Purpose" ] := "Displays placement of floor racks."
       hVisual[ "Icon"    ] := __hbqtLoadResourceAsBase64String( "images.png" )
       hVisual[ "Group"   ] := ""
-      hVisual[ "Editable"] := .T.
-      hVisual[ "Markers" ] := __loadMarkersDef( hVisual[ "RefID" ] )
+      IF lAll
+         hVisual[ "Editable"] := .T.
+         hVisual[ "Markers" ] := __loadMarkersDef( hVisual[ "RefID" ] )
+         hVisual[ "ImageID" ] := "MP-LAFR02"
+         hVisual[ "Image"   ] := __hbqtLoadResourceAsBase64String( "harbour.png" )
+      ENDIF
       EXIT
    ENDSWITCH
 
@@ -376,10 +384,11 @@ STATIC FUNCTION __loadDataDef( cMarker )
 
 
 FUNCTION loadVisual( cRefID, nVer )
-   LOCAL oFileDlg, oList, cFile, cBuffer, hVisual, cVer
+   //LOCAL oFileDlg, oList, cFile, cBuffer, cVer
+   LOCAL hVisual
 
    DEFAULT nVer TO 1
-
+#if 0
    cVer := hb_ntos( nVer )
 
    IF Empty( cRefID )
@@ -406,12 +415,9 @@ FUNCTION loadVisual( cRefID, nVer )
    IF Empty( hVisual )
       hVisual := __hbqtStandardHash()
    ENDIF
-
-   hVisual[ "RefID"   ] := cRefID
-   hVisual[ "Version" ] := cVer
-   hVisual[ "ImageID" ] := iif( cRefID == "LA-FL-01", "MP-LAFR01", "MP-LAFR02" )
-   hVisual[ "Image"   ] := __hbqtLoadResourceAsBase64String( iif( cRefID == "LA-FL-01", "harbour-b.png", "harbour.png" ) )
-
+#else
+   hVisual := __loadVisualDef( cRefID, nVer, .T. )
+#endif
    RETURN hVisual
 
 

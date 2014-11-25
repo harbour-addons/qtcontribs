@@ -78,10 +78,314 @@
 #define HBQT_GRAPHICSITEM_DELETED                 2
 #define HBQT_GRAPHICSITEM_GEOMETRYCHANGED         3
 
+#define __graphicsScene_block__                   2001
 
-//#xTranslate HBQGraphicsItem( <x> )          =>    HBQGraphicsObject( <x> )
+//--------------------------------------------------------------------//
+//                            CLASS HbQtVisual
+//--------------------------------------------------------------------//
+
+CLASS HbQtVisual
+   DATA   oVisualizer
+
+   DATA   cRefID                                  INIT ""
+   DATA   nVersion                                INIT 1
+   DATA   cTitle                                  INIT ""
+   DATA   hVisual                                 INIT __hbqtStandardHash()
+   DATA   hList                                   INIT __hbqtStandardHash()
+   DATA   hMarkers                                INIT __hbqtStandardHash()
+   DATA   hItems                                  INIT __hbqtStandardHash()
+   DATA   hObjects                                INIT __hbqtStandardHash()
+   DATA   hData                                   INIT __hbqtStandardHash()
+   DATA   oPixmap
+   DATA   oIcon
+   DATA   oTransform
+   DATA   nVPos                                   INIT 0
+   DATA   nHPos                                   INIT 0
+   DATA   oScene
+   DATA   oBGItem
+   DATA   oHbQtVisualBackground
+
+   METHOD init( oVisualizer )
+   METHOD create( oVisualizer )
+
+   METHOD list( hList )                           SETGET
+   METHOD visual( hVisual )                       SETGET
+   METHOD markers( hMarkers )                     SETGET
+   METHOD title( cTitle )                         SETGET
+   METHOD refID( cRefID )                         SETGET
+   METHOD version( nVersion )                     SETGET
+   METHOD data( hData )                           SETGET
+   METHOD pixmap( oPixmap )                       SETGET
+   METHOD icon( oIcon )                           SETGET
+   METHOD scene( lPrepare )                       SETGET
+   METHOD backGround( lPrepare )                  SETGET
+   METHOD transform( oTransform )                 SETGET
+   METHOD vertPos( nVPos )                        SETGET
+   METHOD horzPos( nHPos )                        SETGET
+
+   METHOD setupMarkers( hMarkers, hMarkersList )
+
+   METHOD marker( cMarker )
+
+   METHOD objects( hObjects )                     SETGET
+   METHOD items( hItems )                         SETGET
+   METHOD item( cItem )
+   METHOD addItem( cItem, oHbQtVisualItem )
+   METHOD delItem( cItem )
+   METHOD hasItem( cItem )
+   METHOD clearItems()
+   METHOD getMarkerProperty( cMarker, cProperty, xDefault )
+
+   ENDCLASS
 
 
+METHOD HbQtVisual:init( oVisualizer )
+   ::oVisualizer := oVisualizer
+   RETURN Self
+
+
+METHOD HbQtVisual:create( oVisualizer )
+   DEFAULT oVisualizer TO ::oVisualizer
+   ::oVisualizer := oVisualizer
+   RETURN Self
+
+
+METHOD HbQtVisual:list( hList )
+   LOCAL oldList := hb_HClone( ::hList )
+   IF HB_ISHASH( hList )
+      ::hList := hList
+      IF hb_HHasKey( hList, "Label" )
+         ::title( hList[ "Label" ] )
+      ENDIF
+      IF hb_HHasKey( hList, "Icon" )
+         ::icon( __hbqtIconFromBuffer( hb_base64Decode( hList[ "Icon" ] ) ) )
+      ENDIF
+      ::scene( .T. )
+   ENDIF
+   RETURN oldList
+
+
+METHOD HbQtVisual:visual( hVisual )
+   LOCAL oldVisual := hb_HClone( ::hVisual )
+   IF HB_ISHASH( hVisual )
+      ::hVisual := hVisual
+      IF hb_HHasKey( hVisual, "Markers" )
+         ::markers( hVisual[ "Markers" ] )
+      ENDIF
+      IF hb_HHasKey( hVisual, "RefID" )
+         ::refId( hVisual[ "RefID" ] )
+      ENDIF
+      IF hb_HHasKey( hVisual, "Version" )
+         ::version( hVisual[ "Version" ] )
+      ENDIF
+      IF hb_HHasKey( hVisual, "Objects" )
+         ::objects( hVisual[ "Objects" ] )
+      ENDIF
+      IF hb_HHasKey( hVisual, "Image" )
+         ::pixmap( __hbqtLoadPixmapFromBuffer( hb_base64Decode( hVisual[ "Image" ] ) ) )
+         ::backGround( .T. )
+      ENDIF
+   ENDIF
+   RETURN oldVisual
+
+
+METHOD HbQtVisual:scene( lPrepare )
+   IF HB_ISLOGICAL( lPrepare ) .AND. lPrepare
+      WITH OBJECT ::oScene := HBQGraphicsScene()
+         :hbSetBlock( {|p, p1, p2| ::oVisualizer:execEvent( __graphicsScene_block__, p, p1, p2 ) } )
+         :setLeftMagnet( .T. )
+         :setTopMagnet( .T. )
+         :setRightMagnet( .T. )
+         :setBottomMagnet( .T. )
+         :setPageSize( QPrinter_Letter )
+         :setOrientation( QPrinter_Landscape )
+      ENDWITH
+   ENDIF
+   RETURN ::oScene
+
+
+METHOD HbQtVisual:backGround( lPrepare )
+   LOCAL oRectF
+
+   IF HB_ISLOGICAL( lPrepare ) .AND. lPrepare
+      oRectF := ::scene():sceneRect()
+      WITH OBJECT ::oBGItem := QGraphicsPixmapItem( ::pixmap():scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ) )
+         :setZValue( -5000 )
+         :setCacheMode( QGraphicsItem_ItemCoordinateCache )
+         :setFlags( QGraphicsItem_ItemClipsChildrenToShape )
+      ENDWITH
+      ::scene():addItem( ::oBGItem )
+   ENDIF
+   RETURN ::oHbQtVisualBackground
+
+
+METHOD HbQtVisual:transform( oTransform )
+   LOCAL oldTransform := ::oTransform
+   IF HB_ISOBJECT( oTransform )
+      ::oTransform := oTransform
+   ENDIF
+   RETURN oldTransform
+
+
+METHOD HbQtVisual:clearItems()
+   ::hItems := __hbqtStandardHash()
+   RETURN Self
+
+
+METHOD HbQtVisual:item( cItem )
+   IF hb_HHasKey( ::hItems, cItem )
+      RETURN ::hItems[ cItem ]
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtVisual:addItem( cItem, oHbQtVisualItem )
+   ::hItems[ cItem ] := oHbQtVisualItem
+   RETURN Self
+
+
+METHOD HbQtVisual:delItem( cItem )
+   IF hb_HHasKey( ::hItems, cItem )
+      hb_HDel( ::hItems, cItem )
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+METHOD HbQtVisual:hasItem( cItem )
+   IF hb_HHasKey( ::hItems, cItem )
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+METHOD HbQtVisual:items( hItems )
+   LOCAL oldItems := ::hItems
+   IF HB_ISHASH( hItems )
+      ::hItems := hb_HClone( hItems )
+   ENDIF
+   RETURN oldItems
+
+
+METHOD HbQtVisual:objects( hObjects )
+   LOCAL oldObjects := hb_HClone( ::hObjects )
+   IF HB_ISHASH( hObjects )
+      ::hObjects := hb_HClone( hObjects )
+   ENDIF
+   RETURN oldObjects
+
+
+METHOD HbQtVisual:marker( cMarker )
+   IF hb_HHasKey( ::hMarkers, cMarker )
+      RETURN ::hMarkers[ cMarker ]
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtVisual:getMarkerProperty( cMarker, cProperty, xDefault )
+   IF hb_HHasKey( ::hMarkers, cMarker ) .AND. hb_HHasKey( ::hMarkers[ cMarker ], cProperty )
+      RETURN ::hMarkers[ cMarker ][ cProperty ]
+   ENDIF
+   RETURN xDefault
+
+
+METHOD HbQtVisual:setupMarkers( hMarkers, hMarkersList )
+   LOCAL cMarkerID, hMarker
+   LOCAL hMrk := __hbqtStandardHash()
+
+   FOR EACH hMarker IN hMarkers
+      cMarkerID := hMarker:__enumKey()
+      IF hb_HHasKey( hMarkersList, cMarkerID )
+         hMrk[ cMarkerID ] := hb_HClone( hMarkersList[ cMarkerID ] )
+         IF hb_HHasKey( hMarker, "Data" )
+            hMrk[ cMarkerID ][ "Data" ] := hMarker[ "Data" ]
+         ENDIF
+      ELSE
+         hMrk[ cMarkerID ] := hMarker
+      ENDIF
+      IF hb_HHasKey( hMrk[ cMarkerID ], "Icon" )
+         hMrk[ cMarkerID ][ "Pixmap" ] := __hbqtLoadPixmapFromBuffer( hb_base64Decode( hMrk[ cMarkerID ][ "Icon" ] ) )
+      ENDIF
+   NEXT
+
+   ::markers( hMrk )
+   RETURN Self
+
+
+METHOD HbQtVisual:data( hData )
+   LOCAL oldData := ::hData
+   IF HB_ISHASH( hData )
+      ::hData := hData
+   ENDIF
+   RETURN oldData
+
+
+METHOD HbQtVisual:pixmap( oPixmap )
+   LOCAL oldPixmap := ::oPixmap
+   IF HB_ISOBJECT( oPixmap )
+      ::oPixmap := oPixmap
+   ENDIF
+   RETURN oldPixmap
+
+
+METHOD HbQtVisual:icon( oIcon )
+   LOCAL oldIcon := ::oIcon
+   IF HB_ISOBJECT( oIcon )
+      ::oIcon := oIcon
+   ENDIF
+   RETURN oldIcon
+
+
+METHOD HbQtVisual:markers( hMarkers )
+   LOCAL oldMarkers := ::hMarkers
+   IF HB_ISHASH( hMarkers )
+      ::hMarkers := hMarkers
+   ENDIF
+   RETURN oldMarkers
+
+
+METHOD HbQtVisual:title( cTitle )
+   LOCAL oldTitle := ::cTitle
+   IF HB_ISSTRING( cTitle )
+      ::cTitle := cTitle
+   ENDIF
+   RETURN oldTitle
+
+
+METHOD HbQtVisual:refID( cRefID )
+   LOCAL oldRefID := ::cRefID
+   IF HB_ISSTRING( cRefID )
+      ::cRefID := cRefID
+   ENDIF
+   RETURN oldRefID
+
+
+METHOD HbQtVisual:version( nVersion )
+   LOCAL oldVersion := ::nVersion
+   IF HB_ISNUMERIC( nVersion )
+      ::nVersion := nVersion
+   ENDIF
+   RETURN oldVersion
+
+
+METHOD HbQtVisual:vertPos( nVPos )
+   LOCAL oldVPos := ::nVPos
+   IF HB_ISNUMERIC( nVPos )
+      ::nVPos := nVPos
+   ENDIF
+   RETURN oldVPos
+
+
+METHOD HbQtVisual:horzPos( nHPos )
+   LOCAL oldHPos := ::nHPos
+   IF HB_ISNUMERIC( nHPos )
+      ::nHPos := nHPos
+   ENDIF
+   RETURN oldHPos
+
+//--------------------------------------------------------------------//
+//                          CLASS HbQtVisualItem
+//--------------------------------------------------------------------//
 
 CLASS HbQtVisualItem
 
@@ -219,6 +523,7 @@ CLASS HbQtVisualItem
    METHOD actionsBlock( bBlock )                  SETGET
 
    METHOD getProperties()
+   //METHOD setPixmapEx( oPixmap )
 
    DATA   hData                                   INIT __hbqtStandardHash()
    METHOD setData( hData )
@@ -275,6 +580,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight )
    CASE "Marker"
    CASE "Image"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_PICTURE )
+      ::oWidget:setCacheMode( QGraphicsItem_ItemCoordinateCache )
       EXIT
    CASE "Chart"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_CHART )
@@ -346,6 +652,8 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight )
    IF ! empty( ::aPos )
       ::setPos( ::aPos[ 1 ], ::aPos[ 2 ] )
    ENDIF
+
+   ::oWidget:setCacheMode( QGraphicsItem_ItemCoordinateCache )
    RETURN Self
 
 
@@ -848,6 +1156,19 @@ METHOD HbQtVisualItem:setGradient( ... )
    RETURN ::qGBrush
 
 
+#if 0
+METHOD HbQtVisualItem:setPixmap( oPixmap )
+   LOCAL oOldPixmap
+   IF ::cType == "Image" .OR. ::cType == "Marker"
+      WITH OBJECT ::oWidget:toPixmapItem()
+         oOldPixmap := :pixmap()
+         :setPixmap( oPixmap )
+         :setCacheMode( QGraphicsItem_ItemCoordinateCache )
+      ENDWITH
+   ENDIF
+   RETURN oOldPixmap
+#else
+
 METHOD HbQtVisualItem:setPixmap( ... )
    LOCAL a_:= hb_aParams()
    SWITCH Len( a_ )
@@ -866,7 +1187,7 @@ METHOD HbQtVisualItem:setPixmap( ... )
       EXIT
    ENDSWITCH
    RETURN ::qPixmap
-
+#endif
 
 METHOD HbQtVisualItem:setBorderWidth( ... )
    LOCAL a_:= hb_aParams()
@@ -1019,7 +1340,7 @@ METHOD HbQtVisualItem:setLineType( ... )
 
 METHOD HbQtVisualItem:drawSelection( oPainter, oRect )
    LOCAL a, p, lt, rt, lb, rb, nW, nH
-   LOCAL drawSelectionBorder := .t.
+   LOCAL drawSelectionBorder := .T.
    LOCAL iResizeHandle := 2 / UNIT
 
    oPainter:save()
@@ -1034,8 +1355,9 @@ METHOD HbQtVisualItem:drawSelection( oPainter, oRect )
          p:setStyle( Qt_DashLine )
          p:setBrush( a )
          oPainter:setPen( p )
-         oPainter:drawRect( oRect )
+         oPainter:drawRect( oRect:adjusted( 0, 0, -1, -1 ) )
       ENDIF
+      // Corners
       lt := QPainterPath()
       lt:moveTo( 0,0 )
       lt:lineTo( 0, iResizeHandle )
@@ -1827,6 +2149,13 @@ METHOD HbQtVisualItemDraw:barcode( oPainter, oRectF, oLineColor, oBGColor, cText
 
 
 METHOD HbQtVisualItemDraw:image( oPainter, oRectF, oPixmap )
+#if 1
+   IF oPixmap:isNull()
+      oPainter:drawRect( oRectF )
+   ELSE
+      oPainter:drawPixmap( oRectF, oPixmap:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ), oRectF )
+   ENDIF
+#else
    LOCAL image, rc, img, point, pen, cx, cy, cw, ch
    LOCAL paintType    := HBQT_GRAPHICSITEM_RESIZE_PICTURE_TO_ITEM_KEEP_ASPECT_RATIO
    LOCAL borderWidth  := 0
@@ -1886,6 +2215,7 @@ METHOD HbQtVisualItemDraw:image( oPainter, oRectF, oPixmap )
       oPainter:drawRect( rc:x() + borderWidth / 2, rc:y() + borderWidth / 2, ;
                          rc:width() - borderWidth, rc:height() - borderWidth )
    ENDIF
+#endif
    RETURN Self
 
 

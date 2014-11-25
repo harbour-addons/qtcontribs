@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QEvent
+QObject     = No
+Version     = 0x040800
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QScrollPrepareEvent>
+
+
+/*
+ * QScrollPrepareEvent(const QPointF & startPos)
+ * ~QScrollPrepareEvent()
+ */
+HB_FUNC( QT_QSCROLLPREPAREEVENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPointF" ) )
+   {
+      __HB_RETPTRGC__( new QScrollPrepareEvent( *hbqt_par_QPointF( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPointF contentPos() const
+QRectF contentPosRange() const
+void setContentPos(const QPointF & pos)
+void setContentPosRange(const QRectF & rect)
+void setViewportSize(const QSizeF & size)
+QPointF startPos() const
+QSizeF viewportSize() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

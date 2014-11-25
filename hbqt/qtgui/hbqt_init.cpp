@@ -629,9 +629,6 @@ HB_FUNC_EXTERN( HB_QTABLEWIDGETITEM );
 HB_FUNC_EXTERN( HB_QTREEWIDGETITEM );
 HB_FUNC_EXTERN( HB_QSCROLLER );
 HB_FUNC_EXTERN( HB_QSCROLLERPROPERTIES );
-
-/*----------------------------------------------------------------------*/
-
 HB_FUNC_EXTERN( HB_QACTIONEVENT );
 HB_FUNC_EXTERN( HB_QCONTEXTMENUEVENT );
 HB_FUNC_EXTERN( HB_QDRAGENTEREVENT );
@@ -640,9 +637,7 @@ HB_FUNC_EXTERN( HB_QDRAGMOVEEVENT );
 HB_FUNC_EXTERN( HB_QDROPEVENT );
 HB_FUNC_EXTERN( HB_QEVENT );
 HB_FUNC_EXTERN( HB_QFOCUSEVENT );
-#if QT_VERSION >= 0x040600
 HB_FUNC_EXTERN( HB_QGESTUREEVENT );
-#endif
 HB_FUNC_EXTERN( HB_QGRAPHICSSCENECONTEXTMENUEVENT );
 HB_FUNC_EXTERN( HB_QGRAPHICSSCENEDRAGDROPEVENT );
 HB_FUNC_EXTERN( HB_QGRAPHICSSCENEHOVEREVENT );
@@ -674,9 +669,7 @@ void _hbqtgui_force_link_for_event( void )
    HB_FUNC_EXEC( HB_QDROPEVENT );
    HB_FUNC_EXEC( HB_QEVENT );
    HB_FUNC_EXEC( HB_QFOCUSEVENT );
-#if QT_VERSION >= 0x040600
    HB_FUNC_EXEC( HB_QGESTUREEVENT );
-#endif
    HB_FUNC_EXEC( HB_QGRAPHICSSCENECONTEXTMENUEVENT );
    HB_FUNC_EXEC( HB_QGRAPHICSSCENEDRAGDROPEVENT );
    HB_FUNC_EXEC( HB_QGRAPHICSSCENEHOVEREVENT );
@@ -697,7 +690,6 @@ void _hbqtgui_force_link_for_event( void )
    HB_FUNC_EXEC( HB_QSHORTCUTEVENT );
    HB_FUNC_EXEC( HB_QWHEELEVENT );
    HB_FUNC_EXEC( HB_QWINDOWSTATECHANGEEVENT );
-
    HB_FUNC_EXEC( HB_QABSTRACTBUTTON );
    HB_FUNC_EXEC( HB_QACTION );
    HB_FUNC_EXEC( HB_QMDISUBWINDOW );
@@ -870,8 +862,26 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::UngrabMouse                       , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::GrabKeyboard                      , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::UngrabKeyboard                    , "hb_QEvent"                         );
-#if QT_VERSION >= 0x040600
    hbqt_events_register_createobj( QEvent::Gesture                           , "hb_QGestureEvent"                  );
+   hbqt_events_register_createobj( QEvent::GestureOverride                   , "hb_QGestureEvent"                  );
+
+   hbqt_events_register_createobj( QEvent::TouchBegin                        , "hb_QTouchEvent"                    );
+   hbqt_events_register_createobj( QEvent::TouchUpdate                       , "hb_QTouchEvent"                    );
+   hbqt_events_register_createobj( QEvent::TouchEnd                          , "hb_QTouchEvent"                    );
+   hbqt_events_register_createobj( QEvent::TouchCancel                       , "hb_QTouchEvent"                    );
+   hbqt_events_register_createobj( QEvent::ScrollPrepare                     , "hb_QScrollPrepareEvent"            );
+   hbqt_events_register_createobj( QEvent::Scroll                            , "hb_QScrollEvent"                   );
+   hbqt_events_register_createobj( QEvent::InputMethodQuery                  , "hb_QInputMethodQueryEvent"         );
+
+   hbqt_events_register_createobj( QEvent::RequestSoftwareInputPanel         , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::CloseSoftwareInputPanel           , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::WinIdChange                       , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::Expose                            , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::PlatformPanel                     , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::ApplicationStateChange            , "hb_QEvent"                         );
+
+#if 0
+#define QEvent_OrientationChange                  208      // The screens orientation has changes (QScreenOrientationChangeEvent)
 #endif
 }
 

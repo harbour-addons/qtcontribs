@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-14 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -499,6 +499,7 @@ void HBQGraphicsScene::keyPressEvent( QKeyEvent * keyEvent )
 
 void HBQGraphicsScene::drawBackground( QPainter * painter, const QRectF & rect )
 {
+#if 0
    if( block && hb_vmRequestReenter() )
    {
       PHB_ITEM p1 = hb_itemPutNI( NULL, 21201 );
@@ -511,6 +512,7 @@ void HBQGraphicsScene::drawBackground( QPainter * painter, const QRectF & rect )
 
       hb_vmRequestRestore();
    }
+#endif
    QGraphicsScene::drawBackground( painter, rect );
 }
 

@@ -141,15 +141,17 @@ STATIC hIDs := {=>}
 
 CLASS HbQtVisualizer
 
-   METHOD init( oParent )
-   METHOD create( oParent )
+   METHOD init( oParent, oAppWidget )
+   METHOD create( oParent, oAppWidget )
    METHOD destroy()                               VIRTUAL
+
+   METHOD setAppWidget( oWidget )
 
    METHOD setSplitterSizes( nFrameLeftWidth, nFrameRightWidth )
    METHOD setOption( nOption, xValue )
 
    ACCESS toolbarTop()                            INLINE ::oToolbar
-   ACCESS toolbarObjects()                        INLINE ::oToolbarObjects
+   ACCESS toolbarObjects()                        INLINE ::oObjectsToolbar
 
    METHOD visualsListBlock( bBlock )              SETGET
    METHOD visualsLoadBlock( bBlock )              SETGET
@@ -165,44 +167,56 @@ CLASS HbQtVisualizer
 
    DATA   oWidget
    DATA   oParent
+   DATA   oAppWidget
+   DATA   oOpenGLViewport
+   DATA   oSplitter
+   DATA   oStatusBar
+   DATA   oSlidingsManager
+   DATA   oSlidingListRight
+   DATA   oSlidingListLeft
+
    DATA   oToolbar
-   DATA   oToolbarObjects
-   DATA   oToolbarStates
+   DATA   oObjectsToolbar
+   DATA   oStatesToolbar
+
    DATA   oHbQtPreview
+
    DATA   oDataWidget
    DATA   oDataManager
    DATA   oDataSheet
-   DATA   oSplitter
+
    DATA   oPropWidget
    DATA   oPropManager
-   DATA   oSheetGraphicObjects
-   DATA   oTreeVisuals
-   DATA   oTreeNavigator
-   DATA   oTreeData
+   DATA   oPropertySheet
+
+   DATA   oVisualsTree
+   DATA   oNavgtTree
+   DATA   oDataTree
    DATA   oMarkersTree
-   DATA   oCurrentMarkersItem
+
    DATA   oGraphicsView
-   DATA   oScene
-   DATA   oStatusBar
+   DATA   oCurScene
+
+   DATA   oCurHbQtVisual
+
+   DATA   oCurrentMarkersItem
    DATA   oCurGraphicsItem
-   DATA   oHbQtVisualBackground
-   DATA   oPixmapBackground
 
    DATA   cSaved                                  INIT ""
-   DATA   cCurrentVisual                          INIT ""
    DATA   cCurrentState
    DATA   cCurrentMarkerV
+   DATA   cNavigtTreePage                         INIT "Objects"
 
    DATA   nScreenDpiX                             INIT 96
    DATA   nScreenDpiY                             INIT 96
    DATA   nResizerSteps                           INIT 10
    DATA   nMoverSteps                             INIT 10
+   DATA   nFrameLeftWidth                         INIT 100
+   DATA   nFrameRightWidth                        INIT 100
 
    DATA   lNew                                    INIT .T.
    DATA   lShowGrid                               INIT .F.
    DATA   lDoubleClickZoom                        INIT .F.
-   DATA   lResizerOn                              INIT .F.
-   DATA   lMovingOn                               INIT .F.
    DATA   lEditingOn                              INIT .F.
    DATA   lResizeInPlace                          INIT .T.
    DATA   lShowInitialized                        INIT .F.
@@ -213,24 +227,19 @@ CLASS HbQtVisualizer
    DATA   bVisualsVerListBlock
 
    DATA   hVisualsTree                            INIT __hbqtStandardHash()
-   DATA   hItems                                  INIT __hbqtStandardHash()
-   DATA   hNavigatorTree                          INIT __hbqtStandardHash()
+   DATA   hNavgtTreeItems                         INIT __hbqtStandardHash()
    DATA   hVisualsList                            INIT __hbqtStandardHash()
    DATA   hDataStruct                             INIT __hbqtStandardHash()
    DATA   hVisualsStates                          INIT __hbqtStandardHash()
    DATA   hMarkers                                INIT __hbqtStandardHash()
-
+   DATA   hHbQtVisuals                            INIT __hbqtStandardHash()
 
    DATA   aStatusPnls                             INIT {}
    DATA   aPages                                  INIT {}
    DATA   aSources                                INIT {}
    DATA   aObjects                                INIT {}
    DATA   aRptPages                               INIT {}
-   DATA   aRptSources                             INIT {}
    DATA   aRptObjects                             INIT {}
-
-   DATA   cCurrentVisualTitle                     INIT "Untitled"
-   DATA   cNavigtTreePage                         INIT "Objects"
 
    METHOD execEvent( nEvent, p, p1, p2 )
 
@@ -239,25 +248,23 @@ CLASS HbQtVisualizer
    METHOD buildMarkersTree()
    METHOD buildStatusBar()
    METHOD buildComponents()
-   METHOD buildScene()
+   METHOD activateScene()
    METHOD buildPropertySheets()
    METHOD buildDataSheets()
    METHOD showStatus( nPanel, cMsg )
    METHOD addObject( cType, oPos, oGeo )
    METHOD placeObject( nSceneX, nSceneY )
-   METHOD populateVisual( xData )
+   METHOD populateVisual()
    METHOD getNextID( cType )
    METHOD getImageOfType( cType )
    METHOD updateObjectsTree( cType, cParent, cName, cSubType, oPixmap )
    METHOD contextMenuScene( nX, nY )
-   METHOD addSource( cAlias, aStruct )
    METHOD clear()
-   METHOD buildVisualStream()
-   METHOD toString()
+   METHOD buildVisualStream( oHbQtVisual )
+   METHOD toString( oHbQtVisual )
    METHOD parseBuffer( cBuffer )
    METHOD presentBlankVisual()
    METHOD printVisual( oPrinter )
-   METHOD printPreview( oPrinter )
    METHOD zoom( nMode )
    METHOD resizeMarker( nDirection )
    METHOD moveMarker( nDirection )
@@ -274,7 +281,6 @@ CLASS HbQtVisualizer
    METHOD setMarker( oGraphicsItem )
    METHOD clearMarker()
 
-   METHOD setBackgroundImage( oPixmap )           INLINE ::oPixmapBackground := oPixmap
    ACCESS splitter()                              INLINE ::oSplitter
 
    METHOD dataStructureProperties()
@@ -284,37 +290,42 @@ CLASS HbQtVisualizer
    ACCESS propertiesManager()                     INLINE ::oPropManager
    METHOD populatePropertySheet( oHbQtVisualItem )
    METHOD visualPropertyChanged( cSheet, cProperty, xValue )
-   METHOD saveVisual( cVisualID )
+   METHOD saveVisual( oHbQtVisual )
    METHOD show()
    METHOD populateVisualsList( hVisualsList )
-   METHOD loadVisual( cRefID )
+   METHOD loadVisual( cRefID, nVer )
    METHOD buildStates( hStates )
    METHOD buildStyleSheet()
    METHOD switchItemOptions( lOnOff )
    METHOD updateItemStatus( oHbQtVisualItem )
 
+   FRIEND CLASS HbQtVisual
    ENDCLASS
 
 
-METHOD HbQtVisualizer:init( oParent )
-   DEFAULT oParent TO ::oParent
+METHOD HbQtVisualizer:init( oParent, oAppWidget )
+
    ::oParent := oParent
+   ::oAppWidget := oAppWidget
 
    hIDs := __hbqtStandardHash()
 
    RETURN Self
 
 
-METHOD HbQtVisualizer:create( oParent )
+METHOD HbQtVisualizer:create( oParent, oAppWidget )
    LOCAL oLayout, i
 
    DEFAULT oParent TO ::oParent
+   DEFAULT oAppWidget TO ::oAppWidget
    ::oParent := oParent
+   ::oAppWidget := oAppWidget
 
    ::oUI := hbqtui_visualizer( oParent )
-   ::oWidget := ::oUI:oWidget
-
-   ::oWidget:setStyleSheet( ::buildStyleSheet() )
+   WITH OBJECT ::oWidget := ::oUI:oWidget
+      :setStyleSheet( ::buildStyleSheet() )
+      :setContentsMargins( 1,0,1,0 )
+   ENDWITH
 
    IF HB_ISOBJECT( oParent )
       IF Empty( oLayout := oParent:layout() )
@@ -334,10 +345,45 @@ METHOD HbQtVisualizer:create( oParent )
       ENDIF
    ENDIF
 
+   DEFAULT ::oAppWidget TO ::oUI:oWidget
+
+   WITH OBJECT ::oSlidingListRight := HbQtSlidingList():new( ::oAppWidget )
+      :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
+      :setDuration( 70 )
+      :create()
+      :addItem( "b", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "a", { "k Visual"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "P", { "Right Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Right" ) } )
+      :addItem( "q", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "y", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "t", { "hgf Visual"  , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "r", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "e", QPlainTextEdit(), {|| NIL  } )
+   ENDWITH
+
+   WITH OBJECT ::oSlidingListLeft := HbQtSlidingList():new( ::oAppWidget )
+      :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ )
+      :setDuration( 70 )
+      :create()
+      :addItem( "P", { "Left Visual" , QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Left" )  } )
+      :addItem( "q", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "s", { "hh Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "c", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "f", { "dd Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "h", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "j", { "k Visual"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "k", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+   ENDWITH
+
+   WITH OBJECT ::oSlidingsManager := HbQtSlidingsManager():new( ::oWidget ):create()
+      :addSliding( "PrintList" , {|| ::oSlidingListRight:activate() } )
+      :addSliding( "PrintListL", {|| ::oSlidingListLeft:activate() } )
+      :activateSlidings( "PrintListL", "PrintList" )
+   ENDWITH
+
    ::buildToolbar( ::oUI:hLayToolbarVisualizer )
    ::buildToolbarObjects( ::oUI:vLayToolbarVisualizer )
    ::buildComponents()
-   ::buildMarkersTree()
    ::buildPropertySheets()
 
    WITH OBJECT ::oUI:labelTopLeft
@@ -357,8 +403,6 @@ METHOD HbQtVisualizer:create( oParent )
    ::oUI:toolBoxLeft:setCurrentIndex( 0 )
    ::oUI:toolBoxRight:setCurrentIndex( 1 )
 
-   ::switchItemOptions( .F. )
-
    ::oUI:stackBase:setCurrentIndex( 1 )
    ::oUI:stackMarkers:setCurrentIndex( 1 )
    ::oUI:stackData:setCurrentIndex( 1 )
@@ -366,12 +410,7 @@ METHOD HbQtVisualizer:create( oParent )
    WITH OBJECT ::oHbQtPreview := HbQtPrintPreview():new():create( ::oUI:vLayPreviewer )
       :previewBlock := {|oPrinter| ::printVisual( oPrinter ) }
       :exitBlock    := {|| ::oUI:stackBase:setCurrentIndex( 1 ) }
-      :refreshPreview()
    ENDWITH
-
-   ::oWidget:connect( QEvent_Show, {|| ::show() } )
-
-   __hbqGraphics_AllowMovement( ::lEditingOn )
 
    FOR i := 1 TO 10
       ::oUI:comboResizerSteps:addItem( hb_ntos( i ) )
@@ -385,34 +424,48 @@ METHOD HbQtVisualizer:create( oParent )
    ::oUI:comboMoverSteps:setCurrentIndex( 9 )
    ::oUI:comboMoverSteps:connect( "currentIndexChanged(int)", {|nIndex| ::nMoverSteps := nIndex+1 } )
 
-   ::manageEditing( .F. )
+   ::oWidget:connect( QEvent_Show, {|| ::show() } )
+
    RETURN Self
 
 
 METHOD HbQtVisualizer:buildComponents()
 
-   ::oToolbar:setEnabled( "Separator_1", .F. )
-
    ::oSplitter := ::oUI:splitterViews
+
    WITH OBJECT ::oGraphicsView := ::oUI:graphicsView
-      //
+      :grabGesture( Qt_PinchGesture )
+      :connect( QEvent_Gesture, ;
+         {|oEvent|
+            LOCAL nChangeFlags, nScale
+            LOCAL oGesture := oEvent:gesture( Qt_PinchGesture )
+            IF ! Empty( oGesture )
+               oGesture := oGesture:__toPinchGesture()
+               nChangeFlags := oGesture:changeFlags()
+               IF hb_bitAnd( nChangeFlags, QPinchGesture_ScaleFactorChanged ) != 0
+                  nScale := oGesture:scaleFactor()
+                  IF nScale < 2 .AND. nScale > 0.5
+                     ::oGraphicsView:scale( nScale, nScale )
+                  ENDIF
+               ENDIF
+               RETURN .T.
+            ENDIF
+            RETURN .T.
+         } )
    ENDWITH
-
-   ::buildScene()
-
    WITH OBJECT ::oPropWidget := ::oUI:pageProperties
       //
    ENDWITH
 
-   WITH OBJECT ::oTreeNavigator := ::oUI:treeNavigator
-      __hbqtApplyStandardScroller( ::oTreeNavigator )
+   WITH OBJECT ::oNavgtTree := ::oUI:treeNavigator
+      __hbqtApplyStandardScroller( ::oNavgtTree )
       :connect( "itemClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeObjects_clicked__, p, p1 ) } )
    ENDWITH
-   WITH OBJECT ::oTreeData := ::oUI:treeWidgetData
-      __hbqtApplyStandardScroller( ::oTreeData )
+   WITH OBJECT ::oDataTree := ::oUI:treeWidgetData
+      __hbqtApplyStandardScroller( ::oDataTree )
    ENDWITH
-   WITH OBJECT ::oTreeVisuals := ::oUI:treeVisuals
-      __hbqtApplyStandardScroller( ::oTreeVisuals )
+   WITH OBJECT ::oVisualsTree := ::oUI:treeVisuals
+      __hbqtApplyStandardScroller( ::oVisualsTree )
    ENDWITH
    WITH OBJECT ::oMarkersTree := ::oUI:treeMarkers
       __hbqtApplyStandardScroller( ::oMarkersTree )
@@ -479,31 +532,43 @@ METHOD HbQtVisualizer:buildComponents()
    RETURN Self
 
 
-METHOD HbQtVisualizer:buildScene()
-   IF Empty( ::oScene )
-      ::oScene := HBQGraphicsScene()
+METHOD HbQtVisualizer:setAppWidget( oWidget )
+   IF HB_ISOBJECT( oWidget )
+      ::oAppWidget := oWidget
    ENDIF
-   WITH OBJECT ::oScene
-      :hbSetBlock( {|p, p1, p2| ::execEvent( __graphicsScene_block__, p, p1, p2 ) } )
-      :setLeftMagnet( .T. )
-      :setTopMagnet( .T. )
-      :setRightMagnet( .T. )
-      :setBottomMagnet( .T. )
-      :setPageSize( QPrinter_Letter )
-   ENDWITH
-   ::oGraphicsView:setScene( ::oScene )
+   RETURN Self
+
+
+METHOD HbQtVisualizer:activateScene()
+
+   ::oCurScene := ::oCurHbQtVisual:scene()
+   ::oGraphicsView:setScene( ::oCurScene )
+   ::oHbQtPreview:refreshPreview()
+
+   __hbqGraphics_AllowMovement( ::lEditingOn )
+   ::switchItemOptions( .F. )
+   ::manageEditing( .F. )
+
    RETURN Self
 
 
 METHOD HbQtVisualizer:setSplitterSizes( nFrameLeftWidth, nFrameRightWidth )
-   ::splitter():hbSetSizes( { __hbqtPixelsByDPI( nFrameLeftWidth ), ;
-                              ::splitter():width()-nFrameLeftWidth-nFrameRightWidth, ;
-                              __hbqtPixelsByDPI( nFrameRightWidth ) } )
+
+   DEFAULT nFrameLeftWidth  TO ::nFrameLeftWidth
+   DEFAULT nFrameRightWidth TO ::nFrameRightWidth
+
+   ::nFrameLeftWidth  := nFrameLeftWidth
+   ::nFrameRightWidth := nFrameRightWidth
+
+   ::splitter():hbSetSizes( { __hbqtPixelsByDPI( ::nFrameLeftWidth ), ;
+                              ::splitter():width() - ::nFrameLeftWidth - ::nFrameRightWidth, ;
+                              __hbqtPixelsByDPI( ::nFrameRightWidth ) } )
    RETURN Self
 
 
 METHOD HbQtVisualizer:setOption( nOption, xValue )
    LOCAL xOldValue
+
    SWITCH nOption
    CASE __HBQT_VISUALIZER_OPTION_RESIZEINPLACE__
       xOldValue := ::lResizeInPlace
@@ -517,28 +582,24 @@ METHOD HbQtVisualizer:setOption( nOption, xValue )
 
 
 METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
-   LOCAL i, oPainter, oRectF, nScaleFactor
+   LOCAL i, nScaleFactor
 
    SWITCH nEvent
    CASE __graphicsScene_block__
       DO CASE
       CASE p == 21201                             // paint background
-         oPainter := p1
-         oRectF := ::oScene:sceneRect()
-         oPainter:fillRect( oRectF, QColor( Qt_white ) )
-         IF HB_ISOBJECT( ::oHbQtVisualBackground )
-            WITH OBJECT ::oHbQtVisualBackground
-               :setPixmap( ::oPixmapBackground:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ) )
-               :setGeometry( oRectF:x(), oRectF:y(), oRectF:width(), oRectF:height() )
-               :draw( oPainter, oRectF )
-            ENDWITH
+#if 0
+         IF HB_ISOBJECT( ::oCurHbQtVisual ) .AND. HB_ISOBJECT( ::oCurHbQtVisual:backGround() )
+            p1:fillRect( ::oCurScene:sceneRect(), QColor( Qt_white ) )
+            ::oCurHbQtVisual:backGround():draw( p1, ::oCurScene:sceneRect() )
          ENDIF
+#endif
       CASE p == 21107                             // Left button pressed nowhere on an item
          ::objectSelected()
          ::placeObject( p1, p2 )                  // scene coordinates
          ::objectSelected()
       CASE p == 21131                             // double-click
-         nScaleFactor := 1.10
+         nScaleFactor := 1.15
          IF ::lDoubleClickZoom
             FOR i := 1 TO 10
                ::oGraphicsView:scale( 1 / nScaleFactor, 1 / nScaleFactor )
@@ -558,11 +619,7 @@ METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
       ENDCASE
       EXIT
    CASE __treeObjects_clicked__
-      IF hb_hHasKey( ::hItems, p:text( 0 ) )
-         ::objectSelected( ::hItems[ p:text( 0 ) ] )
-      ELSE
-         ::objectSelected()
-      ENDIF
+      ::objectSelected( ::oCurHbQtVisual:item( p:text( 0 ) ) )
       EXIT
    CASE __treeMarkers_currentItemChanged__
       IF ::cCurrentMarkerV != p:whatsThis( 0 )
@@ -650,14 +707,14 @@ METHOD HbQtVisualizer:objectDeleted( oHbQtVisualItem )
 
    IF HB_ISOBJECT( oHbQtVisualItem )
       cName := oHbQtVisualItem:name()
-      IF hb_hHasKey( ::hNavigatorTree, cName )
+      IF hb_hHasKey( ::hNavgtTreeItems, cName )
          IF ! oHbQtVisualItem:isLocked()
-            oParent := ::hNavigatorTree[ cName ]:parent()
-            oParent:removeChild( ::hNavigatorTree[ cName ] )
-            ::hNavigatorTree[ cName ] := NIL
-            hb_HDel( ::hNavigatorTree, cName )
-            ::oScene:removeItem( oHbQtVisualItem:oWidget )
-            hb_HDel( ::hItems, cName )
+            oParent := ::hNavgtTreeItems[ cName ]:parent()
+            oParent:removeChild( ::hNavgtTreeItems[ cName ] )
+            ::hNavgtTreeItems[ cName ] := NIL
+            hb_HDel( ::hNavgtTreeItems, cName )
+            ::oCurScene:removeItem( oHbQtVisualItem:oWidget )
+            ::oCurHbQtVisual:delItem( cName )
             QApplication():processEvents()
          ENDIF
       ENDIF
@@ -684,15 +741,16 @@ METHOD HbQtVisualizer:deleteState( oHbQtVisualItem )
 METHOD HbQtVisualizer:objectSelected( oHbQtVisualItem )
    LOCAL cName := iif( HB_ISOBJECT( oHbQtVisualItem ), oHbQtVisualItem:name(), "x.x" )
 
-   ::oTreeNavigator:clearSelection()
+   ::oNavgtTree:clearSelection()
 
    IF ! Empty( ::oCurGraphicsItem )
       ::oCurGraphicsItem:unselect()
    ENDIF
-   IF hb_hHasKey( ::hNavigatorTree, cName )
-      ::oCurGraphicsItem := ::hItems[ cName ]
-      ::oTreeNavigator:setCurrentItem( ::hNavigatorTree[ cName ] )
+   IF hb_hHasKey( ::hNavgtTreeItems, cName )
+      ::oCurGraphicsItem := ::oCurHbQtVisual:item( cName )
+      ::oNavgtTree:setCurrentItem( ::hNavgtTreeItems[ cName ] )
       ::oCurGraphicsItem:select()
+      //::oGraphicsView:ensureVisible( ::oCurGraphicsItem:oWidget )
    ELSE
       ::oCurGraphicsItem := NIL
    ENDIF
@@ -700,7 +758,7 @@ METHOD HbQtVisualizer:objectSelected( oHbQtVisualItem )
    ::populateDataSheet( ::oCurGraphicsItem )
    IF ! Empty( ::cCurrentState ) .AND. ! Empty( ::oCurGraphicsItem )
       ::oCurGraphicsItem:setState( ::hVisualsStates[ ::cCurrentState ][ "HbQtVisualItemState" ] )
-      ::oToolbarStates:click( ::cCurrentState )
+      ::oStatesToolbar:click( ::cCurrentState )
    ENDIF
    ::switchItemOptions( ! Empty( ::oCurGraphicsItem ) )
    ::updateItemStatus( ::oCurGraphicsItem )
@@ -762,101 +820,64 @@ METHOD HbQtVisualizer:populatePropertySheet( oHbQtVisualItem )
 
 
 METHOD HbQtVisualizer:clear()
-   LOCAL oVisualObject
 
-   FOR EACH oVisualObject IN ::hItems
-      ::oScene:removeItem( oVisualObject:oWidget )
-      oVisualObject:destroy()
-      oVisualObject := NIL
-   NEXT
-   IF HB_ISOBJECT( ::oHbQtVisualBackground )
-      ::oScene:removeItem( ::oHbQtVisualBackground:oWidget )
-      ::oHbQtVisualBackground:destroy()
-      ::oHbQtVisualBackground := NIL
-   ENDIF
+   hIDs := __hbqtStandardHash()
 
-   ::oTreeNavigator:clear()
-   ::oTreeData:clear()
+   ::oNavgtTree:clear()
+   ::oDataTree:clear()
 
-   hIDs             := __hbqtStandardHash()
-   ::hItems         := __hbqtStandardHash()
-   ::hNavigatorTree := __hbqtStandardHash()
+   ::hNavgtTreeItems := __hbqtStandardHash()
 
-   ::aObjects    := {}
    ::aPages      := {}
    ::aSources    := {}
    ::aRptObjects := {}
    ::aRptPages   := {}
-   ::aRptSources := {}
 
-   ::oScene:invalidate()
    RETURN Self
 
 
 METHOD HbQtVisualizer:presentBlankVisual()
-   aadd( ::aPages, { ::cNavigtTreePage } )
 
-   ::updateObjectsTree( "Visual", NIL, ::cCurrentVisualTitle )
+   AAdd( ::aPages, { ::cNavigtTreePage } )
+
+   ::updateObjectsTree( "Visual", NIL, ::oCurHbQtVisual:title() )
    ::updateObjectsTree( "Page", "Visual", ::cNavigtTreePage )
 
-   ::addSource( "Customer", { { "Title" ,"C",35,0 }, { "Street","C",20,0 }, { "Revenue","N",12,2 } } )
-   ::addSource( "Invoice" , { { "Number","C",10,0 }, { "Date"  ,"D",08,0 }, { "Amount" ,"N",12,2 } } )
-
-   ::oScene:setPageSize( QPrinter_Letter )
-   ::oScene:setOrientation( QPrinter_Landscape )
-   ::zoom( HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG )
-
+   IF ! Empty( ::oCurHbQtVisual:transform() )
+      ::oGraphicsView:setTransform( ::oCurHbQtVisual:transform() )
+      ::oGraphicsView:verticalScrollBar():setValue( ::oCurHbQtVisual:vertPos() )
+      ::oGraphicsView:horizontalScrollBar():setValue( ::oCurHbQtVisual:horzPos() )
+   ELSE
+      ::zoom( HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG )
+   ENDIF
    RETURN Self
 
 
-METHOD HbQtVisualizer:populateVisual( xData )
-   LOCAL cBuffer, a_, d_, oWidget, oRectF
-   LOCAL aGeo, aPt, aTran, oGeo, oTran, oPos
+METHOD HbQtVisualizer:populateVisual()
+   LOCAL hItems, hItem, oHbQtVisualItem
+   //LOCAL a_, d_, oWidget, aGeo, aPt, aTran, oGeo, oTran, oPos, oHbQtVisualItem
 
    ::clear()
+   ::presentBlankVisual()
 
-   IF HB_ISOBJECT( ::oPixmapBackground )
-      oRectF := ::oScene:sceneRect()
-      WITH OBJECT ::oHbQtVisualBackground := HbQtVisualItem():new():create( "Image", "BackGround", {0,0}, { 0, 0, oRectF:width(), oRectF:height() } )
-         WITH OBJECT :oWidget
-            :setZValue( -5000 )
-            :setPixmap( ::oPixmapBackground:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ) )
-         ENDWITH
-      ENDWITH
+   IF ! Empty( hItems := ::oCurHbQtVisual:items() )
+      FOR EACH oHbQtVisualItem IN hItems
+         ::updateObjectsTree( "Object", ::cNavigtTreePage, oHbQtVisualItem:name(), oHbQtVisualItem:type(), oHbQtVisualItem:pixmap() )
+      NEXT
+   ELSEIF ! Empty( hItems := ::oCurHbQtVisual:objects() )
+      FOR EACH hItem IN hItems
+
+      NEXT
    ENDIF
 
-   IF Empty( xData )
-      ::lNew := .T.
-      ::presentBlankVisual()
-   ELSE
-      ::lNew := .F.
+#if 0
+   IF .T.
+      FOR EACH oHbQtVisualItem IN ::oCurHbQtVisual:items()
+         d_    := a_[ 5 ]
 
-      IF Len( xData ) <= 300 .AND. hb_fileExists( xData )
-         ::cSaved := xData
-         cBuffer  := hb_UTF8ToStr( hb_MemoRead( xData ) )
-         IF ! empty( ::oParent )
-            ::oParent:setWindowTitle( "HbQt Visualizer [" + ::cSaved + "]" )
-         ENDIF
-      ELSE
-         ::cSaved := ""
-         cBuffer  := xData
-      ENDIF
-
-      ::oScene:setPageSize( QPrinter_Letter )
-      ::oScene:setOrientation( QPrinter_Landscape )
-      ::zoom( HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG )
-
-      ::parseBuffer( cBuffer )
-
-      ::updateObjectsTree( "Visual", NIL     , ::cCurrentVisualTitle )
-      ::updateObjectsTree( "Page"  , "Visual", ::cNavigtTreePage )
-
-      FOR EACH a_ IN ::aRptSources
-         ::addSource( a_[ 1 ], a_[ 2 ] )
-      NEXT
-
-      FOR EACH a_ IN ::aRptObjects
-         d_:= a_[ 5 ] ; aGeo := d_[ 1 ] ; aPt := d_[ 2 ] ; aTran := d_[ 3 ]
+         aGeo  := d_[ 1 ]
+         aPt   := d_[ 2 ]
+         aTran := d_[ 3 ]
 
          oGeo := QRectF( aGeo[ 1 ], aGeo[ 2 ], aGeo[ 3 ], aGeo[ 4 ] )
          oPos := QPointF( aPt[ 1 ], aPt[ 2 ] )
@@ -872,23 +893,7 @@ METHOD HbQtVisualizer:populateVisual( xData )
          oWidget :  setTransform( oTran )
       NEXT
    ENDIF
-   RETURN Self
-
-
-METHOD HbQtVisualizer:addSource( cAlias, aStruct )
-   LOCAL oItem, qItmC, b_
-
-   oItem := QTreeWidgetItem()
-   oItem:setText( 0, cAlias )
-   ::oTreeData:addTopLevelItem( oItem )
-
-   FOR EACH b_ IN aStruct
-      qItmC := QTreeWidgetItem()
-      qItmC:setText( 0, b_[ 1 ] )
-      oItem:addChild( qItmC )
-      oItem:setExpanded( .t. )
-   NEXT
-   aadd( ::aSources, { cAlias, aStruct } )
+#endif
    RETURN Self
 
 
@@ -902,12 +907,8 @@ METHOD HbQtVisualizer:addObject( cType, oPos, oGeo )
       cMarker := SubStr( cType, 8 )
       cType   := "Marker"
       cName   := cMarker + "_" + hb_ntos( ::getNextID( cMarker ) )
-      IF hb_HHasKey( ::hMarkers[ ::cCurrentVisual ][ cMarker ], "Width" )
-         nWidth  := ::hMarkers[ ::cCurrentVisual ][ cMarker ][ "Width" ]
-      ENDIF
-      IF hb_HHasKey( ::hMarkers[ ::cCurrentVisual ][ cMarker ], "Height" )
-         nHeight := ::hMarkers[ ::cCurrentVisual ][ cMarker ][ "Height" ]
-      ENDIF
+      nWidth  := ::oCurHbQtVisual:getMarkerProperty( cMarker, "Width" , nWidth  )
+      nHeight := ::oCurHbQtVisual:getMarkerProperty( cMarker, "Height", nHeight )
    ELSE
       cName := cType + "_" + hb_ntos( ::getNextID( cType ) )
    ENDIF
@@ -918,10 +919,10 @@ METHOD HbQtVisualizer:addObject( cType, oPos, oGeo )
 
       SWITCH cType
       CASE "Marker"
-         oPixmap := __hbqtLoadPixmapFromBuffer( hb_base64Decode( ::hMarkers[ ::cCurrentVisual ][ cMarker ][ "Icon" ] ) )
+         oPixmap := ::oCurHbQtVisual:getMarkerProperty( cMarker, "Pixmap", oPixmap )
          :setPixmap( oPixmap )
          :setBorderWidth( 2 )
-         :setData( __hbqtMergeMarkerData( ::hDataStruct, ::hMarkers[ ::cCurrentVisual ][ cMarker ] ) )
+         :setData( __hbqtMergeMarkerData( ::hDataStruct, ::oCurHbQtVisual:marker( cMarker ) ) )
          EXIT
       CASE "Image"
          :setPixmap( QPixmap( __hbqtImage( "harbour" ) ) )
@@ -946,12 +947,11 @@ METHOD HbQtVisualizer:addObject( cType, oPos, oGeo )
          :setText( "Text" )
          EXIT
       ENDSWITCH
-      ::oScene:addItem( :oWidget )
+      ::oCurScene:addItem( :oWidget )
    ENDWITH
 
-   ::hItems[ cName ] := oHbQtVisualItem
+   ::oCurHbQtVisual:addItem( cName, oHbQtVisualItem )
    ::updateObjectsTree( "Object", ::cNavigtTreePage, cName, cType, oPixmap )
-   aadd( ::aObjects, { "Object", ::cNavigtTreePage, cName, cType, {} } )
 
    RETURN oHbQtVisualItem
 
@@ -983,11 +983,12 @@ METHOD HbQtVisualizer:manageEditing( lOn )
       ENDIF
    ENDIF
    IF ::lEditingOn
-      __hbqtUndoStandardScroller( ::oGraphicsView )
+      __hbqtUndoScroller( ::oGraphicsView )
       QScroller():scroller( ::oGraphicsView ):ungrabGesture( ::oGraphicsView )
       ::oGraphicsView:setDragMode( QGraphicsView_ScrollHandDrag )
    ELSE
       __hbqtApplyStandardScroller( ::oGraphicsView )
+      //__hbqtApplyTouchScroller( ::oGraphicsView )
       ::oGraphicsView:setDragMode( QGraphicsView_NoDrag )
    ENDIF
    RETURN Self
@@ -1033,27 +1034,27 @@ METHOD HbQtVisualizer:updateObjectsTree( cType, cParent, cName, cSubType, oPixma
          :setText( 0, cName )
          :setIcon( 0, QIcon( __hbqtImage( "r-report" ) ) )
       ENDWITH
-      ::oTreeNavigator:addTopLevelItem( oItem )
-      ::hNavigatorTree[ cType ] := oItem
+      ::oNavgtTree:addTopLevelItem( oItem )
+      ::hNavgtTreeItems[ cType ] := oItem
       oItem:setExpanded( .t. )
 
    CASE cType == "Page" .OR. cType == "Object" .OR. cType == "Field"
-      IF hb_hHasKey( ::hNavigatorTree, cParent )
-         oParent := ::hNavigatorTree[ cParent ]
+      IF hb_hHasKey( ::hNavgtTreeItems, cParent )
+         oParent := ::hNavgtTreeItems[ cParent ]
       ENDIF
-      IF !empty( oParent )
-         IF hb_hHasKey( ::hNavigatorTree, cName )
+      IF ! empty( oParent )
+         IF hb_hHasKey( ::hNavgtTreeItems, cName )
             //
          ENDIF
          oItem := QTreeWidgetItem()
          oItem:setText( 0, cName )
          oParent:addChild( oItem )
-         ::hNavigatorTree[ cName ] := oItem
+         ::hNavgtTreeItems[ cName ] := oItem
 
          IF cType == "Page"
             oItem:setIcon( 0, QIcon( __hbqtImage( "r-page" ) ) )
          ELSEIF cType == "Object"
-            IF ! Empty( oPixmap )
+            IF ! Empty( oPixmap ) .AND. ! oPixmap:isNull()
                oItem:setIcon( 0, QIcon( oPixmap ) )
             ELSE
                oItem:setIcon( 0, QIcon( ::getImageOfType( cSubType ) ) )
@@ -1070,7 +1071,7 @@ METHOD HbQtVisualizer:updateObjectsTree( cType, cParent, cName, cSubType, oPixma
 
 METHOD HbQtVisualizer:manageMarkerVClicks( cMarker )
    IF ::cCurrentMarkerV != cMarker
-      ::oToolbarObjects:setState( ::cCurrentMarkerV, 2 )
+      ::oObjectsToolbar:setState( ::cCurrentMarkerV, 2 )
       ::cCurrentMarkerV := cMarker
    ELSE
       ::cCurrentMarkerV := NIL
@@ -1083,7 +1084,7 @@ METHOD HbQtVisualizer:placeObject( nSceneX, nSceneY )
    IF ::lEditingOn
       IF ! Empty( ::cCurrentMarkerV )
          ::addObject( ::cCurrentMarkerV, QPoint( nSceneX, nSceneY ), NIL )
-         ::oToolbarObjects:click( ::cCurrentMarkerV )
+         ::oObjectsToolbar:click( ::cCurrentMarkerV )
          ::clearMarker()
       ENDIF
       ::showStatus( STATUS_PANEL_MARKERS, iif( Empty( ::cCurrentMarkerV ), "", ::cCurrentMarkerV ) )
@@ -1135,7 +1136,7 @@ STATIC FUNCTION __hbqtMergeMarkerData( hDataStruct, hMarkers )
 
 
 METHOD HbQtVisualizer:buildMarkersTree()
-   LOCAL oItem, oIcon, hVisual, oChild, hMarker, oGroup, oFont
+   LOCAL oItem, oChild, hMarker, oGroup, oFont
    LOCAL oSize := QSize( __hbqtPixelsByDPI( 40 ), __hbqtPixelsByDPI( 40 ) )
    LOCAL hGrp := __hbqtStandardHash()
 
@@ -1145,13 +1146,11 @@ METHOD HbQtVisualizer:buildMarkersTree()
    ::oMarkersTree:clear()
    ::oMarkersTree:setIconSize( oSize )
 
-   IF ! Empty( ::cCurrentVisual )
-      IF hb_HHasKey( ::hMarkers, ::cCurrentVisual ) .AND. ! Empty( ::hMarkers[ ::cCurrentVisual ] )
-         hVisual := ::hVisualsList[ ::cCurrentVisual ]
-         oIcon := __hbqtIconFromBuffer( hb_base64Decode( hVisual[ "Icon" ] ) )
+   IF ! Empty( ::oCurHbQtVisual )
+      IF ! Empty( ::oCurHbQtVisual:markers() )
          WITH OBJECT oItem := QTreeWidgetItem()
-            :setText( 0, hVisual[ "Label" ] )
-            :setIcon( 0, oIcon )
+            :setText( 0, ::oCurHbQtVisual:title() )
+            :setIcon( 0, ::oCurHbQtVisual:icon() )
             :setData( 0, Qt_UserRole, QVariant( "VisualMarkers" ) )
             :setFlags( Qt_ItemIsEnabled )
             :setBackground( 0, QBrush( QColor( 220,255,220 ) ) )
@@ -1160,7 +1159,7 @@ METHOD HbQtVisualizer:buildMarkersTree()
          ENDWITH
          ::oMarkersTree:addTopLevelItem( oItem )
 
-         FOR EACH hMarker IN ::hMarkers[ ::cCurrentVisual ]
+         FOR EACH hMarker IN ::oCurHbQtVisual:markers()
             IF hb_HHasKey( hMarker, "Group" ) .AND. ! Empty( hMarker[ "Group" ] )
                WITH OBJECT oGroup := QTreeWidgetItem()
                   :setText( 0, hMarker[ "Group" ] )
@@ -1171,12 +1170,12 @@ METHOD HbQtVisualizer:buildMarkersTree()
                ENDWITH
                oItem:addChild( oGroup )
                hGrp[ hMarker[ "Group" ] ] := oGroup
-               IF hMarker:__enumIndex() == 1
+               IF .T. //hMarker:__enumIndex() == 1
                   oGroup:setExpanded( .T. )
                ENDIF
             ENDIF
          NEXT
-         FOR EACH hMarker IN ::hMarkers[ ::cCurrentVisual ]
+         FOR EACH hMarker IN ::oCurHbQtVisual:markers()
             IF hb_HHasKey( hMarker, "Icon" ) .AND. hb_HHasKey( hMarker, "Label" )
                WITH OBJECT oChild := QTreeWidgetItem()
                   :setText( 0, hMarker[ "Label" ] )
@@ -1214,7 +1213,7 @@ METHOD HbQtVisualizer:buildMarkersTree()
       :addChild( __hbqtTreeWidgetItem( "LineDR"     , "LineDR"     , __hbqtImage( "z-linedr"      ), oFont ) )
       :addChild( __hbqtTreeWidgetItem( "LineDL"     , "LineDL"     , __hbqtImage( "z-linedl"      ), oFont ) )
    ENDWITH
-   IF ::oMarkersTree:topLevelItemCount() == 1
+   IF .T. //IF ::oMarkersTree:topLevelItemCount() == 1
       oItem:setExpanded( .T. )
    ENDIF
    RETURN Self
@@ -1222,20 +1221,20 @@ METHOD HbQtVisualizer:buildMarkersTree()
 
 METHOD HbQtVisualizer:toggleGrid()
    ::lShowGrid := ! ::lShowGrid
-   ::oScene:setShowGrid( ::lShowGrid )
+   ::oCurScene:setShowGrid( ::lShowGrid )
    RETURN Self
 
 
 METHOD HbQtVisualizer:buildToolbarObjects( oLayout )
 
-   WITH OBJECT ::oToolbarObjects := HbQtScrollableToolbar():new()
+   WITH OBJECT ::oObjectsToolbar := HbQtScrollableToolbar():new()
       :setIndicatorsRGB( { 255,0,0 } )
       :setButtonHeight( 50 )
       :setButtonWidth( 50 )
       :create( oLayout )
    ENDWITH
 
-   WITH OBJECT ::oToolbarObjects
+   WITH OBJECT ::oObjectsToolbar
       :addToolbarButton( "Text"       , "Text"               , "text-object"  , {|| ::manageMarkerVClicks( "Text"        ) }, .T., .F. )
       :addToolbarButton( "Barcode"    , "Barcode"            , "z-barcode"    , {|| ::manageMarkerVClicks( "Barcode"     ) }, .T., .F. )
       :addToolbarButton( "Rectangle"  , "Rectangle"          , "z-rectangle"  , {|| ::manageMarkerVClicks( "Rectangle"   ) }, .T., .F. )
@@ -1286,60 +1285,24 @@ METHOD HbQtVisualizer:buildToolbar( oLayout )
    RETURN Self
 
 
-METHOD HbQtVisualizer:printPreview( oPrinter )
-   LOCAL oDlg
-
-   WITH OBJECT oPrinter := QPrinter()
-      :setOutputFormat( QPrinter_PdfFormat )
-      :setOrientation( ::oScene:orientation() )
-      :setPaperSize( ::oScene:pageSize() )
-   ENDWITH
-
-   WITH OBJECT oDlg := QPrintPreviewDialog( oPrinter, ::oGraphicsView )
-      :setWindowTitle( "HBReportGenerator : " + iif( !empty( ::cSaved ), ::cSaved, "Untitled" ) )
-      :move( 20, 20 )
-      :resize( 400, 600 )
-      :connect( "paintRequested(QPrinter*)", {|p| ::printVisual( p ) } )
-      :exec()
-   ENDWITH
-   oDlg:disconnect( "paintRequested(QPrinter*)" )
-
-   RETURN NIL
-
-
 METHOD HbQtVisualizer:printVisual( oPrinter )
-   LOCAL oPageLayout, oPainter, oRectF, oRPage, oRectS, nMarginW, nMarginH, a_
+   LOCAL oPainter
+   LOCAL oPageLayout
 
-   WITH OBJECT oPageLayout := QPageLayout( QPageSize( QPageSize_Letter ), ::oScene:orientation(), QMarginsF( 10,10,10,10 ), QPageLayout_Millimeter )
+   WITH OBJECT oPageLayout := QPageLayout( QPageSize( QPageSize_Letter ), ::oCurScene:orientation(), QMarginsF( 10,10,10,10 ), QPageLayout_Millimeter )
       :SetMode( QPageLayout_StandardMode )
    ENDWITH
+
    WITH OBJECT oPrinter
       :setOutputFormat( QPrinter_PdfFormat )
       :setPageLayout( oPageLayout )
    ENDWITH
    oPainter := QPainter()
    IF oPainter:begin( oPrinter )
-      oRectS := ::oScene:sceneRect()
-      oRectF := oPrinter:paperRect( QPrinter_Millimeter )
-      oRPage := oPrinter:pageRect( QPrinter_Millimeter )
-
-      nMarginW := ( ( oRectF:width()  - oRPage:width()  ) / UNIT )
-      nMarginH := ( ( oRectF:height() - oRPage:height() ) / UNIT )
-      IF HB_ISOBJECT( ::oHbQtVisualBackground )
-         WITH OBJECT ::oHbQtVisualBackground
-            :setPixmap( ::oPixmapBackground:scaled( oRectS:width(), oRectS:height(), Qt_KeepAspectRatio ) )
-            :setGeometry( 0, 0, oRectS:width(), oRectS:height() )
-            :drawOnPrinter( oPainter )
-         ENDWITH
-      ENDIF
-      FOR EACH a_ IN ::aObjects
-         IF hb_hHasKey( ::hItems, a_[ 3 ] )
-            ::hItems[ a_[ 3 ] ]:drawOnPrinter( oPainter )
-         ENDIF
-      NEXT
+      oPainter:setRenderHint( QPainter_Antialiasing )
+      ::oCurScene:render( oPainter )
       oPainter:end()
    ENDIF
-   HB_SYMBOL_UNUSED( nMarginW + nMarginH )
    RETURN Self
 
 
@@ -1482,7 +1445,7 @@ METHOD HbQtVisualizer:buildPropertySheets()
    AAdd( aBrushStyle, "TexturePattern"         )
 #endif
    WITH OBJECT ::oPropManager := HbQtPropertiesManager():new():create( ::oPropWidget )
-      WITH OBJECT ::oSheetGraphicObjects := :addPropertySheet( "GraphicObjects" )
+      WITH OBJECT ::oPropertySheet := :addPropertySheet( "GraphicObjects" )
          :addProperty( "objectName"     , "objectName"     , ""               , __HBQT_PRP_EDIT__    , ""               , NIL )
 
          :addProperty( "geometry"       , "Geometry"       , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
@@ -1492,7 +1455,7 @@ METHOD HbQtVisualizer:buildPropertySheets()
          :addProperty( "height"         , "height"         , "Geometry"       , __HBQT_PRP_EDIT__    , 0.0              , NIL )
 
          :addProperty( "pen"            , "Pen"            , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
-         :addProperty( "penStyle"       , "style"          , "Pen"            , __HBQT_PRP_COMBO__   , "SolidLine"          , aPenStyle )
+         :addProperty( "penStyle"       , "style"          , "Pen"            , __HBQT_PRP_COMBO__   , "SolidLine"      , aPenStyle )
          :addProperty( "penWidth"       , "width"          , "Pen"            , __HBQT_PRP_EDIT__    , 1                , NIL )
          :addProperty( "penColor"       , "color"          , "Pen"            , __HBQT_PRP_COLOR__   , "#000000"        , NIL )
          :addProperty( "capStyle"       , "capStyle"       , "Pen"            , __HBQT_PRP_COMBO__   , "FlatCap"        , aCapStyle  )
@@ -1506,14 +1469,14 @@ METHOD HbQtVisualizer:buildPropertySheets()
 
          :addProperty( "text"           , "text"           , ""               , __HBQT_PRP_EDIT__    , ""               , NIL )
          :addProperty( "font"           , "Font"           , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
-         :addProperty( "fontFamily"     , "fontFamily"     , "Font"           , __HBQT_PRP_FONT__    , "Arial"          , NIL )
-         :addProperty( "fontStyle"      , "fontStyle"      , "Font"           , __HBQT_PRP_COMBO__   , "Normal"         , { "Normal", "Italic", "Bold", "Bold Italic" } )
-         :addProperty( "fontSize"       , "fontSize[MM]"   , "Font"           , __HBQT_PRP_COMBO__   , "3.5"            , { "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0" } )
+         :addProperty( "fontFamily"     , "family"         , "Font"           , __HBQT_PRP_FONT__    , "Arial"          , NIL )
+         :addProperty( "fontStyle"      , "style"          , "Font"           , __HBQT_PRP_COMBO__   , "Normal"         , { "Normal", "Italic", "Bold", "Bold Italic" } )
+         :addProperty( "fontSize"       , "size[MM]"       , "Font"           , __HBQT_PRP_COMBO__   , "3.5"            , { "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0" } )
 
-         :addProperty( "backgroundMode" , "backgroundMode" , ""               , __HBQT_PRP_COMBO__   , "TransparentMode", { "TransparentMode", "OpaqueMode" } )
+         :addProperty( "backgroundMode" , "bgMode"         , ""               , __HBQT_PRP_COMBO__   , "TransparentMode", { "TransparentMode", "OpaqueMode" } )
          :addProperty( "opacity"        , "opacity"        , ""               , __HBQT_PRP_EDIT__    , 100              , NIL )
 
-         :addProperty( "backgroundBrush", "BackgroundBrush", ""               , __HBQT_PRP_JUST__    , ""               , NIL )
+         :addProperty( "backgroundBrush", "BGBrush"        , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
          :addProperty( "bBrushStyle"    , "style"          , "BackgroundBrush", __HBQT_PRP_COMBO__   , "NoBrush"        , aBrushStyle )
          :addProperty( "bBrushColor"    , "color"          , "BackgroundBrush", __HBQT_PRP_COLOR__   , "#ffffff"        , NIL )
 //       :addProperty( "bBushTexture"   , "texture"        , "BackgroundBrush", __HBQT_PRP_TEXTURE__ , ""               , NIL )
@@ -1676,7 +1639,7 @@ METHOD HbQtVisualizer:moveMarker( nDirection )
    ::oCurGraphicsItem:setGeometry( oRect )
    ::objectGeometryChanged( ::oCurGraphicsItem )
    ::oCurGraphicsItem:update()
-   ::oScene:invalidate( oOldRect )
+   ::oCurScene:invalidate( oOldRect )
    RETURN Self
 
 
@@ -1771,7 +1734,7 @@ METHOD HbQtVisualizer:resizeMarker( nDirection )
    ::oCurGraphicsItem:setGeometry( oRect )
    ::objectGeometryChanged( ::oCurGraphicsItem )
    ::oCurGraphicsItem:update()
-   ::oScene:invalidate( oOldRect )
+   ::oCurScene:invalidate( oOldRect )
    RETURN Self
 
 
@@ -1786,7 +1749,7 @@ METHOD HbQtVisualizer:zoom( nMode )
       ::oGraphicsView:scale( 1 / nScaleFactor, 1 / nScaleFactor )
       EXIT
    CASE HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG
-      ::oGraphicsView:fitInView( ::oScene:sceneRect(), Qt_KeepAspectRatio )
+      ::oGraphicsView:fitInView( ::oCurScene:sceneRect(), Qt_KeepAspectRatio )
       EXIT
    CASE HBQT_GRAPHICSVIEW_ZOOM_ORIGINAL
       ::oGraphicsView:resetMatrix()
@@ -1858,12 +1821,31 @@ METHOD HbQtVisualizer:buildStatusBar()
    RETURN Self
 
 
-METHOD HbQtVisualizer:toString()
-   RETURN ::buildVisualStream()
+METHOD HbQtVisualizer:saveVisual( oHbQtVisual )
+   LOCAL hVisual
+
+   DEFAULT oHbQtVisual TO ::oCurHbQtVisual
+
+   IF ! Empty( oHbQtVisual ) .AND. HB_ISBLOCK( ::visualsSaveBlock() )
+      IF Alert( "Save [" + oHbQtVisual:title() + "]", { "Yes", "No" } ) == 1
+         IF ! Empty( hVisual := ::buildVisualStream( oHbQtVisual ) )
+            Eval( ::visualsSaveBlock(), oHbQtVisual:refID(), oHbQtVisual:version(), hVisual )
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN Self
 
 
-METHOD HbQtVisualizer:buildVisualStream()
-   LOCAL txt_:= {}, n, a_, s, oWidget, oPos, oTran
+METHOD HbQtVisualizer:toString( oHbQtVisual )
+   DEFAULT oHbQtVisual TO ::oCurHbQtVisual
+   RETURN ::buildVisualStream( oHbQtVisual )
+
+
+METHOD HbQtVisualizer:buildVisualStream( oHbQtVisual )
+   LOCAL txt_:= {}, n, a_, s, oWidget, oPos, oTran, oHbQtVisualItem
+
+   DEFAULT oHbQtVisual TO ::oCurHbQtVisual
+   HB_SYMBOL_UNUSED( oHbQtVisual )
 
    aadd( txt_, "[GENERAL]" )
    aadd( txt_, "" )
@@ -1891,20 +1873,20 @@ METHOD HbQtVisualizer:buildVisualStream()
    aadd( txt_, "" )
    aadd( txt_, "[OBJECTS]" )
    aadd( txt_, "" )
-   FOR EACH a_ IN ::aObjects
-      n := a_:__enumIndex()
-      IF hb_hHasKey( ::hItems, a_[ 3 ] )
-         oWidget := ::hItems[ a_[ 3 ] ]:oWidget
-         oPos    := oWidget:scenePos()
-         oTran   := oWidget:transform()
 
-         a_[ 5 ] := { { 0, 0, oWidget:width(), oWidget:height() }, ;
-                      { oPos:x(), oPos:y() }, ;
-                      { oTran:m11(), oTran:m12(), oTran:m13(), oTran:m21(), oTran:m22(), oTran:m23(), oTran:m31(), oTran:m32(), oTran:m33() }, ;
-                    }
+   FOR EACH oHbQtVisualItem IN ::oCurHbQtVisual:items()
+      n := oHbQtVisualItem:__enumIndex()
 
-         aadd( txt_, INI_KEY( "object", n ) + rmgr_a2arrayStr( a_ ) )
-      ENDIF
+      oWidget := oHbQtVisualItem:oWidget
+      oPos    := oWidget:scenePos()
+      oTran   := oWidget:transform()
+
+      a_:= { { 0, 0, oWidget:width(), oWidget:height() }, ;
+                   { oPos:x(), oPos:y() }, ;
+                   { oTran:m11(), oTran:m12(), oTran:m13(), oTran:m21(), oTran:m22(), oTran:m23(), oTran:m31(), oTran:m32(), oTran:m33() }, ;
+           }
+      aadd( txt_, INI_KEY( "object", n ) + ;
+             rmgr_a2arrayStr( { "Object", ::cNavigtTreePage, oHbQtVisualItem:name(), oHbQtVisualItem:type(), a_ } ) )
    NEXT
    aadd( txt_, "" )
 
@@ -1926,18 +1908,11 @@ METHOD HbQtVisualizer:parseBuffer( cBuffer )
 
       SWITCH Upper( s )
       CASE "[GENERAL]" ; nPart := "HQR_GENERAL" ; EXIT
-      CASE "[SOURCES]" ; nPart := "HQR_SOURCES" ; EXIT
       CASE "[PAGES]"   ; nPart := "HQR_PAGES"   ; EXIT
       CASE "[OBJECTS]" ; nPart := "HQR_OBJECTS" ; EXIT
       OTHERWISE
          DO CASE
          CASE nPart == "HQR_GENERAL"
-         CASE nPart == "HQR_SOURCES"
-            IF rmgr_keyValuePair( s, @cKey, @cVal, "=" )
-               IF rmgr_keyValuePair( cVal, @cKey, @cVal, "," )
-                  aadd( ::aRptSources, { "Source", rmgr_evalAsArray( cVal ) } )
-               ENDIF
-            ENDIF
          CASE nPart == "HQR_PAGES"
             IF rmgr_keyValuePair( s, @cKey, @cVal, "=" )
                aadd( ::aRptPages, { "Page", rmgr_evalAsArray( cVal ) } )
@@ -1956,23 +1931,25 @@ METHOD HbQtVisualizer:getImageOfType( cType )
    LOCAL cImage
 
    DO CASE
-   CASE cType == "Image"     ;   cImage := "f-image"
-   CASE cType == "Barcode"   ;   cImage := "f_barcode"
-   CASE cType == "Chart"     ;   cImage := "f_chart"
-   CASE cType == "Gradient"  ;   cImage := "f_gradient"
-   CASE cType == "Text"      ;   cImage := "text"
-   CASE cType == "Field"     ;   cImage := "text"
-   CASE cType == "Rectangle" ;   cImage := "rp_rectangle"
-   CASE cType == "RoundedRect";  cImage := "rp_roundrectangle"
-   CASE cType == "Ellipse"   ;   cImage := "rp_ellipse"
-   CASE cType == "LineH"     ;   cImage := "rp_linehorz"
-   CASE cType == "LineV"     ;   cImage := "rp_linevert"
-   CASE cType == "LineDR"    ;   cImage := "rp_linediagright"
-   CASE cType == "LineDL"    ;   cImage := "rp_linediagleft"
-   CASE cType == "Arc"       ;   cImage := "rp_arc"
-   CASE cType == "Chord"     ;   cImage := "rp_chord"
-   CASE cType == "Diamond"   ;   cImage := "rp_diamond"
-   CASE cType == "Triangle"  ;   cImage := "rp_triangle"
+   CASE cType == "Image"      ;   cImage := "f-image"
+   CASE cType == "Chart"      ;   cImage := "f_chart"
+   CASE cType == "Gradient"   ;   cImage := "f_gradient"
+   CASE cType == "Field"      ;   cImage := "text"
+
+   CASE cType == "Text"       ;   cImage := "text-object"
+   CASE cType == "Barcode"    ;   cImage := "z-barcode"
+   CASE cType == "Rectangle"  ;   cImage := "z-rectangle"
+   CASE cType == "RoundedRect";   cImage := "z-roundedrect"
+   CASE cType == "Ellipse"    ;   cImage := "z-ellipse"
+   CASE cType == "Diamond"    ;   cImage := "z-diamond"
+   CASE cType == "Triangle"   ;   cImage := "z-triangle"
+   CASE cType == "LineH"      ;   cImage := "z-lineh"
+   CASE cType == "LineV"      ;   cImage := "z-linev"
+   CASE cType == "LineDR"     ;   cImage := "z-linedr"
+   CASE cType == "LineDL"     ;   cImage := "z-linedl"
+
+   CASE cType == "Arc"        ;   cImage := "rp_arc"
+   CASE cType == "Chord"      ;   cImage := "rp_chord"
    ENDCASE
    RETURN __hbqtImage( cImage )
 
@@ -1989,18 +1966,17 @@ METHOD HbQtVisualizer:buildStyleSheet()
    LOCAL cCSS := ""
    //LOCAL cColorTreeBranch := "rgba(  255, 255, 220, 255 );"
 
-   AAdd( aCSS, 'QLabel#labelTopLeft{' )
-   AAdd( aCSS, '    min-width: '                 + __hbqtCssPX( 28 ) )
-   AAdd( aCSS, '    max-width: '                 + __hbqtCssPX( 28 ) )
-   AAdd( aCSS, '    max-height: '                + __hbqtCssPX( 50 ) )
+   AAdd( aCSS, 'QWidget {' )
+   AAdd( aCSS, '   font-size: '                  + __hbqtCssPX( 16 ) )
    AAdd( aCSS, '}' )
-   AAdd( aCSS, 'QLabel#labelTopRight{' )
+
+   AAdd( aCSS, '#labelTopLeft, #labelTopRight{' )
    AAdd( aCSS, '    min-width: '                 + __hbqtCssPX( 28 ) )
    AAdd( aCSS, '    max-width: '                 + __hbqtCssPX( 28 ) )
    AAdd( aCSS, '    max-height: '                + __hbqtCssPX( 50 ) )
    AAdd( aCSS, '}' )
 
-   AAdd( aCSS, 'QFrame#frameTop {' )
+   AAdd( aCSS, '#frameTop {' )
    AAdd( aCSS, '   min-width: 0px;' )
    AAdd( aCSS, '   max-height: '                 + __hbqtCssPX( 60 ) )
    AAdd( aCSS, '}' )
@@ -2014,9 +1990,18 @@ METHOD HbQtVisualizer:buildStyleSheet()
    AAdd( aCSS, '}' )
 
    AAdd( aCSS, 'QStatusBar {' )
-   AAdd( aCSS, '    min-height: '                + __hbqtCssPX( 24 ) )
-   AAdd( aCSS, '    max-height: '                + __hbqtCssPX( 24 ) )
-   AAdd( aCSS, '    font-size: '                 + __hbqtCssPX( 20 ) )
+   AAdd( aCSS, '   min-height: '                 + __hbqtCssPX( 24 ) )
+   AAdd( aCSS, '   max-height: '                 + __hbqtCssPX( 24 ) )
+   AAdd( aCSS, '   font-size: '                  + __hbqtCssPX( 20 ) )
+   AAdd( aCSS, '}' )
+
+   AAdd( aCSS, '#toolBoxLeft::tab:selected, #toolBoxRight::tab:selected { ' )
+   AAdd( aCSS, '   font: bold; color: #4FA600;' )
+   AAdd( aCSS, '   min-height: '                 + __hbqtCssPX( 40 ) )
+   AAdd( aCSS, '}' )
+   AAdd( aCSS, '#toolBoxLeft::tab:!selected, #toolBoxRight::tab:!selected {' )
+   AAdd( aCSS, '   font: bold; color: rgb(85,85,84);' )
+   AAdd( aCSS, '   min-height: '                 + __hbqtCssPX( 40 ) )
    AAdd( aCSS, '}' )
 
    AEval( aCSS, {|e| cCSS += e + Chr( 13 )+Chr( 10 ) } )
@@ -2067,9 +2052,9 @@ STATIC FUNCTION  __hbqtIconFromBuffer( cBuffer )
 
 
 METHOD HbQtVisualizer:show()
-   LOCAL hList, hMarker, oFirst
+   LOCAL hList, hMarker, oFirst, hVisual
 
-   ::setSplitterSizes( 100, 100 )
+   ::setSplitterSizes()
 
    IF ! ::lShowInitialized
       IF HB_ISBLOCK( ::visualsListBlock() )
@@ -2104,11 +2089,16 @@ METHOD HbQtVisualizer:show()
                ::buildDataSheets()
             ENDIF
 
+            FOR EACH hVisual IN ::hVisualsList
+               ::hHbQtVisuals[ hVisual:__enumKey() ] := HbQtVisual():new( Self ):create()
+               ::hHbQtVisuals[ hVisual:__enumKey() ]:list( hVisual )
+            NEXT
+
             // Fire first visual in the list - replace it by looking at what it was at last session
             //
             oFirst := hb_HValueAt( ::hVisualsTree, 1 )
             oFirst:setSelected( .T. )
-            ::loadVisual( oFirst:whatsThis( 0 ) )
+            ::loadVisual( oFirst:whatsThis( 0 ), 1 )   // TOFIX: how to get nVer
             IF oFirst:whatsThis( 0 ) == "UNTITLED"
                ::toggleGrid()
             ENDIF
@@ -2118,89 +2108,68 @@ METHOD HbQtVisualizer:show()
    RETURN Self
 
 
+METHOD HbQtVisualizer:loadVisual( cRefID, nVer )
+   LOCAL hVisual
+
+   DEFAULT nVer TO ::hVisualsList[ cRefID ][ "Version" ]
+
+   IF ! Empty( ::oCurHbQtVisual )
+      ::oCurHbQtVisual:transform( ::oGraphicsView:Transform() )
+      ::oCurHbQtVisual:vertPos( ::oGraphicsView:verticalScrollBar():value() )
+      ::oCurHbQtVisual:horzPos( ::oGraphicsView:horizontalScrollbar():value() )
+   ENDIF
+
+   ::oCurHbQtVisual := NIL
+   ::oCurGraphicsItem := NIL
+
+   ::showStatus( STATUS_PANEL_VISUALS )
+   IF ! Empty( cRefID )
+      ::oCurHbQtVisual := ::hHbQtVisuals[ cRefID ]
+
+      IF HB_ISBLOCK( ::visualsLoadBlock() )
+         IF hb_HHasKey( ::hVisualsList, cRefID ) .AND. hb_HHasKey( ::hVisualsList[ cRefID ], "Visual" )
+            // nothing to do
+         ELSE
+            hVisual := Eval( ::visualsLoadBlock(), cRefID, nVer )
+
+            IF HB_ISHASH( hVisual ) .AND. ! Empty( hVisual )
+               ::hVisualsList[ cRefID ][ "Visual" ] := hVisual
+               ::oCurHbQtVisual:visual( hVisual )
+               ::oCurHbQtVisual:setupMarkers( hVisual[ "Markers" ], ::hMarkers[ "m_markers" ] )
+            ENDIF
+         ENDIF
+      ENDIF
+
+      ::activateScene()
+      ::buildMarkersTree()
+      ::populateVisual()
+      ::showStatus( STATUS_PANEL_VISUALS, ::oCurHbQtVisual:title() )
+   ENDIF
+
+   ::oUI:toolBoxLeft:setCurrentIndex( 1 )
+   RETURN Self
+
+
 METHOD HbQtVisualizer:populateVisualsList( hVisualsList )
-   LOCAL cID, oItem, oIcon, hVisual
+   LOCAL cRefID, oItem, oIcon, hVisual
 
    IF ! Empty( hVisualsList )
       FOR EACH hVisual IN hVisualsList
          IF hb_HHasKey( hVisual, "RefID" )
-            cID   := hVisual[ "RefID" ]
+            cRefID := hVisual[ "RefID" ]
             oIcon := __hbqtIconFromBuffer( hb_base64Decode( hVisual[ "Icon" ] ) )
             WITH OBJECT oItem := QTreeWidgetItem()
                :setText( 0, hVisual[ "Label" ] )
                :setIcon( 0, oIcon )
                :setTooltip( 0, hVisual[ "Purpose" ] )
-               :setWhatsThis( 0, cID )
+               :setWhatsThis( 0, cRefID )
             ENDWITH
-            ::oTreeVisuals:addTopLevelItem( oItem )
-            ::hVisualsTree[ cID ] := oItem
+            ::oVisualsTree:addTopLevelItem( oItem )
+            ::hVisualsTree[ cRefID ] := oItem
             oItem:setExpanded( .T.  )
          ENDIF
       NEXT
-      ::oTreeVisuals:connect( "itemClicked(QTreeWidgetItem*,int)", {|oItem| ::loadVisual( oItem:whatsThis( 0 ) ) } )
-   ENDIF
-   RETURN Self
-
-
-METHOD HbQtVisualizer:loadVisual( cRefID )
-   LOCAL hVisual, hMarker, cMarkerID
-
-   IF ! Empty( ::cCurrentVisual )
-      ::saveVisual( ::cCurrentVisual )
-   ENDIF
-
-   ::oCurGraphicsItem := NIL
-
-   ::showStatus( STATUS_PANEL_VISUALS )
-   IF ! Empty( cRefID )
-      ::cCurrentVisual := cRefID
-      IF HB_ISBLOCK( ::visualsLoadBlock() )
-         hVisual := Eval( ::visualsLoadBlock(), cRefID, ::hVisualsList[ cRefID ][ "Version" ] )
-         IF HB_ISHASH( hVisual ) .AND. ! Empty( hVisual )
-            ::hVisualsList[ ::cCurrentVisual ][ "Visual" ] := hVisual
-
-            ::oPixmapBackground := NIL
-            ::setBackgroundImage( __hbqtLoadPixmapFromBuffer( hb_base64Decode( hVisual[ "Image" ] ) ) )
-
-            ::hMarkers[ ::cCurrentVisual ] := __hbqtStandardHash()
-            IF hb_HHasKey( ::hVisualsList[ ::cCurrentVisual ], "Markers" )
-               FOR EACH hMarker IN ::hVisualsList[ ::cCurrentVisual ][ "Markers" ]
-                  cMarkerID := hMarker:__enumKey()
-                  IF hb_HHasKey( ::hMarkers, "m_markers" ) .AND. hb_HHasKey( ::hMarkers[ "m_markers" ], cMarkerID )
-                     ::hMarkers[ ::cCurrentVisual ][ cMarkerID ] := ::hMarkers[ "m_markers" ][ cMarkerID ]
-                     IF hb_HHasKey( hMarker, "Data" )
-                        ::hMarkers[ ::cCurrentVisual ][ cMarkerID ][ "Data" ] := hMarker[ "Data" ]
-                     ENDIF
-                  ELSE
-                     ::hMarkers[ ::cCurrentVisual ][ cMarkerID ] := hMarker
-                     IF hb_HHasKey( hMarker, "Icon" )
-                        hMarker[ "Pixmap" ] := QPixmap( hb_base64Decode( hMarker[ "Icon" ] ) )
-                     ENDIF
-                  ENDIF
-               NEXT
-            ENDIF
-         ENDIF
-      ENDIF
-      ::cCurrentVisualTitle := ::hVisualsList[ ::cCurrentVisual ][ "Label" ]
-      ::buildMarkersTree()
-      ::populateVisual()
-      ::showStatus( STATUS_PANEL_VISUALS, ::cCurrentVisualTitle )
-   ENDIF
-   ::oUI:toolBoxLeft:setCurrentIndex( 1 )
-   RETURN Self
-
-
-METHOD HbQtVisualizer:saveVisual( cVisualID )
-   LOCAL hVisual
-
-   IF ! Empty( cVisualID ) .AND. HB_ISBLOCK( ::visualsSaveBlock() )
-      IF hb_HHasKey( ::hVisualsList, cVisualID )
-         IF Alert( "Save [" + ::hVisualsList[ cVisualID ][ "Label" ], { "Yes", "No" } ) == 1
-            IF ! Empty( hVisual := ::buildVisualStream() )
-               Eval( ::visualsSaveBlock(), cVisualID, ::hVisualsList[ cVisualID ][ "Version1" ], hVisual )
-            ENDIF
-         ENDIF
-      ENDIF
+      ::oVisualsTree:connect( "itemClicked(QTreeWidgetItem*,int)", {|oItem| ::loadVisual( oItem:whatsThis( 0 ) ) } )
    ENDIF
    RETURN Self
 
@@ -2209,13 +2178,13 @@ METHOD HbQtVisualizer:buildStates( hStates )
    LOCAL hState, oPixmap, oState
 
    IF ! Empty( hStates )
-      WITH OBJECT ::oToolbarStates := HbQtScrollableToolbar():new()
+      WITH OBJECT ::oStatesToolbar := HbQtScrollableToolbar():new()
          :setIndicatorsRGB( { 255,0,0 } )
          :setButtonHeight( 50 )
          :setButtonWidth( 50 )
          :create( ::oUI:vLayToolbarStates )
       ENDWITH
-      WITH OBJECT ::oToolbarStates
+      WITH OBJECT ::oStatesToolbar
          FOR EACH hState IN hStates
             oState := HbQtVisualItemState():new( hState )
             hState[ "HbQtVisualItemState" ] := oState
@@ -2235,7 +2204,7 @@ STATIC FUNCTION __stateNameBlock( oObj, cState )
 METHOD HbQtVisualizer:manageStateClicks( cButton )
    LOCAL oldState
    IF ::cCurrentState != cButton
-      oldState := ::oToolbarStates:setState( ::cCurrentState, 2 )
+      oldState := ::oStatesToolbar:setState( ::cCurrentState, 2 )
       ::cCurrentState := cButton
    ELSE
       ::cCurrentState := NIL

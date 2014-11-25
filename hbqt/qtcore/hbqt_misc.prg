@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2011 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2014 Pritpal Bedi <pritpal@vouchcac.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -255,4 +255,19 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
 
    __hbqt_error( 1300 + nResult )
    RETURN .F.
+
+//--------------------------------------------------------------------//
+//                                  .
+//--------------------------------------------------------------------//
+
+CLASS HbQtTouchPoint
+   DATA   hData                                   INIT __hbqtStandardHash()
+   DATA   oRect
+
+   METHOD init()
+   ENDCLASS
+
+
+METHOD HbQtTouchPoint:init()
+   RETURN Self
 

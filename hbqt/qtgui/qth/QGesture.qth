@@ -21,6 +21,17 @@ Version     = 0x040600
 
 <CODE>
 #include <QtGui/QGesture>
+#include <QtGui/QTapAndHoldGesture>
+#include <QtGui/QPanGesture>
+#include <QtGui/QTapGesture>
+#include <QtGui/QSwipeGesture>
+#include <QtGui/QPinchGesture>
+
+HB_FUNC_EXTERN( HB_QTAPANDHOLDGESTURE );
+HB_FUNC_EXTERN( HB_QPANGESTURE );
+HB_FUNC_EXTERN( HB_QTAPGESTURE );
+HB_FUNC_EXTERN( HB_QSWIPEGESTURE );
+HB_FUNC_EXTERN( HB_QPINCHGESTURE );
 
 
 /*
@@ -53,6 +64,60 @@ void setGestureCancelPolicy ( GestureCancelPolicy policy )
 void setHotSpot ( const QPointF & value )
 Qt::GestureState state () const
 void unsetHotSpot ()
+
+
+QTapAndHoldGesture * __toTapAndHoldGesture(){
+   QGesture * p = ( QGesture * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      PHB_ITEM pGesture = hbqt_bindGetHbObject( NULL, new QTapAndHoldGesture(), "HB_QTAPANDHOLDGESTURE", NULL, HBQT_BIT_NONE );
+      hbqt_bindSwapQtObject( pGesture, hb_param( 0, HB_IT_OBJECT ) );
+      hb_itemReturnRelease( pGesture );
+   }
+}
+QPanGesture * __toPanGesture(){
+   QGesture * p = ( QGesture * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      PHB_ITEM pGesture = hbqt_bindGetHbObject( NULL, new QPanGesture(), "HB_QPANGESTURE", NULL, HBQT_BIT_NONE );
+      hbqt_bindSwapQtObject( pGesture, hb_param( 0, HB_IT_OBJECT ) );
+      hb_itemReturnRelease( pGesture );
+   }
+}
+QTapGesture * __toTapGesture(){
+   QGesture * p = ( QGesture * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      PHB_ITEM pGesture = hbqt_bindGetHbObject( NULL, new QTapGesture(), "HB_QTAPGESTURE", NULL, HBQT_BIT_NONE );
+      hbqt_bindSwapQtObject( pGesture, hb_param( 0, HB_IT_OBJECT ) );
+      hb_itemReturnRelease( pGesture );
+   }
+}
+QSwipeGesture * __toSwipeGesture(){
+   QGesture * p = ( QGesture * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      PHB_ITEM pGesture = hbqt_bindGetHbObject( NULL, new QSwipeGesture(), "HB_QSWIPEGESTURE", NULL, HBQT_BIT_NONE );
+      hbqt_bindSwapQtObject( pGesture, hb_param( 0, HB_IT_OBJECT ) );
+      hb_itemReturnRelease( pGesture );
+   }
+}
+QPinchGesture * __toPinchGesture(){
+   QGesture * p = ( QGesture * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      PHB_ITEM pGesture = hbqt_bindGetHbObject( NULL, new QPinchGesture(), "HB_QPINCHGESTURE", NULL, HBQT_BIT_NONE );
+      hbqt_bindSwapQtObject( pGesture, hb_param( 0, HB_IT_OBJECT ) );
+      hb_itemReturnRelease( pGesture );
+   }
+}
+void __justForceLink(){
+   HB_FUNC_EXEC( HB_QTAPANDHOLDGESTURE );
+   HB_FUNC_EXEC( HB_QPANGESTURE );
+   HB_FUNC_EXEC( HB_QTAPGESTURE );
+   HB_FUNC_EXEC( HB_QSWIPEGESTURE );
+   HB_FUNC_EXEC( HB_QPINCHGESTURE );
+}
 </PROTOS>
 
 <SLOTS>

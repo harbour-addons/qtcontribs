@@ -68,7 +68,6 @@ FUNCTION hbmk_plugin_qt( hbmk )
 
       cVer := qt_version_detect( hbmk, "uic", "UIC_BIN" )
       cVer := StrTran( cVer, hb_eol() )
-      hbmk_OutStd( hbmk, ".............................." + cVer )
       hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
 
       IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )
@@ -2242,11 +2241,11 @@ METHOD HbQtSource:getMethodBody( oMtd, cMtdName, aMethods )
    /* If method is manually written in .qth - no more processing */
    IF ! Empty( oMtd:fBody_ )
       AEval( oMtd:fBody_, {| e | AAdd( txt_, e ) } )
+      IF ! empty( oMtd:cVersion ) .OR. ::cQtVer > "0x040500" .OR. ::lQtVerLessThan
+         AAdd( txt_, "#endif" )
+      ENDIF
       AAdd( txt_, "}" )
       AAdd( txt_, "" )
-      IF ! empty( oMtd:cVersion ) .OR. ::cQtVer > "0x040500" .OR. ::lQtVerLessThan
-         AAdd( txt_, "   #endif" )
-      ENDIF
       RETURN txt_
    ENDIF
 

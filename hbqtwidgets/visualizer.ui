@@ -232,7 +232,7 @@
             </property>
             <widget class="QToolBox" name="toolBoxLeft">
              <property name="currentIndex">
-              <number>3</number>
+              <number>1</number>
              </property>
              <property name="tabSpacing">
               <number>6</number>
@@ -242,7 +242,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>245</width>
+                <width>226</width>
                 <height>391</height>
                </rect>
               </property>
@@ -302,12 +302,12 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>245</width>
+                <width>226</width>
                 <height>391</height>
                </rect>
               </property>
               <attribute name="label">
-               <string>Markers</string>
+               <string>Items</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <property name="spacing">
@@ -439,7 +439,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>245</width>
+                <width>226</width>
                 <height>391</height>
                </rect>
               </property>
@@ -510,7 +510,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>245</width>
+                <width>226</width>
                 <height>391</height>
                </rect>
               </property>
@@ -590,19 +590,19 @@
             </widget>
             <widget class="QToolBox" name="toolBoxRight">
              <property name="currentIndex">
-              <number>3</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="pageData">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>185</width>
+                <width>205</width>
                 <height>391</height>
                </rect>
               </property>
               <attribute name="label">
-               <string>Markers Data</string>
+               <string>Data</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_6">
                <property name="leftMargin">
@@ -707,12 +707,12 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>185</width>
+                <width>205</width>
                 <height>391</height>
                </rect>
               </property>
               <attribute name="label">
-               <string>Visual Properties</string>
+               <string>Properties</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_2">
                <property name="spacing">
@@ -1316,7 +1316,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>233</width>
+                <width>215</width>
                 <height>374</height>
                </rect>
               </property>
@@ -1324,6 +1324,18 @@
                <string>Mover</string>
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_14">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
                 <spacer name="verticalSpacer_6">
                  <property name="orientation">

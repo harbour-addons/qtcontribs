@@ -306,4 +306,7 @@
    //
    #define __STATE_AREA_MAXIMUM__                    5
 
+   #define __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ 1
+   #define __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ 2
+
 #endif

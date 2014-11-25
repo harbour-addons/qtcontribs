@@ -16,6 +16,116 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-24 14:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r382)
+  * hbqt/hbmk2_qt.hb
+    ! Fixed: closing #ifdef QT_VERSION in .qth inserted method code.
+
+  * hbqt/qtcore/hbqt.h
+    + Added prototype 
+       HB_EXPORT void hbqt_bindSwapQtObject( PHB_ITEM pSrcObject, PHB_ITEM pSwpObject );
+
+  * hbqt/qtcore/hbqt_bind.cpp
+    + Added: void hbqt_bindSwapQtObject( PHB_ITEM pSrcObject, PHB_ITEM pSwpObject ).
+       This allows to build descendant class out of parent class which are 
+       only possible via Qt's static_cast() function. For example, QGesture() 
+       derived classes which are only casted by static_cast() function. The 
+       implementation is manifested in three methods added to QGesture.qth, viz., 
+       __toPanGesture(), __toPinchGesture() and family.
+
+       WITH OBJECT ::oGraphicsView := ::oUI:graphicsView
+          :grabGesture( Qt_PinchGesture )
+          :connect( QEvent_Gesture, ;
+             {|oEvent|
+                LOCAL nChangeFlags, nScale
+                LOCAL oGesture := oEvent:gesture( Qt_PinchGesture )
+                IF ! Empty( oGesture )
+                   oGesture := oGesture:__toPinchGesture()  // IMPLEMENTATION MANIFEST 
+                   nChangeFlags := oGesture:changeFlags()
+                   IF hb_bitAnd( nChangeFlags, QPinchGesture_ScaleFactorChanged ) != 0
+                      nScale := oGesture:scaleFactor()
+                      IF nScale < 2 .AND. nScale > 0.5
+                         ::oGraphicsView:scale( nScale, nScale )
+                      ENDIF
+                   ENDIF
+                   RETURN .T.
+                ENDIF
+                RETURN .T.
+             } )
+       ENDWITH
+
+
+  * hbqt/qtcore/hbqt_misc.prg
+    + Added a class HbQtTouchPoint. [ Under Development ]. It is not meant to be 
+       initiated by PRG code. The clss will be exploted from within QTouchEvent()
+       and will hold the long list of variables a touch point offers.
+
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+    % Changes overall, mainly to offer more versatality to manage Qt Graphics Framework.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Updated registration of events introduced lately by Qt via
+        hbqt_events_register_createobj( nEvent, ... ).
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added more constants needed for newly added classes.
+
+  * hbqt/qtgui/qth/HBQGraphicsItem.qth
+    + Added HbQt specific method QGraphicsPixmapItem * toPixmapItem() returning a 
+       QGraphicsPixmapItem from HBQGraphicsItem().
+
+  * hbqt/qtgui/qth/QGesture.qth
+    + Added HbQt specific methods __toPanGesture(), etc., swapping the QGesture()
+       class object with QPanGesture() object. QGesture() object is destroyed 
+       by HbQt engine. The dangling Harbour object stays within scope if not 
+       ressigned. So oGesture has to be ressigned as 
+         oGesture := oGesture:__toPanGesture | __toPinchGesture() | etc.
+    
+  + hbqt/qtgui/qth/QInputMethodQueryEvent.qth
+  + hbqt/qtgui/qth/QOpenGLBuffer.qth
+  + hbqt/qtgui/qth/QOpenGLWidget.qth
+  + hbqt/qtgui/qth/QScrollEvent.qth
+  + hbqt/qtgui/qth/QScrollPrepareEvent.qth
+  + hbqt/qtgui/qth/QTouchEvent.qth
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added: above new classes needed to explore many more possibilities.
+
+  * hbqtwidgets/hbqtstd.ch
+    + Addded some constants to be consumed by new HbQt classes.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+  * hbqtwidgets/misc.prg
+  * hbqtwidgets/properties.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+  * hbqtwidgets/visualizer.ui
+    % Many, many changes in implementation.
+       API is not stable yet. I have many features on the drawing-board.
+       So far now keep on playing with demovisualizer.prg.
+
+  + hbqtwidgets/slidinglist.prg
+    + Added:  CLASS HbQtSlidingsManager
+               Responsible to manage SlidingLists.
+
+              CLASS HbQtSlidingList
+               A QListWidget with special features allowing it to 
+               be sliding from left or right edges of parent window.
+               This implementation is similar to mobile application 
+               showing up a list of options when finger is swiped 
+               from outside of the left or right side of the mobile 
+               device into to application window. Currently, this 
+               implementation is good for left-to-right or right-to-left
+               movements. Top-to-bottom and Bottopm-to-top implementation
+               is also thought of.
+
+               You can experience it by maximizing the demovisualizer.exe 
+               then swiping-in the left or right edges with left-mouse-pressed, 
+               which is equivalent to finger-swipe on mobile devices.
+
+  * hbqtwidgets/tests/demovisualizer.prg
+    + Slightly modified to honor latest changes in HbQtVisualizer
+
 2014-11-21 12:57 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r381)
   * hbqt/qtbluetooth/hbqtbluetooth.hbc
   * hbqt/qtcore/hbqtcore.hbc

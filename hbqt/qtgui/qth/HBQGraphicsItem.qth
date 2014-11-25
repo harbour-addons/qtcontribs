@@ -123,7 +123,7 @@ HB_FUNC( QT_HBQGRAPHICSITEM )
    void           setBarValues( const QStringList & list )
    void           setLegendColorRectWidth( int legendColorRectWidth )
    void           hbSetLocked( bool lock )
-
+   QGraphicsPixmapItem * toPixmapItem()
 </PROTOS>
 
 <SLOTS>

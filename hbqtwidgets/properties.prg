@@ -300,6 +300,8 @@ METHOD HbQtPropertySheet:addProperty( cProperty, cLabel, cParent, nType, xValue,
 
    oHbQtProperty:propertyChangedBlock := {|cProperty,xValue| iif( HB_ISBLOCK( ::propertyChangedBlock() ), ;
                                        Eval( ::propertyChangedBlock(), ::name(), cProperty, xValue ), NIL ) }
+
+   ::oWidget:resizeColumnToContents( 0 )
    RETURN Self
 
 

@@ -413,6 +413,12 @@ FUNCTION __hbqtLoadPixmapFromBuffer( cBuffer, cFormat )
    RETURN oPixmap
 
 
+FUNCTION  __hbqtIconFromBuffer( cBuffer )
+   LOCAL oPixmap := QPixmap()
+   oPixmap:loadFromData( cBuffer, Len( cBuffer ), "PNG" )
+   RETURN QIcon( oPixmap )
+
+
 FUNCTION __hbqtLoadResourceAsBase64String( cResource )
    LOCAL cBuffer, oB, oFile
 
@@ -436,7 +442,7 @@ FUNCTION __hbqtRgbaCssStrDarker( aRgb, nFactor )
    RETURN "rgba(" + hb_ntos( oColor:red() ) + "," +  hb_ntos( oColor:green() ) + "," + hb_ntos( oColor:blue() ) + ",255)"
 
 
-FUNCTION __hbqtUndoStandardScroller( oScrollableWidget )
+FUNCTION __hbqtUndoScroller( oScrollableWidget )
    QScroller():scroller( oScrollableWidget ):ungrabGesture( oScrollableWidget )
    RETURN NIL
 
@@ -451,6 +457,19 @@ FUNCTION __hbqtApplyStandardScroller( oScrollableWidget )
    ENDWITH
    oScroller:setScrollerProperties( oScrollerProperties )
    oScroller:grabGesture( oScrollableWidget, QScroller_LeftMouseButtonGesture )
+   RETURN oScroller                               // in case to finetune other properties
+
+
+FUNCTION __hbqtApplyTouchScroller( oScrollableWidget )
+   LOCAL oScrollerProperties
+   LOCAL oScroller := QScroller():scroller( oScrollableWidget )
+
+   WITH OBJECT oScrollerProperties := oScroller:scrollerProperties()
+      :setScrollMetric( QScrollerProperties_OvershootDragDistanceFactor  , QVariant( 0 ) )
+      :setScrollMetric( QScrollerProperties_OvershootScrollDistanceFactor, QVariant( 0 ) )
+   ENDWITH
+   oScroller:setScrollerProperties( oScrollerProperties )
+   oScroller:grabGesture( oScrollableWidget, QScroller_TouchGesture )
    RETURN oScroller                               // in case to finetune other properties
 
 
@@ -473,6 +492,10 @@ FUNCTION __hbqtGradientBrush( oColorStart, oColorStop, nType )
       :setColorAt( 1, oColorStop  )
    ENDWITH
    RETURN QBrush( oGrad )
+
+
+FUNCTION __hbqtApplicationWidget()
+   RETURN QApplication():topLevelAt( 0,0 )
 
 
 FUNCTION __hbqtTreeViewStyleSheet()
