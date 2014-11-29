@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-28 18:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r383)
+  * hbqtwidgets/charts.prg
+  * hbqtwidgets/dashboard.prg
+    ! Fixed: memory leak on DahBoard object of type Chart.
+
 2014-11-24 14:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r382)
   * hbqt/hbmk2_qt.hb
     ! Fixed: closing #ifdef QT_VERSION in .qth inserted method code.

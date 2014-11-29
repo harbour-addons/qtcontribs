@@ -83,7 +83,7 @@ CLASS HbQtCharts
    DATA   oToolbar
    DATA   oLabel
    DATA   oScrollArea
-   DATA   oImage
+   DATA   oPixmap
    DATA   oPainter
 
    DATA   oActBars, oActPie, oActPie3D, oActLines, oActShadows, oActLegends, oActLabels, oActValues, oActPrint
@@ -115,18 +115,18 @@ CLASS HbQtCharts
 
    DATA   lToolbar                                INIT .T.
 
-   METHOD new( oParent )
+   METHOD init( oParent )
    METHOD create()
    METHOD refresh()
    METHOD buildToolbar()
 
    METHOD isToolbarEnabled()                      INLINE ::lToolbar
-   METHOD enableToolbar( lYes )                   INLINE iif( HB_ISLOGICAL( lYes ), ::lToolbar := lYes, NIL ), ::refresh()
+   METHOD enableToolbar( lYes )                   INLINE iif( HB_ISLOGICAL( lYes ), ::lToolbar := lYes, NIL ), iif( ::lToolbar, ::oToolbar:show(), ::oToolbar:hide() )
 
-   METHOD Type()                                  INLINE ::m_type
+   METHOD type()                                  INLINE ::m_type
    METHOD SetType( nType )                        INLINE ::m_type := nType, ::refresh()
 
-   METHOD Title()                                 INLINE ::m_title
+   METHOD title()                                 INLINE ::m_title
    METHOD setTitle( s )                           INLINE ::m_title := s, ::refresh()
 
    METHOD isTitleEnabled()                        INLINE ::m_usingTitle
@@ -147,10 +147,10 @@ CLASS HbQtCharts
    METHOD isValuesOnYEnabled()                    INLINE ::m_valuesEnY
    METHOD enableVluesOnY( b )                     INLINE ::m_valuesEnY := b, ::refresh()
 
-   METHOD TypeOfLegend()                          INLINE ::m_tipoLegend
+   METHOD typeOfLegend()                          INLINE ::m_tipoLegend
    METHOD setLegendType( t )                      INLINE ::m_tipoLegend := t, ::refresh()
 
-   METHOD LegendFont()                            INLINE ::m_letraLegend
+   METHOD legendFont()                            INLINE ::m_letraLegend
    METHOD setLegendFont( f )                      INLINE ::m_letraLegend := f, ::refresh()
 
    METHOD font()                                  INLINE ::m_letra
@@ -168,7 +168,7 @@ CLASS HbQtCharts
    METHOD addLineaStop( s )                       INLINE ::lineasStops:append( s )
    METHOD addLineaStops( sl )                     INLINE ::lineasStops := sl
 
-   METHOD Clear()
+   METHOD clear()
 
    METHOD draw( oSurface )
    METHOD drawBar( painter )
@@ -180,9 +180,9 @@ CLASS HbQtCharts
    METHOD drawLegendCircular( painter )
    METHOD drawYValues( painter )
 
-   METHOD GetQuater( angle )
+   METHOD getQuater( angle )
    METHOD angle360( angle )
-   METHOD GetPoint( angle, R1, R2 )
+   METHOD getPoint( angle, R1, R2 )
    METHOD percent()                               INLINE ::m_percent
    METHOD setPercent( f )
    METHOD startAnimation()
@@ -190,8 +190,8 @@ CLASS HbQtCharts
    METHOD printChart( oPrinter )
    METHOD manageKeyPress( oKeyEvent )
 
-   METHOD height()                                INLINE ::oImage:height()
-   METHOD width()                                 INLINE ::oImage:width()
+   METHOD height()                                INLINE ::oPixmap:height()
+   METHOD width()                                 INLINE ::oPixmap:width()
 
    DATA   nColorIndex                             INIT 1
 
@@ -204,7 +204,7 @@ CLASS HbQtCharts
    ENDCLASS
 
 
-METHOD HbQtCharts:new( oParent )
+METHOD HbQtCharts:init( oParent )
 
    ::oParent := oParent
 
@@ -262,7 +262,7 @@ METHOD HbQtCharts:new( oParent )
 
    ::hPallete[ "default" ] := ::aPallete
 
-   ::oPainter := QPainter()
+   ::oPixmap := QPixmap()
 
    ::nStartIndex := Max( 1, hb_Random( 99999 ) % Len( ::aPallete ) )
 
@@ -284,11 +284,13 @@ METHOD HbQtCharts:create()
    ::buildToolbar()
 
    WITH OBJECT ::oLabel := QLabel()
+      :setContentsMargins( 0,0,0,0 )
       :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
       :resize( 200, 150 )
    ENDWITH
 
    WITH OBJECT ::oScrollArea := QScrollArea()
+      :setContentsMargins( 0,0,0,0 )
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setWidgetResizable( .F. )
@@ -411,25 +413,6 @@ METHOD HbQtCharts:buildToolbar()
 
    RETURN Self
 
-METHOD HbQtCharts:refresh()
-
-   IF HB_ISOBJECT( ::oWidget )
-      IF ::lToolbar
-         ::oToolbar:show()
-      ELSE
-         ::oToolbar:hide()
-      ENDIF
-
-      ::oLabel:setPixmap( QPixmap() )
-      ::oLabel:resize( ::oScrollArea:width(), ::oScrollArea:height() )
-      ::oImage := QImage( ::oScrollArea:width()-10, ::oScrollArea:height()-10, QImage_Format_ARGB32 )
-      ::oImage:fill( Qt_darkGray )
-      ::draw( ::oImage )
-      ::oLabel:setPixmap( QPixmap():fromImage( ::oImage ) )
-   ENDIF
-
-   RETURN Self
-
 
 METHOD HbQtCharts:addItem( name, value, color )
    LOCAL p := HbQtChartsPiece():new()
@@ -457,6 +440,7 @@ METHOD HbQtCharts:addItem( name, value, color )
 
    p:name := name
    p:addValue( value )
+   p:color  := NIL
    p:color  := color
 
    ::pieces:append( p )
@@ -473,25 +457,34 @@ METHOD HbQtCharts:addItem( name, value, color )
 
 
 METHOD HbQtCharts:addMulibarColor( name, color )
-   LOCAL par
+   LOCAL pare
 
-   par := HbQTPair():new()
-   par:first  := name
-   par:second := color
-   ::multibarColors:append( par )
+   pare := HbQtPair():new()
+   pare:first  := name
+   pare:second := color
+   ::multibarColors:append( pare )
+
+   RETURN Self
+
+
+METHOD HbQtCharts:refresh()
+
+   IF HB_ISOBJECT( ::oWidget )
+      ::oLabel:resize( ::oScrollArea:width(), ::oScrollArea:height() )
+      ::oPixmap := QPixmap( ::oScrollArea:width()-10, ::oScrollArea:height()-10 )
+      ::oPixmap:fill( QColor( 240,240,240 ) )
+      ::draw( ::oPixmap )
+      ::oLabel:setPixmap( ::oPixmap )
+      ::oPixmap := NIL
+   ENDIF
 
    RETURN Self
 
 
 METHOD HbQtCharts:draw( oSurface )
-   LOCAL fontH, title, maxLength, cToken, range, p, pieceHeight, s, i, pPerc, fm
-   LOCAL painter := QPainter( oSurface )
-//   LOCAL painter := ::oPainter
-#if 0
-   IF ! painter:begin( oSurface )
-      RETURN Self
-   ENDIF
-#endif
+   LOCAL fontH, title, maxLength, cToken, range, p, pieceHeight, s, i, pPerc, fm, painter
+
+   painter := QPainter( oSurface )
    painter:setRenderHint( QPainter_Antialiasing )
    painter:setFont( ::m_letra )
 
@@ -501,6 +494,9 @@ METHOD HbQtCharts:draw( oSurface )
       ::m_right := ::width() - 5
       ::m_width := ::m_right - ::m_left
       ::drawAxis( painter )
+
+      painter:end()
+      painter := NIL
       RETURN Self
    ENDIF
 
@@ -568,7 +564,7 @@ METHOD HbQtCharts:draw( oSurface )
          IF ::m_tipoLegend == HBQT_LEGEND_VERICAL .AND. ::m_type != HBQT_CHART_BARS_M
             FOR i := 1 TO ::pieces:size()
                IF ::m_type != HBQT_CHART_LINES
-                  cToken := ::pieces:at( i ):name + ":" + HHB_NTOS( ::pieces:at( i ):value() )
+                  cToken := ::pieces:at( i ):name() + ":" + HHB_NTOS( ::pieces:at( i ):value() )
                   maxLength := Max( maxLength, fm:width( cToken ) )
                ELSE
                   maxLength := Max( maxLength, fm:width( ::pieces:at( i ):name ) )
@@ -627,6 +623,7 @@ METHOD HbQtCharts:draw( oSurface )
             :drawText( ::width() / 2 - painter:fontMetrics():width( ::m_title ) / 2, fontH, ::m_title )
             :restore()
          ENDWITH
+         title := NIL
       ENDIF
       ::m_height := ::m_bottom - ::m_top
 
@@ -680,23 +677,14 @@ METHOD HbQtCharts:draw( oSurface )
 
    ENDSWITCH
 
-//   painter:end()
-
+   painter:end()
+   painter := NIL
    RETURN Self
 
 
 METHOD HbQtCharts:drawBar( painter )
    LOCAL pen, isPositive, range, fontHeight, p, pieceHeight, a, s, pDist, i, pieceXPos, label, pieceWidth
-   LOCAL gradient, gradientNeg, pPerc
-   LOCAL fm := painter:fontMetrics()
-
-   painter:save()
-
-   pDist := 15
-   pieceWidth := ( ::m_width -( ::pieces:size() ) * pDist ) / ::pieces:size()
-
-   pen := QPen()
-   pen:setWidth( 2 )
+   LOCAL gradient, gradientNeg, pPerc, fm
 
    range := ::m_mayor
    IF ::m_menor < 0
@@ -705,6 +693,16 @@ METHOD HbQtCharts:drawBar( painter )
    IF range == 0
       RETURN Self
    ENDIF
+
+   painter:save()
+
+   fm := painter:fontMetrics()
+   pDist := 15
+   pieceWidth := ( ::m_width -( ::pieces:size() ) * pDist ) / ::pieces:size()
+
+   pen := QPen()
+   pen:setWidth( 2 )
+
    FOR i := 1 TO ::pieces:size()
       isPositive := ::pieces:at( i ):value() >= 0
 
@@ -780,6 +778,7 @@ METHOD HbQtCharts:drawBar( painter )
    NEXT
    painter:restore()
 
+   pen := NIL
    IF ::m_useLegend
       ::drawLegendVertical( painter )
    ENDIF
@@ -903,8 +902,7 @@ METHOD HbQtCharts:drawMultiBar( painter )
 
 METHOD HbQtCharts:drawLines( painter )
    LOCAL range, start, pDist, i, xPositions, a, s, points, pointcount, above, c, pen, y, x, _p
-   LOCAL use, gradient, c1, _min, _max, fontH
-   LOCAL fm := painter:fontMetrics()
+   LOCAL use, gradient, c1, _min, _max, fontH, fm
 
    range := ::m_mayor
    IF ::m_menor < 0
@@ -913,6 +911,8 @@ METHOD HbQtCharts:drawLines( painter )
    IF range == 0
       RETURN Self
    ENDIF
+
+   fm := painter:fontMetrics()
 
    fontH := fm:height()
    start := ::m_left + 15
@@ -1116,7 +1116,6 @@ METHOD HbQtCharts:drawAxis( painter )
    painter:drawLine( ::m_left, top + 2, ::m_left, ::height() - 4 )
    painter:drawLine( ::m_left, ::m_xAxis, ::m_left + ::m_width, ::m_xAxis )
 
-   //painter:setPen( Qt_SolidLine )
    pen:setWidth( 1 )
    painter:setPen( pen )
    IF ::m_mayor > 0
@@ -1129,7 +1128,7 @@ METHOD HbQtCharts:drawAxis( painter )
    ENDIF
 
    painter:restore()
-
+   pen := NIL
    RETURN SELF
 
 
@@ -1261,7 +1260,7 @@ METHOD HbQtCharts:drawYValues( painter )
    RETURN SELF
 
 
-METHOD HbQtCharts:GetPoint( angle, R1, R2 )
+METHOD HbQtCharts:getPoint( angle, R1, R2 )
    LOCAL point, x, y
 
    DEFAULT R1 TO 0
@@ -1291,6 +1290,7 @@ METHOD HbQtCharts:setPercent( f )
    ::refresh()
 
    RETURN SELF
+
 
 METHOD HbQtCharts:getQuater( angle )
 
@@ -1337,9 +1337,18 @@ METHOD HbQtCharts:startAnimation()
 
 
 METHOD HbQtCharts:Clear()
+   LOCAL i
 
+   FOR i := 1 TO ::pieces:size()
+      ::pieces:at( i ):destroy()
+   NEXT
    ::pieces:clear()
+
+   FOR i := 1 TO ::multibarColors:size()
+      ::multibarColors:at( i ):second := NIL
+   NEXT
    ::multibarColors:clear()
+
    ::lineasStops:clear()
 
    ::m_mayor    := 0
@@ -1354,8 +1363,8 @@ METHOD HbQtCharts:printPreview()
 
    WITH OBJECT oPrinter := QPrinter()
       :setOutputFormat( QPrinter_PdfFormat )
-      :setOrientation( QPrinter_Landscape )
-      :setPaperSize( QPrinter_A4 )
+      :setPageOrientation( QPrinter_Landscape )
+      :setPaperSize( QPageSize( QPrinter_A4 ) )
    ENDWITH
 
    oDlg := QPrintPreviewDialog( oPrinter )
@@ -1375,8 +1384,8 @@ METHOD HbQtCharts:printChart( oPrinter )
    LOCAL oPaper, oPage, nMY, nMX, nH, nW, oImage
    LOCAL oPainter := QPainter( oPrinter )
 
-   oPaper := oPrinter:paperRect()
-   oPage  := oPrinter:pageRect()
+   oPaper := oPrinter:paperRect( QPrinter_DevicePixel )
+   oPage  := oPrinter:pageRect( QPrinter_DevicePixel )
 
    nMX    := oPaper:width()  - oPage:width()
    nMY    := oPaper:height() - oPage:height()
@@ -1396,13 +1405,20 @@ CLASS HbQtChartsPiece
 
    DATA   values                                  INIT NIL
    DATA   i_values                                INIT NIL
-   DATA   color                                   INIT QColor()
-   DATA   name                                    INIT ""
+   DATA   oColor                                  INIT QColor()
+   DATA   cName                                   INIT ""
 
-   METHOD new( oHbQtChartsPiece )
+   ACCESS name()                                  INLINE ::cName
+   ASSIGN name( cName )                           INLINE ::cName := cName
+
+   ACCESS color()                                 INLINE ::oColor
+   ASSIGN color( oColor )                         INLINE ::oColor := NIL, ::oColor := oColor
+
+   METHOD init( oHbQtChartsPiece )
+   METHOD destroy()
    METHOD setPercent( nPerc )
 
-   METHOD value()                                 INLINE iif( ::values:isEmpty(), NIL, ::values:At( 1 ) )
+   METHOD value()                                 INLINE iif( ::values:isEmpty(), NIL, ::values:at( 1 ) )
    METHOD getValues()                             INLINE ::values
 
    METHOD addValue( xValue )
@@ -1410,7 +1426,7 @@ CLASS HbQtChartsPiece
    ENDCLASS
 
 
-METHOD HbQtChartsPiece:new( oHbQtChartsPiece )
+METHOD HbQtChartsPiece:init( oHbQtChartsPiece )
    LOCAL i
 
    ::values   := HbQtList():new()
@@ -1418,14 +1434,26 @@ METHOD HbQtChartsPiece:new( oHbQtChartsPiece )
 
    IF HB_ISOBJECT( oHbQtChartsPiece )
       ::i_values := oHbQtChartsPiece:i_values
-      ::color    := oHbQtChartsPiece:color
-      ::name     := oHbQtChartsPiece:name
+      ::oColor   := NIL
+      ::oColor   := oHbQtChartsPiece:color()
+      ::cName    := oHbQtChartsPiece:name()
       FOR i := 1 TO ::i_values:size()
          ::values:append( 0 )
       NEXT
    ENDIF
 
    RETURN Self
+
+
+METHOD HbQtChartsPiece:destroy()
+
+   ::oColor := NIL
+   ::values:clear()
+   ::values := NIL
+   ::i_values:clear()
+   ::i_values := NIL
+
+   RETURN NIL
 
 
 METHOD HbQtChartsPiece:addValue( xValue )
@@ -1457,49 +1485,18 @@ CLASS HbQtPair
    DATA   xFirst                                  INIT NIL
    DATA   xSecond                                 INIT NIL
 
-   METHOD new()
+   METHOD init()
 
-   ACCESS first                                   INLINE ::xFirst
-   ASSIGN first( first )                          INLINE ::xFirst := first
+   ACCESS first()                                 INLINE ::xFirst
+   ASSIGN first( first )                          INLINE ::xFirst := NIL, ::xFirst := first
 
-   ACCESS second                                  INLINE ::xSecond
-   ASSIGN second( second )                        INLINE ::xSecond := second
-
-   ENDCLASS
-
-
-METHOD HbQtPair:new()
-
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
-
-CLASS RoundLabelPoints
-
-   DATA oStart
-   DATA oIntersec
-   DATA cName
-   DATA nValue
-
-   METHOD new()
-
-   ACCESS start                                   INLINE ::oStart
-   ASSIGN start( oPointF )                        INLINE ::oStart := oPointF
-
-   ACCESS intersec                                INLINE ::oIntersec
-   ASSIGN intersec( oPointF )                     INLINE ::oIntersec := oPointF
-
-   ACCESS name                                    INLINE ::cName
-   ASSIGN name( cName )                           INLINE ::cName := cName
-
-   ACCESS value                                   INLINE ::nValue
-   ASSIGN value( nValue )                         INLINE ::nValue := nValue
+   ACCESS second()                                INLINE ::xSecond
+   ASSIGN second( second )                        INLINE ::xSecond := NIL, ::xSecond := second
 
    ENDCLASS
 
 
-METHOD RoundLabelPoints:new()
-
+METHOD HbQtPair:init()
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -1508,12 +1505,13 @@ CLASS HbQtList
 
    DATA   aItems                                  INIT {}
 
-   METHOD new()
+   METHOD init()
+   METHOD clear()
+
    METHOD isEmpty()                               INLINE Len( ::aItems ) == 0
    METHOD prepend( xValue )                       INLINE hb_AIns( ::aItems, 1, xValue, .T. )
    METHOD append( xValue )                        INLINE AAdd( ::aItems, xValue )
    METHOD size()                                  INLINE Len( ::aItems )
-   METHOD clear()                                 INLINE ::aItems := {}
    METHOD resize( nSize )                         INLINE ASize( ::aItems, nSize )
    METHOD last()                                  INLINE ATail( ::aItems )
    METHOD first()                                 INLINE iif( ::isEmpty(), NIL, ::aItems[ 1 ] )
@@ -1524,9 +1522,9 @@ CLASS HbQtList
    ENDCLASS
 
 
-METHOD HbQtList:new()
-
+METHOD HbQtList:init()
    RETURN Self
+
 
 METHOD HbQtList:at( i, xValue )
    LOCAL l_xValue
@@ -1540,5 +1538,14 @@ METHOD HbQtList:at( i, xValue )
 
    RETURN l_xValue
 
-/*----------------------------------------------------------------------*/
+
+METHOD HbQtList:clear()
+   LOCAL xTmp
+
+   FOR EACH xTmp IN ::aItems
+      xTmp := NIL
+   NEXT
+   ::aItems := {}
+
+   RETURN Len( ::aItems )
 

@@ -1199,7 +1199,7 @@ CLASS HbQtDashboardObject
    ACCESS geometry                                INLINE ::oGeometry
    ASSIGN geometry( oGeometry )                   INLINE ::oGeometry := oGeometry
 
-   METHOD new( oParent, aObject )
+   METHOD init( oParent, aObject )
    METHOD create()
    METHOD destroy()
    METHOD update( xData )
@@ -1237,7 +1237,7 @@ CLASS HbQtDashboardObject
    ENDCLASS
 
 
-METHOD HbQtDashboardObject:new( oParent, aObject )
+METHOD HbQtDashboardObject:init( oParent, aObject )
 
    ::id          := __getAnObjectID()
 
@@ -1297,6 +1297,7 @@ METHOD HbQtDashboardObject:pullData()
    IF ::nID $ hData
       hb_mutexLock( hMutex )
          xData := hData[ ::nID ]
+         hData[ ::nID ] := NIL
       hb_mutexUnLock( hMutex )
    ENDIF
 
