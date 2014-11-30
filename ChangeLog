@@ -16,6 +16,128 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-30 12:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r384)
+  * hbxbp/reports.prg
+    ! Fixed: QPrinter specific API changes calls.
+
+  * debug/hwgdebug.hbp
+    - Commented out GTK specific flags.
+    + Introduced hbmk2 specific -workdir flag.
+       Both changes pointed to by Luigi, many thanks.
+
+  * hbide/edit.prg
+    ! Potentially fixed GPF when tabs to spaces formatting was applied.
+
+  * hbqt/qtcore/hbqt_misc.prg
+    ! Fixed: not to use HbQtWidgets specific constructs.
+       Pointed out by Luigi, thanks.
+
+  * hbqt/qtgui/qth/HBQGraphicsScene.qth
+    +- Some methods.
+
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+    ! Fixed: #include  <QtMultiMedia/QSoundEffect> =>  <QtMultimedia/QSoundEffect>.
+       Detected by Luigi, many thanks.
+    +- Some methods.
+
+  * hbqt/qtgui/hbqtgui.ch
+    % Minor.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: silverlight.prg.
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: more constants used in latest HbQtWidget classes.
+
+  + hbqtwidgets/silverlight.prg
+    + Added: CLASS HbQtSilverLight. 
+       A class akin to MS silver-light effects and usage to some extent.
+       USAGE: 
+	 oSLight := HbQtSilverLight():new():create( xContent, oBackground, lAnimate, aOpacity, oWidget )
+            OR
+         WITH OBJECT oSLight := HbQtSilverLight():new():create()
+            :setContent( xContent )                 // DEFAULT is empty string
+            :setBackground( QColor( 200,200,200 ) ) // DEFAULT is QColor( 50,50,50 )
+            :setAnimation( .T. )                    // DEFAULT is TRUE
+            :setAnimationOpacity( { 100, 200 } )    // DEFAULT is { 127, 200 }
+            :setParent( oWidget )                   // DEFAULT is __hbqtAppWidget()
+         ENDWITH 
+         
+         // then whenever you need to invoke it, mostly inside a lengthy process...
+         //
+         oSLight:activate( [ "Some Hints About Lengthy Process" ], ;
+                           [ oNewBackground ], ;
+                           [ lAnimate ], ;
+                           [ {nStartOpacity,nEndOpacity} ], ;
+                           [ oParentWidget ] )
+         // overriding almost all the elements with every next call to activate.
+         // previous settings remain in effect until changed.
+
+         ...... application code for lengthy process. 
+
+         oSLight:deactivate()
+
+       NOTES:  If <xContent> is of type string, then it can be formatted as richtext. 
+               a subset of 
+
+  * hbqtwidgets/misc.prg
+    + Added: FUNCTION __hbqtAppWidget( oAppWidget ).
+       A set/get function which is used throughout the HbQtWidgets where application's 
+       main window is a requirement, i.e., HbQtSlidingList() and HbQtSilverLight()
+       pulls the parent information via this function.
+       This function should be called immediately after constucting the main window
+       of the application like:
+         oWnd := QMainWindow()
+         __hbqtAppWidget( oWnd )
+            OR
+         oUI := hbqtui_myui()
+         __hbqtAppWidget( oUI:oWidget )
+         
+    + Added: FUNCTION HbQtActivateSilverLight( <lActivate>, [<xContent>], [<oBackground>], ;
+                                                   [<lAnimate>], [<aOpacity>], [<oParent>] )
+       A general purpose implementation of HbQtSilverLight which can be invoked with 
+       this function passing parameters to fine-tune it per requirements.
+
+         lActivate   Mandatory   TRUE switches on, FALSE switches off.
+
+         xContent    Optional    cText | QPixmap | QPicture | QMovie. Default is "Please Wait...".
+         oBackground Optional    QColor. Default is QColor( 50,50,50 ).
+         lAnimate    Optional    Logical. Default is TRUE.
+         aOpacity    Optional    Array. Default is { 127, 200 }.
+         oParent     Optional    QWidget derived widget. Default is __hbqtAppWidget().
+                                 If oParent could not be found, function does nothing.
+
+       USAGE:    
+         
+         HbQtActivateSilverLight( .T., "A Lengthy Process, Please Wait..." )
+         DO WHILE lLengthyProcess
+            QApplication():processEvents()      // keep the application responsive needed for 
+                                                // HbQtSilverLight to animate.
+            ...                                 // application code
+         ENDDO
+         HbQtActivateSilverLight( .F. )
+
+  * hbqtwidgets/properties.prg
+  * hbqtwidgets/slidinglist.prg
+  * hbqtwidgets/toolbarex.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+    % Many many changes in the API of new classes.
+       API is still not stable, so please do not use them for production.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: browse printing methods to respect latest Qt API.
+
+  * hbqtwidgets/tests/demovisualizer.prg
+    + Added: code to demnstrate above changes. 
+       To experience HbQtSilverLight implementation, drop a Text object onto the 
+       canvas, select it, expand <Fonts> tree node on the right-side <Properties>,
+       click on <family><Value> node. SilverLight will start animating until 
+       fonts info is pulled, and immediately afterwards <Available Fonts> 
+       HbQtSlidingList() will appear. This effect is meterialized with 
+       HbQtActivateSilverScreen() function with default parameters.
+
 2014-11-28 18:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r383)
   * hbqtwidgets/charts.prg
   * hbqtwidgets/dashboard.prg

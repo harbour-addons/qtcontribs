@@ -77,6 +77,8 @@
 #define HBQT_GRAPHICSITEM_SELECTED                1
 #define HBQT_GRAPHICSITEM_DELETED                 2
 #define HBQT_GRAPHICSITEM_GEOMETRYCHANGED         3
+#define HBQT_GRAPHICSITEM_REQUESTDATA             4
+
 
 #define __graphicsScene_block__                   2001
 
@@ -135,6 +137,7 @@ CLASS HbQtVisual
    METHOD hasItem( cItem )
    METHOD clearItems()
    METHOD getMarkerProperty( cMarker, cProperty, xDefault )
+   METHOD dataRequestDuration( cMarker )
 
    ENDCLASS
 
@@ -178,12 +181,18 @@ METHOD HbQtVisual:visual( hVisual )
       IF hb_HHasKey( hVisual, "Version" )
          ::version( hVisual[ "Version" ] )
       ENDIF
-      IF hb_HHasKey( hVisual, "Objects" )
-         ::objects( hVisual[ "Objects" ] )
+      IF hb_HHasKey( hVisual, "Orientation" )
+         ::oScene:setOrientation( hVisual[ "Orientation" ] )
+      ENDIF
+      IF hb_HHasKey( hVisual, "Width" ) .AND. hb_HHasKey( hVisual, "Height" )
+         ::oScene:setSceneSize( QSize( hVisual[ "Width" ], hVisual[ "Height" ] ) )
       ENDIF
       IF hb_HHasKey( hVisual, "Image" )
          ::pixmap( __hbqtLoadPixmapFromBuffer( hb_base64Decode( hVisual[ "Image" ] ) ) )
          ::backGround( .T. )
+      ENDIF
+      IF hb_HHasKey( hVisual, "Objects" )
+         ::objects( hVisual[ "Objects" ] )
       ENDIF
    ENDIF
    RETURN oldVisual
@@ -197,8 +206,6 @@ METHOD HbQtVisual:scene( lPrepare )
          :setTopMagnet( .T. )
          :setRightMagnet( .T. )
          :setBottomMagnet( .T. )
-         :setPageSize( QPrinter_Letter )
-         :setOrientation( QPrinter_Landscape )
       ENDWITH
    ENDIF
    RETURN ::oScene
@@ -217,6 +224,13 @@ METHOD HbQtVisual:backGround( lPrepare )
       ::scene():addItem( ::oBGItem )
    ENDIF
    RETURN ::oHbQtVisualBackground
+
+
+METHOD HbQtVisual:dataRequestDuration( cMarker )
+   IF hb_HHasKey( ::hMarkers, cMarker ) .AND. hb_HHasKey( ::hMarkers[ cMarker ], "DataRequestDuration" )
+      RETURN ::hMarkers[ cMarker ][ "DataRequestDuration" ]
+   ENDIF
+   RETURN NIL
 
 
 METHOD HbQtVisual:transform( oTransform )
@@ -299,6 +313,9 @@ METHOD HbQtVisual:setupMarkers( hMarkers, hMarkersList )
          hMrk[ cMarkerID ] := hb_HClone( hMarkersList[ cMarkerID ] )
          IF hb_HHasKey( hMarker, "Data" )
             hMrk[ cMarkerID ][ "Data" ] := hMarker[ "Data" ]
+         ENDIF
+         IF hb_HHasKey( hMarker, "DataRequestDuration" )
+            hMrk[ cMarkerID ][ "DataRequestDuration" ] := hMarker[ "DataRequestDuration" ]
          ENDIF
       ELSE
          hMrk[ cMarkerID ] := hMarker
@@ -392,6 +409,7 @@ CLASS HbQtVisualItem
    DATA   oWidget
    DATA   cType                                   INIT ""
    DATA   cName                                   INIT ""
+   DATA   hCargo
 
    DATA   qPen
    DATA   nPenWidth                               INIT 1
@@ -449,14 +467,21 @@ CLASS HbQtVisualItem
    ACCESS isLocked()                              INLINE ::lLocked
    DATA   oDraw
 
-   METHOD init( cType, cName, aPos, aGeometry, nWidth, nHeight )
-   METHOD create( cType, cName, aPos, aGeometry, nWidth, nHeight )
+   METHOD init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
+   METHOD create( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
    METHOD update()
    METHOD destroy()
    ACCESS name()                                  INLINE ::cName
    ACCESS type()                                  INLINE ::cType
+   ACCESS widget()                                INLINE ::oWidget
    ACCESS defWidth()                              INLINE ::nWidth
    ACCESS defHeight()                             INLINE ::nHeight
+
+   DATA   oHbQtVisual
+   METHOD setVisual( oHbQtVisual )
+   DATA   oDataRequestTimer
+   METHOD setDataRequest( nDuration )
+   METHOD requestData()
 
    METHOD execEvent( cEvent, p, p1, p2 )
    METHOD contextMenu( p1, p2 )
@@ -536,7 +561,7 @@ CLASS HbQtVisualItem
    ENDCLASS
 
 
-METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight )
+METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
 
    HB_TRACE( HB_TR_DEBUG, "HbQtVisualItem:new" )
 
@@ -553,12 +578,13 @@ METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight )
    ::aGeometry := aGeometry
    ::nWidth    := nWidth
    ::nHeight   := nHeight
+   ::hCargo    := hCargo
 
    ::oDraw := HbQtVisualItemDraw():new()
    RETURN Self
 
 
-METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight )
+METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
 
    HB_TRACE( HB_TR_DEBUG, "HbQtVisualItem:new" )
 
@@ -568,6 +594,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight )
    DEFAULT aGeometry TO ::aGeometry
    DEFAULT nWidth    TO ::nWidth
    DEFAULT nHeight   TO ::nHeight
+   DEFAULT hCargo    TO ::hCargo
 
    ::cType     := cType
    ::cName     := cName
@@ -575,6 +602,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight )
    ::aGeometry := aGeometry
    ::nWidth    := nWidth
    ::nHeight   := nHeight
+   ::hCargo    := hCargo
 
    SWITCH cType
    CASE "Marker"
@@ -669,6 +697,50 @@ METHOD HbQtVisualItem:onError( ... )
       cMsg := SubStr( cMsg, 2 )
    ENDIF
    RETURN ::oWidget:&cMsg( ... )
+
+
+METHOD HbQtVisualItem:setVisual( oHbQtVisual )
+   ::oHbQtVisual := oHbQtVisual
+   // trigger other methods
+   //
+   IF HB_ISHASH( ::hCargo ) .AND. hb_HHasKey( ::hCargo, "Marker" )
+      ::setDataRequest( ::oHbQtVisual:dataRequestDuration( ::hCargo[ "Marker" ] ) )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setDataRequest( nDuration )
+   IF HB_ISNUMERIC( nDuration ) .AND. nDuration > 0
+      ::oDataRequestTimer := NIL
+      WITH OBJECT ::oDataRequestTimer := QTimer()
+         :setInterval( nDuration * 1000 )
+         :connect( "timeout()", {|| ::requestData() } )
+         :start()
+      ENDWITH
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:requestData()
+   LOCAL hItem, oRect
+
+   IF HB_ISBLOCK( ::actionsBlock() )
+      oRect := ::geometry()
+
+      hItem := __hbqtStandardHash()
+
+      hItem[ "RefID"    ] := ::oHbQtVisual:refID()
+      hItem[ "Identity" ] := ::hCargo[ "Marker" ]
+      hItem[ "Name"     ] := ::name()
+      hItem[ "X"        ] := oRect:x()
+      hItem[ "Y"        ] := oRect:y()
+      hItem[ "Width"    ] := oRect:width()
+      hItem[ "Height"   ] := oRect:height()
+      hItem[ "State"    ] := iif( Empty( ::state() ), NIL, ::state():type() )
+
+      Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_REQUESTDATA, hItem )   // response channel is separate
+   ENDIF
+   RETURN Self
 
 
 METHOD HbQtVisualItem:actionsBlock( bBlock )
@@ -774,7 +846,6 @@ METHOD HbQtVisualItem:setData( hData )
 METHOD HbQtVisualItem:setDataValue( cField, xValue )
 
    IF ! Empty( cField ) .AND. hb_HHasKey( ::hData, cField )
-//Alert( {cField,xValue} )
       ::hData[ cField ][ "Value" ] := xValue
    ENDIF
    RETURN Self

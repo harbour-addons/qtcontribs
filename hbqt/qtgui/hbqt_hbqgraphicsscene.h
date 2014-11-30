@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QUrl>
-#include <QtMultiMedia/QSoundEffect>
+#include <QtMultimedia/QSoundEffect>
 
 #include <QtGui/QCursor>
 #include <QtGui/QKeyEvent>
@@ -113,10 +113,7 @@ public:
    void                     hbSetBlock( PHB_ITEM b );
    void                     hbClearBlock();
 
-   virtual int              pageSize();
-   virtual void             setPageSize( int pageSize );
-   QRectF                   paperRect();
-   void                     setPaperRect( QRectF paperRect );
+   virtual void             setSceneSize( const QSize & sceneSize );
    virtual int              orientation();
    virtual void             setOrientation( int orientation );
    virtual QRectF           geometry();
@@ -162,7 +159,7 @@ private:
    void                     drawBorder();
 
 private:
-   int                      m_pageSize;
+   QSize                    m_sceneSize;
    int                      m_orientation;
    QRectF                   m_geometry,  m_paperRect;
    int                      m_magnets,   m_magnetArea;

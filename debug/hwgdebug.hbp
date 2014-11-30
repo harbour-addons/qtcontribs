@@ -20,13 +20,14 @@
 
 
 -o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
+-workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_targetname}
 
 
 -instpath=${HB_LIB}/
 
 
 -cflag=-DHWG_USE_POINTER_ITEM
-"{unix}-cflag=`pkg-config --cflags gtk+-2.0`"
+#"{unix}-cflag=`pkg-config --cflags gtk+-2.0`"
 
 # Comment out the following line if you are using very old xHarbour around 2007.
 #-cflag=-D__XHARBOUR_VERYOLD__

@@ -257,17 +257,24 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
    RETURN .F.
 
 //--------------------------------------------------------------------//
-//                                  .
+//                          CLASS HbQtTouchPoint
 //--------------------------------------------------------------------//
 
 CLASS HbQtTouchPoint
-   DATA   hData                                   INIT __hbqtStandardHash()
+
+   DATA   hData
    DATA   oRect
 
    METHOD init()
+
    ENDCLASS
 
 
 METHOD HbQtTouchPoint:init()
+
+   hData := {=>}
+   hb_HKeepOrder( hData, .T. )
+   hb_HCaseMatch( hData, .T. )
+
    RETURN Self
 

@@ -87,6 +87,7 @@
 #define HBQT_GRAPHICSITEM_SELECTED                1
 #define HBQT_GRAPHICSITEM_DELETED                 2
 #define HBQT_GRAPHICSITEM_GEOMETRYCHANGED         3
+#define HBQT_GRAPHICSITEM_REQUESTDATA             4
 
 
 #define HQR_BARCODE_3OF9                          1
@@ -121,13 +122,6 @@
 #define __treeMarkers_currentItemChanged__        2011
 
 
-#define __HBQT_PRP_JUST__                         1000
-#define __HBQT_PRP_EDIT__                         1001
-#define __HBQT_PRP_COMBO__                        1002
-#define __HBQT_PRP_COLOR__                        1003
-#define __HBQT_PRP_FONT__                         1004
-#define __HBQT_PRP_TEXTURE__                      1005
-
 #define __HBQT_VISUALIZER_OPTION_RESIZEINPLACE__  1
 
 #define STATUS_PANEL_READY                        1
@@ -145,8 +139,6 @@ CLASS HbQtVisualizer
    METHOD create( oParent, oAppWidget )
    METHOD destroy()                               VIRTUAL
 
-   METHOD setAppWidget( oWidget )
-
    METHOD setSplitterSizes( nFrameLeftWidth, nFrameRightWidth )
    METHOD setOption( nOption, xValue )
 
@@ -160,6 +152,14 @@ CLASS HbQtVisualizer
 
    METHOD manageStateClicks( cButton )
    METHOD manageMarkerVClicks( cMarker )
+
+   METHOD itemDataChangedBlock( bBlock )          SETGET    // fired for hItem[ "DataChange"  ] == TRUE defined items
+   METHOD itemDataRequestBlock( bBlock )          SETGET    // fired for hItem[ "DataRequestDuration" ] == nDurationInSeconds defined indivisual items
+   METHOD refreshItem( hItem )                              // general purpose method to receive structured data from application
+                                                            // either in reponse to itemDataRequestBlock() or by its own.
+   //
+
+   FRIEND CLASS HbQtVisual
 
    PROTECTED:
 
@@ -225,6 +225,9 @@ CLASS HbQtVisualizer
    DATA   bVisualsLoadBlock
    DATA   bVisualsSaveBlock
    DATA   bVisualsVerListBlock
+   DATA   bItemDataChangedBlock
+   DATA   bItemDataRequestBlock
+
 
    DATA   hVisualsTree                            INIT __hbqtStandardHash()
    DATA   hNavgtTreeItems                         INIT __hbqtStandardHash()
@@ -240,11 +243,15 @@ CLASS HbQtVisualizer
    DATA   aObjects                                INIT {}
    DATA   aRptPages                               INIT {}
    DATA   aRptObjects                             INIT {}
+   DATA   oTimerZoom
+   DATA   nHSBValue                               INIT 0
+   DATA   nVSBValue                               INIT 0
 
    METHOD execEvent( nEvent, p, p1, p2 )
 
    METHOD buildToolbar( oLayout )
    METHOD buildToolbarObjects( oLayout )
+   METHOD buildSlidings()
    METHOD buildMarkersTree()
    METHOD buildStatusBar()
    METHOD buildComponents()
@@ -270,7 +277,7 @@ CLASS HbQtVisualizer
    METHOD moveMarker( nDirection )
    METHOD manageEditing( lOn )
 
-   METHOD itemActionsBlock( oHbQtVisualItem, nAction )
+   METHOD itemActionsBlock( oHbQtVisualItem, nAction, xData )
    METHOD objectGeometryChanged( oHbQtVisualItem )
    METHOD objectDeleted( oHbQtVisualItem )
    METHOD objectSelected( oHbQtVisualItem )
@@ -298,8 +305,8 @@ CLASS HbQtVisualizer
    METHOD buildStyleSheet()
    METHOD switchItemOptions( lOnOff )
    METHOD updateItemStatus( oHbQtVisualItem )
+   METHOD activatePanning( lActivate )
 
-   FRIEND CLASS HbQtVisual
    ENDCLASS
 
 
@@ -309,7 +316,6 @@ METHOD HbQtVisualizer:init( oParent, oAppWidget )
    ::oAppWidget := oAppWidget
 
    hIDs := __hbqtStandardHash()
-
    RETURN Self
 
 
@@ -347,40 +353,7 @@ METHOD HbQtVisualizer:create( oParent, oAppWidget )
 
    DEFAULT ::oAppWidget TO ::oUI:oWidget
 
-   WITH OBJECT ::oSlidingListRight := HbQtSlidingList():new( ::oAppWidget )
-      :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
-      :setDuration( 70 )
-      :create()
-      :addItem( "b", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "a", { "k Visual"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "P", { "Right Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Right" ) } )
-      :addItem( "q", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "y", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "t", { "hgf Visual"  , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "r", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "e", QPlainTextEdit(), {|| NIL  } )
-   ENDWITH
-
-   WITH OBJECT ::oSlidingListLeft := HbQtSlidingList():new( ::oAppWidget )
-      :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ )
-      :setDuration( 70 )
-      :create()
-      :addItem( "P", { "Left Visual" , QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Left" )  } )
-      :addItem( "q", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "s", { "hh Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "c", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "f", { "dd Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "h", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "j", { "k Visual"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "k", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-   ENDWITH
-
-   WITH OBJECT ::oSlidingsManager := HbQtSlidingsManager():new( ::oWidget ):create()
-      :addSliding( "PrintList" , {|| ::oSlidingListRight:activate() } )
-      :addSliding( "PrintListL", {|| ::oSlidingListLeft:activate() } )
-      :activateSlidings( "PrintListL", "PrintList" )
-   ENDWITH
-
+   ::buildSlidings()
    ::buildToolbar( ::oUI:hLayToolbarVisualizer )
    ::buildToolbarObjects( ::oUI:vLayToolbarVisualizer )
    ::buildComponents()
@@ -426,6 +399,11 @@ METHOD HbQtVisualizer:create( oParent, oAppWidget )
 
    ::oWidget:connect( QEvent_Show, {|| ::show() } )
 
+   WITH OBJECT ::oTimerZoom := QTimer()
+      :setSingleShot( .T. )
+      :setInterval( 100 )
+      :connect( "timeout()", {|| ::activatePanning( .T. ) } )
+   ENDWITH
    RETURN Self
 
 
@@ -434,24 +412,36 @@ METHOD HbQtVisualizer:buildComponents()
    ::oSplitter := ::oUI:splitterViews
 
    WITH OBJECT ::oGraphicsView := ::oUI:graphicsView
+#if 0                                             // Still not working as expected, many flaws.
       :grabGesture( Qt_PinchGesture )
       :connect( QEvent_Gesture, ;
          {|oEvent|
-            LOCAL nChangeFlags, nScale
+            LOCAL nChangeFlags, nScale, nZoom
             LOCAL oGesture := oEvent:gesture( Qt_PinchGesture )
             IF ! Empty( oGesture )
                oGesture := oGesture:__toPinchGesture()
+               IF oGesture:state() == Qt_GestureStarted
+                  ::activatePanning( .F. )
+               ENDIF
                nChangeFlags := oGesture:changeFlags()
                IF hb_bitAnd( nChangeFlags, QPinchGesture_ScaleFactorChanged ) != 0
                   nScale := oGesture:scaleFactor()
                   IF nScale < 2 .AND. nScale > 0.5
-                     ::oGraphicsView:scale( nScale, nScale )
+                     nZoom := nScale
+                     ::oGraphicsView:setTransformationAnchor( QGraphicsView_AnchorUnderMouse )
+                     ::nHSBValue := ::oGraphicsView:horizontalScrollbar():value()
+                     ::nVSBValue := ::oGraphicsView:verticalScrollbar():value()
+                     ::oGraphicsView:scale( nZoom, nZoom )
+                     ::showStatus( 4, Str( nZoom ) )
                   ENDIF
                ENDIF
-               RETURN .T.
+               IF oGesture:state() == Qt_GestureFinished
+                  ::oTimerZoom:start()
+               ENDIF
             ENDIF
             RETURN .T.
          } )
+#endif
    ENDWITH
    WITH OBJECT ::oPropWidget := ::oUI:pageProperties
       //
@@ -532,13 +522,6 @@ METHOD HbQtVisualizer:buildComponents()
    RETURN Self
 
 
-METHOD HbQtVisualizer:setAppWidget( oWidget )
-   IF HB_ISOBJECT( oWidget )
-      ::oAppWidget := oWidget
-   ENDIF
-   RETURN Self
-
-
 METHOD HbQtVisualizer:activateScene()
 
    ::oCurScene := ::oCurHbQtVisual:scene()
@@ -582,18 +565,11 @@ METHOD HbQtVisualizer:setOption( nOption, xValue )
 
 
 METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
-   LOCAL i, nScaleFactor
+   LOCAL i, nScaleFactor, xTmp
 
    SWITCH nEvent
    CASE __graphicsScene_block__
       DO CASE
-      CASE p == 21201                             // paint background
-#if 0
-         IF HB_ISOBJECT( ::oCurHbQtVisual ) .AND. HB_ISOBJECT( ::oCurHbQtVisual:backGround() )
-            p1:fillRect( ::oCurScene:sceneRect(), QColor( Qt_white ) )
-            ::oCurHbQtVisual:backGround():draw( p1, ::oCurScene:sceneRect() )
-         ENDIF
-#endif
       CASE p == 21107                             // Left button pressed nowhere on an item
          ::objectSelected()
          ::placeObject( p1, p2 )                  // scene coordinates
@@ -619,7 +595,9 @@ METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
       ENDCASE
       EXIT
    CASE __treeObjects_clicked__
-      ::objectSelected( ::oCurHbQtVisual:item( p:text( 0 ) ) )
+      xTmp := ::oCurHbQtVisual:item( p:text( 0 ) )
+      ::objectSelected( xTmp )
+      ::oGraphicsView:centerOn( xTmp:widget() )   // should it be like this ?
       EXIT
    CASE __treeMarkers_currentItemChanged__
       IF ::cCurrentMarkerV != p:whatsThis( 0 )
@@ -666,7 +644,7 @@ METHOD HbQtVisualizer:clearMarker()
    RETURN Self
 
 
-METHOD HbQtVisualizer:itemActionsBlock( oHbQtVisualItem, nAction )
+METHOD HbQtVisualizer:itemActionsBlock( oHbQtVisualItem, nAction, xData )
    SWITCH nAction
    CASE HBQT_GRAPHICSITEM_SELECTED
       ::objectSelected( oHbQtVisualItem )
@@ -676,6 +654,11 @@ METHOD HbQtVisualizer:itemActionsBlock( oHbQtVisualItem, nAction )
       EXIT
    CASE HBQT_GRAPHICSITEM_GEOMETRYCHANGED
       ::objectGeometryChanged( oHbQtVisualItem )
+      EXIT
+   CASE HBQT_GRAPHICSITEM_REQUESTDATA
+      IF HB_ISBLOCK( ::itemDataRequestBlock() )
+         Eval( ::itemDataRequestBlock(), xData )
+      ENDIF
       EXIT
    ENDSWITCH
    RETURN Self
@@ -750,7 +733,6 @@ METHOD HbQtVisualizer:objectSelected( oHbQtVisualItem )
       ::oCurGraphicsItem := ::oCurHbQtVisual:item( cName )
       ::oNavgtTree:setCurrentItem( ::hNavgtTreeItems[ cName ] )
       ::oCurGraphicsItem:select()
-      //::oGraphicsView:ensureVisible( ::oCurGraphicsItem:oWidget )
    ELSE
       ::oCurGraphicsItem := NIL
    ENDIF
@@ -898,7 +880,7 @@ METHOD HbQtVisualizer:populateVisual()
 
 
 METHOD HbQtVisualizer:addObject( cType, oPos, oGeo )
-   LOCAL cName, oGrad, oHbQtVisualItem, aGeo, aPos, cMarker, oPixmap, nWidth, nHeight
+   LOCAL cName, oGrad, oHbQtVisualItem, aGeo, aPos, cMarker, oPixmap, nWidth, nHeight, hCargo
 
    aPos := iif( empty( oPos ), NIL, { oPos:x(), oPos:y() } )
    aGeo := iif( empty( oGeo ), NIL, { oGeo:x(), oGeo:y(), oGeo:width(), oGeo:height() } )
@@ -909,13 +891,16 @@ METHOD HbQtVisualizer:addObject( cType, oPos, oGeo )
       cName   := cMarker + "_" + hb_ntos( ::getNextID( cMarker ) )
       nWidth  := ::oCurHbQtVisual:getMarkerProperty( cMarker, "Width" , nWidth  )
       nHeight := ::oCurHbQtVisual:getMarkerProperty( cMarker, "Height", nHeight )
+
+      hCargo := __hbqtStandardHash()
+      hCargo[ "Marker" ] := cMarker
    ELSE
       cName := cType + "_" + hb_ntos( ::getNextID( cType ) )
    ENDIF
 
-   WITH OBJECT oHbQtVisualItem := HbQtVisualItem():new():create( cType, cName, aPos, aGeo, nWidth, nHeight )
+   WITH OBJECT oHbQtVisualItem := HbQtVisualItem():new():create( cType, cName, aPos, aGeo, nWidth, nHeight, hCargo )
 
-      :actionsBlock := {|oHbQtVisualItem,nAction| ::itemActionsBlock( oHbQtVisualItem, nAction ) }
+      :actionsBlock := {|oHbQtVisualItem,nAction,xData| ::itemActionsBlock( oHbQtVisualItem, nAction, xData ) }
 
       SWITCH cType
       CASE "Marker"
@@ -947,7 +932,10 @@ METHOD HbQtVisualizer:addObject( cType, oPos, oGeo )
          :setText( "Text" )
          EXIT
       ENDSWITCH
+
       ::oCurScene:addItem( :oWidget )
+
+      :setVisual( ::oCurHbQtVisual )
    ENDWITH
 
    ::oCurHbQtVisual:addItem( cName, oHbQtVisualItem )
@@ -988,8 +976,27 @@ METHOD HbQtVisualizer:manageEditing( lOn )
       ::oGraphicsView:setDragMode( QGraphicsView_ScrollHandDrag )
    ELSE
       __hbqtApplyStandardScroller( ::oGraphicsView )
-      //__hbqtApplyTouchScroller( ::oGraphicsView )
       ::oGraphicsView:setDragMode( QGraphicsView_NoDrag )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualizer:activatePanning( lActivate )
+   IF lActivate
+      ::oGraphicsView:horizontalScrollbar():setValue( ::nHSBValue )
+      ::oGraphicsView:verticalScrollbar():setValue( ::nVSBValue )
+      IF ::lEditingOn
+         ::oGraphicsView:setDragMode( QGraphicsView_ScrollHandDrag )
+      ELSE
+         __hbqtApplyStandardScroller( ::oGraphicsView )
+         ::oGraphicsView:setDragMode( QGraphicsView_NoDrag )
+      ENDIF
+   ELSE
+      IF ::lEditingOn
+         ::oGraphicsView:setDragMode( QGraphicsView_NoDrag )
+      ELSE
+         QScroller():scroller( ::oGraphicsView ):ungrabGesture( ::oGraphicsView )
+      ENDIF
    ENDIF
    RETURN Self
 
@@ -1264,7 +1271,6 @@ METHOD HbQtVisualizer:buildToolbar( oLayout )
       :setButtonWidth( 50 )
       :create( oLayout )
    ENDWITH
-
    WITH OBJECT ::oToolbar
       :addToolbarButton( "Save"       , "Save"           , "save-5"           , {|| ::saveVisual()                                } )
       :addToolbarButton( "Print"      , "Print"          , "preview-1"        , {|| ::oHbQtPreview:refreshPreview(), ::oUI:stackBase:setCurrentIndex( 2 ) } )
@@ -1463,7 +1469,7 @@ METHOD HbQtVisualizer:buildPropertySheets()
          :addProperty( "miterLimit"     , "miterLimit"     , "Pen"            , __HBQT_PRP_EDIT__    , 2.00             , NIL )
 
          :addProperty( "brush"          , "Brush"          , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
-         :addProperty( "brushStyle"     , "style"          , "Brush"          , __HBQT_PRP_COMBO__   , "NoBrush"        , aBrushStyle )
+         :addProperty( "brushStyle"     , "style"          , "Brush"          , __HBQT_PRP_BRUSHSTYLE__, "NoBrush"      , NIL )
          :addProperty( "brushColor"     , "color"          , "Brush"          , __HBQT_PRP_COLOR__   , "#ffffff"        , NIL )
 //       :addProperty( "brushTexture"   , "texture"        , "Brush"          , __HBQT_PRP_TEXTURE__ , ""               , NIL )
 
@@ -1471,13 +1477,13 @@ METHOD HbQtVisualizer:buildPropertySheets()
          :addProperty( "font"           , "Font"           , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
          :addProperty( "fontFamily"     , "family"         , "Font"           , __HBQT_PRP_FONT__    , "Arial"          , NIL )
          :addProperty( "fontStyle"      , "style"          , "Font"           , __HBQT_PRP_COMBO__   , "Normal"         , { "Normal", "Italic", "Bold", "Bold Italic" } )
-         :addProperty( "fontSize"       , "size[MM]"       , "Font"           , __HBQT_PRP_COMBO__   , "3.5"            , { "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0" } )
+         :addProperty( "fontSize"       , "size"           , "Font"           , __HBQT_PRP_FONTSIZE__, "3.5"            , NIL )
 
          :addProperty( "backgroundMode" , "bgMode"         , ""               , __HBQT_PRP_COMBO__   , "TransparentMode", { "TransparentMode", "OpaqueMode" } )
          :addProperty( "opacity"        , "opacity"        , ""               , __HBQT_PRP_EDIT__    , 100              , NIL )
 
          :addProperty( "backgroundBrush", "BGBrush"        , ""               , __HBQT_PRP_JUST__    , ""               , NIL )
-         :addProperty( "bBrushStyle"    , "style"          , "BackgroundBrush", __HBQT_PRP_COMBO__   , "NoBrush"        , aBrushStyle )
+         :addProperty( "bBrushStyle"    , "style"          , "BackgroundBrush", __HBQT_PRP_BRUSHSTYLE__, "NoBrush"      , NIL )
          :addProperty( "bBrushColor"    , "color"          , "BackgroundBrush", __HBQT_PRP_COLOR__   , "#ffffff"        , NIL )
 //       :addProperty( "bBushTexture"   , "texture"        , "BackgroundBrush", __HBQT_PRP_TEXTURE__ , ""               , NIL )
 
@@ -1961,6 +1967,52 @@ METHOD HbQtVisualizer:getNextID( cType )
    RETURN ++hIDs[ cType ]
 
 
+METHOD HbQtVisualizer:buildSlidings()
+
+   WITH OBJECT ::oSlidingListRight := HbQtSlidingList():new( ::oAppWidget )
+      :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
+      :setDuration( 70 )
+      :create()
+      :addItem( "b", { "King Kong", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "a", { "Dara Singh"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "P", { "Tony Greg", QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Right" ) } )
+      :addItem( "q", { "Yes Boss", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "y", { "Floating", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "t", { "Best Practices"  , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "r", { "Fundamentals", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "h", { "Usual Ways", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "j", { "Descriptions", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "u", { "Formalities"  , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "v", { "Operations", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "w", { "Close", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "z", { "Open", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "xx", { "Save"  , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "x", { "Fonts", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+   ENDWITH
+
+   WITH OBJECT ::oSlidingListLeft := HbQtSlidingList():new( ::oAppWidget )
+      :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ )
+      :setDuration( 70 )
+      :create()
+      :addItem( "P", { "Left Visual" , QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Left" )  } )
+      :addItem( "q", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "s", { "hh Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "c", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "f", { "dd Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "h", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "j", { "k Visual"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "k", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+      :addItem( "kk", { "kkkt Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
+   ENDWITH
+
+   WITH OBJECT ::oSlidingsManager := HbQtSlidingsManager():new( ::oWidget ):create()
+      :addSliding( "PrintList" , {|| ::oSlidingListRight:activate() } )
+      :addSliding( "PrintListL", {|| ::oSlidingListLeft:activate() } )
+      :activateSlidings( "PrintListL", "PrintList" )
+   ENDWITH
+   RETURN Self
+
+
 METHOD HbQtVisualizer:buildStyleSheet()
    LOCAL aCSS := {}
    LOCAL cCSS := ""
@@ -2012,6 +2064,58 @@ METHOD HbQtVisualizer:buildStyleSheet()
 //--------------------------------------------------------------------//
 //                       Manage Opening Objects
 //--------------------------------------------------------------------//
+
+METHOD HbQtVisualizer:refreshItem( hItem )
+   LOCAL oHbQtVisual, oHbQtVisualItem, oRect
+
+   IF HB_ISHASH( hItem ) .AND. hb_HHasKey( hItem, "Action" )
+      oHbQtVisual := ::hHbQtVisuals[ hItem[ "RefID" ] ]
+      oHbQtVisualItem := oHbQtVisual:item( hItem[ "Name" ] )
+
+      SWITCH hItem[ "Action" ]
+      CASE __VISUALIZER_ACTION_X__
+         oRect := oHbQtVisualItem:oWidget:geometry()
+         oHbQtVisualItem:oWidget:setPos( QPointF( hItem[ "X" ], oRect:y() ) )
+         oHbQtVisualItem:update()
+         EXIT
+      CASE __VISUALIZER_ACTION_Y__
+         EXIT
+      CASE __VISUALIZER_ACTION_POS__
+         EXIT
+      CASE __VISUALIZER_ACTION_WIDTH__
+         EXIT
+      CASE __VISUALIZER_ACTION_HEIGHT__
+         EXIT
+      CASE __VISUALIZER_ACTION_GEOMETRY__
+         EXIT
+      CASE __VISUALIZER_ACTION_STATE__
+         EXIT
+      CASE __VISUALIZER_ACTION_DEL__
+         EXIT
+      CASE __VISUALIZER_ACTION_LOCK__
+         EXIT
+      CASE __VISUALIZER_ACTION_ROTATE__
+         EXIT
+      ENDSWITCH
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualizer:itemDataChangedBlock( bBlock )
+   LOCAL bOldBlock := ::bItemDataChangedBlock
+   IF HB_ISBLOCK( bBlock )
+      ::bItemDataChangedBlock := bBlock
+   ENDIF
+   RETURN bOldBlock
+
+
+METHOD HbQtVisualizer:itemDataRequestBlock( bBlock )
+   LOCAL bOldBlock := ::bItemDataRequestBlock
+   IF HB_ISBLOCK( bBlock )
+      ::bItemDataRequestBlock := bBlock
+   ENDIF
+   RETURN bOldBlock
+
 
 METHOD HbQtVisualizer:visualsListBlock( bBlock )
    LOCAL bOldBlock := ::bVisualsListBlock

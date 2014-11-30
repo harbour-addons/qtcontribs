@@ -4010,8 +4010,8 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
    IF Empty( oPrinter )
       oPrinter := QPrinter()
       oPrinter:setOutputFormat( QPrinter_PdfFormat )     /* Until issue WITH QPrintDialog() is resolved, Printing will CREATE a .PDF file on disk */
-      oPrinter:setOrientation( QPrinter_Portrait )
-      oPrinter:setPaperSize( QPrinter_A4 )
+      oPrinter:setPageOrientation( QPrinter_Portrait )
+      oPrinter:setPageSize( QPageSize( QPrinter_A4 ) )
    ENDIF
 
    ::printPreview( oPrinter )
@@ -4083,11 +4083,11 @@ METHOD HbQtBrowse:printReport( oPrinter )
 
    oPainter:setFont( ::oFont )
 
-   oPaper := oPrinter:paperRect()
-   oPage  := oPrinter:pageRect()
+   oPaper := oPrinter:paperRect( QPrinter_DevicePixel )
+   oPage  := oPrinter:pageRect( QPrinter_DevicePixel )
 
-   nMX   := oPaper:width()  - oPage:width()
-   nMY   := oPaper:height() - oPage:height()
+   nMX   := ( oPaper:width()  - oPage:width() )
+   nMY   := ( oPaper:height() - oPage:height() )
 
    nW    := oPrinter:width()  - nMX
    nH    := oPrinter:height() - nMY

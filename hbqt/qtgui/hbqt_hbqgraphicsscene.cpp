@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2010-14 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -107,11 +107,10 @@ HBQGraphicsScene::HBQGraphicsScene( QObject * parent ) : QGraphicsScene( parent 
    m_paperBorder  = 0;
    m_pageBorder   = 0;
    m_showGrid     = false;
-   m_pageSize     = QPrinter::Letter;
+   m_sceneSize    = QSize( 2590, 1960 );   /* Equal to  printable area of QPrinter::Letter */
    m_orientation  = QPrinter::Landscape;
 
-   setPageSize( m_pageSize );
-   setOrientation( m_orientation );
+   setSceneSize( m_sceneSize );
 
    QFont m_font = QFont( "Serif" );
    m_font.setPointSizeF( 3.5 );
@@ -165,15 +164,6 @@ void HBQGraphicsScene::hbSetBlock( PHB_ITEM b )
    }
 }
 
-QRectF HBQGraphicsScene::paperRect()
-{
-   return m_paperRect;
-}
-void HBQGraphicsScene::setPaperRect( QRectF paperRect )
-{
-   m_paperRect = paperRect;
-}
-
 QRectF HBQGraphicsScene::geometry()
 {
    return m_geometry;
@@ -187,28 +177,14 @@ void HBQGraphicsScene::setGeometry( QRectF rect )
 
 void HBQGraphicsScene::updatePageRect()
 {
-   QPrinter p;
-   QPageSize ps( ( QPageSize::PageSizeId ) pageSize() );
-   QPageLayout oPageLayout( ps, ( QPageLayout::Orientation ) orientation(), QMarginsF( 10,10,10,10 ), QPageLayout::Millimeter );
-
-   oPageLayout.setMode( QPageLayout::StandardMode );
-
-   p.setPageLayout( oPageLayout );
-   p.setOutputFormat( QPrinter::PdfFormat );
-   setSceneRect( 0, 0, p.pageRect( QPrinter::Millimeter ).width() / UNIT, p.pageRect( QPrinter::Millimeter ).height() / UNIT );
+   setSceneRect( 0, 0, m_sceneSize.width(), m_sceneSize.height() );
 }
 
-int HBQGraphicsScene::pageSize()
+void HBQGraphicsScene::setSceneSize( const QSize & size )
 {
-   return m_pageSize;
-}
-void HBQGraphicsScene::setPageSize( int pageSize )
-{
-   m_pageSize = pageSize;
+   m_sceneSize = size;
    updatePageRect();
    m_paperRect = sceneRect();
-   //setGeometry( QRect( -10 / UNIT, -10 / UNIT, sceneRect().width() + 10 / UNIT * 2, sceneRect().height() + 10 / UNIT * 2 ) );
-   //setGeometry( QRect( 0, 0, sceneRect().width(), sceneRect().height() ) );
    setGeometry( sceneRect() );
 }
 
@@ -221,7 +197,6 @@ void HBQGraphicsScene::setOrientation( int orientation )
    m_orientation = orientation;
    updatePageRect();
    m_paperRect = sceneRect();
-   //setGeometry( QRect( 10 / UNIT, 10 / UNIT, sceneRect().width() - 10 / UNIT * 2, sceneRect().height() - 10 / UNIT * 2 ) );
    setGeometry( m_paperRect );
 }
 

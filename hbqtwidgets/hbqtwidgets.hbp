@@ -27,31 +27,27 @@ hbqt.hbc
 
 getsys.prg
 getlist.prg
-
 hbqtevent.prg
 hbqtbrowse.prg
 hbqtcolumn.prg
 hbqtdbu.prg
 dbucreate.prg
 calculator.prg
-
 alert.prg
-
 toolbar.prg
 toolbarex.prg
 statusbar.prg
 menues.prg
 treeview.prg
-
 misc.prg
 charts.prg
 dashboard.prg
-
 visualizer.prg
 visualitems.prg
 previewer.prg
 properties.prg
 slidinglist.prg
+silverlight.prg
 
 hbqtwidgets.qrc
 

@@ -33,6 +33,7 @@ FUNCTION Main()
       :setLayout( oLay )
    ENDWITH
    oWnd:setCentralWidget( oDa )
+   __hbqtAppWidget( oWnd )                        // ensures that slidings and silver screen works perfect
 
    oVisualizer := buildVisualizer( oDA )
 
@@ -231,6 +232,9 @@ STATIC FUNCTION __loadVisualDef( cVisual, nVer, lAll )
       hVisual[ "Group"   ] := ""
       IF lAll
          hVisual[ "Editable"] := .T.
+         hVisual[ "Width"   ] := 2910
+         hVisual[ "Height"  ] := 1760
+         hVisual[ "Orientation" ] := QPrinter_Landscape
          hVisual[ "Markers" ] := __loadMarkersDef( hVisual[ "RefID" ] )
          hVisual[ "ImageID" ] := "MP-LAFR01"
          hVisual[ "Image"   ] := __hbqtLoadResourceAsBase64String( "harbour-b.png" )

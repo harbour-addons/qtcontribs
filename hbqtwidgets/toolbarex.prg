@@ -153,7 +153,7 @@ METHOD HbQtScrollableToolbar:init( oParent )
 
 
 METHOD HbQtScrollableToolbar:create( oParent )
-   LOCAL oRect
+   //LOCAL oRect
 
    DEFAULT oParent  TO ::oParent
    ::oParent := oParent
@@ -230,7 +230,7 @@ METHOD HbQtScrollableToolbar:create( oParent )
       ENDWITH
    ENDIF
    ::configure()
-
+#if 0
    WITH OBJECT ::oLayout
       oRect := :geometry()
       IF ::isVertical()
@@ -238,11 +238,14 @@ METHOD HbQtScrollableToolbar:create( oParent )
       ELSE
          oRect:setHeight( ::nButtonHeight )
       ENDIF
+Alert( 1005 )
       :setGeometry( oRect )
+Alert( 1006 )
       IF ::nAlignment != NIL
          :setAlignment( ::nAlignment )
       ENDIF
    ENDWITH
+#endif
    RETURN Self
 
 
@@ -315,7 +318,8 @@ METHOD HbQtScrollableToolbar:setHidden( cName, lYes )
 
 
 METHOD HbQtScrollableToolbar:adjustSize()
-   LOCAL oRect, aBtns, nButtons := 0
+   LOCAL aBtns
+   LOCAL nButtons := 0
 
    FOR EACH aBtns IN ::hButtons
       nButtons += iif( aBtns[ 2 ]:whatsThis() == "Y", 0, 1 )
@@ -327,6 +331,7 @@ METHOD HbQtScrollableToolbar:adjustSize()
       ::oWidget:setMaximumWidth( ::oWidget:gridSize():width() * nButtons + ::nGap * nButtons )
    // ::oWidget:setMinimumWidth( ::oWidget:gridSize():width() * nButtons + ::nGap * nButtons )
    ENDIF
+#if 0
    WITH OBJECT ::oLayout
       oRect := :geometry()
       IF ::isVertical()
@@ -341,7 +346,7 @@ METHOD HbQtScrollableToolbar:adjustSize()
          :setAlignment( ::nAlignment )
       ENDIF
    ENDWITH
-
+#endif
    RETURN Self
 
 

@@ -149,7 +149,7 @@ STATIC hIDs := {=>}
 
 /*----------------------------------------------------------------------*/
 
-CLASS HbpReports 
+CLASS HbpReports
 
    DATA   lRegistered                             INIT .F.
 
@@ -412,7 +412,6 @@ METHOD HbpReports:buildDesignReport()
       :setTopMagnet( .t. )
       :setRightMagnet( .t. )
       :setBottomMagnet( .t. )
-      :setPageSize( QPrinter_A4 )
    ENDWITH
    WITH OBJECT ::qView := QGraphicsView( ::qDesign )
       :setMouseTracking( .t. )
@@ -736,7 +735,6 @@ METHOD HbpReports:presentBlankPage()
 
    aadd( ::aPages, { "Page_1" } )
 
-   ::qScene:setPageSize( QPrinter_A4 )
    ::qScene:setOrientation( QPrinter_Portrait )
 
    ::updateObjectsTree( "ReportName", NIL, "Report" )
@@ -941,7 +939,6 @@ METHOD HbpReports:loadReport( xData )
 
       ::parseBuffer( cBuffer )
 
-      ::qScene:setPageSize( QPrinter_A4 )
       ::qScene:setOrientation( QPrinter_Portrait )
 
       ::updateObjectsTree( "ReportName", NIL, "Report" )

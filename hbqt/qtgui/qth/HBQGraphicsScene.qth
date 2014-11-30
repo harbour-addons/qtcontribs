@@ -48,11 +48,6 @@ HB_FUNC( QT_HBQGRAPHICSSCENE )
 <PROTOS>
    void                     hbSetBlock( PHB_ITEM block )
    void                     hbClearBlock()
-
-   virtual int              pageSize()
-   virtual void             setPageSize( int pageSize )
-   QRectF                   paperRect()
-   void                     setPaperRect( const QRectF & paperRect )
    virtual int              orientation()
    virtual void             setOrientation( int orientation )
    virtual QRectF           geometry()
@@ -60,8 +55,6 @@ HB_FUNC( QT_HBQGRAPHICSSCENE )
    int                      magnetArea()
    void                     setMagnetArea( int magnetArea )
    virtual bool             showGrid()
-   virtual void             setShowGrid( bool showGrid )
-
 </PROTOS>
 
 <SLOTS>
@@ -71,6 +64,8 @@ HB_FUNC( QT_HBQGRAPHICSSCENE )
    virtual void             setBottomMagnet( bool magneted )
    virtual void             setHorizontalMagnet( bool magneted )
    virtual void             setVerticalMagnet( bool magneted )
+   virtual void             setShowGrid( bool showGrid )
+   virtual void             setSceneSize( const QSize & size )
 </SLOTS>
 
 <SIGNALS>

@@ -1484,10 +1484,10 @@
 #define Qt_WA_X11NetWmWindowTypeCombo             115   // Adds _NET_WM_WINDOW_TYPE_COMBO to the window's _NET_WM_WINDOW_TYPE X11 window property. See http://standards.freedesktop.org/wm-spec/ for more details. This attribute has no effect on non-X11 platforms. Note: Qt automatically sets this attribute for the QComboBox pop-up.
 #define Qt_WA_X11NetWmWindowTypeDND               116   // Adds _NET_WM_WINDOW_TYPE_DND to the window's _NET_WM_WINDOW_TYPE X11 window property. See http://standards.freedesktop.org/wm-spec/ for more details. This attribute has no effect on non-X11 platforms. Note: Qt automatically sets this attribute on the feedback widget used during a drag.
 #define Qt_WA_MacFrameworkScaled                  117   // Enables resolution independence aware mode on Mac when using Carbon. This attribute has no effect on Cocoa. The attribute is off by default and can be enabled on a per-window basis.
-#define Qt_WA_AcceptTouchEvents                   121	  // Allows touch events (see QTouchEvent) to be sent to the widget. Must be set on all widgets that can handle touch events. Without this attribute set, events from a touch device will be sent as mouse events.
-#define Qt_WA_TouchPadAcceptSingleTouchEvents     123	  // Allows touchpad single touch events to be sent to the widget.
-#define Qt_WA_X11DoNotAcceptFocus                 126	  // Asks the window manager to not give focus to this top level window. This attribute has no effect on non-X11 platforms.
-#define Qt_WA_AlwaysStackOnTop                    128	  // Since Qt 5.4, this value forces QOpenGLWidget and QQuickWidget to be drawn last, on top of other widgets. Ignored for other type of widgets. Setting this attribute breaks the stacking order, but allows having a semi-transparent OpenGL widget with other widgets visible underneath. It is strongly recommended to call update() on the widget's top-level window after enabling or disabling this attribute.
+#define Qt_WA_AcceptTouchEvents                   121     // Allows touch events (see QTouchEvent) to be sent to the widget. Must be set on all widgets that can handle touch events. Without this attribute set, events from a touch device will be sent as mouse events.
+#define Qt_WA_TouchPadAcceptSingleTouchEvents     123     // Allows touchpad single touch events to be sent to the widget.
+#define Qt_WA_X11DoNotAcceptFocus                 126     // Asks the window manager to not give focus to this top level window. This attribute has no effect on non-X11 platforms.
+#define Qt_WA_AlwaysStackOnTop                    128     // Since Qt 5.4, this value forces QOpenGLWidget and QQuickWidget to be drawn last, on top of other widgets. Ignored for other type of widgets. Setting this attribute breaks the stacking order, but allows having a semi-transparent OpenGL widget with other widgets visible underneath. It is strongly recommended to call update() on the widget's top-level window after enabling or disabling this attribute.
 
 
 // enum #define Qt_WindowFrameSection
@@ -5070,7 +5070,6 @@
 #define QScrollEvent_ScrollStarted                           0        // Set for the first scroll event of a scroll activity.
 #define QScrollEvent_ScrollUpdated                           1        // Set for all but the first and the last scroll event of a scroll activity.
 #define QScrollEvent_ScrollFinished                          2        // Set for the last scroll event of a scroll activity.
-
 
 #endif
 

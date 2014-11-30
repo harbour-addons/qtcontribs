@@ -498,6 +498,22 @@ FUNCTION __hbqtApplicationWidget()
    RETURN QApplication():topLevelAt( 0,0 )
 
 
+FUNCTION __hbqtAppWidget( oWidget )
+   STATIC s_oWidget
+   LOCAL oldWidget := s_oWidget
+
+   IF HB_ISOBJECT( oWidget )
+      s_oWidget := oWidget
+   ELSE
+      IF PCount() == 1 .AND. oWidget == NIL
+         s_oWidget := NIL
+      ELSEIF Empty( oldWidget )
+         oldWidget := __hbqtApplicationWidget()
+      ENDIF
+   ENDIF
+   RETURN oldWidget
+
+
 FUNCTION __hbqtTreeViewStyleSheet()
    LOCAL aCSS := {}
    LOCAL cCSS := ""
@@ -549,4 +565,19 @@ FUNCTION __hbqtTreeViewStyleSheet()
    AEval( aCSS, {|e| cCSS += e + Chr( 13 )+Chr( 10 ) } )
 
    RETURN cCSS
+
+
+FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacity, oWidget )
+   STATIC oSilverLight
+
+   IF Empty( oSilverLight )
+      oSilverLight := HbQtSilverLight():new():create( "Please Wait..." )
+   ENDIF
+   IF lActivate
+      oSilverLight:activate( xContent, oColor, lAnimate, aOpacity, oWidget )
+   ELSE
+      oSilverLight:deactivate()
+   ENDIF
+
+   RETURN NIL
 

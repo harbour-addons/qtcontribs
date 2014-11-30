@@ -70,14 +70,6 @@
 #include "hbtrace.ch"
 
 
-#define __HBQT_PRP_JUST__                         1000
-#define __HBQT_PRP_EDIT__                         1001
-#define __HBQT_PRP_COMBO__                        1002
-#define __HBQT_PRP_COLOR__                        1003
-#define __HBQT_PRP_FONT__                         1004
-#define __HBQT_PRP_TEXTURE__                      1005
-
-
 CLASS HbQtPropertiesManager
 
    DATA   oWidget
@@ -430,6 +422,9 @@ CLASS HbQtProperty
    METHOD manageEvent( oKeyEvent, oWidget )
    METHOD execColorDialog()
    METHOD execFontDialog()
+   METHOD execFontNameSliding( oProperty )
+   METHOD execFontSizeSliding( oProperty )
+   METHOD execBrushStyleSliding( oProperty )
 
    ENDCLASS
 
@@ -492,6 +487,7 @@ METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues )
       :addWidget( ::oPropertyWidget )
       :setCurrentIndex( 0 )
    ENDWITH
+
    HB_SYMBOL_UNUSED( oLay )
    RETURN Self
 
@@ -545,16 +541,27 @@ METHOD HbQtProperty:propertyWidget()
       ENDWITH
       EXIT
    CASE __HBQT_PRP_FONT__
-      WITH OBJECT oWidget := QFontComboBox( ::xValue )
-         :connect( "activated(QString)", {| cString | ::valueChanged( cString ), ::oStack:setCurrentIndex( 0 ) } )
-         :connect( QEvent_Show         , {|| ::oPropertyWidget:setCurrentText( ::xValue ) } )
-         :connect( QEvent_FocusOut     , {|| iif( oWidget:view():isVisible(), NIL, ::oStack:setCurrentIndex( 0 ) ) } )
+      WITH OBJECT oWidget := QLabel()
+         :connect( QEvent_Show         , {|| ::oPropertyWidget:setText( ::oValueLabel:text() ), ::execFontNameSliding( Self ) } )
+         :connect( QEvent_FocusOut     , {|| ::oStack:setCurrentIndex( 0 ), ::oStack:setFocus() } )
+      ENDWITH
+      EXIT
+   CASE __HBQT_PRP_FONTSIZE__
+      WITH OBJECT oWidget := QLabel()
+         :connect( QEvent_Show         , {|| ::oPropertyWidget:setText( ::oValueLabel:text() ), ::execFontSizeSliding( Self ) } )
+         :connect( QEvent_FocusOut     , {|| ::oStack:setCurrentIndex( 0 ), ::oStack:setFocus() } )
+      ENDWITH
+      EXIT
+   CASE __HBQT_PRP_BRUSHSTYLE__
+      WITH OBJECT oWidget := QLabel()
+         :connect( QEvent_Show         , {|| ::oPropertyWidget:setText( ::oValueLabel:text() ), ::execBrushStyleSliding( Self ) } )
+         :connect( QEvent_FocusOut     , {|| ::oStack:setCurrentIndex( 0 ), ::oStack:setFocus() } )
       ENDWITH
       EXIT
    CASE __HBQT_PRP_COLOR__
       WITH OBJECT oWidget := QLabel( ::xValue )
-         :connect( QEvent_Show    , {|| ::execColorDialog(), ::oStack:setCurrentIndex( 0 ) } )
-         :connect( QEvent_FocusOut, {|| ::oStack:setCurrentIndex( 0 ) } )
+         :connect( QEvent_Show         , {|| ::execColorDialog(), ::oStack:setCurrentIndex( 0 ) } )
+         :connect( QEvent_FocusOut     , {|| ::oStack:setCurrentIndex( 0 ) } )
       ENDWITH
       EXIT
    CASE __HBQT_PRP_TEXTURE__
@@ -580,10 +587,7 @@ METHOD HbQtProperty:editTriggered()
    IF HB_ISOBJECT( ::oPropertyWidget )
       ::oStack:setCurrentIndex( 1 )
       ::oPropertyWidget:setFocus()
-      IF ::nType == __HBQT_PRP_FONT__
-         QApplication():sendEvent( ::oPropertyWidget, ;
-            QMouseEvent( QEvent_MouseButtonPress, QPoint( 1,1 ), Qt_LeftButton, Qt_LeftButton, Qt_NoModifier ) )
-      ENDIF
+
       IF ::nType == __HBQT_PRP_COMBO__
          IF ::oPropertyWidget:count() <= 0
             WITH OBJECT ::oPropertyWidget
@@ -620,6 +624,8 @@ METHOD HbQtProperty:valueChanged( xValue )
    CASE __HBQT_PRP_COLOR__
       zValue := xValue
       EXIT
+   CASE __HBQT_PRP_BRUSHSTYLE__
+   CASE __HBQT_PRP_FONTSIZE__
    CASE __HBQT_PRP_FONT__
       zValue := xValue
       EXIT
@@ -717,6 +723,111 @@ METHOD HbQtProperty:propertyChangedBlock( bBlock )
       ::bValueChanged := bBlock
    ENDIF
    RETURN bOldBlock
+
+
+METHOD HbQtProperty:execFontNameSliding( oProperty )
+   STATIC oFontNameSliding
+   LOCAL oFontFamilies, i, cFont
+
+   IF Empty( oFontNameSliding )
+      HbQtActivateSilverLight( .T., "Pulling Fonts Info" )
+      WITH OBJECT oFontNameSliding := HbQtSlidingList():new()
+         :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
+         :setDuration( 70 )
+         :setFocusOut( .F. )
+         :setWidth( 300 )
+         :setHeaderText( "Available Fonts" )
+         :hidingBlock( {|| oProperty:oStack:setCurrentIndex( 0 ), oProperty:oStack:setFocus() } )
+         :create()
+
+         oFontFamilies := QFontDatabase():families()
+         FOR i := 0 TO oFontFamilies:size() - 1
+            QApplication():processEvents()
+            cFont := oFontFamilies:at( i )
+            :addItem( cFont, { cFont, NIL, QFont( cFont ) }, NIL )
+         NEXT
+      ENDWITH
+      HbQtActivateSilverLight( .F. )
+   ENDIF
+   oFontNameSliding:activatedBlock( {|cName| oProperty:valueChanged( cName ) } )
+   oFontNameSliding:show()
+
+   RETURN Self
+
+
+METHOD HbQtProperty:execFontSizeSliding( oProperty )
+   STATIC oFontSizeSliding
+   LOCAL i, nMin, cSize
+
+   IF Empty( oFontSizeSliding )
+      WITH OBJECT oFontSizeSliding := HbQtSlidingList():new()
+         :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
+         :setDuration( 70 )
+         :setFocusOut( .F. )
+         :setWidth( 100 )
+         :setHeaderText( "Font Sizes" )
+         :hidingBlock( {|| oProperty:oStack:setCurrentIndex( 0 ), oProperty:oStack:setFocus() } )
+         :create()
+
+         nMin := 3.5
+         FOR i := 0 TO 19
+            cSize := LTrim( Str( nMin + ( i * 0.5 ) ) )
+            :addItem( cSize, { cSize, NIL }, NIL )
+         NEXT
+      ENDWITH
+   ENDIF
+   oFontSizeSliding:activatedBlock( {|cName| oProperty:valueChanged( cName ) } )
+   oFontSizeSliding:show()
+
+   RETURN Self
+
+
+METHOD HbQtProperty:execBrushStyleSliding( oProperty )
+   STATIC oBrushStyleSliding
+   LOCAL i, cStyle, aStyles
+
+   IF Empty( oBrushStyleSliding )
+      aStyles := {}
+
+      AAdd( aStyles, "NoBrush"                )
+      AAdd( aStyles, "SolidPattern"           )
+      AAdd( aStyles, "Dense1Pattern"          )
+      AAdd( aStyles, "Dense2Pattern"          )
+      AAdd( aStyles, "Dense3Pattern"          )
+      AAdd( aStyles, "Dense4Pattern"          )
+      AAdd( aStyles, "Dense5Pattern"          )
+      AAdd( aStyles, "Dense6Pattern"          )
+      AAdd( aStyles, "Dense7Pattern"          )
+      AAdd( aStyles, "HorPattern"             )
+      AAdd( aStyles, "VerPattern"             )
+      AAdd( aStyles, "CrossPattern"           )
+      AAdd( aStyles, "BDiagPattern"           )
+      AAdd( aStyles, "FDiagPattern"           )
+      AAdd( aStyles, "DiagCrossPattern"       )
+#if 0
+      AAdd( aStyles, "LinearGradientPattern"  )
+      AAdd( aStyles, "ConicalGradientPattern" )
+      AAdd( aStyles, "RadialGradientPattern"  )
+      AAdd( aStyles, "TexturePattern"         )
+#endif
+      WITH OBJECT oBrushStyleSliding := HbQtSlidingList():new()
+         :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
+         :setDuration( 70 )
+         :setFocusOut( .F. )
+         :setWidth( 200 )
+         :setHeaderText( "Brush Styles" )
+         :hidingBlock( {|| oProperty:oStack:setCurrentIndex( 0 ), oProperty:oStack:setFocus() } )
+         :create()
+         FOR i := 1 to Len( aStyles )
+            cStyle := aStyles[ i ]
+            :addItem( cStyle, { cStyle, NIL, NIL }, NIL  )
+         NEXT
+      ENDWITH
+   ENDIF
+   oBrushStyleSliding:activatedBlock( {|cName| oProperty:valueChanged( cName ) } )
+   oBrushStyleSliding:show()
+
+   RETURN Self
 
 
 STATIC FUNCTION __xtos( xValue )

@@ -309,4 +309,24 @@
    #define __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ 1
    #define __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ 2
 
+   #define __VISUALIZER_ACTION_X__                   1
+   #define __VISUALIZER_ACTION_Y__                   2
+   #define __VISUALIZER_ACTION_POS__                 4
+   #define __VISUALIZER_ACTION_WIDTH__               8
+   #define __VISUALIZER_ACTION_HEIGHT__              16
+   #define __VISUALIZER_ACTION_GEOMETRY__            32
+   #define __VISUALIZER_ACTION_STATE__               64
+   #define __VISUALIZER_ACTION_DEL__                 128
+   #define __VISUALIZER_ACTION_LOCK__                256
+   #define __VISUALIZER_ACTION_ROTATE__              512
+
+   #define __HBQT_PRP_JUST__                         1000
+   #define __HBQT_PRP_EDIT__                         1001
+   #define __HBQT_PRP_COMBO__                        1002
+   #define __HBQT_PRP_COLOR__                        1003
+   #define __HBQT_PRP_FONT__                         1004
+   #define __HBQT_PRP_FONTSIZE__                     1005
+   #define __HBQT_PRP_BRUSHSTYLE__                   1006
+   #define __HBQT_PRP_TEXTURE__                      1007
+
 #endif

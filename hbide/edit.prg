@@ -2299,7 +2299,8 @@ METHOD IdeEdit:tabs2spaces()
 
       cText := qDoc:toPlainText()
       qDoc:clear()
-      qDoc:setPlainText( strtran( cText, chr( 9 ), cSpaces ) )
+      cText := strtran( cText, chr( 9 ), cSpaces )
+      qDoc:setPlainText( cText )
 
       qDoc:setUndoRedoEnabled( .t. )
    ENDIF
