@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-30 23:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r386)
+  * hbqt/qtcore/hbqt_misc.prg
+    ! Fixed: missing :: in a class variable.
+
 2014-11-30 16:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r385)
   * hbqt/qtgui/qth/QGraphicsScene.qth
     ! Fixed: a nasty bug where :addItem() was re-flagged to [*X=1*]. 

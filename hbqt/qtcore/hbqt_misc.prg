@@ -272,9 +272,9 @@ CLASS HbQtTouchPoint
 
 METHOD HbQtTouchPoint:init()
 
-   hData := {=>}
-   hb_HKeepOrder( hData, .T. )
-   hb_HCaseMatch( hData, .T. )
+   ::hData := {=>}
+   hb_HKeepOrder( ::hData, .T. )
+   hb_HCaseMatch( ::hData, .T. )
 
    RETURN Self
 
