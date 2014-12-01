@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-11-30 16:21 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r385)
+  * hbqt/qtgui/qth/QGraphicsScene.qth
+    ! Fixed: a nasty bug where :addItem() was re-flagged to [*X=1*]. 
+       It must been [*D=1*] as QGraphicsScene acquire ownership of the item.
+
+  * hbqtwidgets/visualitems.prg
+    % Minor.
+
 2014-11-30 12:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r384)
   * hbxbp/reports.prg
     ! Fixed: QPrinter specific API changes calls.

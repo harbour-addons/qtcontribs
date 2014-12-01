@@ -105,7 +105,6 @@ CLASS HbQtVisual
    DATA   nHPos                                   INIT 0
    DATA   oScene
    DATA   oBGItem
-   DATA   oHbQtVisualBackground
 
    METHOD init( oVisualizer )
    METHOD create( oVisualizer )
@@ -223,7 +222,7 @@ METHOD HbQtVisual:backGround( lPrepare )
       ENDWITH
       ::scene():addItem( ::oBGItem )
    ENDIF
-   RETURN ::oHbQtVisualBackground
+   RETURN ::oBGItem
 
 
 METHOD HbQtVisual:dataRequestDuration( cMarker )
