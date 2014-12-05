@@ -89,7 +89,36 @@ bool        setMargins(const QMarginsF & margins)
 void        setMinimumMargins(const QMarginsF & minMargins)
 void        setMode(QPageLayout::Mode mode)
 void        setOrientation(QPageLayout::Orientation orientation)
-//void        setPageSize(const QPageSize & pageSize, const QMarginsF & minMargins = QMarginsF( 0, 0, 0, 0 ))
+void        setPageSize(const QPageSize & pageSize){
+#if QT_VERSION >= 0x050300
+   QPageLayout * p = ( QPageLayout * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+         case 2:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QPAGESIZE" ) && hbqt_par_isDerivedFrom( 2, "QMARGINSF" ) )
+            {
+               p->setPageSize( *hbqt_par_QPageSize( 1 ), *hbqt_par_QMarginsF( 2 ) );
+               return;
+            }
+            break;
+         }
+         case 1:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QPAGESIZE" ) && hbqt_par_isDerivedFrom( 2, "QMARGINSF" ) )
+            {
+               p->setPageSize( *hbqt_par_QPageSize( 1 ) );
+               return;
+            }
+            break;
+         }
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+#endif
+}
 bool        setRightMargin(qreal rightMargin)
 bool        setTopMargin(qreal topMargin)
 void        setUnits(QPageLayout::Unit units)
