@@ -526,7 +526,7 @@ METHOD IdeDocks:buildSystemTray()
 
 
 METHOD IdeDocks:execEvent( nEvent, p, p1 )
-   LOCAL qEvent, qMime, qList, qUrl, i, n, oEdit, aMenu
+   LOCAL qEvent, qMime, qList, qUrl, i, n, aMenu, oEditor
 
    IF ::lQuitting
       RETURN Self
@@ -762,28 +762,6 @@ METHOD IdeDocks:execEvent( nEvent, p, p1 )
       ENDIF
       EXIT
 
-   CASE __x_mdiArea_subWindowActivated__
-      IF ! empty( ::oIde:aMdies )
-         IF ( n := ascan( ::oIde:aMdies, {|e| hbqt_IsEqual( e, p ) } ) )  > 0
-
-            ::setView( ::oIde:aMdies[ n ]:objectName() )
-
-            IF ! ::oIde:aMdies[ n ]:objectName() == "Stats" .AND. ! empty( ::oEM ) .AND. ! empty( oEdit := ::oEM:getEditorCurrent() )
-               oEdit:setDocumentProperties()
-               oEdit:qCoEdit:relayMarkButtons()
-               oEdit:qCoEdit:toggleLineNumbers()
-               oEdit:qCoEdit:toggleHorzRuler()
-               oEdit:qCoEdit:toggleCurrentLineHighlightMode()
-               oEdit:qCoEdit:dispStatusInfo()
-               ::oUpDn:show()
-               ::showSelectedTextToolbar()
-               oEdit:changeThumbnail()
-            ENDIF
-
-         ENDIF
-      ENDIF
-      EXIT
-
    /* Left-toolbar actions */
    CASE __buttonViewTabbed_clicked__
       ::oStackedWidget:setViewMode( iif( ::oStackedWidget:viewMode() == QMdiArea_TabbedView, QMdiArea_SubWindowView, QMdiArea_TabbedView ) )
@@ -833,16 +811,12 @@ METHOD IdeDocks:execEvent( nEvent, p, p1 )
          ENDIF
          IF p1[ 2 ] >= 8 .AND. !( ::cWrkView == p:objectName() )
             ::setView( p:objectName() )
-            IF ! empty( ::oEM ) .AND. ! empty( oEdit := ::oEM:getEditorCurrent() )
-               oEdit:setDocumentProperties()
-               oEdit:qCoEdit:relayMarkButtons()
-               oEdit:qCoEdit:toggleLineNumbers()
-               oEdit:qCoEdit:toggleHorzRuler()
-               oEdit:qCoEdit:toggleCurrentLineHighlightMode()
-               oEdit:qCoEdit:dispStatusInfo()
+            IF ! Empty( oEditor := ::oEM:getEditorCurrent() )
+               WITH OBJECT oEditor
+                  :refresh()
+               ENDWITH
                ::oUpDn:show()
                ::showSelectedTextToolbar()
-               oEdit:changeThumbnail()
             ENDIF
          ENDIF
       ENDIF

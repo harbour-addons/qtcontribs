@@ -6,9 +6,9 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
  * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
+ * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,9 @@
 
 #include "hbqt_hbqevents.h"
 #include <QtCore/QVariant>
+#include <QtGui/QPainter>
+#include <QtGui/QPaintDevice>
+#include <QtWidgets/QWidget>
 
 HBQEvents * hbqt_bindGetReceiverEventsByHbObject( PHB_ITEM pObject );
 
@@ -192,7 +195,21 @@ bool HBQEvents::eventFilter( QObject * object, QEvent * event )
                            PHB_ITEM pItem = hbqt_bindGetHbObject( NULL, ( void * ) event, ( s_lstCreateObj.at( eventId ) ), NULL, HBQT_BIT_NONE );
                            if( pItem )
                            {
-                              stopTheEventChain = ( bool ) hb_itemGetL( hb_vmEvalBlockV( hb_arrayGetItemPtr( pArray, 1 ), 1, pItem ) );
+                              if( eventtype == QEvent::Paint )
+                              {
+                                 QPaintDevice * device = static_cast< QWidget * >( object );
+                                 if( device )
+                                 {
+                                    QPainter painter( device );
+                                    PHB_ITEM pPainter = hbqt_bindGetHbObject( NULL, ( void * ) &painter, "HB_QPAINTER", NULL, HBQT_BIT_NONE );
+                                    stopTheEventChain = ( bool ) hb_itemGetL( hb_vmEvalBlockV( hb_arrayGetItemPtr( pArray, 1 ), 2, pItem, pPainter ) );
+                                    hb_itemRelease( pPainter );
+                                 }
+                              }
+                              else
+                              {
+                                 stopTheEventChain = ( bool ) hb_itemGetL( hb_vmEvalBlockV( hb_arrayGetItemPtr( pArray, 1 ), 1, pItem ) );
+                              }
                               hb_itemRelease( pItem );
                            }
                         }

@@ -329,4 +329,17 @@
    #define __HBQT_PRP_BRUSHSTYLE__                   1006
    #define __HBQT_PRP_TEXTURE__                      1007
 
+   #define __HBQTEDITOR_FOCUSIN__                    101
+   #define __HBQTEDITOR_RESIZE__                     102
+   #define __HBQTEDITOR_SELECTIONINFO__              103
+   #define __HBQTEDITOR_UPDATEFIELDSLIST__           104
+   #define __HBQTEDITOR_MARKCURRENTFUNCTION__        105
+   #define __HBQTEDITOR_GOTOPREVIOUSFUNCTION__       106
+   #define __HBQTEDITOR_GOTONEXTFUNCTION__           107
+   #define __HBQTEDITOR_SHOWHEADERFILE__             108
+   #define __HBQTEDITOR_JUMPTOFUNCTIONHELP__         109
+   #define __HBQTEDITOR_JUMPTOFUNCTION__             110
+   #define __HBQTEDITOR_LOADFUNCTIONHELP__           111
+   #define __HBQTEDITOR_UPDATEWORDSINCOMPLETER__     112
+
 #endif

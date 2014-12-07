@@ -1,4 +1,4 @@
-      /*
+/*
  * $Id$
  */
 
@@ -62,8 +62,8 @@
 
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
-#include "hbide.ch"
 #include "hbqtgui.ch"
+#include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 
@@ -470,6 +470,9 @@ CLASS IdeProjManager INHERIT IdeObject
    DATA   lUpdateTree                             INIT .F.
    DATA   cIfError                                INIT NIL
    DATA   oSelSrc
+   DATA   oEdit
+   DATA   oTheme
+   DATA   oHiliter
 
    METHOD new( oIDE )
    METHOD create( oIDE )
@@ -551,7 +554,7 @@ METHOD IdeProjManager:destroy()
    // ::oUI:buttonSort        :disconnect( "clicked()" )
    // ::oUI:buttonSortZA      :disconnect( "clicked()" )
    // ::oUI:buttonSortOrg     :disconnect( "clicked()" )
-//.      ::oUI:tabWidget         :disconnect( "currentChanged(int)" )
+   // ::oUI:tabWidget         :disconnect( "currentChanged(int)" )
       ::oUI:buttonChoosePrjLoc:disconnect( "clicked()" )
       ::oUI:buttonChooseWd    :disconnect( "clicked()" )
       ::oUI:buttonChooseDest  :disconnect( "clicked()" )
@@ -1160,58 +1163,70 @@ METHOD IdeProjManager:addSourceToArray( aSrc, aTgt, cExt )
 
 
 METHOD IdeProjManager:buildInterface()
-   LOCAL cLukupPng, qDrop
+   LOCAL cLukupPng := hbide_image( "folder" )
 
    ::oUI := hbide_getUI( "projectpropertiesex" )
-
    ::oPropertiesDock:oWidget:setWidget( ::oUI:oWidget )
 
-   ::oUI:comboPrjType:addItem( "Executable" )
-   ::oUI:comboPrjType:addItem( "Library"    )
-   ::oUI:comboPrjType:addItem( "Dll"        )
+   WITH OBJECT ::oUI
+      :comboPrjType      :addItem( "Executable" )
+      :comboPrjType      :addItem( "Library"    )
+      :comboPrjType      :addItem( "Dll"        )
 
-   cLukupPng := hbide_image( "folder" )
-   //
-   ::oUI:buttonChoosePrjLoc:setIcon( QIcon( cLukupPng ) )
-   ::oUI:buttonChooseWd    :setIcon( QIcon( cLukupPng ) )
-   ::oUI:buttonChooseDest  :setIcon( QIcon( cLukupPng ) )
-   ::oUI:buttonBackup      :setIcon( QIcon( cLukupPng ) )
+      :buttonChoosePrjLoc:setIcon( QIcon( cLukupPng ) )
+      :buttonChooseWd    :setIcon( QIcon( cLukupPng ) )
+      :buttonChooseDest  :setIcon( QIcon( cLukupPng ) )
+      :buttonBackup      :setIcon( QIcon( cLukupPng ) )
 
-   ::oUI:buttonSelect      :setIcon( QIcon( hbide_image( "open"        ) ) )
-   ::oUI:buttonUp          :setIcon( QIcon( hbide_image( "dc_up"       ) ) )
-   ::oUI:buttonDown        :setIcon( QIcon( hbide_image( "dc_down"     ) ) )
+      :buttonSelect      :setIcon( QIcon( hbide_image( "open"           ) ) )
+      :buttonUp          :setIcon( QIcon( hbide_image( "dc_up"          ) ) )
+      :buttonDown        :setIcon( QIcon( hbide_image( "dc_down"        ) ) )
 
-   ::oUI:buttonSort        :setIcon( QIcon( hbide_image( "sort"        ) ) )
-   ::oUI:buttonSortZA      :setIcon( QIcon( hbide_image( "sortdescend" ) ) )
-   ::oUI:buttonSortOrg     :setIcon( QIcon( hbide_image( "invertcase"  ) ) )
+      :buttonSort        :setIcon( QIcon( hbide_image( "sort"           ) ) )
+      :buttonSortZA      :setIcon( QIcon( hbide_image( "sortdescend"    ) ) )
+      :buttonSortOrg     :setIcon( QIcon( hbide_image( "invertcase"     ) ) )
+      :buttonDupLine     :setIcon( QIcon( __hbqtImage( "duplicate-line" ) ) )
+      :buttonDeleteLine  :setIcon( QIcon( __hbqtImage( "delete-line"    ) ) )
+      :buttonUnDo        :setIcon( QIcon( hbide_image( "undo"           ) ) )
+      :buttonReDo        :setIcon( QIcon( hbide_image( "redo"           ) ) )
 
-   ::oUI:buttonSort        :hide()
-   ::oUI:buttonSortZA      :hide()
-   ::oUI:buttonSortOrg     :hide()
+      :buttonSort        :hide()
+      :buttonSortZA      :hide()
+      :buttonSortOrg     :hide()
 
-   ::oUI:buttonCn          :connect( "clicked()", {|| ::lSaveOK := .f., ::oPropertiesDock:hide() } )
-   ::oUI:buttonSave        :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .F., .T. )       } )
-   ::oUI:buttonSaveExit    :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .T., .T. )       } )
-   ::oUI:buttonSelect      :connect( "clicked()", {|| ::addSources()         } )
-   ::oUI:buttonUp          :connect( "clicked()", {|| ::moveLine( -1 )       } )
-   ::oUI:buttonDown        :connect( "clicked()", {|| ::moveLine( +1 )       } )
-   ::oUI:buttonChoosePrjLoc:connect( "clicked()", {|| ::PromptForPath( ::oUI:editPrjLoctn , 'Choose Project Location...'   ) } )
-   ::oUI:buttonChooseWd    :connect( "clicked()", {|| ::PromptForPath( ::oUI:editWrkFolder, 'Choose Working Folder...'     ) } )
-   ::oUI:buttonChooseDest  :connect( "clicked()", {|| ::PromptForPath( ::oUI:editDstFolder, 'Choose Destination Folder...' ) } )
-   ::oUI:buttonBackup      :connect( "clicked()", {|| ::PromptForPath( ::oUI:editBackup   , 'Choose Backup Folder...'      ) } )
-   ::oUI:editPrjLoctn      :connect( "textChanged(QString)", {|cPath| ::setProjectLocation( cPath ) } )
+      :buttonCn          :connect( "clicked()", {|| ::lSaveOK := .f., ::oPropertiesDock:hide() } )
+      :buttonSave        :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .F., .T. )       } )
+      :buttonSaveExit    :connect( "clicked()", {|| ::lSaveOK := .t., ::save( .T., .T. )       } )
 
-   /* Set monospaced fonts */
-   ::oUI:editFlags         :setFont( ::oFont:oWidget )
-   ::oUI:editSources       :setFont( ::oFont:oWidget )
-   ::oUI:editHbp           :setFont( ::oFont:oWidget )
+      :buttonChoosePrjLoc:connect( "clicked()", {|| ::PromptForPath( ::oUI:editPrjLoctn , 'Choose Project Location...'   ) } )
+      :buttonChooseWd    :connect( "clicked()", {|| ::PromptForPath( ::oUI:editWrkFolder, 'Choose Working Folder...'     ) } )
+      :buttonChooseDest  :connect( "clicked()", {|| ::PromptForPath( ::oUI:editDstFolder, 'Choose Destination Folder...' ) } )
+      :buttonBackup      :connect( "clicked()", {|| ::PromptForPath( ::oUI:editBackup   , 'Choose Backup Folder...'      ) } )
+      :editPrjLoctn      :connect( "textChanged(QString)", {|cPath| ::setProjectLocation( cPath ) } )
 
-   qDrop := ::oUI:oWidget
+      // provide some muscles to the editor
+      WITH OBJECT ::oEdit := HbQtEditor():new()
+         :qEdit := ::oUI:editSources
+         :create()
+      // :setFont( QFont( "Courier", 10 ) )       // does not work - CSS is installed on QDockWidget - so install CSS onto it.
+         :qEdit:setStyleSheet( 'font: 10pt "Courier";' )
+      ENDWITH
+      :buttonSelect      :connect( "clicked()", {|| ::addSources()               } )
+      :buttonUp          :connect( "clicked()", {|| ::oEdit:moveLine( -1 )       } )
+      :buttonDown        :connect( "clicked()", {|| ::oEdit:moveLine( +1 )       } )
+      :buttonDupLine     :connect( "clicked()", {|| ::oEdit:duplicateLine()      } )
+      :buttonDeleteLine  :connect( "clicked()", {|| ::oEdit:deleteLine()         } )
+      :buttonUnDo        :connect( "clicked()", {|| ::oEdit:undo()               } )
+      :buttonReDo        :connect( "clicked()", {|| ::oEdit:redo()               } )
+      :editFind          :connect( "returnPressed()", {|v| v := ::oUI:editFind:text(), iif( Empty( v ), .T., ::oEdit:find( v ) ) } )
 
-   qDrop:setAcceptDrops( .t. )
-   qDrop:connect( QEvent_DragEnter, {|p| p:acceptProposedAction(), .F. } )
-   qDrop:connect( QEvent_DragMove , {|p| p:acceptProposedAction(), .F. } )
-   qDrop:connect( QEvent_Drop     , {|p|
+   ENDWITH
+
+   WITH OBJECT ::oUI:oWidget
+      :setAcceptDrops( .t. )
+      :connect( QEvent_DragEnter, {|p| p:acceptProposedAction(), .F. } )
+      :connect( QEvent_DragMove , {|p| p:acceptProposedAction(), .F. } )
+      :connect( QEvent_Drop     , {|p|
                                           LOCAL qList, i, qUrl
                                           LOCAL qMime := p:mimeData()
                                           LOCAL aFiles := {}
@@ -1231,6 +1246,7 @@ METHOD IdeProjManager:buildInterface()
                                           ENDIF
                                           RETURN .F.
                                      } )
+   ENDWITH
    RETURN Self
 
 
@@ -1361,12 +1377,7 @@ METHOD IdeProjManager:isValidProjectLocation( lTell )
 
 
 METHOD IdeProjManager:moveLine( nDirection )
-
-   IF nDirection == -1
-
-   ELSE
-
-   ENDIF
+   ::oUI:editSources:hbMoveLine( nDirection )
    RETURN Self
 
 

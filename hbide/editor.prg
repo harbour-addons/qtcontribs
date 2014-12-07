@@ -1,4 +1,4 @@
-/*
+         /*
  * $Id$
  */
 
@@ -74,11 +74,9 @@
 
 #define __qcompleter_activated__                  2001
 #define __qFldsCompleter_activated__              2002
-#define __qDocModificationChanged__               2003
 #define __qDocContentsChange__                    2004
 #define __qTimeSave_timeout__                     2005
 #define __qTab_contextMenu__                      2006
-#define __qTabWidget_tabCloseRequested__          2007
 
 
 #define __selectionMode_stream__                  1
@@ -86,7 +84,8 @@
 #define __selectionMode_line__                    3
 
 
-
+// this is application level, initiate any HbQtEditor specific calls in the constructor.
+//
 CLASS IdeEditsManager INHERIT IdeObject
 
    DATA   qContextMenu
@@ -98,11 +97,11 @@ CLASS IdeEditsManager INHERIT IdeObject
    DATA   qFldsStrList
    DATA   qFldsModel
 
-   DATA   hEditingWords                           INIT {=>}
+   DATA   hEditingWords                           INIT __hbqtStandardHash()
+   DATA   hK                                      INIT __hbqtStandardHash()
    DATA   k_
-   DATA   hK                                      INIT {=>}
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD removeSourceInTree( cSourceFile )
@@ -194,7 +193,6 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD showThumbnail()
    METHOD changeThumbnail()
    METHOD spaces2tabs()
-   METHOD qscintilla()
    METHOD setStyleSheet( nMode )
    METHOD updateCompleter()
    METHOD updateCompleterByEditingWords( cWord )
@@ -207,45 +205,21 @@ CLASS IdeEditsManager INHERIT IdeObject
 
    METHOD nextEditor()
    METHOD previousEditor()
+   METHOD execToolsBox()
 
    ENDCLASS
 
 
-METHOD IdeEditsManager:new( oIde )
-
-   hb_HCaseMatch( ::hK, .F. )
-   hb_HKeepOrder( ::hK, .F. )
+METHOD IdeEditsManager:init( oIde )
 
    ::oIde := oIde
 
    hb_hCaseMatch( ::hEditingWords, .F. )
-   RETURN Self
 
+   //__hbqtStackHarbourFuncList()
+   __hbqtStackQtFuncList()
+   __hbqtStackUserFuncList( __pullDictFunctions( ::oIde:aUserDict ) )
 
-METHOD IdeEditsManager:destroy()
-   LOCAL a_
-
-   ::qCompleter:disconnect( "activated(QString)" )
-
-   ::oIde:qCompModel := NIL
-   ::oIde:qProtoList := NIL
-
-   FOR EACH a_ IN ::aActions
-      a_[ 2 ] := NIL
-      a_:= NIL
-   NEXT
-
-   ::aActions     := NIL
-   ::aProtos      := NIL
-
-   ::qContextMenu := NIL
-   ::qFldsStrList := NIL
-   ::qFldsModel   := NIL
-
-   FOR EACH a_ IN ::oIde:aTabs
-      a_[ 2 ]:destroy()
-      a_:= NIL
-   NEXT
    RETURN Self
 
 
@@ -332,6 +306,33 @@ METHOD IdeEditsManager:create( oIde )
    RETURN Self
 
 
+METHOD IdeEditsManager:destroy()
+   LOCAL a_
+
+   ::qCompleter:disconnect( "activated(QString)" )
+
+   ::oIde:qCompModel := NIL
+   ::oIde:qProtoList := NIL
+
+   FOR EACH a_ IN ::aActions
+      a_[ 2 ] := NIL
+      a_:= NIL
+   NEXT
+
+   ::aActions     := NIL
+   ::aProtos      := NIL
+
+   ::qContextMenu := NIL
+   ::qFldsStrList := NIL
+   ::qFldsModel   := NIL
+
+   FOR EACH a_ IN ::oIde:aTabs
+      a_[ 2 ]:destroy()
+      a_:= NIL
+   NEXT
+   RETURN Self
+
+
 METHOD IdeEditsManager:updateCompleterByEditingWords( cWord )
    LOCAL s
 
@@ -377,7 +378,6 @@ METHOD IdeEditsManager:updateCompleter()
 
 
 METHOD IdeEditsManager:setStyleSheet( nMode )
-
    ::qContextMenu:setStyleSheet( GetStyleSheet( "QMenuPop", nMode ) )
    ::qContextSub:setStyleSheet( GetStyleSheet( "QMenuPop", nMode ) )
    RETURN Self
@@ -400,7 +400,6 @@ METHOD IdeEditsManager:updateFieldsList( cAlias )
       ENDIF
    ENDIF
    ::qCompleter:setModel( ::qCompModel )
-
    RETURN .f.
 
 
@@ -421,7 +420,7 @@ METHOD IdeEditsManager:getProto( cWord )
 METHOD IdeEditsManager:removeSourceInTree( cSourceFile )
    LOCAL n
 
-   IF !Empty( cSourceFile )
+   IF ! Empty( cSourceFile )
       IF ( n := aScan( ::aProjData, {|e_| e_[ TRE_ORIGINAL ] == cSourceFile .AND. e_[ 2 ] == "Opened Source" } ) ) > 0
          ::aProjData[ n,3 ]:delItem( ::oIde:aProjData[ n,1 ] )
          hb_adel( ::aProjData, n, .T. )
@@ -447,10 +446,8 @@ METHOD IdeEditsManager:addSourceInTree( cSourceFile, cView )
                                    cSourceFile, hbide_pathNormalized( cSourceFile ) } )
 
    ::oEditTree:oWidget:sortItems( 0, Qt_AscendingOrder )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:execEvent( nEvent, p )
    LOCAL oEdit
@@ -471,10 +468,8 @@ METHOD IdeEditsManager:execEvent( nEvent, p )
       ENDIF
       EXIT
    ENDSWITCH
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
@@ -482,15 +477,11 @@ METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cVi
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getTabBySource( cSource )
-
    cSource := hbide_pathNormalized( cSource, .t. )
-
    RETURN ascan( ::aTabs, {|e_| hb_FileMatch( e_[ TAB_OEDITOR ]:pathNormalized, cSource ) } )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getTabCurrent()
    LOCAL qTab, nTab
@@ -501,7 +492,6 @@ METHOD IdeEditsManager:getTabCurrent()
    ENDIF
    RETURN nTab
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getTabByIndex( nIndex )
    LOCAL qTab, nTab
@@ -512,7 +502,6 @@ METHOD IdeEditsManager:getTabByIndex( nIndex )
    ENDIF
    RETURN nTab
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getDocumentCurrent()
    LOCAL qTab, nTab
@@ -523,10 +512,8 @@ METHOD IdeEditsManager:getDocumentCurrent()
          RETURN ::aTabs[ nTab, TAB_OEDITOR ]:document()
       ENDIF
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditObjectCurrent()
    LOCAL qTab, nTab
@@ -537,10 +524,8 @@ METHOD IdeEditsManager:getEditObjectCurrent()
          RETURN ::aTabs[ nTab, TAB_OEDITOR ]:qCoEdit
       ENDIF
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditObjectByIndex( nIndex )
    LOCAL qTab, nTab
@@ -551,10 +536,8 @@ METHOD IdeEditsManager:getEditObjectByIndex( nIndex )
          RETURN ::aTabs[ nTab, TAB_OEDITOR ]:qCoEdit
       ENDIF
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditCurrent()
    LOCAL qTab, nTab
@@ -565,10 +548,8 @@ METHOD IdeEditsManager:getEditCurrent()
          RETURN ::aTabs[ nTab, TAB_OEDITOR ]:qCqEdit
       ENDIF
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditorCurrent()
    LOCAL qTab, nTab
@@ -579,10 +560,8 @@ METHOD IdeEditsManager:getEditorCurrent()
          RETURN ::aTabs[ nTab, TAB_OEDITOR ]
       ENDIF
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditorByIndex( nIndex ) /* Index is 0 based */
    LOCAL qTab, a_
@@ -595,10 +574,8 @@ METHOD IdeEditsManager:getEditorByIndex( nIndex ) /* Index is 0 based */
          ENDIF
       NEXT
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditorByTabObject( oTab )
    LOCAL nPos
@@ -608,10 +585,8 @@ METHOD IdeEditsManager:getEditorByTabObject( oTab )
          RETURN ::aTabs[ nPos, TAB_OEDITOR ]
       ENDIF
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditorByTabPosition( nPos )
 
@@ -622,7 +597,6 @@ METHOD IdeEditsManager:getEditorByTabPosition( nPos )
    ENDIF
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getEditorBySource( cSource )
    LOCAL n
@@ -631,10 +605,8 @@ METHOD IdeEditsManager:getEditorBySource( cSource )
    IF ( n := ascan( ::aTabs, {|e_| hb_FileMatch( e_[ TAB_OEDITOR ]:pathNormalized, cSource ) } ) ) > 0
       RETURN ::aTabs[ n, TAB_OEDITOR ]
    ENDIF
-
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:nextEditor()
    LOCAL nCurIndex := ::qTabWidget:currentIndex()
@@ -650,7 +622,6 @@ METHOD IdeEditsManager:nextEditor()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:previousEditor()
 
@@ -664,51 +635,50 @@ METHOD IdeEditsManager:previousEditor()
       ENDIF
    ENDIF
    ::qTabWidget:setCurrentIndex( nCurIndex )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:reLoad( cSource )
-   LOCAL oEdit
+   LOCAL oEditor
 
    IF empty( cSource )
-      IF ! empty( oEdit := ::getEditObjectCurrent() )
-         oEdit:reload()
+      IF ! Empty( oEditor := ::getEditorCurrent() )
+         oEditor:reload()
       ENDIF
    ELSE
       IF hb_fileExists( cSource ) .AND. hbide_isValidText( cSource )
-         IF !empty( oEdit := ::getEditorBySource( cSource ) )
-            oEdit:qEdit:clear()
-            oEdit:qEdit:setPlainText( hb_memoread( hbide_pathToOSPath( cSource ) ) )
+         IF !empty( oEditor := ::getEditorBySource( cSource ) )
+            oEditor:reload()
          ENDIF
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:execToolsBox()
+   LOCAL oEditor
+   IF ! empty( oEditor := ::getEditorCurrent() )
+      oEditor:execToolsBox()
+   ENDIF
+   RETURN Self
+
 
 METHOD IdeEditsManager:setEncoding( cCodec )
    LOCAL oEdit
-
    IF ! empty( oEdit := ::getEditorCurrent() )
       oEdit:setEncoding( cCodec )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:isOpen( cSource )
-   RETURN !empty( ::getEditorBySource( cSource ) )
+   RETURN ! Empty( ::getEditorBySource( cSource ) )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:setSourceVisible( cSource )
    LOCAL oEdit, nIndex
 
-   IF !empty( oEdit := ::getEditorBySource( cSource ) )
+   IF ! Empty( oEdit := ::getEditorBySource( cSource ) )
       ::oDK:setView( oEdit:cView )
 
       nIndex := ::qTabWidget:indexOf( oEdit:oTab:oWidget )
@@ -719,10 +689,8 @@ METHOD IdeEditsManager:setSourceVisible( cSource )
       ENDIF
       RETURN .t.
    ENDIF
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:setSourceVisibleByIndex( nIndex ) /* nIndex is 0 based */
 
@@ -736,19 +704,8 @@ METHOD IdeEditsManager:setSourceVisibleByIndex( nIndex ) /* nIndex is 0 based */
 
    ::qTabWidget:setCurrentIndex( nIndex )
    ::getEditorByIndex( nIndex ):setDocumentProperties()
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
-
-METHOD IdeEditsManager:qscintilla()
-   LOCAL oEdit
-   IF !empty( oEdit := ::getEditorCurrent() )
-      oEdit:qscintilla()
-   ENDIF
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:undo()
    LOCAL oEdit
@@ -757,7 +714,6 @@ METHOD IdeEditsManager:undo()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:redo()
    LOCAL oEdit
@@ -766,7 +722,6 @@ METHOD IdeEditsManager:redo()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:cut()
    LOCAL oEdit
@@ -775,7 +730,6 @@ METHOD IdeEditsManager:cut()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:copy()
    LOCAL oEdit
@@ -784,7 +738,6 @@ METHOD IdeEditsManager:copy()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:paste()
    LOCAL oEdit
@@ -793,7 +746,6 @@ METHOD IdeEditsManager:paste()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:selectAll()
    LOCAL oEdit
@@ -802,7 +754,6 @@ METHOD IdeEditsManager:selectAll()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:findEx( cText, nFlags, nStart )
    LOCAL oEdit
@@ -811,7 +762,6 @@ METHOD IdeEditsManager:findEx( cText, nFlags, nStart )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:highlightAll( cText )
    LOCAL oEdit
@@ -820,7 +770,6 @@ METHOD IdeEditsManager:highlightAll( cText )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleSelectionMode()
    LOCAL oEdit
@@ -829,7 +778,6 @@ METHOD IdeEditsManager:toggleSelectionMode()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleStreamSelectionMode()
    LOCAL oEdit
@@ -838,7 +786,6 @@ METHOD IdeEditsManager:toggleStreamSelectionMode()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleColumnSelectionMode()
    LOCAL oEdit
@@ -847,7 +794,6 @@ METHOD IdeEditsManager:toggleColumnSelectionMode()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleLineSelectionMode()
    LOCAL oEdit
@@ -856,38 +802,32 @@ METHOD IdeEditsManager:toggleLineSelectionMode()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-
-METHOD IdeEditsManager:toggleCurrentLineHighlightMode()
-   LOCAL oEdit
-   ::oIde:lCurrentLineHighlightEnabled := ! ::lCurrentLineHighlightEnabled
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:toggleCurrentLineHighlightMode()
-   ENDIF
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleLineNumbers()
-   LOCAL oEdit
-
-   ::oIde:lLineNumbersVisible := ! ::lLineNumbersVisible
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:toggleLineNumbers()
+   LOCAL oEditor
+   IF ! Empty( oEditor := ::getEditorCurrent() )
+      oEditor:toggleLineNumbers()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleHorzRuler()
    LOCAL oEdit
    ::oIde:lHorzRulerVisible := ! ::lHorzRulerVisible
    IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:toggleHorzRuler()
+      oEdit:toggleHorzRuler( ::oIde:lHorzRulerVisible )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+
+METHOD IdeEditsManager:toggleCurrentLineHighlightMode()
+   LOCAL oEdit
+   ::oIde:lCurrentLineHighlightEnabled := ! ::lCurrentLineHighlightEnabled
+   IF !empty( oEdit := ::getEditObjectCurrent() )
+      oEdit:toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
+   ENDIF
+   RETURN Self
+
 
 METHOD IdeEditsManager:toggleCodeCompetion()
    LOCAL oEdit
@@ -897,7 +837,6 @@ METHOD IdeEditsManager:toggleCodeCompetion()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:toggleCompetionTips()
    LOCAL oEdit
@@ -907,7 +846,6 @@ METHOD IdeEditsManager:toggleCompetionTips()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:duplicateLine()
    LOCAL oEdit
@@ -916,7 +854,6 @@ METHOD IdeEditsManager:duplicateLine()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:moveLine( nDirection )
    LOCAL oEdit
@@ -925,7 +862,6 @@ METHOD IdeEditsManager:moveLine( nDirection )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:deleteLine()
    LOCAL oEdit
@@ -934,7 +870,6 @@ METHOD IdeEditsManager:deleteLine()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:streamComment()
    LOCAL oEdit
@@ -943,7 +878,6 @@ METHOD IdeEditsManager:streamComment()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:blockComment()
    LOCAL oEdit
@@ -952,7 +886,6 @@ METHOD IdeEditsManager:blockComment()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:indent( nStep )
    LOCAL oEdit
@@ -961,7 +894,6 @@ METHOD IdeEditsManager:indent( nStep )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:convertQuotes()
    LOCAL oEdit
@@ -970,7 +902,6 @@ METHOD IdeEditsManager:convertQuotes()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:convertDQuotes()
    LOCAL oEdit
@@ -979,7 +910,6 @@ METHOD IdeEditsManager:convertDQuotes()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:alignAt()
    LOCAL oEdit, cWord
@@ -992,7 +922,6 @@ METHOD IdeEditsManager:alignAt()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:stringify()
    LOCAL oEdit
@@ -1001,7 +930,6 @@ METHOD IdeEditsManager:stringify()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:applyTheme( cTheme )
    LOCAL oEditor
@@ -1010,16 +938,15 @@ METHOD IdeEditsManager:applyTheme( cTheme )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:switchToReadOnly()
-   LOCAL oEdit
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:setReadOnly()
+   LOCAL oEditor
+//   IF !empty( oEdit := ::getEditObjectCurrent() )
+   IF !empty( oEditor := ::getEditorCurrent() )
+      oEditor:setReadOnly()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:presentSkeletons()
    LOCAL oEdit
@@ -1028,7 +955,6 @@ METHOD IdeEditsManager:presentSkeletons()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:clearSelection()
    LOCAL oEdit
@@ -1037,7 +963,6 @@ METHOD IdeEditsManager:clearSelection()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:gotoFunction()
    LOCAL oEdit
@@ -1046,7 +971,6 @@ METHOD IdeEditsManager:gotoFunction()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getText()
    LOCAL oEdit, cText := ""
@@ -1055,7 +979,6 @@ METHOD IdeEditsManager:getText()
    ENDIF
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getWord( lSelect )
    LOCAL oEdit, cText := ""
@@ -1064,7 +987,6 @@ METHOD IdeEditsManager:getWord( lSelect )
    ENDIF
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getLine( nLine, lSelect )
    LOCAL oEdit, cText := ""
@@ -1073,7 +995,6 @@ METHOD IdeEditsManager:getLine( nLine, lSelect )
    ENDIF
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:convertSelection( cKey )
    LOCAL oEdit
@@ -1092,7 +1013,6 @@ METHOD IdeEditsManager:convertSelection( cKey )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:insertSeparator( cSep )
    LOCAL oEdit
@@ -1101,7 +1021,6 @@ METHOD IdeEditsManager:insertSeparator( cSep )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:insertText( cKey )
    LOCAL cFile, cText, oEdit
@@ -1135,7 +1054,6 @@ METHOD IdeEditsManager:insertText( cKey )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:upperCaseKeywords()
    LOCAL oEdit
@@ -1144,7 +1062,6 @@ METHOD IdeEditsManager:upperCaseKeywords()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:formatBraces( nMode )
    LOCAL oEdit
@@ -1153,7 +1070,6 @@ METHOD IdeEditsManager:formatBraces( nMode )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:removeTabs()
    LOCAL oEdit
@@ -1162,7 +1078,6 @@ METHOD IdeEditsManager:removeTabs()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:spaces2tabs()
    LOCAL oEdit
@@ -1171,7 +1086,6 @@ METHOD IdeEditsManager:spaces2tabs()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:removeTrailingSpaces()
    LOCAL oEdit
@@ -1180,7 +1094,6 @@ METHOD IdeEditsManager:removeTrailingSpaces()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:zoom( nKey )
    LOCAL oEdit
@@ -1189,7 +1102,6 @@ METHOD IdeEditsManager:zoom( nKey )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:printPreview()
    LOCAL oEdit
@@ -1198,7 +1110,6 @@ METHOD IdeEditsManager:printPreview()
    ENDIF
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:printPreviewByIndex( nIndex )
    LOCAL oEdit
@@ -1207,13 +1118,11 @@ METHOD IdeEditsManager:printPreviewByIndex( nIndex )
    ENDIF
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:paintRequested( qPrinter )
    ::qCurEdit:print( qPrinter )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:getSelectedText()
    LOCAL oEdit
@@ -1222,34 +1131,30 @@ METHOD IdeEditsManager:getSelectedText()
    ENDIF
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:setMark()
-   LOCAL oEdit
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:setNewMark()
+   LOCAL oEditor
+   IF !empty( oEditor := ::getEditorCurrent() )
+      oEditor:setBookMark()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:setTooltipMark( nIndex )
-   LOCAL oEdit
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:setTooltipMark( nIndex )
+   LOCAL oEditor
+   IF !empty( oEditor := ::getEditorCurrent() )
+      oEditor:setTooltipMark( nIndex )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:gotoMark( nIndex )
-   LOCAL oEdit
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:gotoMark( nIndex )
+   LOCAL oEditor
+   IF !empty( oEditor := ::getEditorCurrent() )
+      oEditor:gotoMark( nIndex )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditsManager:goto( nLine )
    LOCAL oEdit
@@ -1267,100 +1172,115 @@ METHOD IdeEditsManager:home()
       oEdit:home()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:end()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:end()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:down()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:down()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:up()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:up()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:goBottom()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:goBottom()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:goTop()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:goTop()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:left()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:left()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:right()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:right()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:panEnd()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:panEnd()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:panHome()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:panHome()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:pageUp()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:pageUp()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:pageDown()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
       oEdit:pageDown()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:showThumbnail()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditorCurrent() )
       oEdit:showThumbnail()
    ENDIF
    RETURN Self
-/*----------------------------------------------------------------------*/
+
+
 METHOD IdeEditsManager:changeThumbnail()
    LOCAL oEdit
    IF !empty( oEdit := ::getEditorCurrent() )
       oEdit:changeThumbnail()
    ENDIF
    RETURN Self
+
 /*----------------------------------------------------------------------*/
 //                            Locating
 /*----------------------------------------------------------------------*/
+
 METHOD IdeEditsManager:find( cString, nPosFrom )
    LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
@@ -1371,6 +1291,7 @@ METHOD IdeEditsManager:find( cString, nPosFrom )
       ENDIF
    ENDIF
    RETURN Self
+
 /*----------------------------------------------------------------------*/
 //
 //                            CLASS IdeEditor
@@ -1422,7 +1343,6 @@ CLASS IdeEditor INHERIT IdeObject
    DATA   nVPos                                   INIT   0
    DATA   nID
 
-   DATA   qCursor
    DATA   aSplits                                 INIT   {}
 
    DATA   qHLayout
@@ -1443,22 +1363,22 @@ CLASS IdeEditor INHERIT IdeObject
 
    METHOD execTabContextMenu( oPos )
 
-   METHOD new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
+   METHOD init( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    METHOD create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
-   METHOD split( nOrient, oEditP )
-   METHOD relay( oEdit )
+
+   METHOD split( nOrient )
+   METHOD relay( oEdit, nOrient )
    METHOD destroy()
    METHOD execEvent( nEvent, p, p1, p2 )
    METHOD setDocumentProperties()
    METHOD activateTab( mp1, mp2, oXbp )
    METHOD buildTabPage( cSource )
-   METHOD dispEditInfo( qEdit )
+   METHOD dispEditInfo( oEdit )
    METHOD setTabImage( qEdit )
    METHOD applyTheme( cTheme )
    METHOD showThumbnail()
    METHOD changeThumbnail()
    METHOD scrollThumbnail()
-   METHOD qscintilla()
    METHOD prepareBufferToLoad( cBuffer )
    METHOD prepareBufferToSave( cBuffer )
    METHOD reload()
@@ -1469,12 +1389,43 @@ CLASS IdeEditor INHERIT IdeObject
    METHOD extras()
    METHOD manageExtras()
    METHOD source()                                INLINE ::sourceFile
+   METHOD execEditContextMenu( oPos, oInEdit )
+   METHOD selectionChanged( oEdit, nSelectedChars )
+   METHOD connectBlocks( oEdit )
+   METHOD dispStatusInfo()
+   METHOD setReadOnly( lReadOnly )
 
+   METHOD handleKeyPressed( nQtKey, aModifiers, oEdit )
+   METHOD execToolsBox( p )
+   METHOD supplyFormattingInfo()
+   METHOD handleEditorEvents( nEvent, xData, oEdit )
+
+   METHOD currentFunctionIndex( nCurLine )
+   METHOD updateWordsInCompleter( cWord )
+   METHOD updateFieldsList( cAlias )
+   METHOD markCurrentFunction( nCurLine )
+   METHOD toNextFunction( nCurLine )
+   METHOD toPreviousFunction( nCurLine )
+
+   METHOD relayMarkButtons()
+   METHOD setBookmark()
+   METHOD setTooltipMark( nIndex )
+   METHOD gotoMark( nIndex )
+
+   METHOD showHeader( aHeader )
+   METHOD jumpToHarbourHelp( cWord )
+   METHOD jumpToFunction( cWord )
+   METHOD loadFunctionHelp( cWord )
+
+   METHOD toggleLineNumbers( lOn )
+   METHOD toggleHorzRuler( lOn )
+   METHOD toggleCurrentLineHighlightMode( lOn )
+
+   METHOD refresh()
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
+METHOD IdeEditor:init( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
    DEFAULT oIde        TO ::oIde
    DEFAULT cSourceFile TO ::sourceFile
@@ -1499,10 +1450,8 @@ METHOD IdeEditor:new( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBoo
    ::cExtras    := cExtras
 
    ::nID        := hbide_getNextUniqueID()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    LOCAL cFileTemp, nAttr
@@ -1559,47 +1508,43 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
 
    ::qLayout := QBoxLayout(  Qt_Vertical )
    ::qLayout:setContentsMargins( 0,0,0,0 )
-   //
+
    ::oTab:oWidget:setLayout( ::qLayout )
-
-   ::oEdit   := IdeEdit():new( ::oIde, Self, 0 )
-   ::oEdit:aBookMarks := ::aBookMarks
-   ::oEdit:create()
-   ::qEdit   := ::oEdit:qEdit
-   ::qCqEdit := ::oEdit:qEdit
-   ::qCoEdit := ::oEdit
-
-   ::qLayout:addWidget( ::oEdit:qEdit )
-
-   ::oEdit:qEdit:connect( "updateRequest(QRect,int)", {|| ::scrollThumbnail() } )
-   ::oEdit:qEdit:connect( "hbBreakPointSet(int)"    , {| nLine | ::setBreakPoint( ::cFile + ::cExt, nLine ) } )
-
-   ::qDocument  := ::qEdit:document()
-   ::qCursor := ::qEdit:textCursor()
-
-   /* Populate Tabs Array */
    aadd( ::aTabs, { ::oTab, Self } )
-
-   /* Populate right at creation */
    ::oEM:addSourceInTree( ::sourceFile, ::cView )
 
-   //::qTabWidget:setStyleSheet( GetStyleSheet( "QTabWidget", ::nAnimantionMode ) )
-   IF ::lReadOnly
-      ::oEdit:setReadOnly( .t. )
-      ::qEdit:setTextInteractionFlags( Qt_TextSelectableByMouse + Qt_TextSelectableByKeyboard )
-   ENDIF
+   //::oEdit     := IdeEdit():new( ::oIde ):create()
+   ::oEdit     := HbQtEditor():new():create()
+   ::qEdit     := ::oEdit:qEdit
+   ::qCqEdit   := ::oEdit:qEdit
+   ::qCoEdit   := ::oEdit
+   ::qDocument := ::qEdit:document()
 
-   ::qDocument:connect( "modificationChanged(bool)"  , {|p      | ::execEvent( __qDocModificationChanged__, p         ) } )
-   ::qDocument:connect( "contentsChange(int,int,int)", {|p,p1,p2| ::execEvent( __qDocContentsChange__     , p, p1, p2 ) } )
+   ::qLayout:addWidget( ::oEdit:widget() )
 
-   ::qDocument:setModified( .f. )
+   ::connectBlocks( ::oEdit )
+
+   WITH OBJECT ::oEdit
+      :setFormattingInfo( ::supplyFormattingInfo() )
+      :setFontInfo( ::oINI:cFontName, ::oINI:nPointSize )
+      :setCompleter( ::qCompleter )
+      :setTabSpaces( ::nTabSpaces )
+      :setBookmarks( ::aBookMarks )
+      :toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
+      :toggleLineNumbers( ::oIde:lLineNumbersVisible )
+      :toggleHorzRuler( ::oIde:lHorzRulerVisible )
+      :setModified( .F. )
+      IF ::lReadOnly
+         :setReadOnly( .T. )
+      ENDIF
+   ENDWITH
    RETURN Self
 
 
 METHOD IdeEditor:destroy()
    LOCAL n, oEdit
 
-   HB_TRACE( HB_TR_DEBUG, "..........................................................IdeEditor:destroy()", 0 )
+   HB_TRACE( HB_TR_DEBUG, "IdeEditor:destroy()", 0 )
 
    ::oAC:qSelToolbar:setParent( ::oIde:oDlg:oWidget )
 
@@ -1630,19 +1575,6 @@ METHOD IdeEditor:destroy()
       ::qDocument := NIL
    ENDIF
 
-#if 0
-   ::qCqEdit  := NIL
-   ::qCoEdit  := NIL
-   ::qEdit    := NIL
-
-   IF !Empty( ::qHiliter )
-      ::qHiliter := NIL
-   ENDIF
-
-   ::qSplitter := NIL
-   ::oEdit := NIL
-   ::qLayout := NIL
-#endif
    IF ( n := ascan( ::aTabs, {|e_| e_[ TAB_OEDITOR ] == Self } ) ) > 0
       hb_adel( ::oIde:aTabs, n, .T. )
    ENDIF
@@ -1661,18 +1593,209 @@ METHOD IdeEditor:destroy()
          ::oIde:lDockRVisible := .f.
       ENDIF
    ENDIF
-   HB_TRACE( HB_TR_DEBUG, "................................................................IdeEditor:destroy()", 1 )
+   HB_TRACE( HB_TR_DEBUG, "IdeEditor:destroy()", 1 )
    RETURN Self
 
 
-METHOD IdeEditor:relay( oEdit )
+METHOD IdeEditor:refresh()
+
+   ::setDocumentProperties()
+   ::relayMarkButtons()
+   ::toggleLineNumbers()
+   ::toggleHorzRuler()
+   ::toggleCurrentLineHighlightMode()
+   ::dispStatusInfo()
+   ::changeThumbnail()
+   RETURN Self
+
+
+METHOD IdeEditor:connectBlocks( oEdit )
+   WITH OBJECT oEdit
+      :updateRequestBlock       := {| oRect, nYScrolled | HB_SYMBOL_UNUSED( oRect + nYScrolled ), ::scrollThumbnail() }
+      :breakPointSetBlock       := {| nLine | ::setBreakPoint( ::cFile + ::cExt, nLine ) }
+      :modificationChangedBlock := {| lChanged | HB_SYMBOL_UNUSED( lChanged ), ::setTabImage() }
+      :contentsChangedBlock     := {| nPosition, nCharsRemoved, nCharsAdded | ::execEvent( __qDocContentsChange__, nPosition, nCharsRemoved, nCharsAdded ) }
+      :contextMenuBlock         := {| oPos, oInEdit | ::execEditContextMenu( oPos, oInEdit ) }
+      :editorInfoBlock          := {| oEdit | ::dispEditInfo( oEdit ) }
+      :selectionChangedBlock    := {| oEdit, nSelectedChars | ::selectionChanged( oEdit, nSelectedChars ) }
+      :formattingInfoBlock      := {|| ::supplyFormattingInfo() }
+      :keyPressedBlock          := {| nQtKey, aModifiers, oEdit | ::handleKeyPressed( nQtKey, aModifiers, oEdit ) }
+      :eventsBlock              := {| nEvent, xData, oEdit | ::handleEditorEvents( nEvent, xData, oEdit ) }
+   ENDWITH
+   RETURN Self
+
+
+METHOD IdeEditor:supplyFormattingInfo()
+   LOCAL hInfo := __hbqtStandardHash()
+#if 0
+
+   hInfo[ "lSupressHbKWordsToUpper" ] := ::oINI:lSupressHbKWordsToUpper
+   hInfo[ "lISOperator"             ] := ::oINI:lISOperator
+   hInfo[ "lISAlignAssign"          ] := ::oINI:lISAlignAssign
+   hInfo[ "lISCodeBlock"            ] := ::oINI:lISCodeBlock
+   hInfo[ "lISClosingP"             ] := ::oINI:lISClosingP
+   hInfo[ "lISSpaceP"               ] := ::oINI:lISSpaceP
+   hInfo[ "lAutoIndent"             ] := ::oINI:lAutoIndent
+   hInfo[ "lISClosing"              ] := ::oINI:lISClosing
+   hInfo[ "lISIf"                   ] := ::oINI:lISIf
+   hInfo[ "lISElse"                 ] := ::oINI:lISElse
+   hInfo[ "lISEmbrace"              ] := ::oINI:lISEmbrace
+   hInfo[ "lISFor"                  ] := ::oINI:lISFor
+   hInfo[ "lISSwitch"               ] := ::oINI:lISSwitch
+   hInfo[ "nISSwitchCases"          ] := ::oINI:nISSwitchCases
+   hInfo[ "lISSwitchOWise"          ] := ::oINI:lISSwitchOWise
+   hInfo[ "lISExitSameLine"         ] := ::oINI:lISExitSameLine
+   hInfo[ "lISDoCase"               ] := ::oINI:lISDoCase
+   hInfo[ "nISCaseCases"            ] := ::oINI:nISCaseCases
+   hInfo[ "lISCaseOWise"            ] := ::oINI:lISCaseOWise
+   hInfo[ "lISDoWhile"              ] := ::oINI:lISDoWhile
+   hInfo[ "lISFunction"             ] := ::oINI:lISFunction
+   hInfo[ "lISLocal"                ] := ::oINI:lISLocal
+   hInfo[ "lISReturn"               ] := ::oINI:lISReturn
+   hInfo[ "lISSeparator"            ] := ::oINI:lISSeparator
+   hInfo[ "lReturnAsBeginKeyword"   ] := ::oINI:lReturnAsBeginKeyword
+   hInfo[ "lISClass"                ] := ::oINI:lISClass
+   hInfo[ "cISMethods"              ] := ::oINI:cISMethods
+   hInfo[ "lSmartIndent"            ] := ::oINI:lSmartIndent
+   hInfo[ "lCompleteArgumented"     ] := ::oINI:lCompleteArgumented
+   hInfo[ "cGotoDialogGeometry"     ] := ::oINI:cGotoDialogGeometry
+   hInfo[ "cISData"                 ] := ::oINI:cISData
+   hInfo[ "cISFormat"               ] := ::oINI:cISFormat
+
+   hInfo[ "cSeparator"              ] := ::oIde:cSeparator
+#endif
+   RETURN hInfo
+
+
+METHOD IdeEditor:execToolsBox( p )
+   IF Empty( p )
+      RETURN ::oAC:showContextWidget( ::qCoEdit )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:setReadOnly( lReadOnly )
+   IF ! HB_ISLOGICAL( lReadOnly )
+      IF ! ::lReadOnly
+         ::oEdit:setReadOnly()                    // toggle readonly status
+      ENDIF
+   ELSE
+      ::oEdit:setReadOnly( lReadOnly )
+   ENDIF
+   ::setTabImage()
+   RETURN Self
+
+
+METHOD IdeEditor:execEditContextMenu( oPos, oInEdit )
+   LOCAL n, cAct, qAct, qCursor
+
+   IF .T.
+      qCursor := oInEdit:getCursor()
+
+      ::oEM:aActions[ 17, 2 ]:setEnabled( ! empty( qCursor:selectedText() ) )
+
+      n := ascan( ::aEdits, {|oEdit| oEdit == oInEdit } )
+
+      ::oEM:aActions[ 18, 2 ]:setEnabled( Len( ::aEdits ) == 0 .OR. ::nSplOrient == -1 .OR. ::nSplOrient == 1 )
+      ::oEM:aActions[ 19, 2 ]:setEnabled( Len( ::aEdits ) == 0 .OR. ::nSplOrient == -1 .OR. ::nSplOrient == 2 )
+      ::oEM:aActions[ 21, 2 ]:setEnabled( n > 0 )
+      IF empty( qAct := ::oEM:qContextMenu:exec( oInEdit:widget():mapToGlobal( oPos ) ) )
+         RETURN Self
+      ENDIF
+      cAct := strtran( qAct:text(), "&", "" )
+      SWITCH cAct
+      CASE "Split Horizontally"
+         ::split( 1 )
+         EXIT
+      CASE "Split Vertically"
+         ::split( 2 )
+         EXIT
+      CASE "Close Splitted Instance"
+         IF n > 0  /* 1 == Main Edit */
+            hb_ADel( ::aEdits, n, .t. )
+            ::qCqEdit := ::qEdit
+            ::qCoEdit := ::oEdit
+            IF oInEdit == ::oEdit
+               ::oSourceThumbnailDock:oWidget:hide()
+            ENDIF
+            oInEdit:destroy()
+            ::oIde:manageFocusInEditor()
+         ENDIF
+         EXIT
+      CASE "Save as Skeleton..."
+         ::oSK:saveAs( ::getSelectedText() )
+         EXIT
+      CASE "Change Theme"
+         ::applyTheme()
+         EXIT
+      CASE "Goto Function"
+         oInEdit:gotoFunction()
+         EXIT
+      CASE "Cut"
+         oInEdit:cut()
+         EXIT
+      CASE "Copy"
+         oInEdit:copy()
+         EXIT
+      CASE "Paste"
+         oInEdit:paste()
+         EXIT
+      CASE "Undo"
+         oInEdit:undo()
+         EXIT
+      CASE "Redo"
+         oInEdit:redo()
+         EXIT
+      CASE "Show Selected Text"
+         ::oIde:showFragment( oInEdit:getSelectedText(), "Selected Text", QIcon( hbide_image( "selectionline" ) ) )
+         EXIT
+      CASE "Diff"
+         ::vssExecute( "Diff" )
+         EXIT
+      CASE "Get Latest Version"
+         ::vssExecute( "Get" )
+         EXIT
+      CASE "Checkin"
+         ::vssExecute( "Checkin" )
+         EXIT
+      CASE "Undo Checkout"
+         ::vssExecute( "Undocheckout" )
+         EXIT
+      CASE "Checkout"
+         ::vssExecute( "Checkout" )
+         EXIT
+      OTHERWISE
+         IF "." $ cAct
+            ::cTheme := SubStr( cAct, At( ".", cAct ) + 2 )
+            ::oTH:changeSyntaxHilighting( ::qEdit, @::cTheme, ::qHiliter )
+         ENDIF
+         EXIT
+      ENDSWITCH
+   ENDIF
+   RETURN NIL
+
+
+METHOD IdeEditor:split( nOrient )
+   LOCAL oEdit
+
+   WITH OBJECT oEdit := IdeEdit():new( ::oIde, Self ):create()
+      :qEdit:setDocument( ::qDocument )
+      :setHilighter( ::qHiliter )
+      :highlightPage()
+   ENDWITH
+   ::connectBlocks( oEdit )
+   ::relay( oEdit, nOrient )
+   RETURN Self
+
+
+METHOD IdeEditor:relay( oEdit, nOrient )
    LOCAL oEdt
 
    IF Len( ::aEdits ) == 0
       IF ::nSplOrient > -1
          ::nSplOrient := -1
          ::qLayout:removeWidget( ::qSplitter )
-         ::qLayout:addWidget( ::oEdit:qEdit )
+         ::qLayout:addWidget( ::oEdit:widget() )
       ENDIF
    ENDIF
 
@@ -1681,43 +1804,17 @@ METHOD IdeEditor:relay( oEdit )
    ENDIF
 
    IF ::nSplOrient == -1
-      ::nSplOrient := oEdit:nOrient
+      ::nSplOrient := nOrient
 
-      IF oEdit:nOrient == 1
-         ::qSplitter := QSplitter( Qt_Horizontal )
-      ELSE
-         ::qSplitter := QSplitter( Qt_Vertical )
-      ENDIF
-
-      ::qLayout:removeWidget( ::oEdit:qEdit )
+      ::qSplitter := QSplitter( iif( nOrient == 1, Qt_Horizontal, Qt_Vertical ) )
+      ::qLayout:removeWidget( ::oEdit:widget() )
       ::qLayout:addWidget( ::qSplitter )
 
-      ::qSplitter:addWidget( ::oEdit:qEdit )
+      ::qSplitter:addWidget( ::oEdit:widget() )
    ENDIF
-
    FOR EACH oEdt IN ::aEdits
-      ::qSplitter:addWidget( oEdt:qEdit )
+      ::qSplitter:addWidget( oEdt:widget() )
    NEXT
-
-   RETURN Self
-
-
-METHOD IdeEditor:split( nOrient, oEditP )
-   LOCAL oEdit
-
-   HB_SYMBOL_UNUSED( oEditP  )
-
-   oEdit := IdeEdit():new( ::oIde, Self, 1 ):create()
-   oEdit:qEdit:setDocument( ::qDocument )
-   oEdit:nOrient := nOrient
-
-   ::relay( oEdit )
-
-   IF HB_ISOBJECT( ::qHiliter )
-      oEdit:qEdit:hbSetHighLighter( ::qHiliter )
-      oEdit:qEdit:hbHighlightPage()
-   ENDIF
-
    RETURN Self
 
 
@@ -1800,25 +1897,32 @@ METHOD IdeEditor:setEncoding( cCodec )
 METHOD IdeEditor:reload()
    LOCAL nAttr, nPos, qCursor, nHPos, nVPos
 
+   IF ::qEdit:document():isModified()
+      IF ! hbide_getYesNo( "Source is in modified state.", "Reload it anyway?", "Reload" )
+         RETURN Self
+      ENDIF
+   ENDIF
+
+   IF hb_fGetAttr( ::sourceFile, @nAttr )
+      ::lReadOnly := hb_bitAnd( nAttr, FC_READONLY ) == FC_READONLY
+   ENDIF
+   ::oEdit:setReadOnly( ::lReadOnly )
+   ::setTabImage()
+
    qCursor := ::qEdit:textCursor()
    nPos    := qCursor:position()
    nHPos   := ::qEdit:horizontalScrollBar():value()
    nVPos   := ::qEdit:verticalScrollBar():value()
 
-   IF hb_fGetAttr( ::sourceFile, @nAttr )
-      ::lReadOnly := hb_bitAnd( nAttr, FC_READONLY ) == FC_READONLY
-   ENDIF
-
-   ::oEdit:setReadOnly( ::lReadOnly )
-   ::setTabImage()
-
    ::qEdit:clear()
    ::qEdit:setPlainText( ::prepareBufferToLoad( hb_memoread( ::sourceFile ) ) )
 
    qCursor:setPosition( nPos )
-   ::qEdit:setTextCursor( qCursor )
-   ::qEdit:horizontalScrollBar():setValue( nHPos )
-   ::qEdit:verticalScrollBar():setValue( nVPos )
+   WITH OBJECT ::qEdit
+      :setTextCursor( qCursor )
+      :horizontalScrollBar():setValue( nHPos )
+      :verticalScrollBar():setValue( nVPos )
+   ENDWITH
    RETURN Self
 
 
@@ -1826,7 +1930,6 @@ METHOD IdeEditor:setDocumentProperties()
    LOCAL qCursor
 
    qCursor := ::qEdit:textCursor()
-
    IF ! ::lLoaded
       ::oIde:setCodePage( ::cCodePage )
 
@@ -1834,6 +1937,7 @@ METHOD IdeEditor:setDocumentProperties()
 
       IF !( ::cType == "U" )
          ::qHiliter := ::oTH:setSyntaxHilighting( ::qEdit, @::cTheme )
+         ::oEdit:setHilighter( ::qHiliter )
       ENDIF
 
       qCursor:setPosition( ::nPos )
@@ -1849,7 +1953,7 @@ METHOD IdeEditor:setDocumentProperties()
 
       IF HB_ISOBJECT( ::qHiliter )
          ::qHiliter:hbSetInitialized( .T. )
-         ::qEdit:hbHighlightPage()
+         ::oEdit:highlightPage()
       ENDIF
 
       ::manageExtras()
@@ -1864,7 +1968,6 @@ METHOD IdeEditor:setDocumentProperties()
       ::oUpDn:show()
    ENDIF
 
-
    ::nBlock  := qCursor:blockNumber()
    ::nColumn := qCursor:columnNumber()
 
@@ -1873,11 +1976,91 @@ METHOD IdeEditor:setDocumentProperties()
    ::oIde:updateFuncList()
    ::oIde:updateTitleBar()
 
-   ::dispEditInfo( ::qEdit )
-
+   ::dispEditInfo( ::oEdit )
    ::oIde:manageFocusInEditor()
-
    RETURN Self
+
+
+METHOD IdeEditor:handleEditorEvents( nEvent, xData, oEdit )
+   SWITCH nEvent
+   CASE __HBQTEDITOR_FOCUSIN__
+      ::oUpDn:show()
+      ::oDK:showSelectedTextToolbar()
+      EXIT
+   CASE __HBQTEDITOR_RESIZE__
+      ::oUpDn:show()
+      ::oDK:showSelectedTextToolbar()
+      EXIT
+   CASE __HBQTEDITOR_SELECTIONINFO__
+      ::oDK:setButtonState( "SelectionMode", xData )
+      EXIT
+
+   CASE __HBQTEDITOR_UPDATEFIELDSLIST__
+//      RETURN ::oEM:updateFieldsList( xData )
+      RETURN ::updateFieldsList( xData )
+
+   CASE __HBQTEDITOR_MARKCURRENTFUNCTION__
+      RETURN ::markCurrentFunction( xData )
+   CASE __HBQTEDITOR_GOTOPREVIOUSFUNCTION__
+      RETURN ::toPreviousFunction( xData )
+   CASE __HBQTEDITOR_GOTONEXTFUNCTION__
+      RETURN ::toNextFunction( xData )
+
+   CASE __HBQTEDITOR_SHOWHEADERFILE__
+      RETURN ::showHeader( xData )
+
+   CASE __HBQTEDITOR_LOADFUNCTIONHELP__
+      RETURN ::loadFunctionHelp( xData )
+
+   CASE __HBQTEDITOR_JUMPTOFUNCTION__
+      RETURN ::jumpToFunction( xData )
+
+   CASE __HBQTEDITOR_JUMPTOFUNCTIONHELP__
+      RETURN ::jumpToHarbourHelp( xData )
+
+   CASE __HBQTEDITOR_UPDATEWORDSINCOMPLETER__
+      RETURN ::updateWordsInCompleter( xData )
+
+   ENDSWITCH
+
+   HB_SYMBOL_UNUSED( oEdit )
+   RETURN NIL
+
+
+METHOD IdeEditor:handleKeyPressed( nQtKey, aModifiers, oEdit )
+   LOCAL lAlt   := aModifiers[ 1 ]
+   LOCAL lCtrl  := aModifiers[ 2 ]
+   LOCAL lShift := aModifiers[ 3 ]
+
+   IF ::oIde:oDebugger:isActive() .AND. ( AScan( { Qt_Key_F5, Qt_Key_F6, Qt_Key_F7, Qt_Key_F8, Qt_Key_F10 }, nQtKey ) > 0 )
+      ::oIde:oDebugger:manageKey( nQtKey )
+      RETURN .T.
+   ENDIF
+
+   IF ::oSC:execKey( oEdit, nQtKey, lAlt, lCtrl, lShift )   /* User Defined Actions */
+      RETURN .F.
+   ENDIF
+
+   SWITCH nQtKey
+   CASE Qt_Key_Right
+      IF lAlt
+         ::oEM:nextEditor()
+         RETURN .T.
+      ENDIF
+      EXIT
+   CASE Qt_Key_Left
+      IF lAlt
+         ::oEM:previousEditor()
+         RETURN .T.
+      ENDIF
+      EXIT
+   CASE Qt_Key_F3
+      IF ! lCtrl .AND. ! lAlt
+         ::oFR:find( .f. )
+      ENDIF
+      EXIT
+   ENDSWITCH
+   RETURN NIL
 
 
 METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
@@ -1888,24 +2071,14 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
    ENDIF
 
    SWITCH nEvent
-
-   CASE __qTabWidget_tabCloseRequested__
-      ::oSM:closeSource( p + 1 )
-      EXIT
-
-   CASE __qDocModificationChanged__
-      ::setTabImage()
-      EXIT
-
    CASE __qDocContentsChange__
-      IF p1 + p2 > 0
+      IF ::lIsPRG .AND. p1 + p2 > 0
          ::qCoEdit:reformatLine( p, p1, p2 )
          ::oEM:getEditObjectCurrent():aLastEditingPosition := { ::qEdit:horizontalScrollBar():value(), ;
                                                                 ::qEdit:verticalScrollBar():value()  , ;
                                                                 ::qEdit:textCursor() }
       ENDIF
       EXIT
-
    CASE __qTimeSave_timeout__
       IF ::qDocument:isModified()
          cFileTemp := hbide_pathToOSPath( ::cPath + ::cFile + ::cExt + ".tmp" )
@@ -1922,19 +2095,26 @@ METHOD IdeEditor:updateComponents()
    ::oAC:qSelToolbar:setParent( ::oDlg:oWidget )
    ::setDocumentProperties()
    WITH OBJECT ::qCoEdit
-      :relayMarkButtons()
-      :updateTitleBar()
-      :toggleLineNumbers()
-      :toggleHorzRuler()
-      :toggleCurrentLineHighlightMode()
-      :dispStatusInfo()
+      :toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
+      :toggleLineNumbers( ::oIde:lLineNumbersVisible )
+      :toggleHorzRuler( ::oIde:lHorzRulerVisible )
    ENDWITH
+   ::oIde:updateTitleBar()
    ::oUpDn:show()
    ::oDK:showSelectedTextToolbar()
    ::oIde:setCodePage( ::cCodePage )
    ::oDK:setStatusText( SB_PNL_CODEC, ::cCodePage + " | " + ::cWrkCodec )
+   ::dispStatusInfo()
    ::changeThumbnail()
+   ::relayMarkButtons()
+   RETURN Self
 
+
+METHOD IdeEditor:dispStatusInfo()
+   LOCAL nMode := ::oEdit:getSelectionInfo( 5 )
+
+   ::oDK:setButtonState( "SelectionMode", nMode > 1 )
+   ::oDK:setStatusText( SB_PNL_STREAM, iif( nMode == 2, "Column", iif( nMode == 3, "Line", "Stream" ) ) )
    RETURN Self
 
 
@@ -1999,13 +2179,13 @@ METHOD IdeEditor:buildTabPage( cSource )
       :setAcceptDrops( .T. )
       :connect( QEvent_DragEnter, {|p| p:acceptProposedAction() } )
       :connect( QEvent_DragMove , {|p| p:acceptProposedAction() } )
-      :connect( QEvent_Drop     , {|p| iif( p:mimeData():hasUrls(), Alert("hi"), Alert('no') ), p:setDropAction( Qt_IgnoreAction ), p:accept() } )
+      :connect( QEvent_Drop     , {|p| p:setDropAction( Qt_IgnoreAction ), p:accept() } )
       :connect( "customContextMenuRequested(QPoint)", {|oPos| ::execTabContextMenu( oPos )  } )
    ENDWITH
 
    IF ::oINI:lTabAddClose
       ::qTabWidget:setTabsClosable( .T. )
-      ::qTabWidget:connect( "tabCloseRequested(int)", {|i|  ::execEvent( __qTabWidget_tabCloseRequested__, i ) } )
+      ::qTabWidget:connect( "tabCloseRequested(int)", {|i|  ::oSM:closeSource( i + 1 ) } )
    ENDIF
    ::qTabWidget:setTabTooltip( ::qTabWidget:indexOf( ::oTab:oWidget ), cSource )
    ::oTab:tabActivate := {|mp1,mp2,oXbp| ::activateTab( mp1, mp2, oXbp ) }
@@ -2013,8 +2193,9 @@ METHOD IdeEditor:buildTabPage( cSource )
    RETURN Self
 
 
-METHOD IdeEditor:dispEditInfo( qEdit )
+METHOD IdeEditor:dispEditInfo( oEdit )
    LOCAL s, qDocument, qCursor
+   LOCAL qEdit := oEdit:widget()
 
    DEFAULT qEdit TO ::qEdit
 
@@ -2033,6 +2214,23 @@ METHOD IdeEditor:dispEditInfo( qEdit )
       :getItem( SB_PNL_MODIFIED ):caption := iif( qDocument:isModified(), "Modified", iif( qEdit:isReadOnly(), "ReadOnly", " " ) )
       :getItem( SB_PNL_EDIT     ):caption := "Edit"
    ENDWITH
+   RETURN Self
+
+
+METHOD IdeEditor:selectionChanged( oEdit, nSelectedChars )
+   LOCAL lOtherEdit := ! ( ::qCoEdit == oEdit )
+
+   IF lOtherEdit
+      ::qCqEdit := oEdit:qEdit                    // oEdit:widget()
+      ::qCoEdit := oEdit
+      IF HB_ISOBJECT( ::qHiliter )
+         ::qHiliter:hbSetEditor( oEdit:qEdit )
+         oEdit:qEdit:hbSetHighlighter( ::qHiliter )
+      ENDIF
+   ENDIF
+   ::oDK:setStatusText( SB_PNL_SELECTEDCHARS, nSelectedChars )
+   ::oDK:showSelectedTextToolbar( oEdit )
+   ::oUpDn:show( oEdit )
    RETURN Self
 
 
@@ -2088,10 +2286,8 @@ METHOD IdeEditor:setTabImage( qEdit )
 
    ::qTabWidget:setTabIcon( nIndex, QIcon( hbide_image( cIcon ) ) )
    ::oDK:setStatusText( SB_PNL_MODIFIED, iif( lModified, "Modified", iif( lReadOnly, "ReadOnly", " " ) ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:applyTheme( cTheme )
 
@@ -2108,7 +2304,6 @@ METHOD IdeEditor:applyTheme( cTheme )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:vssExecute( cAction )
    LOCAL cPath, cFile, cExt, cCmd, cC, oProcess, cBatch, cOutput := ""
@@ -2141,19 +2336,18 @@ METHOD IdeEditor:vssExecute( cAction )
       oProcess:addArg( cC + cBatch )
       oProcess:start( cCmd )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:showThumbnail()
 
    IF empty( ::qThumbnail )
-      ::qThumbnail := IdeEdit():new( ::oIde, Self, 0 ):create()
-      ::qThumbnail:currentPointSize := 4
-      ::qThumbnail:fontFamily := "Courier New"
-      ::qThumbnail:setFont()
-      ::qThumbnail:setReadOnly( .t. )
+      WITH OBJECT ::qThumbnail := IdeEdit():new( ::oIde, Self, 0 ):create()
+         :currentPointSize := 4
+         :fontFamily := "Courier New"
+         :setFont()
+         :setReadOnly( .t. )
+      ENDWITH
       IF !( ::cType == "U" )
          ::qTNHiliter := ::oTH:SetSyntaxHilighting( ::qThumbnail:qEdit, @::cTheme )
       ENDIF
@@ -2163,20 +2357,15 @@ METHOD IdeEditor:showThumbnail()
    ::oSourceThumbnailDock:oWidget:setWidget( ::qThumbnail:qEdit )
    ::qThumbnail:qEdit:clear()
    ::qThumbnail:qEdit:setPlainText( hb_memoRead( ::sourceFile ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:changeThumbnail()
-
    IF ::lLoaded .AND. ::oSourceThumbnailDock:oWidget:isVisible()
       ::showThumbnail()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeEditor:scrollThumbnail()
    LOCAL qScroll
@@ -2189,175 +2378,243 @@ METHOD IdeEditor:scrollThumbnail()
 
       ::qThumbnail:qEdit:hbHighlightArea( ::oEdit:aViewportInfo[ 1 ], 0, ::oEdit:aViewportInfo[ 1 ]+::oEdit:aViewportInfo[ 3 ]-1, 0, 1 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-//                            Generic Tests
-/*----------------------------------------------------------------------*/
 
-METHOD IdeEditor:qscintilla()
-
-   //  hbide_qtDesigner()
-
-   #ifdef HB_WITH_QSCINTILLA
-   #include "hbqscintilla.ch"
-
-   #if 0
-   SCE_FS_DEFAULT
-   SCE_FS_COMMENT
-   SCE_FS_COMMENTLINE
-   SCE_FS_COMMENTDOC
-   SCE_FS_COMMENTLINEDOC
-   SCE_FS_COMMENTDOCKEYWORD
-   SCE_FS_COMMENTDOCKEYWORDERROR
-   SCE_FS_KEYWORD
-   SCE_FS_KEYWORD2
-   SCE_FS_KEYWORD3
-   SCE_FS_KEYWORD4
-   SCE_FS_NUMBER
-   SCE_FS_STRING
-   SCE_FS_PREPROCESSOR
-   SCE_FS_OPERATOR
-   SCE_FS_IDENTIFIER
-   SCE_FS_DATE
-   SCE_FS_STRINGEOL
-   SCE_FS_CONSTANT
-   SCE_FS_WORDOPERATOR
-   SCE_FS_DISABLEDCODE
-   SCE_FS_DEFAULT_C
-   SCE_FS_COMMENTDOC_C
-   SCE_FS_COMMENTLINEDOC_C
-   SCE_FS_KEYWORD_C
-   SCE_FS_KEYWORD2_C
-   SCE_FS_NUMBER_C
-   SCE_FS_STRING_C
-   SCE_FS_PREPROCESSOR_C
-   SCE_FS_OPERATOR_C
-   SCE_FS_IDENTIFIER_C
-   SCE_FS_STRINGEOL_C
-   SCE_FS_BRACE
-   #endif
-
-   STATIC oSci, qLexer, qAPIs, fontBold, fontNormal, fontItalic, c1, c2, c3
-
-   IF empty( oSci )
-      oSci := HBQsciScintilla()
-      //
-      oSci:setAutoIndent( .t. )
-      oSci:setCaretLineVisible( .t. )
-      oSci:setCaretWidth( 2 )
-      oSci:setFolding( QsciScintilla_BoxedTreeFoldStyle )
-      oSci:setTabWidth( 3 )
-      oSci:setMarginLineNumbers( 0,.t. )
-      oSci:setMarginWidth( 0,30 )
-      oSci:setSelectionBackgroundColor( QColor( 255,0,0 ) )
-      oSci:setEdgeColumn( 40 )
-      oSci:setCallTipsVisible( 3 )
-      oSci:setFont( ::oFont:oWidget )
-      oSci:setEdgeColor( QColor( 0,0,255 ) )
-      oSci:setMarginsFont( ::oFont:oWidget )
-      oSci:setIndentationGuides( .t. )
-
-      oSci:setCallTipsHighlightColor( QColor( 255,127,0 ) )
-
-      /* Auto Completion */
-      oSci:setAutoCompletionSource( QsciScintilla_AcsAll )
-      oSci:setAutoCompletionThreshold( 3 )
-      oSci:setAutoCompletionCaseSensitivity( .t. )
-      oSci:setAutoCompletionShowSingle( .t. )
-      oSci:setAutoCompletionFillupsEnabled( .t. )
-
-      HB_TRACE( HB_TR_DEBUG, time() )
-      oSci:setText( hb_memoread( "c:\harbour\contrib\hbide\idemisc.prg" ) )
-   // oSci:setText( hb_memoread( "c:\harbour\contrib\hbide\ideparseexpr.c" ) )
-      HB_TRACE( HB_TR_DEBUG, time(), "after" )
-
-      c1 := QColor( 0,0,255 )
-      c2 := QColor( 0,12,133 )
-      c3 := QColor( 20,122,144 )
-      oSci:setBraceMatching( QsciScintilla_StrictBraceMatch )
-      oSci:setMatchedBraceForegroundColor( c1 )
-      oSci:setMatchedBraceBackgroundColor( c2 )
-      oSci:setUnmatchedBraceForegroundColor( c3 )
-
-      qLexer := QsciLexerFlagship()
-      //qLexer := QsciLexerCPP()
-      qLexer:setDefaultFont( ::oFont:oWidget )
-      qLexer:setFoldAtElse( .f. )
-
-      fontBold := QFont()
-      fontBold:setFamily( "Courier New" )
-      fontBold:setPointSize(10)
-      fontBold:setWeight(100)
-
-      fontNormal := QFont()
-      fontNormal:setFamily( "Courier New" )
-      fontNormal:setPointSize(10)
-
-      fontItalic := QFont()
-      fontItalic:setFamily( "Courier New" )
-      fontItalic:setPointSize( 10 )
-      fontItalic:setItalic( .t. )
-
-      qLexer:setFont( fontBold, SCE_FS_COMMENTLINEDOC )
-      qLexer:setFont( fontBold, SCE_FS_COMMENTDOCKEYWORD )
-      qLexer:setFont( fontBold, SCE_FS_NUMBER )
-
-      qLexer:setColor( QColor( 255, 127,  67 ), SCE_FS_KEYWORD  )
-      qLexer:setColor( QColor( 255,   0, 127 ), SCE_FS_KEYWORD2 )
-      qLexer:setColor( QColor( 127,  67, 255 ), SCE_FS_OPERATOR )
-      qLexer:setColor( QColor( 255,   0,   0 ), SCE_FS_BRACE    )
-
-      qApis := QsciAPIs( qLexer )
-      qApis:load( "c:/temp/cpp.api" )
-      qApis:prepare()
-      qLexer:setAPIs( qApis )
-
-      oSci:setLexer( qLexer )
-      qLexer:setEditor( oSci )
-
+METHOD IdeEditor:updateFieldsList( cAlias )
+   LOCAL xResp
+   IF ! Empty( xResp := ::oEM:updateFieldsList( cAlias ) )
+      ::oEdit:setActiveFieldsList( xResp )
    ENDIF
-   ::oQScintillaDock:oWidget:setWidget( oSci )
-   #endif
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
-#if 0
-STATIC FUNCTION hbide_qtDesigner()
+METHOD IdeEditor:currentFunctionIndex( nCurLine )
+   LOCAL n := -1
 
-   #ifdef __DESIGNER__
+   IF ! Empty( ::aTags )
+      DEFAULT nCurLine TO ::oEdit:getLineNo()
+      IF Len( ::aTags ) == 1
+         n := 1
+      ELSEIF ( n := ascan( ::aTags, {|e_| e_[ 3 ] >= nCurLine } ) ) == 0
+         n := Len( ::aTags )
+      ELSEIF n > 0
+         n--
+      ENDIF
+   ENDIF
+   RETURN n
+
+
+METHOD IdeEditor:toNextFunction( nCurLine )
    LOCAL n
-   STATIC oEdt, oWM
 
-   oEdt := QDesignerFormEditorInterface( ::oDlg:oWidget )
-   HB_TRACE( HB_TR_DEBUG, 1 )
-   oWM := oEdt:formWindowManager()
-   HB_TRACE( HB_TR_DEBUG, 2 )
-   oWM:createFormWindow( ::oQScintillaDock:oWidget )
-   HB_TRACE( HB_TR_DEBUG, 3 )
-   ::oQScintillaDock:oWidget:show()
-   HB_TRACE( HB_TR_DEBUG, 4 )
-   n := oWM:formWindowCount()
-   HB_TRACE( HB_TR_DEBUG, n )
+   IF ( n := ::currentFunctionIndex( nCurLine ) ) >= 0
+      IF n < Len( ::aTags )
+         IF ::oEdit:find( ::aTags[ n+1, 8 ], QTextDocument_FindCaseSensitively )
+            ::oEdit:centerCursor()
+            ::oEdit:down()
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN Self
 
-   /*
-   QDesignerActionEditorInterface * actionEditor () const
-   QDesignerFormWindowManagerInterface * formWindowManager () const
-   QDesignerObjectInspectorInterface * objectInspector () const
-   QDesignerPropertyEditorInterface * propertyEditor () const
-   void setActionEditor ( QDesignerActionEditorInterface * actionEditor )
-   void setObjectInspector ( QDesignerObjectInspectorInterface * objectInspector )
-   void setPropertyEditor ( QDesignerPropertyEditorInterface * propertyEditor )
-   void setWidgetBox ( QDesignerWidgetBoxInterface * widgetBox )
-   QWidget * topLevel () const
-   QDesignerWidgetBoxInterface * widgetBox () const
-   */
 
-   #endif
-   RETURN NIL
-#endif
+METHOD IdeEditor:toPreviousFunction( nCurLine )
+   LOCAL n
 
-/*----------------------------------------------------------------------*/
+   IF ( n := ::currentFunctionIndex( nCurLine ) ) > 1
+      IF ::oEdit:find( ::aTags[ n-1, 8 ], QTextDocument_FindCaseSensitively )
+         ::oEdit:centerCursor()
+         ::oEdit:down()
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:markCurrentFunction( nCurLine )
+   LOCAL n
+
+   IF ::oFuncDock:oWidget:isVisible()
+      IF ( n := ::currentFunctionIndex( nCurLine ) ) > 0
+         ::oIde:oFuncList:setItemColorFG( ::aTags[ n,7 ], { 255,0,0 } )
+         ::oIde:oFuncList:setVisible( ::aTags[ n,7 ] )
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:gotoMark( nIndex )
+   ::qCoEdit:gotoMark( nIndex )
+   RETURN Self
+
+
+METHOD IdeEditor:relayMarkButtons()
+   LOCAL oBtn
+   FOR EACH oBtn IN ::aMarkTBtns
+      oBtn:hide()
+   NEXT
+   FOR EACH oBtn IN ::qCoEdit:bookMarks()
+      ::aMarkTBtns[ oBtn:__enumIndex() ]:show()
+   NEXT
+   RETURN Self
+
+
+METHOD IdeEditor:setTooltipMark( nIndex )
+   LOCAL oBlock
+   LOCAL aBookMarks := ::qCoEdit:bookMarks()
+
+   IF Len( aBookMarks ) >= nIndex
+      oBlock := ::qCoEdit:findBlockByNumber( aBookMarks[ nIndex ] - 1 )
+      IF oBlock:isValid()
+         ::aMarkTBtns[ nIndex ]:setTooltip( hb_ntos( aBookMarks[ nIndex ] ) + " : " + oBlock:text() )
+      ENDIF
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:setBookmark()
+   LOCAL qCursor, nBlock, n, aBookMarks
+
+   IF ! ( qCursor := ::oEdit:getCursor() ):isNull()
+      nBlock := qCursor:blockNumber() + 1
+      aBookMarks := ::oEdit:bookMarks()
+
+      IF ( n := ascan( aBookMarks, nBlock ) ) > 0
+         hb_ADel( aBookMarks, n, .t. )
+         ::aMarkTBtns[ Len( aBookMarks ) + 1 ]:hide()
+      ELSE
+         IF Len( aBookMarks ) == 6
+            RETURN Self
+         ENDIF
+         AAdd( aBookMarks, nBlock )
+         ::aMarkTBtns[ Len( aBookMarks ) ]:show()
+      ENDIF
+      ::oEdit:toggleBookmark( nBlock )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:loadFunctionHelp( cWord )
+   LOCAL cPro
+
+   IF Empty( cPro := ::oEM:getProto( cWord ) )
+      IF ! Empty( ::oHL )
+         ::oHL:jumpToFunction( cWord )
+      ENDIF
+      IF ! Empty( cPro := ::oFN:positionToFunction( cWord, .T. ) )
+         IF Empty( ::cProto )
+            ::oEdit:showPrototype( cPro )
+         ENDIF
+      ENDIF
+   ELSE
+      ::oEdit:showPrototype( cPro )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:jumpToFunction( cWord )
+   LOCAL n
+   LOCAL lFindCur := .f.
+
+   IF ( n := AScan( ::aTags, {|e_| Lower( cWord ) $ Lower( e_[ 7 ] ) } ) ) > 0
+      lFindCur := ::oEdit:find( AllTrim( ::aTags[ n,8 ] ) )
+   ENDIF
+   IF ! lFindCur
+      ::oFN:jumpToFunction( cWord, .T. )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:jumpToHarbourHelp( cWord )
+   IF ! Empty( ::oHL )
+      ::oHL:jumpToFunction( cWord )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:updateWordsInCompleter( cWord )
+   IF ! cWord $ ::oEM:hEditingWords
+      ::oEM:hEditingWords[ cWord ] := cWord
+      ::oEM:updateCompleterByEditingWords( cWord )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:toggleLineNumbers( lOn )
+   IF HB_ISLOGICAL( lOn )
+      ::oEdit:toggleLineNumbers( lOn )
+   ELSE
+      ::oIde:lLineNumbersVisible := ! ::lLineNumbersVisible
+      ::oEdit:toggleLineNumbers( ::oIde:lLineNumbersVisible )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:toggleHorzRuler( lOn )
+   IF HB_ISLOGICAL( lOn )
+      ::oEdit:toggleHorzRuler( lOn )
+   ELSE
+      ::oIde:lHorzRulerVisible := ! ::lHorzRulerVisible
+      ::oEdit:toggleHorzRuler( ::oIde:lHorzRulerVisible )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:toggleCurrentLineHighlightMode( lOn )
+   IF HB_ISLOGICAL( lOn )
+      ::oEdit:toggleCurrentLineHighlightMode( lOn )
+   ELSE
+      ::oIde:lCurrentLineHighlightEnabled := ! ::lCurrentLineHighlightEnabled
+      ::oEdit:toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
+   ENDIF
+   RETURN Self
+
+
+METHOD IdeEditor:showHeader( aHeader )
+   LOCAL cPath
+   LOCAL lOpened := .F.
+   LOCAL cHeader := aHeader[ 1 ]
+   LOCAL cExt    := aHeader[ 2 ]
+
+   FOR EACH cPath IN ::oINI:aIncludePaths
+      IF hb_FileExists( hbide_pathToOSPath( cPath + cHeader ) )
+         ::oIde:showHeaderFile( hb_MemoRead( cPath + cHeader ), cPath + cHeader, QIcon( hbide_image( hbide_imageForFileType( cExt ) ) ), .T. )
+         lOpened := .T.
+         EXIT
+      ENDIF
+   NEXT
+   RETURN lOpened
+
+
+FUNCTION __pullDictFunctions( aUserDict )
+   LOCAL oDict, aDict, aList := {}
+
+   FOR EACH oDict IN aUserDict
+      IF oDict:lActive
+         SWITCH oDict:cConvMode
+         CASE "ASIS"
+            FOR EACH aDict IN oDict:hItems
+               AAdd( aList, aDict[ 1 ] )
+            NEXT
+            EXIT
+         CASE "LOWER"
+            FOR EACH aDict IN oDict:hItems
+               AAdd( aList, Lower( aDict[ 1 ] ) )
+            NEXT
+            EXIT
+         CASE "UPPER"
+            FOR EACH aDict IN oDict:hItems
+               AAdd( aList, Upper( aDict[ 1 ] ) )
+            NEXT
+            EXIT
+         CASE "NONE"
+            FOR EACH aDict IN oDict:hItems
+               AAdd( aList, aDict:__enumKey() )
+            NEXT
+            EXIT
+         ENDSWITCH
+      ENDIF
+   NEXT
+   RETURN aList
+
 

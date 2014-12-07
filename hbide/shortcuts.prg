@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +59,6 @@
  *                               04Apr2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "hbqtgui.ch"
@@ -70,7 +66,6 @@
 #include "hbclass.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __listMethods_itemDoubleClicked__         2001
 #define __listMethods_currentRowChanged__         2002
@@ -85,7 +80,6 @@
 #define __buttonDelete_clicked__                  2011
 #define __QEvent_KeyPress__                       2012
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeShortcuts INHERIT IdeObject
 
@@ -239,7 +233,6 @@ CLASS IdeShortcuts INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:new( oIde )
 
@@ -247,7 +240,6 @@ METHOD IdeShortcuts:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:create( oIde )
 
@@ -260,7 +252,6 @@ METHOD IdeShortcuts:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:destroy()
    LOCAL a_, qItm
@@ -296,7 +287,6 @@ METHOD IdeShortcuts:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:show()
 
@@ -311,7 +301,6 @@ METHOD IdeShortcuts:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:execEvent( nEvent, p )
    LOCAL nRow, cMethod, cFile, cPath, cTemp, cExt, a_
@@ -425,7 +414,6 @@ METHOD IdeShortcuts:execEvent( nEvent, p )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:array2controls( nRow )
    LOCAL cKey, nKey
@@ -467,7 +455,6 @@ METHOD IdeShortcuts:vrbls2array( nRow )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:vrbls2controls( nRow )
 
@@ -480,7 +467,6 @@ METHOD IdeShortcuts:vrbls2controls( nRow )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:array2table( nRow, a_ )
    LOCAL q0, q1, q2, q3, q4, q5
@@ -522,7 +508,6 @@ METHOD IdeShortcuts:array2table( nRow, a_ )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:controls2vrbls()
    LOCAL nRow := ::oUI:comboKey:currentIndex()
@@ -539,7 +524,6 @@ METHOD IdeShortcuts:controls2vrbls()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:checkDuplicate( cKey, cAlt, cCtrl, cShift, nRow )
    LOCAL lYes, e_
@@ -561,7 +545,6 @@ METHOD IdeShortcuts:checkDuplicate( cKey, cAlt, cCtrl, cShift, nRow )
 
    RETURN lYes
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:buildUI()
    LOCAL oTbl, n, qItm
@@ -602,7 +585,6 @@ METHOD IdeShortcuts:buildUI()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:buildSignals()
 
@@ -620,7 +602,6 @@ METHOD IdeShortcuts:buildSignals()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:populateData( nMode )
 
@@ -632,7 +613,6 @@ METHOD IdeShortcuts:populateData( nMode )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:clearDftSCuts()
    LOCAL a_, qItm
@@ -649,7 +629,6 @@ METHOD IdeShortcuts:clearDftSCuts()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:populateDftSCuts()
    LOCAL a_, nRow
@@ -672,7 +651,6 @@ METHOD IdeShortcuts:populateDftSCuts()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:populateMethods()
    LOCAL qItem, a_
@@ -700,7 +678,6 @@ METHOD IdeShortcuts:populateMethods()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:populateKeys()
    LOCAL a_
@@ -713,7 +690,6 @@ METHOD IdeShortcuts:populateKeys()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:buildBlock( cString )
    LOCAL n, cBlock, cParam
@@ -737,7 +713,6 @@ METHOD IdeShortcuts:buildBlock( cString )
 
    RETURN cBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:test( cString, lWarn )
    LOCAL cBlock, oErr, bBlock
@@ -762,7 +737,6 @@ METHOD IdeShortcuts:test( cString, lWarn )
 
    RETURN lOk
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:evalMacro( cString )
    LOCAL bError := ErrorBlock( {|o| break( o ) } )
@@ -783,14 +757,12 @@ METHOD IdeShortcuts:evalMacro( cString )
    ErrorBlock( bError )
    RETURN lEvaluated
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:execKey( oEdit, nKey, lAlt, lCtrl, lShift )
    LOCAL lExecuted := .f.
    LOCAL cKey, n
 
    IF ( n := ascan( ::aKeys, {|e_| e_[ 1 ] == nKey } ) ) > 0
-
       ::oEdit := oEdit
 
       cKey := ::aKeys[ n, 2 ]
@@ -801,16 +773,12 @@ METHOD IdeShortcuts:execKey( oEdit, nKey, lAlt, lCtrl, lShift )
                                      e_[ 5 ] == iif( lShift, "YES", "NO" )  } )
       IF n > 0
          IF ! empty( ::aDftSCuts[ n, 7 ] )
-            HB_TRACE( HB_TR_DEBUG, nKey, lAlt, lCtrl, lShift, cKey )
-
             lExecuted := ::evalMacro( ::aDftSCuts[ n, 7 ] )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN lExecuted
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:execMacroByName( cName )
    LOCAL n, lExecuted := .f.
@@ -824,7 +792,6 @@ METHOD IdeShortcuts:execMacroByName( cName )
 
    RETURN lExecuted
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:getMacrosList()
    LOCAL aList := {}
@@ -833,7 +800,6 @@ METHOD IdeShortcuts:getMacrosList()
 
    RETURN aList
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:loadKeys()
    LOCAL a_
@@ -974,6 +940,7 @@ METHOD IdeShortcuts:loadKeys()
 /*----------------------------------------------------------------------*/
 //         Edit Instance Specific / Override from top route
 /*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:getWord( lSelect )
    RETURN ::oEdit:getWord( lSelect )
 
@@ -1100,12 +1067,10 @@ METHOD IdeShortcuts:clearSelection()
 METHOD IdeShortcuts:findAgain()
    RETURN ::oEdit:findEx()
 
-METHOD IdeShortcuts:execToolsBox()
-   RETURN ::oEdit:execToolsBox()
-
 /*----------------------------------------------------------------------*/
 //                              Navigation
 /*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:home()
    RETURN ::oEM:home()
 
@@ -1151,9 +1116,13 @@ METHOD IdeShortcuts:nextEditor()
 METHOD IdeShortcuts:previousEditor()
    RETURN ::oEM:previousEditor()
 
+METHOD IdeShortcuts:execToolsBox()
+   RETURN ::oEM:execToolsBox()
+
 /*----------------------------------------------------------------------*/
-//                     Other Cpmponents
+//                             Other Cpmponents
 /*----------------------------------------------------------------------*/
+
 METHOD IdeShortcuts:replace()
    IF !empty( ::qCurEdit )
       ::oFR:replace()
@@ -1605,7 +1574,6 @@ METHOD IdeShortcuts:loadMethods()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:loadDftSCuts()
    LOCAL a_, b_
@@ -1675,7 +1643,6 @@ METHOD IdeShortcuts:loadDftSCuts()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:mergeMacros( a_ )
    LOCAL c_, n
@@ -1688,11 +1655,9 @@ METHOD IdeShortcuts:mergeMacros( a_ )
          ::aDftSCuts[ n ] := c_
       ENDIF
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-   #if 0
+#if 0
    CASE "Environments"
       ::oEV:fetchNew()
       EXIT
@@ -1734,5 +1699,5 @@ METHOD IdeShortcuts:mergeMacros( a_ )
       ::oPM:closeProject()
       EXIT
    ENDSWITCH
-   #endif
-/*----------------------------------------------------------------------*/
+#endif
+

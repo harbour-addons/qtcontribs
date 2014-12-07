@@ -490,45 +490,45 @@ METHOD HbIde:create( aParams )
    ::oAC:buildMainMenu()
 
    /* Initialize ChangeLog Manager */
-   ::oCL := IdeChangeLog():new():create( Self )
+   ::oCL := IdeChangeLog():new( Self ):create()
 
    /* Initialize Doc Writer Manager */
-   ::oDW := IdeDocWriter():new():create( Self )
+   ::oDW := IdeDocWriter():new( Self ):create()
 
    /* Once create Find/Replace dialog */
-   ::oFR := IdeFindReplace():new():create( Self )
-   ::oFF := IdeFindInFiles():new():create( Self )
-   ::oFM := IdeFunctionsMap():new():create( Self )
+   ::oFR := IdeFindReplace():new( Self ):create()
+   ::oFF := IdeFindInFiles():new( Self ):create()
+   ::oFM := IdeFunctionsMap():new( Self ):create()
 
    /* Sources Manager */
-   ::oSM := IdeSourcesManager():new():create( Self )
+   ::oSM := IdeSourcesManager():new( Self ):create()
 
    /* Edits Manager */
-   ::oEM := IdeEditsManager():new():create( Self )
+   ::oEM := IdeEditsManager():new( Self ):create()
 
    /* Harbour Help Object */
-   ::oHL := ideHarbourHelp():new():create( Self )
+   ::oHL := ideHarbourHelp():new( Self ):create()
 
    /* Load Environments */
-   ::oEV := IdeEnvironments():new():create( Self )
+   ::oEV := IdeEnvironments():new( Self ):create()
 
    /* Home Implementation */
-   ::oHM := IdeHome():new():create( Self )
+   ::oHM := IdeHome():new( Self ):create()
 
    /* Browser Manager */
-   ::oBM := IdeDbuMGR():new():create( Self )
+   ::oBM := IdeDbuMGR():new( Self ):create()
 
    /* HbIDE debugger */
-   ::oDebugger := IdeDebugger():new():create( Self )
+   ::oDebugger := IdeDebugger():new( Self ):create()
 
    /* Reports Manager */
    ::oRM := HbpReports():new():create( ::oParts:oStackReports )
 
    /* Code Formatter Manager */
-   ::oFmt := IdeFormat():new():create( Self )
+   ::oFmt := IdeFormat():new( Self ):create()
 
    /* Console Editor */
-   ::oCUI := IdeConsole():new():create( Self )
+   ::oCUI := IdeConsole():new( Self ):create()
 
    ::oDlg:show()     /* Shifted here - it gives the effect that time opening HbIDE is much less */
    qSplash:raise()

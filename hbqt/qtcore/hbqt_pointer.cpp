@@ -67,6 +67,8 @@
 
 #if QT_VERSION >= 0x040500
 
+#include <QtCore/QDebug>
+
 /*----------------------------------------------------------------------*/
 
 void * hbqt_par_ptr( int iParam )
@@ -92,6 +94,16 @@ void hbqt_par_detach_ptrGC( int iParam )
    if( HB_ISOBJECT( iParam ) )
    {
       hbqt_bindSetOwner( hbqt_bindGetQtObject( hb_param( iParam, HB_IT_OBJECT ) ), HB_FALSE );
+   }
+}
+
+HB_FUNC( HBQT_DEBUG )
+{
+   if( HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      qDebug() << ( QString ) hb_parstr_utf8( 1, &pText01, NULL );
+      hb_strfree( pText01 );
    }
 }
 

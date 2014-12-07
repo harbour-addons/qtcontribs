@@ -51,27 +51,45 @@
  */
 
 
-#include "hbqtgui.ch"
+#include "hbtoqt.ch"
 #include "hbqtstd.ch"
+#include "hbqtgui.ch"
 #include "inkey.ch"
 #include "hbtrace.ch"
 #include "common.ch"
 
 
-#define P_X( n )                                  ( LTrim( Str( ::oApp:primaryScreen():logicalDotsPerInchY() * n / 96, 10, 0 ) ) + "px;" )
-#define P_XX( n )                                 ( Int( ::oApp:primaryScreen():logicalDotsPerInchY() * n / 96 ) )
-
 
 THREAD STATIC t_sets := {=>}
 
+STATIC s_hHarbourFuncList := {=>}
+STATIC s_hQtFuncList := {=>}
+STATIC s_hUserFuncList := {=>}
+
 
 INIT PROCEDURE __initHbQtSets()
+
    QResource():registerResource_1( hbqtres_hbqtwidgets() )
 
    t_sets[ _QSET_GETSFONT     ] := QFont( "Courier New", 10 )
    t_sets[ _QSET_LINESPACING  ] := 6
    t_sets[ _QSET_NOMOUSABLE   ] := .F.
    t_sets[ _QSET_EDITSPADDING ] := 4
+
+   hb_HCaseMatch( s_hHarbourFuncList, .F. )
+   hb_HKeepOrder( s_hHarbourFuncList, .T. )
+
+   __hbqtStackHarbourFuncList()
+
+   s_hHarbourFuncList[ "HB_SYMBOL_UNUSED" ] := "HB_SYMBOL_UNUSED"
+
+   hb_HCaseMatch( s_hQtFuncList, .F. )
+   hb_HKeepOrder( s_hQtFuncList, .T. )
+
+   __hbqtStackQtFuncList()
+
+   hb_HCaseMatch( s_hUserFuncList, .F. )
+   hb_HKeepOrder( s_hUserFuncList, .T. )
    RETURN
 
 
@@ -98,14 +116,12 @@ FUNCTION __hbqtGetNextIdAsString( cString )
 
 
 FUNCTION __hbqtGetBlankValue( xValue )
-
    SWITCH ValType( xValue )
    CASE "C" ; RETURN Space( Len( xValue ) )
    CASE "N" ; RETURN 0
    CASE "D" ; RETURN CToD( "" )
    CASE "L" ; RETURN .F.
    ENDSWITCH
-
    RETURN ""
 
 
@@ -201,35 +217,34 @@ FUNCTION __hbqtCSSFromColorString( cColor )
    LOCAL cCSS := ""
    LOCAL n, xFore, xBack, lExt, cCSSF, cCSSB
 
-      IF ( n := At( "/", cColor ) ) > 0
-         xFore := AllTrim( SubStr( cColor, 1, n-1 ) )
-         xBack := AllTrim( SubStr( cColor, n+1 ) )
-      ELSE
-         xFore := AllTrim( cColor )
-         xBack := ""
-      ENDIF
+   IF ( n := At( "/", cColor ) ) > 0
+      xFore := AllTrim( SubStr( cColor, 1, n-1 ) )
+      xBack := AllTrim( SubStr( cColor, n+1 ) )
+   ELSE
+      xFore := AllTrim( cColor )
+      xBack := ""
+   ENDIF
 
-      IF ! Empty( xFore )
-         lExt := At( "+", xFore ) > 0
-         xFore := StrTran( StrTran( xFore, "+" ), "*" )
-         cCSSF := __hbqtRgbStringFromColorString( xFore, lExt )
-      ENDIF
-      IF ! Empty( xBack )
-         lExt := "+" $ xBack .OR. "*" $ xBack
-         xBack := StrTran( StrTran( xBack, "+" ), "*" )
-         cCSSB := __hbqtRgbStringFromColorString( xBack, lExt )
-      ENDIF
-      IF ! Empty( cCSSF )
-         cCSS := "color: " + cCSSF
-      ENDIF
-      IF ! Empty( cCSSB )
-         cCSS += "; background-color: " + cCSSB
-      ENDIF
+   IF ! Empty( xFore )
+      lExt := At( "+", xFore ) > 0
+      xFore := StrTran( StrTran( xFore, "+" ), "*" )
+      cCSSF := __hbqtRgbStringFromColorString( xFore, lExt )
+   ENDIF
+   IF ! Empty( xBack )
+      lExt := "+" $ xBack .OR. "*" $ xBack
+      xBack := StrTran( StrTran( xBack, "+" ), "*" )
+      cCSSB := __hbqtRgbStringFromColorString( xBack, lExt )
+   ENDIF
+   IF ! Empty( cCSSF )
+      cCSS := "color: " + cCSSF
+   ENDIF
+   IF ! Empty( cCSSB )
+      cCSS += "; background-color: " + cCSSB
+   ENDIF
 
-      IF ! Empty( cCSS )
-         cCSS += ";"
-      ENDIF
-
+   IF ! Empty( cCSS )
+      cCSS += ";"
+   ENDIF
    RETURN cCSS
 
 
@@ -280,9 +295,7 @@ FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
       RETURN iif( lExt, Qt_yellow  , Qt_darkYellow  )
    CASE "W"
       RETURN iif( lExt, Qt_white   , Qt_lightGray   )
-
    ENDSWITCH
-
    RETURN 0
 
 
@@ -324,7 +337,6 @@ FUNCTION __hbqtGetXYFromRowColumn( oWnd, nRow, nCol, oFont )  // => { nX, nY, nC
    nX   := ( oFM:averageCharWidth() * nCol ) + 6
    nOH  := oFM:height() + HbQtSet( _QSET_LINESPACING ) + HbQtSet( _QSET_EDITSPADDING )
    nY   := nOH * nRow
-
    RETURN { nX, nY, oFM:averageCharWidth(), nOH }
 
 
@@ -332,7 +344,6 @@ FUNCTION __hbqtPositionWindowClientXY( oWnd, nX, nY )
    LOCAL a_:= __hbqtGetWindowFrameWidthHeight( oWnd )
 
    oWnd:move( nX - ( a_[ 1 ] / 2 ), nY - ( a_[ 2 ] - ( a_[ 1 ] / 2 ) ) )
-
    RETURN NIL
 
 
@@ -417,6 +428,20 @@ FUNCTION  __hbqtIconFromBuffer( cBuffer )
    LOCAL oPixmap := QPixmap()
    oPixmap:loadFromData( cBuffer, Len( cBuffer ), "PNG" )
    RETURN QIcon( oPixmap )
+
+
+FUNCTION __hbqtLoadResource( cResource )
+   LOCAL cBuffer, oB, oFile
+
+   oFile := QFile( cResource )
+   IF oFile:open( QIODevice_ReadOnly )
+      oB := oFile:readAll()
+      cBuffer := oB:toBase64():data()
+      oFile:close()
+   ELSE
+      cBuffer := ""
+   ENDIF
+   RETURN cBuffer
 
 
 FUNCTION __hbqtLoadResourceAsBase64String( cResource )
@@ -580,4 +605,141 @@ FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacit
    ENDIF
 
    RETURN NIL
+
+
+FUNCTION __hbqtSetPosAndSizeByCParams( oWidget, cParams )
+   LOCAL aRect
+
+   IF ! Empty( cParams )
+      aRect := hb_ATokens( cParams, "," )
+      aeval( aRect, {|e,i| aRect[ i ] := val( e ) } )
+      oWidget:move( aRect[ 1 ], aRect[ 2 ] )
+      oWidget:resize( aRect[ 3 ], aRect[ 4 ] )
+   ENDIF
+   RETURN NIL
+
+
+FUNCTION __hbqtSetPosByCParams( oWidget, cParams )
+   LOCAL aRect
+
+   IF ! Empty( cParams )
+      aRect := hb_ATokens( cParams, "," )
+      aeval( aRect, {|e,i| aRect[ i ] := val( e ) } )
+      oWidget:move( aRect[ 1 ], aRect[ 2 ] )
+   ENDIF
+   RETURN NIL
+
+
+FUNCTION __hbqtPosAndSizeAsCParams( oWidget )
+   LOCAL cParams := ""
+   IF HB_ISOBJECT( oWidget )
+      cParams := hb_ntos( oWidget:x() ) + "," + hb_ntos( oWidget:y() ) + "," +hb_ntos( oWidget:width() ) + "," +hb_ntos( oWidget:height() )
+   ENDIF
+   RETURN cParams
+
+//--------------------------------------------------------------------//
+//                Managed Function Lists for HbQtEditor
+//--------------------------------------------------------------------//
+
+STATIC FUNCTION __addInList( hHash, aList )
+   LOCAL s
+
+   FOR EACH s IN aList
+      s := AllTrim( s )
+      IF ! Empty( s )
+         hHash[ s ] := s
+      ENDIF
+   NEXT
+   RETURN NIL
+
+
+PROCEDURE __hbqtStackHarbourFuncList( aFunctions )
+   DEFAULT aFunctions TO  __hbqtPullHarbourFunctions( __getHarbourHbx() )
+   __addInList( s_hHarbourFuncList, aFunctions )
+   RETURN
+
+
+PROCEDURE __hbqtStackQtFuncList( aFunctions )
+   IF Empty( aFunctions )
+      __addInList( s_hQtFuncList, __hbqtPullQtFunctions( __getQtCoreFilelist() ) )
+      __addInList( s_hQtFuncList, __hbqtPullQtFunctions( __getQtGuiFilelist() ) )
+      __addInList( s_hQtFuncList, __hbqtPullQtFunctions( __getQtNetworkFilelist() ) )
+   ELSE
+      __addInList( s_hQtFuncList, aFunctions )
+   ENDIF
+   RETURN
+
+
+PROCEDURE __hbqtStackUserFuncList( aFunctions )
+   __addInList( s_hUserFuncList, aFunctions )
+   RETURN
+
+
+FUNCTION __hbqtIsHarbourFunction( cWord, cCased )
+   IF hb_HHasKey( s_hHarbourFuncList, cWord )
+      cCased := s_hHarbourFuncList[ cWord ]
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+FUNCTION __hbqtIsQtFunction( cWord, cCased )      // cCased sent by reference
+   IF cWord $ s_hQtFuncList
+      cCased := s_hQtFuncList[ cWord ]
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+FUNCTION __hbqtIsUserFunction( cWord, cCased )
+   IF cWord $ s_hUserFuncList
+      cCased := s_hUserFuncList[ cWord ]
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+/* Pulled from harbour/bin/find.hb and adopted for file as buffer */
+STATIC FUNCTION __hbqtPullHarbourFunctions( cBuffer )
+   LOCAL pRegex, tmp
+   LOCAL aDynamic := {}
+
+   IF ! Empty( cBuffer ) .AND. ;
+      ! Empty( pRegex := hb_regexComp( "^DYNAMIC ([a-zA-Z0-9_]*)$", .T., .T. ) )
+      FOR EACH tmp IN hb_regexAll( pRegex, StrTran( cBuffer, Chr( 13 ) ),,,,, .T. )
+         AAdd( aDynamic, tmp[ 2 ] )
+      NEXT
+   ENDIF
+   RETURN aDynamic
+
+
+STATIC FUNCTION __hbqtPullQtFunctions( cBuffer )
+   LOCAL pRegex, tmp
+   LOCAL aDynamic := {}
+
+   IF ! Empty( cBuffer ) .AND. ;
+      ! Empty( pRegex := hb_regexComp( "^([a-zA-Z0-9_]*.qth)$", .T., .T. ) )
+      FOR EACH tmp IN hb_regexAll( pRegex, StrTran( cBuffer, Chr( 13 ) ),,,,, .T. )
+         AAdd( aDynamic, StrTran( tmp[ 1 ], ".qth" ) )
+      NEXT
+   ENDIF
+   RETURN aDynamic
+
+//--------------------------------------------------------------------//
+//           This Section Must be the Last in this Source
+//--------------------------------------------------------------------//
+
+#pragma -km+
+
+STATIC FUNCTION __getHarbourHbx()
+   #pragma __binarystreaminclude "harbour.hbx" | RETURN %s
+
+FUNCTION __getQtCoreFilelist()
+   #pragma __binarystreaminclude "../hbqt/qtcore/qth/filelist.hbm" | RETURN %s
+
+FUNCTION __getQtGuiFilelist()
+   #pragma __binarystreaminclude "../hbqt/qtgui/qth/filelist.hbm" | RETURN %s
+
+FUNCTION __getQtNetworkFilelist()
+   #pragma __binarystreaminclude "../hbqt/qtnetwork/qth/filelist.hbm" | RETURN %s
 

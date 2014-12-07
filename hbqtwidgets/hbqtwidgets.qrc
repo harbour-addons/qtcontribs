@@ -245,5 +245,7 @@
     <file>resources/resize.png</file>
     <file>resources/mover.png</file>
     <file>resources/prv_objects-1.png</file>
+    <file>resources/duplicate-line.png</file>
+    <file>resources/delete-line.png</file>
   </qresource>
 </RCC>

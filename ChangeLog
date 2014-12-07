@@ -16,6 +16,90 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2014-12-06 18:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r388)
+  * hbqt/qtcore/hbqt_hbqevents.cpp
+    + Added code to fire QEvent::Paint.
+       This is a very significant implementation, do not ignore it.
+       QEvent_Paint brings on-widget drawing capabilities to PRG world.
+       This can be the the base for XBase++'s OWNERDRAW create time clause.
+       It opens up many interesting ways to redesign the whole interface.
+       There is a difference between this and all other events in that 
+       the arguments sent to the conncted block are two instead of one.
+         .
+         oButton := QPushButton( "Cancel" )
+         oButton:connect( QEvent_Paint, {| oEvent, oPainter | ;
+                          __paintTheButton( oEvent, oPainter, oButton ) }
+         ...
+         FUNCTION __paintTheButton( oEvent, oPainter, oButton )
+            oPinter:fillRect( oEvent:rect(), QColor( Qt_blue ) )
+            ...
+            RETURN .T.  //  I M P O R T A N T
+
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Added: function HBQT_DEBUG( cDebugString )
+       Facilitates to view Qt's own Qt Creator debugger window.
+       Useful for Android builds.
+
+  * hbide/projectpropertiesex.ui
+    + FaceLift: added few toolbuttons to be exploied via HbQtEditor().
+
+  * hbide/projmanager.prg
+    + Project Properties dialog is now capable of real-time editing
+       almost equal to any other HbIDE editing instance, thanks to 
+       HbQtEditor implementation.
+
+  * hbide/docks.prg
+  * hbide/main.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+  * hbide/editor.prg
+    % Changed: All objects of type IdeEdit() with HbQtEditor. Read below.
+       This is a heavy change, very heavy, so regression is possible,
+       please report.
+
+  * hbide/edit.prg
+    % Deprecated: will be removed in future after HbQtEditor is flagged 
+       to be stable.
+
+  * hbqtwidgets/resources/delete-line.png
+  * hbqtwidgets/resources/duplicate-line.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: few more icons 
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added: more contstants usable with new classes.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: editor.prg 
+
+  * hbqtwidgets/visualizer.prg
+    + Added: method hide().
+
+  * hbqtwidgets/misc.prg
+    + Added: many functions called in HbQteditor().
+
+  * hbqtwidgets/editor.prg
+    + Added: CLASS HbQtEditor.
+       It is the replica of HbIDE's editing instnce but with a significant 
+       change that now it can be linked with any application like a COM
+       object. This has been a very tiring experience but at the same time 
+       extremely rewarding.
+
+       When development of HbIDE started, vision was not mature enough to 
+       foresee the re-usability of components. HbIDE's all components kept 
+       on interwoven madly. HbDBU was developed later which enforced the 
+       re-usability pattern. Luckily, now we are in a position to experience 
+       the same with another big component, HbQtEditor. 
+
+       The component is mature now. I am using HbIDE as of current but not 
+       tested heavily. Normal operations seems to be working fine, so we 
+       can start using it. Still a good amount of thoughts are needed for 
+       API calls which is still, in my opinion, not done with. You need to 
+       wait a little more to deploy it in your apps.
+
+  * hbqtwidgets/tests/validator.prg
+    + Added; code to demonstrate how to use QEvent_Paint signal. 
+
 2014-12-05 11:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r387)
   * hbqt/qtgui/qth/QPageLayout.qth
     + Included: method :setPageSize().

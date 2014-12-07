@@ -299,6 +299,7 @@ CLASS HbQtVisualizer
    METHOD visualPropertyChanged( cSheet, cProperty, xValue )
    METHOD saveVisual( oHbQtVisual )
    METHOD show()
+   METHOD hide()
    METHOD populateVisualsList( hVisualsList )
    METHOD loadVisual( cRefID, nVer )
    METHOD buildStates( hStates )
@@ -354,6 +355,7 @@ METHOD HbQtVisualizer:create( oParent, oAppWidget )
    DEFAULT ::oAppWidget TO ::oUI:oWidget
 
    ::buildSlidings()
+
    ::buildToolbar( ::oUI:hLayToolbarVisualizer )
    ::buildToolbarObjects( ::oUI:vLayToolbarVisualizer )
    ::buildComponents()
@@ -397,7 +399,8 @@ METHOD HbQtVisualizer:create( oParent, oAppWidget )
    ::oUI:comboMoverSteps:setCurrentIndex( 9 )
    ::oUI:comboMoverSteps:connect( "currentIndexChanged(int)", {|nIndex| ::nMoverSteps := nIndex+1 } )
 
-   ::oWidget:connect( QEvent_Show, {|| ::show() } )
+   ::oWidget:connect( QEvent_Show, {|| ::show()  } )
+   ::oWidget:connect( QEvent_Hide, {|| ::hide()  } )
 
    WITH OBJECT ::oTimerZoom := QTimer()
       :setSingleShot( .T. )
@@ -1992,23 +1995,15 @@ METHOD HbQtVisualizer:buildSlidings()
 
    WITH OBJECT ::oSlidingListLeft := HbQtSlidingList():new( ::oAppWidget )
       :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ )
-      :setDuration( 70 )
+      :setHeaderText( "Open Visuals" )
+      :setDuration( 100 )
       :create()
       :addItem( "P", { "Left Visual" , QPixmap( __hbqtImage( "print" ) ) }, {|| Alert( "Left" )  } )
-      :addItem( "q", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "s", { "hh Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "c", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "f", { "dd Visual"   , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "h", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "j", { "k Visual"    , QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "k", { "Print Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
-      :addItem( "kk", { "kkkt Visual", QPixmap( __hbqtImage( "print" ) ) }, {|| NIL  } )
    ENDWITH
 
    WITH OBJECT ::oSlidingsManager := HbQtSlidingsManager():new( ::oWidget ):create()
       :addSliding( "PrintList" , {|| ::oSlidingListRight:activate() } )
       :addSliding( "PrintListL", {|| ::oSlidingListLeft:activate() } )
-      :activateSlidings( "PrintListL", "PrintList" )
    ENDWITH
    RETURN Self
 
@@ -2155,10 +2150,16 @@ STATIC FUNCTION  __hbqtIconFromBuffer( cBuffer )
    RETURN QIcon( oPixmap )
 
 
+METHOD HbQtVisualizer:hide()
+   ::oSlidingsManager:activateSlidings( "none", "none" )
+   RETURN Self
+
+
 METHOD HbQtVisualizer:show()
    LOCAL hList, hMarker, oFirst, hVisual
 
    ::setSplitterSizes()
+   ::oSlidingsManager:activateSlidings( "PrintListL", "PrintList" )
 
    IF ! ::lShowInitialized
       IF HB_ISBLOCK( ::visualsListBlock() )

@@ -232,15 +232,16 @@ CLASS IdeINI INHERIT IdeObject
    DATA   aIncludePaths                           INIT  {}
    DATA   aSourcePaths                            INIT  {}
 
-   DATA   cFontName                               INIT  "Courier New"
+   DATA   cFontName                               INIT  "Courier"
    DATA   nPointSize                              INIT  10
    DATA   cLineEndingMode                         INIT  ""
 
    DATA   lTrimTrailingBlanks                     INIT  .f.
    DATA   lSaveSourceWhenComp                     INIT  .t.
+   DATA   lConvTabToSpcWhenLoading                INIT  .f.
+
    DATA   lSupressHbKWordsToUpper                 INIT  .f.
    DATA   lReturnAsBeginKeyword                   INIT  .f.
-   DATA   lConvTabToSpcWhenLoading                INIT  .f.
    DATA   lAutoIndent                             INIT  .t.
    DATA   lSmartIndent                            INIT  .t.
    DATA   lTabToSpcInEdits                        INIT  .t.
