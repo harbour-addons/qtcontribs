@@ -41,6 +41,8 @@
     <file>resources/panel_7.png</file>
     <file>resources/panel_8.png</file>
     <file>resources/sort.png</file>
+    <file>resources/sort-ascending.png</file>
+    <file>resources/sort-descending.png</file>
     <file>resources/closetab.png</file>
     <file>resources/dbf_p1.png</file>
     <file>resources/dbf_p2.png</file>
@@ -54,6 +56,7 @@
     <file>resources/dbf_p10.png</file>
     <file>resources/form.png</file>
     <file>resources/table.png</file>
+    <file>resources/table-3.png</file>
     <file>resources/f_align_left.png</file>
     <file>resources/f_align_right.png</file>
     <file>resources/f_align_center.png</file>
@@ -247,5 +250,6 @@
     <file>resources/prv_objects-1.png</file>
     <file>resources/duplicate-line.png</file>
     <file>resources/delete-line.png</file>
+    <file>resources/select.png</file>
   </qresource>
 </RCC>

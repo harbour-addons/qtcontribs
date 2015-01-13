@@ -276,6 +276,7 @@ METHOD HbQtPropertySheet:create( cSheet )
       :setRootIsDecorated( .T. )
    ENDWITH
    __hbqtApplyStandardScroller( ::oWidget )
+
    RETURN Self
 
 
@@ -347,6 +348,7 @@ METHOD HbQtPropertySheet:setProperties( hProperties, lHideRest )
          ::setProperty( xValue:__enumKey(), xValue )
       ENDIF
    NEXT
+   ::oWidget:resizeColumnToContents( 0 )
    RETURN Self
 
 

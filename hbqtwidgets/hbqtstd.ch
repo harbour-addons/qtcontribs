@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id$
  */
 
@@ -303,8 +303,22 @@
    #define __STATE_AREA_BOTTOMRIGHT__                3
    #define __STATE_AREA_BOTTOMLEFT__                 4
    #define __STATE_AREA_CENTER__                     5
+   #define __STATE_AREA_OVERALL__                    6
    //
-   #define __STATE_AREA_MAXIMUM__                    5
+   #define __STATE_AREA_TOP_1_8__                    7
+   #define __STATE_AREA_TOP_1_4__                    8
+   #define __STATE_AREA_TOP_1_2__                    9
+   #define __STATE_AREA_BTM_1_8__                    10
+   #define __STATE_AREA_BTM_1_4__                    11
+   #define __STATE_AREA_BTM_1_2__                    12
+   #define __STATE_AREA_LFT_1_8__                    13
+   #define __STATE_AREA_LFT_1_4__                    14
+   #define __STATE_AREA_LFT_1_2__                    15
+   #define __STATE_AREA_RGT_1_8__                    16
+   #define __STATE_AREA_RGT_1_4__                    17
+   #define __STATE_AREA_RGT_1_2__                    18
+   //
+   #define __STATE_AREA_MAXIMUM__                    18
 
    #define __HBQTSLIDINGLIST_DIRECTION_LEFTTORIGHT__ 1
    #define __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ 2
@@ -319,6 +333,36 @@
    #define __VISUALIZER_ACTION_DEL__                 128
    #define __VISUALIZER_ACTION_LOCK__                256
    #define __VISUALIZER_ACTION_ROTATE__              512
+
+   #define __VZOBJ_CLASS__                           1
+   #define __VZOBJ_TYPE__                            2
+   #define __VZOBJ_NAME__                            3
+   #define __VZOBJ_LOCKED__                          4
+   #define __VZOBJ_STATE__                           5
+   #define __VZOBJ_X__                               6
+   #define __VZOBJ_Y__                               7
+   #define __VZOBJ_WIDTH__                           8
+   #define __VZOBJ_HEIGHT__                          9
+   #define __VZOBJ_ROTATION__                        10
+   #define __VZOBJ_PENSTYLE__                        11
+   #define __VZOBJ_PENWIDTH__                        12
+   #define __VZOBJ_PENCOLOR__                        13
+   #define __VZOBJ_CAPSTYLE__                        14
+   #define __VZOBJ_JOINSTYLE__                       15
+   #define __VZOBJ_MITTERLIMIT__                     16
+   #define __VZOBJ_BRUSHSTYLE__                      17
+   #define __VZOBJ_BRUSHCOLOR__                      18
+   #define __VZOBJ_BBRUSHSTYLE__                     19
+   #define __VZOBJ_BBRUSHCOLOR__                     20
+   #define __VZOBJ_BACKGROUNDMODE__                  21
+   #define __VZOBJ_OPACITY__                         22
+   #define __VZOBJ_FONTFAMILY__                      23
+   #define __VZOBJ_FONTSTYLE__                       24
+   #define __VZOBJ_FONTSIZE__                        25
+   #define __VZOBJ_TEXT__                            26
+   #define __VZOBJ_DATA__                            27
+   //
+   #define __VZOBJ_VARIABLES__                       27
 
    #define __HBQT_PRP_JUST__                         1000
    #define __HBQT_PRP_EDIT__                         1001
@@ -341,5 +385,6 @@
    #define __HBQTEDITOR_JUMPTOFUNCTION__             110
    #define __HBQTEDITOR_LOADFUNCTIONHELP__           111
    #define __HBQTEDITOR_UPDATEWORDSINCOMPLETER__     112
+
 
 #endif

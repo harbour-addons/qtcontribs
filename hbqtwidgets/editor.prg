@@ -172,6 +172,8 @@ CLASS HbQtEditor
    DATA   cISMethods                              INIT "init"
    DATA   cISFormat                               INIT "class:method"
 
+   DATA   lSelectionMode                          INIT .F.
+
    METHOD init()
    METHOD create()
    METHOD destroy()
@@ -208,15 +210,14 @@ CLASS HbQtEditor
    METHOD convertQuotes()
    METHOD convertDQuotes()
    METHOD findLastIndent()
-   METHOD presentSkeletons()
    METHOD handleCurrentIndent()
    METHOD loadFuncHelp()
    METHOD clickFuncHelp()
    METHOD gotoFunction()
 
-   METHOD toggleCurrentLineHighlightMode( lOn )
-   METHOD toggleLineNumbers( lOn )
-   METHOD toggleHorzRuler( lOn )
+   METHOD setLineNumbers( lOn )
+   METHOD setCurrentLineHighlightMode( lOn )
+   METHOD setHorzRuler( lOn )
    METHOD toggleSelectionMode()
    METHOD toggleStreamSelectionMode()
    METHOD toggleColumnSelectionMode()
@@ -421,112 +422,6 @@ METHOD HbQtEditor:destroy()
    ::qEdit:setParent( QWidget() )
    ::qFont := NIL
    RETURN NIL
-
-
-METHOD HbQtEditor:setFormattingInfo( hInfo )
-
-   IF HB_ISHASH( hInfo )
-      IF hb_HHasKey( hInfo, "lAutoIndent"             )
-         ::lAutoIndent             := hInfo[ "lAutoIndent"             ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lSmartIndent"            )
-         ::lSmartIndent            := hInfo[ "lSmartIndent"            ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lSupressHbKWordsToUpper" )
-         ::lSupressHbKWordsToUpper := hInfo[ "lSupressHbKWordsToUpper" ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lReturnAsBeginKeyword"   )
-         ::lReturnAsBeginKeyword   := hInfo[ "lReturnAsBeginKeyword"   ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lCompleteArgumented"     )
-         ::lCompleteArgumented     := hInfo[ "lCompleteArgumented"     ]
-      ENDIF
-
-      IF hb_HHasKey( hInfo, "lISOperator"             )
-         ::lISOperator             := hInfo[ "lISOperator"             ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISAlignAssign"          )
-         ::lISAlignAssign          := hInfo[ "lISAlignAssign"          ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISCodeBlock"            )
-         ::lISCodeBlock            := hInfo[ "lISCodeBlock"            ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISClosingP"             )
-         ::lISClosingP             := hInfo[ "lISClosingP"             ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISSpaceP"               )
-         ::lISSpaceP               := hInfo[ "lISSpaceP"               ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISClosing"              )
-         ::lISClosing              := hInfo[ "lISClosing"              ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISIf"                   )
-         ::lISIf                   := hInfo[ "lISIf"                   ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISElse"                 )
-         ::lISElse                 := hInfo[ "lISElse"                 ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISEmbrace"              )
-         ::lISEmbrace              := hInfo[ "lISEmbrace"              ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISFor"                  )
-         ::lISFor                  := hInfo[ "lISFor"                  ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISSwitch"               )
-         ::lISSwitch               := hInfo[ "lISSwitch"               ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "nISSwitchCases"          )
-         ::nISSwitchCases          := hInfo[ "nISSwitchCases"          ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISSwitchOWise"          )
-         ::lISSwitchOWise          := hInfo[ "lISSwitchOWise"          ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISExitSameLine"         )
-         ::lISExitSameLine         := hInfo[ "lISExitSameLine"         ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISDoCase"               )
-         ::lISDoCase               := hInfo[ "lISDoCase"               ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "nISCaseCases"            )
-         ::nISCaseCases            := hInfo[ "nISCaseCases"            ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISCaseOWise"            )
-         ::lISCaseOWise            := hInfo[ "lISCaseOWise"            ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISDoWhile"              )
-         ::lISDoWhile              := hInfo[ "lISDoWhile"              ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISFunction"             )
-         ::lISFunction             := hInfo[ "lISFunction"             ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISLocal"                )
-         ::lISLocal                := hInfo[ "lISLocal"                ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISReturn"               )
-         ::lISReturn               := hInfo[ "lISReturn"               ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISSeparator"            )
-         ::lISSeparator            := hInfo[ "lISSeparator"            ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "lISClass"                )
-         ::lISClass                := hInfo[ "lISClass"                ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "cISMethods"              )
-         ::cISMethods              := hInfo[ "cISMethods"              ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "cISData"                 )
-         ::cISData                 := hInfo[ "cISData"                 ]
-      ENDIF
-      IF hb_HHasKey( hInfo, "cISFormat"               )
-         ::cISFormat               := hInfo[ "cISFormat"               ]
-      ENDIF
-
-      IF hb_HHasKey( hInfo, "cSeparator"              )
-         ::cSeparator              := hInfo[ "cSeparator"              ]
-      ENDIF
-
-   ENDIF
-   RETURN Self
 
 
 METHOD HbQtEditor:updateRequestBlock( bBlock )
@@ -963,14 +858,17 @@ STATIC FUNCTION hbide_convertALine( cLine, cMode )
 
 
 STATIC FUNCTION hbide_qCursorDownInsert( qCursor )
-   LOCAL nRow := qCursor:blockNumber()
+   LOCAL nRow
 
-   qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor )
-   IF qCursor:blockNumber() == nRow
-      qCursor:movePosition( QTextCursor_EndOfBlock, QTextCursor_MoveAnchor )
-      qCursor:insertBlock()
-      qCursor:movePosition( QTextCursor_NextBlock, QTextCursor_MoveAnchor )
-   ENDIF
+   WITH OBJECT qCursor
+      nRow := :blockNumber()
+      :movePosition( QTextCursor_Down, QTextCursor_MoveAnchor )
+      IF :blockNumber() == nRow
+         :movePosition( QTextCursor_EndOfBlock, QTextCursor_MoveAnchor )
+         :insertBlock()
+         :movePosition( QTextCursor_NextBlock, QTextCursor_MoveAnchor )
+      ENDIF
+   ENDWITH
    RETURN NIL
 
 
@@ -979,7 +877,6 @@ METHOD HbQtEditor:copyBlockContents()
    LOCAL cClip := ""
 
    aCord := ::aSelectionInfo
-
    __normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nMode := aCord[ 5 ]
 
@@ -991,7 +888,14 @@ METHOD HbQtEditor:copyBlockContents()
       cLine := strtran( cLine, chr( 13 ) )
       cLine := strtran( cLine, chr( 10 ) )
 
-      IF nMode == __selectionMode_stream__
+      IF nMode == __selectionMode_column__
+         cLine := pad( substr( cLine, nL + 1, nW ), nW )
+
+      ELSEIF nMode == __selectionMode_line__
+         // Nothing to do, complete line is already pulled
+
+      //IF nMode == __selectionMode_stream__
+      ELSE
          IF aCord[ 1 ] > aCord[ 3 ]  // Selection - bottom to top
             IF i == nT .AND. i == nB
                cLine := substr( cLine, min( aCord[ 2 ], aCord[ 4 ] ) + 1, nW )
@@ -1009,16 +913,9 @@ METHOD HbQtEditor:copyBlockContents()
                cLine := substr( cLine, 1, aCord[ 4 ] )
             ENDIF
          ENDIF
-
-      ELSEIF nMode == __selectionMode_column__
-         cLine := pad( substr( cLine, nL + 1, nW ), nW )
-
-      ELSEIF nMode == __selectionMode_line__
-         // Nothing to do, complete line is already pulled
-
       ENDIF
 
-      aadd( ::aBlockCopyContents, cLine )
+      AAdd( ::aBlockCopyContents, cLine )
       cClip += cLine + iif( nT == nB, "", iif( i < nB, hb_eol(), "" ) )
    NEXT
 
@@ -1182,10 +1079,15 @@ METHOD HbQtEditor:cutBlockContents( k )
 
          ELSEIF nSelMode == __selectionMode_stream__
             hbide_qPositionCursor( qCursor, nT, nL )
-            qCursor:movePosition( QTextCursor_Down       , QTextCursor_KeepAnchor, nB - nT )
-            qCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_KeepAnchor          )
-            qCursor:movePosition( QTextCursor_Right      , QTextCursor_KeepAnchor, nR      )
-            qCursor:removeSelectedText()
+            IF qCursor:atEnd()
+               hbide_qPositionCursor( qCursor, nT-1, nL )
+            ENDIF
+            WITH OBJECT qCursor
+               :movePosition( QTextCursor_Down       , QTextCursor_KeepAnchor, nB - nT )
+               :movePosition( QTextCursor_StartOfLine, QTextCursor_KeepAnchor          )
+               :movePosition( QTextCursor_Right      , QTextCursor_KeepAnchor, nR      )
+               :removeSelectedText()
+            ENDWITH
             ::qEdit:hbSetSelectionInfo( { -1, -1, -1, -1, __selectionMode_stream__ } )
 
          ELSEIF nSelMode == __selectionMode_line__
@@ -1664,29 +1566,25 @@ METHOD HbQtEditor:markCurrentFunction()
    RETURN Self
 
 
-METHOD HbQtEditor:presentSkeletons()
-   ::oSK:selectByMenuAndPostText( ::qEdit )
-   RETURN Self
-
-
-METHOD HbQtEditor:toggleCurrentLineHighlightMode( lOn )
-   ::qEdit:hbHighlightCurrentLine( lOn )
-   RETURN Self
-
-
-METHOD HbQtEditor:toggleLineNumbers( lOn )
+METHOD HbQtEditor:setLineNumbers( lOn )
    ::qEdit:hbNumberBlockVisible( lOn )
    RETURN Self
 
 
-METHOD HbQtEditor:toggleHorzRuler( lOn )
+METHOD HbQtEditor:setCurrentLineHighlightMode( lOn )
+   ::qEdit:hbHighlightCurrentLine( lOn )
+   RETURN Self
+
+
+METHOD HbQtEditor:setHorzRuler( lOn )
    ::qEdit:hbHorzRulerVisible( lOn )
    RETURN Self
 
 
 /* Fired by icon */
 METHOD HbQtEditor:toggleSelectionMode()
-   ::qEdit:hbSetSelectionMode( iif( ::oDK:setButtonState( "SelectionMode" ), 2, 1 ), .f. )
+   ::lSelectionMode := ! ::lSelectionMode
+   ::qEdit:hbSetSelectionMode( iif( ::lSelectionMode, 2, 1 ), .f. )
    RETURN Self
 
 
@@ -2821,7 +2719,6 @@ METHOD HbQtEditor:loadFuncHelp()
 
 
 METHOD HbQtEditor:resumePrototype()
-
    ::isSuspended := .f.
    IF !empty( ::qEdit )
       IF ::getLineNo() == ::nProtoLine .AND. ::getColumnNo() >= ::nProtoCol
@@ -2832,7 +2729,6 @@ METHOD HbQtEditor:resumePrototype()
 
 
 METHOD HbQtEditor:suspendPrototype()
-
    ::isSuspended := .t.
    IF !empty( ::qEdit )
       ::qEdit:hbShowPrototype( "", 0, 0 )
@@ -2841,7 +2737,6 @@ METHOD HbQtEditor:suspendPrototype()
 
 
 METHOD HbQtEditor:showPrototype( cProto )
-
    IF ! ::isSuspended  .AND. !empty( ::qEdit )
       IF !empty( cProto )
          ::cProtoOrg  := cProto
@@ -2855,7 +2750,6 @@ METHOD HbQtEditor:showPrototype( cProto )
 
 
 METHOD HbQtEditor:hidePrototype()
-
    IF !empty( ::qedit )
       ::nProtoLine := -1
       ::nProtoCol  := -1
@@ -2917,6 +2811,111 @@ METHOD HbQtEditor:completeCode( p )
 
    ::qEdit:setTextCursor( qCursor )
    Eval( ::bEventsBlock, __HBQTEDITOR_UPDATEFIELDSLIST__, NIL, Self )
+   RETURN Self
+
+
+METHOD HbQtEditor:setFormattingInfo( hInfo )
+
+   IF HB_ISHASH( hInfo )
+      IF hb_HHasKey( hInfo, "lAutoIndent"             )
+         ::lAutoIndent             := hInfo[ "lAutoIndent"             ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lSmartIndent"            )
+         ::lSmartIndent            := hInfo[ "lSmartIndent"            ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lSupressHbKWordsToUpper" )
+         ::lSupressHbKWordsToUpper := hInfo[ "lSupressHbKWordsToUpper" ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lReturnAsBeginKeyword"   )
+         ::lReturnAsBeginKeyword   := hInfo[ "lReturnAsBeginKeyword"   ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lCompleteArgumented"     )
+         ::lCompleteArgumented     := hInfo[ "lCompleteArgumented"     ]
+      ENDIF
+
+      IF hb_HHasKey( hInfo, "lISOperator"             )
+         ::lISOperator             := hInfo[ "lISOperator"             ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISAlignAssign"          )
+         ::lISAlignAssign          := hInfo[ "lISAlignAssign"          ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISCodeBlock"            )
+         ::lISCodeBlock            := hInfo[ "lISCodeBlock"            ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISClosingP"             )
+         ::lISClosingP             := hInfo[ "lISClosingP"             ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISSpaceP"               )
+         ::lISSpaceP               := hInfo[ "lISSpaceP"               ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISClosing"              )
+         ::lISClosing              := hInfo[ "lISClosing"              ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISIf"                   )
+         ::lISIf                   := hInfo[ "lISIf"                   ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISElse"                 )
+         ::lISElse                 := hInfo[ "lISElse"                 ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISEmbrace"              )
+         ::lISEmbrace              := hInfo[ "lISEmbrace"              ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISFor"                  )
+         ::lISFor                  := hInfo[ "lISFor"                  ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISSwitch"               )
+         ::lISSwitch               := hInfo[ "lISSwitch"               ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "nISSwitchCases"          )
+         ::nISSwitchCases          := hInfo[ "nISSwitchCases"          ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISSwitchOWise"          )
+         ::lISSwitchOWise          := hInfo[ "lISSwitchOWise"          ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISExitSameLine"         )
+         ::lISExitSameLine         := hInfo[ "lISExitSameLine"         ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISDoCase"               )
+         ::lISDoCase               := hInfo[ "lISDoCase"               ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "nISCaseCases"            )
+         ::nISCaseCases            := hInfo[ "nISCaseCases"            ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISCaseOWise"            )
+         ::lISCaseOWise            := hInfo[ "lISCaseOWise"            ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISDoWhile"              )
+         ::lISDoWhile              := hInfo[ "lISDoWhile"              ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISFunction"             )
+         ::lISFunction             := hInfo[ "lISFunction"             ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISLocal"                )
+         ::lISLocal                := hInfo[ "lISLocal"                ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISReturn"               )
+         ::lISReturn               := hInfo[ "lISReturn"               ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISSeparator"            )
+         ::lISSeparator            := hInfo[ "lISSeparator"            ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "lISClass"                )
+         ::lISClass                := hInfo[ "lISClass"                ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "cISMethods"              )
+         ::cISMethods              := hInfo[ "cISMethods"              ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "cISData"                 )
+         ::cISData                 := hInfo[ "cISData"                 ]
+      ENDIF
+      IF hb_HHasKey( hInfo, "cISFormat"               )
+         ::cISFormat               := hInfo[ "cISFormat"               ]
+      ENDIF
+
+      IF hb_HHasKey( hInfo, "cSeparator"              )
+         ::cSeparator              := hInfo[ "cSeparator"              ]
+      ENDIF
+   ENDIF
    RETURN Self
 
 //--------------------------------------------------------------------//

@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2011 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2011-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +59,12 @@
  *                               25May2011
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __editChangelog_textChanged__            2001
 #define __editUser_textChanged__                 2002
@@ -83,7 +78,6 @@
 #define __buttonCancel_clicked__                 2010
 #define __buttonSave_clicked__                   2011
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeChangeLog INHERIT IdeObject
 
@@ -106,36 +100,25 @@ CLASS IdeChangeLog INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:new( oIde )
-
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:destroy()
-
    IF !empty( ::oUI )
       ::oUI:buttonNew   :disconnect( "clicked()" )
-
       ::oUI:destroy()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:show()
 
@@ -201,9 +184,11 @@ METHOD IdeChangeLog:show()
       ::oUI:editUser:setText( ::oINI:cUserChangeLog )
       ::oUI:setWindowTitle( "Manage ChangeLog(s)" )
 
-      ::oEdit := IdeEdit():new( ::oIde )
+      ::oEdit := HbQtEditor():new()
       ::qEdit := ::oUI:plainChangelog
       ::oEdit:qEdit := ::qEdit
+      ::oEdit:create()
+
       ::qEdit:setFocusPolicy( Qt_NoFocus )
       ::qEdit:hbHorzRulerVisible( .f. )
 
@@ -211,22 +196,19 @@ METHOD IdeChangeLog:show()
       ::qHiliter := ::oTheme:setSyntaxHilighting( ::qEdit, , .t., .t. )
       ::qHiliter:hbSetType( 1 )
 
-      ::oUI:editChangelog   :setText( ::oINI:cChangeLog )
+      ::oUI:editChangelog:setText( ::oINI:cChangeLog )
 
       ::oUI:oWidget:connect( QEvent_Close, {|| ::oIde:oINI:cChangelogDialogGeometry := hbide_posAndSize( ::oUI:oWidget ) } )
    ENDIF
 
    ::oIde:setPosAndSizeByIniEx( ::oUI:oWidget, ::oINI:cChangelogDialogGeometry )
    ::oUI:show()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_eol()
-   RETURN hb_eol() // chr( 13 ) + chr( 10 )
+   RETURN hb_eol()
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_getLogCounter( cBuffer )
    LOCAL n, n1, nCntr := 0
@@ -235,10 +217,8 @@ STATIC FUNCTION hbide_getLogCounter( cBuffer )
       n1 := at( ">", cBuffer )
       nCntr := val( substr( cBuffer, n + 2, n1 - n - 2 ) )
    ENDIF
-
    RETURN nCntr + 1
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:execEvent( nEvent, p )
    LOCAL cTmp, cTmp1, s, n
@@ -346,12 +326,9 @@ METHOD IdeChangeLog:execEvent( nEvent, p )
          ::oUI:plainChangelog:clear()
       ENDIF
       EXIT
-
    ENDSWITCH
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:updateLog()
 
@@ -362,26 +339,20 @@ METHOD IdeChangeLog:updateLog()
    ::oUI:plainChangelog:setPlainText( hb_memoread( ::oINI:cChangeLog ) )
 
    ::refresh()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_dtosFmt( dDate )
    LOCAL s
 
    DEFAULT dDate TO date()
-
    s := dtos( dDate )
-
    RETURN substr( s, 1, 4 ) + "-" + substr( s, 5, 2 ) + "-" + substr( s, 7, 2 )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:refresh()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:addToLog( aLog )
    LOCAL k, e
@@ -405,10 +376,8 @@ METHOD IdeChangeLog:addToLog( aLog )
 
    ::oUI:plainLogEntry:setPlainText( hbide_arrayToMemo( a_ ) )
    QApplication():sendEvent( ::oUI:plainLogEntry, QKeyEvent( QEvent_KeyPress, Qt_Key_End, Qt_ControlModifier ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:getLogEntry()
    LOCAL e, n, f, s_:={}, lHandelled
@@ -484,15 +453,12 @@ METHOD IdeChangeLog:getLogEntry()
          ENDIF
       ENDIF
    NEXT
-
    RETURN s_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeChangeLog:buildLogEntry()
    RETURN hbide_arrayToMemo( ::getLogEntry() )
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_howManyPreSpaces( cStr )
    LOCAL i, n := 0
@@ -505,4 +471,3 @@ STATIC FUNCTION hbide_howManyPreSpaces( cStr )
    NEXT
    RETURN n
 
-/*----------------------------------------------------------------------*/

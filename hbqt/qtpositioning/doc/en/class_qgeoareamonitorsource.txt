@@ -13,7 +13,7 @@
    $ONELINER$
       Creates a new QGeoAreaMonitorSource object.
    $INHERITS$
-
+      QObject
    $SYNTAX$
       QGeoAreaMonitorSource( ... )
 

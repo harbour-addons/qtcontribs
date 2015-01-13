@@ -43,9 +43,41 @@ virtual void   setUpdateInterval(int msec)
 QString   sourceName() const
 int   updateInterval() const
 
-QStringList   availableSources()
-QGeoSatelliteInfoSource *   createDefaultSource(QObject * parent)
-QGeoSatelliteInfoSource *   createSource(const QString & sourceName, QObject * parent)
+QStringList availableSources(){
+   hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QStringList( QGeoSatelliteInfoSource::availableSources() ), "HB_QSTRINGLIST", hbqt_del_QStringList, HBQT_BIT_OWNER ) );
+}
+
+QGeoSatelliteInfoSource * createDefaultSource(QObject * parent){
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoSatelliteInfoSource::createDefaultSource( hbqt_par_QObject( 1 ) ), "HB_QGEOPOSITIONINFOSOURCE", NULL, HBQT_BIT_QOBJECT ) );
+   }
+   else
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoSatelliteInfoSource::createDefaultSource( 0 ), "HB_QGEOSATELLITEINFOSOURCE", hbqt_del_QGeoSatelliteInfoSource, HBQT_BIT_OWNER | HBQT_BIT_QOBJECT ) );
+   }
+}
+
+QGeoSatelliteInfoSource * createSource(const QString & sourceName, QObject * parent){
+
+   if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoSatelliteInfoSource::createSource( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ), 0 ), "HB_QGEOSATELLITEINFOSOURCE", hbqt_del_QGeoSatelliteInfoSource, HBQT_BIT_OWNER | HBQT_BIT_QOBJECT ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoSatelliteInfoSource::createSource( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ), "HB_QGEOSATELLITEINFOSOURCE", NULL, HBQT_BIT_QOBJECT ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+
 </PROTOS>
 
 <SLOTS>

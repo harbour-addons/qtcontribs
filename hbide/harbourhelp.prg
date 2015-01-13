@@ -932,9 +932,11 @@ STATIC FUNCTION doc2functions( hFile )
    LOCAL hDoc
    LOCAL aFn := {}
 
-   FOR EACH hDoc IN hFile
-      aadd( aFn, hbide_getFuncObjectFromHash( hDoc ) )
-   NEXT
+   IF HB_ISHASH( hFile )
+      FOR EACH hDoc IN hFile
+         aadd( aFn, hbide_getFuncObjectFromHash( hDoc ) )
+      NEXT
+   ENDIF
 
    RETURN aFn
 

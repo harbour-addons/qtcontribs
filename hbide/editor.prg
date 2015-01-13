@@ -158,14 +158,15 @@ CLASS IdeEditsManager INHERIT IdeObject
    METHOD convertQuotes()
    METHOD convertDQuotes()
 
+   METHOD toggleLineNumbers( lOn )
+   METHOD toggleHorzRuler( lOn )
+   METHOD toggleCurrentLineHighlightMode( lOn )
+
    METHOD toggleSelectionMode()
    METHOD toggleStreamSelectionMode()
    METHOD toggleColumnSelectionMode()
    METHOD toggleLineSelectionMode()
 
-   METHOD toggleLineNumbers()
-   METHOD toggleHorzRuler()
-   METHOD toggleCurrentLineHighlightMode()
    METHOD toggleCodeCompetion()
    METHOD toggleCompetionTips()
 
@@ -473,7 +474,7 @@ METHOD IdeEditsManager:execEvent( nEvent, p )
 
 METHOD IdeEditsManager:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
-   IdeEditor():new():create( ::oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
+   IdeEditor():new( ::oIde ):create( ::oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
 
    RETURN Self
 
@@ -803,28 +804,35 @@ METHOD IdeEditsManager:toggleLineSelectionMode()
    RETURN Self
 
 
-METHOD IdeEditsManager:toggleLineNumbers()
+METHOD IdeEditsManager:toggleLineNumbers( lOn )
    LOCAL oEditor
    IF ! Empty( oEditor := ::getEditorCurrent() )
-      oEditor:toggleLineNumbers()
+      IF ! HB_ISLOGICAL( lOn )
+         ::oIde:lLineNumbersVisible := lOn := ! ::oIde:lLineNumbersVisible
+      ENDIF
+      oEditor:setLineNumbers( lOn )
    ENDIF
    RETURN Self
 
 
-METHOD IdeEditsManager:toggleHorzRuler()
-   LOCAL oEdit
-   ::oIde:lHorzRulerVisible := ! ::lHorzRulerVisible
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:toggleHorzRuler( ::oIde:lHorzRulerVisible )
+METHOD IdeEditsManager:toggleHorzRuler( lOn )
+   LOCAL oEditor
+   IF ! Empty( oEditor := ::getEditorCurrent() )
+      IF ! HB_ISLOGICAL( lOn )
+         ::oIde:lHorzRulerVisible := lOn := ! ::oIde:lHorzRulerVisible
+      ENDIF
+      oEditor:setHorzRuler( lOn )
    ENDIF
    RETURN Self
 
 
-METHOD IdeEditsManager:toggleCurrentLineHighlightMode()
-   LOCAL oEdit
-   ::oIde:lCurrentLineHighlightEnabled := ! ::lCurrentLineHighlightEnabled
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
+METHOD IdeEditsManager:toggleCurrentLineHighlightMode( lOn )
+   LOCAL oEditor
+   IF ! Empty( oEditor := ::getEditorCurrent() )
+      IF ! HB_ISLOGICAL( lOn )
+         ::oIde:lCurrentLineHighlightEnabled := lOn := ! ::lCurrentLineHighlightEnabled
+      ENDIF
+      oEditor:setCurrentLineHighlightMode( lOn )
    ENDIF
    RETURN Self
 
@@ -941,7 +949,6 @@ METHOD IdeEditsManager:applyTheme( cTheme )
 
 METHOD IdeEditsManager:switchToReadOnly()
    LOCAL oEditor
-//   IF !empty( oEdit := ::getEditObjectCurrent() )
    IF !empty( oEditor := ::getEditorCurrent() )
       oEditor:setReadOnly()
    ENDIF
@@ -949,9 +956,9 @@ METHOD IdeEditsManager:switchToReadOnly()
 
 
 METHOD IdeEditsManager:presentSkeletons()
-   LOCAL oEdit
-   IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:presentSkeletons()
+   LOCAL oEditor
+   IF !empty( oEditor := ::getEditorCurrent() )
+      oEditor:presentSkeletons()
    ENDIF
    RETURN Self
 
@@ -1417,10 +1424,11 @@ CLASS IdeEditor INHERIT IdeObject
    METHOD jumpToFunction( cWord )
    METHOD loadFunctionHelp( cWord )
 
-   METHOD toggleLineNumbers( lOn )
-   METHOD toggleHorzRuler( lOn )
-   METHOD toggleCurrentLineHighlightMode( lOn )
+   METHOD setLineNumbers( lOn )
+   METHOD setHorzRuler( lOn )
+   METHOD setCurrentLineHighlightMode( lOn )
 
+   METHOD presentSkeletons()
    METHOD refresh()
    ENDCLASS
 
@@ -1450,6 +1458,7 @@ METHOD IdeEditor:init( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBo
    ::cExtras    := cExtras
 
    ::nID        := hbide_getNextUniqueID()
+
    RETURN Self
 
 
@@ -1513,7 +1522,6 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
    aadd( ::aTabs, { ::oTab, Self } )
    ::oEM:addSourceInTree( ::sourceFile, ::cView )
 
-   //::oEdit     := IdeEdit():new( ::oIde ):create()
    ::oEdit     := HbQtEditor():new():create()
    ::qEdit     := ::oEdit:qEdit
    ::qCqEdit   := ::oEdit:qEdit
@@ -1530,14 +1538,14 @@ METHOD IdeEditor:create( oIde, cSourceFile, nPos, nHPos, nVPos, cTheme, cView, a
       :setCompleter( ::qCompleter )
       :setTabSpaces( ::nTabSpaces )
       :setBookmarks( ::aBookMarks )
-      :toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
-      :toggleLineNumbers( ::oIde:lLineNumbersVisible )
-      :toggleHorzRuler( ::oIde:lHorzRulerVisible )
       :setModified( .F. )
       IF ::lReadOnly
          :setReadOnly( .T. )
       ENDIF
    ENDWITH
+   ::setLineNumbers()
+   ::setCurrentLineHighlightMode()
+   ::setHorzRuler()
    RETURN Self
 
 
@@ -1601,9 +1609,9 @@ METHOD IdeEditor:refresh()
 
    ::setDocumentProperties()
    ::relayMarkButtons()
-   ::toggleLineNumbers()
-   ::toggleHorzRuler()
-   ::toggleCurrentLineHighlightMode()
+   ::setLineNumbers()
+   ::setHorzRuler()
+   ::setCurrentLineHighlightMode()
    ::dispStatusInfo()
    ::changeThumbnail()
    RETURN Self
@@ -1627,7 +1635,6 @@ METHOD IdeEditor:connectBlocks( oEdit )
 
 METHOD IdeEditor:supplyFormattingInfo()
    LOCAL hInfo := __hbqtStandardHash()
-#if 0
 
    hInfo[ "lSupressHbKWordsToUpper" ] := ::oINI:lSupressHbKWordsToUpper
    hInfo[ "lISOperator"             ] := ::oINI:lISOperator
@@ -1663,7 +1670,6 @@ METHOD IdeEditor:supplyFormattingInfo()
    hInfo[ "cISFormat"               ] := ::oINI:cISFormat
 
    hInfo[ "cSeparator"              ] := ::oIde:cSeparator
-#endif
    RETURN hInfo
 
 
@@ -1778,7 +1784,7 @@ METHOD IdeEditor:execEditContextMenu( oPos, oInEdit )
 METHOD IdeEditor:split( nOrient )
    LOCAL oEdit
 
-   WITH OBJECT oEdit := IdeEdit():new( ::oIde, Self ):create()
+   WITH OBJECT oEdit := HbQtEditor():new():create()
       :qEdit:setDocument( ::qDocument )
       :setHilighter( ::qHiliter )
       :highlightPage()
@@ -1984,9 +1990,6 @@ METHOD IdeEditor:setDocumentProperties()
 METHOD IdeEditor:handleEditorEvents( nEvent, xData, oEdit )
    SWITCH nEvent
    CASE __HBQTEDITOR_FOCUSIN__
-      ::oUpDn:show()
-      ::oDK:showSelectedTextToolbar()
-      EXIT
    CASE __HBQTEDITOR_RESIZE__
       ::oUpDn:show()
       ::oDK:showSelectedTextToolbar()
@@ -1996,7 +1999,6 @@ METHOD IdeEditor:handleEditorEvents( nEvent, xData, oEdit )
       EXIT
 
    CASE __HBQTEDITOR_UPDATEFIELDSLIST__
-//      RETURN ::oEM:updateFieldsList( xData )
       RETURN ::updateFieldsList( xData )
 
    CASE __HBQTEDITOR_MARKCURRENTFUNCTION__
@@ -2022,7 +2024,6 @@ METHOD IdeEditor:handleEditorEvents( nEvent, xData, oEdit )
       RETURN ::updateWordsInCompleter( xData )
 
    ENDSWITCH
-
    HB_SYMBOL_UNUSED( oEdit )
    RETURN NIL
 
@@ -2085,7 +2086,6 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
          hb_memowrit( cFileTemp, ::qEdit:toPlainText() )
       ENDIF
       EXIT
-
    ENDSWITCH
    RETURN Self
 
@@ -2093,12 +2093,12 @@ METHOD IdeEditor:execEvent( nEvent, p, p1, p2 )
 METHOD IdeEditor:updateComponents()
 
    ::oAC:qSelToolbar:setParent( ::oDlg:oWidget )
+
    ::setDocumentProperties()
-   WITH OBJECT ::qCoEdit
-      :toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
-      :toggleLineNumbers( ::oIde:lLineNumbersVisible )
-      :toggleHorzRuler( ::oIde:lHorzRulerVisible )
-   ENDWITH
+   ::setCurrentLineHighlightMode()
+   ::setLineNumbers()
+   ::setHorzRuler()
+
    ::oIde:updateTitleBar()
    ::oUpDn:show()
    ::oDK:showSelectedTextToolbar()
@@ -2342,7 +2342,7 @@ METHOD IdeEditor:vssExecute( cAction )
 METHOD IdeEditor:showThumbnail()
 
    IF empty( ::qThumbnail )
-      WITH OBJECT ::qThumbnail := IdeEdit():new( ::oIde, Self, 0 ):create()
+      WITH OBJECT ::qThumbnail := HbQtEditor():new():create()
          :currentPointSize := 4
          :fontFamily := "Courier New"
          :setFont()
@@ -2540,33 +2540,18 @@ METHOD IdeEditor:updateWordsInCompleter( cWord )
    RETURN Self
 
 
-METHOD IdeEditor:toggleLineNumbers( lOn )
-   IF HB_ISLOGICAL( lOn )
-      ::oEdit:toggleLineNumbers( lOn )
-   ELSE
-      ::oIde:lLineNumbersVisible := ! ::lLineNumbersVisible
-      ::oEdit:toggleLineNumbers( ::oIde:lLineNumbersVisible )
-   ENDIF
+METHOD IdeEditor:setLineNumbers( lOn )
+   ::oEdit:setLineNumbers( iif( HB_ISLOGICAL( lOn ), lOn, ::oIde:lLineNumbersVisible ) )
    RETURN Self
 
 
-METHOD IdeEditor:toggleHorzRuler( lOn )
-   IF HB_ISLOGICAL( lOn )
-      ::oEdit:toggleHorzRuler( lOn )
-   ELSE
-      ::oIde:lHorzRulerVisible := ! ::lHorzRulerVisible
-      ::oEdit:toggleHorzRuler( ::oIde:lHorzRulerVisible )
-   ENDIF
+METHOD IdeEditor:setHorzRuler( lOn )
+   ::oEdit:setHorzRuler( iif( HB_ISLOGICAL( lOn ), lOn, ::oIde:lHorzRulerVisible ) )
    RETURN Self
 
 
-METHOD IdeEditor:toggleCurrentLineHighlightMode( lOn )
-   IF HB_ISLOGICAL( lOn )
-      ::oEdit:toggleCurrentLineHighlightMode( lOn )
-   ELSE
-      ::oIde:lCurrentLineHighlightEnabled := ! ::lCurrentLineHighlightEnabled
-      ::oEdit:toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
-   ENDIF
+METHOD IdeEditor:setCurrentLineHighlightMode( lOn )
+   ::oEdit:setCurrentLineHighlightMode( iif( HB_ISLOGICAL( lOn ), lOn, ::oIde:lCurrentLineHighlightEnabled ) )
    RETURN Self
 
 
@@ -2584,6 +2569,11 @@ METHOD IdeEditor:showHeader( aHeader )
       ENDIF
    NEXT
    RETURN lOpened
+
+
+METHOD IdeEditor:presentSkeletons()
+   ::oSK:selectByMenuAndPostText( ::qEdit )
+   RETURN Self
 
 
 FUNCTION __pullDictFunctions( aUserDict )

@@ -26,6 +26,7 @@ hbxbp.hbc
 hbqt.hbc
 hbqtwidgets.hbc
 hbformat.hbc
+hbct.hbc
 
 -env:HB_DYNLOAD_RDDADS=yes
 rddads.hbc

@@ -82,7 +82,6 @@ CLASS HbQtSlidingsManager
    DATA   oParent
    DATA   hSlidings                               INIT __hbqtStandardHash()
    DATA   lInMeasure                              INIT .F.
-   DATA   cCurrentActiveSlider                    INIT "x.x"
    DATA   nActiveArea                             INIT 0
    DATA   nX                                      INIT 0
    DATA   nY                                      INIT 0
@@ -245,6 +244,10 @@ CLASS HbQtSlidingList
    ACCESS focusOut()                              INLINE ::lFocusOut
    METHOD setFocusOut( lFocusOut )                INLINE iif( HB_ISLOGICAL( lFocusOut ), ::lFocusOut := lFocusOut, NIL )
 
+   DATA   lHideOnClick                            INIT .T.
+   ACCESS hideOnClick()                           INLINE ::lHideOnClick
+   METHOD setHideOnClick( lHideOnClick )          INLINE iif( HB_ISLOGICAL( lHideOnClick ), ::lHideOnClick := lHideOnClick, NIL )
+
    DATA   bHidingBlock
    METHOD hidingBlock( bBlock )                   SETGET
 
@@ -401,7 +404,9 @@ METHOD HbQtSlidingList:addSeparator()
 
 
 METHOD HbQtSlidingList:manageItemClicked( cName )
-   ::hide()
+   IF ::lHideOnClick
+      ::hide()
+   ENDIF
    IF hb_HHasKey( ::hItems, cName ) .AND. HB_ISBLOCK( ::hItems[ cName ][ 2 ] )
       Eval( ::hItems[ cName ][ 2 ], cName )
    ENDIF

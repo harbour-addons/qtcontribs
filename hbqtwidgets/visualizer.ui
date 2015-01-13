@@ -242,7 +242,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>226</width>
+                <width>288</width>
                 <height>391</height>
                </rect>
               </property>
@@ -302,7 +302,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>226</width>
+                <width>288</width>
                 <height>391</height>
                </rect>
               </property>
@@ -415,6 +415,9 @@
                      <property name="indentation">
                       <number>10</number>
                      </property>
+                     <property name="rootIsDecorated">
+                      <bool>false</bool>
+                     </property>
                      <property name="allColumnsShowFocus">
                       <bool>false</bool>
                      </property>
@@ -439,7 +442,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>226</width>
+                <width>288</width>
                 <height>391</height>
                </rect>
               </property>
@@ -510,7 +513,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>226</width>
+                <width>288</width>
                 <height>391</height>
                </rect>
               </property>
@@ -586,7 +589,22 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="page_2"/>
+             <widget class="QWidget" name="pageBrowser">
+              <layout class="QVBoxLayout" name="layoutBrowser">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
             </widget>
             <widget class="QToolBox" name="toolBoxRight">
              <property name="currentIndex">
@@ -597,7 +615,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>205</width>
+                <width>77</width>
                 <height>391</height>
                </rect>
               </property>
@@ -707,7 +725,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>205</width>
+                <width>77</width>
                 <height>391</height>
                </rect>
               </property>

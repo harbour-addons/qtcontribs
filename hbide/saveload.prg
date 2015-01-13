@@ -1883,19 +1883,18 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
       EXIT
 
    CASE __checkHilightLine_stateChanged__
-      ::oEM:toggleCurrentLineHighlightMode()
+      ::oIde:lCurrentLineHighlightEnabled := ( p == 2 )
+      ::oEM:toggleCurrentLineHighlightMode( ::oIde:lCurrentLineHighlightEnabled )
       EXIT
 
    CASE __checkHorzRuler_stateChanged__
-      ::oEM:toggleHorzRuler()
+      ::oIde:lHorzRulerVisible := ( p == 2 )
+      ::oEM:toggleHorzRuler( ::oIde:lHorzRulerVisible )
       EXIT
 
    CASE __checkLineNumbers_stateChanged__
-      IF p == 2
-         ::oIde:lLineNumbersVisible := .T.
-      ELSE
-         ::oIde:lLineNumbersVisible := .F.
-      ENDIF
+      ::oIde:lLineNumbersVisible := ( p == 2 )
+      ::oEM:toggleLineNumbers( ::oIde:lLineNumbersVisible )
       EXIT
 
    CASE __checkShowSelToolbar_stateChanged__

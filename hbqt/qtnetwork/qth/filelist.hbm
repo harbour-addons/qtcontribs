@@ -43,6 +43,7 @@ QNetworkProxyFactory.qth
 QNetworkProxyQuery.qth
 QNetworkReply.qth
 QNetworkSession.qth
+
 QSslCertificate.qth
 QSslCertificateExtension.qth
 QSslCipher.qth
@@ -50,6 +51,7 @@ QSslConfiguration.qth
 QSslError.qth
 QSslKey.qth
 QSslSocket.qth
+
 QTcpServer.qth
 QTcpSocket.qth
 QUdpSocket.qth

@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2014 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +59,6 @@
  *                               28Feb2012
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
@@ -71,13 +67,11 @@
 #include "hbide.ch"
 #include "hbhrb.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define  PNL_UI                                   1
 #define  PNL_OBJECTS                              2
 #define  PNL_TYPE                                 3
 
-/*----------------------------------------------------------------------*/
 
 #define __dockUIScr_dragEnterEvent__              2001
 #define __dockUISrc_dropEvent__                   2002
@@ -97,10 +91,8 @@ CLASS UISrcData
    DATA   hSource                                 INIT {=>}
 
    METHOD new( qObj, cObj )
-
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD UISrcData:new( qObj, cObj )
 
@@ -108,7 +100,6 @@ METHOD UISrcData:new( qObj, cObj )
 
    ::qObj  := qObj
    ::cName := cObj
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -184,30 +175,23 @@ CLASS IdeUISrcManager INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:new( oIde )
-
    ::oIde := oIde
 
    hb_hKeepOrder( ::hObjects, .t. )
    hb_hCaseMatch( ::hObjects, .f. )
-
    hb_hKeepOrder( ::hMethods, .t. )
    hb_hCaseMatch( ::hMethods, .f. )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:create( oIde )
 
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:show()
    LOCAL qDock
@@ -228,14 +212,12 @@ METHOD IdeUISrcManager:show()
 
    qDock:setWidget( ::qWidget )
 
-   /* Layout applied to dbu widget */
    ::qLayout := QGridLayout()
    ::qLayout:setContentsMargins( 0,0,0,0 )
    ::qLayout:setSpacing( 0 )
 
    ::qWidget:setLayout( ::qLayout )
 
-   /* Toolbar */
    ::buildToolbar()
    ::qLayout:addWidget( ::qToolbar, 0, 0, 1, 1 )
 
@@ -243,7 +225,6 @@ METHOD IdeUISrcManager:show()
    ::qSplitter:setOrientation( Qt_Vertical )
    ::qLayout:addWidget( ::qSplitter, 1, 0, 1, 1 )
 
-   /* StatusBar */
    ::qStatus := QStatusBar()
    ::qStatus:setSizeGripEnabled( .f. )
    ::qLayout:addWidget( ::qStatus  , 2, 0, 1, 1 )
@@ -271,11 +252,9 @@ METHOD IdeUISrcManager:show()
    ::qTree:connect( "itemSelectionChanged()", {|| ::exposeAction() } )
    ::qHBLayout:addWidget( ::qTree )
 
-   ::qEdit := QPlainTextEdit()
+   ::oEdit := HbQtEditor():new():create()
+   ::qEdit := ::oEdit:qEdit
    ::qHBLayout:addWidget( ::qEdit )
-
-   ::oEdit := IdeEdit():new( ::oIde )
-   ::oEdit:qEdit := ::qEdit
 
    ::qFont := QFont()
    ::qFont:setFamily( "Courier" )
@@ -290,18 +269,13 @@ METHOD IdeUISrcManager:show()
    ::qHiliter := ::oTH:setSyntaxHilighting( ::qEdit, "Bare Minimum", .t., .t. )
    ::qHiliter:hbSetInitialized( .t. )
 
-   /* Statusbar Panels */
    ::buildStatusPanels()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:destroy()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:execEvent( nEvent, p, p1 )
    LOCAL qList, qMime, qUrl, cExt, cUI
@@ -352,10 +326,8 @@ METHOD IdeUISrcManager:execEvent( nEvent, p, p1 )
       EXIT
 
    ENDSWITCH
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:getCurrentSlot()
    LOCAL cCls := __objGetClsName( ::qCurrent )
@@ -369,10 +341,8 @@ METHOD IdeUISrcManager:getCurrentSlot()
    CASE "Icon"  /* just */
       EXIT
    ENDSWITCH
-
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:saveMethod()
    LOCAL cSrc, n, n0, n1, n2, n3, cMtd, i, aSrc, cSearch, cSlot
@@ -468,10 +438,8 @@ METHOD IdeUISrcManager:saveMethod()
 
    ::qEdit:document():clear()
    ::buildSource() /* Temporary */
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:loadMethod()
    LOCAL cSrc := "", n0, n1, n2, n3, cMtd, i
@@ -499,10 +467,8 @@ METHOD IdeUISrcManager:loadMethod()
          cSrc := substr( cSrc, 1, Len( cSrc ) - 1 )
       ENDIF
    ENDIF
-
    RETURN cSrc
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:exposeAction()
    LOCAL qItem := ::qTree:currentItem()
@@ -533,12 +499,9 @@ METHOD IdeUISrcManager:exposeAction()
       ENDSWITCH
 
       EXIT
-
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:loadActions( oWidget, cName )
    LOCAL qItem
@@ -557,18 +520,13 @@ METHOD IdeUISrcManager:loadActions( oWidget, cName )
       qItem:setText( 0, "Icon" )
       ::qTree:addTopLevelItem( qItem )
       EXIT
-
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:checkUpdates()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:clear()
 
@@ -606,7 +564,6 @@ METHOD IdeUISrcManager:clear()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:reloadIfOpen( cUI )
    LOCAL cPath, cName, cExt
@@ -632,10 +589,8 @@ METHOD IdeUISrcManager:reloadIfOpen( cUI )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:openUi( cUI )
 
@@ -643,10 +598,8 @@ METHOD IdeUISrcManager:openUi( cUI )
    ::oIde:oUiSrcDock:show()
    ::clear()
    ::buildUiWidget( cUI )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildUiWidget( cUI )
    LOCAL cPath, cName, cExt, cBuffer, cPrg, aPrg
@@ -676,13 +629,9 @@ METHOD IdeUISrcManager:buildUiWidget( cUI )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildWidget( cBuffer, cPath, cName, cExt, aPrg )
    LOCAL cCode, s, n, oObj, cCls, i, pHrb, cObj
-
-//   MEMVAR cObj
-//   PRIVATE cObj
 
    cBuffer := hb_compileFromBuf( cBuffer, "-n2", "-w3", "-es2", "-q0", "-i" + ::oINI:getHarbourPath() + "include" )
    IF ! empty( cBuffer )
@@ -745,10 +694,8 @@ METHOD IdeUISrcManager:buildWidget( cBuffer, cPath, cName, cExt, aPrg )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:runHbmk2( cUI )
    LOCAL cPath, cName, cExt, cExeHbMk2, cCmdParams, cCmd, cC, cBuf, fhnd, cHbpFileName, cHbpFile, cBatch
@@ -824,7 +771,6 @@ METHOD IdeUISrcManager:runHbmk2( cUI )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:finished( nExitCode, nExitStatus )
    LOCAL cTmp
@@ -834,16 +780,13 @@ METHOD IdeUISrcManager:finished( nExitCode, nExitStatus )
            "Finished at [ " + time() + " ]    Done in [ " + hb_ntos( seconds() - ::oProcess:started ) + " Secs ]"
    ::outputText( cTmp )
    ::outputText( hbide_outputLine() )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:outputText( cText )
    ::oOutputResult:oWidget:append( "<font color=black>" + cText + "</font>" )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildToolbar()
    LOCAL nW := 25
@@ -858,10 +801,8 @@ METHOD IdeUISrcManager:buildToolbar()
    ::buildToolButton( ::qToolbar, { "Open a .UI"  , "open3"  , {|| ::execEvent( __buttonOpen_clicked__  ) }, .f. } )
    ::qToolbar:addWidget( ::sp0 )
    ::buildToolButton( ::qToolbar, { "Build Source", "fileprg", {|| ::execEvent( __buttonBuild_clicked__ ) }, .f. } )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildToolButton( qToolbar, aBtn )
    LOCAL qBtn
@@ -883,7 +824,6 @@ METHOD IdeUISrcManager:buildToolButton( qToolbar, aBtn )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildStatusPanels()
    LOCAL qLabel
@@ -903,15 +843,12 @@ METHOD IdeUISrcManager:buildStatusPanels()
    qLabel := QLabel(); qLabel:setMinimumWidth( 40 )
    ::qStatus:addPermanentWidget( qLabel, 1 )
    aadd( ::aStatusPnls, qLabel )
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 STATIC FUNCTION getObject( oSelf, oHbQtUi, cObj )
    RETURN {|...| oSelf:execEvent( __child_object__, oHbQtUi:&cObj., cObj, ... ) }
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:loadSource()
 
@@ -919,10 +856,8 @@ METHOD IdeUISrcManager:loadSource()
       ::aSource := hbide_readSource( ::cSrcFile )
    ENDIF
    ::buildSource()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildSource()
    LOCAL qHScr, qVScr, qCursor, qCurPos, qHVal, qVVal, qEdit
@@ -955,10 +890,8 @@ METHOD IdeUISrcManager:buildSource()
       qHScr:setValue( qHVal )
       qVScr:setValue( qVVal )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUISrcManager:buildClassSkeleton( cCls, cUiName )
    LOCAL aSrc := {}
@@ -1097,4 +1030,3 @@ METHOD IdeUISrcManager:buildClassSkeleton( cCls, cUiName )
 
    RETURN aSrc
 
-/*----------------------------------------------------------------------*/

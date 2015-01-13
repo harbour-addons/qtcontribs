@@ -230,22 +230,6 @@ METHOD HbQtScrollableToolbar:create( oParent )
       ENDWITH
    ENDIF
    ::configure()
-#if 0
-   WITH OBJECT ::oLayout
-      oRect := :geometry()
-      IF ::isVertical()
-         oRect:setWidth( ::nButtonWidth )
-      ELSE
-         oRect:setHeight( ::nButtonHeight )
-      ENDIF
-Alert( 1005 )
-      :setGeometry( oRect )
-Alert( 1006 )
-      IF ::nAlignment != NIL
-         :setAlignment( ::nAlignment )
-      ENDIF
-   ENDWITH
-#endif
    RETURN Self
 
 
@@ -293,12 +277,17 @@ METHOD HbQtScrollableToolbar:setState( cName, nState )
             oToolButton:toggle()
          ENDIF
          EXIT
-      CASE 2                                      // __HBQT_TBBUTTON_STATE_TOGGLEIFCHECKED__
+      CASE 2                                      // __HBQT_TBBUTTON_STATE_UNCHECKED__
          IF ( oldState := oToolButton:isChecked() )
             oToolButton:toggle()
          ENDIF
          EXIT
-      CASE 3
+      CASE 3                                      // __HBQT_TBBUTTON_STATE_CHECKED__
+         IF oToolButton:isCheckable()
+            IF ! ( oldState := oToolButton:isChecked() )
+               oToolButton:toggle()
+            ENDIF
+         ENDIF
          EXIT
       ENDSWITCH
    ENDIF

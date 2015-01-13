@@ -222,8 +222,9 @@ CLASS HbQtGet INHERIT GET
 
    FRIEND CLASS HbQtGetList
 
-   DATA   sl_font
-   DATA   oStyle
+   CLASSVAR oStyle                                INIT HBQProxyStyle()
+   CLASSVAR sl_font
+
    DATA   nKeyPressed
    DATA   cPastBuffer
    DATA   nPastPosition
@@ -253,7 +254,6 @@ METHOD HbQtGet:destroy()
 
    ::oParent   := NIL
    ::sl_font   := NIL
-   ::oStyle    := NIL
    ::oEdit     := NIL
    ::oGet      := NIL
    ::oControl  := NIL
@@ -347,7 +347,7 @@ METHOD HbQtGet:create( oControl )
    ::lChanged := .F.
 
    IF ::cClassName == "QLINEEDIT"
-      ::oStyle := HBQProxyStyle()
+   //   ::oStyle := HBQProxyStyle()
       ::oEdit:setStyle( ::oStyle )
       ::oEdit:home( .F. )
       ::positionCursor()
@@ -475,6 +475,7 @@ METHOD HbQtGet:manageCursor()
 
 METHOD HbQtGet:font( oFont )
    IF HB_ISOBJECT( oFont )
+      ::sl_font := NIL
       ::sl_font := oFont
    ENDIF
    RETURN ::sl_font
@@ -1186,10 +1187,11 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    IF HB_ISBLOCK( SetKey( nHbKey ) )
       Eval( SetKey( nHbKey ) )
-#if 1
+      IF nHbKey == K_INS
+         ::manageCursor()
+      ENDIF
       oKeyEvent:accept()
       RETURN .T.
-#endif
    ENDIF
    IF nHbKey == K_INS
       ::manageCursor()

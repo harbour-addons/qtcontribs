@@ -13,6 +13,9 @@ HBQPlainTextEdit.qth
 HBQSyntaxHighlighter.qth
 HBQTableView.qth
 HBQTextBlockUserData.qth
+HBQValidator.qth
+HBQProxyStyle.qth
+HBQFlickCharm.qth
 
 QAbstractButton.qth
 QAbstractGraphicsShapeItem.qth
@@ -77,7 +80,19 @@ QFontMetrics.qth
 QFontMetricsF.qth
 QFormLayout.qth
 QFrame.qth
+QGesture.qth
+QGestureEvent.qth
+QPanGesture.qth
+QPinchGesture.qth
+QSwipeGesture.qth
+QTapAndHoldGesture.qth
+QTapGesture.qth
 QGradient.qth
+QGraphicsBlurEffect.qth
+QGraphicsColorizeEffect.qth
+QGraphicsDropShadowEffect.qth
+QGraphicsOpacityEffect.qth
+QGraphicsEffect.qth
 QGraphicsEllipseItem.qth
 QGraphicsGridLayout.qth
 QGraphicsItem.qth
@@ -87,6 +102,7 @@ QGraphicsLayout.qth
 QGraphicsLayoutItem.qth
 QGraphicsLinearLayout.qth
 QGraphicsLineItem.qth
+QGraphicsObject.qth
 QGraphicsPathItem.qth
 QGraphicsPixmapItem.qth
 QGraphicsPolygonItem.qth
@@ -108,6 +124,7 @@ QGraphicsView.qth
 QGraphicsWidget.qth
 QGridLayout.qth
 QGroupBox.qth
+QGuiApplication.qth
 QHBoxLayout.qth
 QHeaderView.qth
 QHelpEvent.qth
@@ -117,10 +134,12 @@ QIcon.qth
 QImage.qth
 QImageReader.qth
 QImageWriter.qth
-# QInputContext.qth      # Disabled because of OS/2
+#QInputContext.qth      # Disabled because of OS/2
 QInputDialog.qth
 QInputEvent.qth
+QInputMethod.qth
 QInputMethodEvent.qth
+QInputMethodQueryEvent.qth
 QIntValidator.qth
 QItemDelegate.qth
 # QItemEditorCreator.qth
@@ -149,7 +168,11 @@ QMessageBox.qth
 QMouseEvent.qth
 QMoveEvent.qth
 QMovie.qth
+QOpenGLBuffer.qth
+QOpenGLWidget.qth
+QPageLayout.qth
 QPageSetupDialog.qth
+QPageSize.qth
 QPaintDevice.qth
 QPaintEngine.qth
 QPainter.qth
@@ -179,6 +202,10 @@ QRegion.qth
 QResizeEvent.qth
 QScrollArea.qth
 QScrollBar.qth
+QScrollEvent.qth
+QScrollPrepareEvent.qth
+QScrollerProperties.qth
+QScroller.qth
 QSessionManager.qth
 QShortcutEvent.qth
 QShowEvent.qth
@@ -191,6 +218,7 @@ QSpacerItem.qth
 QSpinBox.qth
 QSplashScreen.qth
 QSplitter.qth
+QSplitterHandle.qth
 QStackedWidget.qth
 QStandardItem.qth
 QStandardItemModel.qth
@@ -199,6 +227,7 @@ QStringListModel.qth
 QStyle.qth
 QStyledItemDelegate.qth
 QStyleFactory.qth
+QStyleHints.qth
 QStyleHintReturn.qth
 QStyleHintReturnMask.qth
 QStyleHintReturnVariant.qth
@@ -263,6 +292,8 @@ QTimeEdit.qth
 QToolBar.qth
 QToolBox.qth
 QToolButton.qth
+QToolTip.qth
+QTouchEvent.qth
 QTransform.qth
 QTreeView.qth
 QTreeWidget.qth
@@ -277,4 +308,10 @@ QWindowsStyle.qth
 QWindowStateChangeEvent.qth
 QWizard.qth
 QWizardPage.qth
-QToolTip.qth
+
+QSurface.qth
+QWindow.qth
+QScreen.qth
+QSurfaceFormat.qth
+
+QProxyStyle.qth

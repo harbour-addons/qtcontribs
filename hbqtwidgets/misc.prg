@@ -65,13 +65,17 @@ THREAD STATIC t_sets := {=>}
 STATIC s_hHarbourFuncList := {=>}
 STATIC s_hQtFuncList := {=>}
 STATIC s_hUserFuncList := {=>}
+STATIC s_timerSingleShot
 
 
 INIT PROCEDURE __initHbQtSets()
+   LOCAL oFont := QFont( "Courier New", 10 )
+
+   oFont:setFixedPitch( .T. )
 
    QResource():registerResource_1( hbqtres_hbqtwidgets() )
 
-   t_sets[ _QSET_GETSFONT     ] := QFont( "Courier New", 10 )
+   t_sets[ _QSET_GETSFONT     ] := oFont
    t_sets[ _QSET_LINESPACING  ] := 6
    t_sets[ _QSET_NOMOUSABLE   ] := .F.
    t_sets[ _QSET_EDITSPADDING ] := 4
@@ -410,10 +414,22 @@ FUNCTION __hbqtCssPX( nPixels, nBase, lDeviceRatio )
    RETURN LTrim( Str( __hbqtPixelsByDPI( nPixels, nBase, lDeviceRatio ) ) ) + "px;"
 
 
-FUNCTION __hbqtStandardHash()
+FUNCTION __hbqtHHasKey( hHash, xKey, xValue )     // <xValue> must be passed by reference
+   IF HB_ISHASH( hHash ) .AND. hb_HHasKey( hHash, xKey )
+      xValue := hHash[ xKey ]
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+FUNCTION __hbqtStandardHash( cKey, xValue )
    LOCAL hHash := {=>}
+
    hb_HKeepOrder( hHash, .T. )
    hb_HCaseMatch( hHash, .F. )
+   IF HB_ISSTRING( cKey ) .AND. ! Empty( cKey )
+      hHash[ cKey ] := xValue
+   ENDIF
    RETURN hHash
 
 
@@ -542,7 +558,8 @@ FUNCTION __hbqtAppWidget( oWidget )
 FUNCTION __hbqtTreeViewStyleSheet()
    LOCAL aCSS := {}
    LOCAL cCSS := ""
-   LOCAL cColorTreeBranch := "rgba( 255, 255, 220, 255 );"
+   //LOCAL cColorTreeBranch := "rgba( 255, 255, 220, 255 );"
+   LOCAL cColorTreeBranch := "rgba( 180,180,180, 255 );"
 
    AAdd( aCSS, 'QTreeView {' )
    AAdd( aCSS, '    paint-alternating-row-colors-for-empty-area: true;' )
@@ -636,6 +653,115 @@ FUNCTION __hbqtPosAndSizeAsCParams( oWidget )
       cParams := hb_ntos( oWidget:x() ) + "," + hb_ntos( oWidget:y() ) + "," +hb_ntos( oWidget:width() ) + "," +hb_ntos( oWidget:height() )
    ENDIF
    RETURN cParams
+
+
+FUNCTION __hbqtStyleConvert( cProperty, cnStyleOrValue )
+   LOCAL cStyle
+   LOCAL nValue
+
+   STATIC hBrushStyles
+   STATIC hPenStyles
+   STATIC hCapStyles
+   STATIC hJoinStyles
+
+   IF Empty( hBrushStyles )
+      hBrushStyles := __hbqtStandardHash()
+      hPenStyles   := __hbqtStandardHash()
+      hCapStyles   := __hbqtStandardHash()
+      hJoinStyles  := __hbqtStandardHash()
+
+      hBrushStyles[ "NoBrush"                ] := Qt_NoBrush
+      hBrushStyles[ "SolidPattern"           ] := Qt_SolidPattern
+      hBrushStyles[ "Dense1Pattern"          ] := Qt_Dense1Pattern
+      hBrushStyles[ "Dense2Pattern"          ] := Qt_Dense2Pattern
+      hBrushStyles[ "Dense3Pattern"          ] := Qt_Dense3Pattern
+      hBrushStyles[ "Dense4Pattern"          ] := Qt_Dense4Pattern
+      hBrushStyles[ "Dense5Pattern"          ] := Qt_Dense5Pattern
+      hBrushStyles[ "Dense6Pattern"          ] := Qt_Dense6Pattern
+      hBrushStyles[ "Dense7Pattern"          ] := Qt_Dense7Pattern
+      hBrushStyles[ "HorPattern"             ] := Qt_HorPattern
+      hBrushStyles[ "VerPattern"             ] := Qt_VerPattern
+      hBrushStyles[ "CrossPattern"           ] := Qt_CrossPattern
+      hBrushStyles[ "BDiagPattern"           ] := Qt_BDiagPattern
+      hBrushStyles[ "FDiagPattern"           ] := Qt_FDiagPattern
+      hBrushStyles[ "DiagCrossPattern"       ] := Qt_DiagCrossPattern
+      hBrushStyles[ "LinearGradientPattern"  ] := Qt_LinearGradientPattern
+      hBrushStyles[ "ConicalGradientPattern" ] := Qt_ConicalGradientPattern
+      hBrushStyles[ "RadialGradientPattern"  ] := Qt_RadialGradientPattern
+      hBrushStyles[ "TexturePattern"         ] := Qt_TexturePattern
+
+      hPenStyles[ "NoPen"          ] := Qt_NoPen
+      hPenStyles[ "SolidLine"      ] := Qt_SolidLine
+      hPenStyles[ "DashLine"       ] := Qt_DashLine
+      hPenStyles[ "DotLine"        ] := Qt_DotLine
+      hPenStyles[ "DashDotLine"    ] := Qt_DashDotLine
+      hPenStyles[ "DashDotDotLine" ] := Qt_DashDotDotLine
+
+      hCapStyles[ "FlatCap"        ] := Qt_FlatCap
+      hCapStyles[ "RoundCap"       ] := Qt_RoundCap
+      hCapStyles[ "SquareCap"      ] := Qt_SquareCap
+
+      hJoinStyles[ "BevelJoin"     ] := Qt_BevelJoin
+      hJoinStyles[ "MiterJoin"     ] := Qt_MiterJoin
+      hJoinStyles[ "RoundJoin"     ] := Qt_RoundJoin
+      hJoinStyles[ "SvgMiterJoin"  ] := Qt_SvgMiterJoin
+   ENDIF
+
+   IF HB_ISSTRING( cnStyleOrValue )
+      cStyle := cnStyleOrValue
+
+      SWITCH Lower( cProperty )
+      CASE "penstyle"  ; RETURN iif( hb_HHasKey( hPenStyles, cStyle ), hPenStyles[ cStyle ], Qt_SolidLine )
+      CASE "capstyle"  ; RETURN iif( hb_HHasKey( hCapStyles, cStyle ), hCapStyles[ cStyle ], Qt_FlatCap )
+      CASE "joinstyle" ; RETURN iif( hb_HHasKey( hJoinStyles, cStyle ), hJoinStyles[ cStyle ], Qt_BevelJoin )
+      CASE "brushstyle"; RETURN iif( hb_HHasKey( hBrushStyles, cStyle ), hBrushStyles[ cStyle ], Qt_NoBrush )
+      ENDSWITCH
+   ELSE
+      SWITCH Lower( cProperty )
+      CASE "penstyle"
+         FOR EACH nValue IN hPenStyles
+            IF nValue == cnStyleOrValue
+               RETURN nValue:__enumKey()
+            ENDIF
+         NEXT
+         EXIT
+      CASE "capstyle"
+         FOR EACH nValue IN hCapStyles
+            IF nValue == cnStyleOrValue
+               RETURN nValue:__enumKey()
+            ENDIF
+         NEXT
+         EXIT
+      CASE "joinstyle"
+         FOR EACH nValue IN hJoinStyles
+            IF nValue == cnStyleOrValue
+               RETURN nValue:__enumKey()
+            ENDIF
+         NEXT
+         EXIT
+      CASE "brushstyle"
+         FOR EACH nValue IN hBrushStyles
+            IF nValue == cnStyleOrValue
+               RETURN nValue:__enumKey()
+            ENDIF
+         NEXT
+         EXIT
+      ENDSWITCH
+   ENDIF
+
+   RETURN iif( HB_ISSTRING( cnStyleOrValue ), -1, "" )
+
+
+PROCEDURE __hbqtActivateTimerSingleShot( nMSeconds, bBlock )
+
+   s_timerSingleShot := NIL
+   WITH OBJECT s_timerSingleShot := QTimer()
+      :setSingleShot( .T. )
+      :setInterval( nMSeconds )
+      :connect( "timeout()", bBlock )
+      :start()
+   ENDWITH
+   RETURN
 
 //--------------------------------------------------------------------//
 //                Managed Function Lists for HbQtEditor

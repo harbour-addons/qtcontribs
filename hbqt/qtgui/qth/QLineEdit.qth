@@ -104,7 +104,18 @@ virtual QSize sizeHint () const
 QString text () const
 virtual const QValidator * validator () const
 
+QString placeholderText() const                                    [*V=0x040700*]
 void setPlaceholderText ( const QString & )                        [*V=0x040700*]
+
+bool isClearButtonEnabled() const                                  [*V=0x050200*]
+void setClearButtonEnabled(bool enable)                            [*V=0x050200*]
+
+Qt::CursorMoveStyle cursorMoveStyle() const                        [*V=0x040800*]
+void setCursorMoveStyle(Qt::CursorMoveStyle style)                 [*V=0x040800*]
+
+void addAction(QAction * action, ActionPosition position)        [*V=0x050200*]
+QAction * addAction(const QIcon & icon, ActionPosition position) [*V=0x050200*]
+
 </PROTOS>
 
 <SLOTS>

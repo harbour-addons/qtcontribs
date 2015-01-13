@@ -279,11 +279,13 @@ CLASS HbIde
    DATA   lProjTreeVisible                        INIT   .t.
    DATA   lDockRVisible                           INIT   .f.
    DATA   lDockBVisible                           INIT   .f.
-   DATA   lTabCloseRequested                      INIT   .f.
-   DATA   isColumnSelectionEnabled                INIT   .f.
+
    DATA   lLineNumbersVisible                     INIT   .t.
    DATA   lHorzRulerVisible                       INIT   .t.
    DATA   lCurrentLineHighlightEnabled            INIT   .t.
+
+   DATA   lTabCloseRequested                      INIT   .f.
+   DATA   isColumnSelectionEnabled                INIT   .f.
    DATA   cWrkFolderLast                          INIT   ""
    DATA   cWrkProject                             INIT   ""
    DATA   cWrkTheme                               INIT   ""

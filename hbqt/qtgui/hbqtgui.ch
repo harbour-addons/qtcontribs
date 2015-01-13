@@ -330,6 +330,9 @@
 #define QLineEdit_Password                        2        // Display asterisks instead of the characters actually entered.
 #define QLineEdit_PasswordEchoOnEdit              3
 
+#define QLineEdit_LeadingPosition                 0        // The widget is displayed to the left of the text when using layout direction Qt::LeftToRight or to the right when using Qt::RightToLeft, respectively.
+#define QLineEdit_TrailingPosition                1        // The widget is displayed to the right of the text when using layout direction Qt::LeftToRight or to the left when using Qt::RightToLeft, respectively.
+
 #define QMessageBox_InvalidRole                   -1        // The button is invalid.
 #define QMessageBox_AcceptRole                    0         // Clicking the button causes the dialog to be accepted (e.g. OK).
 #define QMessageBox_RejectRole                    1         // Clicking the button causes the dialog to be rejected (e.g. Cancel).
@@ -1764,7 +1767,9 @@
 #define QAbstractPrintDialog_PrintToFile          0x0001   // The print to file option is enabled.
 #define QAbstractPrintDialog_PrintSelection       0x0002   // The print selection option is enabled.
 #define QAbstractPrintDialog_PrintPageRange       0x0004   // The page range selection option is enabled.
-#define QAbstractPrintDialog_PrintCollateCopies   0x0010
+#define QAbstractPrintDialog_PrintShowPageSize    0x0008   // Show the page size + margins page only if this is enabled.
+#define QAbstractPrintDialog_PrintCollateCopies   0x0010   // The collate copies option is enabled
+#define QAbstractPrintDialog_PrintCurrentPage     0x0040   // The print current page option is enabled
 
 // enum QAbstractPrintDialog::PrintRange
 // Used to specify the print range selection option.
@@ -1772,6 +1777,7 @@
 #define QAbstractPrintDialog_AllPages             0   // All pages should be printed.
 #define QAbstractPrintDialog_Selection            1   // Only the selection should be printed.
 #define QAbstractPrintDialog_PageRange            2   // The specified page range should be printed.
+#define QAbstractPrintDialog_CurrentPage          3   // Only the currently visible page should be printed.
 
 // enum QPrinter::ColorMode
 // This enum type is used to indicate whether QPrinter should print in color or not.

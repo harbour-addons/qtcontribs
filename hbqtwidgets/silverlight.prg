@@ -156,30 +156,32 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
    ENDWITH
 
    ::setContent( ::xContent )
-   ::setBackground( ::oBackground )
    ::setAnimation( ::lAnimate )
    ::setAnimationOpacity( ::aOpacity )
+   ::setBackground( ::oBackground )
 
    RETURN Self
 
 
 METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oParent )
-
    DEFAULT oParent TO ::oParent
+#if 0
    ::oParent := oParent
    IF ! HB_ISOBJECT( ::oParent )                  // simply return silently - no alerts
       RETURN Self
    ENDIF
-
+#endif
    WITH OBJECT ::oWidget
       ::setContent( xContent )
-      ::setBackground( oBackground )
       ::setAnimation( lAnimate )
       ::setAnimationOpacity( aOpacity )
+      ::setBackground( oBackground )
 
-      :setParent( ::oParent )
-      :resize( ::oParent:width(), ::oParent:height() )
+      //:setParent( ::oParent )
+      //:move( 0, 0 )
+      :setGeometry( oParent:geometry() )
       :move( 0, 0 )
+      :resize( ::oParent:width(), ::oParent:height() )
       :raise()
       :show()
       IF ::lAnimate

@@ -79,6 +79,7 @@
 #define __buttonSaveAs_clicked__                  2010
 #define __buttonDelete_clicked__                  2011
 #define __QEvent_KeyPress__                       2012
+#define __buttonClose_clicked__                  2013
 
 
 CLASS IdeShortcuts INHERIT IdeObject
@@ -313,6 +314,9 @@ METHOD IdeShortcuts:execEvent( nEvent, p )
 
    CASE __QEvent_KeyPress__
       MsgBox( "KeyPress on LabelMacros" )
+      EXIT
+   CASE __buttonClose_clicked__
+      ::oUI:hide()
       EXIT
    CASE __buttonDelete_clicked__
       nRow := ::oUI:tableMacros:currentRow()
@@ -595,6 +599,7 @@ METHOD IdeShortcuts:buildSignals()
    ::oUI:buttonSave  :connect( "clicked()"                           , {| | ::execEvent( __buttonSave_clicked__                  ) } )
    ::oUI:buttonSaveAs:connect( "clicked()"                           , {| | ::execEvent( __buttonSaveAs_clicked__                ) } )
    ::oUI:buttonDelete:connect( "clicked()"                           , {| | ::execEvent( __buttonDelete_clicked__                ) } )
+   ::oUI:btnClose    :connect( "clicked()"                           , {| | ::execEvent( __buttonClose_clicked__                 ) } )
    ::oUI:listMethods :connect( "itemDoubleClicked(QListWidgetItem*)" , {|p| ::execEvent( __listMethods_itemDoubleClicked__   , p ) } )
    ::oUI:listMethods :connect( "currentRowChanged(int)"              , {|p| ::execEvent( __listMethods_currentRowChanged__   , p ) } )
    ::oUI:tableMacros :connect( "itemSelectionChanged()"              , {| | ::execEvent( __tableMacros_itemSelectionChanged__    ) } )
@@ -1037,17 +1042,8 @@ METHOD IdeShortcuts:tabs2spaces()
 METHOD IdeShortcuts:removeTrailingSpaces()
    RETURN ::oEdit:removeTrailingSpaces()
 
-METHOD IdeShortcuts:toggleLineNumbersDisplay()
-   RETURN ::oEdit:toggleLineNumbers()
-
-METHOD IdeShortcuts:presentSkeletons()
-   RETURN ::oEdit:presentSkeletons()
-
 METHOD IdeShortcuts:gotoFunction()
    RETURN ::oEdit:gotoFunction()
-
-METHOD IdeShortcuts:toggleCurrentLineHilight()
-   RETURN ::oEdit:toggleCurrentLineHighlightMode()
 
 METHOD IdeShortcuts:toggleStreamSelectionMode()
    RETURN ::oEdit:toggleStreamSelectionMode()
@@ -1070,6 +1066,15 @@ METHOD IdeShortcuts:findAgain()
 /*----------------------------------------------------------------------*/
 //                              Navigation
 /*----------------------------------------------------------------------*/
+
+METHOD IdeShortcuts:presentSkeletons()
+   RETURN ::oEM:presentSkeletons()
+
+METHOD IdeShortcuts:toggleCurrentLineHilight()
+   RETURN ::oEM:toggleCurrentLineHighlightMode()
+
+METHOD IdeShortcuts:toggleLineNumbersDisplay()
+   RETURN ::oEM:toggleLineNumbers()
 
 METHOD IdeShortcuts:home()
    RETURN ::oEM:home()

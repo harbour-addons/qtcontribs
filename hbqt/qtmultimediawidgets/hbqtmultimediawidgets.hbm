@@ -22,5 +22,5 @@ hbqt_init.cpp
 {!darwin}-depincpath=qtmultimediawidgets:/usr/include
 {bsd}-depincpath=qt:/usr/local/include/qt5
 {darwin}-depincpath=qtmultimediawidgets:/Developer/qt/include
-{darwin}-depincpath=qtmultimediwidgetsa:/Library/Frameworks
+{darwin}-depincpath=qtmultimediawidgets:/Library/Frameworks
 {darwin}-depincpath=qtmultimediawidgets:/usr/local/include

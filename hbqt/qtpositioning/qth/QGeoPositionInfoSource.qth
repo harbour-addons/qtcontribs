@@ -13,7 +13,7 @@
 
 <CLASS>
 QObject     = yes
-Inherit     =
+Inherit     = QObject
 Type        =
 New         =
 Version     = 0x050200
@@ -21,6 +21,8 @@ Version     = 0x050200
 
 <CODE>
 #include <QtPositioning/QGeoPositionInfoSource>
+#include <QtCore/QStringList>
+
 
 /*
  * QGeoPositionInfoSource(QObject * parent)
@@ -49,9 +51,42 @@ QString   sourceName() const
 virtual QGeoPositionInfoSource::PositioningMethods   supportedPositioningMethods() const = 0
 int   updateInterval() const
 
-QStringList   availableSources()
-QGeoPositionInfoSource *   createDefaultSource(QObject * parent)
-QGeoPositionInfoSource *   createSource(const QString & sourceName, QObject * parent)
+
+
+QStringList availableSources(){
+   hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QStringList( QGeoPositionInfoSource::availableSources() ), "HB_QSTRINGLIST", hbqt_del_QStringList, HBQT_BIT_OWNER ) );
+}
+
+QGeoPositionInfoSource * createDefaultSource(QObject * parent){
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoPositionInfoSource::createDefaultSource( hbqt_par_QObject( 1 ) ), "HB_QGEOPOSITIONINFOSOURCE", hbqt_del_QGeoPositionInfoSource, HBQT_BIT_OWNER | HBQT_BIT_QOBJECT ) );
+   }
+   else
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoPositionInfoSource::createDefaultSource( 0 ), "HB_QGEOPOSITIONINFOSOURCE", NULL, HBQT_BIT_QOBJECT ) );
+   }
+}
+
+QGeoPositionInfoSource * createSource(const QString & sourceName, QObject * parent){
+
+   if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoPositionInfoSource::createSource( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ), 0 ), "HB_QGEOPOSITIONINFOSOURCE", hbqt_del_QGeoPositionInfoSource, HBQT_BIT_OWNER | HBQT_BIT_QOBJECT ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoPositionInfoSource::createSource( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ), "HB_QGEOPOSITIONINFOSOURCE", NULL, HBQT_BIT_QOBJECT ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
 </PROTOS>
 
 <SLOTS>

@@ -637,16 +637,16 @@ METHOD IdeThemes:show()
       aeval( ::aThemes, {|e_| ::oUI:listThemes:addItem( e_[ 1 ] ) } )
       aeval( ::aItems , {|e_| ::oUI:listItems:addItem( e_[ 2 ] )  } )
 
-      ::oEdit := IdeEdit():new( ::oIde )
+      ::oEdit := HbQtEditor():new()
       ::qEdit := ::oUI:plainThemeText
       ::oEdit:qEdit := ::qEdit
+      ::oEdit:create()
 
       ::qEdit:setPlainText( GetSource() )
       ::qEdit:setLineWrapMode( QTextEdit_NoWrap )
       ::qEdit:setFont( ::oIde:oFont:oWidget )
       ::qEdit:ensureCursorVisible()
       ::qEdit:setFocusPolicy( Qt_NoFocus )
-      //::qEdit:setFocusPolicy( Qt_ClickFocus )
 
       ::lCreating := .f.
 

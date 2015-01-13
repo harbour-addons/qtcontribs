@@ -13,7 +13,7 @@
 
 <CLASS>
 QObject     = yes
-Inherit     =
+Inherit     = QObject
 Type        =
 New         =
 Version     = 0x050200
@@ -50,9 +50,41 @@ virtual bool   startMonitoring(const QGeoAreaMonitorInfo & monitor) = 0
 virtual bool   stopMonitoring(const QGeoAreaMonitorInfo & monitor) = 0
 virtual AreaMonitorFeatures   supportedAreaMonitorFeatures() const = 0
 
-QStringList   availableSources()
-QGeoAreaMonitorSource *   createDefaultSource(QObject * parent)
-QGeoAreaMonitorSource *   createSource(const QString & sourceName, QObject * parent)
+QStringList availableSources(){
+   hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QStringList( QGeoAreaMonitorSource::availableSources() ), "HB_QSTRINGLIST", hbqt_del_QStringList, HBQT_BIT_OWNER ) );
+}
+
+QGeoAreaMonitorSource * createDefaultSource(QObject * parent){
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoAreaMonitorSource::createDefaultSource( hbqt_par_QObject( 1 ) ), "HB_QGEOAREAMONITORSOURCE", NULL, HBQT_BIT_QOBJECT ) );
+   }
+   else
+   {
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoAreaMonitorSource::createDefaultSource( 0 ), "HB_QGEOAREAMONITORSOURCE", hbqt_del_QGeoAreaMonitorSource, HBQT_BIT_OWNER | HBQT_BIT_QOBJECT ) );
+   }
+}
+
+QGeoAreaMonitorSource * createSource(const QString & sourceName, QObject * parent){
+
+   if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoAreaMonitorSource::createSource( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ), 0 ), "HB_QGEOAREAMONITORSOURCE", hbqt_del_QGeoAreaMonitorSource, HBQT_BIT_OWNER | HBQT_BIT_QOBJECT ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, ( void * ) QGeoAreaMonitorSource::createSource( ( QString ) hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ), "HB_QGEOAREAMONITORSOURCE", NULL, HBQT_BIT_QOBJECT ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+
 </PROTOS>
 
 <SLOTS>

@@ -399,7 +399,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
 
 CREATE CLASS HbQtGetList INHERIT HbGetList
 
-   METHOD new( aGetList )
+   METHOD init( aGetList )
    METHOD goNext( oGet )
    METHOD goPrevious( oGet )
    METHOD goTop( oGet )
@@ -417,7 +417,8 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    METHOD lastGetBlock( bBlock )                  SETGET
    METHOD terminate()                             INLINE iif( HB_ISBLOCK( ::bOnLastGet ), Eval( ::bOnLastGet ), NIL )
 
-   DATA   oFocusFrame
+   CLASSVAR oFocusFrame                           INIT QFocusFrame()
+
    DATA   lFocusFrame                             INIT .T.
    METHOD focusFrame                              SETGET
 
@@ -427,10 +428,14 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
    ENDCLASS
 
 
-METHOD HbQtGetList:new( aGetList )
+METHOD HbQtGetList:init( aGetList )
 
    ::HbGetList:new( aGetList )
-   ::oFocusFrame := QFocusFrame()
+#if 0
+   IF Empty( ::oFocusFrame )
+      ::oFocusFrame := QFocusFrame()
+   ENDIF
+#endif
    ::oFocusFrame:setStyleSheet( "border: 1px solid red;" )
 
    RETURN Self

@@ -16,6 +16,54 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-12 19:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r389)
+  * hbide/changelog.prg
+  * hbide/editor.prg
+  * hbide/harbourhelp.prg
+  * hbide/hbide.hbp
+  * hbide/hbqtoolbar.prg
+  * hbide/main.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+  * hbide/shortcuts.ui
+  * hbide/themes.prg
+  * hbide/uisrcmanager.prg
+  * hbide/qtcore.txt
+  * hbide/qtgui.txt
+  * hbide/qtnetwork.txt
+    % Many small changes mostly belonging to synchronize HbQtEditor separation.
+
+  * hbqt/qtgui/hbqt_version.ch
+  * hbqt/qtgui/hbqtgui.ch
+  * hbqt/qtgui/qth/QLineEdit.qth
+  * hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbm
+  * hbqt/qtnetwork/qth/filelist.hbm
+  * hbqt/qtpositioning/doc/en/class_qgeoareamonitorsource.txt
+  * hbqt/qtpositioning/doc/en/class_qgeopositioninfosource.txt
+  * hbqt/qtpositioning/qth/QGeoAreaMonitorSource.qth
+  * hbqt/qtpositioning/qth/QGeoPositionInfoSource.qth
+  * hbqt/qtpositioning/qth/QGeoSatelliteInfoSource.qth
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+  * hbqtwidgets/editor.prg
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtstd.ch
+  * hbqtwidgets/hbqtwidgets.qrc
+  * hbqtwidgets/misc.prg
+  * hbqtwidgets/properties.prg
+  + hbqtwidgets/resources/sort-ascending.png
+  + hbqtwidgets/resources/sort-descending.png
+  * hbqtwidgets/silverlight.prg
+  * hbqtwidgets/slidinglist.prg
+  * hbqtwidgets/tests/browgets.prg
+  * hbqtwidgets/toolbarex.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+  * hbqtwidgets/visualizer.ui
+    % Many-many changes.
+      Will document all at some next commits. In a hurry right now but needs commit.
+
 2014-12-06 18:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r388)
   * hbqt/qtcore/hbqt_hbqevents.cpp
     + Added code to fire QEvent::Paint.

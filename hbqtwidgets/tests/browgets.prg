@@ -24,9 +24,14 @@ FUNCTION MAIN()
 
    hbqt_errorSys()
 
-   oMain := QMainWindow()
-   oMain:setWindowTitle( "Database TBrowse Implemented !" )
-   oMain:connect( QEvent_Close, {|| lExit := .T. } )
+   ReadInsert( .T. )
+   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+
+   WITH OBJECT oMain := QMainWindow()
+      :setWindowTitle( "Database TBrowse Implemented !" )
+      :connect( QEvent_Close, {|| lExit := .T. } )
+   ENDWITH
+   __hbqtAppWidget( oMain )
 
    oBrw := BrowseMe( oMain )
    IF ! Empty( oBrw )
@@ -39,16 +44,16 @@ FUNCTION MAIN()
 
    lExit := .F.
    oELoop := QEventLoop( oMain )
-   oMain:setWindowTitle( hb_ntos( __hbqt_dump_ItemsInGlobalList() ) ) 
+   oMain:setWindowTitle( hb_ntos( __hbqt_dump_ItemsInGlobalList() ) )
    DO WHILE .t.
       oELoop:processEvents()
       IF lExit
          EXIT
       ENDIF
-      oMain:setWindowTitle( hb_ntos( __hbqt_ItemsInGlobalList() ) ) 
+      oMain:setWindowTitle( hb_ntos( __hbqt_ItemsInGlobalList() ) )
    ENDDO
    HB_TRACE( HB_TR_ALWAYS, "=====================================" )
-   oMain:setWindowTitle( hb_ntos( __hbqt_dump_ItemsInGlobalList() ) ) 
+   oMain:setWindowTitle( hb_ntos( __hbqt_dump_ItemsInGlobalList() ) )
    oELoop:exit( 0 )
 
 
@@ -59,59 +64,79 @@ FUNCTION MAIN()
 
 FUNCTION BrowseMe( oWnd )
    LOCAL oBrowse
-   LOCAL field_list := { "N001", "N002", "N003", "N004", "N005", "C001" }
-   LOCAL asm        := { "No Picture", "@K 9999999.99", "@K", "@ZK", "@K 9,999,999.99", "ABCD" }
+   LOCAL aFields := { "N001", "N002", "N003", "N004", "N005", "C001" }
+   LOCAL aTitles := { "No Picture", "@K 9999999.99", "@K", "@ZK", "@K 9,999,999.99", "ABCD" }
 
    CreateUseTable()
 
-   oBrowse := HbQtBrowseNew( 0, 0, 20, 20, oWnd )
-   SBMW( oBrowse, field_list, asm )
-   FBMWL( oBrowse, field_list )
-   oBrowse:skipBlock       := {|n| GSkipper( n ) }
-   oBrowse:navigationBlock := {|nKey, xData, oBrowse| ApplyKey( nKey, xData, oBrowse ) }
+   WITH OBJECT oBrowse := HbQtBrowseNew( 0, 0, 20, 20, oWnd )
+      SetBlocks( oBrowse, aFields, aTitles )
+      SetPicture( oBrowse, aFields )
 
-   oBrowse:configure()
+      :skipBlock                := {|n| GSkipper( n ) }
+      :navigationBlock          := {|nKey, xData, oBrowse| ApplyKey( nKey, xData, oBrowse ) }
+      :cellEditingFinishedBlock := {|xValue, oCol, oBrowse| UpdateColumn( xValue, oCol, oBrowse ) }
+      :configure()
+   ENDWITH
 
    RETURN obrowse
 
 
 STATIC FUNCTION ApplyKey( nKey, xData, oBrowse )
-   LOCAL lRet := .t.
+   LOCAL lRet := .T.
    LOCAL oCol := oBrowse:getColumn( oBrowse:colPos )
-   LOCAL tget_data
 
    HB_SYMBOL_UNUSED( xData )
 
    DO CASE
    CASE ( nKey == K_ENTER .OR. nKey == K_RETURN .OR. nKey == K_LDBLCLK .OR. ( nKey >= 32 .AND. nKey <= 255 ) )
-
-      tget_data := iif( nKey == K_ENTER .OR. nKey == K_RETURN .OR. nKey == K_LDBLCLK, ;
-                         oBrowse:editCell( oCol:picture, "N/rgb(255,255,175)" ), ;
-                         oBrowse:editCell( oCol:picture, "N/rgb(255,255,175)", , , nKey ) )
-      IF tget_data == NIL
-         RETURN lRet
-      ENDIF
-
-      IF tget_data != Eval( oCol:block )
-         IF RLock()
-            Eval( oCol:block, tget_data )
-            dbCommit()
-            dbUnlock()
-         ENDIF
-         oBrowse:right():refreshCurrent()
+      IF nKey == K_ENTER .OR. nKey == K_RETURN .OR. nKey == K_LDBLCLK
+         oBrowse:editCellEx( oCol:picture, "N/rgb(255,255,175)" )
+      ELSE
+         oBrowse:editCellEx( oCol:picture, "N/rgb(255,255,175)", , , nKey )
       ENDIF
    OTHERWISE
-      lRet := .f.
+      lRet := .F.
    ENDCASE
 
    RETURN lRet
 
 
-STATIC FUNCTION SBMW( oBrowse, field_list, asm )
+STATIC FUNCTION UpdateColumn( xValue, oCol, oBrowse )
+   LOCAL nKey := __hbqtSetLastKey()
+
+   IF nKey != K_ESC
+      WITH OBJECT oBrowse
+         IF xValue != NIL
+            IF RLock()
+               Eval( oCol:block, xValue )
+               dbCommit()
+               dbUnlock()
+            ENDIF
+         ENDIF
+         :refreshCurrent()
+         :forceStable()
+         IF :colPos < :colCount
+            :right()
+         ELSE
+            :down()
+            :panHome()
+         ENDIF
+         :forceStable()
+         IF ( nKey == K_ENTER .OR. nKey == K_RETURN )
+            oCol := :getColumn( :colPos )
+            :editCellEx( oCol:picture, "N/rgb(255,255,175)" )
+         ENDIF
+      ENDWITH
+   ENDIF
+   RETURN NIL
+
+
+STATIC FUNCTION SetBlocks( oBrowse, aFields, aTitles )
    LOCAL i
 
-   FOR i := 1 to len( field_list )
-      oBrowse:addColumn( HbQtColumnNew( asm[ i ], iif( VALTYPE( field_list[ i ] ) == "B", field_list[ i ], FieldWBlock( field_list[ i ], select() ) ) ) )
+   FOR i := 1 to Len( aFields )
+      oBrowse:addColumn( HbQtColumnNew( aTitles[ i ], iif( ValType( aFields[ i ] ) == "B", aFields[ i ], FieldWBlock( aFields[ i ], select() ) ) ) )
    NEXT
 
    oBrowse:goTopBlock          := {| | DbGoTop()        }
@@ -138,8 +163,26 @@ STATIC FUNCTION SBMW( oBrowse, field_list, asm )
    RETURN oBrowse
 
 
-STATIC FUNCTION Gskipper( nSkip)
-   LOCAL i:=0
+STATIC FUNCTION SetPicture( oBrowse, aFields )
+   LOCAL i, oColumn
+
+   FOR i := 1 TO oBrowse:colCount
+      oColumn := oBrowse:getColumn( i )
+      DO CASE
+      CASE aFields[ i ] == "N001"
+      CASE aFields[ i ] == "N002" ; oColumn:picture := "@K 9999999.99"
+      CASE aFields[ i ] == "N003" ; oColumn:picture := "@K"
+      CASE aFields[ i ] == "N004" ; oColumn:picture := "@ZK"
+      CASE aFields[ i ] == "N005" ; oColumn:picture := "@K 9,999,999.99"
+      CASE aFields[ i ] == "C001" ; oColumn:picture := "@K!" //"@R 99-99-999-99999/9"
+      ENDCASE
+   NEXT
+
+   RETURN NIL
+
+
+STATIC FUNCTION Gskipper( nSkip )
+   LOCAL i := 0
 
    DO CASE
    CASE ( nSkip == 0 .or. LastRec() == 0 ) ; dbskip( 0 )
@@ -163,24 +206,6 @@ STATIC FUNCTION Gskipper( nSkip)
    ENDCASE
 
    RETURN i
-
-
-STATIC FUNCTION FBMWL( oBrowse, field_list )
-   LOCAL i, oColumn
-
-   FOR i := 1 TO oBrowse:colCount
-      oColumn := oBrowse:getColumn( i )
-      DO CASE
-      CASE field_list[ i ] == "N001"
-      CASE field_list[ i ] == "N002" ; oColumn:picture := "@K 9999999.99"
-      CASE field_list[ i ] == "N003" ; oColumn:picture := "@K"
-      CASE field_list[ i ] == "N004" ; oColumn:picture := "@ZK"
-      CASE field_list[ i ] == "N005" ; oColumn:picture := "@K 9,999,999.99"
-      CASE field_list[ i ] == "C001" ; oColumn:picture := "@K!" //"@R 99-99-999-99999/9"
-      ENDCASE
-   NEXT
-
-   RETURN NIL
 
 
 STATIC FUNCTION CreateUseTable()

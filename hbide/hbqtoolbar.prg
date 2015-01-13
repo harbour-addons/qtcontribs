@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2010-2012 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2014 Pritpal Bedi <pritpal@vouchcac.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +59,12 @@
  *                               07Aug2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS HbqToolbar
 
@@ -111,7 +106,6 @@ CLASS HbqToolbar
    ERROR HANDLER onError( ... )
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:new( cName, oParent )
 
@@ -120,7 +114,6 @@ METHOD HbqToolbar:new( cName, oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:create( cName, oParent )
 
@@ -135,18 +128,19 @@ METHOD HbqToolbar:create( cName, oParent )
 
    DEFAULT ::size TO QSize( 16,16 )
 
-   ::oWidget := QToolbar( ::oParent )
-   ::oWidget:setObjectName( ::cName )
-   ::oWidget:setAllowedAreas( ::allowedAreas )
-   ::oWidget:setOrientation( ::orientation )
-   ::oWidget:setIconSize( ::size )
-   ::oWidget:setMovable( ::moveable )
-   ::oWidget:setFloatable( ::floatable )
-   ::oWidget:setFocusPolicy( Qt_NoFocus )
+   WITH OBJECT ::oWidget := QToolbar( ::oParent )
+      :setObjectName( ::cName )
+      :setAllowedAreas( ::allowedAreas )
+      :setOrientation( ::orientation )
+      :setIconSize( ::size )
+      :setMovable( ::moveable )
+      :setFloatable( ::floatable )
+      :setFocusPolicy( Qt_NoFocus )
+      :setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
+   ENDWITH
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:onError( ... )
    LOCAL cMsg := __GetMessage()
@@ -156,7 +150,6 @@ METHOD HbqToolbar:onError( ... )
    ENDIF
    RETURN ::oWidget:&cMsg( ... )
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:destroy()
    LOCAL xTmp
@@ -193,7 +186,6 @@ METHOD HbqToolbar:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:execEvent( cEvent, p, p1 )
    LOCAL qEvent, qRC
@@ -244,7 +236,6 @@ METHOD HbqToolbar:execEvent( cEvent, p, p1 )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:addWidget( cName, qWidget )
    LOCAL qAction
@@ -260,7 +251,6 @@ METHOD HbqToolbar:addWidget( cName, qWidget )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:addSeparator()
    LOCAL qAction
@@ -273,7 +263,6 @@ METHOD HbqToolbar:addSeparator()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:addAction( cName, qAction, bBlock )
    LOCAL qAct
@@ -304,7 +293,6 @@ METHOD HbqToolbar:addAction( cName, qAction, bBlock )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDragEnabled )
    LOCAL oButton, oActBtn
@@ -314,22 +302,22 @@ METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDra
    DEFAULT lCheckable   TO .f.
    DEFAULT lDragEnabled TO .f.
 
-   oButton := QToolButton()
-   oButton:setObjectName( cName )
-   oButton:setTooltip( cDesc )
-   oButton:setIcon( QIcon( cImage ) )
-   oButton:setCheckable( lCheckable )
-   oButton:setFocusPolicy( Qt_NoFocus )
-   oButton:setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
-   oButton:setCursor( QCursor( Qt_ArrowCursor ) )
-   oButton:setAutoRaise( .T. )
-
-   IF lDragEnabled
-      oButton:connect( QEvent_MouseButtonPress  , {|p| ::execEvent( "QEvent_MousePress"  , p, cName ) } )
-      oButton:connect( QEvent_MouseButtonRelease, {|p| ::execEvent( "QEvent_MouseRelease", p, cName ) } )
-      oButton:connect( QEvent_MouseMove         , {|p| ::execEvent( "QEvent_MouseMove"   , p, cName ) } )
-      oButton:connect( QEvent_Enter             , {|p| ::execEvent( "QEvent_MouseEnter"  , p, cName ) } )
-   ENDIF
+   WITH OBJECT oButton := QToolButton()
+      :setObjectName( cName )
+      :setTooltip( cDesc )
+      :setIcon( QIcon( cImage ) )
+      :setCheckable( lCheckable )
+      :setFocusPolicy( Qt_NoFocus )
+      :setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
+      :setCursor( QCursor( Qt_ArrowCursor ) )
+      :setAutoRaise( .T. )
+      IF lDragEnabled
+         :connect( QEvent_MouseButtonPress  , {|p| ::execEvent( "QEvent_MousePress"  , p, cName ) } )
+         :connect( QEvent_MouseButtonRelease, {|p| ::execEvent( "QEvent_MouseRelease", p, cName ) } )
+         :connect( QEvent_MouseMove         , {|p| ::execEvent( "QEvent_MouseMove"   , p, cName ) } )
+         :connect( QEvent_Enter             , {|p| ::execEvent( "QEvent_MouseEnter"  , p, cName ) } )
+      ENDIF
+   ENDWITH
 
    IF HB_ISBLOCK( bAction )
       oButton:connect( "clicked()", bAction )
@@ -341,7 +329,6 @@ METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDra
 
    RETURN oButton
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:setItemChecked( cName, lState )
    LOCAL lOldState
@@ -357,7 +344,6 @@ METHOD HbqToolbar:setItemChecked( cName, lState )
 
    RETURN lOldState
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:setItemEnabled( cName, lEnabled )
    LOCAL lOldEnabled
@@ -371,7 +357,6 @@ METHOD HbqToolbar:setItemEnabled( cName, lEnabled )
 
    RETURN lOldEnabled
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbqToolbar:itemToggle( cName )
    LOCAL lOldState
@@ -384,6 +369,4 @@ METHOD HbqToolbar:itemToggle( cName )
    ENDIF
 
    RETURN lOldState
-
-/*----------------------------------------------------------------------*/
 
