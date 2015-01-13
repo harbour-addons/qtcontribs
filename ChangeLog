@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-13 08:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r390)
+  * hbqt/qtgui/qth/QLineEdit.qth
+  * hbqtwidgets/hbqtwidgets.hbp
+  + hbqtwidgets/resources/select.png
+  + hbqtwidgets/resources/table-2.png
+  + hbqtwidgets/resources/table-3.png
+    ! Misses from previous commit.
+      Was in a hurry to complete something on MAC and did not 
+      realized I did not compile everything on Windows. Sorry for the 
+      carelessness.
+
 2015-01-12 19:06 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r389)
   * hbide/changelog.prg
   * hbide/editor.prg

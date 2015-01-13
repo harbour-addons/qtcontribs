@@ -18,6 +18,7 @@
 
 
 hbqt.hbc
+hbct.hbc
 
 -instfile=inc:hbtoqt.ch
 -instfile=inc:hbqtstd.ch

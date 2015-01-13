@@ -53,6 +53,7 @@ HB_FUNC( QT_QLINEEDIT )
 
 <ENUMS>
 enum EchoMode { Normal, NoEcho, Password, PasswordEchoOnEdit }
+enum ActionPosition { LeadingPosition, TrailingPosition } 
 </ENUMS>
 
 <PROTOS>
