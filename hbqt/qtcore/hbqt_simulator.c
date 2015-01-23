@@ -1,11 +1,4 @@
 
-#include <stdio.h>
-#include <string.h>
-#include <dirent.h>
-#include <fnmatch.h>
-
-typedef enum {false,true} BOOL;
-
 #ifdef __APPLE__
    #include "TargetConditionals.h"
    #if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
@@ -19,6 +12,13 @@ typedef enum {false,true} BOOL;
 
 
 #ifdef HB_BUILD_IOS //__CONTINUE__
+
+#include <stdio.h>
+#include <string.h>
+#include <dirent.h>
+#include <fnmatch.h>
+
+typedef enum {false,true} BOOL;
 
 
 #if defined(__i386__)
