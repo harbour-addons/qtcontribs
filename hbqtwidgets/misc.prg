@@ -405,9 +405,10 @@ FUNCTION __hbqtPixelsByDPI( nPixels, nBase, lDeviceRatio )
    LOCAL nDpi := QApplication():primaryScreen():logicalDotsPerInchY()
 
    DEFAULT nBase        TO 96
-   DEFAULT lDeviceRatio TO .T.
+   DEFAULT lDeviceRatio TO .F.
 
-   RETURN Int( ( nDpi * nPixels / nBase ) * QApplication():primaryScreen():devicePixelRatio() )
+   HB_SYMBOL_UNUSED( lDeviceRatio )
+   RETURN Int( ( nDpi * nPixels / nBase ) * iif( lDeviceRatio, QApplication():primaryScreen():devicePixelRatio(), 1 ) )
 
 
 FUNCTION __hbqtCssPX( nPixels, nBase, lDeviceRatio )

@@ -2,6 +2,8 @@
 # $Id$
 #
 
+{__ios__}-stop='QtBluetooth is not available for ios...'
+
 -cflag=-I${HB_WITH_QT}/QtCore
 
 ../hbqt_common.hbm

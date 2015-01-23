@@ -16,6 +16,120 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-23 12:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r392)
+  * hbide/resources/hbide-2014.png
+  * hbqtwidgets/resources/hbdbu-2014.png
+    % Splash image copyright bumped to 2015.
+
+  * qtcontribs.hbp
+    % Minor.
+
+  * debug/hwgdebug.hbp
+    - Excluded for ios builds.
+
+  * hbdbu/hbdbu.hbp
+    % Added ${hb_build} token.
+
+  * hbide/findreplace.prg
+    ! Fixed find/replace dialog to behave the same way on OSX.
+
+  * hbide/editor.prg
+    ! Fixed to behave excatly the same way on OSX as on Windows.
+
+  * hbide/plugins.prg
+    + Enhanced to through eleborate error message for 
+       "Run as Script" feature of HbIDE. 
+
+  * hbide/projmanager.prg
+    + "Run as Script" feature enhanced to supply "-n", "-I*"
+        switches to the build engine. -I switch contains #include file
+        paths defined in <Setup><HbIDE Setup><Projects><Include Paths>. 
+
+  * hbide/hbide.hbp
+    % Tuned to be built as a lib on ios.
+
+  * hbnetioqt/hbnetioq.hbp
+    % Added ${hb_build} token.
+ 
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtgui/hbqtgui.hbc
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+    - Removed "s" from static libs definitions. 
+       Was breaking because hbmk2 does not create a lib 
+       with "s" suffix even if HB_STATIC_QT is defined.
+
+  * hbqt/hbqt_common.hbm
+    + Added ${hb_build} 
+
+  * hbqt/qtcore/hbqtcore.hbm
+    + Added hbqt_simulator.c
+
+  * hbqt/qtbluetooth/hbqtbluetooth.hbp
+  * hbqt/qtdesigner/hbqtdesigner.hbp
+  * hbqt/qtopengl/hbqtopengl.hbp
+  * hbqt/qtquick/hbqtquick.hbp
+  * hbqt/qtwebkit/hbqtwebkit.hbp
+  * hbqt/qzxing/hbqtzxing.hbp
+    ! Guarded not to be compiled for {__ios__}.
+
+  + hbqt/qtcore/hbqt_simulator.c
+    + Added: conditionally compilable source containing 
+       missing functions for iOS builds, mainly for 
+       iPhoneSimulator platform.
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+    ! Fixed a nasty bug persistent since begining where 
+       some pointers were not initialized before use.
+       It resolves a key issue with HbQtEditor() 
+       implementation.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added Qt_Qt_Application* constants introduced in 
+       newer versions of Qt. 
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.h
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+    - Removed unused variables.
+
+  * hbqt/qtgui/qth/QPrinterInfo.qth
+  * hbqt/qtgui/qth/QPrinter.qth
+  * hbqt/qtgui/qth/QTextDocument.qth
+  * hbqt/qtgui/qth/QTextEdit.qth
+  * hbqt/qtgui/qth/QPlainTextEdit.qth
+  * hbqt/qtgui/qth/QPrintPreviewWidget.qth
+  * hbqt/qtgui/qth/QPrintPreviewDialog.qth
+  * hbqt/qtnetwork/qth/QNetworkAccessManager.qth
+  * hbqt/qtnetwork/qth/QNetworkReply.qth
+  * hbqt/qtwebsockets/qth/QWebSocketServer.qth
+  * hbqt/qtwebsockets/qth/QWebSocket.qth
+    + Added conditional inculsion of some methods belonging 
+      to QPrinter & family guarded against HB_BUILD_IOS.
+      Qt in v5.4 has an issue with these symbols for iOS.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    % Changes to honor builds-by-name.
+
+  + hbqtwidgets/resources/back-icon.png
+  + hbqtwidgets/resources/forward-icon.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added above images.
+  * hbqtwidgets/editor.prg
+  * hbqtwidgets/misc.prg
+    ! Fixed to work with OSX.
+
+  * hbxbp/dialog.prg
+  * hbxbp/generic.prg
+    % Cosmetic.
+
+  * hbxbp/hbxbp.hbp
+    % Changes to honor builds-by-name.
+
+  ; This commit maily focus on OSX and IOS builds and is being 
+    committed from MAC. How it will fare on Windows is yet to 
+    be tested. So please be patient and report any regression.
+    Also one more commit is required for ios builds but those 
+    files need more investigation and integration.
+
 2015-01-13 12:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r391)
   * hbdbu/hbdbu.hbp
     ! Missed from ... Damm, ageing process is begining to manifest.

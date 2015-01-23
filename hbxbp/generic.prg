@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,20 +60,14 @@
  *                              08Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
-
 #include "xbp.ch"
 #include "gra.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define EVENT_BUFFER    128
-
-/*----------------------------------------------------------------------*/
 
 STATIC s_oDeskTop
 STATIC s_hLastEvent := {=>}
@@ -91,15 +83,11 @@ THREAD STATIC t_oEventLoop
 
 THREAD STATIC t_oXbpInFocus
 
-/*----------------------------------------------------------------------*/
 
 INIT PROCEDURE hbxbp_Start()
-
    hbqt_errorsys()
-
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 EXIT PROCEDURE hbxbp_End()
    HB_TRACE( HB_TR_DEBUG, "................................... EXIT PROCEDURE hbxbp_End()    begin " )
@@ -113,7 +101,6 @@ EXIT PROCEDURE hbxbp_End()
    HB_TRACE( HB_TR_DEBUG, "................................... EXIT PROCEDURE hbxbp_End()    end   " )
    RETURN
 
-/*----------------------------------------------------------------------*/
 /*
  * Will be called from XbpDialog() | XbpCRT()
  */
@@ -126,7 +113,6 @@ FUNCTION hbxbp_InitializeEventBuffer()
 #endif
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbxbp_ClearEventBuffer()
 
@@ -137,7 +123,6 @@ FUNCTION hbxbp_ClearEventBuffer()
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbxbp_SetEventLoop( oELoop )
    LOCAL oLoop := t_oEventLoop
@@ -150,13 +135,10 @@ FUNCTION hbxbp_SetEventLoop( oELoop )
 
    RETURN oLoop
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION AppType()
-
    RETURN APPTYPE_PM
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION PostAppEvent( nEvent, mp1, mp2, oXbp )
 
@@ -172,7 +154,6 @@ FUNCTION PostAppEvent( nEvent, mp1, mp2, oXbp )
 
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION LastAppEvent( mp1, mp2, oXbp, nThreadID )
    LOCAL nEvent
@@ -204,7 +185,6 @@ FUNCTION NextAppEvent( mp1, mp2, oXbp )
 
    RETURN nEvent
 
-/*----------------------------------------------------------------------*/
 
 PROCEDURE SetAppEvent( nEvent, mp1, mp2, oXbp )
 
@@ -212,7 +192,6 @@ PROCEDURE SetAppEvent( nEvent, mp1, mp2, oXbp )
 
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION AppEvent( mp1, mp2, oXbp, nTimeout )
    LOCAL nEvent := 0
@@ -264,7 +243,6 @@ FUNCTION NextAppEvent( mp1, mp2, oXbp )
 
    RETURN nEvent
 
-/*----------------------------------------------------------------------*/
 /*
  *  Internal to the XbpParts, must NOT be called from application code
  */
@@ -301,7 +279,6 @@ PROCEDURE SetAppEvent( nEvent, mp1, mp2, oXbp )
 
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION AppEvent( mp1, mp2, oXbp, nTimeout )
    LOCAL nEvent := 0
@@ -350,7 +327,6 @@ FUNCTION SetAppWindow( oXbp )
 
    RETURN oldAppWindow
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION SetAppFocus( oXbp )
    LOCAL oldXbpInFocus
@@ -364,7 +340,6 @@ FUNCTION SetAppFocus( oXbp )
 
    RETURN oldXbpInFocus
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION AppDesktop()
 
@@ -374,7 +349,6 @@ FUNCTION AppDesktop()
 
    RETURN s_oDeskTop
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION MsgBox( cMsg, cTitle )
    LOCAL oMB
@@ -398,7 +372,6 @@ FUNCTION MsgBox( cMsg, cTitle )
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbxbp_ConvertAFactFromXBP( cMode, xValue )
 
@@ -473,7 +446,6 @@ FUNCTION hbxbp_ConvertAFactFromXBP( cMode, xValue )
 
    RETURN xValue
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbxbp_getNextID( cString )
 
@@ -485,7 +457,6 @@ FUNCTION hbxbp_getNextID( cString )
 
    RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
 
-/*----------------------------------------------------------------------*/
 /*
    ConfirmBox( [<oOwner>], <cMessage>, [<cTitle>], ;
             [<nButtons>],[<nStyle>],[<nStartBtn>] ) --> nAction
@@ -616,7 +587,6 @@ FUNCTION ConfirmBox( oOwner, cMessage, cTitle, nButtons, nStyle, nStartBtn )
 
    RETURN nRet
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION Xbp_getNextIdAsString( cString )
 
@@ -628,4 +598,3 @@ FUNCTION Xbp_getNextIdAsString( cString )
 
    RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
 
-/*----------------------------------------------------------------------*/

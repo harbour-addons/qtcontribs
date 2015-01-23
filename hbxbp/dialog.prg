@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              29May2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -73,7 +69,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpDialog FROM XbpWindow
 
@@ -124,7 +119,6 @@ CLASS XbpDialog FROM XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -139,7 +133,6 @@ METHOD XbpDialog:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    LOCAL nFlags, nnFlags
@@ -260,7 +253,6 @@ METHOD XbpDialog:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:destroy()
 
@@ -289,7 +281,6 @@ METHOD XbpDialog:destroy()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:execEvent( nEvent, pEvent )
 
@@ -312,7 +303,6 @@ METHOD XbpDialog:execEvent( nEvent, pEvent )
 
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -320,7 +310,6 @@ METHOD XbpDialog:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible 
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:maxSize( aSize )
 
@@ -332,7 +321,6 @@ METHOD XbpDialog:maxSize( aSize )
 
    RETURN ::aMaxSize
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:minSize( aSize )
 
@@ -344,7 +332,6 @@ METHOD XbpDialog:minSize( aSize )
 
    RETURN ::aMinSize
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:showModal()
    LOCAL nEvent, mp1, mp2, oXbp
@@ -375,7 +362,6 @@ METHOD XbpDialog:showModal()
 
    RETURN ::modalResult
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:setFrameState( nState )
    LOCAL lSuccess := .T.
@@ -403,7 +389,6 @@ METHOD XbpDialog:setFrameState( nState )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:getFrameState()
    LOCAL nState := iif( HB_ISOBJECT( ::oMdi ), ::oMdi, ::oWidget ):windowState()
@@ -416,7 +401,6 @@ METHOD XbpDialog:getFrameState()
 
    RETURN XBPDLG_FRAMESTAT_NORMALIZED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDialog:menuBar()
 
@@ -444,7 +428,6 @@ CLASS XbpDrawingArea  INHERIT  XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDrawingArea:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -453,7 +436,6 @@ METHOD XbpDrawingArea:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible 
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpDrawingArea:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -478,4 +460,3 @@ METHOD XbpDrawingArea:create( oParent, oOwner, aPos, aSize, aPresParams, lVisibl
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/

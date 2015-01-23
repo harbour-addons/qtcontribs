@@ -5077,5 +5077,10 @@
 #define QScrollEvent_ScrollUpdated                           1        // Set for all but the first and the last scroll event of a scroll activity.
 #define QScrollEvent_ScrollFinished                          2        // Set for the last scroll event of a scroll activity.
 
+#define Qt_ApplicationSuspended                              0x00000000  // The application is about to suspend. When entering this state, the application should save its state, cease all activities, and be prepared for code execution to stop. While suspended, the application can be killed at any time without further warnings (e.g. when low memory forces the OS to purge suspended applications).
+#define Qt_ApplicationHidden                                 0x00000001  // The application is hidden and runs in the background. This is the normal state for applications that need to do background processing, like playing music, while the user interacts with other applications. The application should free up all graphical resources when entering this state.
+#define Qt_ApplicationInactive                               0x00000002  // The application is visible, but not selected to be in front. On desktop platforms, this typically means that the user activated another application. On mobile platforms, it is more common to enter this state when the OS is interrupting the user with e.g. incoming calls or SMS-messages. While in this state, consider reducing CPU-intensive tasks.
+#define Qt_ApplicationActive                                 0x00000004  // The application is visible and selected to be in front.
+
 #endif
 

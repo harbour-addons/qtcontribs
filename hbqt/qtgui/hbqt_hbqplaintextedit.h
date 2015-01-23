@@ -188,7 +188,6 @@ private:
    QCompleter   * cFlds;
    QBrush         brushForBookmark( int index );
    bool           isCursorInSelection();
-   QTimer       * timer;
    int            caretState;
    bool           isSelectionByApplication;
    int            hitTestRow;

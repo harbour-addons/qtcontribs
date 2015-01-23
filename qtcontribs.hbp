@@ -5,8 +5,7 @@
 -hbcontainer
 
 #    Generate SVN Revision Info
-#
--vcshead=hbide/hbide_v.ch
+#-vcshead=hbide/hbide_v.ch
 
 #    HWGDebug
 debug/hwgdebug.hbp

@@ -27,6 +27,7 @@ New         = pParent, nFlags
  */
 HB_FUNC( QT_QPRINTPREVIEWWIDGET )
 {
+#ifndef HB_BUILD_IOS
    if( hb_pcount() >= 2 && hbqt_par_isDerivedFrom( 1, "QPRINTER" ) && hbqt_par_isDerivedFrom( 2, "QWIDGET" ) )
    {
       __HB_RETPTRGC__( new QPrintPreviewWidget( hbqt_par_QPrinter( 1 ), hbqt_par_QWidget( 2 ), ( Qt::WindowFlags ) hb_parni( 3 ) ) );
@@ -39,6 +40,7 @@ HB_FUNC( QT_QPRINTPREVIEWWIDGET )
    {
       __HB_RETPTRGC__( new QPrintPreviewWidget() );
    }
+#endif
 }
 </CODE>
 
@@ -48,31 +50,31 @@ enum ZoomMode { CustomZoom, FitToWidth, FitInView }
 </ENUMS>
 
 <PROTOS>
-int currentPage () const
-QPrinter::Orientation orientation () const
-int pageCount () const                        [*V=0x040600*]
-ViewMode viewMode () const
-qreal zoomFactor () const
-ZoomMode zoomMode () const
+int currentPage () const                                  [*F=#ifndef HB_BUILD_IOS*]
+QPrinter::Orientation orientation () const                [*F=#ifndef HB_BUILD_IOS*]
+int pageCount () const                         [*V=0x040600;F=#ifndef HB_BUILD_IOS*]
+ViewMode viewMode () const                                [*F=#ifndef HB_BUILD_IOS*]
+qreal zoomFactor () const                                 [*F=#ifndef HB_BUILD_IOS*]
+ZoomMode zoomMode () const                                [*F=#ifndef HB_BUILD_IOS*]
 </PROTOS>
 
 <SLOTS>
-void fitInView ()
-void fitToWidth ()
-void print ()
-void setAllPagesViewMode ()
-void setCurrentPage ( int page )
-void setFacingPagesViewMode ()
-void setLandscapeOrientation ()
-void setOrientation ( QPrinter::Orientation orientation )
-void setPortraitOrientation ()
-void setSinglePageViewMode ()
-void setViewMode ( ViewMode mode )
-void setZoomFactor ( qreal factor )
-void setZoomMode ( ZoomMode zoomMode )
-void updatePreview ()
-void zoomIn ( qreal factor = 1.1 )
-void zoomOut ( qreal factor = 1.1 )
+void fitInView ()                                         [*F=#ifndef HB_BUILD_IOS*]
+void fitToWidth ()                                        [*F=#ifndef HB_BUILD_IOS*]
+void print ()                                             [*F=#ifndef HB_BUILD_IOS*]
+void setAllPagesViewMode ()                               [*F=#ifndef HB_BUILD_IOS*]
+void setCurrentPage ( int page )                          [*F=#ifndef HB_BUILD_IOS*]
+void setFacingPagesViewMode ()                            [*F=#ifndef HB_BUILD_IOS*]
+void setLandscapeOrientation ()                           [*F=#ifndef HB_BUILD_IOS*]
+void setOrientation ( QPrinter::Orientation orientation ) [*F=#ifndef HB_BUILD_IOS*]
+void setPortraitOrientation ()                            [*F=#ifndef HB_BUILD_IOS*]
+void setSinglePageViewMode ()                             [*F=#ifndef HB_BUILD_IOS*]
+void setViewMode ( ViewMode mode )                        [*F=#ifndef HB_BUILD_IOS*]
+void setZoomFactor ( qreal factor )                       [*F=#ifndef HB_BUILD_IOS*]
+void setZoomMode ( ZoomMode zoomMode )                    [*F=#ifndef HB_BUILD_IOS*]
+void updatePreview ()                                     [*F=#ifndef HB_BUILD_IOS*]
+void zoomIn ( qreal factor = 1.1 )                        [*F=#ifndef HB_BUILD_IOS*]
+void zoomOut ( qreal factor = 1.1 )                       [*F=#ifndef HB_BUILD_IOS*]
 </SLOTS>
 
 <SIGNALS>

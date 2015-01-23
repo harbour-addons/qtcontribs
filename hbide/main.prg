@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@
  *
  *                            Harbour-Qt IDE
  *
- *                  Pritpal Bedi <pritpal@vouchcac.com>
+ *                 Pritpal Bedi <bedipritpal@hotmail.com>
  *                               17Nov2009
  */
 /*----------------------------------------------------------------------*/
@@ -84,9 +84,24 @@
 //   #include "rddads.hbx"
 #endif
 
+
 /* Link all Harbour Functions : needed to run external scripts */
 /* NOTE: Please only add what's actually requested by plugin developers */
-//REQUEST __HB_EXTERN__
+
+REQUEST __HB_EXTERN__
+
+#include "hbct.hbx"
+#include "hbnf.hbx"
+#include "hbtip.hbx"
+#include "hbnetio.hbx"
+#include "hbmxml.hbx"
+#include "hbmemio.hbx"
+#include "hbmzip.hbx"
+#include "hbsms.hbx"
+#include "hbtcpio.hbx"
+#include "hbzebra.hbx"
+#include "hbziparc.hbx"
+
 //REQUEST __HBEXTERN__HBXBP__
 //REQUEST __HBEXTERN__HBQTCORE__
 //REQUEST __HBEXTERN__HBQTGUI__
@@ -99,12 +114,14 @@ REQUEST DBFNTX
 REQUEST DBFNSX
 //REQUEST ADS
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION Main( ... )
-   LOCAL oTmp
+   LOCAL oTmp, hRDDADS, tmp
 
-   LOCAL hRDDADS, tmp
+   hbqt_errorSys()
+
+   QResource():registerResource_1( hbqtres_HbIde() )
+   QResource():registerResource_1( hbqtres_Settings() )
 
    hb_cdpSelect( "UTF8EX" )
    SET EPOCH TO 1950
@@ -122,32 +139,22 @@ FUNCTION Main( ... )
       hb_setEnv( "HB_IDE_INSTALL", cBse )
    #endif
 
-
    IF hb_FileExists( tmp := hb_dirBase() + hb_libName( "rddads" + hb_libPostfix() ) )
       hRDDADS := hb_libLoad( tmp )
       IF ! Empty( hRDDADS )
          hbide_setAdsAvailable( .t. )
-//         hb_rddadsRegister()
+         // hb_rddadsRegister()
       ENDIF
    ENDIF
 
    SET DATE TO ANSI
    SET CENTURY ON
 
-   QResource():registerResource_1( hbqtres_HbIde() )
-   QResource():registerResource_1( hbqtres_Settings() )
-
    oTmp := HbIde():new( hb_aParams() )
-#if 0
    oTmp:create()
-   oTmp:destroy()
-#else
-   oTmp:create()
-#endif
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 CLASS HbIde
 
@@ -198,7 +205,7 @@ CLASS HbIde
    DATA   aHbpOnCmdLine                           INIT   {}
    DATA   aDbfOnCmdLine                           INIT   {}
 
-//   DATA   qLayout
+   //DATA   qLayout
 
    DATA   qTabWidget
    DATA   oTabParent
@@ -329,7 +336,7 @@ CLASS HbIde
    DATA   oSysMenu
    DATA   lSortedFuncList                         INIT   .t.
    DATA   lQuitting                               INIT   .f.
-   DATA   hHeaderFiles                            INIT {=>}
+   DATA   hHeaderFiles                            INIT   {=>}
 
    // debugger interface
    DATA   oDebugger
@@ -342,10 +349,10 @@ CLASS HbIde
    METHOD new( aParams )
    METHOD create( aParams )
    METHOD destroy()
-   //
+
    METHOD setPosAndSizeByIniEx( qWidget, cParams )
    METHOD setPosByIniEx( qWidget, cParams )
-   //
+
    METHOD manageFocusInEditor()
    METHOD removeProjectTree( aPrj )
    METHOD updateProjectTree( aPrj )
@@ -1520,8 +1527,4 @@ METHOD HbIde:testPainter( qPainter )
    //qPainter:fillRect( 100, 100, 500, 500, QColor( 175, 175, 255 ) )
    RETURN NIL
 
-
-FUNCTION hb_gtsys()
-   REQUEST HB_GT_QTC
-   RETURN NIL
 

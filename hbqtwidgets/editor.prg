@@ -608,9 +608,7 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
       IF HB_ISBLOCK( ::keyPressedBlock() )
          lProcessed := Eval( ::keyPressedBlock(), key, { lAlt, lCtrl, lShift }, Self )
          IF HB_ISLOGICAL( lProcessed )
-            IF lProcessed
-               p:accept()
-            ENDIF
+            p:accept()
             RETURN lProcessed
          ENDIF
       ENDIF

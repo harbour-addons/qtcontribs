@@ -2,6 +2,8 @@
 # $Id$
 #
 
+{__ios__}-stop='QtOpenGL is not available for ios...'
+
 ../hbqt_common.hbm
 
 hbqtopengl.hbm

@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +59,12 @@
  *                               28Dec2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __buttonPrev_clicked__                    2001
 #define __buttonNext_clicked__                    2002
@@ -88,7 +83,6 @@
 #define __editResults__                           2015
 #define __editResults_contextMenu__               2016
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeUpDown INHERIT IdeObject
 
@@ -101,7 +95,6 @@ CLASS IdeUpDown INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUpDown:new( oIde )
 
@@ -109,7 +102,6 @@ METHOD IdeUpDown:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUpDown:position()
    LOCAL qRect, qHSBar, qVSBar, qEdit
@@ -128,7 +120,6 @@ METHOD IdeUpDown:position()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUpDown:show( oEdit )
 
@@ -144,7 +135,6 @@ METHOD IdeUpDown:show( oEdit )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUpDown:create( oIde )
 
@@ -181,7 +171,6 @@ METHOD IdeUpDown:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUpDown:execEvent( nEvent, p )
    LOCAL cText, oEdit
@@ -217,7 +206,6 @@ METHOD IdeUpDown:execEvent( nEvent, p )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeUpDown:destroy()
 
@@ -249,7 +237,6 @@ CLASS IdeSearchReplace INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:new( oIde )
 
@@ -257,7 +244,6 @@ METHOD IdeSearchReplace:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:create( oIde )
 
@@ -305,7 +291,6 @@ METHOD IdeSearchReplace:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:destroy()
 
@@ -319,7 +304,6 @@ METHOD IdeSearchReplace:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:find( cText, lBackward )
    LOCAL qCursor, qDoc, qCur, qReg
@@ -366,7 +350,6 @@ METHOD IdeSearchReplace:find( cText, lBackward )
    ENDIF
    RETURN lFound
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:beginFind()
 
@@ -384,7 +367,6 @@ METHOD IdeSearchReplace:beginFind()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:setFindString( cText )
    LOCAL qCursor, nPos
@@ -414,7 +396,6 @@ METHOD IdeSearchReplace:setFindString( cText )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSearchReplace:startFromTop()
    LOCAL qCursor
@@ -428,11 +409,7 @@ METHOD IdeSearchReplace:startFromTop()
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 //                           IdeFindReplace
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 CLASS IdeFindReplace INHERIT IdeObject
@@ -455,20 +432,15 @@ CLASS IdeFindReplace INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:new( oIde )
-
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:destroy()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:getFocus()
 
@@ -484,7 +456,6 @@ METHOD IdeFindReplace:getFocus()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:create( oIde )
 
@@ -492,10 +463,13 @@ METHOD IdeFindReplace:create( oIde )
 
    ::oIde := oIde
 
+#if   defined( __PLATFORM__UNIX )
+   ::oUI := hbide_getUI( "finddialog" )
+   ::oUI:setWindowFlags( hb_bitOr( Qt_Sheet, Qt_WindowStaysOnTopHint ) )
+#else
    ::oUI := hbide_getUI( "finddialog", ::oIde:oDlg:oWidget )
-
    ::oUI:setWindowFlags( Qt_Sheet )
-
+#endif
    aeval( ::oINI:aFind   , {|e| ::oUI:comboFindWhat:addItem( e ) } )
    aeval( ::oINI:aReplace, {|e| ::oUI:comboReplaceWith:addItem( e ) } )
 
@@ -524,7 +498,6 @@ METHOD IdeFindReplace:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:show()
 
@@ -547,7 +520,6 @@ METHOD IdeFindReplace:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:onClickFind( nFrom )
    LOCAL lFound, nPos, qCursor
@@ -581,7 +553,6 @@ METHOD IdeFindReplace:onClickFind( nFrom )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:find( lWarn )
    LOCAL nFlags
@@ -603,7 +574,6 @@ METHOD IdeFindReplace:find( lWarn )
 
    RETURN lFound
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:onClickReplace( nFrom )
 
@@ -615,7 +585,6 @@ METHOD IdeFindReplace:onClickReplace( nFrom )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:replaceSelection( cReplWith )
    LOCAL nB, nL, cBuffer, qCursor
@@ -638,7 +607,6 @@ METHOD IdeFindReplace:replaceSelection( cReplWith )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:replace()
    LOCAL cReplWith
@@ -667,7 +635,6 @@ METHOD IdeFindReplace:replace()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFindReplace:updateFindReplaceData( cMode )
    LOCAL cData, nIndex

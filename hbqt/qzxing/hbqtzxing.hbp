@@ -2,6 +2,8 @@
 # $Id$
 #
 
+{__ios__}-stop='ZXing is not available for ios...'
+
 ../hbqt_common.hbm
 
 hbqtzxing.hbm

@@ -16,6 +16,7 @@ QObject     = no
 Inherit     =
 Type        =
 New         =
+Destructor  = no
 </CLASS>
 
 <CODE>
@@ -30,6 +31,7 @@ New         =
  */
 HB_FUNC( QT_QPRINTERINFO )
 {
+#if !defined( HB_BUILD_IOS )
    if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPRINTERINFO" ) )
    {
       __HB_RETPTRGC__( new QPrinterInfo( *hbqt_par_QPrinterInfo( 1 ) ) );
@@ -42,6 +44,7 @@ HB_FUNC( QT_QPRINTERINFO )
    {
       __HB_RETPTRGC__( new QPrinterInfo() );
    }
+#endif
 }
 </CODE>
 
@@ -49,26 +52,26 @@ HB_FUNC( QT_QPRINTERINFO )
 </ENUMS>
 
 <PROTOS>
-QPageSize      defaultPageSize() const                   [*V=0x050300*]
-QString        description() const                       [*V=0x050000*]
-bool           isDefault() const
-bool           isNull() const
-bool           isRemote() const                          [*V=0x050300*]
-QString        location() const                          [*V=0x050000*]
-QString        makeAndModel() const                      [*V=0x050000*]
-QPageSize      maximumPhysicalPageSize() const           [*V=0x050300*]
-QPageSize      minimumPhysicalPageSize() const           [*V=0x050300*]
-QString        printerName() const
-QPrinter::PrinterState   state() const                   [*V=0x050300*]
-QList<QPageSize>   supportedPageSizes() const            [*V=0x050300*]
-QList<int>     supportedResolutions() const              [*V=0x050300*]
-bool           supportsCustomPageSizes() const           [*V=0x050300*]
+QPageSize      defaultPageSize() const                   [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QString        description() const                       [*V=0x050000;F=#ifndef HB_BUILD_IOS*]
+bool           isDefault() const                         [*F=#ifndef HB_BUILD_IOS*]
+bool           isNull() const                            [*F=#ifndef HB_BUILD_IOS*]
+bool           isRemote() const                          [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QString        location() const                          [*V=0x050000;F=#ifndef HB_BUILD_IOS*]
+QString        makeAndModel() const                      [*V=0x050000;F=#ifndef HB_BUILD_IOS*]
+QPageSize      maximumPhysicalPageSize() const           [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QPageSize      minimumPhysicalPageSize() const           [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QString        printerName() const                       [*F=#ifndef HB_BUILD_IOS*]
+QPrinter::PrinterState   state() const                   [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QList<QPageSize>   supportedPageSizes() const            [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QList<int>     supportedResolutions() const              [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+bool           supportsCustomPageSizes() const           [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
 
-QStringList    availablePrinterNames()                   [*V=0x050300*]
-QList<QPrinterInfo>   availablePrinters()
-QPrinterInfo   defaultPrinter()
-QString        defaultPrinterName()                      [*V=0x050300*]
-QPrinterInfo   printerInfo(const QString & printerName)  [*V=0x050000*]
+QStringList    availablePrinterNames()                   [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QList<QPrinterInfo>   availablePrinters()                [*F=#ifndef HB_BUILD_IOS*]
+QPrinterInfo   defaultPrinter()                          [*F=#ifndef HB_BUILD_IOS*]
+QString        defaultPrinterName()                      [*V=0x050300;F=#ifndef HB_BUILD_IOS*]
+QPrinterInfo   printerInfo(const QString & printerName)  [*V=0x050000;F=#ifndef HB_BUILD_IOS*]
 </PROTOS>
 
 <SLOTS>

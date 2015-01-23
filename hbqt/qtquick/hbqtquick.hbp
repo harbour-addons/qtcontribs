@@ -2,6 +2,8 @@
 # $Id: hbqtsvg.hbp 34 2012-10-13 21:57:41Z bedipritpal $
 #
 
+{__ios__}-stop='QtQuick is not available for ios...'
+
 ../hbqt_common.hbm
 
 hbqtquick.hbm

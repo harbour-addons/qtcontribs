@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Harbour-Qt wrapper generator.
  *
- * Copyright 2010 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * Copyright 2009 Gancov Kostya <kossne@mail.ru>
  * www - http://harbour-project.org
  *
@@ -54,7 +54,7 @@
 /*
  *  The code below is puled from TextEdit.cpp of QWriter by Gancov Kotsya
  *
- *  and adopted for Harbour's hbIDE interface. The code has been intensively
+ *  and adopted for Harbour's HbIDE interface. The code has been intensively
  *  formatted and changed to suit hbIDE and Harbour's wrappers for Qt.
  *  The special hilight for this adoption is <braces matching>, current line
  *  coloring and bookmarks.
@@ -91,7 +91,6 @@ HB_EXTERN_END
 #define mouseMode_select                          1
 #define mouseMode_drag                            2
 
-/*----------------------------------------------------------------------*/
 
 HBQPlainTextEdit::HBQPlainTextEdit( QWidget * parent ) : QPlainTextEdit( parent )
 {
@@ -154,19 +153,15 @@ HBQPlainTextEdit::HBQPlainTextEdit( QWidget * parent ) : QPlainTextEdit( parent 
 
    highlighter = NULL;
    block = NULL;
+   c = NULL;
+   cFlds = NULL;
 
    setAcceptDrops( true );
 }
 
-/*----------------------------------------------------------------------*/
 
 HBQPlainTextEdit::~HBQPlainTextEdit()
 {
-   #if 0
-   if( timer )
-      timer->stop();
-   #endif
-
    delete lineNumberArea;
    delete horzRuler;
 
@@ -174,14 +169,14 @@ HBQPlainTextEdit::~HBQPlainTextEdit()
       hb_itemRelease( block );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 int HBQPlainTextEdit::hbFirstVisibleColumn()
 {
    return ( horizontalScrollBar()->value() / fontMetrics().averageCharWidth() );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbGetViewportInfo()
 {
@@ -210,7 +205,7 @@ void HBQPlainTextEdit::hbGetViewportInfo()
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbShowPrototype( const QString & tip, int rows, int cols )
 {
@@ -225,7 +220,7 @@ void HBQPlainTextEdit::hbShowPrototype( const QString & tip, int rows, int cols 
    QToolTip::showText( viewport()->mapToGlobal( QPoint( cursorRect().x(), cursorRect().y() ) ), tip );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSetEventBlock( PHB_ITEM pBlock )
 {
@@ -235,7 +230,7 @@ void HBQPlainTextEdit::hbSetEventBlock( PHB_ITEM pBlock )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbApplyKey( int key, Qt::KeyboardModifiers modifiers, const QString & txt )
 {
@@ -243,14 +238,14 @@ void HBQPlainTextEdit::hbApplyKey( int key, Qt::KeyboardModifiers modifiers, con
    QPlainTextEdit::keyPressEvent( ev );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbRefresh()
 {
    repaint();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 bool HBQPlainTextEdit::event( QEvent *event )
 {
@@ -270,7 +265,7 @@ bool HBQPlainTextEdit::event( QEvent *event )
    return QPlainTextEdit::event( event );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbHighlightArea( int top, int left, int bottom, int right, int mode )
 {
@@ -284,7 +279,7 @@ void HBQPlainTextEdit::hbHighlightArea( int top, int left, int bottom, int right
    repaint();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSetSelectionColor( const QColor & color )
 {
@@ -296,7 +291,7 @@ void HBQPlainTextEdit::hbSetSelectionColor( const QColor & color )
    setPalette( pl );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 static bool isNavableKey( int k )
 {
@@ -304,16 +299,16 @@ static bool isNavableKey( int k )
             k == Qt::Key_Home  || k == Qt::Key_End  || k == Qt::Key_PageUp || k == Qt::Key_PageDown );
 }
 
-/*----------------------------------------------------------------------*/
+
 /*                          Selection Manipulation                      */
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbTogglePersistentSelection()
 {
    isSelectionPersistent = ! isSelectionPersistent;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 bool HBQPlainTextEdit::isCursorInSelection()
 {
@@ -349,7 +344,7 @@ bool HBQPlainTextEdit::isCursorInSelection()
    return( false );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbPostSelectionInfo()
 {
@@ -375,7 +370,7 @@ void HBQPlainTextEdit::hbPostSelectionInfo()
    emit selectionChanged();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbClearSelection()
 {
@@ -386,7 +381,7 @@ void HBQPlainTextEdit::hbClearSelection()
    hbPostSelectionInfo();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSelectAll()
 {
@@ -398,7 +393,7 @@ void HBQPlainTextEdit::hbSelectAll()
    repaint();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSetSelectionInfo( PHB_ITEM selectionInfo )
 {
@@ -410,7 +405,7 @@ void HBQPlainTextEdit::hbSetSelectionInfo( PHB_ITEM selectionInfo )
    hbPostSelectionInfo();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSetSelectionMode( int mode, bool byApplication )
 {
@@ -531,7 +526,7 @@ void HBQPlainTextEdit::hbSetSelectionMode( int mode, bool byApplication )
    repaint();   /* Only once when mode is changed from stream to column , so no issues */
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbToStream()
 {
@@ -585,7 +580,7 @@ void HBQPlainTextEdit::hbToStream()
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbHitTest( const QPoint & pt )
 {
@@ -597,7 +592,7 @@ void HBQPlainTextEdit::hbHitTest( const QPoint & pt )
    hitTestColumn = c + ( pt.x() / fontMetrics().averageCharWidth() );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbCut( int k )
 {
@@ -615,7 +610,7 @@ void HBQPlainTextEdit::hbCut( int k )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbCopy()
 {
@@ -631,7 +626,7 @@ void HBQPlainTextEdit::hbCopy()
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbPaste()
 {
@@ -652,7 +647,7 @@ void HBQPlainTextEdit::hbPaste()
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::dropEvent( QDropEvent *event )
 {
@@ -739,7 +734,7 @@ void HBQPlainTextEdit::dropEvent( QDropEvent *event )
    QPlainTextEdit::dropEvent( event );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::dragMoveEvent( QDragMoveEvent *event )
 {
@@ -761,7 +756,7 @@ void HBQPlainTextEdit::dragMoveEvent( QDragMoveEvent *event )
    QPlainTextEdit::dragMoveEvent( event );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::dragEnterEvent( QDragEnterEvent *event )
 {
@@ -783,7 +778,7 @@ void HBQPlainTextEdit::dragEnterEvent( QDragEnterEvent *event )
    QPlainTextEdit::dragEnterEvent( event );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::mouseDoubleClickEvent( QMouseEvent *event )
 {
@@ -818,7 +813,7 @@ void HBQPlainTextEdit::mouseDoubleClickEvent( QMouseEvent *event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::mouseReleaseEvent( QMouseEvent *event )
 {
@@ -862,7 +857,7 @@ void HBQPlainTextEdit::mouseReleaseEvent( QMouseEvent *event )
 #endif
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::mousePressEvent( QMouseEvent *event )
 {
@@ -952,7 +947,7 @@ void HBQPlainTextEdit::mousePressEvent( QMouseEvent *event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::mouseMoveEvent( QMouseEvent *event )
 {
@@ -1048,7 +1043,7 @@ void HBQPlainTextEdit::mouseMoveEvent( QMouseEvent *event )
 #endif
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::keyReleaseEvent( QKeyEvent * event )
 {
@@ -1060,7 +1055,7 @@ void HBQPlainTextEdit::keyReleaseEvent( QKeyEvent * event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbHandleKey( QKeyEvent * event, int k, int selMode, bool shift )
 {
@@ -1117,7 +1112,7 @@ void HBQPlainTextEdit::hbHandleKey( QKeyEvent * event, int k, int selMode, bool 
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 bool HBQPlainTextEdit::hbKeyPressSelection( QKeyEvent * event )
 {
@@ -1300,7 +1295,7 @@ bool HBQPlainTextEdit::hbKeyPressSelection( QKeyEvent * event )
    return false;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::keyPressEvent( QKeyEvent * event )
 {
@@ -1380,7 +1375,7 @@ void HBQPlainTextEdit::keyPressEvent( QKeyEvent * event )
    c->complete( cr ); /* pop it up! */
 }
 
-/*----------------------------------------------------------------------*/
+
 
 bool HBQPlainTextEdit::hbKeyPressSelectionByApplication( QKeyEvent * event )
 {
@@ -1475,7 +1470,7 @@ bool HBQPlainTextEdit::hbKeyPressSelectionByApplication( QKeyEvent * event )
    return true;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 bool HBQPlainTextEdit::hbHandlePopup( QKeyEvent * event )
 {
@@ -1498,7 +1493,7 @@ bool HBQPlainTextEdit::hbHandlePopup( QKeyEvent * event )
    return false;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbRefreshCompleter( const QString & alias )
 {
@@ -1512,7 +1507,7 @@ void HBQPlainTextEdit::hbRefreshCompleter( const QString & alias )
    }
 }
 
-/*------------------------------------------------------------------------*/
+
 
 QString HBQPlainTextEdit::hbTextUnderCursor( bool bCodeComplete )
 {
@@ -1542,7 +1537,7 @@ QString HBQPlainTextEdit::hbTextUnderCursor( bool bCodeComplete )
    return tc.selectedText();
 }
 
-/*----------------------------------------------------------------------*/
+
 
 QString HBQPlainTextEdit::hbTextAlias()
 {
@@ -1561,7 +1556,7 @@ QString HBQPlainTextEdit::hbTextAlias()
    return "";
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::resizeEvent( QResizeEvent *e )
 {
@@ -1576,7 +1571,7 @@ void HBQPlainTextEdit::resizeEvent( QResizeEvent *e )
    horzRuler->setGeometry( QRect( cr.left(), cr.top(), cr.width(), horzRulerHeight ) );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::focusInEvent( QFocusEvent * event )
 {
@@ -1586,7 +1581,7 @@ void HBQPlainTextEdit::focusInEvent( QFocusEvent * event )
    QPlainTextEdit::focusInEvent( event );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::paintEvent( QPaintEvent * event )
 {
@@ -1655,7 +1650,7 @@ void HBQPlainTextEdit::paintEvent( QPaintEvent * event )
    QPlainTextEdit::paintEvent( event );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbPaintHighlight( QPaintEvent * event )
 {
@@ -1686,7 +1681,7 @@ void HBQPlainTextEdit::hbPaintHighlight( QPaintEvent * event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbPaintSelection( QPaintEvent * event )
 {
@@ -1705,12 +1700,15 @@ void HBQPlainTextEdit::hbPaintSelection( QPaintEvent * event )
       int          c = hbFirstVisibleColumn();
       int fontHeight = fontMetrics().height();
       int          b = t + ( ( viewport()->height() - ttop ) / fontHeight ) + 1;
+               QPainter p( viewport() );
+               QRect r( 0, 0, viewport()->width(), fontHeight );
+               p.fillRect( r, QBrush( m_selectionColor ) );
 
       re = re > b ? b : re;
 
       if( re >= t && rb < b )
       {
-         QPainter p( viewport() );
+//         QPainter p( viewport() );
 
          int fontWidth = fontMetrics().averageCharWidth();
 
@@ -1732,10 +1730,11 @@ void HBQPlainTextEdit::hbPaintSelection( QPaintEvent * event )
             case selectionMode_line:
             {
                QRect r( 0, top, viewport()->width(), btm );
-               p.fillRect( r, QBrush( m_selectionColor ) );
+               p.fillRect( r, br );
             }
             break;
-            case selectionMode_stream:
+            //case selectionMode_stream:
+            default:
             {
                int width = viewport()->width();
                int   i;
@@ -1805,7 +1804,7 @@ void HBQPlainTextEdit::hbPaintSelection( QPaintEvent * event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 QRect HBQPlainTextEdit::hbGetSelectionRect()
 {
@@ -1849,7 +1848,7 @@ QRect HBQPlainTextEdit::hbGetSelectionRect()
    return r;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbDrawCursor( QPaintEvent *event )
 {
@@ -1870,7 +1869,7 @@ void HBQPlainTextEdit::hbDrawCursor( QPaintEvent *event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUpdateCaret()
 {
@@ -1882,7 +1881,7 @@ void HBQPlainTextEdit::hbUpdateCaret()
    repaint( r );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 int HBQPlainTextEdit::lastVisibleBlockNumber()
 {
@@ -1901,7 +1900,7 @@ int HBQPlainTextEdit::lastVisibleBlockNumber()
    return blockNumber;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::horzRulerPaintEvent( QPaintEvent *event )
 {
@@ -1944,7 +1943,7 @@ void HBQPlainTextEdit::horzRulerPaintEvent( QPaintEvent *event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::lineNumberAreaMouseEvent( QMouseEvent *e )
 {
@@ -1969,7 +1968,7 @@ void HBQPlainTextEdit::lineNumberAreaMouseEvent( QMouseEvent *e )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
 {
@@ -2013,7 +2012,7 @@ void HBQPlainTextEdit::lineNumberAreaPaintEvent( QPaintEvent *event )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 QBrush HBQPlainTextEdit::brushForBookmark( int index )
 {
@@ -2128,7 +2127,7 @@ void HBQPlainTextEdit::hbPrevBookmark( int block )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbBreakPoints( int block )
 {
@@ -2184,7 +2183,7 @@ QString HBQPlainTextEdit::hbGetBreakPoints()
    return RetString;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbNumberBlockVisible( bool b )
 {
@@ -2203,12 +2202,13 @@ void HBQPlainTextEdit::hbNumberBlockVisible( bool b )
 }
 
 
+
 bool HBQPlainTextEdit::hbNumberBlockVisible()
 {
    return numberBlock;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 int HBQPlainTextEdit::hbLineNumberAreaWidth()
 {
@@ -2225,7 +2225,7 @@ int HBQPlainTextEdit::hbLineNumberAreaWidth()
    return space;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUpdateHorzRulerHeight( int height )
 {
@@ -2233,7 +2233,7 @@ void HBQPlainTextEdit::hbUpdateHorzRulerHeight( int height )
    setViewportMargins( hbLineNumberAreaWidth(), horzRulerHeight, 0, 0 );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUpdateLineNumberAreaWidth( int )
 {
@@ -2247,7 +2247,7 @@ void HBQPlainTextEdit::hbUpdateLineNumberAreaWidth( int )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUpdateHorzRuler( const QRect & rect, int dy )
 {
@@ -2261,7 +2261,7 @@ void HBQPlainTextEdit::hbUpdateHorzRuler( const QRect & rect, int dy )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbHighlightPage()
 {
@@ -2285,7 +2285,7 @@ void HBQPlainTextEdit::hbHighlightPage()
 #endif
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUpdateLineNumberArea( const QRect &rect, int dy )
 {
@@ -2337,7 +2337,7 @@ void HBQPlainTextEdit::hbUpdateLineNumberArea( const QRect &rect, int dy )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSetSpaces( int newSpaces )
 {
@@ -2356,7 +2356,7 @@ void HBQPlainTextEdit::hbSetSpaces( int newSpaces )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 int HBQPlainTextEdit::hbGetIndex( const QTextCursor &crQTextCursor )
 {
@@ -2367,7 +2367,7 @@ int HBQPlainTextEdit::hbGetIndex( const QTextCursor &crQTextCursor )
    return column;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 int HBQPlainTextEdit::hbGetLine( const QTextCursor &crQTextCursor )
 {
@@ -2383,7 +2383,7 @@ int HBQPlainTextEdit::hbGetLine( const QTextCursor &crQTextCursor )
    return line;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSlotCursorPositionChanged()
 {
@@ -2402,14 +2402,14 @@ void HBQPlainTextEdit::hbSlotCursorPositionChanged()
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbSetStyleHightlighter( const QString &style )
 {
    styleHightlighter = style;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbShowHighlighter( const QString &style, bool b )
 {
@@ -2430,7 +2430,7 @@ void HBQPlainTextEdit::hbShowHighlighter( const QString &style, bool b )
    styleHightlighter = style;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbEscapeQuotes()
 {
@@ -2443,7 +2443,7 @@ void HBQPlainTextEdit::hbEscapeQuotes()
    insertPlainText( txt );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbEscapeDQuotes()
 {
@@ -2456,7 +2456,7 @@ void HBQPlainTextEdit::hbEscapeDQuotes()
    insertPlainText( txt );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUnescapeQuotes()
 {
@@ -2469,7 +2469,7 @@ void HBQPlainTextEdit::hbUnescapeQuotes()
    insertPlainText( txt );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbUnescapeDQuotes()
 {
@@ -2482,7 +2482,7 @@ void HBQPlainTextEdit::hbUnescapeDQuotes()
    insertPlainText( txt );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbCaseUpper()
 {
@@ -2503,7 +2503,7 @@ void HBQPlainTextEdit::hbCaseUpper()
    setTextCursor( cursor );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbCaseLower()
 {
@@ -2524,7 +2524,7 @@ void HBQPlainTextEdit::hbCaseLower()
    setTextCursor( cursor );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbConvertQuotes()
 {
@@ -2545,7 +2545,7 @@ void HBQPlainTextEdit::hbConvertQuotes()
    setTextCursor( cursor );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbConvertDQuotes()
 {
@@ -2566,7 +2566,7 @@ void HBQPlainTextEdit::hbConvertDQuotes()
    setTextCursor( cursor );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbReplaceSelection( const QString & txt )
 {
@@ -2586,7 +2586,7 @@ void HBQPlainTextEdit::hbReplaceSelection( const QString & txt )
    setTextCursor( cursor );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbStreamComment()
 {
@@ -2607,7 +2607,7 @@ void HBQPlainTextEdit::hbStreamComment()
    setTextCursor( cursor );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 QString HBQPlainTextEdit::hbGetSelectedText()
 {
@@ -2620,7 +2620,7 @@ QString HBQPlainTextEdit::hbGetSelectedText()
    return txt;
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbInsertTab( int mode )
 {
@@ -2643,7 +2643,7 @@ void HBQPlainTextEdit::hbInsertTab( int mode )
    setTextCursor( c );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbMoveLine( int iDirection )
 {
@@ -2690,7 +2690,7 @@ void HBQPlainTextEdit::hbMoveLine( int iDirection )
    setTextCursor( c );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbDeleteLine()
 {
@@ -2711,7 +2711,7 @@ void HBQPlainTextEdit::hbDeleteLine()
    setTextCursor( c );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbBlockIndent( int steps )
 {
@@ -2763,7 +2763,7 @@ void HBQPlainTextEdit::hbBlockIndent( int steps )
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbBlockComment()
 {
@@ -2803,7 +2803,7 @@ void HBQPlainTextEdit::hbBlockComment()
    setTextCursor( c );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbDuplicateLine()
 {
@@ -2818,7 +2818,7 @@ void HBQPlainTextEdit::hbDuplicateLine()
    setTextCursor( c );
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::hbBraceHighlight()
 {
@@ -3019,7 +3019,7 @@ void HBQPlainTextEdit::hbBraceHighlight()
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::matchPair( QTextCursor cursor, QString brace, QString openBrace, QString closeBrace, bool bBraceAll, QTextDocument::FindFlags flags )
 {
@@ -3081,7 +3081,7 @@ void HBQPlainTextEdit::matchPair( QTextCursor cursor, QString brace, QString ope
    }
 }
 
-/*----------------------------------------------------------------------*/
+
 
 void HBQPlainTextEdit::matchPair( QTextCursor cursor, QRegExp brace, QRegExp openBrace, QRegExp closeBrace, bool bBraceAll, QTextDocument::FindFlags flags, bool bForward )
 {

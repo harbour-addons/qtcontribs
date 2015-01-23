@@ -85,7 +85,7 @@ int maximumBlockCount () const
 void mergeCurrentCharFormat ( const QTextCharFormat & modifier )
 void moveCursor ( QTextCursor::MoveOperation operation, QTextCursor::MoveMode mode = QTextCursor::MoveAnchor )
 bool overwriteMode () const
-void print ( QPrinter * printer ) const
+void print ( QPrinter * printer ) const             [*F=#ifndef HB_BUILD_IOS*]
 void setBackgroundVisible ( bool visible )
 void setCenterOnScroll ( bool enabled )
 void setCurrentCharFormat ( const QTextCharFormat & format )

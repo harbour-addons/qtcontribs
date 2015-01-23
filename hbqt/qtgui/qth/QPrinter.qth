@@ -29,6 +29,7 @@ New         =
  */
 HB_FUNC( QT_QPRINTER )
 {
+#ifndef HB_BUILD_IOS
    if( hb_pcount() >= 1 && hbqt_par_isDerivedFrom( 1, "QPRINTERINFO" ) )
    {
       __HB_RETPTRGC__( new QPrinter( *hbqt_par_QPrinterInfo( 1 ), ( QPrinter::PrinterMode ) ( HB_ISNUM( 2 ) ? hb_parni( 2 ) : QPrinter::ScreenResolution ) ) );
@@ -41,6 +42,7 @@ HB_FUNC( QT_QPRINTER )
    {
       __HB_RETPTRGC__( new QPrinter() );
    }
+#endif
 }
 </CODE>
 
@@ -59,63 +61,63 @@ enum Unit { Millimeter, Point, Inch, Pica, ..., DevicePixel }
 </ENUMS>
 
 <PROTOS>
-bool   abort()
-bool   collateCopies() const
-ColorMode   colorMode() const
-int   copyCount() const
-QString   creator() const
-QString   docName() const
-bool   doubleSidedPrinting() const
-DuplexMode   duplex() const
-bool   fontEmbeddingEnabled() const
-int   fromPage() const
-bool   fullPage() const
-bool   isValid() const
-QString   outputFileName() const
-OutputFormat   outputFormat() const
-QPageLayout   pageLayout() const
-PageOrder   pageOrder() const
-QRectF   pageRect(Unit unit) const
-QRectF   paperRect(Unit unit) const
-PaperSource   paperSource() const
-QPrintEngine *   printEngine() const
-QString   printProgram() const
-PrintRange   printRange() const
-QString   printerName() const
-QString   printerSelectionOption() const
-PrinterState   printerState() const
-int   resolution() const
-void   setCollateCopies(bool collate)
-void   setColorMode(ColorMode newColorMode)
-void   setCopyCount(int count)
-void   setCreator(const QString & creator)
-void   setDocName(const QString & name)
-void   setDoubleSidedPrinting(bool doubleSided)
-void   setDuplex(DuplexMode duplex)
-void   setFontEmbeddingEnabled(bool enable)
-void   setFromTo(int from, int to)
-void   setFullPage(bool fp)
-void   setOutputFileName(const QString & fileName)
-void   setOutputFormat(OutputFormat format)
-bool   setPageLayout(const QPageLayout & newLayout)
-bool   setPageMargins(const QMarginsF & margins)
-bool   setPageMargins(const QMarginsF & margins, QPageLayout::Unit units)
-void   setPageOrder(PageOrder pageOrder)
-bool   setPageOrientation(QPageLayout::Orientation orientation)
-bool   setPageSize(const QPageSize & pageSize)
-void   setPaperSource(PaperSource source)
-void   setPrintProgram(const QString & printProg)
-void   setPrintRange(PrintRange range)
-void   setPrinterName(const QString & name)
-void   setPrinterSelectionOption(const QString & option)
-void   setResolution(int dpi)
-QList<QPrinter::PaperSource>   supportedPaperSources() const
-QList<int>   supportedResolutions() const
-bool   supportsMultipleCopies() const
-int   toPage() const
+bool   abort()                  [*F=#ifndef HB_BUILD_IOS*]
+bool   collateCopies() const    [*F=#ifndef HB_BUILD_IOS*]
+ColorMode   colorMode() const   [*F=#ifndef HB_BUILD_IOS*]
+int   copyCount() const         [*F=#ifndef HB_BUILD_IOS*]
+QString   creator() const       [*F=#ifndef HB_BUILD_IOS*]
+QString   docName() const       [*F=#ifndef HB_BUILD_IOS*]
+bool   doubleSidedPrinting() const  [*F=#ifndef HB_BUILD_IOS*]
+DuplexMode   duplex() const         [*F=#ifndef HB_BUILD_IOS*]
+bool   fontEmbeddingEnabled() const [*F=#ifndef HB_BUILD_IOS*]
+int   fromPage() const              [*F=#ifndef HB_BUILD_IOS*]
+bool   fullPage() const             [*F=#ifndef HB_BUILD_IOS*]
+bool   isValid() const              [*F=#ifndef HB_BUILD_IOS*]
+QString   outputFileName() const    [*F=#ifndef HB_BUILD_IOS*]
+OutputFormat   outputFormat() const [*F=#ifndef HB_BUILD_IOS*]
+QPageLayout   pageLayout() const    [*F=#ifndef HB_BUILD_IOS*]
+PageOrder   pageOrder() const       [*F=#ifndef HB_BUILD_IOS*]
+QRectF   pageRect(Unit unit) const  [*F=#ifndef HB_BUILD_IOS*]
+QRectF   paperRect(Unit unit) const [*F=#ifndef HB_BUILD_IOS*]
+PaperSource   paperSource() const   [*F=#ifndef HB_BUILD_IOS*]
+QPrintEngine *   printEngine() const [*F=#ifndef HB_BUILD_IOS*]
+QString   printProgram() const      [*F=#ifndef HB_BUILD_IOS*]
+PrintRange   printRange() const     [*F=#ifndef HB_BUILD_IOS*]
+QString   printerName() const       [*F=#ifndef HB_BUILD_IOS*]
+QString   printerSelectionOption() const [*F=#ifndef HB_BUILD_IOS*]
+PrinterState   printerState() const [*F=#ifndef HB_BUILD_IOS*]
+int   resolution() const            [*F=#ifndef HB_BUILD_IOS*]
+void   setCollateCopies(bool collate) [*F=#ifndef HB_BUILD_IOS*]
+void   setColorMode(ColorMode newColorMode) [*F=#ifndef HB_BUILD_IOS*]
+void   setCopyCount(int count)      [*F=#ifndef HB_BUILD_IOS*]
+void   setCreator(const QString & creator) [*F=#ifndef HB_BUILD_IOS*]
+void   setDocName(const QString & name)    [*F=#ifndef HB_BUILD_IOS*]
+void   setDoubleSidedPrinting(bool doubleSided) [*F=#ifndef HB_BUILD_IOS*]
+void   setDuplex(DuplexMode duplex)             [*F=#ifndef HB_BUILD_IOS*]
+void   setFontEmbeddingEnabled(bool enable)     [*F=#ifndef HB_BUILD_IOS*]
+void   setFromTo(int from, int to)              [*F=#ifndef HB_BUILD_IOS*]
+void   setFullPage(bool fp)                     [*F=#ifndef HB_BUILD_IOS*]
+void   setOutputFileName(const QString & fileName) [*F=#ifndef HB_BUILD_IOS*]
+void   setOutputFormat(OutputFormat format)     [*F=#ifndef HB_BUILD_IOS*]
+bool   setPageLayout(const QPageLayout & newLayout) [*F=#ifndef HB_BUILD_IOS*]
+bool   setPageMargins(const QMarginsF & margins)    [*F=#ifndef HB_BUILD_IOS*]
+bool   setPageMargins(const QMarginsF & margins, QPageLayout::Unit units) [*F=#ifndef HB_BUILD_IOS*]
+void   setPageOrder(PageOrder pageOrder)            [*F=#ifndef HB_BUILD_IOS*]
+bool   setPageOrientation(QPageLayout::Orientation orientation) [*F=#ifndef HB_BUILD_IOS*]
+bool   setPageSize(const QPageSize & pageSize)      [*F=#ifndef HB_BUILD_IOS*]
+void   setPaperSource(PaperSource source)           [*F=#ifndef HB_BUILD_IOS*]
+void   setPrintProgram(const QString & printProg)   [*F=#ifndef HB_BUILD_IOS*]
+void   setPrintRange(PrintRange range)              [*F=#ifndef HB_BUILD_IOS*]
+void   setPrinterName(const QString & name)         [*F=#ifndef HB_BUILD_IOS*]
+void   setPrinterSelectionOption(const QString & option) [*F=#ifndef HB_BUILD_IOS*]
+void   setResolution(int dpi)                       [*F=#ifndef HB_BUILD_IOS*]
+QList<QPrinter::PaperSource>   supportedPaperSources() const [*F=#ifndef HB_BUILD_IOS*]
+QList<int>   supportedResolutions() const           [*F=#ifndef HB_BUILD_IOS*]
+bool   supportsMultipleCopies() const               [*F=#ifndef HB_BUILD_IOS*]
+int   toPage() const                                [*F=#ifndef HB_BUILD_IOS*]
 
-virtual bool   newPage()
-virtual QPaintEngine *   paintEngine() const
+virtual bool   newPage()                            [*F=#ifndef HB_BUILD_IOS*]
+virtual QPaintEngine *   paintEngine() const        [*F=#ifndef HB_BUILD_IOS*]
 </PROTOS>
 
 <SLOTS>

@@ -6,7 +6,8 @@
 
 -w3 -es2 -l
 
--o../../bin/${hb_plat}/${hb_comp}/${hb_name}
+-o../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
+-workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
 
 -icon={allwin}harb_win.ico
 -icon={os2}harb_os2.ico

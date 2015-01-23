@@ -42,7 +42,7 @@ QVariant   attribute(QNetworkRequest::Attribute code) const
 NetworkError   error() const
 bool   hasRawHeader(const QByteArray & headerName) const
 QVariant   header(QNetworkRequest::KnownHeaders header) const
-void   ignoreSslErrors(const QList<QSslError> & errors)
+void   ignoreSslErrors(const QList<QSslError> & errors)             [*F=#ifndef HB_BUILD_IOS*]
 bool   isFinished() const
 bool   isRunning() const
 QNetworkAccessManager *   manager() const
@@ -53,8 +53,8 @@ QList<QByteArray>   rawHeaderList() const
 qint64   readBufferSize() const
 QNetworkRequest   request() const
 virtual void   setReadBufferSize(qint64 size)
-void   setSslConfiguration(const QSslConfiguration & config)
-QSslConfiguration   sslConfiguration() const
+void   setSslConfiguration(const QSslConfiguration & config)         [*F=#ifndef HB_BUILD_IOS*]
+QSslConfiguration   sslConfiguration() const                         [*F=#ifndef HB_BUILD_IOS*]
 QUrl   url() const
 
 virtual void   close()

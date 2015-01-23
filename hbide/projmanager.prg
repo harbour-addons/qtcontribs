@@ -2158,10 +2158,18 @@ METHOD IdeProjManager:getCurrentExeName( cProject )
 
 
 METHOD IdeProjManager:runAsScript()
-   LOCAL oEdit
+   LOCAL oEdit, cFlags, cInclude
 
+   cFlags := "-n "
+   IF ! Empty( ::oINI:aIncludePaths ) .AND. HB_ISARRAY( ::oINI:aIncludePaths )
+      FOR EACH cInclude IN ::oINI:aIncludePaths
+         IF ! Empty( cInclude )
+            cFlags += "-i" + hbide_pathStripLastSlash( hbide_pathToOSPath( AllTrim( cInclude ) ) ) + " "
+         ENDIF
+      NEXT
+   ENDIF
    IF !empty( oEdit := ::oEM:getEditorCurrent() )
-      hbide_runAScript( oEdit:qEdit:toPlainText() )
+      hbide_runAScript( oEdit:qEdit:toPlainText(), AllTrim( cFlags ) )
    ENDIF
    RETURN Self
 

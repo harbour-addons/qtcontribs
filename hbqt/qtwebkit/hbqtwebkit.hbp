@@ -2,7 +2,7 @@
 # $Id$
 #
 
-{android}-stop='QtWebkit is not available for Android...'
+{android|__ios__}-stop='QtWebkit is not available for Android/ios...'
 
 ../hbqt_common.hbm
 

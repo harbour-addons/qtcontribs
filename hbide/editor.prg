@@ -2039,7 +2039,7 @@ METHOD IdeEditor:handleKeyPressed( nQtKey, aModifiers, oEdit )
    ENDIF
 
    IF ::oSC:execKey( oEdit, nQtKey, lAlt, lCtrl, lShift )   /* User Defined Actions */
-      RETURN .F.
+      RETURN .T.
    ENDIF
 
    SWITCH nQtKey

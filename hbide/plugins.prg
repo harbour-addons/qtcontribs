@@ -69,6 +69,8 @@
 #include "inkey.ch"
 #include "hbide.ch"
 #include "hbhrb.ch"
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
 
 /*----------------------------------------------------------------------*/
 
@@ -163,17 +165,19 @@ STATIC FUNCTION hbide_loadAPlugin( cPlugin, oIde, cVer )
 /*----------------------------------------------------------------------*/
 
 FUNCTION hbide_runAScript( cBuffer, cCompFlags, xParam )
-   LOCAL cFile, pHrb, oErr
+   LOCAL cFile, pHrb, oErr, a_:={}
    LOCAL lError := .f.
    LOCAL bError := ErrorBlock( {|o| break( o ) } )
 
    BEGIN SEQUENCE
-      cFile := hb_compileFromBuf( cBuffer, cCompFlags )
+      AAdd( a_, cBuffer )
+      AEval( hb_ATokens( cCompFlags, " " ), {|s| iif( ! Empty( s ), AAdd( a_,s ), NIL ) } )
+      cFile := hb_compileFromBuf( hb_ArrayToParams( a_ ) )
       IF ! Empty( cFile )
          pHrb := hb_hrbLoad( HB_HRB_BIND_FORCELOCAL, cFile )
       ENDIF
    RECOVER USING oErr
-      MsgBox( oErr:description )
+      MsgBox( hbide_errorDesc( oErr ) )
       lError := .t.
    END SEQUENCE
 
@@ -181,14 +185,84 @@ FUNCTION hbide_runAScript( cBuffer, cCompFlags, xParam )
       BEGIN SEQUENCE
          hb_hrbDo( pHrb, xParam )
       RECOVER USING oErr
-         MsgBox( oErr:description, "Error running script" )
+         MsgBox( hbide_errorDesc( oErr ), "Error Running Script!" )
       END SEQUENCE
    ENDIF
 
    ErrorBlock( bError )
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION hbide_errorDesc( e )
+   LOCAL n
+   LOCAL cErrorLog := e:description + Chr( 10 ) + e:operation + Chr( 10 )
+   LOCAL aStack := {}
+
+   if ValType( e:Args ) == "A"
+      cErrorLog += "   Args:" + Chr( 10 )
+      FOR n := 1 to Len( e:Args )
+         cErrorLog += "     [" + Str( n, 4 ) + "] = " + ValType( e:Args[ n ] ) + ;
+                      "   " + hbide_cValToChar( hbide_cValToChar( e:Args[ n ] ) ) + ;
+                      iif( ValType( e:Args[ n ] ) == "A", " length: " + ;
+                      AllTrim( Str( Len( e:Args[ n ] ) ) ), "" ) + Chr( 10 )
+      next
+   endif
+
+   cErrorLog += Chr( 10 ) + "Stack Calls" + Chr( 10 )
+   cErrorLog += "===========" + Chr( 10 )
+   n := 1
+   WHILE  ( n < 74 )
+      IF ! Empty( ProcName( n ) )
+         AAdd( aStack, "   Called from: " + ProcFile( n ) + " => " + Trim( ProcName( n ) ) + ;
+                        "( " + hb_ntos( ProcLine( n ) ) + " )" )
+         cErrorLog += ATail( aStack ) + Chr( 10 )
+      ENDIF
+      n++
+    END
+   RETURN cErrorLog
+
+
+function hbide_cValToChar( uVal )
+  local cType := ValType( uVal )
+
+  do case
+     case cType == "C" .or. cType == "M"
+          return uVal
+
+     case cType == "D"
+          return DToC( uVal )
+
+     case cType == "T"
+           return If( Year( uVal ) == 0, HB_TToC( uVal, '', Set( _SET_TIMEFORMAT ) ), HB_TToC( uVal ) )
+
+     case cType == "L"
+          return If( uVal, ".T.", ".F." )
+
+     case cType == "N"
+          return AllTrim( Str( uVal ) )
+
+     case cType == "B"
+          return "{|| ... }"
+
+     case cType == "A"
+          return "{ ... }"
+
+     case cType == "O"
+          RETURN iif( __ObjHasData( uVal, "cClassName" ), uVal:cClassName, uVal:ClassName() )
+
+     case cType == "H"
+          return "{=>}"
+
+     case cType == "P"
+          return "0x" + hb_NumToHex( uVal )
+
+     otherwise
+
+          return ""
+  endcase
+
+   return nil
+
 
 FUNCTION hbide_execAutoScripts()
    LOCAL cPath, a_, dir_, cFileName, cBuffer

@@ -6,7 +6,7 @@
 -3rd=hbide_title=hbide
 -3rd=hbide_output=hbide
 
-{android}-hblib
+{android|__ios__}-hblib
 
 -inc
 -w3
@@ -14,19 +14,30 @@
 
 -icon={allwin}hbide.ico
 
--workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_name}
+-workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_name}
 
-{!android}-o../../bin/${hb_plat}/${hb_comp}/${hb_name}
-{android}-o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
+{!android&!__ios__}-o../../bin/${hb_plat}/${hb_comp}${hb_build}/${hb_name}
+{android|__ios__}-o../../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_name}
 
-{!android}-instpath=${HB_BIN}/
-{android}-instpath=${HB_LIB}/
+{!android&!__ios__}-instpath=${HB_BIN}/
+{android|__ios__}-instpath=${HB_LIB}/
 
-hbxbp.hbc
 hbqt.hbc
 hbqtwidgets.hbc
+hbxbp.hbc
+
 hbformat.hbc
 hbct.hbc
+hbnf.hbc
+hbtip.hbc
+hbnetio.hbc
+hbmxml.hbc
+hbmemio.hbc 
+hbmzip.hbc
+hbsms.hbc
+hbtcpio.hbc
+hbzebra.hbc
+hbziparc.hbc
 
 -env:HB_DYNLOAD_RDDADS=yes
 rddads.hbc

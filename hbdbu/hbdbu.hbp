@@ -6,7 +6,7 @@
 -3rd=hbide_title=HbDBU
 -3rd=hbide_output=hbdbu
 
-{android}-hblib
+{android|__ios__}-hblib
 
 -w3
 -es2
@@ -14,13 +14,13 @@
 
 -icon={allwin}hbdbu.ico
 
--workdir=${hb_work}/${hb_plat}/${hb_comp}/${hb_name}
+-workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_name}
 
-{!android}-o../../bin/${hb_plat}/${hb_comp}/${hb_name}
-{android}-o../../../lib/${hb_plat}/${hb_comp}/${hb_name}
+{!(android|__ios__)}-o../../bin/${hb_plat}/${hb_comp}${hb_build}/${hb_name}
+{android|__ios__}-o../../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_name}
 
-{!android}-instpath=${HB_BIN}/
-{android}-instpath=${HB_LIB}/
+{!(android|__ios__)}-instpath=${HB_BIN}/
+{android|__ios__}-instpath=${HB_LIB}/
 
 
 hbqtwidgets.hbc

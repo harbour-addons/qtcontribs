@@ -103,7 +103,7 @@ QTextObject * object ( int objectIndex ) const
 QTextObject * objectForFormat ( const QTextFormat & f ) const
 int pageCount () const
 QSizeF pageSize () const
-void print ( QPrinter * printer ) const
+void print ( QPrinter * printer ) const        [*F=#ifndef HB_BUILD_IOS*]
 void redo ( QTextCursor * cursor )
 QVariant resource ( int type, const QUrl & name ) const
 int revision () const

@@ -152,7 +152,6 @@ public:
 
 private:
    int            iType;
-   bool           bYes;
 
    QBrush         QBrush_brush, QBrush_bgBrush;
    QPen           QPen_pen;
