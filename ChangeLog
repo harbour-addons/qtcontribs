@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-23 15:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r395)
+  * hbide/main.prg
+    ! Changed: <#include "hb*.hbx"> with <REQUEST __HBEXTERN__HB*__>
+       Needed because some of the .hbc in <contrib> do not have 
+       -incpaths=. switch.
+
 2015-01-23 13:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r394)
   * hbqt/qtcore/hbqt_simulator.c
     ! Fixed to be linked for all compilers, a nasty omission.   

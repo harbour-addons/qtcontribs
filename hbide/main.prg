@@ -81,7 +81,7 @@
 
 #if defined( __PLATFORM__WINDOWS ) .OR. ;
     defined( __PLATFORM__LINUX )
-//   #include "rddads.hbx"
+    //#include "rddads.hbx"
 #endif
 
 
@@ -90,24 +90,22 @@
 
 REQUEST __HB_EXTERN__
 
-#include "hbct.hbx"
-#include "hbnf.hbx"
-#include "hbtip.hbx"
-#include "hbnetio.hbx"
-#include "hbmxml.hbx"
-#include "hbmemio.hbx"
-#include "hbmzip.hbx"
-#include "hbsms.hbx"
-#include "hbtcpio.hbx"
-#include "hbzebra.hbx"
-#include "hbziparc.hbx"
+REQUEST __HBEXTERN__HBCT__
+REQUEST __HBEXTERN__HBNF__
+REQUEST __HBEXTERN__HBTIP__
+REQUEST __HBEXTERN__HBNETIO__
+REQUEST __HBEXTERN__HBMXML__
+REQUEST __HBEXTERN__HBMEMIO__
+REQUEST __HBEXTERN__HBMZIP__
+REQUEST __HBEXTERN__HBSMS__
+REQUEST __HBEXTERN__HBTCPIO__
+REQUEST __HBEXTERN__HBZIPARC__
 
 //REQUEST __HBEXTERN__HBXBP__
 //REQUEST __HBEXTERN__HBQTCORE__
 //REQUEST __HBEXTERN__HBQTGUI__
 //REQUEST __HBEXTERN__HBQTNETWORK__
 //REQUEST __HBEXTERN__HBQTSQL__
-
 
 REQUEST DBFCDX
 REQUEST DBFNTX
