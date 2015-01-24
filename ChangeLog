@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-23 17:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r397)
+  * hbqt/qtgui/qth/filelist.hbm
+  * hbqt/qtnetwork/qth/filelist.hbm
+    - Excluded some sources not compilable in IOS.
+
 2015-01-23 16:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r396)
   * hbqt/qscintilla/hbqscintilla.hbc
   * hbqt/qtbluetooth/hbqtbluetooth.hbc

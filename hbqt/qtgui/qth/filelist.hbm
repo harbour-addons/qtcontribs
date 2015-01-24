@@ -168,8 +168,8 @@ QMessageBox.qth
 QMouseEvent.qth
 QMoveEvent.qth
 QMovie.qth
-QOpenGLBuffer.qth
-QOpenGLWidget.qth
+{!__ios__}QOpenGLBuffer.qth
+{!__ios__}QOpenGLWidget.qth
 QPageLayout.qth
 QPageSetupDialog.qth
 QPageSize.qth
