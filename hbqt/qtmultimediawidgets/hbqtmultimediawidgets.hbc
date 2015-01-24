@@ -21,7 +21,7 @@ libs=../qtmultimedia/hbqtmultimedia.hbc
 {!HB_STATIC_QT&(linux|beos|symbian)}libs=Qt5MultimediaWidgets
 {!HB_STATIC_QT&darwin}frameworks=QtMultimediaWidgets
 
-{HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}s${_HB_DYNSUFF}
+{HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 {HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 
 {HB_STATIC_QT&(allwin|linux|darwin|beos)}libs=Qt5MultimediaWidgets

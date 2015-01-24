@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-23 16:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r396)
+  * hbqt/qscintilla/hbqscintilla.hbc
+  * hbqt/qtbluetooth/hbqtbluetooth.hbc
+  * hbqt/qtdeclarative/hbqtdeclarative.hbc
+  * hbqt/qtdesigner/hbqtdesigner.hbc
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+  * hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbc
+  * hbqt/qtopengl/hbqtopengl.hbc
+  * hbqt/qtpositioning/hbqtpositioning.hbc
+  * hbqt/qtqml/hbqtqml.hbc
+  * hbqt/qtquick/hbqtquick.hbc
+  * hbqt/qtscript/hbqtscript.hbc
+  * hbqt/qtsensors/hbqtsensors.hbc
+  * hbqt/qtsql/hbqtsql.hbc
+  * hbqt/qtsvg/hbqtsvg.hbc
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+  * hbqt/qtwebsockets/hbqtwebsockets.hbc
+  * hbqt/qtxml/hbqtxml.hbc
+  * hbqt/qzxing/hbqtzxing.hbc
+    - Removed "S" suffix used for static libraries.
+       Better way is to use 
+        HB_BUILD_NAME=-iphone | iphonesimulator | mingw-static etc.
+
 2015-01-23 15:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r395)
   * hbide/main.prg
     ! Changed: <#include "hb*.hbx"> with <REQUEST __HBEXTERN__HB*__>
