@@ -16,6 +16,36 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-01-30 14:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r398)
+  * hbide/hbide.hbp
+    - Removed: edit.prg.
+
+  * hbide/debugger.prg
+    ! Tried to fix error in debugger in certain situations.
+
+  * hbide/main.prg
+    ! Fixed: INS key was causing RTE.
+       Implementation transfererred to editing instance object.
+
+  * hbide/misc.prg
+    - Transferred functions belonging to editing instance to HbQtWidgets.
+
+  * hbide/resources/hbide-2014.png
+    % Copyright bump.
+
+  * hbqt/hbmk2_qt.hb
+    + Added: UI class method :widget() which returns :oWidget.
+       Useful where ::oUI:oWidget is needed. Now it can be ::oUI:widget().
+
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+    ! Fixed: painting of top-most line at selection process.
+
+  * hbqtwidgets/editor.prg
+    + Transferred: HbIDE contained functions belong to editing instance.
+
+  * hbqtwidgets/resources/hbdbu-2014.png
+    % Copyright bump.
+
 2015-01-23 17:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r397)
   * hbqt/qtgui/qth/filelist.hbm
   * hbqt/qtnetwork/qth/filelist.hbm

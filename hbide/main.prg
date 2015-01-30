@@ -3,8 +3,6 @@
  */
 
 /*
- * Harbour Project source code:
- *
  * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
@@ -646,17 +644,6 @@ METHOD HbIde:create( aParams )
                ::oSM:closeAllSources( .f. /* can not cancel */ )
                EXIT
             ENDIF
-
-         ELSEIF nEvent == xbeP_Keyboard
-            SWITCH mp1
-
-            CASE xbeK_INS
-               IF !empty( ::qCurEdit )
-                  ::qCurEdit:setOverwriteMode( !::qCurEdit:overwriteMode() )
-                  ::oCurEditor:dispEditInfo( ::qCurEdit )
-               ENDIF
-
-            ENDSWITCH
          ENDIF
 
          oXbp:handleEvent( nEvent, mp1, mp2 )

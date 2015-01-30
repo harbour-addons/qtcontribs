@@ -1700,15 +1700,16 @@ void HBQPlainTextEdit::hbPaintSelection( QPaintEvent * event )
       int          c = hbFirstVisibleColumn();
       int fontHeight = fontMetrics().height();
       int          b = t + ( ( viewport()->height() - ttop ) / fontHeight ) + 1;
+#if 0
                QPainter p( viewport() );
                QRect r( 0, 0, viewport()->width(), fontHeight );
                p.fillRect( r, QBrush( m_selectionColor ) );
-
+#endif
       re = re > b ? b : re;
 
       if( re >= t && rb < b )
       {
-//         QPainter p( viewport() );
+         QPainter p( viewport() );
 
          int fontWidth = fontMetrics().averageCharWidth();
 

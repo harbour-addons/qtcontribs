@@ -792,6 +792,7 @@ STATIC FUNCTION hbqtui_buildClassCode( cFuncName, cMCls, aWidgets, aCommands, aC
    NEXT
    AAdd( aLinesPRG, "" )
    AAdd( aLinesPRG, "   METHOD init( oParent )" )
+   AAdd( aLinesPRG, "   ACCESS widget()                                INLINE ::oWidget" )
 // AAdd( aLinesPRG, "   METHOD destroy()                               INLINE ::oWidget:setParent( QWidget() )" )
    AAdd( aLinesPRG, "   METHOD destroy()" )
    AAdd( aLinesPRG, "" )

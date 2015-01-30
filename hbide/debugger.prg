@@ -1529,7 +1529,7 @@ METHOD IdeDebugger:requestVars( index )
 
 
 METHOD IdeDebugger:ui_load()
-   LOCAL i
+   LOCAL i, oItem
 
    IF ! ::isActive()
       RETURN Self
@@ -1556,8 +1556,12 @@ METHOD IdeDebugger:ui_load()
    ::oUI:tableCurrentRecord:setRowCount( 0 )
    IF ::oUI:tableWatchExpressions:rowCount() > 0
       FOR i := 1 TO ::oUI:tableWatchExpressions:rowCount()
-         ::oUI:tableWatchExpressions:item( i-1, 1 ):setText( "" )
-         ::oUI:tableWatchExpressions:item( i-1, 2 ):setText( "" )
+         IF ! Empty( oItem := ::oUI:tableWatchExpressions:item( i-1, 1 ) )
+            oItem:setText( "" )
+         ENDIF
+         IF ! Empty( oItem := ::oUI:tableWatchExpressions:item( i-1, 2 ) )
+            oItem:setText( "" )
+         ENDIF
          ::processEvents()
       NEXT
    ENDIF

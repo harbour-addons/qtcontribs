@@ -371,7 +371,7 @@ METHOD HbQtEditor:create()
       :ensureCursorVisible()
       :setTabChangesFocus( .f. )
       :setFocusPolicy( Qt_StrongFocus )
-      :setObjectName( hbide_getNextIDasString( "HBQPlainTextEdit" ) )
+      :setObjectName( __hbqtGetNextIdAsString( "HBQPlainTextEdit" ) )
       :setMouseTracking( .T. )
    ENDWITH
 
@@ -617,6 +617,11 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
       CASE Qt_Key_Insert
          IF lCtrl
             ::copy()
+         ELSE
+            ::qEdit:setOverwriteMode( ! ::qEdit:overwriteMode() )
+            IF HB_ISBLOCK( ::editorInfoBlock() )
+               Eval( ::editorInfoBlock(), Self )
+            ENDIF
          ENDIF
          EXIT
       CASE Qt_Key_Space
@@ -1002,7 +1007,7 @@ METHOD HbQtEditor:insertBlockContents( oKey )  /* Only called if block selection
       RETURN Self
    ENDIF
 
-   cKey := chr( hbxbp_QKeyEventToAppEvent( oKey ) )
+   cKey := chr( HbQt_QtEventToHbEvent( oKey ) )
 
    aCord := ::aSelectionInfo
    __normalizeRect( aCord, @nT, @nL, @nB, @nR )
@@ -3388,4 +3393,136 @@ STATIC FUNCTION __isMatchingWord( cWord )
    ENDIF
    RETURN cWord $ hMatches
 #endif
+
+
+STATIC FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
+   LOCAL i
+
+   DEFAULT nSpaces TO 6
+   DEFAULT lOuter  TO .F.
+
+   IF .T.
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, cBraceO + Space( i ), cBraceO )
+      NEXT
+      IF lOuter
+         FOR i := nSpaces TO 2 STEP -1
+            cText := StrTran( cText, Space( i ) + cBraceO, cBraceO )
+         NEXT
+      ENDIF
+      cText := StrTran( cText, cBraceO, cBraceO + Space( 1 ) )
+
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, Space( i ) + cBraceC, cBraceC )
+      NEXT
+      IF lOuter
+         FOR i := nSpaces TO 2 STEP -1
+            cText := StrTran( cText, cBraceC + Space( i ), cBraceC )
+         NEXT
+      ENDIF
+      cText := StrTran( cText, cBraceC, Space( 1 ) + cBraceC )
+
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, cBraceO + Space( i ) + cBraceC, cBraceO + cBraceC )
+      NEXT
+   ENDIF
+   RETURN cText
+
+
+STATIC FUNCTION hbide_formatOperators( cText, aOprtrs, nSpaces )
+   LOCAL i, cOprtr
+
+   DEFAULT nSpaces TO 1
+
+   FOR EACH cOprtr IN aOprtrs
+      FOR i := nSpaces TO 1 STEP -1
+         cText := StrTran( cText, Space( i ) + cOprtr, cOprtr )
+         cText := StrTran( cText, cOprtr + Space( i ), cOprtr )
+      NEXT
+      cText := StrTran( cText, cOprtr, Space( 1 ) + cOprtr + Space( 1 ) )
+   NEXT
+   RETURN cText
+
+
+STATIC FUNCTION hbide_formatCommas( cText, nSpaces )
+   LOCAL i, cOprtr := ","
+
+   DEFAULT nSpaces TO 1
+
+   FOR i := nSpaces TO 1 STEP -1
+      cText := StrTran( cText, cOprtr + Space( i ), cOprtr )
+   NEXT
+   RETURN StrTran( cText, cOprtr, cOprtr + Space( 1 ) )
+
+
+STATIC FUNCTION hbide_memoToArray( s )
+   LOCAL aLine := hb_ATokens( StrTran( RTrim( s ), Chr( 13 ) + Chr( 10 ), hb_eol() ), hb_eol() )
+   LOCAL nNewSize := 0
+   LOCAL line
+
+   FOR EACH line IN aLine DESCEND
+      IF ! Empty( line )
+         nNewSize := line:__enumIndex()
+         EXIT
+      ENDIF
+   NEXT
+   ASize( aLine, nNewSize )
+   RETURN aLine
+
+
+STATIC FUNCTION hbide_arrayToMemo( a_ )
+   LOCAL s := ""
+
+   aeval( a_, {|e| s += e + hb_eol() } )
+   RETURN s += hb_eol()
+
+
+STATIC FUNCTION hbide_IsInCommentOrString( cText, nPos )
+   LOCAL  nCmt
+
+   IF ( nCmt := At( "//", cText ) ) > 0
+      IF nPos > nCmt
+         RETURN .T.
+      ENDIF
+   ENDIF
+   IF ( nCmt := At( "/*", cText ) ) > 0
+      IF nPos > nCmt
+         DO WHILE .T.
+            nCmt := hb_At( "*/", cText, nCmt )
+            IF nCmt > 0 .AND. nPos < nCmt
+               RETURN .T.
+            ELSEIF nCmt > 0 .AND. nPos > nCmt
+               nCmt := hb_At( "/*", cText, nCmt )
+               IF nCmt == 0 .OR. nPos < nCmt
+                  RETURN .F.
+               ENDIF
+            ELSE
+               RETURN .F.
+            ENDIF
+         ENDDO
+      ENDIF
+   ENDIF
+   RETURN hbide_IsInString( cText, nPos, 1 )
+
+
+STATIC FUNCTION hbide_IsInString( cText, nPos, nStart, cQuote )
+   LOCAL j, cTkn
+   LOCAL lInString := .F.
+
+   STATIC cAnyQuote  := '"' + "'"
+
+   FOR j := nStart TO nPos-1          // check if string did not begin before it
+       cTkn := substr( cText, j, 1 )
+       IF cTkn $ cAnyQuote            // any quote characters present ?
+          IF lInstring                // if we are already in string
+             IF cTkn == cQuote        // is it a matching quote ?
+                lInstring := .F.      // yes, we are no in string any more
+             ENDIF
+          ELSE                        // we are not in string yet
+             cQuote    := cTkn        // this is the streing quote
+             lInstring := .T.         // now we are in string
+         ENDIF
+      ENDIF
+   NEXT
+   RETURN lInString
 

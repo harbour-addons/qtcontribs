@@ -2005,7 +2005,7 @@ FUNCTION hbide_IsInString( cText, nPos, nStart, cQuote )
    NEXT
    RETURN lInString
 
-
+#if 0
 FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
    LOCAL i
 
@@ -2065,3 +2065,4 @@ FUNCTION hbide_formatCommas( cText, nSpaces )
    NEXT
    RETURN StrTran( cText, cOprtr, cOprtr + Space( 1 ) )
 
+#endif
