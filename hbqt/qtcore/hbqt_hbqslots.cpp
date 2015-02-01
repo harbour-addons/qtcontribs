@@ -289,12 +289,15 @@ int HBQSlots::qt_metacall( QMetaObject::Call c, int id, void ** arguments )
                   else
                   {
                      int paramId = s_argCombinations.indexOf( paramString );
-                     PHBQT_SLOT_FUNC pCallback = s_pCallback.at( paramId );
-                     if( pCallback )
+                     if( paramId >= 0 )
                      {
-                        HB_TRACE( HB_TR_DEBUG, ( "Firing Signal( %p, %s )", object, paramString.data() ) );
-                        pCallback( ( PHB_ITEM * ) codeBlock, arguments, pList );
-                        HB_TRACE( HB_TR_DEBUG, ( "Fired ( %p )", object ) );
+                        PHBQT_SLOT_FUNC pCallback = s_pCallback.at( paramId );
+                        if( pCallback )
+                        {
+                           HB_TRACE( HB_TR_DEBUG, ( "Firing Signal( %p, %s )", object, paramString.data() ) );
+                           pCallback( ( PHB_ITEM * ) codeBlock, arguments, pList );
+                           HB_TRACE( HB_TR_DEBUG, ( "Fired ( %p )", object ) );
+                        }   
                      }
                   }
                }

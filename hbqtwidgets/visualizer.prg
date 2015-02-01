@@ -392,12 +392,12 @@ METHOD HbQtVisualizer:create( oParent )
    ::oUI:stackBase:setCurrentIndex( 1 )
    ::oUI:stackMarkers:setCurrentIndex( 1 )
    ::oUI:stackData:setCurrentIndex( 1 )
-
+#ifndef __ios__
    WITH OBJECT ::oHbQtPreview := HbQtPrintPreview():new():create( ::oUI:vLayPreviewer )
       :previewBlock := {|oPrinter| ::printVisual( oPrinter ) }
       :exitBlock    := {|| ::oUI:stackBase:setCurrentIndex( 1 ) }
    ENDWITH
-
+#endif
    FOR i := 1 TO 10
       ::oUI:comboResizerSteps:addItem( hb_ntos( i ) )
    NEXT

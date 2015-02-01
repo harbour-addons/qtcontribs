@@ -16,6 +16,26 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-01 14:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r399)
+  * hbqt/qtcore/hbqt_hbqslots.cpp
+    ! Fixed: a nasty bug surfacing at some rare combination of libraries.
+       A SLOT is actually defined/linked or not was not being tested.
+
+  * hbqt/qtpositioning/doc/en/class_qgeoareamonitorinfo.txt
+  * hbqt/qtpositioning/hbqt_init.cpp
+    % Minor.
+
+  * hbqt/qtpositioning/qth/QGeoAreaMonitorInfo.qth
+    - Commented QVariantMap specific methods. It is acually a typedef.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: __ios__ define for .prg sources if __ios__ is defined 
+       for Harbour builds.
+
+  * hbqtwidgets/visualizer.prg
+    ! Guarded QPrinter specific code against #define __ios__.
+       QPrinter and family is still missing in Qt 5.4 iOS builds.
+
 2015-01-30 14:35 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r398)
   * hbide/hbide.hbp
     - Removed: edit.prg.

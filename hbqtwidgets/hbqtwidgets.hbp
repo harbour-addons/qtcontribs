@@ -12,6 +12,9 @@
 -w3 
 -es2
 -inc
+{__ios__|android}-d__HBQTMOBILE__
+{__ios__}-d__ios__
+
 
 -o../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
 -workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}

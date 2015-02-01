@@ -28,11 +28,9 @@
       :isPersistent()                                     -> lBool
       :isValid()                                          -> lBool
       :name()                                             -> cQString
-      :notificationParameters()                           -> oQVariantMap
       :setArea( oQGeoShape )                              -> NIL
       :setExpiration( oQDateTime )                        -> NIL
       :setName( cName )                                   -> NIL
-      :setNotificationParameters( oQVariantMap )          -> NIL
       :setPersistent( lIsPersistent )                     -> NIL
 
    $DESCRIPTION$

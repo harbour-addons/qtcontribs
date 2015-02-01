@@ -57,11 +57,11 @@ QString   identifier() const
 bool   isPersistent() const
 bool   isValid() const
 QString   name() const
-QVariantMap   notificationParameters() const
+//QVariantMap   notificationParameters() const
 void   setArea(const QGeoShape & newShape)
 void   setExpiration(const QDateTime & expiry)
 void   setName(const QString & name)
-void   setNotificationParameters(const QVariantMap & parameters)
+//void   setNotificationParameters(const QVariantMap & parameters)
 void   setPersistent(bool isPersistent)
 </PROTOS>
 

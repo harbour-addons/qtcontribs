@@ -7,7 +7,7 @@
  * QT wrapper main header
  *
  * Copyright 2009 Marcos Antonio Gambeta (marcosgambeta at gmail dot com)
- * Copyright 2014 Pritpal Bedi (bedipritpal@hotmail.com)
+ * Copyright 2014-2015 Pritpal Bedi (bedipritpal@hotmail.com)
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
  * Copyright 2010 Francesco Perillo ()
  * www - http://harbour-project.org
@@ -128,10 +128,12 @@ static void hbqt_SlotsExecQGeoAreaMonitorInfoQGeoPositionInfo( PHB_ITEM * codeBl
 
 
 HB_FUNC_EXTERN( HB_QGEOAREAMONITORINFO );
+HB_FUNC_EXTERN( HB_QGEOPOSITIONINFO );
 
 void _hbqtpositioning_force_link_for_event( void )
 {
    HB_FUNC_EXEC( HB_QGEOAREAMONITORINFO );
+   HB_FUNC_EXEC( HB_QGEOPOSITIONINFO );
 }
 
 static void hbqt_registerCallbacks( void )
