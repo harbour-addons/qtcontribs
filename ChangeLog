@@ -16,6 +16,45 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-02 00:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r400)
+  + hbqt/hbqtscintilla.hbc
+    + Added .hbc stub to compile hbqscintilla lib.
+
+  * hbqt/hbqt.hbc
+    + Added: entry for hbqtqscintilla.hbc but commented out.
+
+  * hbqt/qscintilla/qth/filelist.hbm
+    - Commented out few no-longer-required classes. 
+
+  * hbqt/qscintilla/qth/HBQsciScintilla.qth
+  * hbqt/qscintilla/qth/QsciAbstractAPIs.qth
+  * hbqt/qscintilla/qth/QsciAPIs.qth
+  * hbqt/qscintilla/qth/QsciCommand.qth
+  * hbqt/qscintilla/qth/QsciCommandSet.qth
+  * hbqt/qscintilla/qth/QsciDocument.qth
+  * hbqt/qscintilla/qth/QsciLexer.qth
+  * hbqt/qscintilla/qth/QsciLexerCPP.qth
+  * hbqt/qscintilla/qth/QsciLexerFlagship.qth
+  * hbqt/qscintilla/qth/QsciScintilla.qth
+  * hbqt/qscintilla/qth/QsciStyle.qth
+  * hbqt/qscintilla/qth/QsciStyledText.qth
+
+  * hbqt/qscintilla/hbqscintilla.hbc
+  * hbqt/qscintilla/hbqscintilla.hbm
+  * hbqt/qscintilla/hbqscintilla.hbp
+  * hbqt/qscintilla/hbqt_hbqsciscintilla.h
+    ! Changes to address QScintilla v2.
+
+  ; NOTE: Above patch is submitted by Francessco Perillo via Antonio Linares.
+          They intend to use and enhance QScintilla components.
+
+  ; DISCLAIMER: I have no interest in QScintilla by now. I wrote these 
+          wrappers to experiment QScintilla be embedded into HbIDE and 
+          had found it to be very limited ( around 2010 ) and have no idea
+          what they have implemented later, and, weather it is useful 
+          to average HbQt user or not. So any commits for this library 
+          has to be maintained by the respective beneficiaries.
+
 2015-02-01 14:25 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r399)
   * hbqt/qtcore/hbqt_hbqslots.cpp
     ! Fixed: a nasty bug surfacing at some rare combination of libraries.

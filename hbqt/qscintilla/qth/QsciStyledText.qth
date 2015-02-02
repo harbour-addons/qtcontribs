@@ -13,20 +13,11 @@
 
 <CLASS>
 QObject  = no
-Inherits =
-Type     =
-New      =
-Folder   = hbqscintilla
 </CLASS>
 
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
 <CODE>
-#include <qscistyledtext.h>
+#include <qsci/qscistyledtext.h>
+#include <QtCore/QStringList>
 
 
 /*

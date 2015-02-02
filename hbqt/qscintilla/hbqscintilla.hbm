@@ -10,8 +10,9 @@ hbqscintilla.hbx
 
 hbqt_init.cpp
 
+../qtcore/hbqtcore.hbc
+../qtgui/hbqtgui.hbc
+
 hbqt_hbqsciscintilla.cpp
 hbqt_hbqsciscintilla.h
 
-../qtcore/hbqtcore.hbc
-../qtgui/hbqtgui.hbc

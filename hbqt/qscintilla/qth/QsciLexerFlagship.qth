@@ -12,21 +12,13 @@
  */
 
 <CLASS>
-QObject  =
 Inherits = QsciLexer
-Type     =
-New      =
 Folder   = hbqscintilla
 </CLASS>
 
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
 <CODE>
-#include <qscilexerflagship.h>
+#include <qsci/qscilexerflagship.h>
+#include <QtCore/QStringList>
 
 
 /*

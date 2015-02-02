@@ -56,15 +56,13 @@
 
 <CLASS>
 QObject  = Yes
-Inherits =
-Type     =
-New      =
-Folder   = hbqscintilla
+inherits = QAbstractScrollArea
 </CLASS>
 
 <CODE>
 
-#include "qsciscintilla.h"
+#include "qsci/qsciscintilla.h"
+#include <QtCore/QStringList>
 
 
 /*
@@ -122,6 +120,8 @@ enum WrapVisualFlag { WrapFlagNone, WrapFlagByText, WrapFlagByBorder }
 </ENUMS>
 
 <PROTOS>
+void SendScintilla (unsigned int msg, unsigned long wParam, const char * lParam ) const
+void SendScintilla ( unsigned int msg, long wParam ) const
 # virtual QStringList apiContext (int pos, int &context_start, int &last_word_start)
 void annotate (int line, const QString &text, int style)
 void annotate (int line, const QString &text, const QsciStyle &style)
@@ -186,7 +186,7 @@ int marginMarkerMask (int margin) const
 bool marginSensitivity (int margin) const
 MarginType marginType (int margin) const
 int marginWidth (int margin) const
-int markerDefine (MarkerSymbol sym, int mnr=-1)
+## int markerDefine (MarkerSymbol sym, int mnr=-1)
 int markerDefine (char ch, int mnr=-1)
 int markerDefine (const QPixmap &pm, int mnr=-1)
 int markerAdd (int linenr, int mnr)

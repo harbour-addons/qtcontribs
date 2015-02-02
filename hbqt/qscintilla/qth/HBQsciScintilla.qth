@@ -57,13 +57,9 @@
 <CLASS>
 QObject  = Yes
 Inherits = QsciScintilla
-Type     =
-New      =
-Folder   = qscintilla
 </CLASS>
 
 <CODE>
-
 #include "hbqt_hbqsciscintilla.h"
 
 

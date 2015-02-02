@@ -12,21 +12,12 @@
  */
 
 <CLASS>
-QObject  =
 Inherits = QsciAbstractAPIs
-Type     =
-New      =
-Folder   = hbqscintilla
 </CLASS>
 
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
 <CODE>
-#include <qsciapis.h>
+#include <qsci/qsciapis.h>
+#include <QtCore/QStringList>
 
 
 /*

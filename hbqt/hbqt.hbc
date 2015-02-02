@@ -8,11 +8,18 @@
 # ---------------------------------------------------------------
 
 libs=hbqtcore.hbc
-# libs=hbqtdesigner.hbc
 libs=hbqtgui.hbc
 libs=hbqtnetwork.hbc
-#  libs=hbqtwebkit.hbc
+
+# Remove following # if any of the following libs are needed to be built.
+# libs=hbqtwebkit.hbc
 # libs=hbqtsql.hbc
+
 libs=gtqtc.hbc
 
+# Remove the follow # if you want to build QScintilla wrappers - QScintilla needs to be built as a .dll separately.
+#
+# libs=hbqtqscintilla.hbc
+
 libpaths=lib/${hb_plat}/${hb_comp}/
+

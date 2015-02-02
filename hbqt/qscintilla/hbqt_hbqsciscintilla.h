@@ -58,7 +58,7 @@
 #include <QtCore/QPointer>
 #include <QtGui/QKeyEvent>
 
-#include <qsciscintilla.h>
+#include <Qsci/qsciscintilla.h>
 
 class QsciScintilla;
 

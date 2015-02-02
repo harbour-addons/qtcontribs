@@ -14,19 +14,10 @@
 <CLASS>
 QObject  = no
 Inherits =
-Type     =
-New      =
-Folder   = hbqscintilla
 </CLASS>
 
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
 <CODE>
-#include <qscidocument.h>
+#include <qsci/qscidocument.h>
 
 
 /*

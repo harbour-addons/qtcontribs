@@ -14,19 +14,11 @@
 <CLASS>
 QObject  =
 Inherits = QsciLexer
-Type     =
-New      =
-Folder   = hbqscintilla
 </CLASS>
 
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
 <CODE>
-#include <qscilexercpp.h>
+#include <qsci/qscilexercpp.h>
+#include <QtCore/QStringList>
 
 
 /*

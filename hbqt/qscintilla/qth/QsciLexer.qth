@@ -14,21 +14,10 @@
 <CLASS>
 QObject    =
 Inherits   =
-Type       =
-New        =
-Folder     = hbqscintilla
-Destructor = no
-Constructor = no
 </CLASS>
 
-<SUBCLASS>
-</SUBCLASS>
-
-<DOC>
-</DOC>
-
 <CODE>
-#include <qscilexer.h>
+#include <qsci/qscilexer.h>
 
 
 /*

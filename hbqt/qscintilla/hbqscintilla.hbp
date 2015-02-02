@@ -6,6 +6,11 @@
 
 hbqscintilla.hbm
 
+-IC:/qt/qt5.3.1/5.3/mingw482_32/include/QtPrintSupport
+-IC:/qt/qt5.3.1/5.3/mingw482_32/include/QtWidgets
+-IC:/qt/qt5.3.1/5.3/mingw482_32/include/QtGui
+-IC:/qt/qt5.3.1/5.3/mingw482_32/include/QtCore
+
 -instfile=inc:hbqscintilla.hbx
 
 hbqscintillas.hbp

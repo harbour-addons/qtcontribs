@@ -14,8 +14,8 @@ QsciCommand.qth
 QsciCommandSet.qth
 QsciDocument.qth
 QsciLexer.qth
-QsciLexerCPP.qth
-QsciLexerFlagship.qth
+## QsciLexerCPP.qth
+## QsciLexerFlagship.qth
 QsciScintilla.qth
 QsciStyle.qth
 QsciStyledText.qth
