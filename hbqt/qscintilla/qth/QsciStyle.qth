@@ -27,7 +27,7 @@ Inherits =
  */
 HB_FUNC( QT_QSCISTYLE )
 {
-   if( HB_ISNUMERIC( 1 ) )
+   if( HB_ISNUM( 1 ) )
    {
       __HB_RETPTRGC__( new QsciStyle( hb_parni( 1 ) ) );
    }

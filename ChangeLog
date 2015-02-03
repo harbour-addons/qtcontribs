@@ -16,6 +16,15 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-02 16:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r401)
+  * hbqt/qscintilla/hbqscintilla.hbp
+  * hbqt/qscintilla/qth/QsciCommandSet.qth
+  * hbqt/qscintilla/qth/QsciStyle.qth
+    % Another patch sent by Francesco.
+
+  ; Francesco, make sure that you are working with the latest sources
+     from SF. I had to repatch one you sent from older one.
+
 2015-02-02 00:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r400)
   + hbqt/hbqtscintilla.hbc
     + Added .hbc stub to compile hbqscintilla lib.
