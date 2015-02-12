@@ -6,10 +6,10 @@
 
 hbqscintilla.hbm
 
--IC:/qt/5.4/mingw491_32/include/QtPrintSupport
--IC:/qt/5.4/mingw491_32/include/QtWidgets
--IC:/qt/5.4/mingw491_32/include/QtGui
--IC:/qt/5.4/mingw491_32/include/QtCore
+-cflag=-I${HB_WITH_QT}\QtCore
+-cflag=-I${HB_WITH_QT}\QtWidgets
+-cflag=-I${HB_WITH_QT}\QtGui
+-cflag=-I${HB_WITH_QT}\QtPrintSupport
 
 -instfile=inc:hbqscintilla.hbx
 

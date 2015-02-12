@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-11 17:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r402)
+  * hbqt/qscintilla/hbqscintilla.hbp
+    % Patch sent by Francesco.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed: SET CENTURY ON issue for QGET of type date.
+
 2015-02-02 16:24 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r401)
   * hbqt/qscintilla/hbqscintilla.hbp
   * hbqt/qscintilla/qth/QsciCommandSet.qth

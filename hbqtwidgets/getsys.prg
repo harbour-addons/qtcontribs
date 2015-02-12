@@ -906,7 +906,7 @@ METHOD HbQtGet:setParams()
          ::cPicMask     := ""
          ::sl_qMask     := ""
          FOR EACH cChr IN cTmp
-            IF cChr $ "mdy"
+            IF cChr $ "mMdDyY"
                ::cPicMask += "9"
                ::sl_qMask += "9"
             ELSE
