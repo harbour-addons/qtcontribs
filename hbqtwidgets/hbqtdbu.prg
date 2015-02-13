@@ -2938,6 +2938,7 @@ CLASS HbQtMdiBrowser
    METHOD goToAsk()
    METHOD lock( nRec )
    METHOD unLock( nRec )
+   METHOD dbCommit()
    METHOD append()
    METHOD delete( lAsk )
    METHOD recall()
@@ -3798,7 +3799,17 @@ METHOD HbQtMdiBrowser:lock( nRec )
 METHOD HbQtMdiBrowser:unLock( nRec )
 
    IF ::nType == BRW_TYPE_DBF
-      RETURN ( ::cAlias )->( DbrUnLock( nRec ) )
+      RETURN ( ::cAlias )->( dbRUnlock( nRec ) )
+   ELSE
+   ENDIF
+
+   RETURN .F.
+
+
+METHOD HbQtMdiBrowser:dbCommit()
+
+   IF ::nType == BRW_TYPE_DBF
+      RETURN ( ::cAlias )->( dbCommit() )
    ELSE
    ENDIF
 

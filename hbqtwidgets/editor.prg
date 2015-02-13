@@ -86,6 +86,7 @@ CLASS HbQtEditor
    DATA   qEdit
    ACCESS widget()                                INLINE ::qEdit
    ACCESS document()                              INLINE ::qEdit:document()
+   METHOD setDocument( oDocument )                INLINE ::qEdit:setDocument( oDocument )
 
    DATA   oHilighter
 
@@ -257,6 +258,7 @@ CLASS HbQtEditor
 
    METHOD setLineNumbersBkColor( nR, nG, nB )
    METHOD setCurrentLineColor( nR, nG, nB )
+   METHOD isReadOnly()
    METHOD setReadOnly( lReadOnly )
    METHOD setHilighter( oHilighter )
    METHOD setCompleter( oCompleter )              INLINE iif( HB_ISOBJECT( oCompleter ), ::oCompleter := oCompleter, NIL ), ::qEdit:hbSetCompleter( ::oCompleter )
@@ -299,6 +301,7 @@ CLASS HbQtEditor
    METHOD highlightAll( cText )
    METHOD unHighlight()
    METHOD highlightPage()
+   METHOD initHighlighter()
    METHOD parseCodeCompletion( cSyntax )
 
    METHOD reformatLine( nPos, nDeleted, nAdded )
@@ -766,18 +769,25 @@ METHOD HbQtEditor:setFont( oFont )
    RETURN Self
 
 
-METHOD HbQtEditor:setHiLighter( oHilighter )
+METHOD HbQtEditor:setHilighter( oHilighter )
    LOCAL oOldHiLighter := ::oHilighter
 
    IF HB_ISOBJECT( oHilighter )
       ::oHilighter := oHilighter
       ::qEdit:hbSetHighLighter( ::oHilighter )
+      ::oHilighter:hbSetEditor( ::widget() )
    ENDIF
    RETURN oOldHiLighter
 
 
-METHOD HbQtEditor:highlightPage()
+METHOD HbQtEditor:initHighlighter()
+   IF HB_ISOBJECT( ::oHilighter )
+      ::oHilighter:hbSetInitialized( .T. )
+   ENDIF
+   RETURN Self
 
+
+METHOD HbQtEditor:highlightPage()
    IF HB_ISOBJECT( ::oHilighter )
       ::qEdit:hbHighlightPage()
    ENDIF
@@ -1666,6 +1676,9 @@ METHOD HbQtEditor:selectAll()
    RETURN Self
 
 
+METHOD HbQtEditor:isReadOnly()
+   RETURN iif( HB_ISLOGICAL( ::lReadOnly ), ::lReadOnly, ::qEdit:isReadOnly() )
+
 METHOD HbQtEditor:setReadOnly( lReadOnly )
    IF ! HB_ISLOGICAL( lReadOnly )
       lReadOnly := ! ::qEdit:isReadOnly()
@@ -1993,15 +2006,15 @@ METHOD HbQtEditor:formatBraces( nMode )
 
       SWITCH nMode
       CASE 0
-         cText := hbide_formatBrace( cText, "(", ")", 6 )
-         cText := hbide_formatBrace( cText, "{", "}", 6 )
-         cText := hbide_formatBrace( cText, "[", "]", 6 )
+         cText := __formatBrace( cText, "(", ")", 6 )
+         cText := __formatBrace( cText, "{", "}", 6 )
+         cText := __formatBrace( cText, "[", "]", 6 )
          EXIT
       CASE 1
-         cText := hbide_formatOperators( cText, { ":=", "==", ">=", "<=", "!=", "<>", ".AND.", ".OR.", ".NOT." }, 1 )
+         cText := __formatOperators( cText, { ":=", "==", ">=", "<=", "!=", "<>", ".AND.", ".OR.", ".NOT." }, 1 )
          EXIT
       CASE 2
-         cText := hbide_formatCommas( cText, 1 )
+         cText := __formatCommas( cText, 1 )
          EXIT
       ENDSWITCH
 
@@ -2020,11 +2033,11 @@ METHOD HbQtEditor:removeTrailingSpaces()
    IF !( qDoc:isEmpty() )
       qDoc:setUndoRedoEnabled( .f. )
       cText := qDoc:toPlainText()
-      a_:= hbide_memoToArray( cText )
+      a_:= __memoToArray( cText )
       FOR EACH s IN a_
          s := trim( s )
       NEXT
-      cText := hbide_arrayToMemo( a_ )
+      cText := __arrayToMemo( a_ )
       qDoc:clear()
       qDoc:setPlainText( cText )
       qDoc:setUndoRedoEnabled( .t. )
@@ -2209,7 +2222,7 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
 
    IF .T.
       qCursor:joinPreviousEditBlock()
-      IF ! hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
+      IF ! __IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
 
          nPostn := qCursor:position()
          nLine  := qCursor:blockNumber()
@@ -2401,7 +2414,7 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
             ENDIF
             ::qEdit:setTextCursor( qCursor )
          ENDIF
-      ENDIF /* hbide_IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() ) */
+      ENDIF /* __IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() ) */
       qCursor:endEditBlock()
    ENDIF
 
@@ -3395,7 +3408,7 @@ STATIC FUNCTION __isMatchingWord( cWord )
 #endif
 
 
-STATIC FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
+STATIC FUNCTION __formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
    LOCAL i
 
    DEFAULT nSpaces TO 6
@@ -3429,7 +3442,7 @@ STATIC FUNCTION hbide_formatBrace( cText, cBraceO, cBraceC, nSpaces, lOuter )
    RETURN cText
 
 
-STATIC FUNCTION hbide_formatOperators( cText, aOprtrs, nSpaces )
+STATIC FUNCTION __formatOperators( cText, aOprtrs, nSpaces )
    LOCAL i, cOprtr
 
    DEFAULT nSpaces TO 1
@@ -3444,7 +3457,7 @@ STATIC FUNCTION hbide_formatOperators( cText, aOprtrs, nSpaces )
    RETURN cText
 
 
-STATIC FUNCTION hbide_formatCommas( cText, nSpaces )
+STATIC FUNCTION __formatCommas( cText, nSpaces )
    LOCAL i, cOprtr := ","
 
    DEFAULT nSpaces TO 1
@@ -3455,7 +3468,7 @@ STATIC FUNCTION hbide_formatCommas( cText, nSpaces )
    RETURN StrTran( cText, cOprtr, cOprtr + Space( 1 ) )
 
 
-STATIC FUNCTION hbide_memoToArray( s )
+STATIC FUNCTION __memoToArray( s )
    LOCAL aLine := hb_ATokens( StrTran( RTrim( s ), Chr( 13 ) + Chr( 10 ), hb_eol() ), hb_eol() )
    LOCAL nNewSize := 0
    LOCAL line
@@ -3470,14 +3483,14 @@ STATIC FUNCTION hbide_memoToArray( s )
    RETURN aLine
 
 
-STATIC FUNCTION hbide_arrayToMemo( a_ )
+STATIC FUNCTION __arrayToMemo( a_ )
    LOCAL s := ""
 
    aeval( a_, {|e| s += e + hb_eol() } )
    RETURN s += hb_eol()
 
 
-STATIC FUNCTION hbide_IsInCommentOrString( cText, nPos )
+STATIC FUNCTION __IsInCommentOrString( cText, nPos )
    LOCAL  nCmt
 
    IF ( nCmt := At( "//", cText ) ) > 0
@@ -3502,10 +3515,10 @@ STATIC FUNCTION hbide_IsInCommentOrString( cText, nPos )
          ENDDO
       ENDIF
    ENDIF
-   RETURN hbide_IsInString( cText, nPos, 1 )
+   RETURN __IsInString( cText, nPos, 1 )
 
 
-STATIC FUNCTION hbide_IsInString( cText, nPos, nStart, cQuote )
+STATIC FUNCTION __IsInString( cText, nPos, nStart, cQuote )
    LOCAL j, cTkn
    LOCAL lInString := .F.
 

@@ -810,7 +810,8 @@ METHOD IdeDebugger:loadBreakPoints()
    FOR i := 1 TO Len( ::aTabs )
       oEditor := ::aTabs[ i, TAB_OEDITOR ]
       cSource := Lower( hb_FNameName( oEditor:source() ) + hb_FNameExt( oEditor:source() ) )
-      aBP := hb_ATokens( oEditor:qCoEdit:qEdit:hbGetBreakPoints(), "," )
+      //aBP := hb_ATokens( oEditor:qCoEdit:qEdit:hbGetBreakPoints(), "," )
+      aBP := hb_ATokens( oEditor:oEdit:qEdit:hbGetBreakPoints(), "," )
       AEval( aBP, {|e,i| aBP[ i ] := Val( e ) } )
       FOR EACH nBP IN aBP
          IF nBP > 0

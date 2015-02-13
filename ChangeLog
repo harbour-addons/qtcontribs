@@ -16,6 +16,32 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-13 12:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r403)
+  * hbqtwidgets/editor.prg
+    + Added: more methods to enahnce its usability.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Fixed a nasty bug surfacing when editing last column was finished.
+
+  * hbqtwidgets/misc.prg
+    + Added function __hbqtLiteDebug( ... ).
+       The debug string build from list of parameters passed, CNLD types,
+       is shown as Window's Titlebar retrieved by __hbqtAppWidget().
+       This is very handy mechanism to debug something on the fly.
+         __hbqtLiteDebug( "This Text", 213.13, .t., date() )
+
+  * hbide/debugger.prg
+    % Minor. A fix to manage re-availability of Editing Instance Split 
+       functionality.
+    
+  * hbide/editor.prg
+    + Re-activated editing instance's SPLIT feature with more functionality.
+       Now split can be Horizontal AND/OR Vertical, both together.
+
+  + hbqtwidgets/tests/glossybutton.prg
+    + Added demo app to demonstrate QEvent_Paint implementation as a 
+       separate source. The demo is submitted by Luigi, many thanks.
+
 2015-02-11 17:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r402)
   * hbqt/qscintilla/hbqscintilla.hbp
     % Patch sent by Francesco.

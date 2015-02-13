@@ -423,6 +423,28 @@ FUNCTION __hbqtHHasKey( hHash, xKey, xValue )     // <xValue> must be passed by 
    RETURN .F.
 
 
+FUNCTION __hbqtLiteDebug( ... )
+   LOCAL a_:= hb_AParams()
+   LOCAL i, s
+
+   s := ""
+   FOR i := 1 TO Len( a_ )
+      s += __hbqtXToS( a_[ i ] ) + ","
+   NEXT
+   __hbqtAppWidget():setWindowTitle( s )
+   RETURN NIL
+
+
+FUNCTION __hbqtXToS( xVrb )
+   SWITCH ValType( xVrb )
+   CASE "C" ; RETURN xVrb
+   CASE "D" ; RETURN DToC( xVrb )
+   CASE "N" ; RETURN LTrim( Str( xVrb ) )
+   CASE "L" ; RETURN iif( xVrb, "Yes", "No" )
+   ENDSWITCH
+   RETURN ""
+
+
 FUNCTION __hbqtStandardHash( cKey, xValue )
    LOCAL hHash := {=>}
 
