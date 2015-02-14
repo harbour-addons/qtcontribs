@@ -109,6 +109,7 @@ CLASS HbQtVisual
    DATA   lEdited                                 INIT .F.
    DATA   hNamesID                                INIT __hbqtStandardHash()
    DATA   lLoaded                                 INIT .F.
+   DATA   hScaledPixmap                           INIT __hbqtStandardHash()
 
    METHOD init( oVisualizer )
    METHOD create( oVisualizer )
@@ -146,6 +147,7 @@ CLASS HbQtVisual
    METHOD getMarkerProperty( cMarker, cProperty, xDefault )
    METHOD dataRequestDuration( cMarker )
    METHOD getName( cType, cName )
+   METHOD getScaledPixmap( cMarker, oRectF )
 
    ENDCLASS
 
@@ -227,7 +229,7 @@ METHOD HbQtVisual:backGround( lPrepare )
       oRectF := ::scene():sceneRect()
       WITH OBJECT ::oBGItem := QGraphicsPixmapItem( ::pixmap():scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ) )
          :setZValue( -5000 )
-         :setCacheMode( QGraphicsItem_ItemCoordinateCache )
+         :setCacheMode( QGraphicsItem_DeviceCoordinateCache )
          :setFlags( QGraphicsItem_ItemClipsChildrenToShape )
       ENDWITH
       ::scene():addItem( ::oBGItem )
@@ -301,6 +303,23 @@ METHOD HbQtVisual:objects( aObjects )
 METHOD HbQtVisual:marker( cMarker )
    IF hb_HHasKey( ::hMarkers, cMarker )
       RETURN ::hMarkers[ cMarker ]
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtVisual:getScaledPixmap( cMarker, oRectF )
+   STATIC n := 0
+   IF ! hb_HHasKey( ::hScaledPixmap, cMarker )
+      ::hScaledPixmap[ cMarker ] := { ::getMarkerProperty( cMarker, "Pixmap" ), 0, 0, NIL }
+   ENDIF
+   IF ! Empty( ::hScaledPixmap[ cMarker ][ 1 ] )
+      IF ::hScaledPixmap[ cMarker ][ 2 ] == oRectF:width() .AND. ::hScaledPixmap[ cMarker ][ 3 ] == oRectF:height()
+         RETURN ::hScaledPixmap[ cMarker ][ 4 ]
+      ENDIF
+      ::hScaledPixmap[ cMarker ][ 2 ] := oRectF:width()
+      ::hScaledPixmap[ cMarker ][ 3 ] := oRectF:height()
+      ::hScaledPixmap[ cMarker ][ 4 ] := NIL
+      RETURN ::hScaledPixmap[ cMarker ][ 4 ] := ::hScaledPixmap[ cMarker ][ 1 ]:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio, Qt_SmoothTransformation )
    ENDIF
    RETURN NIL
 
@@ -554,6 +573,8 @@ CLASS HbQtVisualItem
    METHOD setRotation( nAngle )                   INLINE ::oWidget:setRotation( nAngle )
    METHOD rotate( nAngle )                        INLINE ::oWidget:setRotation( ::oWidget:rotation() + nAngle )
 
+   METHOD getPixmap( oRectF )                     INLINE ::oHbQtVisual:getScaledPixmap( ::cMarker, oRectF )
+
    DATA   oHbQtVisual
    METHOD setVisual( oHbQtVisual )
    ACCESS visual()                                INLINE ::oHbQtVisual
@@ -688,7 +709,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hC
    CASE "MARKER"
    CASE "IMAGE"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_PICTURE )
-      ::oWidget:setCacheMode( QGraphicsItem_ItemCoordinateCache )
+      ::oWidget:setCacheMode( QGraphicsItem_DeviceCoordinateCache )
       EXIT
    CASE "CHART"
       ::oWidget := HBQGraphicsItem( HBQT_GRAPHICSITEM_CHART )
@@ -767,7 +788,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hC
       ::setPos( ::aPos[ 1 ], ::aPos[ 2 ] )
    ENDIF
 
-   ::oWidget:setCacheMode( QGraphicsItem_ItemCoordinateCache )
+   ::oWidget:setCacheMode( QGraphicsItem_DeviceCoordinateCache )
    RETURN Self
 
 
@@ -1266,7 +1287,7 @@ METHOD HbQtVisualItem:setPixmap( oPixmap )
       WITH OBJECT ::oWidget:toPixmapItem()
          oOldPixmap := :pixmap()
          :setPixmap( oPixmap )
-         :setCacheMode( QGraphicsItem_ItemCoordinateCache )
+         :setCacheMode( QGraphicsItem_DeviceCoordinateCache )
       ENDWITH
    ENDIF
    RETURN oOldPixmap
@@ -1556,7 +1577,8 @@ METHOD HbQtVisualItem:draw( oPainter, oRectF, lDrawSelection )
 
    SWITCH Upper( ::cType )
    CASE "BARCODE" ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), nOpacity, ::text()   ) ; EXIT
-   CASE "MARKER"  ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), nOpacity, ::pixmap() ) ; EXIT
+   //CASE "MARKER"  ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), nOpacity, ::pixmap() ) ; EXIT
+   CASE "MARKER"  ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), nOpacity, ::getPixmap( oRectF ) ) ; EXIT
    CASE "IMAGE"   ; ::oDraw:drawShape( oPainter, oRectF, ::cType, ::pen(), ::brush(), nOpacity, ::pixmap() ) ; EXIT
    CASE "TEXT"    ; ::drawText( oPainter, oRectF, lDrawSelection ) ;    EXIT
    CASE "CHART"   ; ::drawChart( oPainter, oRectF )        ;    EXIT
@@ -2359,7 +2381,9 @@ METHOD HbQtVisualItemDraw:image( oPainter, oRectF, oPixmap )
    IF oPixmap:isNull()
       oPainter:drawRect( oRectF )
    ELSE
-      oPainter:drawPixmap( oRectF, oPixmap:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ), oRectF )
+      //oPainter:drawPixmap( oRectF, oPixmap:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ), oRectF )
+      oPainter:drawPixmap( oRectF, oPixmap, oRectF )
+      //oPainter:drawPixmap( oRectF, oPixmap, QRectF( 0.0, 0.0, oPixmap:width(), oPixmap:height() ) )
    ENDIF
 #else
    LOCAL image, rc, img, point, pen, cx, cy, cw, ch

@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-13 17:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r405)
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+    % Changed HBQGraphicsScene's grid ruler marking text in ( value / 100 ).
+       Before it was ( value / 10 ). It prevents cluttering and also 
+       facilitates easy grasp of scalings.
+
+  + hbqtwidgets/resources/prv_zoom_locate.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added a new icon to zoom visualizer scene to clicked position.
+       
+  * hbqtwidgets/hbqtbrowse.prg
+    % Changed: HbQtBrowser's scroll behavior to pixels instead of items.
+       This is a needed feature for mobile devices.
+
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+    % Modified to scale pixmaps only once per type of image and scene scale.
+    + Added another toolbar icon to reach anywhere on the scene but preserving
+       the zoom level before activation. 
+         1. Zoom to the desired level.
+         2. Click on the "Zoom Locate" icon.
+         3. Scene will turn to fit-in-view mode.
+         4. Double-click on the derired area of the scene.
+         5. Scene will zoom to previous scale with clicked area anchored in center.
+
+  * hbqtwidgets/tests/demovisualizer.prg
+    ! Fixed to demonstrate above feature and to respect previous changes.
+
 2015-02-13 12:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r403)
   * hbqtwidgets/editor.prg
     + Added: more methods to enahnce its usability.

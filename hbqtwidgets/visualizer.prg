@@ -83,6 +83,7 @@
 #define HBQT_GRAPHICSVIEW_ZOOM_OUT                2
 #define HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG            3
 #define HBQT_GRAPHICSVIEW_ZOOM_ORIGINAL           4
+#define HBQT_GRAPHICSVIEW_ZOOM_LOCATE             5
 
 #define HBQT_GRAPHICSITEM_SELECTED                1
 #define HBQT_GRAPHICSITEM_DELETED                 2
@@ -253,6 +254,8 @@ CLASS HbQtVisualizer
    DATA   oTimerZoom
    DATA   nHSBValue                               INIT 0
    DATA   nVSBValue                               INIT 0
+   DATA   lZoomLocate                             INIT .F.
+   DATA   oZoomTrans
 
    METHOD execEvent( nEvent, p, p1, p2 )
 
@@ -458,6 +461,7 @@ METHOD HbQtVisualizer:buildComponents()
             RETURN .T.
          } )
 #else
+#if 0          // not useful until we find its proper use . actually it hits the performance in many ways -
       :grabGesture( Qt_TapAndHoldGesture )
       :connect( QEvent_Gesture, ;
          {|oEvent|
@@ -472,6 +476,7 @@ METHOD HbQtVisualizer:buildComponents()
             ENDIF
             RETURN .T.
          } )
+#endif
 #endif
    ENDWITH
    WITH OBJECT ::oPropWidget := ::oUI:pageProperties
@@ -559,8 +564,9 @@ METHOD HbQtVisualizer:activateScene()
 
    ::oCurScene := ::oCurHbQtVisual:scene()
    ::oGraphicsView:setScene( ::oCurScene )
+#ifndef __ios__
    ::oHbQtPreview:refreshPreview()
-
+#endif
    __hbqGraphics_AllowMovement( ::lEditingOn )
    ::switchItemOptions( .F. )
    ::manageEditing( .F. )
@@ -608,18 +614,25 @@ METHOD HbQtVisualizer:execEvent( nEvent, p, p1, p2 )
          ::placeObject( p1, p2 )                  // scene coordinates
          ::objectSelected()
       CASE p == 21131                             // double-click
-         nScaleFactor := 1.15
-         IF ::lDoubleClickZoom
-            FOR i := 1 TO 10
-               ::oGraphicsView:scale( 1 / nScaleFactor, 1 / nScaleFactor )
-            NEXT
+         IF ::lZoomLocate
+            ::lZoomLocate := .F.
+            ::oGraphicsView:resetMatrix()
+            ::oGraphicsView:setTransform( ::oZoomTrans )
+            ::oGraphicsView:centerOn( p1, p2 )
          ELSE
-            FOR i := 1 TO 10
-               ::oGraphicsView:scale( nScaleFactor, nScaleFactor )
-            NEXT
+            nScaleFactor := 1.15
+            IF ::lDoubleClickZoom
+               FOR i := 1 TO 10
+                  ::oGraphicsView:scale( 1 / nScaleFactor, 1 / nScaleFactor )
+               NEXT
+            ELSE
+               FOR i := 1 TO 10
+                  ::oGraphicsView:scale( nScaleFactor, nScaleFactor )
+               NEXT
+            ENDIF
+            ::lDoubleClickZoom := ! ::lDoubleClickZoom
+            ::oGraphicsView:centerOn( p1, p2 )
          ENDIF
-         ::lDoubleClickZoom := ! ::lDoubleClickZoom
-         ::oGraphicsView:centerOn( p1, p2 )
       CASE p == 21001                             // at initialization
          ::nScreenDpiX := p1
          ::nScreenDpiY := p2
@@ -1548,6 +1561,7 @@ METHOD HbQtVisualizer:buildToolbar( oLayout )
       :addToolbarButton( "ZoomOut"    , "Zoom Out"       , "prv_zoom-out-1"   , {|| ::zoom( HBQT_GRAPHICSVIEW_ZOOM_OUT       )    }, .F., .F., .T. )
       :addToolbarButton( "ZoomWYS"    , "Zoom WYSIWYG"   , "prv_zoom-1"       , {|| ::zoom( HBQT_GRAPHICSVIEW_ZOOM_WYSIWYG   )    } )
       :addToolbarButton( "ZoomOrg"    , "Zoom Original"  , "prv_zoom-original", {|| ::zoom( HBQT_GRAPHICSVIEW_ZOOM_ORIGINAL  )    } )
+      :addToolbarButton( "ZoomLocate" , "Zoom Locate"    , "prv_zoom_locate"  , {|| ::zoom( HBQT_GRAPHICSVIEW_ZOOM_LOCATE    )    } )
       :addToolbarButton( "Grid"       , "Show Grid"      , "grid-4"           , {|| ::toggleGrid() } )
       :addToolbarButton( "Table"      , "Tabulize Visual", "table-3"          , {|| ::tabulize() }, .T. )
       :addSeparator( "Separator_1" )
@@ -2217,6 +2231,12 @@ METHOD HbQtVisualizer:zoom( nMode )
    CASE HBQT_GRAPHICSVIEW_ZOOM_ORIGINAL
       ::oGraphicsView:resetMatrix()
       ::oGraphicsView:centerOn( 0.0, 0.0 )
+      EXIT
+   CASE HBQT_GRAPHICSVIEW_ZOOM_LOCATE
+      ::oZoomTrans := NIL
+      ::oZoomTrans := ::oGraphicsView:Transform()
+      ::oGraphicsView:fitInView( ::oCurScene:sceneRect(), Qt_KeepAspectRatio )
+      ::lZoomLocate := .T.
       EXIT
    ENDSWITCH
    RETURN sELF

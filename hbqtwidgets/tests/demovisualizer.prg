@@ -16,6 +16,9 @@
 #include "common.ch"
 
 
+STATIC s_lInDemoMode := .T.
+
+
 FUNCTION Main()
    LOCAL oWnd, oDa, oLay, oVisualizer, oRect
 
@@ -82,16 +85,11 @@ FUNCTION buildVisualizer( oDA )
       :setSplitterSizes( 210, 210 )
 #endif
       :visualsListBlock    := {|| supplyVisualsList() }
-      :visualsVerListBlock := {|cRefID| supplyVisualsVersions( cRefID ) }
       :visualsLoadBlock    := {|cRefID,nVer| supplyVisualsData( cRefID, nVer ) }
       :visualsSaveBlock    := {|cRefID,nVer,hVisual| saveVisual( cRefID, nVer, hVisual ) }
+      :visualInfoBlock     := {|cRequiredInfo,cRefID,nVer| supplyVisualInfo( cRequiredInfo, cRefID, nVer ) }
    ENDWITH
    RETURN oVisualizer
-
-
-FUNCTION supplyVisualsVersions( cRefID )
-   HB_SYMBOL_UNUSED( cRefID )
-   RETURN NIL
 
 
 FUNCTION supplyVisualsData( cRefID, nVer )
@@ -472,4 +470,21 @@ FUNCTION __appLoadResourceAsBase64String( cResource )
    ENDIF
    RETURN cBuffer
 
+
+STATIC FUNCTION supplyVisualInfo( cRequiredInfo, cRefID, nVer )
+   LOCAL xInfo
+
+   IF s_lInDemoMode
+      SWITCH Lower( cRequiredInfo )
+      CASE "canedit"
+         xInfo := __hbqtStandardHash( "response", "YES" )
+         EXIT
+      CASE "doneedit"
+         xInfo := __hbqtStandardHash( "response", "OK" )
+         EXIT
+      ENDSWITCH
+   ENDIF
+
+   HB_SYMBOL_UNUSED( cRefID + nVer )
+   RETURN xInfo
 

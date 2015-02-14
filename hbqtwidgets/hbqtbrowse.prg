@@ -809,6 +809,10 @@ METHOD HbQtBrowse:create()
       :verticalHeader():hide()
       :setModel( ::oDbfModel )
       :horizontalScrollBar():hide()
+//#ifdef __HBQTMOBILE__
+      :setHorizontalScrollMode( QAbstractItemView_ScrollPerPixel )
+      :setVerticalScrollMode( QAbstractItemView_ScrollPerPixel )
+//#endif
    ENDWITH
 
    oPal := ::oTableView:palette()

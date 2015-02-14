@@ -665,7 +665,7 @@ void HBQGraphicsScene::drawBorder()
          line->setLine( i, 0, i, height() );
          if( n % 2 == 0 )
          {
-            QGraphicsTextItem * text = new QGraphicsTextItem( QString::number( i * UNIT ), m_paperBorder );
+            QGraphicsTextItem * text = new QGraphicsTextItem( QString::number( i * UNIT / 10 ), m_paperBorder );
             text->setPos( i - 15, 0.0 );
             text->setFont( QFont( "Ariel", 12 ) );
          }
@@ -677,7 +677,7 @@ void HBQGraphicsScene::drawBorder()
          line->setLine( 0, i, width(), i );
          if( n % 2 == 0 )
          {
-            QGraphicsTextItem * text = new QGraphicsTextItem( QString::number( i * UNIT ), m_paperBorder );
+            QGraphicsTextItem * text = new QGraphicsTextItem( QString::number( i * UNIT / 10 ), m_paperBorder );
             text->setPos( 0.0, i - 15 );
             text->setFont( QFont( "Ariel", 12 ) );
          }
