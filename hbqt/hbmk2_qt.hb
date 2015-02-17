@@ -430,14 +430,15 @@ FUNCTION hbmk_plugin_qt( hbmk )
    RETURN cRetVal
 
 STATIC FUNCTION qt_version_detect( hbmk, cName, cEnvQT, lPostfix )
-   LOCAL cTmp := ""
+   LOCAL cStdOut := ""
+	LOCAL cStdErr := ""
    LOCAL cBIN := qt_tool_detect( hbmk, cName, cEnvQT, lPostfix )
 
    IF ! Empty( cBIN )
-      hb_processRun( cBIN + " -v",,, @cTmp )
+      hb_processRun( cBIN + " -v",, @cStdOut, @cStdErr )
    ENDIF
 
-   RETURN cTmp
+   RETURN IIF( !EMPTY(cStdOut), cStdOut, cStdErr )
 
 STATIC FUNCTION qt_tool_detect( hbmk, cName, cEnvQT, lPostfix )
    LOCAL cBIN

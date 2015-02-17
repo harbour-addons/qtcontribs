@@ -65,6 +65,7 @@
  */
 
 #define HBQT_QAIM_data                              1001
+#define HBQT_QAIM_setdata                           1002
 #define HBQT_QAIM_flags                             1003
 #define HBQT_QAIM_headerData                        2001
 #define HBQT_QAIM_rowCount                          3001
@@ -87,6 +88,7 @@ public:
 
    Qt::ItemFlags flags( const QModelIndex & index ) const;
    QVariant      data( const QModelIndex & index, int role = Qt::DisplayRole ) const;
+   bool          setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
    QVariant      headerData( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
    int           rowCount( const QModelIndex & parent = QModelIndex() ) const;
    int           columnCount( const QModelIndex & parent = QModelIndex() ) const;

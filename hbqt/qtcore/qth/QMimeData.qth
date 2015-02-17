@@ -23,6 +23,7 @@ Destructor  =
 #include <QtCore/QMimeData>
 #include <QtCore/QStringList>
 #include <QtCore/QUrl>
+#include <QtGui/QImage>
 
 /* QMimeData ()
  * ~QMimeData ()
@@ -48,7 +49,21 @@ bool hasImage () const
 bool hasText () const
 bool hasUrls () const
 QString html () const
-QVariant imageData () const
+
+//QVariant imageData () const
+// Instead of QVariant HbQt returns QImage which for any practical case make sense.
+// This is a Harbour extension.
+QImage imageData () const {
+   QMimeData * p = ( QMimeData * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      if( p->hasImage() )
+      {
+         hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, new QImage( qvariant_cast< QImage >( p->imageData() ) ), "HB_QIMAGE", hbqt_del_QImage, HBQT_BIT_NONE | HBQT_BIT_OWNER ) );
+      }
+   }
+}
+
 void removeFormat ( const QString & mimeType )
 void setColorData ( const QVariant & color )
 void setData ( const QString & mimeType, const QByteArray & data )

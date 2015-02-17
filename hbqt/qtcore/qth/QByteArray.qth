@@ -69,7 +69,13 @@ char at ( int i ) const
 int capacity () const
 void chop ( int n )
 void clear ()
-const char * constData () const
+const char * constData () const {
+   QByteArray * p = ( QByteArray * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      hb_retclen( p->constData(), p->size() );
+   }
+}
 // bool contains ( const QByteArray & ba ) const
 // bool contains ( const char * str ) const
 // bool contains ( char ch ) const
@@ -78,7 +84,13 @@ int count ( const char * str ) const
 int count ( char ch ) const
 int count () const
 // char * data ()
-const char * data () const
+const char * data () const {
+   QByteArray * p = ( QByteArray * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      hb_retclen( p->data(), p->size() );
+   }
+}
 bool endsWith ( const QByteArray & ba ) const
 bool endsWith ( const char * str ) const
 bool endsWith ( char ch ) const

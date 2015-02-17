@@ -65,6 +65,10 @@
 #include <QtGui/QFont>
 #include <QtGui/QPixmap>
 #include <QtCore/QFlags>
+#include <QtCore/QDate>
+#include <QtCore/QDateTime>
+#include <QtCore/QString>
+#include <QtCore/QModelIndex>
 
 #if QT_VERSION <= 0x040900
 #include <QtGui/QWidget>
@@ -72,7 +76,7 @@
 #include <QtWidgets/QWidget>
 #endif
 
-QVariant hbqt_fetchData( PHB_ITEM block, int type, int role, int par1, int par2 )
+static QVariant hbqt_fetchData( PHB_ITEM block, int type, int role, int par1, int par2 )
 {
    QVariant vv;
 
@@ -137,6 +141,111 @@ QVariant hbqt_fetchData( PHB_ITEM block, int type, int role, int par1, int par2 
    return vv;
 }
 
+static bool hbqt_setData( PHB_ITEM block, int type, int role, int iRow, int iCol, const QVariant & qVariantObj )
+{
+   bool bRet = false;
+
+   if( hb_vmRequestReenter() )
+   {
+      PHB_ITEM p0 = hb_itemPutNI( NULL, type );
+      PHB_ITEM p1 = hb_itemPutNI( NULL, role );
+      PHB_ITEM p2 = hb_itemPutNI( NULL, iRow );
+      PHB_ITEM p3 = hb_itemPutNI( NULL, iCol );
+      PHB_ITEM p4;
+
+      switch( qVariantObj.type() )
+      {
+         case QVariant::Bool:
+         {
+            p4 = hb_itemPutL( NULL, qVariantObj.toBool() );
+         }
+         break;
+
+         case QVariant::Char:
+         case QVariant::String:
+         {
+            QString qS;
+            qS = qVariantObj.toString();
+            p4 = hb_itemPutStrLenUTF8( NULL, qS.toUtf8().constData(), qS.size() );
+         }
+         break;
+
+         case QVariant::Date:
+         {
+            QDate qD;
+            qD = qVariantObj.toDate();
+            p4 = hb_itemPutDL( NULL, qD.toJulianDay() );
+         }
+         break;
+
+         case QVariant::DateTime:
+         {
+            QDateTime qDT;
+            QDate qD;
+            qDT = qVariantObj.toDateTime();
+            qD = qDT.date();
+            p4 = hb_itemPutTDT( NULL, qD.toJulianDay(), qDT.time().msecsSinceStartOfDay());
+         }
+         break;
+
+         case QVariant::LongLong:
+         case QVariant::ULongLong:
+         {
+            p4 = hb_itemPutNLL( NULL, qVariantObj.toLongLong() );
+         }
+         break;
+
+         case QVariant::Int:
+         case QVariant::UInt:
+         {
+            p4 = hb_itemPutNI( NULL, qVariantObj.toInt() );
+         }
+         break;
+
+         case QVariant::Double:
+         {
+            p4 = hb_itemPutND( NULL, qVariantObj.toDouble() );
+         }
+         break;
+
+         case QVariant::ModelIndex:
+         {
+            QModelIndex qMI;
+            PHB_ITEM pRow;
+            PHB_ITEM pCol;
+            qMI = qVariantObj.toModelIndex();
+            pRow = hb_itemPutNI( NULL, qMI.row() );
+            pCol = hb_itemPutNI( NULL, qMI.column() );
+            p4 = hb_itemArrayNew( 2 );
+            hb_itemArrayPut( p4, 1, pRow );
+            hb_itemArrayPut( p4, 2, pCol );
+            hb_itemRelease( pCol );
+            hb_itemRelease( pRow );
+         }
+         break;
+
+         default:
+            p4 = NULL;
+      }
+
+      if( p4 )
+      {
+         PHB_ITEM ret = hb_itemNew( hb_vmEvalBlockV( block, 5, p0, p1, p2, p3, p4 ) );
+         hb_itemRelease( p4 );
+         if( hb_itemType( ret ) & HB_IT_LOGICAL )
+            bRet = hb_itemGetL( ret );
+      }
+      hb_itemRelease( p3 );
+      hb_itemRelease( p2 );
+      hb_itemRelease( p1 );
+      hb_itemRelease( p0 );
+
+      hb_vmRequestRestore();
+   }
+
+   return bRet;
+}
+
 HBQAbstractItemModel::HBQAbstractItemModel( PHB_ITEM pBlock ) : QAbstractItemModel()
 {
    if( pBlock )
@@ -173,6 +282,18 @@ QVariant HBQAbstractItemModel::data( const QModelIndex & index, int role ) const
       return QVariant();
 
    return hbqt_fetchData( block, HBQT_QAIM_data, role, index.column(), index.row() );
+}
+
+bool HBQAbstractItemModel::setData( const QModelIndex & index, const QVariant & value, int role )
+{
+   if( ! index.isValid() )
+      return false;
+
+   bool ret = hbqt_setData( block, HBQT_QAIM_setdata, role, index.column(), index.row(), value );
+   if( ret )
+      emit QAbstractItemModel::dataChanged( index, index );
+
+   return ret;
 }
 
 QVariant HBQAbstractItemModel::headerData( int section, Qt::Orientation orientation, int role ) const

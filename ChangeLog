@@ -16,7 +16,61 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2015-02-13 17:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r405)
+2015-02-16 20:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r405)
+  * hbqt/hbmk2_qt.hb
+    % Changed: to use stdout and/or stderr while catching result of 
+       external process executed to detect the Qt version.
+       
+  * hbqt/qtcore/qth/QByteArray.qth
+    % Changed: const char * constData()/data() returns data in proper length 
+       by changing hb_retc(...) to hb_retclen(..., p->size()).
+
+  * hbqt/qtcore/qth/QMimeData.qth
+    % Changed: ( an HbQt Extention ) 
+       QVariant imageData () const 
+          =>
+       QImage imageData () const
+       It is always tricky to manage all types in QVariant what Qt provides.
+       Also as the method name implies, one expects that it will return the 
+       immage associated with QMimeData. And hence this simplification.
+
+    @Ryszard Glab
+       Other big stopper was pasting images from the clipboard. Current code 
+       stores QImage in QVariant variable however QVariant has no method to convert 
+       it to QImage. According to the Qt documentation the only solution is casting 
+       at C++ level.  
+
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.h
+    + Added: bool setData ( const QModelIndex & index, const QVariant & value, int role = Qt::EditRole );
+       It is a handy mechanism to write back the values of a field just as 
+       those are retrieved via getData method.
+
+    @Ryszard Glab
+       The really big problem with current hbqt code is lack of in-place editing 
+       features of QTableView. Althought QTableView can edit cells using standard 
+       build-in delegates (it work if you return Flags with Qt_ItemIsEditable and 
+       use Qt_EditRole to get value from cell) however there is no possibility to 
+       get back edited value from the delegate editor. Please consider the 
+       following patch to extend current code to return the edited value to 
+       codeblock used in hb_qabstractitemmodel - it requires the the codeblock have 
+       to accept additional fifth parameter.
+
+  ; The above patch is submitted by Ryszard Glab, a big thank you.
+     For those who are new to Harbour and HbQt - an introduction to Ryszard Glab.
+     Ryszard is one of the pioneers in maturing Harbour since its birth until 2008.
+     Below is his last commit in Harbour:
+        2008-02-02 23:40 UTC+0100 Ryszard Glab (harbour//rglab.pl)
+     Till date he is remembered for his in-depth knowledge about programming 
+     concepts and specifically Harbour. He is finishing a big project 
+     heavily based on HbQt. This patch highlights the state of HbQt to 
+     the effect that now we are production ready.
+
+     I have requested him if he could provide few screen-shots of HbQt based 
+     application with short description about its end-usage. That will certainly 
+     put HbQt on some higher plane. 
+     
+2015-02-13 17:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r404)
   * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
     % Changed HBQGraphicsScene's grid ruler marking text in ( value / 100 ).
        Before it was ( value / 10 ). It prevents cluttering and also 
