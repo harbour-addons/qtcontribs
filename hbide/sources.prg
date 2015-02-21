@@ -160,9 +160,9 @@ METHOD IdeSourcesManager:saveNamedSource( cSource )
    FOR EACH a_ IN ::aTabs
       oEditor := a_[ TAB_OEDITOR ]
       IF HB_ISOBJECT( oEditor )
-         IF hb_FileMatch( hbide_pathNormalized( oEditor:sourceFile, .t. ), cSource )
+         IF hb_FileMatch( hbide_pathNormalized( oEditor:source(), .t. ), cSource )
             IF oEditor:lLoaded
-               IF oEditor:qDocument:isModified()
+               IF oEditor:document():isModified()
                   ::oIde:setCodePage( oEditor:cCodePage )
 
                   cBuffer := oEditor:prepareBufferToSave( oEditor:qEdit:toPlainText() )
@@ -170,7 +170,7 @@ METHOD IdeSourcesManager:saveNamedSource( cSource )
                   ::oFileWatcher:removePath( cSource )
 
                   IF ( lSaved := hb_memowrit( hbide_pathToOSPath( cSource ), cBuffer ) )
-                     oEditor:qDocument:setModified( .f. )
+                     oEditor:document():setModified( .f. )
                      oEditor:setTabImage()
                   ENDIF
 
@@ -244,7 +244,7 @@ METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cV
  *   Save selected Tab on harddisk and return .T. if successfull!
  */
 METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
-   LOCAL oEdit, lNew, cBuffer, qDocument, nIndex, cSource, cFileTemp
+   LOCAL oEditor, lNew, cBuffer, qDocument, nIndex, cSource, cFileTemp
    LOCAL cFileToSave, cPath, cFile, cExt, cNewFile, oItem
 
    DEFAULT nTab TO ::oEM:getTabCurrent()
@@ -252,21 +252,21 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
 
    lCancel := .F.
 
-   IF ! Empty( oEdit := ::oEM:getEditorByTabPosition( nTab ) )
-      nIndex  := ::qTabWidget:indexOf( oEdit:oTab:oWidget )
-      cSource := oEdit:sourceFile
+   IF ! Empty( oEditor := ::oEM:getEditorByTabPosition( nTab ) )
+      nIndex  := ::qTabWidget:indexOf( oEditor:oTab:oWidget )
+      cSource := oEditor:source()
 
       IF cSource == "default.prg"
          lAs := .t.
       ENDIF
 
-      IF lAs .OR. Empty( cSource ) .OR. ( oEdit:lLoaded .AND. oEdit:qDocument:isModified() )
+      IF lAs .OR. Empty( cSource ) .OR. ( oEditor:lLoaded .AND. oEditor:document():isModified() )
 
          lNew := Empty( cSource ) .OR. lAs
          IF lNew
             cNewFile := ::selectSource( 'save', ;
                                        iif( ! Empty( cSource ), cSource, hb_dirBase() + "projects" + hb_ps() ),;
-                                              "Save " + oEdit:oTab:caption + " as..." )
+                                              "Save " + oEditor:oTab:caption + " as..." )
             IF Empty( cNewFile )
                // will check later what decision to take
                RETURN .f.
@@ -277,16 +277,16 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
          ENDIF
 
          cFileToSave := iif( lNew, cNewFile, cSource )
-         qDocument := oEdit:qDocument
+         qDocument := oEditor:document()
 
-         ::oIde:setCodePage( oEdit:cCodePage )
-         cBuffer := oEdit:prepareBufferToSave( oEdit:qEdit:toPlainText() )
+         ::oIde:setCodePage( oEditor:cCodePage )
+         cBuffer := oEditor:prepareBufferToSave( oEditor:oEdit:widget():toPlainText() )
          //
          IF hb_FileExists( cFileToSave )
             ::oFileWatcher:removePath( cFileToSave )
          ENDIF
          IF ! hb_memowrit( cFileToSave, cBuffer )
-            MsgBox( "Error saving the file " + oEdit:sourceFile + ".",, 'Error saving file!' )
+            MsgBox( "Error saving the file " + oEditor:source() + ".",, 'Error saving file!' )
             lCancel := .T.
             RETURN .F.
          ENDIF
@@ -297,33 +297,33 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
          hb_fNameSplit( cFileToSave, @cPath, @cFile, @cExt )
 
          IF lNew
-            oEdit:sourceFile := cFileToSave
+            oEditor:setSource( cFileToSave )
 
-            oEdit:oTab:Caption := cFile + cExt
-            oEdit:updateTitleBar()
+            oEditor:oTab:Caption := cFile + cExt
+            oEditor:updateTitleBar()
 
             ::qTabWidget:setTabText( nIndex, cFile + cExt )
             ::qTabWidget:setTabTooltip( nIndex, cFileToSave )
 
             IF empty( cSource )
                /* The file is not populated in editors tree. Inject */
-               ::oEM:addSourceInTree( oEdit:sourceFile )
+               ::oEM:addSourceInTree( oEditor:source() )
             ELSEIF lAs
                /* Rename the existing nodes in tree */
-               IF !empty( oItem := hbide_findProjTreeItem( ::oIde, oEdit:sourceFile, "Opened Source" ) )
+               IF !empty( oItem := hbide_findProjTreeItem( ::oIde, oEditor:source(), "Opened Source" ) )
                   oItem:oWidget:caption := cFile + cExt
                ENDIF
             ENDIF
          ENDIF
 
          qDocument:setModified( .f. )
-         ::oIde:aSources := { oEdit:sourceFile }
+         ::oIde:aSources := { oEditor:source() }
          ::createTags()
          ::updateFuncList()
          ::qTabWidget:setTabIcon( nIndex, QIcon( ::resPath + "tabunmodified.png" ) )
          ::oDK:setStatusText( SB_PNL_MODIFIED, " " )
 
-         cFileTemp := hbide_pathToOSPath( oEdit:cPath + oEdit:cFile + oEdit:cExt + ".tmp" )
+         cFileTemp := hbide_pathToOSPath( oEditor:cPath + oEditor:cFile + oEditor:cExt + ".tmp" )
          ferase( cFileTemp )
 
          IF left( lower( cFile ), 4 ) == "cls_"
@@ -347,7 +347,7 @@ METHOD IdeSourcesManager:closeSource( nTab, lCanCancel, lCanceled, lAsk )
       DEFAULT lCanCancel TO .F.
       lCanceled := .F.
 
-      IF !( oEditor:qDocument:isModified() ) /* File has not changed, ignore the question to User */
+      IF !( oEditor:document():isModified() ) /* File has not changed, ignore the question to User */
          lSave := .F.
 
       ELSEIF lCanCancel
@@ -487,13 +487,13 @@ METHOD IdeSourcesManager:revertSource( nTab )
       * File has not changed, ignore the question to User
    ELSE
       IF !hbide_getYesNo( 'Revert ' + oEditor:oTab:Caption + '?',  ;
-                    'The file ' + oEditor:sourceFile + ' has changed. '+;
+                    'The file ' + oEditor:source() + ' has changed. '+;
                     'Discard current changes and revert contents to the previously saved on disk?', 'Revert file?' )
          RETURN Self
       ENDIF
    ENDIF
 
-   oEditor:qEdit:setPlainText( hb_memoRead( oEditor:sourceFile ) )
+   oEditor:qEdit:setPlainText( hb_memoRead( oEditor:source() ) )
    oEditor:qEdit:ensureCursorVisible()
    ::manageFocusInEditor()
 

@@ -1089,7 +1089,7 @@ METHOD IdeFindInFiles:find()
    /* Process Open Tabs */
    IF lTabs
       FOR EACH a_ IN ::aTabs
-         cSource := a_[ 2 ]:sourceFile
+         cSource := a_[ 2 ]:source()
          IF hbide_isSourceOfType( cSource, aFilter )
             aadd( aOpenSrc, cSource )
          ENDIF

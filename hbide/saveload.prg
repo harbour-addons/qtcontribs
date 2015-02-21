@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2015 Pritpal Bedi <pritpal@vouchcac.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +59,6 @@
  *                               28Dec2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
@@ -70,12 +66,10 @@
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define INI_SECTIONS_COUNT                        14
 #define INI_HBIDE_VRBLS                           30
 
-/*----------------------------------------------------------------------*/
 
 #define __buttonAddTextext_clicked__              2001
 #define __buttonDelTextext_clicked__              2002
@@ -248,6 +242,7 @@ CLASS IdeINI INHERIT IdeObject
  //DATA   nTabSpaces                              INIT  ::oIde:nTabSpaces
    DATA   nIndentSpaces                           INIT  3
    DATA   lSelToolbar                             INIT  .T.
+   DATA   lSplitVertical                          INIT  .F.
 
    DATA   nTmpBkpPrd                              INIT  60
    DATA   cBkpPath                                INIT  ""
@@ -332,39 +327,32 @@ CLASS IdeINI INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeINI:new( oIde )
    ::oIde := oIde
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeINI:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeINI:create( oIde )
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeINI:getINIPath()
    LOCAL cPath
    hb_fNameSplit( ::oIde:cProjIni, @cPath )
    RETURN cPath
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getResourcesPath()
    LOCAL cPath := iif( empty( ::cPathResources ), ::getINIPath(), ::cPathResources )
    RETURN iif( empty( cPath ), cPath, hbide_pathToOSPath( hbide_pathAppendLastSlash( cPath ) ) )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getHarbourPath()
    LOCAL cPath := ::cPathHrbRoot
@@ -386,17 +374,14 @@ METHOD IdeINI:getHarbourPath()
 
    RETURN ::cPathHrbRoot
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getTempPath()
    RETURN hbide_pathToOSPath( ::cPathTemp )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getINIFile()
    RETURN hbide_pathToOSPath( hbide_pathFile( ::getINIPath(), "hbide.ini" ) )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getHbmk2File()
    LOCAL cFile
@@ -413,27 +398,22 @@ METHOD IdeINI:getHbmk2File()
 
    RETURN hbide_pathToOSPath( cFile )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getEnvFile()
    RETURN hbide_pathToOSPath( iif( empty( ::cPathEnv ), hbide_pathFile( ::getINIPath(), "hbide.skl" ), ::cPathEnv ) )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getSnippetsFile()
    RETURN hbide_pathToOSPath( iif( empty( ::cPathSnippets ), hbide_pathFile( ::getINIPath(), "hbide.skl" ), ::cPathSnippets ) )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getShortcutsFile()
    RETURN hbide_pathToOSPath( iif( empty( ::cPathShortcuts ), hbide_pathFile( ::getINIPath(), "hbide.scu" ), ::cPathShortcuts ) )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:getThemesFile()
    RETURN hbide_pathToOSPath( iif( empty( ::cPathThemes ), hbide_pathFile( ::getINIPath(), "hbide.hbt" ), ::cPathThemes ) )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeINI:showHideDocks()
 
@@ -448,7 +428,6 @@ METHOD IdeINI:showHideDocks()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeINI:save( cHbideIni )
    LOCAL j, nTab, pTab, n, txt_, oEdit, nTabs, nn, a_, s, qLst, k
@@ -548,6 +527,8 @@ METHOD IdeINI:save( cHbideIni )
    aadd( txt_, "PanelsTabPosition"         + "=" +   hb_ntos( ::nPanelsTabPosition )                    )
    aadd( txt_, "PanelsTabShape"            + "=" +   hb_ntos( ::nPanelsTabShape )                       )
 
+   aadd( txt_, "SplitVertical"             + "=" +   iif( ::lSplitVertical         , "YES", "NO" )     )
+
    aadd( txt_, "ISClosing"                 + "=" +   iif( ::lISClosing             , "YES", "NO" )      )
    aadd( txt_, "ISIf"                      + "=" +   iif( ::lISIf                  , "YES", "NO" )      )
    aadd( txt_, "ISFor"                     + "=" +   iif( ::lISFor                 , "YES", "NO" )      )
@@ -614,12 +595,12 @@ METHOD IdeINI:save( cHbideIni )
          IF nTab > 0
             oEdit := ::oIde:aTabs[ nTab, TAB_OEDITOR ]
 
-            IF !Empty( oEdit:sourceFile ) .AND. !( ".ppo" == lower( oEdit:cExt ) )
+            IF !Empty( oEdit:source() ) .AND. !( ".ppo" == lower( oEdit:cExt ) )
                IF oEdit:lLoaded
                   aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_getEditInfoAsString( oEdit ) )
 
                ELSE
-                  aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_pathNormalized( oEdit:sourceFile, .f. ) + "," + ;
+                  aadd( txt_, "file_" + hb_ntos( ++nn ) + "=" + hbide_pathNormalized( oEdit:source(), .f. ) + "," + ;
                               hb_ntos( oEdit:nPos  ) +  ","  + ;
                               hb_ntos( oEdit:nHPos ) +  ","  + ;
                               hb_ntos( oEdit:nVPos ) +  ","  + ;
@@ -768,7 +749,6 @@ METHOD IdeINI:save( cHbideIni )
 
    RETURN hbide_saveSettings( ::oIde )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeINI:load( cHbideIni )
    LOCAL aElem, s, nPart, cKey, cVal, a_
@@ -976,7 +956,9 @@ METHOD IdeINI:load( cHbideIni )
                      CASE "ToolWindowColumns"           ; ::nToolWindowColumns                := val( cVal )       ; EXIT
                      CASE "ExtBuildLaunch"              ; ::lExtBuildLaunch                   := !( cVal == "NO" ) ; EXIT
                      CASE "DebuggerState"               ; ::cDebuggerState                    := cVal              ; EXIT
-
+                     //
+                     CASE "SplitVertical"               ; ::lSplitVertical                    := ( cVal == "YES" ) ; EXIT
+                     //
                      ENDSWITCH
                   ENDIF
 
@@ -1104,7 +1086,6 @@ METHOD IdeINI:load( cHbideIni )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_saveSettings( oIde, cFile )
    LOCAL cPath
@@ -1116,7 +1097,6 @@ FUNCTION hbide_saveSettings( oIde, cFile )
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_restSettings( oIde, cFile )
    LOCAL cPath
@@ -1128,7 +1108,6 @@ FUNCTION hbide_restSettings( oIde, cFile )
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getEditInfoAsString( oEdit )
    LOCAL qHScr   := oEdit:qEdit:horizontalScrollBar()
@@ -1136,7 +1115,7 @@ FUNCTION hbide_getEditInfoAsString( oEdit )
    LOCAL qCursor := oEdit:qEdit:textCursor()
    LOCAL cBMarks := hbide_nArray2string( oEdit:oEdit:aBookMarks )
 
-   RETURN hbide_pathNormalized( oEdit:sourceFile, .f. ) +  ","  + ;
+   RETURN hbide_pathNormalized( oEdit:source(), .f. ) +  ","  + ;
                           hb_ntos( qCursor:position() ) +  ","  + ;
                           hb_ntos( qHScr:value()      ) +  ","  + ;
                           hb_ntos( qVScr:value()      ) +  ","  + ;
@@ -1146,7 +1125,6 @@ FUNCTION hbide_getEditInfoAsString( oEdit )
                           oEdit:cCodePage               +  ","  + ;
                           oEdit:extras()
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getIniPath( cHbideIni )
    LOCAL cPath, cIni
@@ -1171,7 +1149,6 @@ FUNCTION hbide_getIniPath( cHbideIni )
 
    RETURN cIni
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_loadSkltns( oIde, cPathSkltns )
    LOCAL s, n, cSkltn, cCode
@@ -1219,7 +1196,6 @@ FUNCTION hbide_loadSkltns( oIde, cPathSkltns )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_saveSkltns( oIde )
    LOCAL a_, txt_:= {}
@@ -1233,7 +1209,6 @@ FUNCTION hbide_saveSkltns( oIde )
 
    RETURN hbide_createTarget( oIde:oINI:getSnippetsFile(), txt_ )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_loadShortcuts( oIde, cFileShortcuts )
    LOCAL a_:= {}
@@ -1247,7 +1222,6 @@ FUNCTION hbide_loadShortcuts( oIde, cFileShortcuts )
 
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_saveShortcuts( oIde, a_, cFileShortcuts )
 
@@ -1258,7 +1232,6 @@ FUNCTION hbide_saveShortcuts( oIde, a_, cFileShortcuts )
 
    RETURN hb_fileExists( cFileShortcuts )
 
-/*------------------------------------------------------------------------*/
 
 FUNCTION hbide_loadHarbourProtos( oIde )
 
@@ -1266,7 +1239,6 @@ FUNCTION hbide_loadHarbourProtos( oIde )
 
    RETURN NIL //hbide_harbourProtos()
 
-/*------------------------------------------------------------------------*/
 
 FUNCTION hbide_saveHarbourProtos( oIde, aProto )
    LOCAL cFile := hb_dirBase() + "idehbprotos.prg"
@@ -1331,7 +1303,6 @@ CLASS IdeSetup INHERIT IdeObject
    METHOD setSystemStyle( cStyle )
    METHOD setBaseColor()
    METHOD connectSlots()
-   METHOD disConnectSlots()
    METHOD setIcons()
    METHOD populate()
    METHOD retrieve()
@@ -1351,13 +1322,11 @@ CLASS IdeSetup INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:new( oIde )
    ::oIde := oIde
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:create( oIde )
    DEFAULT oIde TO ::oIde
@@ -1365,23 +1334,19 @@ METHOD IdeSetup:create( oIde )
    ::oINI := ::oIde:oINI
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:destroy()
 
    IF !empty( ::oUI )
-      ::disConnectSlots()
       ::oUI:destroy()
    ENDIF
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:eol()
    RETURN iif( ::oINI:cLineEndingMode == "CRLF", hb_eol(), iif( ::oINI:cLineEndingMode == "CR", chr( 13 ), ;
                                                          iif( ::oINI:cLineEndingMode == "LF", chr( 10 ), hb_eol() ) ) )
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:setIcons()
 
@@ -1421,12 +1386,6 @@ METHOD IdeSetup:setIcons()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-
-METHOD IdeSetup:disConnectSlots()
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:connectSlots()
 
@@ -1536,9 +1495,10 @@ METHOD IdeSetup:connectSlots()
    ::oUI:radioDictAsIn       :connect( "clicked()"               , {| | ::execEvent( __radioDictAsIn_clicked__                          ) } )
    ::oUI:chkExtBuildLaunch   :connect( "stateChanged(int)"       , {|i| ::oINI:lExtBuildLaunch := ( i == 2 )                              } )
 
+   ::oUI:checkSplitVertical  :connect( "stateChanged(int)"       , {|i| ::oINI:lSplitVertical := ( i == 2 )                               } )
+
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:retrieve()
    LOCAL a_, i, s, qItm
@@ -1624,14 +1584,13 @@ METHOD IdeSetup:retrieve()
    ::oINI:lTabAddClose             := ::oUI:chkTabAddClose     : isChecked()
    ::oINI:lExtBuildLaunch          := ::oUI:chkExtBuildLaunch  : isChecked()
 
+   ::oINI:lSplitVertical           := ::oUI:checkSplitVertical : isChecked()
+
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:populate()
    LOCAL s, a_
-
-   ::disconnectSlots()
 
    ::oUI:checkAnimated                : setChecked( val( ::oINI:cIdeAnimated ) > 0      )
 
@@ -1759,6 +1718,8 @@ METHOD IdeSetup:populate()
    ::oUI:chkTabAddClose     : setChecked( ::oINI:lTabAddClose    )
    ::oUI:chkExtBuildLaunch  : setChecked( ::oINI:lExtBuildLaunch )
 
+   ::oUI:checkSplitVertical : setChecked( ::oINI:lSplitVertical  )
+
    ::connectSlots()
 
    ::pushThemesData()
@@ -1768,7 +1729,6 @@ METHOD IdeSetup:populate()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:show()
    LOCAL cStyle
@@ -1847,7 +1807,6 @@ METHOD IdeSetup:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:execEvent( nEvent, p, p1 )
    LOCAL qItem, nIndex, qFontDlg, qFont, nOK, nRow, b_, q0, q1, nCol, w0, w1
@@ -2334,7 +2293,6 @@ METHOD IdeSetup:execEvent( nEvent, p, p1 )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:uiDictionaries()
    LOCAL oDict, nRow
@@ -2349,7 +2307,6 @@ METHOD IdeSetup:uiDictionaries()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:uiIncludePaths()
    LOCAL cDict, nRow
@@ -2365,7 +2322,6 @@ METHOD IdeSetup:uiIncludePaths()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:uiSourcePaths()
    LOCAL cDict, nRow
@@ -2381,7 +2337,6 @@ METHOD IdeSetup:uiSourcePaths()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:viewIt( cFileName, lSaveAs, lSave, lReadOnly, lApplyHiliter )
    LOCAL oUI
@@ -2410,7 +2365,6 @@ METHOD IdeSetup:viewIt( cFileName, lSaveAs, lSave, lReadOnly, lApplyHiliter )
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeSetup:pushThemesData()
    LOCAL s, a_, qItem
@@ -2434,7 +2388,6 @@ METHOD IdeSetup:pushThemesData()
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeSetup:getThemeData( nTheme )
    LOCAL a_, i, aTheme := {}
@@ -2451,7 +2404,6 @@ METHOD IdeSetup:getThemeData( nTheme )
 
    RETURN aTheme
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:pushThemeColors( nTheme )
    LOCAL n, a_, i, aRGB, nSlot
@@ -2483,7 +2435,6 @@ METHOD IdeSetup:pushThemeColors( nTheme )
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeSetup:populateThemeColors( nSlot, aRGB )
    LOCAL qFrame
@@ -2497,7 +2448,6 @@ METHOD IdeSetup:populateThemeColors( nSlot, aRGB )
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeSetup:fetchThemeColorsString( nSlot )
    LOCAL s := ""
@@ -2518,7 +2468,6 @@ METHOD IdeSetup:fetchThemeColorsString( nSlot )
 
    RETURN s
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeSetup:pullThemeColors( nSlot )
    LOCAL aRGB := {}
@@ -2531,7 +2480,6 @@ METHOD IdeSetup:pullThemeColors( nSlot )
 
    RETURN aRGB
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeSetup:populateKeyTableRow( nRow, cTxtCol1, cTxtCol2 )
    LOCAL lAppend := Len( ::aKeyItems ) < nRow
@@ -2560,7 +2508,6 @@ METHOD IdeSetup:populateKeyTableRow( nRow, cTxtCol1, cTxtCol2 )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:buildKeywords()
    LOCAL hdr_:= { { "Keyword", 100 }, { "Value", 230 } }
@@ -2583,7 +2530,6 @@ METHOD IdeSetup:buildKeywords()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:buildTree()
    LOCAL oRoot, oChild, s
@@ -2613,7 +2559,6 @@ METHOD IdeSetup:buildTree()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:setSystemStyle( cStyle )
    LOCAL qFactory
@@ -2625,7 +2570,6 @@ METHOD IdeSetup:setSystemStyle( cStyle )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSetup:setBaseColor()
    #if 0
@@ -2671,7 +2615,6 @@ FUNCTION hbide_saveEnvironment( oIde, cFile )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_restEnvironment( oIde, cFile )
    LOCAL cPath, cExt, oSettings
@@ -2695,7 +2638,6 @@ FUNCTION hbide_restEnvironment( oIde, cFile )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_restEnvironment_byResource( oIde, cFile )
    LOCAL oSettings := QSettings( ":/env/" + cFile + ".ide", QSettings_IniFormat )
@@ -2704,10 +2646,7 @@ FUNCTION hbide_restEnvironment_byResource( oIde, cFile )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getFileContentsFromResource( cFile )
-
    RETURN QResource( ":/" + cFile ):data()
 
-/*----------------------------------------------------------------------*/

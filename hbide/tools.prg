@@ -1037,7 +1037,7 @@ METHOD IdeToolsManager:deletePanel( cView )
       pTab  := ::oIde:qTabWidget:widget( 0 )
       IF ( nTab  := ascan( ::oIde:aTabs, {|e_| hbqt_IsEqual( e_[ 1 ]:oWidget, pTab ) } ) ) > 0
          oEdit := ::oIde:aTabs[ nTab, TAB_OEDITOR ]
-         IF ! Empty( oEdit:sourceFile ) .AND. !( ".ppo" == lower( oEdit:cExt ) )
+         IF ! Empty( oEdit:source() ) .AND. !( ".ppo" == lower( oEdit:cExt ) )
             ::oSM:closeSource( nTab, .F., .F., .T. )  /* This deletes the tabs also */
          ENDIF
       ENDIF

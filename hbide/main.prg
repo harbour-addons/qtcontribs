@@ -535,6 +535,8 @@ METHOD HbIde:create( aParams )
    /* Console Editor */
    ::oCUI := IdeConsole():new( Self ):create()
 
+   __hbqtAppWidget( ::oDlg:oWidget )
+
    ::oDlg:show()     /* Shifted here - it gives the effect that time opening HbIDE is much less */
    qSplash:raise()
 
@@ -1469,10 +1471,10 @@ METHOD HbIde:updateTitleBar()
    ENDIF
 
    IF !empty( oEdit := ::oEM:getEditorCurrent() )
-      IF Empty( oEdit:sourceFile )
+      IF Empty( oEdit:source() )
          cTitle += " [" + oEdit:oTab:caption + "]"
       ELSE
-         cTitle += " [" + oEdit:sourceFile + "]"
+         cTitle += " [" + oEdit:source() + "]"
       ENDIF
    ENDIF
 

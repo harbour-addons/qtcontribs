@@ -539,7 +539,7 @@ METHOD IdeDocWriter:loadCurrentFuncDoc()
 
    IF !empty( oEdit := ::oEM:getEditObjectCurrent() )
       IF oEdit:isModified()
-         MsgBox( oEdit:oEditor:sourceFile + " is modified.", "Please save the source first" )
+         MsgBox( oEdit:oEditor:source() + " is modified.", "Please save the source first" )
          RETURN Self
       ENDIF
 
@@ -562,7 +562,7 @@ METHOD IdeDocWriter:loadCurrentFuncDoc()
                ::cFuncPtoto  := cProto
                ::nFuncLine   := nProtoLine
                ::nTagsIndex  := n
-               ::cSourceFile := oEdit:oEditor:sourceFile
+               ::cSourceFile := oEdit:oEditor:source()
                IF Empty( aDoc := ::pullDocFromSource( nProtoLine, oEdit ) )
                   ::fillForm( aFacts )
                ELSE
@@ -644,7 +644,7 @@ METHOD IdeDocWriter:saveInFunction()
       ENDIF
 
       IF oEdit:isModified()
-         MsgBox( oEdit:oEditor:sourceFile + " is modified.", "Please save the source first!" )
+         MsgBox( oEdit:oEditor:source() + " is modified.", "Please save the source first!" )
          RETURN Self
       ENDIF
       IF oEdit:find( ::cFuncPtoto, 0 )

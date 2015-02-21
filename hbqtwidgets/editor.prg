@@ -85,8 +85,8 @@ CLASS HbQtEditor
 
    DATA   qEdit
    ACCESS widget()                                INLINE ::qEdit
-   ACCESS document()                              INLINE ::qEdit:document()
-   METHOD setDocument( oDocument )                INLINE ::qEdit:setDocument( oDocument )
+   ACCESS document()                              INLINE ::oDocument
+   METHOD setDocument( oDocument )                INLINE ::oDocument := oDocument, ::qEdit:setDocument( oDocument )
 
    DATA   oHilighter
 
@@ -321,33 +321,34 @@ CLASS HbQtEditor
    DATA   bUpdateRequestBlock
    DATA   bBreakPointSetBlock
    DATA   bModificationChangedBlock
-   DATA   bContentsChangedBlock
    DATA   bContextMenuBlock
    DATA   bEditorInfoBlock
    DATA   bSelectionChangedBlock
    DATA   bKeyPressedBlock
-   DATA   bFormattingInfoBlock
    DATA   bEventsBlock                            INIT {|| NIL }
 
    METHOD updateRequestBlock( bBlock )            SETGET
    METHOD breakPointSetBlock( bBlock )            SETGET
    METHOD modificationChangedBlock( bBlock )      SETGET
-   METHOD contentsChangedBlock( bBlock )          SETGET
    METHOD contextMenuBlock( bBlock )              SETGET
    METHOD editorInfoBlock( bBlock )               SETGET
    METHOD selectionChangedBlock( bBlock )         SETGET
    METHOD keyPressedBlock( bBlock )               SETGET
-   METHOD formattingInfoBlock( bBlock )           SETGET
    METHOD eventsBlock( bBlock )                   SETGET
 
-   METHOD appendCLASS( qCursor, cClassName )
-   METHOD appendFUNCTION( qCursor )
-   METHOD appendSWITCH( qCursor )
-   METHOD appendWHILE( qCursor )
-   METHOD appendFOR( qCursor )
-   METHOD appendIF( qCursor )
-   METHOD appendCASE( qCursor )
-   METHOD appendWITH( qCursor )
+   METHOD appendCLASS( oTxtCursor, cClassName )
+   METHOD appendFUNCTION( oTxtCursor )
+   METHOD appendSWITCH( oTxtCursor )
+   METHOD appendWHILE( oTxtCursor )
+   METHOD appendFOR( oTxtCursor )
+   METHOD appendIF( oTxtCursor )
+   METHOD appendCASE( oTxtCursor )
+   METHOD appendWITH( oTxtCursor )
+
+   METHOD documentContentsChanged( nPosition, nCharsRemoved, nCharsAdded )
+
+   PROTECTED:
+   DATA   oDocument
 
    ENDCLASS
 
@@ -382,6 +383,7 @@ METHOD HbQtEditor:create()
       :setColor( QPalette_Inactive, QPalette_Highlight, QColor( Qt_yellow ) )
    ENDWITH
    ::qEdit:setPalette( oPalette )
+   ::oDocument := ::qEdit:document()
 
    ::setFont()
    ::connectEditSignals()
@@ -393,6 +395,8 @@ METHOD HbQtEditor:create()
       :connect( QEvent_Resize             , {| | ::execKeyEvent( 106, QEvent_Resize                 ) } )
       :connect( QEvent_FocusOut           , {| | ::execKeyEvent( 105, QEvent_FocusOut               ) } )
       :connect( QEvent_MouseButtonPress   , {| | ::execKeyEvent( 106, QEvent_MouseButtonPress       ) } )
+
+      ::oDocument:connect( "contentsChange(int,int,int)", {| nPosition, nCharsRemoved, nCharsAdded | ::documentContentsChanged( nPosition, nCharsRemoved, nCharsAdded ) } )
 
       :hbSetEventBlock( {|p,p1,p2| ::execKeyEvent( 115, 1001, p, p1, p2 ) } )
    ENDWITH
@@ -427,6 +431,14 @@ METHOD HbQtEditor:destroy()
    RETURN NIL
 
 
+METHOD HbQtEditor:documentContentsChanged( nPosition, nCharsRemoved, nCharsAdded )
+   ::reformatLine( nPosition, nCharsRemoved, nCharsAdded )
+   ::aLastEditingPosition := { ::qEdit:horizontalScrollBar():value(), ;
+                               ::qEdit:verticalScrollBar():value()  , ;
+                               ::qEdit:textCursor() }
+   RETURN Self
+
+
 METHOD HbQtEditor:updateRequestBlock( bBlock )
    LOCAL bOldBlock := ::bUpdateRequestBlock
    IF HB_ISBLOCK( bBlock )
@@ -450,15 +462,6 @@ METHOD HbQtEditor:modificationChangedBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
       ::bModificationChangedBlock := bBlock
       ::qEdit:document():connect( "modificationChanged(bool)", {| lChanged | Eval( ::bModificationChangedBlock, lChanged ) } )
-   ENDIF
-   RETURN bOldBlock
-
-
-METHOD HbQtEditor:contentsChangedBlock( bBlock )
-   LOCAL bOldBlock := ::bContentsChangedBlock
-   IF HB_ISBLOCK( bBlock )
-      ::bContentsChangedBlock := bBlock
-      ::qEdit:document():connect( "contentsChange(int,int,int)", {| nPosition, nCharsRemoved, nCharsAdded | Eval( ::bContentsChangedBlock, nPosition, nCharsRemoved, nCharsAdded ) } )
    ENDIF
    RETURN bOldBlock
 
@@ -497,14 +500,6 @@ METHOD HbQtEditor:keyPressedBlock( bBlock )
    RETURN bOldBlock
 
 
-METHOD HbQtEditor:formattingInfoBlock( bBlock )
-   LOCAL bOldBlock := ::bFormattingInfoBlock
-   IF HB_ISBLOCK( bBlock )
-      ::bFormattingInfoBlock := bBlock
-   ENDIF
-   RETURN bOldBlock
-
-
 METHOD HbQtEditor:eventsBlock( bBlock )
    LOCAL bOldBlock := ::bEventsBlock
    IF HB_ISBLOCK( bBlock )
@@ -514,9 +509,9 @@ METHOD HbQtEditor:eventsBlock( bBlock )
 
 
 METHOD HbQtEditor:connectEditSignals()
-   ::qEdit:connect( "selectionChanged()"                , {|p   | ::execEvent( __selectionChanged__, p    ) } )
-   ::qEdit:connect( "cursorPositionChanged()"           , {|    | ::execEvent( __cursorPositionChanged__  ) } )
-   ::qEdit:connect( "copyAvailable(bool)"               , {|p   | ::execEvent( __copyAvailable__, p       ) } )
+   ::qEdit:connect( "selectionChanged()"     , {|p| ::execEvent( __selectionChanged__, p    ) } )
+   ::qEdit:connect( "cursorPositionChanged()", {| | ::execEvent( __cursorPositionChanged__  ) } )
+   ::qEdit:connect( "copyAvailable(bool)"    , {|p| ::execEvent( __copyAvailable__, p       ) } )
    RETURN NIL
 
 
@@ -528,10 +523,10 @@ METHOD HbQtEditor:disconnectEditSignals()
 
 
 METHOD HbQtEditor:execEvent( nMode, p, p1 )
-   LOCAL qCursor, nChars
+   LOCAL oTxtCursor, nChars
 
-   qCursor := ::qEdit:textCursor()
-   ::nCurLineNo := qCursor:blockNumber()
+   oTxtCursor := ::qEdit:textCursor()
+   ::nCurLineNo := oTxtCursor:blockNumber()
 
    SWITCH nMode
    CASE __timerTimeout__
@@ -576,6 +571,11 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
    HB_SYMBOL_UNUSED( nMode )
    HB_SYMBOL_UNUSED( p1 )
    HB_SYMBOL_UNUSED( p2 )
+
+   IF nMode == 104
+      Eval( ::bEventsBlock, __HBQTEDITOR_FOCUSIN__, NIL, Self )
+      RETURN .F.
+   ENDIF
 
    SWITCH nEvent
 
@@ -804,26 +804,26 @@ STATIC FUNCTION hbide_blockContents( aContents )
 
 
 STATIC FUNCTION hbide_setQCursor( qEdit, a_ )
-   LOCAL qCursor
+   LOCAL oTxtCursor
 
    IF HB_ISARRAY( a_ )
-      WITH OBJECT qCursor := a_[ 1 ]
+      WITH OBJECT oTxtCursor := a_[ 1 ]
          :movePosition( QTextCursor_Start, QTextCursor_MoveAnchor )
          :movePosition( QTextCursor_Down , QTextCursor_MoveAnchor, a_[ 2 ] )
          :movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, a_[ 3 ] )
       ENDWITH
-      qEdit:setTextCursor( qCursor )
-      qCursor:endEditBlock()
+      qEdit:setTextCursor( oTxtCursor )
+      oTxtCursor:endEditBlock()
    ELSE
-      qCursor := qEdit:textCursor()
-      qCursor:beginEditBlock()
-      RETURN { qCursor, qCursor:blockNumber(), qCursor:columnNumber() }
+      oTxtCursor := qEdit:textCursor()
+      oTxtCursor:beginEditBlock()
+      RETURN { oTxtCursor, oTxtCursor:blockNumber(), oTxtCursor:columnNumber() }
    ENDIF
    RETURN NIL
 
 
-STATIC FUNCTION hbide_qReplaceLine( qCursor, nLine, cLine )
-   WITH OBJECT qCursor
+STATIC FUNCTION hbide_qReplaceLine( oTxtCursor, nLine, cLine )
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_Start      , QTextCursor_MoveAnchor )
       :movePosition( QTextCursor_Down       , QTextCursor_MoveAnchor, nLine )
       :movePosition( QTextCursor_StartOfLine, QTextCursor_MoveAnchor )
@@ -833,8 +833,8 @@ STATIC FUNCTION hbide_qReplaceLine( qCursor, nLine, cLine )
    RETURN NIL
 
 
-STATIC FUNCTION hbide_qPositionCursor( qCursor, nRow, nCol )
-   WITH OBJECT qCursor
+STATIC FUNCTION hbide_qPositionCursor( oTxtCursor, nRow, nCol )
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_Start, QTextCursor_MoveAnchor       )
       :movePosition( QTextCursor_Down , QTextCursor_MoveAnchor, nRow )
       :movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, nCol )
@@ -870,10 +870,10 @@ STATIC FUNCTION hbide_convertALine( cLine, cMode )
    RETURN cLine
 
 
-STATIC FUNCTION hbide_qCursorDownInsert( qCursor )
+STATIC FUNCTION hbide_qCursorDownInsert( oTxtCursor )
    LOCAL nRow
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       nRow := :blockNumber()
       :movePosition( QTextCursor_Down, QTextCursor_MoveAnchor )
       IF :blockNumber() == nRow
@@ -941,7 +941,7 @@ METHOD HbQtEditor:copyBlockContents()
 
 
 METHOD HbQtEditor:pasteBlockContents()
-   LOCAL i, nCol, qCursor, nMaxCol, aCopy, a_, nPasteMode, nMode
+   LOCAL i, nCol, oTxtCursor, nMaxCol, aCopy, a_, nPasteMode, nMode
 
    IF ::lReadOnly
       RETURN Self
@@ -966,52 +966,52 @@ METHOD HbQtEditor:pasteBlockContents()
    ENDIF
 
    nPasteMode := iif( empty( nPasteMode ), __selectionMode_stream__, nPasteMode )
-   qCursor    := ::qEdit:textCursor()
-   nCol       := qCursor:columnNumber()
+   oTxtCursor    := ::qEdit:textCursor()
+   nCol       := oTxtCursor:columnNumber()
 
-   qCursor:beginEditBlock()
+   oTxtCursor:beginEditBlock()
    //
    SWITCH nPasteMode
    CASE __selectionMode_column__
       FOR i := 1 TO Len( aCopy )
-         qCursor:insertText( aCopy[ i ] )
+         oTxtCursor:insertText( aCopy[ i ] )
          IF i < Len( aCopy )
-            hbide_qCursorDownInsert( qCursor )
+            hbide_qCursorDownInsert( oTxtCursor )
 
-            qCursor:movePosition( QTextCursor_EndOfLine, QTextCursor_MoveAnchor )
-            nMaxCol := qCursor:columnNumber()
+            oTxtCursor:movePosition( QTextCursor_EndOfLine, QTextCursor_MoveAnchor )
+            nMaxCol := oTxtCursor:columnNumber()
             IF nMaxCol < nCol
-               qCursor:insertText( replicate( " ", nCol - nMaxCol ) )
+               oTxtCursor:insertText( replicate( " ", nCol - nMaxCol ) )
             ENDIF
-            qCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_MoveAnchor       )
-            qCursor:movePosition( QTextCursor_Right      , QTextCursor_MoveAnchor, nCol )
+            oTxtCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_MoveAnchor       )
+            oTxtCursor:movePosition( QTextCursor_Right      , QTextCursor_MoveAnchor, nCol )
          ENDIF
       NEXT
       EXIT
    CASE __selectionMode_stream__
       FOR i := 1 TO Len( aCopy )
-         qCursor:insertText( aCopy[ i ] )
+         oTxtCursor:insertText( aCopy[ i ] )
          IF i < Len( aCopy )
-            qCursor:insertText( hb_eol() )
+            oTxtCursor:insertText( hb_eol() )
          ENDIF
       NEXT
       EXIT
    CASE __selectionMode_line__
-      qCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_MoveAnchor       )
+      oTxtCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_MoveAnchor       )
       FOR i := 1 TO Len( aCopy )
-         qCursor:insertText( aCopy[ i ] )
-         qCursor:insertBlock()
+         oTxtCursor:insertText( aCopy[ i ] )
+         oTxtCursor:insertBlock()
       NEXT
       EXIT
    ENDSWITCH
 
-   qCursor:endEditBlock()
+   oTxtCursor:endEditBlock()
    ::qEdit:ensureCursorVisible()
    RETURN Self
 
 
 METHOD HbQtEditor:insertBlockContents( oKey )  /* Only called if block selection is on */
-   LOCAL nT, nL, nB, nR, nW, i, cLine, cKey, qCursor, aCord, qCur
+   LOCAL nT, nL, nB, nR, nW, i, cLine, cKey, oTxtCursor, aCord, qCur
 
    IF ::lReadOnly
       RETURN Self
@@ -1023,35 +1023,35 @@ METHOD HbQtEditor:insertBlockContents( oKey )  /* Only called if block selection
    __normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nW := nR - nL
 
-   qCursor := ::qEdit:textCursor()
+   oTxtCursor := ::qEdit:textCursor()
    qCur := ::qEdit:textCursor()
-   qCursor:beginEditBlock()
+   oTxtCursor:beginEditBlock()
 
    IF nW == 0
       FOR i := nT TO nB
          cLine := ::getLine( i + 1 )
          cLine := pad( substr( cLine, 1, nL ), nL ) + cKey + substr( cLine, nL + 1 )
-         hbide_qReplaceLine( qCursor, i, cLine )
+         hbide_qReplaceLine( oTxtCursor, i, cLine )
       NEXT
 
-      hbide_qPositionCursor( qCursor, qCur:blockNumber(), nR + 1 )
+      hbide_qPositionCursor( oTxtCursor, qCur:blockNumber(), nR + 1 )
    ELSE
       FOR i := nT TO nB
          cLine := ::getLine( i + 1 )
          cLine := pad( substr( cLine, 1, nL ), nL ) + replicate( cKey, nW ) + substr( cLine, nR + 1 )
-         hbide_qReplaceLine( qCursor, i, cLine )
+         hbide_qReplaceLine( oTxtCursor, i, cLine )
       NEXT
 
-      hbide_qPositionCursor( qCursor, qCur:blockNumber(), nR )
+      hbide_qPositionCursor( oTxtCursor, qCur:blockNumber(), nR )
    ENDIF
 
-   ::qEdit:setTextCursor( qCursor )
-   qCursor:endEditBlock()
+   ::qEdit:setTextCursor( oTxtCursor )
+   oTxtCursor:endEditBlock()
    RETURN Self
 
 
 METHOD HbQtEditor:cutBlockContents( k )
-   LOCAL nT, nL, nB, nR, i, cLine, qCursor, nSelMode, aCord, qCur
+   LOCAL nT, nL, nB, nR, i, cLine, oTxtCursor, nSelMode, aCord, qCur
 
    IF ::lReadOnly
       RETURN Self
@@ -1066,18 +1066,18 @@ METHOD HbQtEditor:cutBlockContents( k )
 
    nSelMode := aCord[ 5 ]
 
-   qCursor := ::qEdit:textCursor()
+   oTxtCursor := ::qEdit:textCursor()
    qCur := ::qEdit:textCursor()
-   qCursor:beginEditBlock()
+   oTxtCursor:beginEditBlock()
 
    IF k == Qt_Key_Backspace
       IF nSelMode == __selectionMode_column__
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
             cLine := pad( substr( cLine, 1, nL - 1 ), nL - 1 ) + substr( cLine, nL + 1 )
-            hbide_qReplaceLine( qCursor, i, cLine )
+            hbide_qReplaceLine( oTxtCursor, i, cLine )
          NEXT
-         hbide_qPositionCursor( qCursor, qCur:blockNumber(), nR - 1 )
+         hbide_qPositionCursor( oTxtCursor, qCur:blockNumber(), nR - 1 )
       ENDIF
    ELSE
       IF k == Qt_Key_Delete .OR. k == Qt_Key_X
@@ -1085,17 +1085,17 @@ METHOD HbQtEditor:cutBlockContents( k )
             FOR i := nT TO nB
                cLine := ::getLine( i + 1 )
                cLine := pad( substr( cLine, 1, nL ), nL ) + substr( cLine, nR + 1 )
-               hbide_qReplaceLine( qCursor, i, cLine )
+               hbide_qReplaceLine( oTxtCursor, i, cLine )
             NEXT
-            hbide_qPositionCursor( qCursor, qCur:blockNumber(), nL )
+            hbide_qPositionCursor( oTxtCursor, qCur:blockNumber(), nL )
             ::qEdit:hbSetSelectionInfo( { nT, nL, nB, nL, __selectionMode_column__ } )
 
          ELSEIF nSelMode == __selectionMode_stream__
-            hbide_qPositionCursor( qCursor, nT, nL )
-            IF qCursor:atEnd()
-               hbide_qPositionCursor( qCursor, nT-1, nL )
+            hbide_qPositionCursor( oTxtCursor, nT, nL )
+            IF oTxtCursor:atEnd()
+               hbide_qPositionCursor( oTxtCursor, nT-1, nL )
             ENDIF
-            WITH OBJECT qCursor
+            WITH OBJECT oTxtCursor
                :movePosition( QTextCursor_Down       , QTextCursor_KeepAnchor, nB - nT )
                :movePosition( QTextCursor_StartOfLine, QTextCursor_KeepAnchor          )
                :movePosition( QTextCursor_Right      , QTextCursor_KeepAnchor, nR      )
@@ -1104,10 +1104,10 @@ METHOD HbQtEditor:cutBlockContents( k )
             ::qEdit:hbSetSelectionInfo( { -1, -1, -1, -1, __selectionMode_stream__ } )
 
          ELSEIF nSelMode == __selectionMode_line__
-            hbide_qPositionCursor( qCursor, nT, nL )
-            qCursor:movePosition( QTextCursor_Down       , QTextCursor_KeepAnchor, nB - nT + 1 )
-            qCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_KeepAnchor          )
-            qCursor:removeSelectedText()
+            hbide_qPositionCursor( oTxtCursor, nT, nL )
+            oTxtCursor:movePosition( QTextCursor_Down       , QTextCursor_KeepAnchor, nB - nT + 1 )
+            oTxtCursor:movePosition( QTextCursor_StartOfLine, QTextCursor_KeepAnchor          )
+            oTxtCursor:removeSelectedText()
             ::qEdit:hbSetSelectionInfo( { -1, -1, -1, -1, __selectionMode_stream__ } )
             ::isLineSelectionON := .f.
 
@@ -1115,13 +1115,13 @@ METHOD HbQtEditor:cutBlockContents( k )
       ENDIF
    ENDIF
 
-   ::qEdit:setTextCursor( qCursor )
-   qCursor:endEditBlock()
+   ::qEdit:setTextCursor( oTxtCursor )
+   oTxtCursor:endEditBlock()
    RETURN Self
 
 
 METHOD HbQtEditor:blockComment()  /* Toggles the block comments - always inserted at the begining of the line */
-   LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, nMode, a_
+   LOCAL nT, nL, nB, nR, nW, i, cLine, oTxtCursor, aCord, nMode, a_
    LOCAL cComment := "// "
    LOCAL nLen := Len( cComment )
 
@@ -1136,7 +1136,7 @@ METHOD HbQtEditor:blockComment()  /* Toggles the block comments - always inserte
    IF nW >= 0
       nMode := aCord[ 5 ]
       a_:= hbide_setQCursor( ::qEdit )
-      qCursor := a_[ 1 ]
+      oTxtCursor := a_[ 1 ]
 
       FOR i := nT TO nB
          cLine := ::getLine( i + 1 )
@@ -1159,12 +1159,12 @@ METHOD HbQtEditor:blockComment()  /* Toggles the block comments - always inserte
             EXIT
          ENDSWITCH
 
-         hbide_qReplaceLine( qCursor, i, cLine )
+         hbide_qReplaceLine( oTxtCursor, i, cLine )
       NEXT
 #if 1
       hbide_setQCursor( ::qEdit, a_ )
 #else
-      hbide_qPositionCursor( qCursor, qCur:blockNumber(), nL )
+      hbide_qPositionCursor( oTxtCursor, qCur:blockNumber(), nL )
       ::qEdit:hbSetSelectionInfo( { nT, nL, nB, nL, __selectionMode_column__ } )
 #endif
    ENDIF
@@ -1172,7 +1172,7 @@ METHOD HbQtEditor:blockComment()  /* Toggles the block comments - always inserte
 
 
 METHOD HbQtEditor:streamComment()
-   LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, nMode, a_
+   LOCAL nT, nL, nB, nR, nW, i, cLine, oTxtCursor, aCord, nMode, a_
 
    IF ::lReadOnly
       RETURN Self
@@ -1184,7 +1184,7 @@ METHOD HbQtEditor:streamComment()
 
    IF nW >= 0
       nMode   := aCord[ 5 ]
-      a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
+      a_:= hbide_setQCursor( ::qEdit ) ; oTxtCursor := a_[ 1 ]
 
       FOR i := nT TO nB
          cLine := ::getLine( i + 1 )
@@ -1206,7 +1206,7 @@ METHOD HbQtEditor:streamComment()
 
          ENDCASE
 
-         hbide_qReplaceLine( qCursor, i, cLine )
+         hbide_qReplaceLine( oTxtCursor, i, cLine )
       NEXT
 
       hbide_setQCursor( ::qEdit, a_ )
@@ -1215,7 +1215,7 @@ METHOD HbQtEditor:streamComment()
 
 
 METHOD HbQtEditor:handleTab( key )
-   LOCAL nT, nL, nB, nR, i, cLine, qCursor, aCord, nMode, nCol, nRow
+   LOCAL nT, nL, nB, nR, i, cLine, oTxtCursor, aCord, nMode, nCol, nRow
    LOCAL nLen, cComment, nOff
 
    IF ::lReadOnly
@@ -1230,10 +1230,10 @@ METHOD HbQtEditor:handleTab( key )
    __normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nMode := aCord[ 5 ]
 
-   qCursor := ::qEdit:textCursor()
-   qCursor:beginEditBlock()
-   nCol := qCursor:columnNumber()
-   nRow := qCursor:blockNumber()
+   oTxtCursor := ::qEdit:textCursor()
+   oTxtCursor:beginEditBlock()
+   nCol := oTxtCursor:columnNumber()
+   nRow := oTxtCursor:blockNumber()
 
    SWITCH nMode
    CASE __selectionMode_column__
@@ -1246,9 +1246,9 @@ METHOD HbQtEditor:handleTab( key )
             //cLine := substr( cLine, 1, nCol - 3 ) + substr( cLine, nCol + 1 )
             cLine := substr( cLine, 1, nL - 3 ) + substr( cLine, nL + 1 )
          ENDIF
-         hbide_qReplaceLine( qCursor, i, cLine )
+         hbide_qReplaceLine( oTxtCursor, i, cLine )
       NEXT
-      hbide_qPositionCursor( qCursor, nRow, max( 0, nCol + nOff ) )
+      hbide_qPositionCursor( oTxtCursor, nRow, max( 0, nCol + nOff ) )
       ::qEdit:hbSetSelectionInfo( { nT, max( 0, nL + nOff ), nB, max( 0, nR + nOff ), __selectionMode_column__ } )
       EXIT
    CASE __selectionMode_stream__
@@ -1262,23 +1262,23 @@ METHOD HbQtEditor:handleTab( key )
             ELSE
                cLine := substr( cLine, nLen + 1 )
             ENDIF
-            hbide_qReplaceLine( qCursor, i, cLine )
+            hbide_qReplaceLine( oTxtCursor, i, cLine )
          NEXT
-         hbide_qPositionCursor( qCursor, nRow, max( 0, nCol ) )
+         hbide_qPositionCursor( oTxtCursor, nRow, max( 0, nCol ) )
       ELSE
          IF key == Qt_Key_Tab
-            qCursor:insertText( Space( ::nTabSpaces ) )
+            oTxtCursor:insertText( Space( ::nTabSpaces ) )
          ELSE
             cLine := ::getLine( nRow + 1 )
             cLine := substr( cLine, 1, nCol - nLen ) + substr( cLine, nCol + 1 )
-            hbide_qReplaceLine( qCursor, nRow, cLine )
-            hbide_qPositionCursor( qCursor, nRow, max( 0, nCol + nOff ) )
+            hbide_qReplaceLine( oTxtCursor, nRow, cLine )
+            hbide_qPositionCursor( oTxtCursor, nRow, max( 0, nCol + nOff ) )
          ENDIF
       ENDIF
       EXIT
    ENDSWITCH
-   ::qEdit:setTextCursor( qCursor )
-   qCursor:endEditBlock()
+   ::qEdit:setTextCursor( oTxtCursor )
+   oTxtCursor:endEditBlock()
    RETURN .t.
 
 
@@ -1292,7 +1292,7 @@ METHOD HbQtEditor:blockIndent( nDirection )
 
 
 METHOD HbQtEditor:stringify()
-   LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, a_, cTkn, cT1
+   LOCAL nT, nL, nB, nR, nW, i, cLine, oTxtCursor, aCord, a_, cTkn, cT1
 
    IF ::lReadOnly
       RETURN Self
@@ -1301,7 +1301,7 @@ METHOD HbQtEditor:stringify()
    __normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nW := nR - nL
    IF nW > 0
-      a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
+      a_:= hbide_setQCursor( ::qEdit ) ; oTxtCursor := a_[ 1 ]
       IF aCord[ 5 ] == __selectionMode_column__
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
@@ -1309,14 +1309,14 @@ METHOD HbQtEditor:stringify()
             cT1   := Trim( cTkn )
             cTkn  := '"' + cT1 + '"' + Space( Len( cTkn ) - Len( cT1 ) )
             cLine := SubStr( cLine, 1, nL ) + cTkn + SubStr( cLine, nR + 1 )
-            hbide_qReplaceLine( qCursor, i, cLine )
+            hbide_qReplaceLine( oTxtCursor, i, cLine )
          NEXT
       ELSEIF aCord[ 1 ] == aCord[ 3 ]  /* same line selection */
-         cLine := qCursor:block():text()
+         cLine := oTxtCursor:block():text()
          cTkn  := SubStr( cLine, nL + 1, nR - nL )
          cTkn  := '"' + cTkn + '"'
          cLine := SubStr( cLine, 1, nL ) + cTkn + SubStr( cLine, nR + 1 )
-         hbide_qReplaceLine( qCursor, qCursor:blockNumber(), cLine )
+         hbide_qReplaceLine( oTxtCursor, oTxtCursor:blockNumber(), cLine )
       ENDIF
       hbide_setQCursor( ::qEdit, a_ )
    ENDIF
@@ -1324,7 +1324,7 @@ METHOD HbQtEditor:stringify()
 
 
 METHOD HbQtEditor:alignAt( cAt )
-   LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, a_, nMax, n, c1st, c2nd
+   LOCAL nT, nL, nB, nR, nW, i, cLine, oTxtCursor, aCord, a_, nMax, n, c1st, c2nd
    LOCAL  nCol, nMode, aAt, cREdgt, aReg
 
    IF ::lReadOnly
@@ -1335,7 +1335,7 @@ METHOD HbQtEditor:alignAt( cAt )
    aCord := ::aSelectionInfo
    __normalizeRect( aCord, @nT, @nL, @nB, @nR )
    nW := nR - nL + 1
-   a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
+   a_:= hbide_setQCursor( ::qEdit ) ; oTxtCursor := a_[ 1 ]
 
    IF Left( cAt, 2 ) == "\L"          //   \L    align at left column of selected block
       nCol := nL
@@ -1374,7 +1374,7 @@ METHOD HbQtEditor:alignAt( cAt )
                c2nd := SubStr( cLine, nL + n - 1 )
                cLine := PadR( c1st, nMax ) + c2nd
             ENDIF
-            hbide_qReplaceLine( qCursor, i, cLine )
+            hbide_qReplaceLine( oTxtCursor, i, cLine )
          NEXT
       ENDIF
       EXIT
@@ -1383,7 +1383,7 @@ METHOD HbQtEditor:alignAt( cAt )
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
             c1st  := PadR( SubStr( cLine, 1, nL ), nCol - 1 ) + SubStr( cLine, nL + 1 )
-            hbide_qReplaceLine( qCursor, i, c1st )
+            hbide_qReplaceLine( oTxtCursor, i, c1st )
          NEXT
       ENDIF
       EXIT
@@ -1408,7 +1408,7 @@ METHOD HbQtEditor:alignAt( cAt )
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
             c1st  := PadR( SubStr( cLine, 1, nL ), nMax - 1 ) + LTrim( SubStr( cLine, nL + 1 ) )
-            hbide_qReplaceLine( qCursor, i, c1st )
+            hbide_qReplaceLine( oTxtCursor, i, c1st )
          NEXT
       ELSE
          FOR i := nT TO nB
@@ -1430,7 +1430,7 @@ METHOD HbQtEditor:alignAt( cAt )
                   c1st  := SubStr( cLine, 1, aAt[ n ] - 1 )
                   c2nd  := SubStr( cLine, aAt[ n ] )
                   cLine := PadR( c1st, nMax - 1 ) + c2nd
-                  hbide_qReplaceLine( qCursor, i, cLine )
+                  hbide_qReplaceLine( oTxtCursor, i, cLine )
                ENDIF
             NEXT
          ENDIF
@@ -1441,7 +1441,7 @@ METHOD HbQtEditor:alignAt( cAt )
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
             c1st  := PadR( SubStr( cLine, 1, nL ), nL ) + LTrim( SubStr( cLine, nL + 1 ) )
-            hbide_qReplaceLine( qCursor, i, c1st )
+            hbide_qReplaceLine( oTxtCursor, i, c1st )
          NEXT
       ENDIF
       EXIT
@@ -1450,7 +1450,7 @@ METHOD HbQtEditor:alignAt( cAt )
          FOR i := nT TO nB
             cLine := ::getLine( i + 1 )
             c1st  := PadL( Trim( SubStr( cLine, 1, nL ) ), nL ) + SubStr( cLine, nL + 1 )
-            hbide_qReplaceLine( qCursor, i, c1st )
+            hbide_qReplaceLine( oTxtCursor, i, c1st )
          NEXT
       ENDIF
       EXIT
@@ -1461,7 +1461,7 @@ METHOD HbQtEditor:alignAt( cAt )
 
 
 METHOD HbQtEditor:blockConvert( cMode )
-   LOCAL nT, nL, nB, nR, nW, i, cLine, qCursor, aCord, a_, nMode
+   LOCAL nT, nL, nB, nR, nW, i, cLine, oTxtCursor, aCord, a_, nMode
 
    IF ::lReadOnly
       RETURN Self
@@ -1473,7 +1473,7 @@ METHOD HbQtEditor:blockConvert( cMode )
 
    IF nW >= 0
       nMode := aCord[ 5 ]
-      a_:= hbide_setQCursor( ::qEdit ) ; qCursor := a_[ 1 ]
+      a_:= hbide_setQCursor( ::qEdit ) ; oTxtCursor := a_[ 1 ]
 
       FOR i := nT TO nB
          cLine := ::getLine( i + 1 )
@@ -1500,7 +1500,7 @@ METHOD HbQtEditor:blockConvert( cMode )
 
          ENDCASE
 
-         hbide_qReplaceLine( qCursor, i, cLine )
+         hbide_qReplaceLine( oTxtCursor, i, cLine )
       NEXT
 
       hbide_setQCursor( ::qEdit, a_ )
@@ -1690,7 +1690,7 @@ METHOD HbQtEditor:setReadOnly( lReadOnly )
 
 METHOD HbQtEditor:setBookmarks( aBookMarks )
    LOCAL nBlock
-   LOCAL aOldBookMarks := ::aBookMarks
+   LOCAL aOldBookMarks := {}
 
    IF HB_ISARRAY( aBookMarks )
       ::aBookMarks := aBookMarks
@@ -1698,6 +1698,11 @@ METHOD HbQtEditor:setBookmarks( aBookMarks )
          ::qEdit:hbBookMarks( nBlock )
       NEXT
    ENDIF
+   FOR EACH nBlock IN ::aBookMarks
+      IF ::qEdit:blockCount() >= nBlock
+         AAdd( aOldBookMarks, nBlock )
+      ENDIF
+   NEXT
    RETURN aOldBookmarks
 
 
@@ -1729,21 +1734,21 @@ METHOD HbQtEditor:setCurrentLineColor( nR, nG, nB )
  */
 METHOD HbQtEditor:find( cText, nPosFrom )
    LOCAL lFound, nPos
-   LOCAL qCursor := ::getCursor()
+   LOCAL oTxtCursor := ::getCursor()
 
-   nPos := qCursor:position()
+   nPos := oTxtCursor:position()
    IF HB_ISNUMERIC( nPosFrom )
-      qCursor:setPosition( nPosFrom )
+      oTxtCursor:setPosition( nPosFrom )
    ENDIF
-   ::qEdit:setTextCursor( qCursor )
+   ::qEdit:setTextCursor( oTxtCursor )
    IF ! ( lFound := ::qEdit:find( cText, QTextDocument_FindCaseSensitively ) )
       IF ! HB_ISNUMERIC( nPosFrom )
          lFound := ::qEdit:find( cText, QTextDocument_FindBackward + QTextDocument_FindCaseSensitively )
       ENDIF
    ENDIF
    IF ! lFound
-      qCursor:setPosition( nPos )
-      ::qEdit:setTextCursor( qCursor )
+      oTxtCursor:setPosition( nPos )
+      ::qEdit:setTextCursor( oTxtCursor )
    ELSE
       ::qEdit:centerCursor()
    ENDIF
@@ -1753,7 +1758,7 @@ METHOD HbQtEditor:find( cText, nPosFrom )
 /*  nFlags will decide the position, case sensitivity and direction
  */
 METHOD HbQtEditor:findEx( cText, nFlags, nStart )
-   LOCAL qCursor, lFound, nPos
+   LOCAL oTxtCursor, lFound, nPos
 
    DEFAULT cText  TO ::getSelectedText()
    IF Empty( cText )
@@ -1762,8 +1767,8 @@ METHOD HbQtEditor:findEx( cText, nFlags, nStart )
    DEFAULT nFlags TO 0
    DEFAULT nStart TO 0
 
-   qCursor := ::getCursor()
-   nPos    := qCursor:position()
+   oTxtCursor := ::getCursor()
+   nPos := oTxtCursor:position()
 
    IF nStart == 0
       // No need to move cursor
@@ -1775,39 +1780,38 @@ METHOD HbQtEditor:findEx( cText, nFlags, nStart )
 
    IF ( lFound := ::qEdit:find( cText, nFlags ) )
       ::qEdit:centerCursor()
-      qCursor := ::qEdit:textCursor()
-
-      ::qEdit:hbSetSelectionInfo( { qCursor:blockNumber(), qCursor:columnNumber() - Len( cText ), ;
-                                    qCursor:blockNumber(), qCursor:columnNumber(), 1, .t., .f. } )
-      qCursor:clearSelection()
+      oTxtCursor := ::qEdit:textCursor()
+      ::qEdit:hbSetSelectionInfo( { oTxtCursor:blockNumber(), oTxtCursor:columnNumber() - Len( cText ), ;
+                                    oTxtCursor:blockNumber(), oTxtCursor:columnNumber(), 1, .t., .f. } )
+      oTxtCursor:clearSelection()
    ELSE
-      qCursor:setPosition( nPos )
-      ::qEdit:setTextCursor( qCursor )
+      oTxtCursor:setPosition( nPos )
+      ::qEdit:setTextCursor( oTxtCursor )
    ENDIF
    RETURN lFound
 
 
 METHOD HbQtEditor:unHighlight()
-   LOCAL qCursor, nPos, lModified
+   LOCAL oTxtCursor, nPos, lModified
 
    IF ::isHighLighted
       ::isHighLighted := .f.
-      qCursor := ::getCursor()
-      nPos := qCursor:position()
+      oTxtCursor := ::getCursor()
+      nPos := oTxtCursor:position()
       lModified := ::qEdit:document():isModified()
       ::qEdit:undo()
       IF ! lModified
          ::qEdit:document():setModified( .f. )
       ENDIF
-      qCursor:setPosition( nPos )
-      ::qEdit:setTextCursor( qCursor )
+      oTxtCursor:setPosition( nPos )
+      ::qEdit:setTextCursor( oTxtCursor )
       RETURN .t.
    ENDIF
    RETURN .f.
 
 
 METHOD HbQtEditor:highlightAll( cText )
-   LOCAL qDoc, qFormat, qCursor, qFormatHL, qCur, lModified
+   LOCAL qDoc, qFormat, oTxtCursor, qFormatHL, qCur, lModified
 
    IF ::unHighLight()
       RETURN Self
@@ -1825,17 +1829,17 @@ METHOD HbQtEditor:highlightAll( cText )
    qCur := ::getCursor()
    qCur:beginEditBlock()
 
-   qCursor   := QTextCursor( qDoc )
-   qFormat   := qCursor:charFormat()
+   oTxtCursor   := QTextCursor( qDoc )
+   qFormat   := oTxtCursor:charFormat()
    qFormatHL := qFormat
    qFormatHL:setBackground( QBrush( QColor( Qt_yellow ) ) )
 
    DO WHILE .t.
-      qCursor := qDoc:find( cText, qCursor, 0 )
-      IF qCursor:isNull()
+      oTxtCursor := qDoc:find( cText, oTxtCursor, 0 )
+      IF oTxtCursor:isNull()
          EXIT
       ENDIF
-      qCursor:mergeCharFormat( qFormatHL )
+      oTxtCursor:mergeCharFormat( qFormatHL )
    ENDDO
    qCur:endEditBlock()
 
@@ -1894,27 +1898,27 @@ METHOD HbQtEditor:right()
 
 
 METHOD HbQtEditor:panEnd()
-   LOCAL qCursor := ::getCursor()
+   LOCAL oTxtCursor := ::getCursor()
    LOCAL cLine := ::getLine()
    ::qEdit:hbGetViewportInfo()
    IF Len( cLine ) - ::aViewportInfo[ 2 ] > ::aViewportInfo[ 4 ]
-      qCursor:movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, Len( cLine ) - ::aViewportInfo[ 2 ] )
+      oTxtCursor:movePosition( QTextCursor_Right, QTextCursor_MoveAnchor, Len( cLine ) - ::aViewportInfo[ 2 ] )
    ELSE
-      qCursor:movePosition( QTextCursor_EndOfLine )
+      oTxtCursor:movePosition( QTextCursor_EndOfLine )
    ENDIF
-   ::qEdit:setTextCursor( qCursor )
+   ::qEdit:setTextCursor( oTxtCursor )
    RETURN Self
 
 
 METHOD HbQtEditor:panHome()
-   LOCAL qCursor := ::getCursor()
+   LOCAL oTxtCursor := ::getCursor()
    ::qEdit:hbGetViewportInfo()
    IF ::aViewportInfo[ 2 ] == 0
-      qCursor:movePosition( QTextCursor_StartOfLine )
+      oTxtCursor:movePosition( QTextCursor_StartOfLine )
    ELSE
-      qCursor:movePosition( QTextCursor_Left, QTextCursor_MoveAnchor, qCursor:columnNumber() - ::aViewportInfo[ 2 ] )
+      oTxtCursor:movePosition( QTextCursor_Left, QTextCursor_MoveAnchor, oTxtCursor:columnNumber() - ::aViewportInfo[ 2 ] )
    ENDIF
-   ::qEdit:setTextCursor( qCursor )
+   ::qEdit:setTextCursor( oTxtCursor )
    RETURN Self
 
 
@@ -2102,26 +2106,26 @@ METHOD HbQtEditor:getText()
 
 
 METHOD HbQtEditor:getWord( lSelect )
-   LOCAL cText, qCursor := ::qEdit:textCursor()
+   LOCAL cText, oTxtCursor := ::qEdit:textCursor()
 
    DEFAULT lSelect TO .F.
 
-   qCursor:select( QTextCursor_WordUnderCursor )
-   cText := qCursor:selectedText()
+   oTxtCursor:select( QTextCursor_WordUnderCursor )
+   cText := oTxtCursor:selectedText()
 
    IF lSelect
-      ::qEdit:setTextCursor( qCursor )
+      ::qEdit:setTextCursor( oTxtCursor )
    ENDIF
    RETURN cText
 
 
 METHOD HbQtEditor:goto( nLine )
    LOCAL nRows, oGo
-   LOCAL qCursor := ::qEdit:textCursor()
+   LOCAL oTxtCursor := ::qEdit:textCursor()
 
    IF empty( nLine )
       nRows := ::qEdit:blockCount()
-      nLine := qCursor:blockNumber()
+      nLine := oTxtCursor:blockNumber()
 
       WITH OBJECT oGo := QInputDialog( ::qEdit )
          :setInputMode( 1 )
@@ -2138,28 +2142,28 @@ METHOD HbQtEditor:goto( nLine )
       ::qEdit:setFocus()
    ENDIF
 
-   qCursor:movePosition( QTextCursor_Start )
-   qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
-   ::qEdit:setTextCursor( qCursor )
+   oTxtCursor:movePosition( QTextCursor_Start )
+   oTxtCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
+   ::qEdit:setTextCursor( oTxtCursor )
    ::qEdit:centerCursor()
    RETURN Self
 
 
 METHOD HbQtEditor:getLine( nLine, lSelect )
-   LOCAL cText, qCursor := ::qEdit:textCursor()
+   LOCAL cText, oTxtCursor := ::qEdit:textCursor()
 
-   DEFAULT nLine   TO qCursor:blockNumber() + 1
+   DEFAULT nLine   TO oTxtCursor:blockNumber() + 1
    DEFAULT lSelect TO .F.
 
-   IF nLine != qCursor:blockNumber() + 1
-      qCursor:movePosition( QTextCursor_Start )
-      qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
+   IF nLine != oTxtCursor:blockNumber() + 1
+      oTxtCursor:movePosition( QTextCursor_Start )
+      oTxtCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
    ENDIF
 
-   qCursor:select( QTextCursor_LineUnderCursor )
-   cText := qCursor:selectedText()
+   oTxtCursor:select( QTextCursor_LineUnderCursor )
+   cText := oTxtCursor:selectedText()
    IF lSelect
-      ::qEdit:setTextCursor( qCursor )
+      ::qEdit:setTextCursor( oTxtCursor )
    ENDIF
 
    RETURN cText
@@ -2174,12 +2178,12 @@ METHOD HbQtEditor:getLineNo()
 
 
 METHOD HbQtEditor:insertSeparator( cSep )
-   LOCAL qCursor := ::qEdit:textCursor()
+   LOCAL oTxtCursor := ::qEdit:textCursor()
 
    IF empty( cSep )
       cSep := ::cSeparator
    ENDIF
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :beginEditBlock()
       :movePosition( QTextCursor_StartOfBlock )
       :insertBlock()
@@ -2193,15 +2197,15 @@ METHOD HbQtEditor:insertSeparator( cSep )
 
 
 METHOD HbQtEditor:insertText( cText )
-   LOCAL qCursor, nL, nB
+   LOCAL oTxtCursor, nL, nB
 
    IF HB_ISSTRING( cText ) .AND. !Empty( cText )
-      qCursor := ::qEdit:textCursor()
+      oTxtCursor := ::qEdit:textCursor()
 
       nL := Len( cText )
-      nB := qCursor:position() + nL
+      nB := oTxtCursor:position() + nL
 
-      WITH OBJECT qCursor
+      WITH OBJECT oTxtCursor
          :beginEditBlock()
          :removeSelectedText()
          :insertText( cText )
@@ -2218,55 +2222,55 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
    LOCAL cPWord, cPPWord, nPostn, nLine, nLPrev, nLPrevPrev, nCPrev, nCPrevPrev, nOff, cCased
    LOCAL cCWord  := ""
    LOCAL cRest   := ""
-   LOCAL qCursor := ::qEdit:textCursor()
+   LOCAL oTxtCursor := ::qEdit:textCursor()
 
    IF .T.
-      qCursor:joinPreviousEditBlock()
-      IF ! __IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() )
+      oTxtCursor:joinPreviousEditBlock()
+      IF ! __IsInCommentOrString( oTxtCursor:block():text(), oTxtCursor:columnNumber() )
 
-         nPostn := qCursor:position()
-         nLine  := qCursor:blockNumber()
+         nPostn := oTxtCursor:position()
+         nLine  := oTxtCursor:blockNumber()
 
          IF nPos == -1
             cCWord := " "
          ELSE
-            IF ( nCol := nPostn - qCursor:block():position() ) > 0
-               cCWord := SubStr( qCursor:block():text(), nCol, 1 )
+            IF ( nCol := nPostn - oTxtCursor:block():position() ) > 0
+               cCWord := SubStr( oTxtCursor:block():text(), nCol, 1 )
             ENDIF
          ENDIF
 
-         IF qCursor:movePosition( QTextCursor_EndOfLine, QTextCursor_KeepAnchor ) .AND. qCursor:position() > nPostn
-            cRest := qCursor:selectedText()
+         IF oTxtCursor:movePosition( QTextCursor_EndOfLine, QTextCursor_KeepAnchor ) .AND. oTxtCursor:position() > nPostn
+            cRest := oTxtCursor:selectedText()
          ENDIF
-         qCursor:clearSelection()
-         qCursor:setPosition( nPostn )
+         oTxtCursor:clearSelection()
+         oTxtCursor:setPosition( nPostn )
 
-         qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
-         nLPrev := qCursor:blockNumber()
+         oTxtCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
+         nLPrev := oTxtCursor:blockNumber()
          IF nLPrev == nLine
-            nCPrev := qCursor:position() - qCursor:block():position()
-            qCursor:select( QTextCursor_WordUnderCursor )
-            cPWord := qCursor:selectedText()
-            qCursor:clearSelection()
-            qCursor:setPosition( nPostn )
+            nCPrev := oTxtCursor:position() - oTxtCursor:block():position()
+            oTxtCursor:select( QTextCursor_WordUnderCursor )
+            cPWord := oTxtCursor:selectedText()
+            oTxtCursor:clearSelection()
+            oTxtCursor:setPosition( nPostn )
 
-            qCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
-            nLPrevPrev := qCursor:blockNumber()
+            oTxtCursor:movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
+            nLPrevPrev := oTxtCursor:blockNumber()
             IF nLPrevPrev == nLine
-               nCPrevPrev := qCursor:position() - qCursor:block():position()
-               qCursor:select( QTextCursor_WordUnderCursor )
-               cPPWord := qCursor:selectedText()
+               nCPrevPrev := oTxtCursor:position() - oTxtCursor:block():position()
+               oTxtCursor:select( QTextCursor_WordUnderCursor )
+               cPPWord := oTxtCursor:selectedText()
             ELSE
                nCPrevPrev := -1
                cPPWord := ""
             ENDIF
-            qCursor:clearSelection()
-            qCursor:setPosition( nPostn )
+            oTxtCursor:clearSelection()
+            oTxtCursor:setPosition( nPostn )
 
             /* Group I operations */
             IF cPWord == "." .AND. cPPWord $ ::hLogicals     /* ALWAYS */
                IF ! ::lSupressHbKWordsToUpper
-                  WITH OBJECT qCursor
+                  WITH OBJECT oTxtCursor
                      :movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 2 )
                      :select( QTextCursor_WordUnderCursor )
                      :removeSelectedText()
@@ -2277,37 +2281,37 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
 
             ELSEIF cPWord == ":=" .AND. cCWord == "=" .AND. nAdded == 1
                IF ::lISOperator
-                  qCursor:insertText( " " )
+                  oTxtCursor:insertText( " " )
                ENDIF
                IF ::lISAlignAssign
                   // look for previous lines and if 2nd keyword is assignment operator then align both to same offset
-                  __alignAssignments( qCursor )
+                  __alignAssignments( oTxtCursor )
                ENDIF
 
             ELSEIF ::lISCodeBlock .AND. Right( cPWord, 2 ) == "{|" .AND. cCWord == "|" .AND. nAdded == 1 .AND. Empty( cRest )
-               qCursor:insertText( "|  }" )
-               qCursor:setPosition( nPostn )
+               oTxtCursor:insertText( "|  }" )
+               oTxtCursor:setPosition( nPostn )
 
             ELSEIF cCWord == "(" .AND. ( __hbqtIsHarbourFunction( cPPWord, @cCased ) .OR. __hbqtIsQtFunction( cPPWord, @cCased ) .OR. __hbqtIsUserFunction( cPPWord, @cCased ) )
-               __replaceWord( qCursor, 2, cCased, nPostn )
+               __replaceWord( oTxtCursor, 2, cCased, nPostn )
                IF ::lISClosingP
                   IF cCWord == "(" .AND. nAdded == 1
-                     qCursor:insertText( ")" )
+                     oTxtCursor:insertText( ")" )
                      IF ::lISSpaceP
-                        qCursor:setPosition( nPostn )
-                        qCursor:insertText( "  " )
+                        oTxtCursor:setPosition( nPostn )
+                        oTxtCursor:insertText( "  " )
                         nPostn++
                      ENDIF
                   ENDIF
                ENDIF
-               qCursor:setPosition( nPostn )
+               oTxtCursor:setPosition( nPostn )
 
             ELSEIF cCWord == " " .AND. __hbqtIsUserFunction( cPPWord, @cCased ) /* User dictionaries : only keywords */
-               __replaceWord( qCursor, 2, cCased, nPostn )
+               __replaceWord( oTxtCursor, 2, cCased, nPostn )
 
             ELSEIF cCWord == " " .AND. cPPWord != "#" .AND. __isHarbourKeyword( cPWord )
                IF ! ::lSupressHbKWordsToUpper
-                  WITH OBJECT qCursor
+                  WITH OBJECT oTxtCursor
                      :movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, 1 )
                      :select( QTextCursor_WordUnderCursor )
                      :removeSelectedText()
@@ -2323,16 +2327,16 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
                   Eval( ::bEventsBlock, __HBQTEDITOR_UPDATEWORDSINCOMPLETER__, cPWord, Self )
                ENDIF
 
-            ELSEIF cCWord $ ",:" .AND. ! Empty( cPPWord ) .AND. ! ( Left( cPPWord, 1 ) $ "`~!@#$%^&*()+1234567890-=+[]{}|\':;?/>.<," )
+            ELSEIF cCWord $ ",:(" .AND. ! Empty( cPPWord ) .AND. ! ( Left( cPPWord, 1 ) $ "`~!@#$%^&*()+1234567890-=+[]{}|\':;?/>.<," )
                IF Len( cPPWord ) > 3
-                  Eval( ::bEventsBlock, __HBQTEDITOR_UPDATEWORDSINCOMPLETER__, cPWord, Self )
+                  Eval( ::bEventsBlock, __HBQTEDITOR_UPDATEWORDSINCOMPLETER__, cPPWord, Self )
                ENDIF
             ENDIF
 
             /* Group II operations */
             IF empty( cPPWord ) .AND. cCWord == " "
                IF __isStartingKeyword( cPWord, ::lReturnAsBeginKeyword )
-                  WITH OBJECT qCursor                                       /* FUNCTION PROCEDURE CLASS */
+                  WITH OBJECT oTxtCursor                                       /* FUNCTION PROCEDURE CLASS */
                      :movePosition( QTextCursor_StartOfBlock )
                      :movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
                      :removeSelectedText()
@@ -2340,7 +2344,7 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
                   ENDWITH
 
                ELSEIF ::lAutoIndent .AND. __isMinimumIndentableKeyword( cPWord, ::lReturnAsBeginKeyword )  /* LOCAL STATIC DEFAULT PRIVATE PUBLIC ENDCLASS RETURN */
-                  WITH OBJECT qCursor
+                  WITH OBJECT oTxtCursor
                      :movePosition( QTextCursor_StartOfBlock )
                      :movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nCPrev )
                      :removeSelectedText()
@@ -2351,14 +2355,14 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
                ELSEIF  ::lAutoIndent .AND. __isIndentableKeyword( cPWord )         /* IF SWITCH FOR DO */
                   IF nCPrev < ::nTabSpaces
                      nOff := ::nTabSpaces - nCPrev
-                     WITH OBJECT qCursor
+                     WITH OBJECT oTxtCursor
                         :movePosition( QTextCursor_StartOfBlock )
                         :insertText( space( nOff ) )
                         :setPosition( nPostn + nOff )
                      ENDWITH
 
                   ELSEIF ( nOff := nCPrev % ::nTabSpaces ) > 0            /* We always go back to the previous indent */
-                     WITH OBJECT qCursor
+                     WITH OBJECT oTxtCursor
                         :movePosition( QTextCursor_StartOfBlock )
                         :movePosition( QTextCursor_NextCharacter, QTextCursor_KeepAnchor, nOff )
                         :removeSelectedText()
@@ -2375,47 +2379,47 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
 
                IF ::lISClosing
                   IF     ::lISIf      .AND. cWord == "if" .AND. Empty( cPPWord ) /* Protected for #if */
-                     ::appendIF( qCursor )
+                     ::appendIF( oTxtCursor )
                   ELSEIF ::lISFor     .AND. cWord == "for"
-                     ::appendFOR( qCursor )
+                     ::appendFOR( oTxtCursor )
                   ELSEIF ::lISSwitch  .AND. cWord == "switch"
-                     ::appendSWITCH( qCursor )
+                     ::appendSWITCH( oTxtCursor )
                   ELSEIF ::lISDoCase  .AND. Lower( cPPWord ) == "do" .AND. cWord == "case"
-                     ::appendCASE( qCursor )
+                     ::appendCASE( oTxtCursor )
                   ELSEIF ::lISDoWhile .AND. Lower( cPPWord ) == "do" .AND. cWord == "while"
-                     ::appendWHILE( qCursor )
+                     ::appendWHILE( oTxtCursor )
                   ELSEIF Lower( cPPWord ) == "with" .AND. cWord == "object"
-                     ::appendWITH( qCursor )
+                     ::appendWITH( oTxtCursor )
                   ENDIF
                ENDIF
 
                IF cWord == "elseif" .OR. cWord == "else" .OR. cWord == "endif"
-                  __alignToPrevWord( qCursor, "if", "endif", Len( cWord ), nPostn )
+                  __alignToPrevWord( oTxtCursor, "if", "endif", Len( cWord ), nPostn )
                ELSEIF cWord == "next"
-                  __alignToPrevWord( qCursor, "for", "next", Len( cWord ), nPostn )
+                  __alignToPrevWord( oTxtCursor, "for", "next", Len( cWord ), nPostn )
                ELSEIF cWord == "endwith"
-                  __alignToPrevWord( qCursor, "with", "endwith", Len( cWord ), nPostn )
+                  __alignToPrevWord( oTxtCursor, "with", "endwith", Len( cWord ), nPostn )
                ELSEIF Lower( cPPWord ) == "static" .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
-                  __removeStartingSpaces( qCursor, nCPrevPrev )
+                  __removeStartingSpaces( oTxtCursor, nCPrevPrev )
                   IF ::lISFunction
-                     ::appendFUNCTION( qCursor )
+                     ::appendFUNCTION( oTxtCursor )
                   ENDIF
                ELSEIF Empty( cPPWord ) .AND. ( cPWord == "function" .OR. cPWord == "procedure" )
                   IF ::lISFunction
-                     ::appendFUNCTION( qCursor )
+                     ::appendFUNCTION( oTxtCursor )
                   ENDIF
                ELSEIF Lower( cPPWord ) == "create" .AND. cPWord == "class"
-                  __removeStartingSpaces( qCursor, nCPrevPrev )
+                  __removeStartingSpaces( oTxtCursor, nCPrevPrev )
                ELSEIF Lower( cPPWord ) == "class" .AND. ! Empty( cPWord )
                   IF ::lISClass
-                     ::appendCLASS( qCursor, cPWord )
+                     ::appendCLASS( oTxtCursor, cPWord )
                   ENDIF
                ENDIF
             ENDIF
-            ::qEdit:setTextCursor( qCursor )
+            ::qEdit:setTextCursor( oTxtCursor )
          ENDIF
-      ENDIF /* __IsInCommentOrString( qCursor:block():text(), qCursor:columnNumber() ) */
-      qCursor:endEditBlock()
+      ENDIF /* __IsInCommentOrString( oTxtCursor:block():text(), oTxtCursor:columnNumber() ) */
+      oTxtCursor:endEditBlock()
    ENDIF
 
    IF nPos != -1
@@ -2437,14 +2441,14 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
    RETURN cRest
 
 
-METHOD HbQtEditor:appendCLASS( qCursor, cClassName )
+METHOD HbQtEditor:appendCLASS( oTxtCursor, cClassName )
    LOCAL cMethod
    LOCAL nTabSpaces := ::nTabSpaces
    LOCAL aMethods   := hb_ATokens( ::cISMethods, ";" )
-   LOCAL nPostn     := qCursor:position()
+   LOCAL nPostn     := oTxtCursor:position()
    LOCAL nClosingIndent := iif( ::lReturnAsBeginKeyword, 0, nTabSpaces )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       :insertBlock()
       :insertText( Space( nTabSpaces ) + PadR( ::cISData, 7 ) + "xDummy" + Space( 34 ) + "INIT NIL" )
@@ -2477,10 +2481,10 @@ METHOD HbQtEditor:appendCLASS( qCursor, cClassName )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendFUNCTION( qCursor )
-   LOCAL nPostn := qCursor:position()
+METHOD HbQtEditor:appendFUNCTION( oTxtCursor )
+   LOCAL nPostn := oTxtCursor:position()
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       IF ::lISLocal
          :insertBlock()
@@ -2505,12 +2509,12 @@ METHOD HbQtEditor:appendFUNCTION( qCursor )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendCASE( qCursor )
+METHOD HbQtEditor:appendCASE( oTxtCursor )
    LOCAL i
-   LOCAL nCurPos := qCursor:position()
-   LOCAL nIndent := __getFrontSpacesAndWord( qCursor:block():text() )
+   LOCAL nCurPos := oTxtCursor:position()
+   LOCAL nIndent := __getFrontSpacesAndWord( oTxtCursor:block():text() )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       FOR i := 1 TO ::nISCaseCases
          :insertBlock()
@@ -2529,12 +2533,12 @@ METHOD HbQtEditor:appendCASE( qCursor )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendSWITCH( qCursor )
+METHOD HbQtEditor:appendSWITCH( oTxtCursor )
    LOCAL i
-   LOCAL nCurPos  := qCursor:position()
-   LOCAL nIndent  := __getFrontSpacesAndWord( qCursor:block():text() )
+   LOCAL nCurPos  := oTxtCursor:position()
+   LOCAL nIndent  := __getFrontSpacesAndWord( oTxtCursor:block():text() )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       FOR i := 1 TO ::nISSwitchCases
          :insertBlock()
@@ -2557,11 +2561,11 @@ METHOD HbQtEditor:appendSWITCH( qCursor )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendWHILE( qCursor )
-   LOCAL nCurPos  := qCursor:position()
-   LOCAL nIndent  := __getFrontSpacesAndWord( qCursor:block():text() )
+METHOD HbQtEditor:appendWHILE( oTxtCursor )
+   LOCAL nCurPos  := oTxtCursor:position()
+   LOCAL nIndent  := __getFrontSpacesAndWord( oTxtCursor:block():text() )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       :insertBlock()
       :insertText( Space( nIndent ) + "ENDDO" )
@@ -2570,11 +2574,11 @@ METHOD HbQtEditor:appendWHILE( qCursor )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendFOR( qCursor )
-   LOCAL nCurPos  := qCursor:position()
-   LOCAL nIndent  := __getFrontSpacesAndWord( qCursor:block():text() )
+METHOD HbQtEditor:appendFOR( oTxtCursor )
+   LOCAL nCurPos  := oTxtCursor:position()
+   LOCAL nIndent  := __getFrontSpacesAndWord( oTxtCursor:block():text() )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       :insertBlock()
       :insertText( Space( nIndent ) + "NEXT" )
@@ -2583,11 +2587,11 @@ METHOD HbQtEditor:appendFOR( qCursor )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendWITH( qCursor )
-   LOCAL nCurPos  := qCursor:position()
-   LOCAL nIndent  := __getFrontSpacesAndWord( qCursor:block():text() )
+METHOD HbQtEditor:appendWITH( oTxtCursor )
+   LOCAL nCurPos  := oTxtCursor:position()
+   LOCAL nIndent  := __getFrontSpacesAndWord( oTxtCursor:block():text() )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_EndOfBlock )
       :insertBlock()
       :insertText( Space( nIndent ) + "ENDWITH" )
@@ -2596,34 +2600,34 @@ METHOD HbQtEditor:appendWITH( qCursor )
    RETURN NIL
 
 
-METHOD HbQtEditor:appendIF( qCursor )
+METHOD HbQtEditor:appendIF( oTxtCursor )
    LOCAL nCol, cLine
    LOCAL lAligned := .F.
-   LOCAL nCurPos  := qCursor:position()
-   LOCAL nIndent  := __getFrontSpacesAndWord( qCursor:block():text() )
+   LOCAL nCurPos  := oTxtCursor:position()
+   LOCAL nIndent  := __getFrontSpacesAndWord( oTxtCursor:block():text() )
 
    IF ::lISEmbrace
-      qCursor:movePosition( QTextCursor_StartOfBlock )
-      IF qCursor:movePosition( QTextCursor_NextBlock )
-         cLine := qCursor:block():text()
+      oTxtCursor:movePosition( QTextCursor_StartOfBlock )
+      IF oTxtCursor:movePosition( QTextCursor_NextBlock )
+         cLine := oTxtCursor:block():text()
          nCol := __getFrontSpacesAndWord( cLine )
          IF ! Empty( cLine ) .AND. nCol == nIndent
             lAligned := .T.
-            qCursor:insertText( Space( ::nTabSpaces ) )
-            DO WHILE qCursor:movePosition( QTextCursor_NextBlock )
-               nCol := __getFrontSpacesAndWord( qCursor:block():text() )
+            oTxtCursor:insertText( Space( ::nTabSpaces ) )
+            DO WHILE oTxtCursor:movePosition( QTextCursor_NextBlock )
+               nCol := __getFrontSpacesAndWord( oTxtCursor:block():text() )
                IF nCol < nIndent
-                  qCursor:movePosition( QTextCursor_PreviousBlock )
+                  oTxtCursor:movePosition( QTextCursor_PreviousBlock )
                   EXIT
                ENDIF
-               qCursor:insertText( Space( ::nTabSpaces ) )
+               oTxtCursor:insertText( Space( ::nTabSpaces ) )
                QApplication():processEvents()
             ENDDO
          ENDIF
       ENDIF
    ENDIF
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       IF ! lAligned
          :movePosition( QTextCursor_PreviousBlock )
          :setPosition( nCurPos )
@@ -2641,11 +2645,11 @@ METHOD HbQtEditor:appendIF( qCursor )
 
 
 METHOD HbQtEditor:findLastIndent()
-   LOCAL qCursor, qTextBlock, cText, cWord
+   LOCAL oTxtCursor, qTextBlock, cText, cWord
    LOCAL nSpaces := 0
 
-   qCursor := ::qEdit:textCursor()
-   qTextBlock := qCursor:block()
+   oTxtCursor := ::qEdit:textCursor()
+   qTextBlock := oTxtCursor:block()
 
    qTextBlock := qTextBlock:previous()
    DO WHILE .t.
@@ -2667,13 +2671,13 @@ METHOD HbQtEditor:findLastIndent()
 
 
 METHOD HbQtEditor:handleCurrentIndent()
-   LOCAL qCursor, nSpaces
+   LOCAL oTxtCursor, nSpaces
 
    IF ::lIndentIt
       ::lIndentIt := .f.
       IF ( nSpaces := ::findLastIndent() ) > 0
-         qCursor := ::qEdit:textCursor()
-         qCursor:insertText( space( nSpaces ) )
+         oTxtCursor := ::qEdit:textCursor()
+         oTxtCursor:insertText( space( nSpaces ) )
       ENDIF
    ENDIF
    RETURN Self
@@ -2722,11 +2726,11 @@ METHOD HbQtEditor:clickFuncHelp()
 
 
 METHOD HbQtEditor:loadFuncHelp()
-   LOCAL qCursor, cText, cWord
+   LOCAL oTxtCursor, cText, cWord
 
-   qCursor := ::qEdit:textCursor()
-   cText   := qCursor:block():text()
-   cWord   := __getPreviousWord( cText, qCursor:columnNumber() )
+   oTxtCursor := ::qEdit:textCursor()
+   cText   := oTxtCursor:block():text()
+   cWord   := __getPreviousWord( cText, oTxtCursor:columnNumber() )
 
    IF ! Empty( cWord )
       Eval( ::bEventsBlock, __HBQTEDITOR_LOADFUNCTIONHELP__, cWord, Self )
@@ -2810,9 +2814,9 @@ METHOD HbQtEditor:parseCodeCompletion( cSyntax )
 
 METHOD HbQtEditor:completeCode( p )
    LOCAL cWord
-   LOCAL qCursor := ::qEdit:textCursor()
+   LOCAL oTxtCursor := ::qEdit:textCursor()
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_Left )
       :movePosition( QTextCursor_StartOfWord )
       :movePosition( QTextCursor_EndOfWord, QTextCursor_KeepAnchor )
@@ -2825,7 +2829,7 @@ METHOD HbQtEditor:completeCode( p )
       :movePosition( QTextCursor_Right )
    ENDWITH
 
-   ::qEdit:setTextCursor( qCursor )
+   ::qEdit:setTextCursor( oTxtCursor )
    Eval( ::bEventsBlock, __HBQTEDITOR_UPDATEFIELDSLIST__, NIL, Self )
    RETURN Self
 
@@ -2938,25 +2942,25 @@ METHOD HbQtEditor:setFormattingInfo( hInfo )
 //                        Supporting Functions
 //--------------------------------------------------------------------//
 
-STATIC FUNCTION __alignAssignments( qCursor )
+STATIC FUNCTION __alignAssignments( oTxtCursor )
    LOCAL aWords, cLine, nIndent, nPostn, cCLine, nCBlock, nAssgnAt, nCol
    LOCAL lAssign := .F.
 
-   nIndent := __getFrontSpacesAndWordsByCursor( qCursor, @aWords )
+   nIndent := __getFrontSpacesAndWordsByCursor( oTxtCursor, @aWords )
    IF Len( aWords ) >= 2
       IF Len( aWords ) == 2 .AND. aWords[ 2 ] == ":=" .OR. ;
          Len( aWords ) == 4 .AND. aWords[ 4 ] == ":=" .OR. ;
          Len( aWords ) == 5 .AND. aWords[ 5 ] == ":=" .AND. aWords[ 1 ] == "::"
 
-         cCLine   := qCursor:block():text()
-         nPostn   := qCursor:position()
+         cCLine   := oTxtCursor:block():text()
+         nPostn   := oTxtCursor:position()
          nAssgnAt := At( ":=", cCLine )
-         nCBlock  := qCursor:blockNumber()
+         nCBlock  := oTxtCursor:blockNumber()
 
          DO WHILE .T.
-            IF qCursor:movePosition( QTextCursor_PreviousBlock, QTextCursor_MoveAnchor )
-               IF ! Empty( cLine := qCursor:block():text() )
-                  nCol := __getFrontSpacesAndWordsByCursor( qCursor, @aWords )
+            IF oTxtCursor:movePosition( QTextCursor_PreviousBlock, QTextCursor_MoveAnchor )
+               IF ! Empty( cLine := oTxtCursor:block():text() )
+                  nCol := __getFrontSpacesAndWordsByCursor( oTxtCursor, @aWords )
                   IF nCol == nIndent .AND. Len( aWords ) >= 2 .AND. aWords[ 2 ] == ":="
                      nAssgnAt := Max( nAssgnAt, At( ":=", cLine ) )
                      lAssign  := .T.
@@ -2975,28 +2979,28 @@ STATIC FUNCTION __alignAssignments( qCursor )
             ENDIF
          ENDDO
          /* Anyway we are TO move TO NEXT block */
-         qCursor:movePosition( QTextCursor_NextBlock, QTextCursor_MoveAnchor )
+         oTxtCursor:movePosition( QTextCursor_NextBlock, QTextCursor_MoveAnchor )
          IF lAssign
             DO WHILE .T.
-               cLine := qCursor:block():text()
+               cLine := oTxtCursor:block():text()
                IF ! Empty( cLine )
                   nCol  := At( ":=", cLine )
                   cLine := Pad( Trim( SubStr( cLine, 1, nCol - 1 ) ), nAssgnAt - 1 ) + ":=" + Trim( SubStr( cLine, nCol + 2 ) )
-                  WITH OBJECT qCursor
+                  WITH OBJECT oTxtCursor
                      :movePosition( QTextCursor_EndOfLine, QTextCursor_KeepAnchor )
                      :removeSelectedText()
                      :insertText( cLine )
                   ENDWITH
                ENDIF
-               IF qCursor:blockNumber() == nCBlock
+               IF oTxtCursor:blockNumber() == nCBlock
                   EXIT
                ENDIF
-               qCursor:movePosition( QTextCursor_NextBlock, QTextCursor_MoveAnchor )
+               oTxtCursor:movePosition( QTextCursor_NextBlock, QTextCursor_MoveAnchor )
             ENDDO
             /* We have reached on current line */
-            qCursor:movePosition( QTextCursor_EndOfBlock, QTextCursor_MoveAnchor )
+            oTxtCursor:movePosition( QTextCursor_EndOfBlock, QTextCursor_MoveAnchor )
          ELSE
-            qCursor:setPosition( nPostn )
+            oTxtCursor:setPosition( nPostn )
          ENDIF
       ENDIF
    ENDIF
@@ -3140,48 +3144,48 @@ STATIC FUNCTION __isHarbourKeyword( cWord )
    RETURN cWord $ __harbourKeywords()
 
 
-STATIC FUNCTION __getFrontSpacesAndWordsByCursor( qCursor, /*@*/aWords )
+STATIC FUNCTION __getFrontSpacesAndWordsByCursor( oTxtCursor, /*@*/aWords )
    LOCAL cLine, cWord
-   LOCAL nPos   := qCursor:position()
-   LOCAL nBlock := qCursor:blockNumber()
+   LOCAL nPos   := oTxtCursor:position()
+   LOCAL nBlock := oTxtCursor:blockNumber()
    LOCAL nStart := 0
 
    aWords := {}
-   IF Empty( cLine := qCursor:block():text() )
+   IF Empty( cLine := oTxtCursor:block():text() )
       RETURN 0
 
    ELSE
       DO WHILE SubStr( cLine, ++nStart, 1 ) == " " ; QApplication():processEvents() ; ENDDO
       nStart--
 
-      qCursor:movePosition( QTextCursor_StartOfBlock )
-      qCursor:movePosition( QTextCursor_StartOfWord )
+      oTxtCursor:movePosition( QTextCursor_StartOfBlock )
+      oTxtCursor:movePosition( QTextCursor_StartOfWord )
       DO WHILE .T.
          QApplication():processEvents()
-         IF ! qCursor:movePosition( QTextCursor_EndOfWord, QTextCursor_KeepAnchor )
-            qCursor:movePosition( QTextCursor_NextWord )
+         IF ! oTxtCursor:movePosition( QTextCursor_EndOfWord, QTextCursor_KeepAnchor )
+            oTxtCursor:movePosition( QTextCursor_NextWord )
          ENDIF
-         IF qCursor:blockNumber() != nBlock
+         IF oTxtCursor:blockNumber() != nBlock
             EXIT
          ENDIF
-         IF ! Empty( cWord := qCursor:selectedText() )
+         IF ! Empty( cWord := oTxtCursor:selectedText() )
             AAdd( aWords, cWord )
          ENDIF
-         qCursor:clearSelection()
+         oTxtCursor:clearSelection()
       ENDDO
 
    ENDIF
-   qCursor:clearSelection()
-   qCursor:setPosition( nPos )
+   oTxtCursor:clearSelection()
+   oTxtCursor:setPosition( nPos )
    RETURN nStart
 
 
-STATIC FUNCTION __removeStartingSpaces( qCursor, nCPrevPrev )
+STATIC FUNCTION __removeStartingSpaces( oTxtCursor, nCPrevPrev )
    LOCAL nPostn
 
    IF nCPrevPrev > 0
-      nPostn := qCursor:position()
-      WITH OBJECT qCursor
+      nPostn := oTxtCursor:position()
+      WITH OBJECT oTxtCursor
          :movePosition( QTextCursor_StartOfBlock )
          :movePosition( QTextCursor_NextWord, QTextCursor_KeepAnchor )
          :removeSelectedText()
@@ -3191,13 +3195,13 @@ STATIC FUNCTION __removeStartingSpaces( qCursor, nCPrevPrev )
    RETURN NIL
 
 
-STATIC FUNCTION __alignToPrevWord( qCursor, cWord, cEWord, nLenCWord, nPostn )
+STATIC FUNCTION __alignToPrevWord( oTxtCursor, cWord, cEWord, nLenCWord, nPostn )
    LOCAL cFWord, nCol, nInner := 0
    LOCAL lFound := .F.
 
    DO WHILE .T.
-      IF qCursor:movePosition( QTextCursor_Up, QTextCursor_MoveAnchor )
-         nCol := __getFrontSpacesAndWord( qCursor:block():text(), @cFWord )
+      IF oTxtCursor:movePosition( QTextCursor_Up, QTextCursor_MoveAnchor )
+         nCol := __getFrontSpacesAndWord( oTxtCursor:block():text(), @cFWord )
          IF Lower( cFWord ) == cWord .AND. nInner == 0
             lFound := .T.
             EXIT
@@ -3210,9 +3214,9 @@ STATIC FUNCTION __alignToPrevWord( qCursor, cWord, cEWord, nLenCWord, nPostn )
          EXIT
       ENDIF
    ENDDO
-   qCursor:setPosition( nPostn )
+   oTxtCursor:setPosition( nPostn )
    IF lFound
-      WITH OBJECT qCursor
+      WITH OBJECT oTxtCursor
          :movePosition( QTextCursor_StartOfBlock, QTextCursor_MoveAnchor )
          :movePosition( QTextCursor_NextWord, QTextCursor_KeepAnchor )
          :removeSelectedText()
@@ -3223,9 +3227,9 @@ STATIC FUNCTION __alignToPrevWord( qCursor, cWord, cEWord, nLenCWord, nPostn )
    RETURN NIL
 
 
-STATIC FUNCTION __replaceWord( qCursor, nWord, cWord, nPostn )
+STATIC FUNCTION __replaceWord( oTxtCursor, nWord, cWord, nPostn )
 
-   WITH OBJECT qCursor
+   WITH OBJECT oTxtCursor
       :movePosition( QTextCursor_PreviousWord, QTextCursor_MoveAnchor, nWord )
       :select( QTextCursor_WordUnderCursor )
       :removeSelectedText()

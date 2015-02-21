@@ -1037,7 +1037,7 @@ FUNCTION hbide_macro2value( cMacro )
 
    oEdit   := oIde:oEM:getEditorCurrent()
    IF ! Empty( oEdit )
-      hb_fNameSplit( oEdit:sourceFile, @cPath, @cFile, @cExt )
+      hb_fNameSplit( oEdit:source(), @cPath, @cFile, @cExt )
    ELSE
       cPath := ""; cFile := ""; cExt := ""
    ENDIF

@@ -16,6 +16,47 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-02-20 16:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r406)
+  * hbqt/qtcore/qth/QVariant.qth
+    + Uncommented method: "const char * typeName () const"
+
+  * hbqtwidgets/editor.prg
+    % Simplifications.
+
+  * hbide/setup.ui
+    + Added: <General><Editing Area><Split Instances Vertical Prime?>
+
+  * hbide/docwriter.prg
+  * hbide/editor.prg
+  * hbide/findreplace.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+  * hbide/sources.prg
+  * hbide/tools.prg
+    % Mainly simplification.
+
+    + Redesigned: editing instance "SPLIT" protocol.
+       Splitting an editing instance can be configured in two ways:
+        HORIZONTAL Prime [ Default ]
+          or
+        VERTICAL Prime [ via <Setup><HbIDE Setup><General><Editing Area>
+                                 <Split Instances Vertical Prime?> ]
+
+       Horizontal Prime :    |   |   |
+                             |   |   |
+                             -----
+                             |   |   |
+                             |   |   |
+
+
+       Vertical Prime        |   |   |
+                             |   |   |
+                             ---------
+                             |       |
+                             |       |
+
 2015-02-16 20:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r405)
   * hbqt/hbmk2_qt.hb
     % Changed: to use stdout and/or stderr while catching result of 

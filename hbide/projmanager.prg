@@ -1692,8 +1692,8 @@ METHOD IdeProjManager:buildSource( lExecutable )
    ::cProjectInProcess := NIL
 
    IF !empty( oEdit := ::oEM:getEditorCurrent() )
-      IF ! hbide_isSourcePRG( oEdit:sourceFile )
-         MsgBox( 'Operation not supported for this file type: "' + oEdit:sourceFile + '"' )
+      IF ! hbide_isSourcePRG( oEdit:source() )
+         MsgBox( 'Operation not supported for this file type: "' + oEdit:source() + '"' )
          RETURN Self
       ENDIF
    ELSE
@@ -1701,7 +1701,7 @@ METHOD IdeProjManager:buildSource( lExecutable )
       RETURN Self
    ENDIF
    IF ::oINI:lSaveSourceWhenComp
-      ::oSM:saveNamedSource( oEdit:sourceFile )
+      ::oSM:saveNamedSource( oEdit:source() )
    ENDIF
 
    ::cargo := oEdit
@@ -1717,13 +1717,13 @@ METHOD IdeProjManager:buildSource( lExecutable )
    ELSE
       aadd( aHbp, "-s"      )
    ENDIF
-   aadd( aHbp, hbide_pathToOSPath( oEdit:sourceFile ) )
+   aadd( aHbp, hbide_pathToOSPath( oEdit:source() ) )
 
    ::oDockB2:show()
    ::oOutputResult:oWidget:clear()
 
    ::outputText( hbide_outputLine() )
-   cTmp := "Project [ " + oEdit:sourceFile              + " ]    " + ;
+   cTmp := "Project [ " + oEdit:source()              + " ]    " + ;
            "Launch [ "  + iif( ::lLaunch, 'Yes', 'No' ) + " ]    " + ;
            "Rebuild [ " + iif( lRebuild , 'Yes', 'No' ) + " ]    " + ;
            "Started [ " + time() + " ]"
@@ -1833,19 +1833,19 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
    ENDIF
    IF ::lPPO
       IF !empty( oEdit := ::oEM:getEditorCurrent() )
-         IF hbide_isSourcePRG( oEdit:sourceFile )
+         IF hbide_isSourcePRG( oEdit:source() )
             aadd( aHbp, "-s"     )
             aadd( aHbp, "-p"     )
             aadd( aHbp, "-hbraw" )
 
             // TODO: We have to test if the current file is part of a project, and we
             // pull your settings, even though this is not the active project - vailtom
-            aadd( aHbp, hbide_pathToOSPath( oEdit:sourceFile ) )
+            aadd( aHbp, hbide_pathToOSPath( oEdit:source() ) )
 
             ::cPPO := hbide_pathFile( oEdit:cPath, oEdit:cFile + '.ppo' )
             FErase( ::cPPO )
          ELSE
-            MsgBox( 'Operation not supported for this file type: "' + oEdit:sourceFile + '"' )
+            MsgBox( 'Operation not supported for this file type: "' + oEdit:source() + '"' )
             RETURN Self
          ENDIF
          lViaQt := .t.   /* Donot know why it fails with Qt */

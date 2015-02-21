@@ -225,7 +225,7 @@ qulonglong toULongLong ( bool * ok = 0 ) const
 QUrl toUrl () const
 Type type () const
 #
-//const char * typeName () const
+const char * typeName () const
 #
 int userType () const
 #

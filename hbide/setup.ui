@@ -47,7 +47,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>10</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="pageGeneral">
     <widget class="QGroupBox" name="groupBox">
@@ -93,7 +93,7 @@
          <x>10</x>
          <y>120</y>
          <width>147</width>
-         <height>135</height>
+         <height>117</height>
         </rect>
        </property>
        <property name="title">
@@ -103,7 +103,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>108</y>
+          <y>96</y>
           <width>99</width>
           <height>19</height>
          </rect>
@@ -116,7 +116,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>86</y>
+          <y>76</y>
           <width>99</width>
           <height>19</height>
          </rect>
@@ -129,7 +129,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>20</y>
+          <y>16</y>
           <width>133</width>
           <height>19</height>
          </rect>
@@ -142,7 +142,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>42</y>
+          <y>36</y>
           <width>82</width>
           <height>19</height>
          </rect>
@@ -155,7 +155,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>64</y>
+          <y>56</y>
           <width>82</width>
           <height>19</height>
          </rect>
@@ -171,7 +171,7 @@
          <x>172</x>
          <y>120</y>
          <width>149</width>
-         <height>135</height>
+         <height>117</height>
         </rect>
        </property>
        <property name="title">
@@ -181,7 +181,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>18</y>
+          <y>16</y>
           <width>137</width>
           <height>19</height>
          </rect>
@@ -194,7 +194,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>42</y>
+          <y>36</y>
           <width>85</width>
           <height>16</height>
          </rect>
@@ -207,7 +207,7 @@
         <property name="geometry">
          <rect>
           <x>100</x>
-          <y>42</y>
+          <y>36</y>
           <width>39</width>
           <height>20</height>
          </rect>
@@ -217,7 +217,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>64</y>
+          <y>56</y>
           <width>89</width>
           <height>19</height>
          </rect>
@@ -230,7 +230,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>86</y>
+          <y>76</y>
           <width>87</width>
           <height>19</height>
          </rect>
@@ -243,7 +243,7 @@
         <property name="geometry">
          <rect>
           <x>8</x>
-          <y>108</y>
+          <y>96</y>
           <width>59</width>
           <height>16</height>
          </rect>
@@ -256,7 +256,7 @@
         <property name="geometry">
          <rect>
           <x>98</x>
-          <y>104</y>
+          <y>92</y>
           <width>39</width>
           <height>20</height>
          </rect>
@@ -320,9 +320,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>258</y>
+        <y>242</y>
         <width>331</width>
-        <height>97</height>
+        <height>113</height>
        </rect>
       </property>
       <property name="title">
@@ -463,6 +463,19 @@
        </property>
        <property name="text">
         <string>Show Selection Toolbar</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="checkSplitVertical">
+       <property name="geometry">
+        <rect>
+         <x>12</x>
+         <y>92</y>
+         <width>165</width>
+         <height>17</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Split Instances Verical Prime ?</string>
        </property>
       </widget>
      </widget>
