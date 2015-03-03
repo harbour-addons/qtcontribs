@@ -45,6 +45,12 @@ HB_FUNC( QT_QGRAPHICSITEMGROUP )
 <PROTOS>
 void addToGroup ( QGraphicsItem * item )
 void removeFromGroup ( QGraphicsItem * item )
+
+virtual QRectF boundingRect() const
+virtual bool isObscuredBy(const QGraphicsItem * item) const
+virtual QPainterPath opaqueArea() const
+virtual void paint(QPainter * painter, const QStyleOptionGraphicsItem * option, QWidget * widget = 0)
+virtual int type() const
 </PROTOS>
 
 <SLOTS>

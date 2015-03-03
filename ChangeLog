@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-03-02 16:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r407)
+  * debug/hwgdebug.hbp
+    % Fixed: build path.
+
+  * hbqt/qtgui/qth/QGraphicsItemGroup.qth
+    + Added: Static methods.
+
+  + libs
+  + libs/openssl-1.0.2
+  + libs/openssl-1.0.2/android-armv7
+  + libs/openssl-1.0.2/android-armv7/libcrypto.a
+  + libs/openssl-1.0.2/android-armv7/libssl.a
+  + libs/openssl-1.0.2/mingw491_32
+  + libs/openssl-1.0.2/mingw491_32/libcrypto.a
+  + libs/openssl-1.0.2/mingw491_32/libssl.a
+  + libs/openssl-1.0.2/mac-osx
+  + libs/openssl-1.0.2/mac-osx/libcrypto.a
+  + libs/openssl-1.0.2/mac-osx/libssl.a
+    + Added: Latest OpenSSL binaries linked statically for various platforms.
+       iOS binary is a fat one containg all flavours for iPhone Simulator,
+       iPhone -arm86, -arm7v, -x86_64, etc.
+
+       The reason to have these binaries in the SVN is that not everybody 
+       has the expertise to build them on their systems because of many 
+       depenendancies must be installed on the machine. In the past I 
+       struggled to obtain the static libraries without success. I thank 
+       Przemek for many pointers to this direction.
+
 2015-02-20 16:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r406)
   * hbqt/qtcore/qth/QVariant.qth
     + Uncommented method: "const char * typeName () const"
