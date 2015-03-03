@@ -4,6 +4,6 @@
    #define __HBQT_VERSION_CH
  
 #define __HB_QT_MAJOR_VERSION_5__        "Qt User Interface Compiler version 5.4.0"
-#define __HBQT_REVISION__                "407"
+#define __HBQT_REVISION__                "408"
  
 #endif
