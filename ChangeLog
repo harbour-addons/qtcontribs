@@ -16,6 +16,19 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-03-24 09:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r409)
+  * hbqt/qtgui/qth/QCompleter.qth
+    + Added: methods introduced in Qt5.2.
+
+  * hbqt/hbmk2_qt.hb
+    % Changed: Rewritten .ui parser code by Francek Prijatelj.
+       A greately improved parser which fixes many left-overs and other issues.
+       Tested on HbIDE, HbDBU, many tests and my applications. It is 
+       backwardly compatible but still needs to be improved upon 
+       signal/slots, mostly, by switching on/off by a define.
+
+       Please give a big hand to Francek. I personally pay a big thank-you.
+
 2015-03-02 16:11 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r408)
   + libs/openssl-1.0.2/iphone-os
   + libs/openssl-1.0.2/iphone-os/libcrypto.a
