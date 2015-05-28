@@ -66,6 +66,7 @@ STATIC s_hHarbourFuncList := {=>}
 STATIC s_hQtFuncList := {=>}
 STATIC s_hUserFuncList := {=>}
 STATIC s_timerSingleShot
+STATIC s_aRegisteredBlocksForEventClose := {}
 
 
 INIT PROCEDURE __initHbQtSets()
@@ -100,6 +101,35 @@ INIT PROCEDURE __initHbQtSets()
 EXIT PROCEDURE __exitHbQtSets()
    t_sets := NIL
    RETURN
+
+
+FUNCTION __hbqtRegisterForEventClose( bBlock )
+   AAdd( s_aRegisteredBlocksForEventClose, bBlock )
+   RETURN Len( s_aRegisteredBlocksForEventClose )
+
+
+FUNCTION __hbqtBroadcastEventClose( oEvent )
+   LOCAL bBlock
+
+   FOR EACH bBlock IN s_aRegisteredBlocksForEventClose
+      IF Eval( bBlock, oEvent )
+         RETURN .T.
+      ENDIF
+   NEXT
+   RETURN .F.
+
+
+FUNCTION __hbqtManageEditEvents( oWidget )
+   oWidget:connect( QEvent_KeyRelease, {|oEvent| __hbqtManageEditEventKeyRelease( oEvent, oWidget ) } )
+   RETURN NIL
+
+STATIC FUNCTION __hbqtManageEditEventKeyRelease( oEvent, oWidget )
+   SWITCH oEvent:key()
+   CASE Qt_Key_Return
+      QApplication():postEvent( oWidget, QEvent( QEvent_CloseSoftwareInputPanel ) )
+      RETURN .T.
+   ENDSWITCH
+   RETURN .F.
 
 
 FUNCTION __hbqtImage( cName )

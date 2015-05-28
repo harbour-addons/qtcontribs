@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2012-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,7 @@
 #include "hbqtstd.ch"
 #include "inkey.ch"
 #include "hbtrace.ch"
+#include "common.ch"
 
 
 FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oParent )
@@ -108,54 +109,62 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oPare
 
 
 STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent )
-
-   LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus
-   LOCAL nResult
+   LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus, nResult
    LOCAL aButtons := {}
 
-   oFocus := QFocusFrame()
-   oFocus:setStyleSheet( "border: 2px solid red" )
-   oFocus:hide()
+   WITH OBJECT oFocus := QFocusFrame()
+      :setStyleSheet( "border: 2px solid red;" )
+      :hide()
+   ENDWITH
 
    hb_default( @oParent, QApplication():focusWidget() )
 
-   oDlg := QDialog( oParent )
-   oDlg:setWindowTitle( cTitle )
-   oDlg:setStyleSheet( __hbqtCSSFromColorString( cColorNorm ) )
-   oDlg:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
+   WITH OBJECT oDlg := QDialog( oParent )
+      :setWindowTitle( cTitle )
+      :setStyleSheet( __hbqtCSSFromColorString( cColorNorm ) )
+      :connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
+   ENDWITH
 
-   oVBLayout := QVBoxLayout( oDlg )
-   oHBLayout := QHBoxLayout()
+   WITH OBJECT oVBLayout := QVBoxLayout( oDlg )
+      :setSpacing( 10 )
+   ENDWITH
+   WITH OBJECT oHBLayout := QHBoxLayout()
+      :setSpacing( 10 )
+   ENDWITH
 
-   oLabel    := QLabel()
+   oLabel := QLabel()
 
    oVBLayout:addWidget( oLabel )
    oVBLayout:addLayout( oHBLayout )
 
-   oLabel:setAlignment( Qt_AlignHCenter )
-   oLabel:setText( cMsg )
-   oLabel:setOpenExternalLinks( .T. )
-   oLabel:setFont( QFont( "Courier", 10 ) )
-   oLabel:setStyleSheet( "padding: 10px;" )
+   WITH OBJECT oLabel
+      :setAlignment( Qt_AlignHCenter )
+      :setText( cMsg )
+      :setOpenExternalLinks( .T. )
+      :setFont( QFont( "Courier", 10 ) )
+      :setStyleSheet( "padding: 10px;" )
+   ENDWITH
 
    FOR EACH cBtn IN aOptions
-      oBtn := QPushButton( oDlg )
-      oBtn:setText( cBtn )
-      oBtn:setFocusPolicy( Qt_StrongFocus )
-      oBtn:setStyleSheet( "" )
-      oBtn:setFont( QFont( "Courier", 10 ) )
-      oBtn:setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) )
-      oBtn:connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
-      oBtn:connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
+      WITH OBJECT oBtn := QPushButton( oDlg )
+         :setText( cBtn )
+         :setFocusPolicy( Qt_StrongFocus )
+         :setFont( QFont( "Courier", 10 ) )
+         :setStyleSheet( "" )
+         :setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) + "border-radius: 5px;" )
+         :connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
+         :connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
+      ENDWITH
       oHBLayout:addWidget( oBtn )
       AAdd( aButtons, oBtn )
    NEXT
 
    IF HB_ISNUMERIC( nDelay ) .AND. nDelay > 0
-      oTimer := QTimer( oDlg )
-      oTimer:setInterval( nDelay * 1000 )
-      oTimer:setSingleShot( .T. )
-      oTimer:connect( "timeout()", {||  TerminateAlert( aButtons ) } )
+      WITH OBJECT oTimer := QTimer( oDlg )
+         :setInterval( nDelay * 1000 )
+         :setSingleShot( .T. )
+         :connect( "timeout()", {|| TerminateAlert( aButtons ) } )
+      ENDWITH
       oTimer:start()
    ENDIF
 
@@ -508,4 +517,72 @@ FUNCTION HbQtMaxCol( oWnd )
    aInfo := __hbqtGetXYFromRowColumn( oWnd, 0, 0 )
 
    RETURN Int( oWnd:width() / aInfo[ 3 ] ) - 1
+
+
+FUNCTION HbQtGetSome( xValue, bEditingFinishedBlock, cLabel, cPicture, cColor, bWhen, bValid )
+   STATIC oCellEditor, bEscape
+   LOCAL GetList := {}, SayList := {}
+
+   DEFAULT cLabel TO "Enter Some Value"
+
+   bEscape := SetKey( K_ESC, {|| __hbqtEditingTerminate( oCellEditor, bEscape ) } )
+
+   IF Empty( oCellEditor )
+      oCellEditor := QLineEdit( __hbqtAppWidget() )
+   ENDIF
+
+   IF Empty( cPicture )
+      cPicture := ""
+   ENDIF
+
+   HbQtActivateSilverLight( .T., cLabel, NIL, .F. )
+
+   WITH OBJECT oCellEditor
+      :setGeometry( QRect( 20,__hbqtAppWidget():height() / 4, __hbqtAppWidget():width() - 40, 50 ) )
+      :show()
+      :raise()
+   ENDWITH
+
+   @ 0,0 QGET xValue CONTROL oCellEditor ;
+                     PICTURE cPicture ;
+                     COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
+                     WHEN    {|oGet| iif( HB_ISBLOCK( bWhen  ), Eval( bWhen , oGet ), .T. ) } ;
+                     VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), .T. ) }
+   QREAD PARENT __hbqtAppWidget() NOFOCUSFRAME LASTGETBLOCK  {|| __hbqtEditingFinished( bEditingFinishedBlock, oCellEditor, bEscape ) }
+
+   oCellEditor:setFocus()
+   RETURN NIL
+
+
+STATIC FUNCTION __hbqtEditingFinished( bBlock, oCellEditor, bEscape )
+   LOCAL xValue := iif( Empty( GetActive() ), NIL, GetActive():varGet() )
+
+   oCellEditor:hide()
+   HbQtActivateSilverLight( .F. )
+   SetKey( K_ESC, bEscape )
+
+   HbQtSetGetSomeValue( xValue )
+   IF HB_ISBLOCK( bBlock )
+      Eval( bBlock, xValue )
+   ENDIF
+   oCellEditor:setParent( QWidget() )
+   RETURN NIL
+
+
+STATIC FUNCTION __hbqtEditingTerminate( oCellEditor, bEscape )
+   oCellEditor:hide()
+   HbQtActivateSilverLight( .F. )
+   SetKey( K_ESC, bEscape )
+   HbQtSetGetSomeValue( NIL )
+   oCellEditor:setParent( QWidget() )
+   RETURN NIL
+
+
+FUNCTION HbQtSetGetSomeValue( xValue )
+   STATIC s_value
+   LOCAL l_value := s_value
+   IF PCount() == 1
+      s_value := xValue
+   ENDIF
+   RETURN l_value
 

@@ -1,4 +1,4 @@
-/*
+   /*
  * $Id$
  */
 
@@ -110,6 +110,9 @@ CLASS HbQtVisual
    DATA   hNamesID                                INIT __hbqtStandardHash()
    DATA   lLoaded                                 INIT .F.
    DATA   hScaledPixmap                           INIT __hbqtStandardHash()
+   DATA   aLayers                                 INIT {}
+   DATA   hFilter                                 INIT __hbqtStandardHash()
+
 
    METHOD init( oVisualizer )
    METHOD create( oVisualizer )
@@ -119,6 +122,7 @@ CLASS HbQtVisual
    METHOD list( hList )                           SETGET
    METHOD visual( hVisual )                       SETGET
    METHOD markers( hMarkers )                     SETGET
+   METHOD layers( aLayers )                       SETGET
    METHOD title( cTitle )                         SETGET
    METHOD refID( cRefID )                         SETGET
    METHOD version( nVersion )                     SETGET
@@ -134,6 +138,16 @@ CLASS HbQtVisual
    METHOD edited( lYes )                          SETGET
 
    METHOD setupMarkers( hMarkers, hMarkersList )
+
+   ACCESS layer                                   INLINE iif( ::nCurrentLayer <= 0 .OR. ::nCurrentLayer > Len( ::aLayers ), "", ::aLayers[ ::nCurrentLayer ] )
+   DATA   nCurrentLayer                           INIT 0
+   ACCESS currentLayer                            INLINE ::nCurrentLayer
+   METHOD setCurrentLayer( nLayer )               INLINE iif( HB_ISNUMERIC( nLayer ), ::nCurrentLayer := nLayer, NIL )
+   METHOD zValue( cLayer )
+
+   ACCESS filter()                                INLINE ::hFilter
+   METHOD isFiltered( cLayer )                    INLINE iif( Empty( cLayer ), hb_HHasKey( ::hFilter, "...ROOT..." ), hb_HHasKey( ::hFilter, cLayer ) )
+   METHOD setFilter( cLayer, lAdd )
 
    METHOD marker( cMarker )
 
@@ -161,6 +175,29 @@ METHOD HbQtVisual:create( oVisualizer )
    DEFAULT oVisualizer TO ::oVisualizer
    ::oVisualizer := oVisualizer
    RETURN Self
+
+
+METHOD HbQtVisual:setFilter( cLayer, lAdd )
+   IF lAdd
+      ::hFilter[ cLayer ] := NIL
+   ELSE
+      IF hb_HHasKey( ::hFilter, cLayer )
+         hb_HDel( ::hFilter, cLayer )
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtVisual:zValue( cLayer )
+   LOCAL n
+   LOCAL nValue := 5000
+
+   IF Empty( cLayer )
+      n := ::nCurrentLayer
+   ELSE
+      n := AScan( ::aLayers, {|e| e == cLayer } )
+   ENDIF
+   RETURN iif( n <= 0, 0, nValue - n )
 
 
 METHOD HbQtVisual:list( hList )
@@ -204,6 +241,10 @@ METHOD HbQtVisual:visual( hVisual )
       IF hb_HHasKey( hVisual, "Objects" )
          ::objects( hVisual[ "Objects" ] )
       ENDIF
+      IF hb_HHasKey( hVisual, "Layers" )
+         ::layers( hVisual[ "Layers" ] )
+      ENDIF
+
       ::lLoaded := .T.
    ENDIF
    RETURN oldVisual
@@ -298,6 +339,15 @@ METHOD HbQtVisual:objects( aObjects )
       ::aObjects := aclone( aObjects )
    ENDIF
    RETURN oldObjects
+
+
+METHOD HbQtVisual:layers( aLayers )
+   LOCAL oldLayers := AClone( ::aLayers )
+   IF HB_ISARRAY( aLayers )
+      ::aLayers := {}
+      AEval( aLayers, {|e| AAdd( ::aLayers, Trim( e ) ) } )
+   ENDIF
+   RETURN oldLayers
 
 
 METHOD HbQtVisual:marker( cMarker )
@@ -499,6 +549,10 @@ CLASS HbQtVisualItem
    DATA   cMarker                                 INIT ""
    DATA   hCargo
 
+   DATA   cLayer                                  INIT ""
+   ACCESS layer()                                 INLINE ::cLayer
+   METHOD setLayer( cLayer )
+
    DATA   qPen
    DATA   nPenWidth                               INIT 1
    DATA   cPenColor                               INIT "#000000"
@@ -654,6 +708,9 @@ CLASS HbQtVisualItem
    METHOD getData()
    METHOD getDataEx()
 
+   METHOD show()                                  INLINE ::oWidget:show()
+   METHOD hide()                                  INLINE ::oWidget:hide()
+
    ERROR  HANDLER OnError( ... )
    ENDCLASS
 
@@ -804,6 +861,16 @@ METHOD HbQtVisualItem:onError( ... )
       cMsg := SubStr( cMsg, 2 )
    ENDIF
    RETURN ::oWidget:&cMsg( ... )
+
+
+METHOD HbQtVisualItem:setLayer( cLayer )
+   IF HB_ISSTRING( cLayer )
+      ::cLayer := Trim( cLayer )
+   ENDIF
+   IF ! Empty( ::oHbQtVisual )
+      ::oWidget:setZValue( ::oHbQtVisual:zValue( cLayer ) )
+   ENDIF
+   RETURN Self
 
 
 METHOD HbQtVisualItem:setVisual( oHbQtVisual )
@@ -2030,6 +2097,9 @@ METHOD HbQtVisualItemState:draw( oPainter, oRectF )
          ::nArea := __STATE_AREA_TOPLEFT__
       ENDIF
 
+      oRF:setWidth( oRF:width() + nOffX )
+      oRF:setHeight( oRF:height() + nOffY )
+
       ::oDraw:drawShape( oPainter, oRF, ::cType, ::oPen, ::oBrush, ::nOpacity, ::nArea )
    ENDIF
    RETURN Self
@@ -2110,6 +2180,9 @@ STATIC FUNCTION __hbqtRectByArea( oRectF, nArea, nOffX, nOffY )
       CASE __STATE_AREA_RGT_1_4__     ; oRF := QRectF( nX + nOffX + ( nW - nW / 4 ), nY + nOffY                  , nW / 4, nH ) ; EXIT
       CASE __STATE_AREA_RGT_1_2__     ; oRF := QRectF( nX + nOffX + ( nW - nW / 2 ), nY + nOffY                  , nW / 2, nH ) ; EXIT
       ENDSWITCH
+
+      oRF:setWidth( oRF:width() + nOffX )
+      oRF:setHeight( oRF:height() + nOffY )
    ENDIF
    RETURN oRF
 
@@ -2449,3 +2522,100 @@ METHOD HbQtVisualItemDraw:image( oPainter, oRectF, oPixmap )
    RETURN Self
 
 
+//--------------------------------------------------------------------//
+//                     HbQtVisualItemGroups Class
+//--------------------------------------------------------------------//
+
+
+CLASS HbQtVisualItemGroups
+
+   DATA   hGroups                                 INIT __hbqtStandardHash()
+
+   METHOD init()
+   METHOD addItem( cGroup, oHbQtVisualItem )
+   METHOD removeItem( cGroup, oHbQtVisualItem )
+   METHOD clear( cGroup )
+
+   ENDCLASS
+
+
+METHOD HbQtVisualItemGroups:init()
+   RETURN Self
+
+
+METHOD HbQtVisualItemGroups:addItem( cGroup, oHbQtVisualItem )
+   IF ! hb_HHasKey( ::hGroups, cGroup )
+      ::hGroups[ cGroup ] := HbQtVisualItemGroup():new( cGroup )
+   ENDIF
+   ::hGroups[ cGroup ]:addItem( oHbQtVisualItem )
+   RETURN Self
+
+
+METHOD HbQtVisualItemGroups:removeItem( cGroup, oHbQtVisualItem )
+   IF hb_HHasKey( ::hGroups, cGroup )
+      ::hGroups[ cGroup ]:removeItem( oHbQtVisualItem )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItemGroups:clear( cGroup )
+   IF ! Empty( cGroup )
+      IF hb_HHasKey( ::hGroups, cGroup )
+         ::hGroups[ cGroup ]:clear()
+      ENDIF
+   ELSE
+      FOR EACH cGroup IN ::hGroups
+         ::hGroups[ cGroup ]:clear()
+      NEXT
+   ENDIF
+   RETURN Self
+
+//--------------------------------------------------------------------//
+//                     HbQtVisualItemGroup Class
+//--------------------------------------------------------------------//
+
+CLASS HbQtVisualItemGroup
+
+   DATA   oWidget
+   DATA   cName
+
+   METHOD init( oParent, cName )
+   ACCESS name()                                  INLINE ::cName
+   METHOD addItem( oHbQtVisualItem )
+   METHOD removeItem( oHbQtVisualItem )
+   METHOD clear()
+   METHOD hide()                                  INLINE ::oWidget:hide()
+   METHOD show()                                  INLINE ::oWidget:show()
+
+   ENDCLASS
+
+
+METHOD HbQtVisualItemGroup:init( oParent, cName )
+   IF HB_ISSTRING( cName )
+      ::cName := cName
+   ENDIF
+   ::oWidget := QGraphicsItemGroup( oParent )
+   RETURN Self
+
+
+METHOD HbQtVisualItemGroup:addItem( oHbQtVisualItem )
+   ::oWidget:addToGroup( oHbQtVisualItem:oWidget )
+   RETURN Self
+
+
+METHOD HbQtVisualItemGroup:removeItem( oHbQtVisualItem )
+   ::oWidget:removeFromGroup( oHbQtVisualItem:oWidget )
+   RETURN Self
+
+
+METHOD HbQtVisualItemGroup:clear()
+   LOCAL i
+   LOCAL oList := ::oWidget:childItems()
+
+   FOR i := 1 TO oList:size()
+      ::oWidget:removeFromGroup( oList:At( i - 1 ) )
+      oList:At( i - 1 ):show()
+   NEXT
+   RETURN Self
+
+//--------------------------------------------------------------------//

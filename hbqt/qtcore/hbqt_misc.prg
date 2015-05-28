@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009-2014 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -57,7 +55,7 @@
 
 CREATE CLASS HbQtObjectHandler
 
-   VAR    __hEvents  INIT { => }
+   VAR    __hEvents
 
    VAR    __Slots
    VAR    __Events
@@ -68,11 +66,20 @@ CREATE CLASS HbQtObjectHandler
    METHOD setEvents()
    METHOD findChild( cObjectName )
    METHOD isConnected( cnEvent )
+   METHOD initialize()
 
    DESTRUCTOR FUNCTION __hbqt_destroy()
    ERROR HANDLER onError()
 
    ENDCLASS
+
+
+METHOD HbQtObjectHandler:initialize()
+   IF Empty( ::__hEvents )
+      ::__hEvents := {=>}
+      hb_HCaseMatch( ::__hEvents, .F. )
+   ENDIF
+   RETURN Self
 
 
 METHOD HbQtObjectHandler:findChild( cObjectName )
@@ -133,12 +140,14 @@ METHOD HbQtObjectHandler:onError()
 
 
 METHOD HbQtObjectHandler:isConnected( cnEvent )
+   ::initialize()
    RETURN hb_hHasKey( ::__hEvents, cnEvent )
 
 
 METHOD HbQtObjectHandler:connect( cnEvent, bBlock )
    LOCAL nResult
 
+   ::initialize()
    IF ! __objDerivedFrom( Self, "QOBJECT" )
       RETURN .f.
    ENDIF
@@ -193,6 +202,7 @@ METHOD HbQtObjectHandler:connect( cnEvent, bBlock )
 METHOD HbQtObjectHandler:disconnect( cnEvent )
    LOCAL hEvent, xKey, nResult := 0
 
+   ::initialize()
    IF ! __objDerivedFrom( Self, "QOBJECT" )
       RETURN .f.
    ENDIF
@@ -214,7 +224,7 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
    ENDIF
 
    IF ! hb_hHasKey( ::__hEvents, cnEvent )
-      RETURN .f.
+      RETURN .F.
    ENDIF
 
    SWITCH ValType( cnEvent )

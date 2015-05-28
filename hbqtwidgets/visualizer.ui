@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>686</width>
+    <width>677</width>
     <height>601</height>
    </rect>
   </property>
@@ -121,7 +121,7 @@
              <string/>
             </property>
             <property name="pixmap">
-             <pixmap resource="hbqtwidgets.qrc">:/hbqt/resources/arrow-left-1.png</pixmap>
+             <pixmap resource="hbqtwidgets.qrc">:/hbqt/resources/left-close.png</pixmap>
             </property>
             <property name="scaledContents">
              <bool>true</bool>
@@ -188,7 +188,7 @@
              <string/>
             </property>
             <property name="pixmap">
-             <pixmap resource="hbqtwidgets.qrc">:/hbqt/resources/arrow-right-1.png</pixmap>
+             <pixmap resource="hbqtwidgets.qrc">:/hbqt/resources/right-close.png</pixmap>
             </property>
             <property name="scaledContents">
              <bool>true</bool>
@@ -230,7 +230,19 @@
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
+            <property name="opaqueResize">
+             <bool>false</bool>
+            </property>
+            <property name="childrenCollapsible">
+             <bool>false</bool>
+            </property>
             <widget class="QToolBox" name="toolBoxLeft">
+             <property name="minimumSize">
+              <size>
+               <width>60</width>
+               <height>0</height>
+              </size>
+             </property>
              <property name="currentIndex">
               <number>1</number>
              </property>
@@ -242,10 +254,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>288</width>
-                <height>391</height>
+                <width>216</width>
+                <height>240</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-maps.png</normaloff>:/hbqt/resources/vz-maps.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Visuals</string>
               </attribute>
@@ -266,6 +282,12 @@
                 <widget class="QTreeWidget" name="treeVisuals">
                  <property name="focusPolicy">
                   <enum>Qt::NoFocus</enum>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
                  </property>
                  <property name="verticalScrollBarPolicy">
                   <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -302,10 +324,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>288</width>
-                <height>391</height>
+                <width>216</width>
+                <height>240</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-items.png</normaloff>:/hbqt/resources/vz-items.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Items</string>
               </attribute>
@@ -332,6 +358,9 @@
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
+                 </property>
+                 <property name="currentIndex">
+                  <number>1</number>
                  </property>
                  <widget class="QWidget" name="stackedMarkersPageBars">
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -394,6 +423,12 @@
                      <property name="focusPolicy">
                       <enum>Qt::NoFocus</enum>
                      </property>
+                     <property name="frameShape">
+                      <enum>QFrame::Box</enum>
+                     </property>
+                     <property name="frameShadow">
+                      <enum>QFrame::Plain</enum>
+                     </property>
                      <property name="verticalScrollBarPolicy">
                       <enum>Qt::ScrollBarAlwaysOff</enum>
                      </property>
@@ -442,10 +477,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>288</width>
-                <height>391</height>
+                <width>216</width>
+                <height>240</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-states.png</normaloff>:/hbqt/resources/vz-states.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>States</string>
               </attribute>
@@ -513,10 +552,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>288</width>
-                <height>391</height>
+                <width>216</width>
+                <height>240</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-navigate.png</normaloff>:/hbqt/resources/vz-navigate.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Navigator</string>
               </attribute>
@@ -538,11 +581,87 @@
                  <property name="focusPolicy">
                   <enum>Qt::NoFocus</enum>
                  </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
+                 </property>
                  <property name="verticalScrollBarPolicy">
                   <enum>Qt::ScrollBarAlwaysOff</enum>
                  </property>
                  <property name="horizontalScrollBarPolicy">
                   <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="indentation">
+                  <number>10</number>
+                 </property>
+                 <property name="rootIsDecorated">
+                  <bool>false</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <column>
+                  <property name="text">
+                   <string notr="true">1</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="pageFilter">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>216</width>
+                <height>240</height>
+               </rect>
+              </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-filter.png</normaloff>:/hbqt/resources/vz-filter.png</iconset>
+              </attribute>
+              <attribute name="label">
+               <string>Filter</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_15">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QTreeWidget" name="treeFilter">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
+                 </property>
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
                  </property>
                  <property name="verticalScrollMode">
                   <enum>QAbstractItemView::ScrollPerPixel</enum>
@@ -585,7 +704,14 @@
                 <number>10</number>
                </property>
                <item>
-                <widget class="QGraphicsView" name="graphicsView"/>
+                <widget class="QGraphicsView" name="graphicsView">
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>
@@ -608,17 +734,97 @@
             </widget>
             <widget class="QToolBox" name="toolBoxRight">
              <property name="currentIndex">
-              <number>1</number>
+              <number>5</number>
              </property>
+             <widget class="QWidget" name="pageLayers">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>216</width>
+                <height>210</height>
+               </rect>
+              </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-layers.png</normaloff>:/hbqt/resources/vz-layers.png</iconset>
+              </attribute>
+              <attribute name="label">
+               <string>Layers</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <property name="spacing">
+                <number>3</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QTreeWidget" name="treeLayers">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
+                 </property>
+                 <property name="lineWidth">
+                  <number>1</number>
+                 </property>
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="indentation">
+                  <number>10</number>
+                 </property>
+                 <property name="rootIsDecorated">
+                  <bool>false</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <column>
+                  <property name="text">
+                   <string notr="true">1</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
              <widget class="QWidget" name="pageData">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>77</width>
-                <height>391</height>
+                <width>216</width>
+                <height>210</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-data.png</normaloff>:/hbqt/resources/vz-data.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Data</string>
               </attribute>
@@ -658,6 +864,9 @@
                     <widget class="QTreeWidget" name="treeWidgetData">
                      <property name="focusPolicy">
                       <enum>Qt::NoFocus</enum>
+                     </property>
+                     <property name="frameShape">
+                      <enum>QFrame::NoFrame</enum>
                      </property>
                      <property name="verticalScrollBarPolicy">
                       <enum>Qt::ScrollBarAlwaysOff</enum>
@@ -725,10 +934,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>77</width>
-                <height>391</height>
+                <width>216</width>
+                <height>210</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-properties.png</normaloff>:/hbqt/resources/vz-properties.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Properties</string>
               </attribute>
@@ -755,10 +968,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>193</width>
+                <width>199</width>
                 <height>423</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-resizer.png</normaloff>:/hbqt/resources/vz-resizer.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Resizer</string>
               </attribute>
@@ -1334,10 +1551,14 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>215</width>
-                <height>374</height>
+                <width>216</width>
+                <height>210</height>
                </rect>
               </property>
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-mover.png</normaloff>:/hbqt/resources/vz-mover.png</iconset>
+              </attribute>
               <attribute name="label">
                <string>Mover</string>
               </attribute>
@@ -1593,11 +1814,76 @@
                </item>
               </layout>
              </widget>
+             <widget class="QWidget" name="pageChangeLayer">
+              <attribute name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-layerchange.png</normaloff>:/hbqt/resources/vz-layerchange.png</iconset>
+              </attribute>
+              <attribute name="label">
+               <string>Change Item Layer</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_22">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QTreeWidget" name="treeChangeLayer">
+                 <property name="focusPolicy">
+                  <enum>Qt::NoFocus</enum>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
+                 </property>
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::NoSelection</enum>
+                 </property>
+                 <property name="verticalScrollMode">
+                  <enum>QAbstractItemView::ScrollPerPixel</enum>
+                 </property>
+                 <property name="rootIsDecorated">
+                  <bool>false</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <column>
+                  <property name="text">
+                   <string notr="true">1</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </widget>
           </item>
          </layout>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="hLayoutItemEdit"/>
        </item>
       </layout>
      </widget>

@@ -77,6 +77,8 @@ bool isEmpty () const
 bool isNull () const
 bool isValid () const
 int left () const
+QRect marginsAdded(const QMargins & margins) const       [*V=0x050100*]
+QRect marginsRemoved(const QMargins & margins) const     [*V=0x050100*]
 void moveBottom ( int y )
 void moveBottomLeft ( const QPoint & position )
 void moveBottomRight ( const QPoint & position )

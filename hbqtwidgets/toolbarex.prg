@@ -128,7 +128,9 @@ CLASS HbQtScrollableToolbar
    METHOD adjustSize()
    METHOD manageToolbar()
 
-   METHOD addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise )
+   METHOD buildToolbarButton( nIndex, xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
+   METHOD insertToolbarButton( nIndex, xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
+   METHOD addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
    METHOD addSeparator( cName )
    METHOD manageIconDrag( oEvent, oButton )
 
@@ -139,8 +141,8 @@ CLASS HbQtScrollableToolbar
    METHOD setEnabled( cName, lEnable )
    METHOD setHidden( cName, lYes )
 
-   METHOD hide()                                  INLINE ::oWidget:hide()
-   METHOD show()                                  INLINE ::oWidget:show()
+   METHOD hide()                                  INLINE ::oFirstIndicator:hide(), ::oLastIndicator:hide(), ::oWidget:hide()
+   METHOD show()                                  INLINE ::oFirstIndicator:show(), ::oLastIndicator:show(), ::oWidget:show()
    ENDCLASS
 
 
@@ -153,7 +155,6 @@ METHOD HbQtScrollableToolbar:init( oParent )
 
 
 METHOD HbQtScrollableToolbar:create( oParent )
-   //LOCAL oRect
 
    DEFAULT oParent  TO ::oParent
    ::oParent := oParent
@@ -205,6 +206,8 @@ METHOD HbQtScrollableToolbar:create( oParent )
          :setMaximumHeight( ::nButtonHeight )
       ENDIF
       :setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
+      :setFrameShape( QFrame_NoFrame )
+      :setSelectionRectVisible( .F. )
    ENDWITH
    __hbqtApplyStandardScroller( ::oWidget )
 
@@ -423,11 +426,21 @@ METHOD HbQtScrollableToolbar:addSeparator( cName )
    RETURN Self
 
 
-METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise )
+METHOD HbQtScrollableToolbar:insertToolbarButton( nIndex, xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
+   nIndex := Max( nIndex, 1 )
+   RETURN ::buildToolbarButton( nIndex, xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
+
+
+METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
+   LOCAL nIndex := Len( ::aToolButtons ) + 1
+   RETURN ::buildToolbarButton( nIndex, xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
+
+
+METHOD HbQtScrollableToolbar:buildToolbarButton( nIndex, xCaption, cTooltip, xButton, bBlock, lCheckable, lDraggable, lAutoRepeat, lNoAutoRaise, nStyle )
    LOCAL oToolBtn, oItm, cName
 
    IF HB_ISARRAY( xCaption )
-      ASize( xCaption, 8 )
+      ASize( xCaption, 9 )
 
       cName       := xCaption[ 1 ]
       cTooltip    := xCaption[ 2 ]
@@ -437,6 +450,7 @@ METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlo
       lDraggable  := xCaption[ 6 ]
       lAutoRepeat := xCaption[ 7 ]
       lNoAutoRaise:= xCaption[ 8 ]
+      nStyle      := xCaption[ 9 ]
    ELSE
       cName := xCaption
    ENDIF
@@ -446,9 +460,11 @@ METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlo
    DEFAULT lAutoRepeat  TO .F.
    DEFAULT lDraggable   TO .F.
    DEFAULT lNoAutoRaise TO .F.
+   DEFAULT nStyle       TO Qt_ToolButtonIconOnly
+
 
    WITH OBJECT oToolBtn := QToolButton()
-      //:setToolButtonStyle( Qt_ToolButtonTextUnderIcon )
+      :setToolButtonStyle( nStyle )
       :setIconSize( QSize( ::nImageWidth, ::nImageHeight ) )
       :setMaximumWidth( ::nButtonWidth )
       :setMinimumWidth( ::nButtonWidth )
@@ -468,8 +484,11 @@ METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlo
             ENDIF
          ENDIF
       ENDIF
+#if 0
+      :setText( ft_proper( cName ) )
+#else
       :setText( cName )
-
+#endif
       :setCheckable( lCheckable )
       :setAutoRepeat( lAutoRepeat )
       :setAutoRaise( ! lNoAutoRaise )
@@ -484,12 +503,15 @@ METHOD HbQtScrollableToolbar:addToolbarButton( xCaption, cTooltip, xButton, bBlo
    oItm := QListWidgetItem()
    oItm:setSizeHint( oToolBtn:sizeHint() )
    oItm:setWhatsThis( "N" )
-   ::oWidget:addItem( oItm )
+
+   ::oWidget:insertItem( nIndex, oItm )
    ::oWidget:setItemWidget( oItm, oToolBtn )
 
    ::hButtons[ cName ] := { oToolBtn, oItm }
    AAdd( ::aToolButtons, { oToolBtn, oItm, cName } )
+   //hb_AIns( ::aToolButtons, nIndex, { oToolBtn, oItm, cName }, .T. )
    oItm:setData( Qt_UserRole, QVariant( Len( ::aToolButtons ) ) )
+   //oItm:setData( Qt_UserRole, QVariant( nIndex ) )
 
    ::adjustSize()
    RETURN oToolBtn

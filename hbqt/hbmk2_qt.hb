@@ -804,7 +804,7 @@ METHOD THbUIC:New( cTmpFileSrc, cUiFile, cOutDir, cFrmFile, cSlotStyle, cTestFil
 #define RX_C_TYPE                                 '(bool|int|char)'
 #define RX_ANY_TYPE                               '(bool|int|char|Q\w+)'
 #define RX_VAR                                    '([A-Z,a-z,_]\w*)'
-#define RX_FUNC                                   '([A-Z,a-z,_]\w*\(.*\))'
+#define RX_FUNC                                   '([A-Z,a-z,_]\w*\(.*?\))'
 #define RX_ANY                                    '(.*)'
 #define RX_NUMERIC                                '(\d+\.?\d*u?)'
 #define RX_STRING                                 '(".*")'
@@ -907,7 +907,9 @@ METHOD THbUIC:scanInputFile()
 	
    ::buildMethod( "init", ::nSetupUiStartLine, ::nSetupUiEndLine, "oParent" )
    ::scanLines( ::nSetupUiStartLine, ::nSetupUiEndLine )
-   ::processActions()
+   IF ! Empty( GetEnv( "HBQT_UIC_GEN_ACTIONS" ) )
+      ::processActions()
+   ENDIF
    ::buildCloseMethod()
 	
    ::buildMethod( "retranslate",  ::nRetranslateUiStartLine, ::nRetranslateUiEndLine, ""  )
@@ -1177,17 +1179,6 @@ METHOD THbUIC:replaceConstants()
             cLine   := StrTran( cLine, "const " )
          ENDIF
 
-#if 0
-         IF "::" $ cLine       // replace only if not in string
-            DO WHILE .T.
-               aResult := hb_regex( regd2, cLine )
-               IF Empty( aResult )
-                  EXIT
-               ENDIF
-               cLine := StrTran( cLine, aResult[ 1 ], StrTran( aResult[ 1 ], "::", "_" ) )
-            ENDDO
-         ENDIF
-#endif
          aResult := hb_regexAll( regd2, cLine )
          FOR i:=1 TO Len( aResult )
              cStr:=aResult[ i, 1 ]
@@ -1647,7 +1638,6 @@ METHOD THbUIC:buildClass()
    WR_PRG( "" )
    WR_PRG( "   ERROR HANDLER __OnError( ... )" )
    WR_PRG( "" )
-   // ::processActions()
    WR_PRG( "" )
    WR_PRG( "   ENDCLASS" )
    WR_PRG( "" )

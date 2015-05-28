@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2014-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -199,10 +199,11 @@ CLASS HbQtSlidingList
    DATA   nSeparatorHeight                        INIT 0
    DATA   nPressX                                 INIT 0
    DATA   nPressY                                 INIT 0
-   DATA   cHeaderText                             INIT "Options"
+   DATA   cHeaderText                             INIT ""
 
    DATA   hItems                                  INIT __hbqtStandardHash()
    DATA   hSeparators                             INIT __hbqtStandardHash()
+   DATA   lSlided                                 INIT .F.
 
    METHOD init( oParent )
    METHOD create( oParent )
@@ -231,7 +232,7 @@ CLASS HbQtSlidingList
    METHOD setHeaderText( cText )                  INLINE iif( HB_ISSTRING( cText ), ::cHeaderText := cText, NIL ), ;
                                                          iif( HB_ISOBJECT( ::oHeaderLabel ), ::oHeaderLabel:setText( ::cHeaderText ), NIL )
    METHOD setSeparator( nHeight, oColor )
-   METHOD addSeparator()
+   METHOD addSeparator( nHeight, cColor )
    METHOD addItem( cName, xItem, bBlock )
    METHOD setEnabled( cName, lEnable )
    METHOD setHidden( cName, lHide )
@@ -239,6 +240,7 @@ CLASS HbQtSlidingList
    METHOD applyAnimation()
    METHOD applyStyleSheet()
    METHOD manageLeftRight( oEvent, nEvent )
+   METHOD recalculateHeight()
 
    DATA   lFocusOut                               INIT .T.
    ACCESS focusOut()                              INLINE ::lFocusOut
@@ -273,10 +275,13 @@ METHOD HbQtSlidingList:create( oParent )
       RETURN NIL
    ENDIF
 
-   ::oLayout := QVBoxLayout()
+   WITH OBJECT ::oLayout := QVBoxLayout()
+      :setContentsMargins( 0,0,0,0 )
+      :setSpacing( 0 )
+   ENDWITH
    WITH OBJECT ::oWidget := QWidget( ::oParent )
       :hide()
-      :setContentsMargins( 1,1,1,1 )
+      :setContentsMargins( 0,0,0,0 )
       :setObjectName( "SlidingWidget" )
       :setLayout( ::oLayout )
    ENDWITH
@@ -285,36 +290,39 @@ METHOD HbQtSlidingList:create( oParent )
       :setObjectName( "SlidingHeader" )
       :setMaximumHeight( __hbqtPixelsByDPI( 24 ) )
       :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
-      //:hide()
+      IF Empty( ::cHeaderText )
+         :hide()
+      ENDIF
    ENDWITH
 
    WITH OBJECT ::oListWidget := QListWidget()
-      :setObjectName( "SlidingList" )
+      :setContentsMargins( 0,0,0,0 )
+      :setObjectName( "SlidingListWidget" )
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
+      :setHorizontalScrollMode( QAbstractItemView_ScrollPerPixel )
+      :setVerticalScrollMode( QAbstractItemView_ScrollPerPixel )
       :setIconSize( QSize( __hbqtPixelsByDPI( 36 ), __hbqtPixelsByDPI( 36 ) ) )
       :setFocusPolicy( Qt_NoFocus )
       :setSelectionRectVisible( .F. )
-      :connect( "itemDoubleClicked(QListWidgetItem*)", {|oItem| ::manageItemClicked( oItem:whatsThis() ) } )
+      :connect( "itemClicked(QListWidgetItem*)", {|oItem| ::manageItemClicked( oItem:whatsThis() ) } )
+      :setFrameShape( QFrame_NoFrame )
    ENDWITH
-   __hbqtApplyStandardScroller( ::oListWidget )
+   __hbqtApplyTouchScroller( ::oListWidget )
 
    WITH OBJECT ::oFiller := QLabel()
       :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
       :setMinimumHeight( 0 )
       :setSizePolicy( QSizePolicy_Preferred, QSizePolicy_Expanding )
-      :setStyleSheet( "background-color: rgba(0,0,0,60);" )
+      :setStyleSheet( "border: none; background-color: rgba(0,0,0,100);" )
       :connect( QEvent_MouseButtonPress  , {|oEvent| ::manageLeftRight( oEvent, QEvent_MouseButtonPress   ) } )
       :connect( QEvent_MouseButtonRelease, {|oEvent| ::manageLeftRight( oEvent, QEvent_MouseButtonRelease ) } )
    ENDWITH
 
    WITH OBJECT ::oLayout
-      :setContentsMargins( 0,0,0,0 )
-      :setSpacing( 0 )
       :addWidget( ::oHeaderLabel )
       :addWidget( ::oListWidget )
       :addWidget( ::oFiller )
-
       :setStretch( 0, 0 )
       :setStretch( 1, 1 )
       :setStretch( 2, 0 )
@@ -332,14 +340,16 @@ METHOD HbQtSlidingList:create( oParent )
 
 
 METHOD HbQtSlidingList:addItem( cName, xItem, bBlock )
-   LOCAL oItem, oLay, oFrame, oLabel, cText, oPixmap, nHeight, i
+   LOCAL oItem, oLay, oFrame, oLabel, cText, oPixmap
 
    WITH OBJECT oLay := QHBoxLayout()
-      :setSpacing( 5 )
+      :setSpacing( 10 )
    ENDWITH
    WITH OBJECT oFrame := QFrame()
+      :setObjectName( "SlidingItemFrame" )
       :setLayout( oLay )
       :setMinimumWidth( __hbqtPixelsByDPI( ::nWidth ) )
+      :setMaximumWidth( __hbqtPixelsByDPI( ::nWidth ) )
       :setMinimumHeight( __hbqtPixelsByDPI( ::nItemsHeight ) )
       :setMaximumHeight( __hbqtPixelsByDPI( ::nItemsHeight ) )
       :connect( QEvent_MouseButtonPress   , {|oEvent| ::manageLeftRight( oEvent, QEvent_MouseButtonPress   ) } )
@@ -353,6 +363,7 @@ METHOD HbQtSlidingList:addItem( cName, xItem, bBlock )
          IF HB_ISOBJECT( xItem[ 2 ] )
             oPixmap := xItem[ 2 ]
             WITH OBJECT oLabel := QLabel()
+               :setObjectName( "SlidingLabel" )
                :setPixmap( oPixmap:scaled( __hbqtPixelsByDPI( 36 ), __hbqtPixelsByDPI( 36 ) ) )
                :setMaximumWidth( __hbqtPixelsByDPI( 36 ) )
             ENDWITH
@@ -382,28 +393,55 @@ METHOD HbQtSlidingList:addItem( cName, xItem, bBlock )
       :addItem( oItem )
       :setItemWidget( oItem, oFrame )
    ENDWITH
-   ::addSeparator()
 
-   nHeight := 0
+   ::recalculateHeight()
+   RETURN Self
+
+
+METHOD HbQtSlidingList:addSeparator( nHeight, cColor )
+   LOCAL oLabel, oItem
+
+   DEFAULT nHeight TO ::nSeparatorHeight
+   DEFAULT cColor  TO ::oSeparatorColor:name()
+
+   WITH OBJECT oLabel := QLabel()
+      :setMaximumHeight( __hbqtPixelsByDPI( nHeight ) )
+      :setMinimumHeight( __hbqtPixelsByDPI( nHeight ) )
+      :setStyleSheet( "background-color: " + cColor )
+   ENDWITH
+   ::hSeparators[ hb_ntos( Seconds() ) ] := oLabel
+
+   WITH OBJECT oItem := QListWidgetItem()
+      :setSizeHint( oLabel:sizeHint() )
+   ENDWITH
+   WITH OBJECT ::oListWidget
+      :addItem( oItem )
+      :setItemWidget( oItem, oLabel )
+   ENDWITH
+
+   ::recalculateHeight()
+   RETURN Self
+
+
+METHOD HbQtSlidingList:recalculateHeight()
+   LOCAL i, oLabel
+   LOCAL nHeight := iif( ::oHeaderLabel:isVisible(), ::oHeaderLabel:height(), 0 )
+
    FOR i := 0 TO ::oListWidget:count() - 1
       nHeight += ::oListWidget:item( i ):sizeHint():height()
    NEXT
+   FOR EACH oLabel IN ::hSeparators
+      nHeight += oLabel:height()
+   NEXT
+   ::oListWidget:setMinimumHeight( 0 )
    ::oListWidget:setMaximumHeight( nHeight )
    RETURN Self
 
 
-METHOD HbQtSlidingList:addSeparator()
-   LOCAL oLabel
-
-   WITH OBJECT oLabel := QLabel()
-      :setMaximumHeight( __hbqtPixelsByDPI( ::nSeparatorHeight ) )
-      :setStyleSheet( "background-color: " + ::oSeparatorColor:name() )
-   ENDWITH
-   ::hSeparators[ hb_ntos( Seconds() ) ] := oLabel
-   RETURN Self
-
-
 METHOD HbQtSlidingList:manageItemClicked( cName )
+   IF ::lSlided
+      RETURN Self
+   ENDIF
    IF ::lHideOnClick
       ::hide()
    ENDIF
@@ -534,9 +572,9 @@ METHOD HbQtSlidingList:manageLeftRight( oEvent, nEvent )
    IF nEvent == QEvent_MouseButtonRelease
       IF Abs( nX - ::nPressX ) > __hbqtPixelsByDPI( 32 )
          nAngle := Abs( atn2( nY - ::nPressY, nX - ::nPressX ) * 180 / PI )
-         IF nAngle < 30         // right to left swiped - nexr action
+         IF nAngle < 30                           // right to left swiped - nexr action
             lRight := .F.
-         ELSEIF nAngle > 150    // left to right swapped - previous action
+         ELSEIF nAngle > 150                      // left to right swapped - previous action
             lRight := .T.
          ENDIF
       ENDIF
@@ -546,10 +584,13 @@ METHOD HbQtSlidingList:manageLeftRight( oEvent, nEvent )
          ELSEIF ! lRight .AND. ::nDirection == __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__
             ::hide()
          ENDIF
+         ::lSlided := .T.
+         RETURN .T.                               // IMPORTANT : Stop to prepogate CLICK event upward
       ENDIF
    ELSE
       ::nPressX := nX
       ::nPressY := nY
+      ::lSlided := .F.
    ENDIF
    RETURN .F.
 
@@ -670,9 +711,11 @@ METHOD HbQtSlidingList:activatedBlock( bBlock )
 METHOD HbQtSlidingList:applyStyleSheet()
    LOCAL s := ""
    LOCAL aSS := {}
+   LOCAL cBack := 'rgba( 0,0,0,100 );'
+   LOCAL cTransparent := 'rgba( 0,0,0,0 );'
 
    AAdd( aSS, '#SlidingWidget {' )
-   AAdd( aSS, '   background: '                 + 'rgba( 0,0,0,60 );' )
+   AAdd( aSS, '   background: '                 + cBack )
    AAdd( aSS, '}' )
    AAdd( aSS, '#SlidingHeader {' )
    AAdd( aSS, '   min-height: '                 + __hbqtCssPX( 25 ) )
@@ -680,33 +723,37 @@ METHOD HbQtSlidingList:applyStyleSheet()
    AAdd( aSS, '   color: white;'  )
    AAdd( aSS, '   background-color: lightgray;' )
    AAdd( aSS, '}' )
+   AAdd( aSS, '#SlidingItemFrame {' )
+   AAdd( aSS, '   background: '                 + cTransparent )
+   AAdd( aSS, '}' )
    AAdd( aSS, '#SlidingLabel {' )
    AAdd( aSS, '   font-size: '                  + __hbqtCssPX( 18 ) )
    AAdd( aSS, '   color: white;'  )
+   AAdd( aSS, '   background-color: '           + cTransparent )
    AAdd( aSS, '}' )
-   AAdd( aSS, '#SlidingList {' )
+   AAdd( aSS, '#SlidingListWidget {' )
    AAdd( aSS, '   color: white;' )
-   AAdd( aSS, '   background-color: '           + 'rgba(0,0,0,60);' )
+   AAdd( aSS, '   background-color: '           + cTransparent )
+   //AAdd( aSS, '   background: '                 + cTransparent )
    AAdd( aSS, '   font-size: '                  + __hbqtCssPX( 18 ) )
-   AAdd( aSS, '   padding-left: '               + __hbqtCssPX( 2 ) )
-   AAdd( aSS, '   padding-right: '              + __hbqtCssPX( 2 ) )
    AAdd( aSS, '}' )
-   AAdd( aSS, '#SlidingList::item {' )
+   AAdd( aSS, '#SlidingListWidget::item {' )
    AAdd( aSS, '   color: white;' )
+   AAdd( aSS, '   background-color: '           + cTransparent )
    AAdd( aSS, '}' )
-   AAdd( aSS, '#SlidingList::item::icon {' )
+   AAdd( aSS, '#SlidingListWidget::item::icon {' )
+   AAdd( aSS, '   padding-right: '              + __hbqtCssPX( 10 ) )
+   AAdd( aSS, '   background: transparent;' )
+   AAdd( aSS, '}' )
+   AAdd( aSS, '#SlidingListWidget::item::text {' )
    AAdd( aSS, '   padding-left: '               + __hbqtCssPX( 10 ) )
    AAdd( aSS, '   padding-right: '              + __hbqtCssPX( 10 ) )
    AAdd( aSS, '}' )
-   AAdd( aSS, '#SlidingList::item::text {' )
-   AAdd( aSS, '   padding-left: '               + __hbqtCssPX( 10 ) )
-   AAdd( aSS, '   padding-right: '              + __hbqtCssPX( 10 ) )
+   AAdd( aSS, '#SlidingListWidget::item:selected {' )
+   AAdd( aSS, '   background-color: '           + cBack )
    AAdd( aSS, '}' )
-   AAdd( aSS, '#SlidingList::item:selected {' )
-   AAdd( aSS, '   background-color: '           + 'rgba(100,100,100,200);' )
-   AAdd( aSS, '}' )
-   AAdd( aSS, '#SlidingList::item:!selected {' )
-   AAdd( aSS, '   background-color: '           + 'rgba(100,100,100,200);' )
+   AAdd( aSS, '#SlidingListWidget::item:!selected {' )
+   AAdd( aSS, '   background-color: '           + cBack )
    AAdd( aSS, '}' )
 
    AEval( aSS, {|e| s += e + Chr( 13 ) + Chr( 10 ) } )

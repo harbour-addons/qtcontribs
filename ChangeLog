@@ -16,6 +16,103 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-05-27 17:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r410)
+  * hbqt/hbmk2_qt.hb
+    ! Fixed: greedy regular expression. Was breaking compilation of sone .uis. 
+
+  * hbqt/qtcore/hbqt_misc.prg
+    % Optimizations.
+
+  * hbqt/qtcore/qth/QRect.qth
+  * hbqt/qtcore/qth/QRectF.qth
+    + Added: new methods introduced in recent Qt versions.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: one more constant.
+
+  + hbqtwidgets/resources/add.png
+  + hbqtwidgets/resources/brw-bottom.png
+  + hbqtwidgets/resources/brw-down.png
+  + hbqtwidgets/resources/brw-far-left.png
+  + hbqtwidgets/resources/brw-far-right.png
+  + hbqtwidgets/resources/brw-field.png
+  + hbqtwidgets/resources/brw-index.png
+  + hbqtwidgets/resources/brw-left.png
+  + hbqtwidgets/resources/brw-page-down.png
+  + hbqtwidgets/resources/brw-page-up.png
+  + hbqtwidgets/resources/brw-right.png
+  + hbqtwidgets/resources/brw-search.png
+  + hbqtwidgets/resources/brw-top.png
+  + hbqtwidgets/resources/brw-up.png
+  + hbqtwidgets/resources/checkbox-checked-1.png
+  + hbqtwidgets/resources/checkbox-checked-g.png
+  + hbqtwidgets/resources/checkbox-checked.png
+  + hbqtwidgets/resources/checkbox-unchecked-1.png
+  + hbqtwidgets/resources/checkbox-unchecked-g.png
+  + hbqtwidgets/resources/checkbox-unchecked.png
+  + hbqtwidgets/resources/eye-close-48.png
+  + hbqtwidgets/resources/eye-close.png
+  + hbqtwidgets/resources/eye-open-48.png
+  + hbqtwidgets/resources/eye-open.png
+  + hbqtwidgets/resources/left-close.png
+  + hbqtwidgets/resources/left-open.png
+  + hbqtwidgets/resources/module.png
+  + hbqtwidgets/resources/right-close.png
+  + hbqtwidgets/resources/right-open.png
+  + hbqtwidgets/resources/select-1.png
+  + hbqtwidgets/resources/vz-chat-2.png
+  + hbqtwidgets/resources/vz-chat.png
+  + hbqtwidgets/resources/vz-clock.png
+  + hbqtwidgets/resources/vz-collapse.png
+  + hbqtwidgets/resources/vz-data.png
+  + hbqtwidgets/resources/vz-filter.png
+  + hbqtwidgets/resources/vz-items.png
+  + hbqtwidgets/resources/vz-layerchange.png
+  + hbqtwidgets/resources/vz-layers.png
+  + hbqtwidgets/resources/vz-maps.png
+  + hbqtwidgets/resources/vz-menu.png
+  + hbqtwidgets/resources/vz-more.png
+  + hbqtwidgets/resources/vz-mover.png
+  + hbqtwidgets/resources/vz-navigate.png
+  + hbqtwidgets/resources/vz-properties.png
+  + hbqtwidgets/resources/vz-resizer.png
+  + hbqtwidgets/resources/vz-states.png
+  + hbqtwidgets/resources/vz-threaded.png
+  + hbqtwidgets/resources/vz-topic.png
+    + Added: some more images.
+
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: entries to above images.
+
+  * hbqtwidgets/hbqtstd.ch
+    + Added another constant to manage layers in Visualizer.
+
+  * hbqtwidgets/alert.prg
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtcolumn.prg
+  + hbqtwidgets/messages.prg
+  * hbqtwidgets/misc.prg
+  * hbqtwidgets/properties.prg
+  * hbqtwidgets/silverlight.prg
+  * hbqtwidgets/slidinglist.prg
+  * hbqtwidgets/toolbarex.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+
+  * hbqtwidgets/visualizer.ui
+  + hbqtwidgets/messages.ui
+
+  * hbqtwidgets/hbqtwidgets.hbp
+   
+    This commit is a sum total of many enhancements and new features mainly 
+    targetting mobile platforms. Notably, HbQtBrowser has undergone tons of 
+    improvements along-side HbQt Get System. HbQtBrowse now implements modeless 
+    cell editing taking use of HbQtSilverLight object. This is specially useful
+    for mobile apps where modal event loops are not handelled well.
+    Now all of the HbQtWidget objects are desktop + mobile compliant.
+
 2015-03-24 09:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r409)
   * hbqt/qtgui/qth/QCompleter.qth
     + Added: methods introduced in Qt5.2.

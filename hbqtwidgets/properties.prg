@@ -258,11 +258,12 @@ METHOD HbQtPropertySheet:create( cSheet )
    ::cSheet := cSheet
 
    WITH OBJECT oListLabels := QStringList()
-      :append( "  Property" )
+      :append( "  Name" )
       :append( "  Value" )
    ENDWITH
    WITH OBJECT ::oWidget := QTreeWidget()
       :setColumnCount( 2 )
+      :setFrameShape( QFrame_NoFrame )
       :setHeaderLabels( oListLabels )
    // :setAlternatingRowColors( .T. )
       :setIndentation( 15 )
@@ -274,6 +275,7 @@ METHOD HbQtPropertySheet:create( cSheet )
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setRootIsDecorated( .T. )
+      :setMinimumWidth( 0 )
    ENDWITH
    __hbqtApplyStandardScroller( ::oWidget )
 
@@ -502,6 +504,7 @@ METHOD HbQtProperty:propertyWidget()
       SWITCH ::cValueType
       CASE "C"
          WITH OBJECT oWidget := QLineEdit()
+            :setInputMethodHints( Qt_ImhNoPredictiveText )
             :connect( "editingFinished()", {|| ::valueChanged() } )
             :connect( "returnPressed()"  , {|| ::valueChanged(), ::oStack:setCurrentIndex( 0 ) } )
             :connect( QEvent_Show        , {|| ::oPropertyWidget:setText( __xtos( ::xValue ) ) } )
@@ -511,6 +514,7 @@ METHOD HbQtProperty:propertyWidget()
          EXIT
       CASE "N"
          WITH OBJECT oWidget := QLineEdit()
+            :setInputMethodHints( Qt_ImhFormattedNumbersOnly )
             :connect( "editingFinished()", {|| ::valueChanged() } )
             :connect( "returnPressed()"  , {|| ::valueChanged(), ::oStack:setCurrentIndex( 0 ) } )
             :connect( QEvent_Show        , {|| ::oPropertyWidget:setText( __xtos( ::xValue ) ) } )

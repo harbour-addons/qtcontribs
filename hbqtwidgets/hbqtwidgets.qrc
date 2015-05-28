@@ -252,5 +252,53 @@
     <file>resources/duplicate-line.png</file>
     <file>resources/delete-line.png</file>
     <file>resources/select.png</file>
+    <file>resources/checkbox-checked.png</file>
+    <file>resources/checkbox-unchecked.png</file>
+    <file>resources/checkbox-checked-1.png</file>
+    <file>resources/checkbox-unchecked-1.png</file>
+    <file>resources/checkbox-checked-g.png</file>
+    <file>resources/checkbox-unchecked-g.png</file>
+    <file>resources/eye-open.png</file>
+    <file>resources/eye-close.png</file>
+    <file>resources/eye-open-48.png</file>
+    <file>resources/eye-close-48.png</file>
+    <file>resources/vz-data.png</file>
+    <file>resources/vz-filter.png</file>
+    <file>resources/vz-items.png</file>
+    <file>resources/vz-layers.png</file>
+    <file>resources/vz-maps.png</file>
+    <file>resources/vz-mover.png</file>
+    <file>resources/vz-navigate.png</file>
+    <file>resources/vz-properties.png</file>
+    <file>resources/vz-resizer.png</file>
+    <file>resources/vz-states.png</file>
+    <file>resources/vz-menu.png</file>
+    <file>resources/vz-chat.png</file>
+    <file>resources/vz-chat-2.png</file>
+    <file>resources/left-close.png</file>
+    <file>resources/left-open.png</file>
+    <file>resources/right-close.png</file>
+    <file>resources/right-open.png</file>
+    <file>resources/vz-topic.png</file>
+    <file>resources/vz-collapse.png</file>
+    <file>resources/vz-clock.png</file>
+    <file>resources/vz-threaded.png</file>
+    <file>resources/vz-layerchange.png</file>
+    <file>resources/module.png</file>
+    <file>resources/add.png</file>
+    <file>resources/select-1.png</file>
+    <file>resources/brw-far-left.png</file>
+    <file>resources/brw-left.png</file>
+    <file>resources/brw-far-right.png</file>
+    <file>resources/brw-right.png</file>
+    <file>resources/brw-top.png</file>
+    <file>resources/brw-up.png</file>
+    <file>resources/brw-page-up.png</file>
+    <file>resources/brw-page-down.png</file>
+    <file>resources/brw-bottom.png</file>
+    <file>resources/brw-down.png</file>
+    <file>resources/brw-field.png</file>
+    <file>resources/brw-search.png</file>
+    <file>resources/brw-index.png</file>
   </qresource>
 </RCC>

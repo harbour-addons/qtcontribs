@@ -752,6 +752,7 @@
 #define Qt_ItemIsUserCheckable                    16    // It can be checked or unchecked by the user.
 #define Qt_ItemIsEnabled                          32    // The user can interact with the item.
 #define Qt_ItemIsTristate                         64    // The item is checkable with three separate states.
+#define Qt_ItemNeverHasChildren                   128
 // Note that checkable items need to be given both a suitable set of flags and an initial state, indicating whether the item is checked or not. This is handled automatically for model/view components, but needs to be explicitly set for instances of QListWidgetItem, QTableWidgetItem, and QTreeWidgetItem.
 // The ItemFlags type is a typedef for QFlags<ItemFlag>. It stores an OR combination of ItemFlag values.
 // See also QAbstractItemModel.

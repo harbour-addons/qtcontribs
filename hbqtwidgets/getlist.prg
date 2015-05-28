@@ -340,10 +340,10 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
             oEdit:display()                        /* dimensions might have changed */
          ENDIF
 
-         IF lFLayout
+         IF lFLayout .AND. Empty( aEdit[ _QGET_CONTROL ] )
             cCaption := iif( Empty( aEdit[ _QGET_CAPTION ] ), oGet:name(), aEdit[ _QGET_CAPTION ] )
             nMLabW := Max( nMLabW, 6 + ( Len( cCaption ) * nAvgWid ) )
-            oFLayout:addRow( iif( Empty( aEdit[ _QGET_CAPTION ] ), oGet:name(), aEdit[ _QGET_CAPTION ] ), oEdit:edit() )
+            oFLayout:addRow( cCaption, oEdit:edit() )
          ENDIF
 
          AAdd( aGetList, oEdit )
@@ -415,7 +415,7 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
 
    DATA   bOnLastGet
    METHOD lastGetBlock( bBlock )                  SETGET
-   METHOD terminate()                             INLINE iif( HB_ISBLOCK( ::bOnLastGet ), Eval( ::bOnLastGet ), NIL )
+   METHOD terminate()                             INLINE iif( HB_ISBLOCK( ::bOnLastGet ), Eval( ::bOnLastGet, NIL ), NIL )
 
    CLASSVAR oFocusFrame                           INIT QFocusFrame()
 

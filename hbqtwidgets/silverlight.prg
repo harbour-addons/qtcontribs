@@ -148,6 +148,7 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
       :setOpenExternalLinks( .T. )
       :setTextInteractionFlags( Qt_LinksAccessibleByMouse )
       :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
+      :setAttribute( Qt_WA_NoMousePropagation, .T. )
    ENDWITH
 
    WITH OBJECT ::oTimer := QTimer()
@@ -164,21 +165,15 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
 
 
 METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oParent )
+
    DEFAULT oParent TO ::oParent
-#if 0
-   ::oParent := oParent
-   IF ! HB_ISOBJECT( ::oParent )                  // simply return silently - no alerts
-      RETURN Self
-   ENDIF
-#endif
+
    WITH OBJECT ::oWidget
       ::setContent( xContent )
       ::setAnimation( lAnimate )
       ::setAnimationOpacity( aOpacity )
       ::setBackground( oBackground )
 
-      //:setParent( ::oParent )
-      //:move( 0, 0 )
       :setGeometry( oParent:geometry() )
       :move( 0, 0 )
       :resize( ::oParent:width(), ::oParent:height() )

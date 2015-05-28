@@ -70,7 +70,7 @@ FUNCTION HbQtColumnNew( cHeading, bBlock )
 
 CREATE CLASS HbQtColumn INHERIT TBColumn
 
-   METHOD new( cHeading, bBlock )
+   METHOD init( cHeading, bBlock )
 
    DATA   hAlignment                              INIT      Qt_AlignHCenter + Qt_AlignVCenter
    DATA   hHeight                                 INIT      20
@@ -95,9 +95,9 @@ CREATE CLASS HbQtColumn INHERIT TBColumn
    ENDCLASS
 
 
-METHOD HbQtColumn:new( cHeading, bBlock )
+METHOD HbQtColumn:init( cHeading, bBlock )
 
-   ::TBColumn:new( cHeading, bBlock )
+   ::TBColumn:init( cHeading, bBlock )
 
    ::valtype       := valtype( Eval( ::bBlock ) )
    ::blankVariable := iif( ::valtype == "N", 0, iif( ::valtype == "D", ctod( "" ), iif( ::valtype == "L", .f., "" ) ) )

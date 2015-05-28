@@ -52,11 +52,13 @@ properties.prg
 slidinglist.prg
 silverlight.prg
 editor.prg
+messages.prg
 
 hbqtwidgets.qrc
 
 scroll.ui
 visualizer.ui
+messages.ui
 
 $hb_pkg_install.hbm
 

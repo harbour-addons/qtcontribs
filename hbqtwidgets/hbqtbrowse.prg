@@ -92,6 +92,14 @@
 
 #define ISFROZEN( n )                             ( ascan( ::aLeftFrozen, n ) > 0 .OR. ascan( ::aRightFrozen, n ) > 0 )
 
+STATIC s_itemFlags
+
+
+INIT PROCEDURE initItemFlags
+   s_itemFlags := Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsEditable
+   RETURN
+
+
 #if 0
 STATIC PROCEDURE _GENLIMITRTE( cDesc )
    LOCAL oError := ErrorNew()
@@ -147,8 +155,49 @@ FUNCTION __hbqtBrowseActionsSlidingList( oHbQtBrowse, nLeftOrRight, nDuration, n
    RETURN oSlidingList
 
 
+FUNCTION __hbqtBrowseActionsScrollingToolbar( oLayout, oHbQtBrowse, nButtonHeight, nButtonWidth, aRGBIndicator, hOptions )
+   LOCAL oToolbar
+
+   DEFAULT nButtonHeight TO 50
+   DEFAULT nButtonWidth  TO 50
+   DEFAULT aRGBIndicator TO { 255,0,0 }
+
+   WITH OBJECT oToolbar := HbQtScrollableToolbar():new()
+      :setIndicatorsRGB( aRGBIndicator )
+      :setButtonHeight( nButtonHeight )
+      :setButtonWidth( nButtonWidth )
+      :create( oLayout )
+   ENDWITH
+   WITH OBJECT oToolbar
+      IF HB_ISHASH( hOptions ) .AND. hb_HHasKey( hOptions, "menuleft" ) .AND. HB_ISBLOCK( hOptions[ "menuleft" ] )
+         :addToolbarButton( "OPTIONSLEFT", "Naviagte Columns", "vz-menu"    , hOptions[ "menuleft" ] )
+      ENDIF
+      IF HB_ISHASH( hOptions ) .AND. hb_HHasKey( hOptions, "exit" ) .AND. HB_ISBLOCK( hOptions[ "exit" ] )
+         :addToolbarButton( "EXIT"   , "Exit"            , "prv_undo"       , hOptions[ "exit" ] )
+      ENDIF
+      :addToolbarButton( "UP"        , "Up One Row"      , "brw-up"         , {|| __pullBrowser( oHbQtBrowse ):up()       }, .F., .F., .T. )
+      :addToolbarButton( "PAGEUP"    , "Up One Page"     , "brw-page-up"    , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):pageUp()  , HbQtActivateSilverLight( .F. )   } )
+      :addToolbarButton( "TOP"       , "First Row"       , "brw-top"        , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):goTop()    , HbQtActivateSilverLight( .F. )    } )
+      :addToolbarButton( "DOWN"      , "Down One Row"    , "brw-down"       , {|| __pullBrowser( oHbQtBrowse ):down()     }, .F., .F., .T. )
+      :addToolbarButton( "PAGEDOWN"  , "Down One Page"   , "brw-page-down"  , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):pageDown(), HbQtActivateSilverLight( .F. ) } )
+      :addToolbarButton( "BOTTOM"    , "Last Row"        , "brw-bottom"     , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):goBottom() , HbQtActivateSilverLight( .F. ) } )
+      :addToolbarButton( "PANHOME"   , "First Column"    , "brw-far-left"   , {|| __pullBrowser( oHbQtBrowse ):panHome()  } )
+      :addToolbarButton( "LEFT"      , "Left One Column" , "brw-left"       , {|| __pullBrowser( oHbQtBrowse ):left()     } )
+      :addToolbarButton( "RIGHT"     , "Right One Column", "brw-right"      , {|| __pullBrowser( oHbQtBrowse ):right()    } )
+      :addToolbarButton( "PANEND"    , "Last Column"     , "brw-far-right"  , {|| __pullBrowser( oHbQtBrowse ):panEnd()   } )
+      IF HB_ISHASH( hOptions ) .AND. hb_HHasKey( hOptions, "menuright" ) .AND. HB_ISBLOCK( hOptions[ "menuright" ] )
+         :addToolbarButton( "OPTIONSRIGHT", "More Options", "vz-menu"       , hOptions[ "menuright" ] )
+      ENDIF
+   ENDWITH
+   RETURN oToolbar
+
+
+STATIC FUNCTION __pullBrowser( oHbQtBrowse )
+   RETURN iif( HB_ISBLOCK( oHbQtBrowse ), Eval( oHbQtBrowse ), oHbQtBrowse )
+
+
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )
-   LOCAL oDlg, oLay, oBrw //, nX, nY, nW, nH, aInfo
+   LOCAL oDlg, oLay, oBrw
 
    __defaultNIL( @oFont , HbQtSet( _QSET_GETSFONT ) )
    __defaultNIL( @lOnTop, .F. )
@@ -240,7 +289,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD verticalScrollbar                       SETGET
    METHOD cursorMode                              SETGET
 
-   METHOD editCellEx( cPicture, cColor, bWhen, bValid, nKey )
+   METHOD editCellEx( cPicture, cColor, bWhen, bValid, nKey, xValue )
    METHOD cellEditingTerminate()
    METHOD cellEditingFinishedBlock( bBlock )      SETGET
 
@@ -310,9 +359,9 @@ PROTECTED:
 
    METHOD cellValue( nRow, nCol )                 /* Overloaded */
    METHOD cellColor( nRow, nCol )                 /* Overloaded */
+   METHOD cellInBounds( nRow, nCol )              /* Not a TBrowse Method */
 
    /* HbQt Internal Methods */
-   METHOD cellValueA( nRow, nCol )
    METHOD create()
    METHOD execSlot( nEvent, p1, p2, p3 )
    METHOD supplyInfo( nMode, nCall, nRole, nX, nY )
@@ -336,7 +385,7 @@ PROTECTED:
    DATA   oViewport
    DATA   pCurIndex
 
-   DATA   lFirst                                  INIT   .t.
+   DATA   lFirst                                  INIT   .T.
    DATA   nRowsInView                             INIT   1
 
    METHOD connect()
@@ -357,7 +406,7 @@ PROTECTED:
    DATA   softTrack                               INIT   .T.
    DATA   nHorzOffset                             INIT   -1
    DATA   lReset                                  INIT   .F.
-   DATA   lHorzMove                               INIT   .f.
+   DATA   lHorzMove                               INIT   .F.
 
    DATA   oIndicator
    DATA   oTableView
@@ -414,8 +463,6 @@ PROTECTED:
    DATA   hColors                                 INIT {=>}
    DATA   hIcons                                  INIT {=>}
    DATA   hBrushes                                INIT {=>}
-
-   DATA   aCellValuesA                            INIT {}   // cell values buffers for each record - actual
 
    DATA   bGotoBlock                              INIT NIL
    DATA   bInitializationBlock                    INIT NIL
@@ -560,7 +607,7 @@ PROTECTED:
    DATA   oCellEditor
    DATA   oSilverLight
    DATA   bEscape
-   METHOD cellEditingFinished()
+   METHOD cellEditingFinished( xValue, nColumn )
 
    DATA   lInitialized                            INIT .F.
 
@@ -610,7 +657,6 @@ METHOD HbQtBrowse:destroy()
    ::hColors                   := NIL
    ::hIcons                    := NIL
    ::hBrushes                  := NIL
-   ::aCellValuesA              := NIL
    ::bGotoBlock                := NIL
    ::bInitializationBlock      := NIL
    ::bNavigationBlock          := NIL
@@ -780,7 +826,7 @@ METHOD HbQtBrowse:create()
    ::oWidget := QFrame( ::oParent )
    ::oWidget:setObjectName( __hbqtGetNextIdAsString( "TBROWSE" ) )
 
-   /* Important here as other parts will be based on it*/
+   /* Important here as other parts will be based on it */
    IF HB_ISOBJECT( ::oParent )
       ::oWidget:resize( ::oParent:width(), ::oParent:height() )
    ENDIF
@@ -795,13 +841,17 @@ METHOD HbQtBrowse:create()
    WITH OBJECT ::oTableView := HBQTableView()
       :hbSetBlock( {|p,p1,p2| ::execSlot( __ev_tableViewBlock_main__, p, p1, p2 ) } )
       :setFont( ::oFont )
-      :setTabKeyNavigation( .t. )
-      :setShowGrid( .t. )
+      :setTabKeyNavigation( .T. )
+      :setShowGrid( .T. )
       :setGridStyle( ::gridStyle )                /* to be based on column definition */
-      // :setSelectionMode( QAbstractItemView_SingleSelection )
+#ifdef __HBQTMOBILE__
+      :setSelectionMode( QAbstractItemView_SingleSelection )
+      :setSelectionBehavior( QAbstractItemView_SelectItems )
+#else
       :setSelectionMode( QAbstractItemView_ContiguousSelection )
       :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
-      :setAlternatingRowColors( .t. )
+#endif
+      :setAlternatingRowColors( .T. )
       :setContextMenuPolicy( Qt_CustomContextMenu )
       :setEditTriggers( QAbstractItemView_AnyKeyPressed )
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
@@ -809,27 +859,28 @@ METHOD HbQtBrowse:create()
       :verticalHeader():hide()
       :setModel( ::oDbfModel )
       :horizontalScrollBar():hide()
-//#ifdef __HBQTMOBILE__
       :setHorizontalScrollMode( QAbstractItemView_ScrollPerPixel )
       :setVerticalScrollMode( QAbstractItemView_ScrollPerPixel )
-//#endif
+      :setCornerButtonEnabled( .F. )
    ENDWITH
 
    oPal := ::oTableView:palette()
    oPal:SetColor( QPalette_Inactive, QPalette_Highlight, QColor( 255,255,175 ) )
    ::oTableView:setPalette( oPal )
 
-   ::oHScrollBar := QScrollBar()
-   ::oHScrollBar:setOrientation( Qt_Horizontal )
-   ::oHScrollBar:hide()
+   WITH OBJECT ::oHScrollBar := QScrollBar()
+      :setOrientation( Qt_Horizontal )
+      :hide()
+   ENDWITH
 
-   ::oVScrollBar := QScrollBar()
-   ::oVScrollBar:setOrientation( Qt_Vertical )
-   ::oVScrollBar:hide()
+   WITH OBJECT ::oVScrollBar := QScrollBar()
+      :setOrientation( Qt_Vertical )
+      :hide()
+   ENDWITH
 
    ::oViewport := ::oTableView:viewport()
 
-   WITH OBJECT ::oCellEditor := QLineEdit( ::oViewport )
+   WITH OBJECT ::oCellEditor := QLineEdit( iif( HB_ISOBJECT( __hbqtAppWidget() ), __hbqtAppWidget(), ::oViewport ) )
       ::oCellEditor:hide()
    ENDWITH
 
@@ -911,9 +962,9 @@ METHOD HbQtBrowse:create()
 
 
 METHOD HbQtBrowse:refreshWindow()
-   LOCAL nViewH, aVal, aValA, aCol, oSz
+   LOCAL nViewH, aVal, aCol, oSz
 
-   IF len( ::columns ) > 0
+   IF Len( ::columns ) > 0
       oSz := QFontMetrics( ::oTableView:font() ):size( Qt_TextSingleLine, "M" )
 
       ::nCellHeight := oSZ:height() + 3
@@ -926,7 +977,6 @@ METHOD HbQtBrowse:refreshWindow()
                 ::oTableView:horizontalHeader():height()
 
       IF nViewH <= 0
-         //_GENLIMITRTE( "Viewport has 0 height" )  // do not generate error just switch to 1 row browser
          nViewH := 1
       ENDIF
       ::nRowsInView := Max( 1, Int( nViewH / ::nCellHeight ) )
@@ -938,20 +988,15 @@ METHOD HbQtBrowse:refreshWindow()
       ASize( ::aCellStatus , ::nRowsInView )
       ASize( ::aDispStatus , ::nRowsInView )
       ASize( ::aCellValues , ::nRowsInView )
-      ASize( ::aCellValuesA, ::nRowsInView )
       ASize( ::aCellColors , ::nRowsInView )
       AFill( ::aCellStatus , .F. )
       AFill( ::aDispStatus , .T. )
-      FOR EACH aVal, aValA, aCol IN ::aCellValues, ::aCellValuesA, ::aCellColors
+
+      FOR EACH aVal, aCol IN ::aCellValues, ::aCellColors
          IF aVal == NIL
             aVal := Array( ::colCount )
          ELSE
             ASize( aVal, ::colCount )
-         ENDIF
-         IF aValA == NIL
-            aValA := Array( ::colCount )
-         ELSE
-            ASize( aValA, ::colCount )
          ENDIF
          IF aCol == NIL
             aCol := Array( ::colCount )
@@ -976,10 +1021,11 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    LOCAL oCol, oSz
    LOCAL i, xVal, oFontMetrics, n, nLeftWidth, nwVal, nwHead
    LOCAL nMaxCellH, lShowFooter, oAct, cMenu
+   LOCAL nPadding, nColumnWidth
 
    ::TBrowse:doConfigure()
 
-   IF len( ::columns ) <= 0  /* GUI Components are not in place yet */
+   IF Len( ::columns ) <= 0  /* GUI Components are not in place yet */
       RETURN Self
    ENDIF
 
@@ -1009,9 +1055,11 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::oRightFooterView:hide()
       ::oFooterView:hide()
    ENDIF
-
+#ifdef __HBQTMOBILE__
+   ::oTableView:setSelectionBehavior( QAbstractItemView_SelectItems )
+#else
    ::oTableView:setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
-
+#endif
    ::oHeaderView:setSectionResizeMode( iif( ::lSizeCols, QHeaderView_Interactive, QHeaderView_Fixed ) )
    ::oFooterView:setSectionResizeMode( QHeaderView_Fixed )
 
@@ -1023,16 +1071,18 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    oFontMetrics := QFontMetrics( ::oTableView:font() )
    oSz := oFontMetrics:size( Qt_TextSingleLine, "M" )
+   nPadding := 8
+
    IF .T.
       ::nCellHeight := oSZ:height() + 3
 
       nMaxCellH := ::nCellHeight + 5
       ::oHeaderView:setMaximumHeight( nMaxCellH )
       ::oHeaderView:setMinimumHeight( nMaxCellH )
-      //
+
       ::oLeftHeaderView:setMaximumHeight( nMaxCellH )
       ::oLeftHeaderView:setMinimumHeight( nMaxCellH )
-      //
+
       ::oRightHeaderView:setMaximumHeight( nMaxCellH )
       ::oRightHeaderView:setMinimumHeight( nMaxCellH )
 
@@ -1041,15 +1091,15 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::oRightFooterView:setMaximumHeight( nMaxCellH )
    ENDIF
 
-   FOR i := 1 TO len( ::columns )
-      xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
+   FOR i := 1 TO Len( ::columns )
+      xVal := Transform( Eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
       nwVal := oSZ:width() * Len( xVal )
       nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
 
-      ::columns[ i ]:nColWidth := max( nwVal, nwHead ) + 8
+      ::columns[ i ]:nColWidth := Max( nwVal + nPadding, nwHead )
 
-      ::oHeaderView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
-      ::oFooterView:resizeSection( i-1, max( nwVal, nwHead ) + 8 )
+      ::oHeaderView:resizeSection( i-1, ::columns[ i ]:nColWidth )
+      ::oFooterView:resizeSection( i-1, ::columns[ i ]:nColWidth )
    NEXT
 
    nLeftWidth := 0
@@ -1062,10 +1112,12 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
          xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
          nwVal := oSZ:width() * Len( xVal )
          nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
-         ::oLeftHeaderView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
-         ::oLeftFooterView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
+         nColumnWidth := Max( nwVal + nPadding, nwHead )
+
+         ::oLeftHeaderView:resizeSection( n - 1, nColumnWidth )
+         ::oLeftFooterView:resizeSection( n - 1, nColumnWidth )
       ENDIF
-      nLeftWidth += ::oLeftHeaderView:sectionSize( n-1 )
+      nLeftWidth += ::oLeftHeaderView:sectionSize( n - 1 )
    NEXT
    ::oLeftView:setFixedWidth( nLeftWidth )
    ::oLeftFooterView:setFixedWidth( nLeftWidth )
@@ -1080,14 +1132,15 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
          xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
          nwVal := oSZ:width() * Len( xVal )
          nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
-         ::oRightHeaderView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
-         ::oRightFooterView:resizeSection( n-1, max( nwVal, nwHead ) + 8 )
+         nColumnWidth := Max( nwVal + nPadding, nwHead )
+
+         ::oRightHeaderView:resizeSection( n-1, nColumnWidth )
+         ::oRightFooterView:resizeSection( n-1, nColumnWidth )
       ENDIF
-      nLeftWidth += ::oRightHeaderView:sectionSize( n-1 )
+      nLeftWidth += ::oRightHeaderView:sectionSize( n - 1 )
    NEXT
    ::oRightView:setFixedWidth( 4 + nLeftWidth )
    ::oRightFooterView:setFixedWidth( 4 + nLeftWidth )
-
 
    IF ::nLeftFrozen == 0
       ::oLeftView:hide()
@@ -1110,9 +1163,9 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
          ::oFooterView:setSectionHidden( i - 1, .F. )
       ENDIF
    NEXT
-
-   ::refreshWindow()
-
+#if 0
+   ::refreshWindow()                              // on mobile it causes a lot of issues
+#endif
    ::lStable     := .F.
    ::lFrames     := .T.
    ::nLastRow    := ::rowCount()
@@ -1126,7 +1179,7 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
 
    ::oComboColumnM:clear()
    FOR EACH oCol IN ::columns
-      ::oComboColumnM:addItem( oCol:heading )
+      ::oComboColumnM:addItem( oCol:heading() )
    NEXT
 
    ::aActColumns := {}
@@ -1316,8 +1369,8 @@ METHOD HbQtBrowse:buildLeftFreeze()
       :setFont( ::oFont )
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-      :setTabKeyNavigation( .t. )
-      :setShowGrid( .t. )
+      :setTabKeyNavigation( .T. )
+      :setShowGrid( .T. )
       :setGridStyle( ::gridStyle )   /* to be based on column definition */
       :setSelectionMode( QAbstractItemView_SingleSelection )
       :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
@@ -1350,8 +1403,8 @@ METHOD HbQtBrowse:buildRightFreeze()
       :setFont( ::oFont )
       :setHorizontalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
       :setVerticalScrollBarPolicy( Qt_ScrollBarAlwaysOff )
-      :setTabKeyNavigation( .t. )
-      :setShowGrid( .t. )
+      :setTabKeyNavigation( .T. )
+      :setShowGrid( .T. )
       :setGridStyle( ::gridStyle )   /* to be based on column definition */
       :setSelectionMode( QAbstractItemView_SingleSelection )
       :setSelectionBehavior( iif( ::cursorMode == HBQTBRW_CURSOR_ROW, QAbstractItemView_SelectRows, QAbstractItemView_SelectItems ) )
@@ -1455,9 +1508,10 @@ STATIC FUNCTION Array2CSV( aArray )
    NEXT
 
    s := ''
-   aeval( aCsv, {|e| s += e + hb_eol() } )
+   AEval( aCsv, {|e| s += e + hb_eol() } )
 
    RETURN s
+
 
 STATIC FUNCTION X2Csv( x, cTyp )
 
@@ -1465,9 +1519,9 @@ STATIC FUNCTION X2Csv( x, cTyp )
    CASE cTyp == 'C'
       RETURN x
    CASE cTyp == 'N'
-      RETURN ltrim( str( x ) )
+      RETURN LTrim( Str( x ) )
    CASE cTyp == 'D'
-      RETURN dtoc( x )
+      RETURN DToC( x )
    CASE cTyp == 'L'
       RETURN iif( x, 'Yes','No' )
    ENDCASE
@@ -1523,6 +1577,7 @@ METHOD HbQtBrowse:manageMouseWheel( oWheelEvent )
    ENDIF
 
    RETURN Self
+
 
 METHOD HbQtBrowse:manageMousePress( oMouseEvent )
 
@@ -1791,147 +1846,153 @@ METHOD HbQtBrowse:supplyInfo( nMode, nCall, nRole, nX, nY )
    ENDIF
 
    IF nCall == HBQT_QAIM_flags
-      RETURN Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsEditable
+      RETURN s_itemFlags                          /* Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsEditable */
    ENDIF
 
-   DO CASE
-   CASE nMode == 141       /* Main View Header|Data */
-      IF nCall == HBQT_QAIM_columnCount
+   SWITCH nMode
+   CASE 141                                       /* Main View Header|Data */
+      SWITCH nCall
+      CASE HBQT_QAIM_columnCount
          IF ::colCount > 0
             ::forceStable()
-            ::setHorzScrollBarRange( .t. )
+            ::setHorzScrollBarRange( .T. )
          ENDIF
          RETURN ::colCount
-      ELSEIF nCall == HBQT_QAIM_rowCount
+      CASE HBQT_QAIM_rowCount
          IF ::colCount > 0
             ::forceStable()
-            ::setVertScrollBarRange( .f. )
+            ::setVertScrollBarRange( .F. )
          ENDIF
          RETURN ::rowCount
-      ELSEIF nCall == HBQT_QAIM_data
+      CASE HBQT_QAIM_data
          RETURN ::fetchColumnInfo( nCall, nRole, 0, nY+1, nX+1 )
-      ELSEIF nCall == HBQT_QAIM_headerData
+      CASE HBQT_QAIM_headerData
          RETURN ::fetchColumnInfo( nCall, nRole, 0, 0, nY+1 )
-      ENDIF
-      RETURN nil
+      ENDSWITCH
+      EXIT
 
-   CASE nMode == 142       /* Main View Footer */
-      IF nCall == HBQT_QAIM_columnCount
+   CASE 142                                       /* Main View Footer */
+      SWITCH nCall
+      CASE HBQT_QAIM_columnCount
          IF ::colCount > 0
             ::forceStable()
          ENDIF
          RETURN ::colCount
-      ELSEIF nCall == HBQT_QAIM_data
+      CASE HBQT_QAIM_data
          RETURN ::fetchColumnInfo( nCall, nRole, 1, nY+1, nX+1 )
-      ELSEIF nCall == HBQT_QAIM_headerData
+      CASE HBQT_QAIM_headerData
          RETURN ::fetchColumnInfo( nCall, nRole, 1, 0, nY+1 )
-      ENDIF
-      RETURN nil
+      ENDSWITCH
+      EXIT
 
-   CASE nMode == 151       /* Left Frozen Header|Data */
-      IF nCall == HBQT_QAIM_columnCount
+   CASE 151                                       /* Left Frozen Header|Data */
+      SWITCH nCall
+      CASE HBQT_QAIM_columnCount
          IF ::nLeftFrozen > 0
             ::forceStable()
          ENDIF
          RETURN ::nLeftFrozen
-      ELSEIF nCall == HBQT_QAIM_rowCount
+      CASE HBQT_QAIM_rowCount
          IF ::nLeftFrozen > 0
             ::forceStable()
          ENDIF
          RETURN ::rowCount
-      ELSEIF nCall == HBQT_QAIM_data
-         RETURN ::fetchColumnInfo( nCall,nRole, 0, nY+1, ::aLeftFrozen[ nX+1 ] )
-      ELSEIF nCall == HBQT_QAIM_headerData
-         RETURN ::fetchColumnInfo( nCall,nRole, 0, 0, ::aLeftFrozen[ nY+1 ] )
-      ENDIF
-      RETURN NIL
+      CASE HBQT_QAIM_data
+         RETURN ::fetchColumnInfo( nCall, nRole, 0, nY + 1, ::aLeftFrozen[ nX + 1 ] )
+      CASE HBQT_QAIM_headerData
+         RETURN ::fetchColumnInfo( nCall, nRole, 0, 0, ::aLeftFrozen[ nY + 1 ] )
+      ENDSWITCH
+      EXIT
 
-   CASE nMode == 152       /* Left Frozen Footer */
-      IF nCall == HBQT_QAIM_columnCount
+   CASE 152                                       /* Left Frozen Footer */
+      SWITCH nCall
+      CASE HBQT_QAIM_columnCount
          IF ::nLeftFrozen > 0
             ::forceStable()
          ENDIF
          RETURN ::nLeftFrozen
-      ELSEIF nCall == HBQT_QAIM_data
+      CASE HBQT_QAIM_data
          RETURN ::fetchColumnInfo( nCall,nRole, 1, nY+1, ::aLeftFrozen[ nX+1 ] )
-      ELSEIF nCall == HBQT_QAIM_headerData
+      CASE HBQT_QAIM_headerData
          RETURN ::fetchColumnInfo( nCall,nRole, 1, 0, ::aLeftFrozen[ nY+1 ] )
-      ENDIF
+      ENDSWITCH
+      EXIT
 
-   CASE nMode == 161       /* Right Frozen Header|Data */
-      IF nCall == HBQT_QAIM_columnCount
+   CASE 161                                       /* Right Frozen Header|Data */
+      SWITCH nCall
+      CASE HBQT_QAIM_columnCount
          IF ::nRightFrozen > 0
             ::forceStable()
          ENDIF
          RETURN ::nRightFrozen
-      ELSEIF nCall == HBQT_QAIM_rowCount
+      CASE HBQT_QAIM_rowCount
          IF ::nRightFrozen > 0
             ::forceStable()
          ENDIF
          RETURN ::rowCount
-      ELSEIF nCall == HBQT_QAIM_data
-         RETURN ::fetchColumnInfo( nCall,nRole, 0, nY+1, ::aRightFrozen[ nX+1 ] )
-      ELSEIF nCall == HBQT_QAIM_headerData
-         RETURN ::fetchColumnInfo( nCall,nRole, 0, 0, ::aRightFrozen[ nY+1 ] )
-      ENDIF
+      CASE HBQT_QAIM_data
+         RETURN ::fetchColumnInfo( nCall, nRole, 0, nY + 1, ::aRightFrozen[ nX + 1 ] )
+      CASE HBQT_QAIM_headerData
+         RETURN ::fetchColumnInfo( nCall, nRole, 0, 0, ::aRightFrozen[ nY + 1 ] )
+      ENDSWITCH
+      EXIT
 
-   CASE nMode == 162       /* Right Frozen Footer */
-      IF nCall == HBQT_QAIM_columnCount
+   CASE 162                                       /* Right Frozen Footer */
+      SWITCH nCall
+      CASE HBQT_QAIM_columnCount
          IF ::nRightFrozen > 0
             ::forceStable()
          ENDIF
          RETURN ::nRightFrozen
-      ELSEIF nCall == HBQT_QAIM_data
+      CASE HBQT_QAIM_data
          RETURN ::fetchColumnInfo( nCall,nRole, 1, nY+1, ::aRightFrozen[ nX+1 ] )
-      ELSEIF nCall == HBQT_QAIM_headerData
+      CASE HBQT_QAIM_headerData
          RETURN ::fetchColumnInfo( nCall,nRole, 1, 0, ::aRightFrozen[ nY+1 ] )
-      ENDIF
+      ENDSWITCH
+      EXIT
 
-   ENDCASE
-
+   ENDSWITCH
    RETURN NIL
 
 
 METHOD HbQtBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
-   LOCAL oCol := ::columns[ nCol ]
 
    SWITCH nCall
    CASE HBQT_QAIM_data
-
-      SWITCH ( nRole )
+      SWITCH nRole
       CASE Qt_ForegroundRole
-          RETURN ::compatColor( __hbqtHbColorToQtValue( ::colorValue( ::cellColor( nRow, nCol )[ 1 ] ), Qt_ForegroundRole ) )
+         IF ::cellInBounds( nRow, nCol )
+            RETURN ::compatColor( __hbqtHbColorToQtValue( ::colorValue( ::cellColor( nRow, nCol )[ 1 ] ), Qt_ForegroundRole ) )
+         ENDIF
 
       CASE Qt_BackgroundRole
-         RETURN ::compatColor( __hbqtHbColorToQtValue( ::colorValue( ::cellColor( nRow, nCol )[ 1 ] ), Qt_BackgroundRole ) )
+         IF ::cellInBounds( nRow, nCol )
+            RETURN ::compatColor( __hbqtHbColorToQtValue( ::colorValue( ::cellColor( nRow, nCol )[ 1 ] ), Qt_BackgroundRole ) )
+         ENDIF
 
       CASE Qt_TextAlignmentRole
-         RETURN oCol:dAlignment
+         RETURN ::columns[ nCol ]:dAlignment
 
       CASE Qt_SizeHintRole
          RETURN ::oDefaultCellSize
 
       CASE Qt_DecorationRole
-         IF oCol:type == HBQTCOL_TYPE_FILEICON
+         IF ::columns[ nCol ]:type == HBQTCOL_TYPE_FILEICON .AND. ::cellInBounds( nRow, nCol )
             RETURN ::compatIcon( ::cellValue( nRow, nCol ) )
-         ELSE
-            RETURN NIL
          ENDIF
+         RETURN NIL
+
       CASE Qt_EditRole
       CASE Qt_DisplayRole
-         IF oCol:type == HBQTCOL_TYPE_FILEICON
+         IF ::columns[ nCol ]:type == HBQTCOL_TYPE_FILEICON
             RETURN NIL
          ELSE
-            IF nCall == Qt_EditRole    /* Never Reached */
-               SWITCH oCol:valtype
-               CASE "C"
-                  RETURN Trim( Eval( oCol:block ) )
-               CASE "N"
-                  RETURN Val( Eval( oCol:block ) )
-               CASE "D"
-                  RETURN DToC( Eval( oCol:block ) )
-               CASE "L"
-                  RETURN iif( Eval( oCol:block ), "T", "F" )
+            IF nCall == Qt_EditRole               /* Never Reached */
+               SWITCH ::columns[ nCol ]:valtype
+               CASE "C" ; RETURN Trim( Eval( ::columns[ nCol ]:block ) )
+               CASE "N" ; RETURN Val( Eval( ::columns[ nCol ]:block ) )
+               CASE "D" ; RETURN DToC( Eval( ::columns[ nCol ]:block ) )
+               CASE "L" ; RETURN iif( Eval( ::columns[ nCol ]:block ), "T", "F" )
                ENDSWITCH
                RETURN ""
             ELSE
@@ -1942,31 +2003,21 @@ METHOD HbQtBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
       RETURN NIL
 
    CASE HBQT_QAIM_headerData
-      IF nArea == 0                    /* Header Area */
+      IF nArea == 0                               /* Header Area */
          SWITCH nRole
-         CASE Qt_SizeHintRole
-            RETURN ::oDefaultCellSize //oCol:hHeight
-         CASE Qt_DisplayRole
-            RETURN oCol:heading
-         CASE Qt_TextAlignmentRole
-            RETURN oCol:hAlignment
-         CASE Qt_ForegroundRole
-            RETURN ::compatColor( oCol:hFgColor )
-         CASE Qt_BackgroundRole
-            RETURN ::compatColor( oCol:hBgColor )
+         CASE Qt_SizeHintRole      ; RETURN ::oDefaultCellSize
+         CASE Qt_DisplayRole       ; RETURN ::columns[ nCol ]:heading
+         CASE Qt_TextAlignmentRole ; RETURN ::columns[ nCol ]:hAlignment
+         CASE Qt_ForegroundRole    ; RETURN ::compatColor( ::columns[ nCol ]:hFgColor )
+         CASE Qt_BackgroundRole    ; RETURN ::compatColor( ::columns[ nCol ]:hBgColor )
          ENDSWITCH
-      ELSE                             /* Footer Area */
+      ELSE                                        /* Footer Area */
          SWITCH nRole
-         CASE Qt_SizeHintRole
-            RETURN ::oDefaultCellSize //oCol:fHeight
-         CASE Qt_DisplayRole
-            RETURN oCol:footing
-         CASE Qt_TextAlignmentRole
-            RETURN oCol:fAlignment
-         CASE Qt_ForegroundRole
-            RETURN ::compatColor( oCol:fFgColor )
-         CASE Qt_BackgroundRole
-            RETURN ::compatColor( oCol:fBgColor )
+         CASE Qt_SizeHintRole      ; RETURN ::oDefaultCellSize
+         CASE Qt_DisplayRole       ; RETURN ::columns[ nCol ]:footing
+         CASE Qt_TextAlignmentRole ; RETURN ::columns[ nCol ]:fAlignment
+         CASE Qt_ForegroundRole    ; RETURN ::compatColor( ::columns[ nCol ]:fFgColor )
+         CASE Qt_BackgroundRole    ; RETURN ::compatColor( ::columns[ nCol ]:fBgColor )
          ENDSWITCH
       ENDIF
       RETURN NIL
@@ -2180,32 +2231,31 @@ METHOD HbQtBrowse:setCellHeight( nCellHeight )
    NEXT
    RETURN Self
 
-METHOD HbQtBrowse:cellColor( nRow, nCol )
+
+METHOD HbQtBrowse:cellInBounds( nRow, nCol )
 
    IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
-      nCol >= 1 .AND. nCol <= ::colCount
+      nCol >= 1 .AND. nCol <= ::colCount .AND. ;
+      nRow <= Len( ::aCellValues ) .AND. nCol <= Len( ::aCellValues[ nRow ] )
 
+      RETURN .T.
+   ENDIF
+   RETURN .F.
+
+
+METHOD HbQtBrowse:cellColor( nRow, nCol )
+
+   IF ::cellInBounds( nRow, nCol )
       RETURN ::aCellColors[ nRow, nCol ]
    ENDIF
 
    RETURN NIL
 
+
 METHOD HbQtBrowse:cellValue( nRow, nCol )
 
-   IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
-      nCol >= 1 .AND. nCol <= ::colCount
-
+   IF ::cellInBounds( nRow, nCol )
       RETURN ::aCellValues[ nRow, nCol ]
-   ENDIF
-
-   RETURN NIL
-
-METHOD HbQtBrowse:cellValueA( nRow, nCol )
-
-   IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
-      nCol >= 1 .AND. nCol <= ::colCount
-
-      RETURN ::aCellValuesA[ nRow, nCol ]
    ENDIF
 
    RETURN NIL
@@ -2567,7 +2617,7 @@ METHOD HbQtBrowse:pageDown()
    ::TBrowse:pageDown()
 
    ::forceStable()
-   ::setCurrentIndex( .t. )
+   ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
    ::manageVerticalMovement( K_PGDN )
 
@@ -2577,7 +2627,8 @@ METHOD HbQtBrowse:goTop()
 
    ::TBrowse:goTop()
 
-   ::refreshAll()
+   ::forceStable()
+   ::setCurrentIndex( .T. )
    ::updateVertScrollBar()
    ::manageVerticalMovement( K_CTRL_PGUP )
 
@@ -2588,6 +2639,7 @@ METHOD HbQtBrowse:goBottom()
    ::TBrowse:goBottom()
 
    ::refreshAll()
+   ::forceStable()
    ::updateVertScrollBar()
    ::manageVerticalMovement( K_CTRL_PGDN )
 
@@ -2628,14 +2680,14 @@ METHOD HbQtBrowse:manageVerticalMovement( nMode )
 
 METHOD HbQtBrowse:left()
    LOCAL n, nCol
-   LOCAL lUpdate := .f.
+   LOCAL lUpdate := .F.
 
    nCol := ::colPos
 
    IF nCol > 1
       DO WHILE --nCol >= 1
          IF ! ISFROZEN( nCol )
-            lUpdate := .t.
+            lUpdate := .T.
             EXIT
          ENDIF
       ENDDO
@@ -2716,13 +2768,13 @@ METHOD HbQtBrowse:right()
 
 METHOD HbQtBrowse:firstCol()
    LOCAL n, nCol
-   LOCAL lUpdate := .f.
+   LOCAL lUpdate := .F.
 
    nCol := 0
 
    DO WHILE ++nCol <= ::colCount
       IF !ISFROZEN( nCol )
-         lUpdate := .t.
+         lUpdate := .T.
          EXIT
       ENDIF
    ENDDO
@@ -2735,9 +2787,9 @@ METHOD HbQtBrowse:firstCol()
       IF n < 0
          ::oHeaderView:setOffset( ::oHeaderView:offSet() + n )
          ::oFooterView:setOffset( ::oFooterView:offSet() + n )
-         ::setCurrentIndex( .t. )
+         ::setCurrentIndex( .T. )
       ELSE
-         ::setCurrentIndex( .f. )
+         ::setCurrentIndex( .F. )
       ENDIF
       ::oHScrollBar:setValue( 0 )
       IF ::lHorizontalMovementBlock
@@ -2749,13 +2801,13 @@ METHOD HbQtBrowse:firstCol()
 
 METHOD HbQtBrowse:lastCol()
    LOCAL n, n1, n2, nCol
-   LOCAL lUpdate := .f.
+   LOCAL lUpdate := .F.
 
    nCol := ::colCount + 1
 
    DO WHILE --nCol >= 1
       IF !ISFROZEN( nCol )
-         lUpdate := .t.
+         lUpdate := .T.
          EXIT
       ENDIF
    ENDDO
@@ -2775,9 +2827,9 @@ METHOD HbQtBrowse:lastCol()
             ::oHeaderView:setOffset( ::oHeaderView:offSet()+(n1-(n2-n)+1) - ::oTableView:lineWidth() )
             ::oFooterView:setOffset( ::oFooterView:offSet()+(n1-(n2-n)+1) - ::oTableView:lineWidth() )
          ENDIF
-         ::setCurrentIndex( .t. )
+         ::setCurrentIndex( .T. )
       ELSE
-         ::setCurrentIndex( .f. )
+         ::setCurrentIndex( .F. )
       ENDIF
       ::oHScrollBar:setValue( ::colCount - 1 )
 
@@ -2792,7 +2844,7 @@ METHOD HbQtBrowse:lastCol()
 METHOD HbQtBrowse:home()
 
    ::colPos := max( 1, ::oHeaderView:visualIndexAt( 1 ) + 1 )
-   ::setCurrentIndex( .t. )
+   ::setCurrentIndex( .T. )
    ::oHScrollBar:setValue( ::colPos - 1 )
    IF ::lHorizontalMovementBlock
       Eval( ::bHorizontalMovementBlock, 5, NIL, Self )
@@ -2808,7 +2860,7 @@ METHOD HbQtBrowse:end()
       ::nRightVisible := ::colCount
    ENDIF
    ::colPos := ::nRightVisible
-   ::setCurrentIndex( .t. )
+   ::setCurrentIndex( .T. )
    ::oHScrollBar:setValue( ::colPos - 1 )
    IF ::lHorizontalMovementBlock
       Eval( ::bHorizontalMovementBlock, 6, NIL, Self )
@@ -2982,7 +3034,9 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
 
    WITH OBJECT oDlg
       :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
-      //:setAttribute( Qt_WA_TranslucentBackground, .T. )
+#if 0                                             // scheduled to be removed with Qt 5.4.1
+      :setAttribute( Qt_WA_TranslucentBackground, .T. )
+#endif
       :move( oPos:x - 6, oPos:y() )
       :connect( QEvent_Show, {||
                                  LOCAL oEdit := GetList[ 1 ]:edit()
@@ -3106,26 +3160,46 @@ STATIC FUNCTION __applyKey( oEdit, nKey, cPicture, xValue )
    RETURN NIL
 
 
-METHOD HbQtBrowse:editCellEx( cPicture, cColor, bWhen, bValid, nKey )
-   LOCAL oRect     := ::oTableView:visualRect( ::getCurrentIndex() )
-   LOCAL oCol      := ::getColumn( ::colPos )
-   LOCAL xValue    := Eval( oCol:block )
+METHOD HbQtBrowse:editCellEx( cPicture, cColor, bWhen, bValid, nKey, xValue )
    LOCAL GetList   := {}, SayList := {}
+   LOCAL nColumn   := ::colPos
+   LOCAL oCol      := ::getColumn( nColumn )
+   LOCAL oRect     := ::oTableView:visualRect( ::getCurrentIndex() )
+#ifdef __HBQTMOBILE__
+   LOCAL nWidth    := oRect:width()
+   LOCAL nHeight   := oRect:height()
+
+   oRect:setX( ( ::widget():parent():width() - nWidth ) / 2 )
+   oRect:setY( __hbqtPixelsByDPI( 40 ) )
+   oRect:setWidth( nWidth )
+   oRect:setHeight( nHeight )
+#endif
+
+   DEFAULT xValue TO Eval( oCol:block )
 
    ::bEscape := SetKey( K_ESC, {|| ::cellEditingTerminate() } )
-
-   IF Empty( ::oSilverLight )
-      ::oSilverLight := HbQtSilverLight():new():create( "", QColor( 255,255,255 ), .F., { 0,0 }, ::widget():parent() )
-   ENDIF
-   ::oSilverLight:activate( , , , , ::widget() )
 
    cPicture := iif( Empty( cPicture ), oCol:Picture, cPicture )
    IF Empty( cPicture )
       cPicture := ""
    ENDIF
 
+   IF Empty( ::oSilverLight )
+#ifdef __HBQTMOBILE__
+      ::oSilverLight := HbQtSilverLight():new():create( "", QColor( 255,255,255 ), .F., { 0,0 }, __hbqtAppWidget() )
+#else
+      ::oSilverLight := HbQtSilverLight():new():create( "", QColor( 255,255,255 ), .F., { 0,0 }, ::widget():parent() )
+#endif
+   ENDIF
+#ifdef __HBQTMOBILE__
+   ::oSilverLight:activate( .T. )
+#else
+   ::oSilverLight:activate( , , , , ::widget() )
+#endif
+
    WITH OBJECT ::oCellEditor
       :setGeometry( oRect )
+      :setInputMask( "" )
       :show()
       :raise()
    ENDWITH
@@ -3135,23 +3209,26 @@ METHOD HbQtBrowse:editCellEx( cPicture, cColor, bWhen, bValid, nKey )
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
                      WHEN    {|oGet| iif( HB_ISBLOCK( bWhen  ), Eval( bWhen , oGet ), iif( HB_ISBLOCK( oCol:preBlock  ), Eval( oCol:preBlock , oGet ), .T. ) ) } ;
                      VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), iif( HB_ISBLOCK( oCol:postBlock ), Eval( oCol:postBlock, oGet ), .T. ) ) }
-   QREAD PARENT ::widget() NOFOCUSFRAME LASTGETBLOCK  {|| ::cellEditingFinished() }
+   QREAD PARENT ::widget() NOFOCUSFRAME LASTGETBLOCK  {|xValue| ::cellEditingFinished( xValue, nColumn ) }
 
    ::oCellEditor:setFocus()
    __applyKey( ::oCellEditor, nKey, cPicture, xValue )
    RETURN NIL
 
 
-METHOD HbQtBrowse:cellEditingFinished()
-   LOCAL xValue := GetActive():varGet()
+METHOD HbQtBrowse:cellEditingFinished( xValue, nColumn )
+
+   DEFAULT xValue TO iif( HB_ISOBJECT( GetActive() ), GetActive():varGet(), NIL )
 
    ::oCellEditor:hide()
    ::oSilverLight:deActivate()
    SetKey( K_ESC, ::bEscape )
    ::widget():setFocus()
+   ::refreshCurrent()
+   ::forceStable()
 
    IF HB_ISBLOCK( ::cellEditingFinishedBlock() )
-      Eval( ::cellEditingFinishedBlock(), xValue, ::getColumn( ::colPos ), Self )
+      Eval( ::cellEditingFinishedBlock(), xValue, ::getColumn( nColumn ), Self )
    ELSE
       Eval( ::getColumn( ::colPos ), xValue )
    ENDIF
@@ -3999,6 +4076,7 @@ METHOD HbQtBrowse:buildActions()
 STATIC FUNCTION __addColumnBlock( obj, cColumn )
    RETURN {||  obj:addAColumn( cColumn ) }
 
+
 METHOD HbQtBrowse:addAColumn( cColumn )
    LOCAL aNames, oAct
 
@@ -4056,6 +4134,7 @@ METHOD HbQtBrowse:showIndicator( rgbColorString )
 
    RETURN Self
 
+
 METHOD HbQtBrowse:manageStatusbar( lShow )
    IF HB_ISLOGICAL( lShow )
       IF lShow
@@ -4066,6 +4145,7 @@ METHOD HbQtBrowse:manageStatusbar( lShow )
    ENDIF
    RETURN ::oStatusbar:isVisible()
 
+
 METHOD HbQtBrowse:manageToolbar( lShow )
    IF HB_ISLOGICAL( lShow )
       IF lShow
@@ -4075,6 +4155,7 @@ METHOD HbQtBrowse:manageToolbar( lShow )
       ENDIF
    ENDIF
    RETURN ::oToolbar:isVisible()
+
 
 METHOD HbQtBrowse:manageToolbarLeft( lShow )
    IF HB_ISLOGICAL( lShow )
@@ -4089,6 +4170,7 @@ METHOD HbQtBrowse:manageToolbarLeft( lShow )
 
 METHOD HbQtBrowse:getTitle()
    RETURN ::xTitle
+
 
 METHOD HbQtBrowse:setTitle( xTitle )
    IF HB_ISCHAR( xTitle ) .OR. HB_ISARRAY( xTitle ) .OR. HB_ISBLOCK( xTitle )
@@ -4323,6 +4405,7 @@ METHOD HbQtBrowse:dispFrames()
    ::lFrames := .F.
 
    RETURN Self
+
 
 METHOD HbQtBrowse:dispRow( nRow )
 

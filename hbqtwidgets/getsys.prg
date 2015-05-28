@@ -872,6 +872,9 @@ METHOD HbQtGet:setParams()
          ::sl_dispWidth := Len( Transform( ::original, ::cPicture ) )
          ::oEdit:setMaxLength( ::sl_width )
          ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getCharacter( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+#ifdef __HBQTMOBILE__
+         ::oEdit:setInputMethodHints( Qt_ImhNoPredictiveText )
+#endif
          EXIT
       CASE "N"
          IF ! Empty( ::cPicMask )
@@ -898,6 +901,9 @@ METHOD HbQtGet:setParams()
             ::sl_decProxy := ","
             ::sl_commaProxy := "."
          ENDIF
+#ifdef __HBQTMOBILE__
+         ::oEdit:setInputMethodHints( Qt_ImhFormattedNumbersOnly )
+#endif
          EXIT
       CASE "D"
          ::sl_width     := Len( DToC( ::varGet() ) )
@@ -916,15 +922,24 @@ METHOD HbQtGet:setParams()
             ::oEdit:setInputMask( ::sl_qMask )
          NEXT
          ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getDate( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+#ifdef __HBQTMOBILE__
+         ::oEdit:setInputMethodHints( Qt_ImhFormattedNumbersOnly )
+#endif
          EXIT
       CASE "L"
          ::sl_width     := 1
          ::sl_dispWidth := 1
          ::oEdit:setValidator( HBQValidator( {|cText,nPos| ::getLogical( cText, nPos ) }, {|cText| ::fixup( cText ) } ) )
+#ifdef __HBQTMOBILE__
+         ::oEdit:setInputMethodHints( Qt_ImhUppercaseOnly + Qt_ImhNoPredictiveText )
+#endif
          EXIT
       ENDSWITCH
       EXIT
    CASE "QPLAINTEXTEDIT"
+#ifdef __HBQTMOBILE__
+      ::oEdit:setInputMethodHints( Qt_ImhNoPredictiveText )
+#endif
    CASE "QLISTWIDGET"
    CASE "QCOMBOBOX"
    CASE "QPUSHBUTTON"
@@ -1155,7 +1170,7 @@ METHOD HbQtGet:postValidate()
       IF ! Empty( ::oGetList )
          IF ::oGetList:isLastGet( Self )
             IF HB_ISBLOCK( ::oGetList:lastGetBlock() )
-               Eval( ::oGetList:lastGetBlock() )
+               Eval( ::oGetList:lastGetBlock(), ::getData() )
             ENDIF
          ENDIF
       ENDIF
