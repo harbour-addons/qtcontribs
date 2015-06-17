@@ -3,8 +3,6 @@
  */
 
 /*
- * Harbour Project source code:
- *
  * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *

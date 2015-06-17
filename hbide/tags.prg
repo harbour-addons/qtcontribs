@@ -3,8 +3,6 @@
  */
 
 /*
- * Harbour Project source code:
- *
  * Copyright 2009 Andy Wos
  * www - http://harbour-project.org
  *
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -63,15 +59,12 @@
  *                               22Nov2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "xbp.ch"
 
 #define LEFTEQUAL( l, r )       ( Left( l, Len( r ) ) == r )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
    LOCAL cType, cName, cSyntax, n, m, i, cSource, cExt
@@ -188,7 +181,6 @@ FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
 
    RETURN aTags
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION Summarize( aText, cComments, aSumData, nFileType )
    LOCAL cline, i,j, n, c, a, aSummary
@@ -326,7 +318,7 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
 
    RETURN aSummary
 
-/*----------------------------------------------------------------------*/
+
 /*
    updates comments of the whole file or down from line nline (if supplied)
    comment nState codes:
@@ -422,7 +414,6 @@ FUNCTION CheckComments( aText )
 
    RETURN cComments
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION IsInString( cText, nPos, nStart, cQuote )
    LOCAL j, cTkn
@@ -446,4 +437,3 @@ STATIC FUNCTION IsInString( cText, nPos, nStart, cQuote )
 
    RETURN lInString
 
-/*----------------------------------------------------------------------*/

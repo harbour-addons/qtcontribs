@@ -325,13 +325,13 @@ CLASS HbIde
    DATA   aProjects                               INIT   {}
    DATA   aUserDict                               INIT   {}
    DATA   aMarkTBtns                              INIT   array( 6 )
-   DATA   lClosing                                INIT   .f.
-   DATA   lStatusBarVisible                       INIT   .t.
+   DATA   lClosing                                INIT   .F.
+   DATA   lStatusBarVisible                       INIT   .T.
    DATA   nModeUI                                 INIT   UI_MODE_DEFAULT
    DATA   oSys
    DATA   oSysMenu
-   DATA   lSortedFuncList                         INIT   .t.
-   DATA   lQuitting                               INIT   .f.
+   DATA   lSortedFuncList                         INIT   .F.
+   DATA   lQuitting                               INIT   .F.
    DATA   hHeaderFiles                            INIT   {=>}
 
    // debugger interface
@@ -1213,9 +1213,9 @@ METHOD HbIde:updateFuncList( lSorted )
 
    ::oFuncList:clear()
    IF !empty( ::aTags )
-      IF lSorted
-         aeval( ::aTags, {|e_| aadd( aFunc, { e_[ 6 ], e_[ 7 ] } ) } )
-         asort( aFunc, , , {|e,f| lower( e[ 2 ] ) < lower( f[ 2 ] ) } )
+      IF ::lSortedFuncList
+         AEval( ::aTags, {|e_| aadd( aFunc, { e_[ 6 ], e_[ 7 ] } ) } )
+         ASort( aFunc, , , {|e,f| lower( e[ 2 ] ) < lower( f[ 2 ] ) } )
          FOR EACH a_ IN aFunc
             nIndex := ::oFuncList:addItem( a_[ 2 ] )
             ::oFuncList:setIcon( nIndex, QIcon( hbide_identifierImage( a_[ 1 ] ) ) )

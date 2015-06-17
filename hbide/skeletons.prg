@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2010 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +57,12 @@
  *                               18Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __buttonNew_clicked__                     2001
 #define __buttonRename_clicked__                  2002
@@ -81,7 +74,6 @@
 #define __oTree_itemSelected__                    2008
 #define __oTree_contextMenu__                     2009
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeSkeletons INHERIT IdeObject
 
@@ -113,7 +105,6 @@ CLASS IdeSkeletons INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:new( oIde )
 
@@ -121,7 +112,6 @@ METHOD IdeSkeletons:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:create( oIde )
 
@@ -130,7 +120,6 @@ METHOD IdeSkeletons:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:destroy()
 
@@ -151,7 +140,6 @@ METHOD IdeSkeletons:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:show()
 
@@ -177,7 +165,6 @@ METHOD IdeSkeletons:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:execEvent( nEvent, p )
    LOCAL cName, qItem, cCode, n, cOpt
@@ -260,7 +247,6 @@ METHOD IdeSkeletons:execEvent( nEvent, p )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:refreshList()
 
@@ -269,7 +255,6 @@ METHOD IdeSkeletons:refreshList()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:rename( cName )
    LOCAL n, cNewName
@@ -284,7 +269,6 @@ METHOD IdeSkeletons:rename( cName )
    ENDIF
    RETURN iif( empty( cNewName ), cName, cNewName )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:delete( cName )
    LOCAL n
@@ -300,7 +284,6 @@ METHOD IdeSkeletons:delete( cName )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:save( cName, cText )
    LOCAL n
@@ -316,7 +299,6 @@ METHOD IdeSkeletons:save( cName, cText )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:saveAs( cText )
    LOCAL cName
@@ -328,7 +310,6 @@ METHOD IdeSkeletons:saveAs( cText )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:postSkeleton( cSkeleton )
    LOCAL oEdit, cText := ::getText( cSkeleton )
@@ -341,7 +322,6 @@ METHOD IdeSkeletons:postSkeleton( cSkeleton )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:selectByMenuAndPostText( qEdit )
    LOCAL cText, qCursor, qRect, qMenu, qAct, a_, aAct := {}
@@ -375,7 +355,6 @@ METHOD IdeSkeletons:selectByMenuAndPostText( qEdit )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:parseMeta( cMeta )
    LOCAL xVal, cData, n, cKey, cVal, nMeta
@@ -420,7 +399,6 @@ METHOD IdeSkeletons:parseMeta( cMeta )
 
    RETURN xVal
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:parseText( cText )
    LOCAL n, n1, cTkn, xVal
@@ -450,7 +428,6 @@ METHOD IdeSkeletons:parseText( cText )
 
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:getText( cSkeleton )
    LOCAL n, cText := ""
@@ -461,7 +438,6 @@ METHOD IdeSkeletons:getText( cSkeleton )
 
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:postText( qEdit, cText )
    LOCAL s, a_, nCol, nPos, nRowCur, nColCur, n
@@ -499,7 +475,6 @@ METHOD IdeSkeletons:postText( qEdit, cText )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:showTree()
 
@@ -530,7 +505,6 @@ METHOD IdeSkeletons:showTree()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:updateTree()
    LOCAL oItem, a_
@@ -547,7 +521,6 @@ METHOD IdeSkeletons:updateTree()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSkeletons:clearTree()
    LOCAL oItem
@@ -560,4 +533,3 @@ METHOD IdeSkeletons:clearTree()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/

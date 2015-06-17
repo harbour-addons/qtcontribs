@@ -1,8 +1,8 @@
-                        /*
+/*
  * $Id$
  */
 
-/* this file adapted FOR hbide from hwgdebug.prg by alex;(Alexey Zapolski(pepan@mail.ru))
+/* this file adapted for hbide from hwgdebug.prg by alex;(Alexey Zapolski(pepan@mail.ru))
  * (HWGUI - Harbour Win32 GUI library source code)
  * The GUI Debugger
  *

@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2010 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +57,6 @@
  *                               04Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
@@ -70,14 +64,12 @@
 #include "xbp.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __browserStat_anchorClicked__             2001
 #define __browserWelcome_contextMenuRequested__   2002
 #define __browserFaq_contextMenuRequested__       2003
 #define __tabWidget_currentChanged__              2004
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_htmlImgAnchor( cHref, cImg, nWidth, nHeight )
    DEFAULT nWidth  TO 12
@@ -85,13 +77,11 @@ STATIC FUNCTION hbide_htmlImgAnchor( cHref, cImg, nWidth, nHeight )
    RETURN '<a href="' + cHref + '"' + '>' + ' <img src="' + cImg + '"' + ;
           ' width="' + hb_ntos( nWidth ) + '" height="' + hb_ntos( nHeight ) + '"' + '</img>' + '</a>'
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_htmlAnchor( cHref, cText, cTooltip )
 
    RETURN '<a href="' + cHref + '"' + iif( empty( cTooltip ), '', ' title="' + cTooltip + '"' ) +'>' + cText + '</A>'
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeHome INHERIT IdeObject
 
@@ -127,13 +117,11 @@ CLASS IdeHome INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:new( oIde )
    ::oIde := oIde
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:create( oIde )
 
@@ -155,7 +143,6 @@ METHOD IdeHome:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:show()
 
@@ -168,7 +155,6 @@ METHOD IdeHome:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:buildView()
    LOCAL oFrame
@@ -196,7 +182,6 @@ METHOD IdeHome:buildView()
 
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:destroy()
 
@@ -215,7 +200,6 @@ METHOD IdeHome:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:execEvent( nEvent, p )
    LOCAL cAct, cText, cExt
@@ -266,7 +250,6 @@ METHOD IdeHome:execEvent( nEvent, p )
    ENDSWITCH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:activateTab( mp1, mp2, oTab )
 
@@ -281,7 +264,6 @@ METHOD IdeHome:activateTab( mp1, mp2, oTab )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:print()
 
@@ -297,13 +279,11 @@ METHOD IdeHome:print()
 
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:paintRequested( qPrinter )
    ::qCurBrowser:print( qPrinter )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:setStyleSheetTextBrowser( qBrw )
 
@@ -313,7 +293,6 @@ METHOD IdeHome:setStyleSheetTextBrowser( qBrw )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:buildWelcomeTab()
    LOCAL oTab, qBrw, qSList
@@ -346,7 +325,6 @@ METHOD IdeHome:buildWelcomeTab()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:refresh()
    LOCAL aHtm := {}
@@ -382,7 +360,6 @@ METHOD IdeHome:refresh()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:addProjectsInfo( aHtm )
    LOCAL a_, prp_, src_, dir_, cIcon
@@ -426,7 +403,6 @@ METHOD IdeHome:addProjectsInfo( aHtm )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:buildProjectDetails( cProjectTitle )
    LOCAL aSrc, cSrc, dir_, cRoot, cExt, cIcon, cName, cPath
@@ -457,7 +433,6 @@ METHOD IdeHome:buildProjectDetails( cProjectTitle )
 
    RETURN aSrcInfo
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:buildSourcesInfo( cProjectTitle, aSrcInfo )
    LOCAL aHtm := {}, aSrc
@@ -492,7 +467,6 @@ METHOD IdeHome:buildSourcesInfo( cProjectTitle, aSrcInfo )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:formatSourceInfo( aHtm, aSrc )
 
@@ -517,7 +491,6 @@ METHOD IdeHome:formatSourceInfo( aHtm, aSrc )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHome:buildFaqTab()
    LOCAL oTab, qBrw, aFaq, aHtm, a_, b_, s
@@ -567,7 +540,6 @@ METHOD IdeHome:buildFaqTab()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_getFaqs()
    LOCAL a_:= {}, b_:= {}
@@ -618,4 +590,3 @@ STATIC FUNCTION hbide_getFaqs()
 
    RETURN { a_, b_ }
 
-/*----------------------------------------------------------------------*/

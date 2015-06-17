@@ -1,11 +1,9 @@
-         /*
+/*
  * $Id$
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +57,6 @@
  *                               11Jun2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
@@ -70,7 +64,6 @@
 #include "hbide.ch"
 #include "xbp.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __checkDictToPrg_stateChanged__           2056
 #define __checkDictToC_stateChanged__             2057
@@ -105,7 +98,6 @@
 
 #define DIC_NUM_VRBLS                             10
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_loadUserDictionaries( oIde )
    LOCAL aDict := oIde:oINI:aDictionaries
@@ -119,7 +111,6 @@ FUNCTION hbide_loadUserDictionaries( oIde )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeDictionary INHERIT IdeObject
 
@@ -164,7 +155,6 @@ CLASS IdeDictionary INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:new( oIde )
 
@@ -173,14 +163,12 @@ METHOD IdeDictionary:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:create( oIde )
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:load( cDict )
    LOCAL a_:= hb_aTokens( cDict, ";" )
@@ -280,7 +268,6 @@ METHOD IdeDictionary:load( cDict )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:toString()
 
@@ -304,7 +291,6 @@ METHOD IdeDictionary:toString()
 
    RETURN ::cDictInfo
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:populateUI( oUI )
 
@@ -337,7 +323,6 @@ METHOD IdeDictionary:populateUI( oUI )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:setButtonColors( oUI )
 
@@ -352,7 +337,6 @@ METHOD IdeDictionary:setButtonColors( oUI )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:execColorDialog( oUI, cMode )
    LOCAL qColorDlg := QColorDialog( oUI:oWidget )
@@ -391,7 +375,6 @@ METHOD IdeDictionary:execColorDialog( oUI, cMode )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:checkStateChanged( oUI, p, p1 )
    LOCAL lChecked := p1 != 0
@@ -428,7 +411,6 @@ METHOD IdeDictionary:checkStateChanged( oUI, p, p1 )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDictionary:radioButtonClicked( oUI, p )
 
@@ -443,4 +425,3 @@ METHOD IdeDictionary:radioButtonClicked( oUI, p )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/

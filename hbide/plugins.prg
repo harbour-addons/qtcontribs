@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +57,6 @@
  *                               08May2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
@@ -72,13 +66,11 @@
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
 
-/*----------------------------------------------------------------------*/
 
 STATIC s_aPlugins := { { "", NIL } }
 STATIC s_aLoaded  := { { "", .f. } }
 STATIC s_aPersist := {}
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_loadPlugins( oIde, cVer )
    LOCAL a_, cPlugin
@@ -93,7 +85,6 @@ FUNCTION hbide_loadPlugins( oIde, cVer )
 
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_execPlugin( cPlugin, oIde, ... )
    LOCAL n, lLoaded
@@ -113,7 +104,6 @@ FUNCTION hbide_execPlugin( cPlugin, oIde, ... )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_loadAPlugin( cPlugin, oIde, cVer )
    LOCAL pHrb, bBlock, lLoaded, cFileName, cFile, cPath
@@ -162,7 +152,6 @@ STATIC FUNCTION hbide_loadAPlugin( cPlugin, oIde, cVer )
 
    RETURN lLoaded
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_runAScript( cBuffer, cCompFlags, xParam )
    LOCAL cFile, pHrb, oErr, a_:={}
@@ -282,7 +271,6 @@ FUNCTION hbide_execAutoScripts()
    ENDIF
    RETURN NIL
 
-/*------------------------------------------------------------------------*/
 
 FUNCTION hbide_getUserPrototypes()
    LOCAL aProto := {}
@@ -300,7 +288,6 @@ FUNCTION hbide_getUserPrototypes()
 
    RETURN aProto
 
-/*------------------------------------------------------------------------*/
 
 FUNCTION hbide_loadPrototypes( cPath )
    LOCAL a_, s, nLen, i
@@ -339,9 +326,8 @@ FUNCTION hbide_loadPrototypes( cPath )
 
    RETURN aProto
 
-/*------------------------------------------------------------------------*/
-/* Silent Mode */
 
+/* Silent Mode */
 FUNCTION hbide_compileAScript( cBuffer, cCompFlags )
    LOCAL cFile, pHrb
    LOCAL bError := ErrorBlock( {|o| break( o ) } )
@@ -356,7 +342,6 @@ FUNCTION hbide_compileAScript( cBuffer, cCompFlags )
    ErrorBlock( bError )
    RETURN pHrb
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_loadPersistentScripts()
    LOCAL cPath, a_, dir_, cFileName, cBuffer, pHrb
@@ -379,7 +364,6 @@ FUNCTION hbide_loadPersistentScripts()
 
    RETURN NIL
 
-/*------------------------------------------------------------------------*/
 
 FUNCTION hbide_execScriptFunction( cFunc, ... )
 
@@ -389,7 +373,6 @@ FUNCTION hbide_execScriptFunction( cFunc, ... )
 
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_destroyPlugins()
 
@@ -398,5 +381,3 @@ FUNCTION hbide_destroyPlugins()
    s_aPersist := NIL
 
    RETURN NIL
-
-/*----------------------------------------------------------------------*/

@@ -1,11 +1,9 @@
-                                 /*
+/*
  * $Id$
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +57,12 @@
  *                               14Jul2012
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "hbqtgui.ch"
 #include "common.ch"
 #include "hbclass.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __frameSrc_dragMoveEvent__                2001
 #define __frameSrc_dragEnterEvent__               2002
@@ -97,7 +90,6 @@
 #define __btnNext_clicked__                       2024
 #define __btnBack_clicked__                       2025
 
-/*----------------------------------------------------------------------*/
 
 #define PROPS_TREENODE                            1
 #define PROPS_PROPNAME                            2
@@ -109,7 +101,6 @@
 #define SPCFILL( s )                              ( s )  // StrTran( s, " ", "^" )
 #define SPCPULL( s )                              ( s )  // StrTran( s, "^", " " )
 
-/*----------------------------------------------------------------------*/
 
 CREATE CLASS IdeProjectWizard INHERIT IdeObject
 
@@ -136,7 +127,6 @@ CREATE CLASS IdeProjectWizard INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:new( oIde )
 
@@ -145,7 +135,6 @@ METHOD IdeProjectWizard:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:create( oIde )
 
@@ -156,13 +145,11 @@ METHOD IdeProjectWizard:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:clear()
 
@@ -181,7 +168,6 @@ METHOD IdeProjectWizard:clear()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:show()
    LOCAL oBrush
@@ -292,7 +278,6 @@ METHOD IdeProjectWizard:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
    LOCAL cText, qItm, n, i, oFont, aMenu, aFiles, aFilt, cFile, lTop, nChildren, qChild
@@ -547,7 +532,6 @@ METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:addSourceFile( cFile )
    LOCAL oParent, qItm, cExt, n, cSource, lExists, i
@@ -590,7 +574,6 @@ METHOD IdeProjectWizard:addSourceFile( cFile )
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:addTreeItem( oParent )
    LOCAL oFont, qItm
@@ -613,7 +596,6 @@ METHOD IdeProjectWizard:addTreeItem( oParent )
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:deleteTreeItem( oChild )
    LOCAL oParent
@@ -627,7 +609,6 @@ METHOD IdeProjectWizard:deleteTreeItem( oChild )
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:addDropIndicator( oTree, oNode, nMsg, cCSS, nIndex )
    LOCAL qTBtn := QToolButton()
@@ -644,7 +625,6 @@ METHOD IdeProjectWizard:addDropIndicator( oTree, oNode, nMsg, cCSS, nIndex )
 
    RETURN qTBtn
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:loadSwichesSections()
    LOCAL oTree := ::oUI:treeProps
@@ -671,7 +651,6 @@ METHOD IdeProjectWizard:loadSwichesSections()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:loadSourcesSections()
    LOCAL oTree := ::oUI:treeSrc
@@ -698,7 +677,6 @@ METHOD IdeProjectWizard:loadSourcesSections()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:loadDefaults()
    LOCAL cProjPath, cPath, cName, cExt, lExists
@@ -734,7 +712,6 @@ METHOD IdeProjectWizard:loadDefaults()
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeProjectWizard:saveProject()
    LOCAL cPath, cFile, cExt
@@ -851,7 +828,6 @@ CREATE CLASS IdeExProject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:new( cPathHbp )
 
@@ -861,7 +837,6 @@ METHOD IdeExProject:new( cPathHbp )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:create( cPathHbp )
 
@@ -873,7 +848,6 @@ METHOD IdeExProject:create( cPathHbp )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:defaults()
 
@@ -953,7 +927,6 @@ METHOD IdeExProject:defaults()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:loadUI( oWizard, nMode )
    LOCAL oUI := oWizard:oUI
@@ -1023,7 +996,6 @@ METHOD IdeExProject:loadUI( oWizard, nMode )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:saveUI( oWizard )
    LOCAL oUI := oWizard:oUI
@@ -1092,7 +1064,6 @@ METHOD IdeExProject:saveUI( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:retrieveProps( oWizard )
    LOCAL a_, n, cNode, cText
@@ -1120,7 +1091,6 @@ METHOD IdeExProject:retrieveProps( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:retrieveSources( oWizard )
    LOCAL a_, n, cNode, cText
@@ -1145,7 +1115,6 @@ METHOD IdeExProject:retrieveSources( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:retrieveExtras( oWizard )
    LOCAL s, a_:= hbide_memoToArray( oWizard:oUI:plainExtras:toPlainText() )
@@ -1156,7 +1125,6 @@ METHOD IdeExProject:retrieveExtras( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:loadProps( oWizard )
    LOCAL a_, aValues, cValue, qItm
@@ -1190,7 +1158,6 @@ METHOD IdeExProject:loadProps( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:loadSources( oWizard )
    LOCAL a_, aValues, cValue, qItm
@@ -1222,7 +1189,6 @@ METHOD IdeExProject:loadSources( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:loadExtras( oWizard )
 
@@ -1230,7 +1196,6 @@ METHOD IdeExProject:loadExtras( oWizard )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:addSection( aTxt, cSection, aValues )
    LOCAL s, a_:={}
@@ -1255,7 +1220,6 @@ METHOD IdeExProject:addSection( aTxt, cSection, aValues )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:save( cPathHbp )
    LOCAL cTxt, aGen :={}, aTxt := {}
@@ -1354,7 +1318,6 @@ METHOD IdeExProject:save( cPathHbp )
 
    RETURN hb_memowrit( cPathHbp, cTxt )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:sectionToArray( cBuffer, cSection )
    LOCAL cTxt, n, nn, cTknB, cTknE
@@ -1374,7 +1337,6 @@ METHOD IdeExProject:sectionToArray( cBuffer, cSection )
 
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:getKeyValuePair( cStr )
    LOCAL n
@@ -1386,7 +1348,6 @@ METHOD IdeExProject:getKeyValuePair( cStr )
 
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:retrieveSection( cBuffer, cSection, aPost )
    LOCAL s
@@ -1399,7 +1360,6 @@ METHOD IdeExProject:retrieveSection( cBuffer, cSection, aPost )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:load( cPathHbp )
    LOCAL cBuffer := hb_memoRead( cPathHbp )
@@ -1509,7 +1469,6 @@ METHOD IdeExProject:load( cPathHbp )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeExProject:convert( cBuffer )
    LOCAL cBuf := ""
@@ -1545,4 +1504,3 @@ METHOD IdeExProject:convert( cBuffer )
 
    RETURN cBuf
 
-/*----------------------------------------------------------------------*/

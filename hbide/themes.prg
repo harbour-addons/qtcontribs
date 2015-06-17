@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +57,12 @@
  *                               31Dec2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 #include "hbide.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define THM_ATR_R                                 1
 #define THM_ATR_G                                 2
@@ -80,7 +73,6 @@
 
 #define THM_NUM_ATTRBS                            6
 
-/*----------------------------------------------------------------------*/
 
 #define __listThemes_currentRowChanged__          2001
 #define __listItems_currentRowChanged__           2002
@@ -88,7 +80,6 @@
 #define __applyMenu_triggered_applyToAllTabs__    2004
 #define __applyMenu_triggered_setAsDefault__      2005
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeThemes INHERIT IdeObject
 
@@ -151,7 +142,6 @@ CLASS IdeThemes INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:new( oIde, cThemesFile )
 
@@ -160,7 +150,6 @@ METHOD IdeThemes:new( oIde, cThemesFile )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:destroy()
 
@@ -201,7 +190,6 @@ METHOD IdeThemes:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:create( oIde, cThemesFile )
    LOCAL s, b_
@@ -262,7 +250,6 @@ METHOD IdeThemes:create( oIde, cThemesFile )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:execEvent( nEvent, p )
    LOCAL oEditor, a_
@@ -305,7 +292,6 @@ METHOD IdeThemes:execEvent( nEvent, p )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setWrkTheme( cTheme )
 
@@ -319,13 +305,11 @@ METHOD IdeThemes:setWrkTheme( cTheme )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:contains( cTheme )
 
    RETURN ascan( ::aThemes, {|a_| a_[ 1 ] == cTheme } ) > 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:load( cFile )
 
@@ -337,7 +321,6 @@ METHOD IdeThemes:load( cFile )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:save( lAsk )
    LOCAL cFile
@@ -358,7 +341,6 @@ METHOD IdeThemes:save( lAsk )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:getThemeAttribute( cAttr, cTheme )
    LOCAL nTheme, aAttr := {}
@@ -371,7 +353,6 @@ METHOD IdeThemes:getThemeAttribute( cAttr, cTheme )
 
    RETURN aAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:buildSyntaxFormat( aAttr )
    LOCAL qFormat
@@ -388,7 +369,6 @@ METHOD IdeThemes:buildSyntaxFormat( aAttr )
 
    RETURN qFormat
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setForeBackGround( qEdit, cTheme )
    LOCAL aAttr, s
@@ -407,7 +387,6 @@ METHOD IdeThemes:setForeBackGround( qEdit, cTheme )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setQuotesRule( qHiliter, cTheme )
    LOCAL aAttr
@@ -418,7 +397,6 @@ METHOD IdeThemes:setQuotesRule( qHiliter, cTheme )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setSingleLineCommentRule( qHiliter, cTheme )
    LOCAL aAttr
@@ -429,7 +407,6 @@ METHOD IdeThemes:setSingleLineCommentRule( qHiliter, cTheme )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setMultiLineCommentRule( qHiliter, cTheme )
    LOCAL aAttr
@@ -440,7 +417,6 @@ METHOD IdeThemes:setMultiLineCommentRule( qHiliter, cTheme )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setSyntaxRule( qHiliter, cName, cPattern, lCaseSensitive, aAttr )
    LOCAL qRegExp := QRegExp()
@@ -452,7 +428,6 @@ METHOD IdeThemes:setSyntaxRule( qHiliter, cName, cPattern, lCaseSensitive, aAttr
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setSyntaxFormat( qHiliter, cName, aAttr )
 
@@ -460,7 +435,6 @@ METHOD IdeThemes:setSyntaxFormat( qHiliter, cName, aAttr )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
    LOCAL a_, aAttr, qHiliter
@@ -514,7 +488,6 @@ METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
 
    RETURN qHiliter
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:changeSyntaxHilighting( qEdit, cTheme, qHiliter )
    LOCAL a_, aAttr
@@ -550,7 +523,6 @@ METHOD IdeThemes:changeSyntaxHilighting( qEdit, cTheme, qHiliter )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:mergeUserDictionaries( qHiliter, cTheme )
    LOCAL oDict, s, aAttr, qFormat, qRegExp, cName, a_
@@ -596,7 +568,6 @@ METHOD IdeThemes:mergeUserDictionaries( qHiliter, cTheme )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:show()
 
@@ -659,7 +630,6 @@ METHOD IdeThemes:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setTheme()
 
@@ -673,7 +643,6 @@ METHOD IdeThemes:setTheme()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:setAttributes()
    LOCAL aAttr
@@ -690,7 +659,6 @@ METHOD IdeThemes:setAttributes()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:updateLineNumbersBkColor()
    LOCAL aAttr
@@ -703,7 +671,6 @@ METHOD IdeThemes:updateLineNumbersBkColor()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:updateCurrentLineColor()
    LOCAL aAttr
@@ -716,7 +683,6 @@ METHOD IdeThemes:updateCurrentLineColor()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:updateColor()
    LOCAL aAttr, oDlg, qColor, s, aF, aB
@@ -767,7 +733,6 @@ METHOD IdeThemes:updateColor()
    ::setAttributes()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:updateAttribute( nAttr, iState )
    LOCAL aAttr
@@ -781,7 +746,6 @@ METHOD IdeThemes:updateAttribute( nAttr, iState )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:selectTheme()
    LOCAL a_, nDone
@@ -813,7 +777,6 @@ METHOD IdeThemes:selectTheme()
 
    RETURN iif( nDone == 1, ::cSelTheme, "" )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:selectThemeProc( nMode, p )
    LOCAL qModalIndex
@@ -835,7 +798,6 @@ METHOD IdeThemes:selectThemeProc( nMode, p )
 
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:copy()
    LOCAL aItems, qGo, cTheme
@@ -859,7 +821,6 @@ METHOD IdeThemes:copy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:buildINI()
    LOCAL a_, b_
@@ -899,7 +860,6 @@ METHOD IdeThemes:buildINI()
 
    RETURN cINI
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeThemes:parseINI( lAppend )
    LOCAL s, n, cKey, cVal, nPart, nTheme, aVal, aV
@@ -982,28 +942,23 @@ METHOD IdeThemes:parseINI( lAppend )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION FillAttrbs()
    RETURN { 0, 0, 0, .f., .f., .f. }
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Attr2RGBfn( a_ )
    RETURN "rgba( " + Attr2StrRGB( a_ ) + ", 255 )"
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Attr2RGBfnRev( a_ )
    LOCAL b_:= { ( a_[ THM_ATR_R ] + 255 ) % 256, ( a_[ THM_ATR_G ] + 255 ) % 256, ( a_[ THM_ATR_B ] + 255 ) % 256 }
    RETURN "rgba( " + Attr2StrRGB( b_ ) + ", 255 )"
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Attr2StrRGB( a_ )
    RETURN hb_ntos( a_[ THM_ATR_R ] ) +","+ hb_ntos( a_[ THM_ATR_G ] ) +","+ hb_ntos( a_[ THM_ATR_B ] )
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION Attr2Str( a_ )
 
@@ -1014,7 +969,6 @@ STATIC FUNCTION Attr2Str( a_ )
           iif( a_[ 5 ], " Yes", "  No" ) + "," +;
           iif( a_[ 6 ], " Yes", "  No" ) + ","
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION GetKeyValue( aKeys, cKey, cDef )
    LOCAL xVal, n
@@ -1029,7 +983,6 @@ STATIC FUNCTION GetKeyValue( aKeys, cKey, cDef )
 
    RETURN xVal
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION GetSource()
    LOCAL s := ""
@@ -1073,7 +1026,6 @@ STATIC FUNCTION GetSource()
 
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 /*
 STATIC FUNCTION hbide_setSyntaxAttrbs( qHiliter, cPattern, cName, nR, nG, nB, lItalic, lBold, lUnderline )
@@ -1097,7 +1049,6 @@ STATIC FUNCTION hbide_setSyntaxAttrbs( qHiliter, cPattern, cName, nR, nG, nB, lI
    RETURN nil
 */
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_loadDefaultThemes()
    LOCAL aIni := {}
@@ -1268,7 +1219,7 @@ STATIC FUNCTION hbide_loadDefaultThemes()
 
    RETURN aIni
 
-/*----------------------------------------------------------------------*/
+
 #if 0
                                                        [Classic]      [CityLights]  [Evening]     [SandStorm]
 
@@ -1292,4 +1243,3 @@ UserDictionary             = UserDictionary            0,0,0         0,0,0      
 
 #endif
 
-/*----------------------------------------------------------------------*/

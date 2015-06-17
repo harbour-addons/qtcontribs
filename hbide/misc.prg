@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,6 +65,9 @@
 #include "xbp.ch"
 #include "hbide.ch"
 
+#include "hbtoqt.ch"
+#include "hbqtstd.ch"
+
 
 #define __S2A( c )                                hb_aTokens( strtran( c, chr( 13 ) ), chr( 10 ) )
 
@@ -76,6 +77,10 @@ STATIC aRegList
 
 PROCEDURE AppSys()
    RETURN
+
+
+FUNCTION hbide_alert( ... )
+   RETURN Alert( ... )
 
 
 FUNCTION hbide_setIde( oIde )

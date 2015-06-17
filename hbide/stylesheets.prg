@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,14 +57,11 @@
  *                               17Nov2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbide.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setAppTheme( aTheme )
    LOCAL oTheme
@@ -79,7 +72,6 @@ FUNCTION hbide_setAppTheme( aTheme )
    ENDIF
    RETURN oTheme
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GetStyleSheet( cWidget, nMode )
    LOCAL txt_:= {}
@@ -490,7 +482,6 @@ FUNCTION GetStyleSheet( cWidget, nMode )
 
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_cssColorString( cPart )
    LOCAL qColor
@@ -509,7 +500,6 @@ FUNCTION hbide_cssColorString( cPart )
 
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_rgbString( nR, nG, nB )
    IF HB_ISARRAY( nR )
@@ -519,7 +509,6 @@ FUNCTION hbide_rgbString( nR, nG, nB )
    ENDIF
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_buildGradientString( aGrands )
    LOCAL a_, s := ""
@@ -530,7 +519,6 @@ FUNCTION hbide_buildGradientString( aGrands )
 
    RETURN substr( s, 1, Len( s ) - 2 )
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_loadIdeTheme( nTheme )
    // Theme values can be made outer
@@ -548,7 +536,6 @@ STATIC FUNCTION hbide_loadIdeTheme( nTheme )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_ideThemeColorCSS( cPart, nTheme )
    LOCAL cCSS := ""
@@ -590,4 +577,3 @@ STATIC FUNCTION hbide_ideThemeColorCSS( cPart, nTheme )
 
    RETURN cCSS
 
-/*----------------------------------------------------------------------*/

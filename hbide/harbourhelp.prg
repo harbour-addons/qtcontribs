@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2010 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +57,12 @@
  *                               20Feb2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define DOC_FUN_BEGINS                           -5
 #define DOC_FUN_ENDS                             -1
@@ -94,7 +87,6 @@
 #define DOC_FUN_METHODS                           18
 #define DOC_FUN_EXTERNALLINK                      19
 
-/*----------------------------------------------------------------------*/
 
 #define __buttonInstall_clicked__                 2001
 #define __buttonHome_clicked__                    2002
@@ -114,7 +106,6 @@
 #define __treeCategory_itemSelectionChanged__     2016
 #define __listIndex_ItemDoubleClicked__           2017
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeDocFunction
 
@@ -149,7 +140,6 @@ CLASS IdeDocFunction
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocFunction:destroy()
 
@@ -179,7 +169,6 @@ METHOD IdeDocFunction:destroy()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeHarbourHelp INHERIT IdeObject
 
@@ -239,7 +228,6 @@ CLASS IdeHarbourHelp INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:new( oIde )
 
@@ -247,7 +235,6 @@ METHOD IdeHarbourHelp:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:create( oIde )
    LOCAL cPath
@@ -265,7 +252,6 @@ METHOD IdeHarbourHelp:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:show()
 
@@ -288,7 +274,6 @@ METHOD IdeHarbourHelp:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:destroy()
    LOCAL aTmp, oFun
@@ -342,7 +327,6 @@ METHOD IdeHarbourHelp:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:clear()
    LOCAL a_
@@ -411,7 +395,6 @@ METHOD IdeHarbourHelp:clear()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:setImages()
    LOCAL oUI := ::oUI
@@ -437,7 +420,6 @@ METHOD IdeHarbourHelp:setImages()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:setTooltips()
    LOCAL oUI := ::oUI
@@ -458,7 +440,6 @@ METHOD IdeHarbourHelp:setTooltips()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:setParameters()
    LOCAL oUI := ::oUI
@@ -467,7 +448,7 @@ METHOD IdeHarbourHelp:setParameters()
    oUI:treeCategory:setHeaderHidden( .t. )
    oUI:editInstall:setText( ::cWrkHarbour )
 
-   #if 0
+#if 0
    ::qHiliter := ::oTH:SetSyntaxHilighting( oUI:plainExamples, "Bare Minimum" )
 
    oUI:plainExamples:setFont( ::oFont:oWidget )
@@ -478,7 +459,7 @@ METHOD IdeHarbourHelp:setParameters()
 
    oUI:plainExamples:setLineWrapMode( QTextEdit_NoWrap )
    oUI:plainTests:setLineWrapMode( QTextEdit_NoWrap )
-   #endif
+#endif
 
    oUI:treeDoc:setExpandsOnDoubleClick( .f. )
 
@@ -488,7 +469,6 @@ METHOD IdeHarbourHelp:setParameters()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:installSignals()
 
@@ -516,7 +496,6 @@ METHOD IdeHarbourHelp:installSignals()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:execEvent( nEvent, p, p1 )
    LOCAL cPath, qTWItem, cText, n, nn, nLen, cLower
@@ -666,7 +645,6 @@ METHOD IdeHarbourHelp:execEvent( nEvent, p, p1 )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:jumpToFunction( cFunction )
    LOCAL n, nLen
@@ -681,7 +659,6 @@ METHOD IdeHarbourHelp:jumpToFunction( cFunction )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:populateIndexedSelection()
    LOCAL qItem, cText, n
@@ -696,7 +673,6 @@ METHOD IdeHarbourHelp:populateIndexedSelection()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:refreshDocTree()
    LOCAL aPaths, cFolder, cNFolder, aDocs, oChild, oParent, oRoot, cRoot
@@ -790,7 +766,6 @@ METHOD IdeHarbourHelp:refreshDocTree()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_buildFoldersTree( aNodes, aPaths )
    LOCAL cRoot, cPath, s, aSubs, i, n, cCPath, cPPath, nP, cOSPath, oParent, oChild
@@ -834,7 +809,6 @@ STATIC FUNCTION hbide_buildFoldersTree( aNodes, aPaths )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_buildPathFromSubs( aSubs, nUpto )
    LOCAL i, cPath := ""
@@ -846,7 +820,6 @@ STATIC FUNCTION hbide_buildPathFromSubs( aSubs, nUpto )
    ENDIF
    RETURN cPath
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:populateIndex()
    LOCAL a_, qItem, oFunc, oParent, n
@@ -900,7 +873,6 @@ METHOD IdeHarbourHelp:populateIndex()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:pullDefinitions( acBuffer )
 
@@ -908,7 +880,7 @@ METHOD IdeHarbourHelp:pullDefinitions( acBuffer )
       RETURN doc2functions( __hbdoc_fromSource( hbide_arrayToMemo( acBuffer ) ) )
    ELSE
       IF hb_fileExists( acBuffer )
-         RETURN doc2functions( __hbdoc_fromSource( memoread( acBuffer ) ) )
+         RETURN doc2functions( __hbdoc_fromSource( MemoRead( acBuffer ) ) )
       ELSE
          RETURN doc2functions( __hbdoc_fromSource( acBuffer ) )
       ENDIF
@@ -916,7 +888,6 @@ METHOD IdeHarbourHelp:pullDefinitions( acBuffer )
 
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:pullDefinitionsHBD( cFileHBD )
 
@@ -926,21 +897,19 @@ METHOD IdeHarbourHelp:pullDefinitionsHBD( cFileHBD )
 
    RETURN {}
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION doc2functions( hFile )
    LOCAL hDoc
    LOCAL aFn := {}
 
-   IF HB_ISHASH( hFile )
+   IF HB_ISARRAY( hFile )
       FOR EACH hDoc IN hFile
-         aadd( aFn, hbide_getFuncObjectFromHash( hDoc ) )
+         AAdd( aFn, hbide_getFuncObjectFromHash( hDoc ) )
       NEXT
    ENDIF
 
    RETURN aFn
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:parseTextFile( cTextFile, oParent )
    LOCAL aFn, oFunc, oTWItem
@@ -969,7 +938,6 @@ METHOD IdeHarbourHelp:parseTextFile( cTextFile, oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:getDocFunction( acBuffer )
    LOCAL aFn
@@ -980,7 +948,6 @@ METHOD IdeHarbourHelp:getDocFunction( acBuffer )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:getFunctionPrototypes()
    LOCAL a_, cFolder, aFN, oFunc, cNFolder, cRoot, aHbd
@@ -1059,7 +1026,6 @@ METHOD IdeHarbourHelp:getFunctionPrototypes()
 
    RETURN ::aProtoTypes
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:updateViewer( aHtm, cDocName )
 
@@ -1068,7 +1034,6 @@ METHOD IdeHarbourHelp:updateViewer( aHtm, cDocName )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:populateRootInfo()
    LOCAL aHtm := {}
@@ -1088,7 +1053,6 @@ METHOD IdeHarbourHelp:populateRootInfo()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:populatePathInfo( cPath )
    LOCAL aHtm := {}
@@ -1103,7 +1067,6 @@ METHOD IdeHarbourHelp:populatePathInfo( cPath )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:populateTextFile( cTextFile )
    LOCAL aHtm, aFn, oFunc
@@ -1134,7 +1097,6 @@ METHOD IdeHarbourHelp:populateTextFile( cTextFile )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:populateFuncDetails( n )
    LOCAL oTWItem := ::aNodes[ n, 1 ]
@@ -1148,7 +1110,6 @@ METHOD IdeHarbourHelp:populateFuncDetails( n )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:buildView( oFunc )
    LOCAL s, x, y, v, w, z, n, s1, a_, cTxt
@@ -1247,14 +1208,14 @@ METHOD IdeHarbourHelp:buildView( oFunc )
       //aadd( aHtm, v + oFunc:cInherits  + w )
       aadd( aHtm, z )
    ENDIF
-   #if 0
+#if 0
    aadd( aHtm, x + "Category"       + y )
    aadd( aHtm, v + oFunc:cCategory  + w )
    aadd( aHtm, z )
    aadd( aHtm, x + "SubCategory"    + y )
    aadd( aHtm, v + oFunc:cSubCategory+ w )
    aadd( aHtm, z )
-   #endif
+#endif
    IF !empty( s := hbide_arrayToMemoHtml( oFunc:aSyntax ) )
       aadd( aHtm, x + "Syntax"         + y )
       aadd( aHtm, v + s + w )
@@ -1342,7 +1303,6 @@ METHOD IdeHarbourHelp:buildView( oFunc )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:print()
    LOCAL qDlg
@@ -1355,7 +1315,6 @@ METHOD IdeHarbourHelp:print()
 
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:paintRequested( qPrinter )
 
@@ -1363,7 +1322,6 @@ METHOD IdeHarbourHelp:paintRequested( qPrinter )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:exportAsPdf()
    LOCAL cPdf, qPrinter, cExt, cPath, cFile
@@ -1378,7 +1336,6 @@ METHOD IdeHarbourHelp:exportAsPdf()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeHarbourHelp:exportAsPdfAll()
    LOCAL cPdf, qPrinter, cExt, cPath, cFile, aItems
@@ -1406,6 +1363,4 @@ METHOD IdeHarbourHelp:exportAsPdfAll()
    ENDIF
 
    RETURN Self
-
-/*----------------------------------------------------------------------*/
 

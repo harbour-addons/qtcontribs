@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,20 +57,16 @@
  *                               18Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define PAGE_INTRO                                1
 #define PAGE_X                                    2
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_startOpenWizard()
    STATIC oWz
@@ -83,7 +75,6 @@ FUNCTION hbide_startOpenWizard()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeWizard INHERIT IdeObject
 
@@ -98,7 +89,6 @@ CLASS IdeWizard INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeWizard:new( oIde )
 
@@ -106,7 +96,6 @@ METHOD IdeWizard:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeWizard:create( oIde )
 
@@ -124,7 +113,6 @@ METHOD IdeWizard:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeWizard:destroy()
    LOCAL a_, obj
@@ -140,7 +128,6 @@ METHOD IdeWizard:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeWizard:execEvent( nEvent, p )
 
@@ -149,7 +136,6 @@ METHOD IdeWizard:execEvent( nEvent, p )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeWizard:addIntroPage()
    LOCAL page, label, layout
@@ -173,10 +159,7 @@ METHOD IdeWizard:addIntroPage()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeWizard:addDescPage()
 
    RETURN Self
-
-/*----------------------------------------------------------------------*/

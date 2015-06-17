@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2014-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -198,6 +196,7 @@ METHOD ideDbuMGR:manageExSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
    ENDIF
 
    RETURN NIL
+
 
 METHOD ideDbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
@@ -448,6 +447,7 @@ METHOD ideDbuMGR:showStats( oMdiBrowse )
    Alert( aStats, , , , "Various Statistics" )
 
    RETURN NIL
+
 
 METHOD ideDbuMGR:getSearchValue( oMdiBrowse, xValue )
    IF oMdiBrowse:indexOrd() > 0

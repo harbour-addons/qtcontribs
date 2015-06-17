@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2010 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,8 +57,6 @@
  *                               06Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
@@ -72,7 +66,6 @@
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define FLIST_NAME                                1
 #define FLIST_TYPE                                2
@@ -82,7 +75,6 @@
 #define FLIST_TYPE_1                              6
 #define FLIST_SYNTAX                              7
 
-/*----------------------------------------------------------------------*/
 
 #define __editFunc_textChanged__                  2001
 #define __editFunc_returnPressed__                2002
@@ -93,7 +85,6 @@
 #define __tableFuncList_itemSelectionChanged__    2007
 #define __tableFuncList_itemDoubleClicked__       2008
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeFunctions INHERIT IdeObject
 
@@ -131,13 +122,11 @@ CLASS IdeFunctions INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:new( oIde )
    ::oIde := oIde
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:create( oIde )
 
@@ -159,7 +148,6 @@ METHOD IdeFunctions:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:execEvent( nEvent, p )
    LOCAL n, nLen
@@ -208,7 +196,6 @@ METHOD IdeFunctions:execEvent( nEvent, p )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:buildHeader()
    LOCAL oTbl, qItm, cHdr, qFnt, qHdr
@@ -245,7 +232,6 @@ METHOD IdeFunctions:buildHeader()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:destroy()
 #if 0
@@ -274,7 +260,6 @@ METHOD IdeFunctions:destroy()
 #endif
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:clear( lHdrAlso )
    LOCAL qItm
@@ -298,7 +283,6 @@ METHOD IdeFunctions:clear( lHdrAlso )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:show()
    IF ::isNotSetYet
@@ -307,7 +291,6 @@ METHOD IdeFunctions:show()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:positionToFunction( cWord, lShowTip )
    LOCAL nLen, p, n, cProto := ""
@@ -328,7 +311,6 @@ METHOD IdeFunctions:positionToFunction( cWord, lShowTip )
    ENDIF
    RETURN cProto
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:jumpToFunction( cWord )
    LOCAL nLen, lOpened := .f., p, n
@@ -345,7 +327,6 @@ METHOD IdeFunctions:jumpToFunction( cWord )
 
    RETURN lOpened
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:openFunction( lCheckDuplicates )
    LOCAL n, cFunc, cSource, oEdit, lFound, cProto
@@ -379,7 +360,6 @@ METHOD IdeFunctions:openFunction( lCheckDuplicates )
 
    RETURN lOpened
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:clearProjects()
    LOCAL qItm
@@ -394,7 +374,6 @@ METHOD IdeFunctions:clearProjects()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:listProjects()
    LOCAL s, qItm, oLst := ::oUI:listProjects
@@ -412,7 +391,6 @@ METHOD IdeFunctions:listProjects()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:getMarkedProjects()
    LOCAL qItm, a_:= {}
@@ -425,7 +403,6 @@ METHOD IdeFunctions:getMarkedProjects()
 
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:enableControls( lEnable )
 
@@ -441,7 +418,6 @@ METHOD IdeFunctions:enableControls( lEnable )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:loadTags( aProjects, lPopulateTable )
    LOCAL cProjectTitle, cProjFile, cTagFile, aTags, n, a_
@@ -495,7 +471,6 @@ METHOD IdeFunctions:loadTags( aProjects, lPopulateTable )
    ::clearProjects()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:buildTags()
    LOCAL cProjectTitle
@@ -511,7 +486,6 @@ METHOD IdeFunctions:buildTags()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:tagProject( cProjectTitle, lGUI )
    LOCAL aSumData := ""
@@ -581,7 +555,6 @@ METHOD IdeFunctions:tagProject( cProjectTitle, lGUI )
    ENDIF
    RETURN cProjFile
 
-//----------------------------------------------------------------------//
 
 METHOD IdeFunctions:consolidateList()
    LOCAL s, a_, b_, cProjectTitle
@@ -614,7 +587,6 @@ METHOD IdeFunctions:consolidateList()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:populateTable()
    LOCAL oTbl, qItm, a_, n
@@ -647,7 +619,6 @@ METHOD IdeFunctions:populateTable()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFunctions:getFunctionPrototypes()
    LOCAL aProto := {}, a_
@@ -659,7 +630,6 @@ METHOD IdeFunctions:getFunctionPrototypes()
 
    RETURN aProto
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_abbrFuncType( cFunc )
    LOCAL cAbbr := ""
@@ -688,4 +658,3 @@ STATIC FUNCTION hbide_abbrFuncType( cFunc )
 
    RETURN padc( cAbbr, 3 )
 
-/*----------------------------------------------------------------------*/

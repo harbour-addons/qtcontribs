@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2010 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +57,12 @@
  *                               07Jan2011
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeFormat INHERIT IdeObject
 
@@ -88,7 +81,6 @@ CLASS IdeFormat INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFormat:new( oIde )
 
@@ -96,7 +88,6 @@ METHOD IdeFormat:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFormat:create( oIde )
 
@@ -105,7 +96,6 @@ METHOD IdeFormat:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFormat:destroy()
 
@@ -125,7 +115,6 @@ METHOD IdeFormat:destroy()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFormat:show()
 
@@ -157,15 +146,14 @@ METHOD IdeFormat:show()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFormat:execEvent( cEvent, p )
 
    HB_SYMBOL_UNUSED( p )
 
    IF ::lQuitting
-      RETURN Self 
-   ENDIF 
+      RETURN Self
+   ENDIF
 
    SWITCH cEvent
 
@@ -192,7 +180,6 @@ METHOD IdeFormat:execEvent( cEvent, p )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeFormat:format( nMode )
    LOCAL oEdit, aText, cBuffer
@@ -222,5 +209,3 @@ METHOD IdeFormat:format( nMode )
    ENDIF
 
    RETURN Self
-
-/*----------------------------------------------------------------------*/

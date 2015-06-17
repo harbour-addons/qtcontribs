@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2012 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -61,15 +57,12 @@
  *                               31Aug2012
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 #include "hbide.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeParts INHERIT IdeObject
 
@@ -103,7 +96,6 @@ CLASS IdeParts INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeParts:new( oIde )
 
@@ -112,7 +104,6 @@ METHOD IdeParts:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeParts:create( oIde )
 
@@ -121,7 +112,6 @@ METHOD IdeParts:create( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeParts:buildLayout( nLayout )
    LOCAL oLayout
@@ -141,7 +131,6 @@ METHOD IdeParts:buildLayout( nLayout )
 
    RETURN oLayout
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeParts:buildParts()
 
@@ -173,7 +162,6 @@ METHOD IdeParts:buildParts()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeParts:execStackIndexChanged( nIndex )
 
@@ -207,7 +195,6 @@ METHOD IdeParts:execStackIndexChanged( nIndex )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeParts:addWidget( nPart, oWidget, nFromRow, nFromColumn, nRowSpan, nColumnSpan )
 
@@ -228,6 +215,4 @@ METHOD IdeParts:addWidget( nPart, oWidget, nFromRow, nFromColumn, nRowSpan, nCol
    ENDSWITCH
 
    RETURN Self
-
-/*----------------------------------------------------------------------*/
 

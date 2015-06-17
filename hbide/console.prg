@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2011 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2011-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -60,8 +56,6 @@
  *                  Pritpal Bedi <pritpal@vouchcac.com>
  *                               25Aug2011
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 #include "common.ch"
@@ -74,12 +68,10 @@
 #include "achoice.ch"
 #include "box.ch"
 
-/*----------------------------------------------------------------------*/
 
 THREAD STATIC s_vid_stk := ""
 THREAD STATIC SayList := {}
 
-/*----------------------------------------------------------------------*/
 
 #define THE_FILL                                  chr( 177 )
 #define CHR_PIPE                                  chr( 124 )
@@ -193,7 +185,6 @@ THREAD STATIC SayList := {}
 
 #define CHECKMARK                                 chr( 251 )
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeConsole INHERIT IdeObject
 
@@ -210,7 +201,6 @@ CLASS IdeConsole INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeConsole:new( oIde )
 
@@ -219,7 +209,6 @@ METHOD IdeConsole:new( oIde )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeConsole:create( oIde )
 
@@ -228,7 +217,6 @@ METHOD IdeConsole:create( oIde )
 
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeConsole:show()
    LOCAL qRect, qRect1
@@ -279,7 +267,6 @@ METHOD IdeConsole:show()
 
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeConsole:resizeByRowCols( nRows, nCols )
    LOCAL nW := nCols * hb_gtInfo( HB_GTI_FONTWIDTH ) + ::nOffX
@@ -291,13 +278,10 @@ METHOD IdeConsole:resizeByRowCols( nRows, nCols )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
+
 
 #define N_TRIM( n )                               ltrim( str( n, 10, 0 ) )
 
-/*----------------------------------------------------------------------*/
 
 CLASS hbCUIEditor
 
@@ -425,7 +409,6 @@ CLASS hbCUIEditor
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:new( cSource, cScreen )
 
@@ -437,7 +420,6 @@ METHOD hbCUIEditor:new( cSource, cScreen )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:create( cSource, cScreen )
 
@@ -453,12 +435,10 @@ METHOD hbCUIEditor:create( cSource, cScreen )
 
    RETURN SELF
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:destroy()
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrLoad( lAsk )
    LOCAL cBuffer, n, n1, nSel, aMatches, aMatch, cSource
@@ -516,7 +496,6 @@ METHOD hbCUIEditor:scrLoad( lAsk )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrBuildFromBuffer( cBuffer, cScreen )
    LOCAL cTokenB := "/* HB_SCREEN_BEGINS <" + cScreen + "> */"
@@ -737,7 +716,6 @@ METHOD hbCUIEditor:scrBuildFromBuffer( cBuffer, cScreen )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrSave( lAsk )
    LOCAL s, o_, cSource, cScreen, nLenSay, nLenPic, nLenClr, nLenWhn, nLenVld, nLenGet
@@ -850,7 +828,6 @@ METHOD hbCUIEditor:scrSave( lAsk )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrBuildFunction( prg_ )
    LOCAL s
@@ -865,7 +842,6 @@ METHOD hbCUIEditor:scrBuildFunction( prg_ )
 
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrBuildSource( prg_, nIndent )
    LOCAL cP, s := ""
@@ -876,7 +852,6 @@ METHOD hbCUIEditor:scrBuildSource( prg_, nIndent )
 
    RETURN s
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrUpdateSource( prg_ )
    LOCAL cBuffer, cTokenB, cTokenE, nStart, nEnd, s, nIndent, cTmp
@@ -915,7 +890,6 @@ METHOD hbCUIEditor:scrUpdateSource( prg_ )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrConfig()
    LOCAL s, n
@@ -976,7 +950,6 @@ METHOD hbCUIEditor:scrConfig()
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrReConfig()
 
@@ -1006,7 +979,6 @@ METHOD hbCUIEditor:scrReConfig()
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrUpdateUndo()
 
@@ -1014,7 +986,6 @@ METHOD hbCUIEditor:scrUpdateUndo()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrUndo()
    LOCAL nLast
@@ -1027,7 +998,6 @@ METHOD hbCUIEditor:scrUndo()
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:operate()
    LOCAL nObj, nToCol, i, nOff, qApp
@@ -1062,12 +1032,12 @@ METHOD hbCUIEditor:operate()
       CASE ::lGraphics .AND. ascan( grf_, ::nLastKey ) > 0
          //processkey()
       CASE ::scrMouse()
-#IF 0
+#if 0
       CASE ::nLastKey == K_ALT_F6
          graphChar()
          ::lGraphics := ! ::lGraphics
          ::xRefresh  := OBJ_REFRESH_ALL
-#ENDIF
+#endif
       /*  Save Report */
       CASE ::nLastKey == K_ESC
          IF HbQtAlert( "Do you want to exit ?", { "Yes","No" } ) == 1
@@ -1298,7 +1268,6 @@ METHOD hbCUIEditor:operate()
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrDisplay()
 
@@ -1317,7 +1286,6 @@ METHOD hbCUIEditor:scrDisplay()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrMove()
    LOCAL i
@@ -1402,7 +1370,6 @@ METHOD hbCUIEditor:scrMove()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrMoveLine()
    LOCAL i,crs, nRow, nCol, cText, nOff, cColor
@@ -1465,7 +1432,6 @@ METHOD hbCUIEditor:scrMoveLine()
    setCursor( crs )
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrDispSelected()
    LOCAL i,j,nCol,nRow
@@ -1487,7 +1453,6 @@ METHOD hbCUIEditor:scrDispSelected()
    ENDIF
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrDispGhost( gst_ )
    LOCAL i,j,nRow,nCol
@@ -1506,7 +1471,6 @@ METHOD hbCUIEditor:scrDispGhost( gst_ )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrStatus()
    LOCAL s, typ_, objId, cS
@@ -1562,7 +1526,6 @@ METHOD hbCUIEditor:scrStatus()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrMouse()
    LOCAL nmRow, nmCol
@@ -1609,7 +1572,6 @@ METHOD hbCUIEditor:scrMouse()
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrToMouse( nmRow, nmCol )
    LOCAL nRowOff, nColOff
@@ -1628,7 +1590,6 @@ METHOD hbCUIEditor:scrToMouse( nmRow, nmCol )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrOrdGets()
    LOCAL a_:={}, d_:={}, t_, n_, h_, n
@@ -1685,7 +1646,6 @@ METHOD hbCUIEditor:scrOrdGets()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrOrdObj()
    LOCAL a_:={}, d_:={}, t_
@@ -1723,7 +1683,6 @@ METHOD hbCUIEditor:scrOrdObj()
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrMovRgt()
    LOCAL lMoved := .t.
@@ -1745,7 +1704,6 @@ METHOD hbCUIEditor:scrMovRgt()
    ENDIF
    RETURN lMoved
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrMovLft()
    LOCAL lMoved := .t.
@@ -1766,7 +1724,6 @@ METHOD hbCUIEditor:scrMovLft()
    ENDIF
    RETURN lMoved
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrMovUp()
    LOCAL lMoved := .t.
@@ -1787,7 +1744,6 @@ METHOD hbCUIEditor:scrMovUp()
    ENDIF
    RETURN lMoved
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrMovDn()
    LOCAL lMoved := .t.
@@ -1808,27 +1764,22 @@ METHOD hbCUIEditor:scrMovDn()
    ENDIF
    RETURN lMoved
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:objType( nObj )
    RETURN ::obj_[ nObj, OBJ_TYPE ]
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:objIsTxt( nObj )
    RETURN ::obj_[ nObj, OBJ_TYPE ] == OBJ_O_TEXT
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:objIsBox( nObj )
    RETURN ::obj_[ nObj, OBJ_TYPE ] == OBJ_O_BOX
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:objIsFld( nObj )
    RETURN ::obj_[ nObj, OBJ_TYPE ] == OBJ_O_FIELD
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrIsTxt()
    LOCAL e_
@@ -1843,7 +1794,6 @@ METHOD hbCUIEditor:scrIsTxt()
 
    RETURN .f.
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrChkObj()
    LOCAL a_:={}, e_
@@ -1874,7 +1824,6 @@ METHOD hbCUIEditor:scrChkObj()
 
    RETURN 0
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrUpdObjRC()
    LOCAL nW, nH
@@ -1897,7 +1846,6 @@ METHOD hbCUIEditor:scrUpdObjRC()
    ENDIF
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrRepCol()
    LOCAL oCol := ::nColsMax, nCol
@@ -1913,7 +1861,6 @@ METHOD hbCUIEditor:scrRepCol()
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrAddLine()
 
@@ -1926,7 +1873,6 @@ METHOD hbCUIEditor:scrAddLine()
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrDelLine()
    LOCAL nRow := ::nRowRep
@@ -1959,14 +1905,12 @@ METHOD hbCUIEditor:scrDelLine()
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrIsBoxIn()
    RETURN ascan( ::obj_,{|e_| VouchInRange( ::nRowRep, e_[ OBJ_ROW ], e_[ OBJ_TO_ROW ] );
                                      .AND. ;
                             ( e_[ OBJ_TYPE ] == OBJ_O_BOX ) } )    >    0
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrObjCopy()
 
@@ -1977,7 +1921,6 @@ METHOD hbCUIEditor:scrObjCopy()
    ENDIF
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrObjPas()       //  Paste Copied OBJECT
    LOCAL nObj, o_, oldRow, oldCol, oldRow2, oldcol2
@@ -2013,7 +1956,6 @@ METHOD hbCUIEditor:scrObjPas()       //  Paste Copied OBJECT
    ENDIF
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrObjDel( nObj )
 
@@ -2025,7 +1967,6 @@ METHOD hbCUIEditor:scrObjDel( nObj )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrOnLastCol( nObj )
    LOCAL nOff, i
@@ -2048,7 +1989,6 @@ METHOD hbCUIEditor:scrOnLastCol( nObj )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrOnFirstCol( nObj, type_ )
    LOCAL nCur, nOff
@@ -2104,7 +2044,6 @@ METHOD hbCUIEditor:scrOnFirstCol( nObj, type_ )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrGetChar( nRow, nCol )
    LOCAL s := THE_FILL,n
@@ -2155,7 +2094,6 @@ METHOD hbCUIEditor:scrGetChar( nRow, nCol )
    ENDIF
    RETURN s
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrTextBlock()
    LOCAL n, nKey
@@ -2210,7 +2148,6 @@ METHOD hbCUIEditor:scrTextBlock()
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrTextMove( nMode )
    LOCAL gst_, nKey
@@ -2266,7 +2203,6 @@ METHOD hbCUIEditor:scrTextMove( nMode )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrTextPost( gst_, nMode )
    LOCAL n,i,s,s1,s2,s3,n1,nWid,nCol,nn
@@ -2449,7 +2385,6 @@ METHOD hbCUIEditor:scrTextPost( gst_, nMode )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrTextDel()
    LOCAL i,n,n1,s,s1,s3,nCol
@@ -2538,7 +2473,6 @@ METHOD hbCUIEditor:scrTextDel()
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrAddTxt( nMode )
    LOCAL txt_:={}, n, lClub, i
@@ -2677,7 +2611,6 @@ METHOD hbCUIEditor:scrAddTxt( nMode )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrMsg( msg )
    LOCAL row := row(), col := col()
@@ -2692,7 +2625,6 @@ METHOD hbCUIEditor:scrMsg( msg )
    setPos( row,col )
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrInkey( key_ )
    LOCAL nKey
@@ -2706,7 +2638,6 @@ METHOD hbCUIEditor:scrInkey( key_ )
 
    RETURN nKey
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrObjBlank()
    LOCAL o_:= array( OBJ_INIT_VRBLS )
@@ -2731,7 +2662,6 @@ METHOD hbCUIEditor:scrObjBlank()
 
    RETURN o_
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrVrbBlank( nType )
    LOCAL v_:= {}
@@ -2761,7 +2691,6 @@ METHOD hbCUIEditor:scrVrbBlank( nType )
 
    RETURN v_
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrObj2Vv( o_ )
    LOCAL v_:={}, nW := 200
@@ -2791,7 +2720,6 @@ METHOD hbCUIEditor:scrObj2Vv( o_ )
 
    RETURN v_
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrVrbHeaders( nType )
    LOCAL h_:= {}
@@ -2820,7 +2748,6 @@ METHOD hbCUIEditor:scrVrbHeaders( nType )
 
    RETURN h_
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrVv2Obj( v_, o_ )
 
@@ -2849,7 +2776,6 @@ METHOD hbCUIEditor:scrVv2Obj( v_, o_ )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrAddBox( nObj )
    LOCAL o_, nKey, nnObj := nObj
@@ -2914,7 +2840,6 @@ METHOD hbCUIEditor:scrAddBox( nObj )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrAddFld( nObj )
    LOCAL h_, w_, o_, v_
@@ -2977,7 +2902,6 @@ METHOD hbCUIEditor:scrAddFld( nObj )
 
    RETURN Self
 
-//----------------------------------------------------------------------//
 
 METHOD hbCUIEditor:scrGetProperty( nObj )
    LOCAL o_, v_, w_, h_
@@ -3027,7 +2951,6 @@ METHOD hbCUIEditor:scrGetProperty( nObj )
 
    RETURN SELF
 
-/*----------------------------------------------------------------------*/
 
 METHOD hbCUIEditor:scrPreview()
    LOCAL nRows, nCols, a_, cColor, aScr, cPic
@@ -3095,7 +3018,6 @@ METHOD hbCUIEditor:scrPreview()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION VouchGetPic( cType, cPic, nLen, nDec )
    LOCAL cP := ""
@@ -3112,7 +3034,6 @@ STATIC FUNCTION VouchGetPic( cType, cPic, nLen, nDec )
 
    RETURN cP
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION VouchVrbBlank( o_ )
 
@@ -3131,7 +3052,6 @@ STATIC FUNCTION VouchVrbBlank( o_ )
 
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION VouchGetColor( cType, cColor )
 
@@ -3152,8 +3072,6 @@ STATIC FUNCTION VouchGetColor( cType, cColor )
    RETURN "W/B"
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #define CGO_POS                                   1
 #define CGO_ROW                                   2
@@ -3169,12 +3087,10 @@ STATIC FUNCTION VouchGetColor( cType, cColor )
 #define LEN_COL_STR                               20
 #define LEN_VID_STK_ENTRY                         LEN_COL_STR + 3
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION VouchInRange( v, r1, r2 )
    RETURN v >= r1 .AND. v <= r2
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION pad_max( a_,lNum,max )
    LOCAL i := 1
@@ -3186,12 +3102,10 @@ FUNCTION pad_max( a_,lNum,max )
    aeval( a_, {|x| a_[ i ] := iif( lNum, str( i,3 ) + '  ', '' ) + pad( x,max ), i++ } )
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION VouchInArray( v,a_ )
    RETURN ascan( a_,{|e| e = v } ) > 0
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchAShrink( a_,n )
    IF n > 0
@@ -3200,7 +3114,6 @@ FUNCTION VouchAShrink( a_,n )
    ENDIF
    RETURN a_
 
-//----------------------------------------------------------------------//
 
 FUNCTION setGetAch( v_ )
    LOCAL lCrt
@@ -3211,7 +3124,6 @@ FUNCTION setGetAch( v_ )
    ENDIF
    RETURN lCrt
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION VouchWndSave( t, l, b, r )
    LOCAL wnd_,crs
@@ -3228,7 +3140,6 @@ FUNCTION VouchWndSave( t, l, b, r )
 
    RETURN wnd_
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchWndRest( wnd_ )
    LOCAL crs, bError
@@ -3243,12 +3154,10 @@ FUNCTION VouchWndRest( wnd_ )
 
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 FUNCTION Wvt()
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION VouchGetArray( h_,vv_, sel_, nTop, nLft, nBtm, nRgt, title, bWhen_, bValid_, pic_, hlp, ord_ )
    LOCAL i, scr , nSel, maxL, mLen, nDiff, clr
@@ -3384,7 +3293,6 @@ FUNCTION VouchGetArray( h_,vv_, sel_, nTop, nLft, nBtm, nRgt, title, bWhen_, bVa
 
    RETURN{ vv_, nSel }
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION VouchFunc1( mode, nElem, nRow, nKey, cgo_ )
    LOCAL ret := AC_CONT
@@ -3424,7 +3332,6 @@ FUNCTION VouchFunc1( mode, nElem, nRow, nKey, cgo_ )
 
    RETURN ret
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION scan_ff( elem, a_, c /*, nFrom */ )
    LOCAL na, nlen
@@ -3437,7 +3344,6 @@ STATIC FUNCTION scan_ff( elem, a_, c /*, nFrom */ )
 
    RETURN iif( na == 0, elem, na )
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION VouchGetChoice( vrb, row, col, e_col, whn, vld, pic )
    LOCAL scr, maxL, n_vrb, dec, r, c, r1, c1, crs, clr
@@ -3487,37 +3393,29 @@ STATIC FUNCTION VouchGetChoice( vrb, row, col, e_col, whn, vld, pic )
 
    RETURN vrb
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION ScrolBarUpdate()
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION ScrolBarDisplay()
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION ScrolBarNew()
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION whn()
    RETURN eval( getActive():cargo[1] )
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION vld()
    RETURN eval( getActive():cargo[2] )
 
-//----------------------------------------------------------------------//
 
 FUNCTION oAchGet( n )
    RETURN setGetAch()[n]
-
-//----------------------------------------------------------------------//
 
 /*
 STATIC FUNCTION oAchPut( n,v )
@@ -3525,23 +3423,19 @@ STATIC FUNCTION oAchPut( n,v )
    RETURN .t.
 */
 
-//----------------------------------------------------------------------//
 
 FUNCTION oCPut( v )
    getactive():varPut( v )
    RETURN .t.
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION oGet()
    RETURN getActive():varGet()
 
-//----------------------------------------------------------------------//
 
 FUNCTION GetCrtCargoSlots()
    RETURN { .f.,.f.,.f.,.f.,.f.,.f.,.f.,.f.,.f.,.f. }
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION xtos( x )
    LOCAL type := valtype( x )
@@ -3557,12 +3451,10 @@ FUNCTION xtos( x )
    ENDCASE
    RETURN ""
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchRgb( nR, nG, nB )
    RETURN nR +( nG * 256 ) +( nB * 256 * 256 )
 
-//---------------------------------------------------------------------//
 
 FUNCTION VouchYN( msg, nInit )
    LOCAL g := getactive(), sel
@@ -3579,7 +3471,6 @@ FUNCTION VouchYN( msg, nInit )
 
    RETURN sel == 1
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchMenuMM( mnu_,nInit,msg,lExact,aSel )
    LOCAL n, i, t, m_:={}
@@ -3610,7 +3501,6 @@ FUNCTION VouchMenuMM( mnu_,nInit,msg,lExact,aSel )
 
    RETURN .f.
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchMenuM( id,nInit,msg )
    LOCAL n, m_:={},t, mnu_
@@ -3649,7 +3539,6 @@ FUNCTION VouchMenuM( id,nInit,msg )
 
    RETURN .f.   //  Note, because the FUNCTION is used IN when clause
 
-//----------------------------------------------------------------------//
 
 FUNCTION vstk_push()
    s_vid_stk := chr( set( _SET_CURSOR ) ) + ;
@@ -3658,7 +3547,6 @@ FUNCTION vstk_push()
                         s_vid_stk
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 FUNCTION vstk_pop()
    IF Len( s_vid_stk ) > 0
@@ -3670,7 +3558,6 @@ FUNCTION vstk_pop()
    ENDIF
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchMsgBox(r1, c1, r2, c2, width, depth, msg_, msgClr, ;
       ch_, chClr, wait, restore, paste, shadow, trg_, sel, lSelect_, abr, ;
@@ -3936,7 +3823,6 @@ FUNCTION VouchMsgBox(r1, c1, r2, c2, width, depth, msg_, msgClr, ;
 
    RETURN iif( lSlctns, nSlctns_, sel )
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchFunc2( nMode, nElem, nRel, nKey, cgo_ )
    LOCAL n, i, nn, s
@@ -4048,7 +3934,6 @@ FUNCTION VouchFunc2( nMode, nElem, nRel, nKey, cgo_ )
 
    RETURN AC_CONT
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION scan_f( elem, a_, key, nFrom )
    LOCAL n := elem, na, c
@@ -4063,7 +3948,6 @@ STATIC FUNCTION scan_f( elem, a_, key, nFrom )
    ENDIF
    RETURN n
 
-//----------------------------------------------------------------------//
 
 #define BLACK                                     0
 #define WHITE                                     7
@@ -4072,7 +3956,6 @@ STATIC FUNCTION scan_f( elem, a_, key, nFrom )
 #define ATTR_CONV( FORE, BACK )                   (BACK)*16+(FORE)
 #define COL_SHADOW_ATTRIBUTE                      ATTR_CONV( DK_GRAY, BLACK )
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION VouchShadow( t, l, b, r )
    IF r < maxcol() - 1 .AND. b < maxrow()
@@ -4081,7 +3964,6 @@ STATIC FUNCTION VouchShadow( t, l, b, r )
    ENDIF
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION sha_attr( t, l, b, r, new_attr )
    LOCAL old_scr_area, new_scr_area, i
@@ -4096,7 +3978,6 @@ STATIC FUNCTION sha_attr( t, l, b, r, new_attr )
    restscreen( t, l, b, r, new_scr_area )
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 FUNCTION VouchGetSome( msg, vrb, pass, pic, set_, wh, vl, nLastKey )
    LOCAL screen, l, nMaxLen, nLenMsg, nLenVrb, clr, r
@@ -4152,7 +4033,6 @@ FUNCTION VouchGetSome( msg, vrb, pass, pic, set_, wh, vl, nLastKey )
 
    RETURN vrb
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION help( cToken )
    LOCAL nKey, nRows, nCols, aScr, lSetMode
@@ -4211,7 +4091,6 @@ FUNCTION help( cToken )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION SetHelpStr( cStr )
    LOCAL o_str
@@ -4224,7 +4103,6 @@ FUNCTION SetHelpStr( cStr )
 
    RETURN o_str
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION DispHelp( cToken )
 
@@ -4432,7 +4310,6 @@ STATIC FUNCTION DispHelp( cToken )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 #if 0
 FUNCTION hbcui_test()
    LOCAL getlist := {}
@@ -4458,14 +4335,11 @@ FUNCTION hbcui_test()
 
    RETURN NIL
 #endif
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
+
 
 #define INRANGE( xLo, xVal, xHi )  ( ( xVal >= xLo ) .AND. ( xVal <= xHi ) )
 #define BETWEEN( xLo, xVal, xHi )  min( max( xLo, xVal ), xHi )
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION VouchAChoice( nTop, nLft, nBtm, nRgt, acItems, xSelect, cUserFunc, nPos, nHiLytRow, oWin, nLastKey, cargo_ )
    LOCAL nChoice, oChoice
@@ -4483,7 +4357,6 @@ FUNCTION VouchAChoice( nTop, nLft, nBtm, nRgt, acItems, xSelect, cUserFunc, nPos
 
    RETURN nChoice
 
-/*----------------------------------------------------------------------*/
 
 CREATE CLASS AChoiceNew
 
@@ -4536,15 +4409,12 @@ CREATE CLASS AChoiceNew
    METHOD HiLite
    METHOD DispAtNew
 
-ENDCLASS
+   ENDCLASS
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:Destroy()
-
    RETURN NIL
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:init( nTop, nLft, nBtm, nRgt, acItems, xSelect, ;
                         cUserFunc, nPos, nHiLiteRow, oWin, nLastKey, cargo_ )
@@ -4641,7 +4511,6 @@ METHOD AChoiceNew:init( nTop, nLft, nBtm, nRgt, acItems, xSelect, ;
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:Exe()
 
@@ -4808,7 +4677,6 @@ METHOD AChoiceNew:Exe()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:DispPageNew()
    LOCAL nCntr
@@ -4835,7 +4703,6 @@ METHOD AChoiceNew:DispPageNew()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:DispLineNew( nPos, nRow, lHiLite )
 
@@ -4845,7 +4712,6 @@ METHOD AChoiceNew:DispLineNew( nPos, nRow, lHiLite )
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:DeHilite()
 
@@ -4853,7 +4719,6 @@ METHOD AChoiceNew:DeHilite()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:HiLite()
 
@@ -4861,7 +4726,6 @@ METHOD AChoiceNew:HiLite()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:Up()
    LOCAL nScroll
@@ -4906,7 +4770,6 @@ METHOD AChoiceNew:Up()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:Down()
    LOCAL nScroll
@@ -4950,7 +4813,6 @@ METHOD AChoiceNew:Down()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:PageUp()
 
@@ -4984,7 +4846,6 @@ METHOD AChoiceNew:PageUp()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:PageDown()
    LOCAL nGap
@@ -5024,7 +4885,6 @@ METHOD AChoiceNew:PageDown()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:Top()
 
@@ -5049,7 +4909,6 @@ METHOD AChoiceNew:Top()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:Bottom()
 
@@ -5074,7 +4933,6 @@ METHOD AChoiceNew:Bottom()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:GoTop()
 
@@ -5093,7 +4951,6 @@ METHOD AChoiceNew:GoTop()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:GoBottom()
 
@@ -5118,7 +4975,6 @@ METHOD AChoiceNew:GoBottom()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:GoTo()
 
@@ -5148,7 +5004,6 @@ METHOD AChoiceNew:GoTo()
 
    RETURN SELF
 
-//----------------------------------------------------------------------//
 
 METHOD AChoiceNew:DispAtNew()
    LOCAL nNewPos
@@ -5169,7 +5024,6 @@ METHOD AChoiceNew:DispAtNew()
 
    RETURN ::nPos
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION Before( cDelim, cValue )
    LOCAL cRetVal := cValue
@@ -5180,7 +5034,6 @@ STATIC FUNCTION Before( cDelim, cValue )
 
    RETURN cRetVal
 
-//----------------------------------------------------------------------//
 
 STATIC FUNCTION After( cDelim, cValue )
    LOCAL cRetVal := ''
@@ -5191,8 +5044,6 @@ STATIC FUNCTION After( cDelim, cValue )
 
    RETURN cRetVal
 
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 STATIC FUNCTION BuildScreen()
@@ -5209,7 +5060,6 @@ STATIC FUNCTION BuildScreen()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_setExitCuiEd( lYes )
    LOCAL l_lYes
@@ -5220,4 +5070,3 @@ FUNCTION hbide_setExitCuiEd( lYes )
    ENDIF
    RETURN l_lYes
 
-/*----------------------------------------------------------------------*/

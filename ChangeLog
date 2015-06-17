@@ -16,6 +16,52 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-06-16 16:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r411)
+  * hbide/actions.prg
+  * hbide/changelog.prg
+  * hbide/console.prg
+  * hbide/dbumgr.prg
+  * hbide/debugger.prg
+  * hbide/dict.prg
+  * hbide/docks.prg
+  * hbide/docwriter.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/environ.prg
+  * hbide/findreplace.prg
+  * hbide/format.prg
+  * hbide/functions.prg
+  * hbide/harbourhelp.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/home.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/object.prg
+  * hbide/parts.prg
+  * hbide/plugins.prg
+  * hbide/projectwizard.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+  * hbide/skeletons.prg
+  * hbide/sources.prg
+  * hbide/stylesheets.prg
+  * hbide/tags.prg
+  * hbide/themes.prg
+  * hbide/tools.prg
+  * hbide/uisrcmanager.prg
+  * hbide/wizard.prg
+    % Copyright year bump.
+
+    % Formatting to some sources
+
+    ! Fixed: reading .hbd files. Now Harbour Help is displayed properly.
+
+    % Changed: the behavior of Functions List to start with "Natural Order"
+       instead of "Sorted Order"
+
+    ! few more minor fixes.
+
 2015-05-27 17:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r410)
   * hbqt/hbmk2_qt.hb
     ! Fixed: greedy regular expression. Was breaking compilation of sone .uis. 
