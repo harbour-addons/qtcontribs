@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoRouteSegment>
+#include <QtLocation/QGeoManeuver>
+#include <QtPositioning/QGeoCoordinate>
+
+/*
+ * QGeoRouteSegment()
+ * QGeoRouteSegment(const QGeoRouteSegment & other)
+ * ~QGeoRouteSegment()
+ */
+HB_FUNC( QT_QGEOROUTESEGMENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoRouteSegment" ) )
+   {
+      __HB_RETPTRGC__( new QGeoRouteSegment( * hbqt_par_QGeoRouteSegment( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoRouteSegment() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal   distance() const
+bool   isValid() const
+QGeoManeuver   maneuver() const
+QGeoRouteSegment   nextRouteSegment() const
+QList<QGeoCoordinate>   path() const
+void   setDistance(qreal distance)
+void   setManeuver(const QGeoManeuver & maneuver)
+void   setNextRouteSegment(const QGeoRouteSegment & routeSegment)
+void   setPath(const QList<QGeoCoordinate> & path)
+void   setTravelTime(int secs)
+int   travelTime() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

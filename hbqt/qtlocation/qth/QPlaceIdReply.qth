@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QPlaceReply
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceIdReply>
+
+/*
+ * QPlaceIdReply(OperationType operationType, QObject * parent = 0)
+ * virtual   ~QPlaceIdReply()
+ */
+HB_FUNC( QT_QPLACEIDREPLY )
+{
+   if( hb_pcount() == 2 && HB_ISNUM( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceIdReply( ( QPlaceIdReply::OperationType ) hb_parni( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QPlaceIdReply( ( QPlaceIdReply::OperationType ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   OperationType { SavePlace, RemovePlace, SaveCategory, RemoveCategory }
+</ENUMS>
+
+<PROTOS>
+QString   id() const
+OperationType   operationType() const
+
+virtual QPlaceReply::Type   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

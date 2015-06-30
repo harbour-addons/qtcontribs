@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceContent>
+#include <QtLocation/QPlaceSupplier>
+#include <QtLocation/QPlaceUser>
+
+/*
+ * QPlaceContent()
+ * QPlaceContent(const QPlaceContent & other)
+ * virtual   ~QPlaceContent()
+ */
+HB_FUNC( QT_QPLACECONTENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceContent" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceContent( * hbqt_par_QPlaceContent( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceContent() );
+   }
+}
+</CODE>
+
+<ENUMS>
+typedef   Collection
+enum   Type { NoType, ImageType, ReviewType, EditorialType }
+</ENUMS>
+
+<PROTOS>
+QString   attribution() const
+void   setAttribution(const QString & attribution)
+void   setSupplier(const QPlaceSupplier & supplier)
+void   setUser(const QPlaceUser & user)
+QPlaceSupplier   supplier() const
+QPlaceContent::Type   type() const
+QPlaceUser   user() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

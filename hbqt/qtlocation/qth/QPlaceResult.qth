@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     = QPlaceSearchResult
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceResult>
+
+/*
+ * QPlaceResult()
+ * QPlaceResult(const QPlaceSearchResult & other)
+ * virtual   ~QPlaceResult()
+ */
+HB_FUNC( QT_QPLACERESULT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceSearchResult" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceResult( * hbqt_par_QPlaceSearchResult( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceResult() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal   distance() const
+bool   isSponsored() const
+QPlace   place() const
+void   setDistance(qreal distance)
+void   setPlace(const QPlace & place)
+void   setSponsored(bool sponsored)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

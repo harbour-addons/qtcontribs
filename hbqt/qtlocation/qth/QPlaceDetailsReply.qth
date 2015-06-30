@@ -1,0 +1,57 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QPlaceReply
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceDetailsReply>
+
+/*
+ * QPlaceDetailsReply(QObject * parent = 0)
+ * virtual   ~QPlaceDetailsReply()
+ */
+HB_FUNC( QT_QPLACEDETAILSREPLY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceDetailsReply( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceDetailsReply() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPlace   place() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,51 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoServiceProviderFactory>
+
+/*
+ * virtual   ~QGeoServiceProviderFactory()
+ */
+HB_FUNC( QT_QGEOSERVICEPROVIDERFACTORY )
+{
+   HB_FUNC_EXEC( HB_QGEOSERVICEPROVIDERFACTORY );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual QGeoCodingManagerEngine *   createGeocodingManagerEngine(const QVariantMap & parameters, QGeoServiceProvider::Error * error, QString * errorString) const
+virtual QPlaceManagerEngine *   createPlaceManagerEngine(const QVariantMap & parameters, QGeoServiceProvider::Error * error, QString * errorString) const
+virtual QGeoRoutingManagerEngine *   createRoutingManagerEngine(const QVariantMap & parameters, QGeoServiceProvider::Error * error, QString * errorString) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,60 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     = QPlaceSearchResult
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceProposedSearchResult>
+#include <QtLocation/QPlaceSearchRequest>
+
+/*
+ * QPlaceProposedSearchResult()
+ * QPlaceProposedSearchResult(const QPlaceSearchResult & other)
+ * ~QPlaceProposedSearchResult()
+ */
+HB_FUNC( QT_QPLACEPROPOSEDSEARCHRESULT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceProposedSearchResult" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceProposedSearchResult( * hbqt_par_QPlaceProposedSearchResult( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceProposedSearchResult() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPlaceSearchRequest   searchRequest() const
+void   setSearchRequest(const QPlaceSearchRequest & request)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

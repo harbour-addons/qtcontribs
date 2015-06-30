@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QPlaceReply
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceSearchReply>
+#include <QtLocation/QPlaceSearchRequest>
+
+/*
+ * QPlaceSearchReply(QObject * parent = 0)
+ * ~QPlaceSearchReply()
+ */
+HB_FUNC( QT_QPLACESEARCHREPLY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceSearchReply( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceSearchReply() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPlaceSearchRequest   nextPageRequest() const
+QPlaceSearchRequest   previousPageRequest() const
+QPlaceSearchRequest   request() const
+QList<QPlaceSearchResult>   results() const
+
+virtual QPlaceReply::Type   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

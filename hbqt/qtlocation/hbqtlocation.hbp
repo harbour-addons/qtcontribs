@@ -1,0 +1,15 @@
+#
+# $Id$
+#
+
+-cflag=-I${HB_WITH_QT}/QtCore
+-cflag=-I${HB_WITH_QT}/QtPositioning
+
+../hbqt_common.hbm
+
+hbqtlocation.hbm
+
+-instfile=inc:hbqtlocation.ch
+-instfile=inc:hbqtlocation.hbx
+
+hbqtlocations.hbp

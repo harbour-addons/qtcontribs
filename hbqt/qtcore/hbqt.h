@@ -74,6 +74,7 @@
 #endif
 
 #include <QtCore/qglobal.h>
+#include <QtCore/QObject>
 #include <QtCore/QEvent>
 #include <QtCore/QStringList>
 

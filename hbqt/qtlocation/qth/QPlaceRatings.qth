@@ -1,0 +1,64 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceRatings>
+
+/*
+ * QPlaceRatings()
+ * QPlaceRatings(const QPlaceRatings & other)
+ * ~QPlaceRatings()
+ */
+HB_FUNC( QT_QPLACERATINGS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceRatings" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceRatings( * hbqt_par_QPlaceRatings( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceRatings() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal   average() const
+int   count() const
+bool   isEmpty() const
+qreal   maximum() const
+void   setAverage(qreal average)
+void   setCount(int count)
+void   setMaximum(qreal max)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

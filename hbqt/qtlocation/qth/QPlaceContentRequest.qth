@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceContentRequest>
+#include <QtCore/QVariant>
+
+/*
+ * QPlaceContentRequest()
+ * QPlaceContentRequest(const QPlaceContentRequest & other)
+ * ~QPlaceContentRequest()
+ */
+HB_FUNC( QT_QPLACECONTENTREQUEST )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceContentRequest" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceContentRequest( * hbqt_par_QPlaceContentRequest( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceContentRequest() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   clear()
+QVariant   contentContext() const
+QPlaceContent::Type   contentType() const
+int   limit() const
+QString   placeId() const
+void   setContentContext(const QVariant & context)
+void   setContentType(QPlaceContent::Type type)
+void   setLimit(int limit)
+void   setPlaceId(const QString & identifier)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

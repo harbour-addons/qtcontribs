@@ -5083,5 +5083,196 @@
 #define Qt_ApplicationInactive                               0x00000002  // The application is visible, but not selected to be in front. On desktop platforms, this typically means that the user activated another application. On mobile platforms, it is more common to enter this state when the OS is interrupting the user with e.g. incoming calls or SMS-messages. While in this state, consider reducing CPU-intensive tasks.
 #define Qt_ApplicationActive                                 0x00000004  // The application is visible and selected to be in front.
 
+#define QLocation_UnspecifiedVisibility                      0x00   // No explicit visibility has been defined.
+#define QLocation_DeviceVisibility                           0x01   // Places and categories with DeviceVisibility are only stored on the local device.
+#define QLocation_PrivateVisibility                          0x02   // Places and categories with PrivateVisibility are only visible to the current user. The data may be stored either locally or on a remote service or both.
+#define QLocation_PublicVisibility                           0x04   // Places and categories with PublicVisibility are visible to everyone.
+
+//enum QGeoCodeReply::Error
+//Describes an error which prevented the completion of the operation.
+#define QGeoCodeReply_NoError                                0   // No error has occurred.
+#define QGeoCodeReply_EngineNotSetError                      1   // The geocoding manager that was used did not have a QGeoCodingManagerEngine instance associated with it.
+#define QGeoCodeReply_CommunicationError                     2   // An error occurred while communicating with the service provider.
+#define QGeoCodeReply_ParseError                             3   // The response from the service provider was in an unrecognizable format.
+#define QGeoCodeReply_UnsupportedOptionError                 4   // The requested operation or one of the options for the operation are not supported by the service provider.
+#define QGeoCodeReply_CombinationError                       5   // An error occurred while results where being combined from multiple sources.
+#define QGeoCodeReply_UnknownError                           6   // An error occurred which does not fit into any of the other categories.
+
+
+//enum QGeoManeuver::InstructionDirection
+//Describes the change in direction associated with the instruction text that is associated with a QGeoManaeuver.
+#define QGeoManeuver_NoDirection                             0   // There is no direction associated with the instruction text.
+#define QGeoManeuver_DirectionForward                        1   // The instruction indicates that the direction of travel does not need to change.
+#define QGeoManeuver_DirectionBearRight                      2   // The instruction indicates that the direction of travel should bear to the right.
+#define QGeoManeuver_DirectionLightRight                     3   // The instruction indicates that a light turn to the right is required.
+#define QGeoManeuver_DirectionRight                          4   // The instruction indicates that a turn to the right is required.
+#define QGeoManeuver_DirectionHardRight                      5   // The instruction indicates that a hard turn to the right is required.
+#define QGeoManeuver_DirectionUTurnRight                     6   // The instruction indicates that a u-turn to the right is required.
+#define QGeoManeuver_DirectionUTurnLeft                      7   // The instruction indicates that a u-turn to the left is required.
+#define QGeoManeuver_DirectionHardLeft                       8   // The instruction indicates that a hard turn to the left is required.
+#define QGeoManeuver_DirectionLeft                           9   // The instruction indicates that a turn to the left is required.
+#define QGeoManeuver_DirectionLightLeft                      10  // The instruction indicates that a light turn to the left is required.
+#define QGeoManeuver_DirectionBearLeft                       11  // The instruction indicates that the direction of travel should bear to the left.
+
+//enum QGeoRouteReply::Error
+//Describes an error which prevented the completion of the operation.
+#define QGeoRouteReply_NoError                               0   // No error has occurred.
+#define QGeoRouteReply_EngineNotSetError                     1   // The routing manager that was used did not have a QGeoRoutingManagerEngine instance associated with it.
+#define QGeoRouteReply_CommunicationError                    2   // An error occurred while communicating with the service provider.
+#define QGeoRouteReply_ParseError                            3   // The response from the service provider was in an unrecognizable format.
+#define QGeoRouteReply_UnsupportedOptionError                4   // The requested operation or one of the options for the operation are not supported by the service provider.
+#define QGeoRouteReply_UnknownError                          5   // An error occurred which does not fit into any of the other categories.
+
+//enum QGeoRouteRequest::FeatureType
+//Defines a feature which is important to the planning of a route.
+//These values will be used in combination with QGeoRouteRequest::FeatureWeight to determine if they should or should not be part of the route.
+#define QGeoRouteRequest_NoFeature                           0x00000000   // Used by QGeoRoutingManager::supportedFeatureTypes() to indicate that no features will be taken into account when planning the route.
+#define QGeoRouteRequest_TollFeature                         0x00000001   // Consdier tollways when planning the route.
+#define QGeoRouteRequest_HighwayFeature                      0x00000002   // Consider highways when planning the route.
+#define QGeoRouteRequest_PublicTransitFeature                0x00000004   // Consider public transit when planning the route.
+#define QGeoRouteRequest_FerryFeature                        0x00000008   // Consider ferries when planning the route.
+#define QGeoRouteRequest_TunnelFeature                       0x00000010   // Consider tunnels when planning the route.
+#define QGeoRouteRequest_DirtRoadFeature                     0x00000020   // Consider dirt roads when planning the route.
+#define QGeoRouteRequest_ParksFeature                        0x00000040   // Consider parks when planning the route.
+#define QGeoRouteRequest_MotorPoolLaneFeature                0x00000080   // Consider motor pool lanes when planning the route.
+
+
+//enum #define QGeoRouteRequest_FeatureWeight
+//Defines the weight to associate with a feature during the planning of a route.
+//These values will be used in combination with #define QGeoRouteRequest_Feature to determine if they should or should not be part of the route.
+#define QGeoRouteRequest_NeutralFeatureWeight                0x00000000   // The presence or absence of the feature will not affect the planning of the route.
+#define QGeoRouteRequest_PreferFeatureWeight                 0x00000001   // Routes which contain the feature will be preferred over those that do not.
+#define QGeoRouteRequest_RequireFeatureWeight                0x00000002   // Only routes which contain the feature will be considered, otherwise no route will be returned.
+#define QGeoRouteRequest_AvoidFeatureWeight                  0x00000004   // Routes which do not contain the feature will be preferred over those that do.
+#define QGeoRouteRequest_DisallowFeatureWeight               0x00000008   // Only routes which do not contain the feature will be considered, otherwise no route will be returned.
+
+//enum #define QGeoRouteRequest_ManeuverDetail
+//Defines the amount of maneuver information that should be included with the route.
+#define QGeoRouteRequest_NoManeuvers                         0x0000       // No maneuvers should be included with the route.
+#define QGeoRouteRequest_BasicManeuvers                      0x0001       // Basic manevuers will be included with the route. This will include #define QGeoManeuver_instructionText().
+
+//enum #define QGeoRouteRequest_RouteOptimization
+//Defines the type of optimization which is applied to the planning of the route.
+#define QGeoRouteRequest_ShortestRoute                       0x0001       // Minimize the length of the journey.
+#define QGeoRouteRequest_FastestRoute                        0x0002       // Minimize the traveling time for the journey.
+#define QGeoRouteRequest_MostEconomicRoute                   0x0004       // Minimize the cost of the journey.
+#define QGeoRouteRequest_MostScenicRoute                     0x0008       // Maximize the scenic potential of the journey.
+
+//enum #define QGeoRouteRequest_SegmentDetail
+//Defines the amount of route segment information that should be included with the route.
+#define QGeoRouteRequest_NoSegmentData                       0x0000       // No segment data should be included with the route. A route requested with this level of segment detail will initialize QGeoRouteSegment::path() as a straight line between the positions of the previous and next QGeoManeuver instances.
+#define QGeoRouteRequest_BasicSegmentData                    0x0001       // Basic segment data will be included with the route. This will include QGeoRouteSegment::path().
+
+//enum #define QGeoRouteRequest_TravelMode
+//Defines modes of travel to be used for a route.
+#define QGeoRouteRequest_CarTravel                           0x0001       // The route will be optimized for someone who is driving a car.
+#define QGeoRouteRequest_PedestrianTravel                    0x0002       // The route will be optimized for someone who is walking.
+#define QGeoRouteRequest_BicycleTravel                       0x0004       // The route will be optimized for someone who is riding a bicycle.
+#define QGeoRouteRequest_PublicTransitTravel                 0x0008       // The route will be optimized for someone who is making use of public transit.
+#define QGeoRouteRequest_TruckTravel                         0x0010       // The route will be optimized for someone who is driving a truck.
+
+//enum #define QGeoServiceProvider_Error
+//Describes an error related to the loading and setup of a service provider plugin.
+#define QGeoServiceProvider_NoError                          0   // No error has occurred.
+#define QGeoServiceProvider_NotSupportedError                1   // The plugin does not support this functionality.
+#define QGeoServiceProvider_UnknownParameterError            2   // The plugin did not recognize one of the parameters it was given.
+#define QGeoServiceProvider_MissingRequiredParameterError    3   // The plugin did not find one of the parameters it was expecting.
+#define QGeoServiceProvider_ConnectionError                  4   // The plugin could not connect to its backend service or database.
+
+//enum #define QGeoServiceProvider_GeocodingFeature
+//Describes the geocoding features supported by the geo service provider.
+#define QGeoServiceProvider_NoGeocodingFeatures              0          // No geocoding features are supported.
+#define QGeoServiceProvider_OnlineGeocodingFeature           ( 1<<0 )   // Online geocoding is supported.
+#define QGeoServiceProvider_OfflineGeocodingFeature          ( 1<<1 )   // Offline geocoding is supported.
+#define QGeoServiceProvider_ReverseGeocodingFeature          ( 1<<2 )   // Reverse geocoding is supported.
+#define QGeoServiceProvider_LocalizedGeocodingFeature        ( 1<<3 )   // Supports returning geocoding results with localized addresses.
+#define QGeoServiceProvider_AnyGeocodingFeatures             ~( 0 )     // Matches a geo service provider that provides any geocoding features.
+
+
+//enum #define QGeoServiceProvider_MappingFeature
+//Describes the mapping features supported by the geo service provider.
+#define QGeoServiceProvider_NoMappingFeatures                0          // No mapping features are supported.
+#define QGeoServiceProvider_OnlineMappingFeature             ( 1<<0 )   // Online mapping is supported.
+#define QGeoServiceProvider_OfflineMappingFeature            ( 1<<1 )   // Offline mapping is supported.
+#define QGeoServiceProvider_LocalizedMappingFeature          ( 1<<2 )   // Supports returning localized map data.
+#define QGeoServiceProvider_AnyMappingFeatures               ~( 0 )     // Matches a geo service provider that provides any mapping features.
+
+
+//enum #define QGeoServiceProvider_PlacesFeature
+//Describes the places features supported by the geo service provider.
+#define QGeoServiceProvider_NoPlacesFeatures                 0          // No places features are supported.
+#define QGeoServiceProvider_OnlinePlacesFeature              ( 1<<0 )   // Online places is supported.
+#define QGeoServiceProvider_OfflinePlacesFeature             ( 1<<1 )   // Offline places is supported.
+#define QGeoServiceProvider_SavePlaceFeature                 ( 1<<2 )   // Saving places is supported.
+#define QGeoServiceProvider_RemovePlaceFeature               ( 1<<3 )   // Removing or deleting places is supported.
+#define QGeoServiceProvider_SaveCategoryFeature              ( 1<<4 )   // Saving categories is supported.
+#define QGeoServiceProvider_RemoveCategoryFeature            ( 1<<5 )   // Removing or deleting categories is supported.
+#define QGeoServiceProvider_PlaceRecommendationsFeature      ( 1<<6 )   // Searching for recommended places similar to another place is supported.
+#define QGeoServiceProvider_SearchSuggestionsFeature         ( 1<<7 )   // Search suggestions is supported.
+#define QGeoServiceProvider_LocalizedPlacesFeature           ( 1<<8 )   // Supports returning localized place data.
+#define QGeoServiceProvider_NotificationsFeature             ( 1<<9 )   // Notifications of place and category changes is supported.
+#define QGeoServiceProvider_PlaceMatchingFeature             ( 1<<10 )  // Supports matching places from two different geo service providers.
+#define QGeoServiceProvider_AnyPlacesFeatures                ~( 0 )     // Matches a geo service provider that provides any places features.
+
+//enum #define QGeoServiceProvider_RoutingFeature
+//Describes the routing features supported by the geo service provider.
+#define QGeoServiceProvider_NoRoutingFeatures                0          // No routing features are supported.
+#define QGeoServiceProvider_OnlineRoutingFeature             ( 1<<0 )   // Online routing is supported.
+#define QGeoServiceProvider_OfflineRoutingFeature            ( 1<<1 )   // Offline routing is supported.
+#define QGeoServiceProvider_LocalizedRoutingFeature          ( 1<<2 )   // Supports returning routes with localized addresses and instructions.
+#define QGeoServiceProvider_RouteUpdatesFeature              ( 1<<3 )   // Updating an existing route based on the current position is supported.
+#define QGeoServiceProvider_AlternativeRoutesFeature         ( 1<<4 )   // Supports returning alternative routes.
+#define QGeoServiceProvider_ExcludeAreasRoutingFeature       ( 1<<5 )   // Supports specifying a areas which the returned route must not cross.
+#define QGeoServiceProvider_AnyRoutingFeatures               ~( 0 )     // Matches a geo service provider that provides any routing features.
+
+//enum #define QPlaceContent_Type
+//Defines the type of content.
+#define QPlaceContent_NoType                                 0   // The content object is default constructed, any other content type may be assigned to this content object.
+#define QPlaceContent_ImageType                              1   // The content object is an image.
+#define QPlaceContent_ReviewType                             2   // The content object is a review.
+#define QPlaceContent_EditorialType                          3   // The content object is an editorial
+
+//enum #define QPlaceReply_Error
+//Describes an error which occurred during an operation.
+#define QPlaceReply_NoError                                  0   // No error has occurred
+#define QPlaceReply_PlaceDoesNotExistError                   1   // A specified place could not be found
+#define QPlaceReply_CategoryDoesNotExistError                2   // A specified category could not be found
+#define QPlaceReply_CommunicationError                       3   // An error occurred communicating with the service provider.
+#define QPlaceReply_ParseError                               4   // The response from the service provider or an import file was in an unrecognizable format
+#define QPlaceReply_PermissionsError                         5   // The operation failed because of insufficient permissions.
+#define QPlaceReply_UnsupportedError                         6   // The operation was not supported by the service provider.
+#define QPlaceReply_BadArgumentError                         7   // . A parameter that was provided was invalid.
+#define QPlaceReply_CancelError                              8   // The operation was canceled.
+#define QPlaceReply_UnknownError                             9   // An error occurred which does not fit into any of the other categories.
+
+//enum #define QPlaceReply_Type
+//Describes the reply's type.
+#define QPlaceReply_Reply                                    0   // This is a generic reply.
+#define QPlaceReply_DetailsReply                             1   // This is a reply for the retrieval of place details
+#define QPlaceReply_SearchReply                              2   // This is a reply for the place search operation.
+#define QPlaceReply_SearchSuggestionReply                    3   // This is a reply for a search suggestion operation.
+#define QPlaceReply_ContentReply                             4   // This is a reply for content associated with a place.
+#define QPlaceReply_IdReply                                  5   // This is a reply that returns an identifier of a place or category. Typically used for place or category save and remove operations.
+#define QPlaceReply_MatchReply                               6   // This is a reply that returns places that match those from another provider.
+
+//enum #define QPlaceSearchRequest_RelevanceHint
+//Defines hints to help rank place results.
+#define QPlaceSearchRequest_UnspecifiedHint                  0   // No explicit hint has been specified.
+#define QPlaceSearchRequest_DistanceHint                     1   // Distance to a search center is relevant for the user. Closer places are more highly weighted. This hint is only useful if a circular search area is used in the query.
+#define QPlaceSearchRequest_LexicalPlaceNameHint             2   // Alphabetic ordering of places according to name is relevant to the user.
+
+//enum #define QPlaceSearchResult_SearchResultType
+//Defines the type of search result
+#define QPlaceSearchResult_UnknownSearchResult               0   // The contents of the search result are unknown.
+#define QPlaceSearchResult_PlaceResult                       1   // The search result contains a place.
+#define QPlaceSearchResult_ProposedSearchResult              2   // The search result contains a proposed search which may be relevant.
+
+//enum #define QPlaceIdReply_OperationType
+//Defines the type of operation that was used to generate this reply.
+#define QPlaceIdReply_SavePlace                              0   // The reply was created for a save place operation
+#define QPlaceIdReply_RemovePlace                            2   // The reply was created for a remove place operation.
+#define QPlaceIdReply_SaveCategory                           1   // The reply was created for a save category operation
+#define QPlaceIdReply_RemoveCategory                         3   // The reply was created for a remove category operation.
+
 #endif
 

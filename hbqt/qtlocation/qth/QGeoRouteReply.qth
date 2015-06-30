@@ -1,0 +1,74 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoRouteReply>
+#include <QtLocation/QGeoCodeReply>
+
+/*
+ * QGeoRouteReply(Error error, const QString & errorString, QObject * parent = 0)
+ * virtual   ~QGeoRouteReply()
+ */
+HB_FUNC( QT_QGEOROUTEREPLY )
+{
+   if( hb_pcount() == 3 && HB_ISNUM( 1 ) && HB_ISCHAR( 2 ) && hbqt_par_isDerivedFrom( 3, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QGeoRouteReply( ( QGeoRouteReply::Error ) hb_parni( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), hbqt_par_QObject( 3 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISNUM( 1 ) && HB_ISCHAR( 2 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QGeoRouteReply( ( QGeoRouteReply::Error ) hb_parni( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, EngineNotSetError, CommunicationError, ParseError, UnsupportedOptionError, UnknownError }
+</ENUMS>
+
+<PROTOS>
+virtual void   abort()
+Error   error() const
+QString   errorString() const
+bool   isFinished() const
+QGeoRouteRequest   request() const
+QList<QGeoRoute>   routes() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void	error(QGeoRouteReply::Error error, const QString & errorString = QString())
+void	finished()
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,64 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoRoutingManager>
+
+/*
+ * ~QGeoRoutingManager()
+ */
+HB_FUNC( QT_QGEOROUTINGMANAGER )
+{
+   HB_FUNC_EXEC( HB_QGEOROUTINGMANAGER );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QGeoRouteReply *   calculateRoute(const QGeoRouteRequest & request)
+QLocale   locale() const
+QString   managerName() const
+int   managerVersion() const
+QLocale::MeasurementSystem   measurementSystem() const
+void   setLocale(const QLocale & locale)
+void   setMeasurementSystem(QLocale::MeasurementSystem system)
+QGeoRouteRequest::FeatureTypes   supportedFeatureTypes() const
+QGeoRouteRequest::FeatureWeights   supportedFeatureWeights() const
+QGeoRouteRequest::ManeuverDetails   supportedManeuverDetails() const
+QGeoRouteRequest::RouteOptimizations   supportedRouteOptimizations() const
+QGeoRouteRequest::SegmentDetails   supportedSegmentDetails() const
+QGeoRouteRequest::TravelModes   supportedTravelModes() const
+QGeoRouteReply *   updateRoute(const QGeoRoute & route, const QGeoCoordinate & position)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   error(QGeoRouteReply * reply, QGeoRouteReply::Error error, QString errorString = QString())
+void   finished(QGeoRouteReply * reply)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

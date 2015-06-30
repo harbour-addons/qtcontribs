@@ -1,0 +1,77 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceManager>
+
+/*
+ * ~QPlaceManager()
+ */
+HB_FUNC( QT_QPLACEMANAGER )
+{
+   HB_FUNC_EXEC( HB_QPLACEMANAGER );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPlaceCategory   category(const QString & categoryId) const
+QList<QPlaceCategory>   childCategories(const QString & parentId = QString()) const
+QStringList   childCategoryIds(const QString & parentId = QString()) const
+QPlace   compatiblePlace(const QPlace & original)
+QPlaceContentReply *   getPlaceContent(const QPlaceContentRequest & request) const
+QPlaceDetailsReply *   getPlaceDetails(const QString & placeId) const
+QPlaceReply *   initializeCategories()
+QList<QLocale>   locales() const
+QString   managerName() const
+int   managerVersion() const
+QPlaceMatchReply *   matchingPlaces(const QPlaceMatchRequest & request) const
+QString   parentCategoryId(const QString & categoryId) const
+QPlaceIdReply *   removeCategory(const QString & categoryId)
+QPlaceIdReply *   removePlace(const QString & placeId)
+QPlaceIdReply *   saveCategory(const QPlaceCategory & category, const QString & parentId = QString())
+QPlaceIdReply *   savePlace(const QPlace & place)
+QPlaceSearchReply *   search(const QPlaceSearchRequest & request) const
+QPlaceSearchSuggestionReply *   searchSuggestions(const QPlaceSearchRequest & request) const
+void   setLocale(const QLocale & locale)
+void   setLocales(const QList<QLocale> & locales)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   categoryAdded(const QPlaceCategory & category, const QString & parentId)
+void   categoryRemoved(const QString & categoryId, const QString & parentId)
+void   categoryUpdated(const QPlaceCategory & category, const QString & parentId)
+void   dataChanged()
+void   error(QPlaceReply * reply, QPlaceReply::Error error, const QString & errorString = QString())
+void   finished(QPlaceReply * reply)
+void   placeAdded(const QString & placeId)
+void   placeRemoved(const QString & placeId)
+void   placeUpdated(const QString & placeId)
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

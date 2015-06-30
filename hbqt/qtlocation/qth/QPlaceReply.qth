@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = Yes
+Inherit     = QObject
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceReply>
+
+/*
+ * QPlaceReply(QObject * parent = 0)
+ * ~QPlaceReply()
+ */
+HB_FUNC( QT_QPLACEREPLY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceReply( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceReply() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   Error { NoError, PlaceDoesNotExistError, CategoryDoesNotExistError, CommunicationError, ..., UnknownError }
+enum   Type { Reply, DetailsReply, SearchReply, SearchSuggestionReply, ..., MatchReply }
+</ENUMS>
+
+<PROTOS>
+QPlaceReply::Error   error() const
+QString   errorString() const
+bool   isFinished() const
+virtual Type   type() const
+</PROTOS>
+
+<SLOTS>
+virtual void   abort()
+</SLOTS>
+
+<SIGNALS>
+void   error(QPlaceReply::Error error, const QString & errorString = QString())
+void   finished()
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

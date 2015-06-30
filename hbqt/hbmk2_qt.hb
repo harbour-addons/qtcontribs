@@ -4682,7 +4682,24 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       "QProximitySensor"                        => NIL , ;
       "QRotationSensor"                         => NIL , ;
       "QTapSensor"                              => NIL , ;
-      "QTiltSensor"                             => NIL   }
+      "QTiltSensor"                             => NIL , ;
+      "QGeoCodeReply"                           => NIL , ;
+      "QGeoCodingManager"                       => NIL , ;
+      "QGeoCodingManagerEngine"                 => NIL , ;
+      "QGeoRouteReply"                          => NIL , ;
+      "QGeoRoutingManager"                      => NIL , ;
+      "QGeoRoutingManagerEngine"                => NIL , ;
+      "QGeoServiceProvider"                     => NIL , ;
+      "QPlaceContentReply"                      => NIL , ;
+      "QPlaceDetailsReply"                      => NIL , ;
+      "QPlaceIdReply"                           => NIL , ;
+      "QPlaceManager"                           => NIL , ;
+      "QPlaceManagerEngine"                     => NIL , ;
+      "QPlaceMatchReply"                        => NIL , ;
+      "QPlaceReply"                             => NIL , ;
+      "QPlaceSearchReply"                       => NIL , ;
+      "QPlaceSearchSuggestionReply"             => NIL , ;
+      "x                      "                 => NIL   }
 
    IF lower( left( cWidget, 3 ) ) == "hbq"
       cWidget := SubStr( cWidget, 3 )

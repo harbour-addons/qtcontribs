@@ -1,0 +1,62 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     = QPlaceContent
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceEditorial>
+
+/*
+ * QPlaceEditorial()
+ * QPlaceEditorial(const QPlaceContent & other)
+ */
+HB_FUNC( QT_QPLACEEDITORIAL )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceEditorial" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceEditorial( * hbqt_par_QPlaceEditorial( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceEditorial() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   language() const
+void   setLanguage(const QString & language)
+void   setText(const QString & text)
+void   setTitle(const QString & title)
+QString   text() const
+QString   title() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,72 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoManeuver>
+#include <QtPositioning/QGeoCoordinate>
+
+/*
+ * QGeoManeuver()
+ * QGeoManeuver(const QGeoManeuver & other)
+ * ~QGeoManeuver()
+ */
+HB_FUNC( QT_QGEOMANEUVER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoManeuver" ) )
+   {
+      __HB_RETPTRGC__( new QGeoManeuver( *hbqt_par_QGeoManeuver( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoManeuver() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   InstructionDirection { NoDirection, DirectionForward, DirectionBearRight, DirectionLightRight, ..., DirectionBearLeft }
+</ENUMS>
+
+<PROTOS>
+InstructionDirection   direction() const
+qreal   distanceToNextInstruction() const
+QString   instructionText() const
+bool   isValid() const
+QGeoCoordinate   position() const
+void   setDirection(InstructionDirection direction)
+void   setDistanceToNextInstruction(qreal distance)
+void   setInstructionText(const QString & instructionText)
+void   setPosition(const QGeoCoordinate & position)
+void   setTimeToNextInstruction(int secs)
+void   setWaypoint(const QGeoCoordinate & coordinate)
+int   timeToNextInstruction() const
+QGeoCoordinate   waypoint() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

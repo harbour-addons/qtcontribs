@@ -1,0 +1,75 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoRoute>
+#include <QtLocation/QGeoRouteSegment>
+#include <QtPositioning/QGeoRectangle>
+
+/*
+ * QGeoRoute()
+ * QGeoRoute(const QGeoRoute & other)
+ * ~QGeoRoute()
+ */
+HB_FUNC( QT_QGEOROUTE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoRoute" ) )
+   {
+      __HB_RETPTRGC__( new QGeoRoute( *hbqt_par_QGeoRoute( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QGeoRoute() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QGeoRectangle   bounds() const
+qreal   distance() const
+QGeoRouteSegment   firstRouteSegment() const
+QList<QGeoCoordinate>   path() const
+QGeoRouteRequest   request() const
+QString   routeId() const
+void   setBounds(const QGeoRectangle & bounds)
+void   setDistance(qreal distance)
+void   setFirstRouteSegment(const QGeoRouteSegment & routeSegment)
+void   setPath(const QList<QGeoCoordinate> & path)
+void   setRequest(const QGeoRouteRequest & request)
+void   setRouteId(const QString & id)
+void   setTravelMode(QGeoRouteRequest::TravelMode mode)
+void   setTravelTime(int secs)
+QGeoRouteRequest::TravelMode   travelMode() const
+int   travelTime() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

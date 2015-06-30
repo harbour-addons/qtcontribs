@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceMatchRequest>
+
+/*
+ * QPlaceMatchRequest()
+ * QPlaceMatchRequest(const QPlaceMatchRequest & other)
+ * ~QPlaceMatchRequest()
+ */
+HB_FUNC( QT_QPLACEMATCHREQUEST )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceMatchRequest" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceMatchRequest( * hbqt_par_QPlaceMatchRequest( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceMatchRequest() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   clear()
+QVariantMap   parameters() const
+QList<QPlace>   places() const
+void   setParameters(const QVariantMap & parameters)
+void   setPlaces(const QList<QPlace> places)
+void   setResults(const QList<QPlaceSearchResult> & results)
+
+const QString   AlternativeId
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

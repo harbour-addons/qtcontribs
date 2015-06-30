@@ -1,0 +1,93 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QGeoRouteRequest>
+#include <QtPositioning/QGeoCoordinate>
+#include <QtPositioning/QGeoRectangle>
+
+/*
+ * QGeoRouteRequest(const QList<QGeoCoordinate> & waypoints = QList<QGeoCoordinate> ())
+ * QGeoRouteRequest(const QGeoCoordinate & origin, const QGeoCoordinate & destination)
+ * QGeoRouteRequest(const QGeoRouteRequest & other)
+ * ~QGeoRouteRequest()
+ */
+HB_FUNC( QT_QGEOROUTEREQUEST )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QGeoCoordinate" ) && hbqt_par_isDerivedFrom( 2, "QGeoCoordinate" ))
+   {
+      __HB_RETPTRGC__( new QGeoRouteRequest( * hbqt_par_QGeoCoordinate( 1 ), * hbqt_par_QGeoCoordinate( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGeoRouteRequest" ) )
+   {
+      __HB_RETPTRGC__( new QGeoRouteRequest( * hbqt_par_QGeoRouteRequest( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   FeatureType { NoFeature, TollFeature, HighwayFeature, PublicTransitFeature, ..., MotorPoolLaneFeature }
+flags   FeatureTypes
+enum   FeatureWeight { NeutralFeatureWeight, PreferFeatureWeight, RequireFeatureWeight, AvoidFeatureWeight, DisallowFeatureWeight }
+flags   FeatureWeights
+enum   ManeuverDetail { NoManeuvers, BasicManeuvers }
+flags   ManeuverDetails
+enum   RouteOptimization { ShortestRoute, FastestRoute, MostEconomicRoute, MostScenicRoute }
+flags   RouteOptimizations
+enum   SegmentDetail { NoSegmentData, BasicSegmentData }
+flags   SegmentDetails
+enum   TravelMode { CarTravel, PedestrianTravel, BicycleTravel, PublicTransitTravel, TruckTravel }
+flags   TravelModes
+</ENUMS>
+
+<PROTOS>
+QList<QGeoRectangle>   excludeAreas() const
+QList<QGeoRouteRequest::FeatureType>   featureTypes() const
+FeatureWeight   featureWeight(FeatureType featureType) const
+ManeuverDetail   maneuverDetail() const
+int   numberAlternativeRoutes() const
+RouteOptimizations   routeOptimization() const
+SegmentDetail   segmentDetail() const
+void   setExcludeAreas(const QList<QGeoRectangle> & areas)
+void   setFeatureWeight(FeatureType featureType, FeatureWeight featureWeight)
+void   setManeuverDetail(ManeuverDetail maneuverDetail)
+void   setNumberAlternativeRoutes(int alternatives)
+void   setRouteOptimization(RouteOptimizations optimization)
+void   setSegmentDetail(SegmentDetail segmentDetail)
+void   setTravelModes(TravelModes travelModes)
+void   setWaypoints(const QList<QGeoCoordinate> & waypoints)
+TravelModes   travelModes() const
+QList<QGeoCoordinate>   waypoints() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

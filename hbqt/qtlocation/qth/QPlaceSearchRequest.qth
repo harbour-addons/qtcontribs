@@ -1,0 +1,78 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceSearchRequest>
+#include <QtPositioning/QGeoShape>
+#include <QtCore/QVariant>
+
+/*
+ * QPlaceSearchRequest()
+ * QPlaceSearchRequest(const QPlaceSearchRequest & other)
+ * ~QPlaceSearchRequest()
+ */
+HB_FUNC( QT_QPLACESEARCHREQUEST )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceSearchRequest" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceSearchRequest( * hbqt_par_QPlaceSearchRequest( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceSearchRequest() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   RelevanceHint { UnspecifiedHint, DistanceHint, LexicalPlaceNameHint }
+</ENUMS>
+
+<PROTOS>
+QList<QPlaceCategory>   categories() const
+void   clear()
+int   limit() const
+QString   recommendationId() const
+RelevanceHint   relevanceHint() const
+QGeoShape   searchArea() const
+QVariant   searchContext() const
+QString   searchTerm() const
+void   setCategories(const QList<QPlaceCategory> & categories)
+void   setCategory(const QPlaceCategory & category)
+void   setLimit(int limit)
+void   setRecommendationId(const QString & placeId)
+void   setRelevanceHint(RelevanceHint hint)
+void   setSearchArea(const QGeoShape & area)
+void   setSearchContext(const QVariant & context)
+void   setSearchTerm(const QString & term)
+void   setVisibilityScope(QLocation::VisibilityScope scope)
+QLocation::VisibilityScope   visibilityScope() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

@@ -1,0 +1,66 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = no
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceAttribute>
+
+/*
+ * QPlaceAttribute()
+ * QPlaceAttribute(const QPlaceAttribute & other)
+ * virtual   ~QPlaceAttribute()
+ */
+HB_FUNC( QT_QPLACEATTRIBUTE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceAttribute" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceAttribute( * hbqt_par_QPlaceAttribute( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceAttribute() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   isEmpty() const
+QString   label() const
+void   setLabel(const QString & label)
+void   setText(const QString & text)
+QString   text() const
+
+const QString OpeningHours
+const QString Payment
+const QString Provider
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

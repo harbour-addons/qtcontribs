@@ -1,0 +1,99 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlace>
+#include <QtLocation/QPlaceIcon>
+#include <QtLocation/QPlaceSupplier>
+
+/*
+ * QPlace()
+ * QPlace(const QPlace & other)
+ * ~QPlace()
+ */
+HB_FUNC( QT_QPLACE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlace" ) )
+   {
+      __HB_RETPTRGC__( new QPlace( * hbqt_par_QPlace( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlace() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   appendContactDetail(const QString & contactType, const QPlaceContactDetail & detail)
+QString   attribution() const
+QList<QPlaceCategory>   categories() const
+QList<QPlaceContactDetail>   contactDetails(const QString & contactType) const
+QStringList   contactTypes() const
+//QPlaceContent::Collection   content(QPlaceContent::Type type) const
+bool   detailsFetched() const
+QPlaceAttribute   extendedAttribute(const QString & attributeType) const
+QStringList   extendedAttributeTypes() const
+QPlaceIcon   icon() const
+//void   insertContent(QPlaceContent::Type type, const QPlaceContent::Collection & content)
+bool   isEmpty() const
+QGeoLocation   location() const
+QString   name() const
+QString   placeId() const
+QString   primaryEmail() const
+QString   primaryFax() const
+QString   primaryPhone() const
+QUrl   primaryWebsite() const
+QPlaceRatings   ratings() const
+void   removeContactDetails(const QString & contactType)
+void   removeExtendedAttribute(const QString & attributeType)
+void   setAttribution(const QString & attribution)
+void   setCategories(const QList<QPlaceCategory> & categories)
+void   setCategory(const QPlaceCategory & category)
+void   setContactDetails(const QString & contactType, QList<QPlaceContactDetail> details)
+//void   setContent(QPlaceContent::Type type, const QPlaceContent::Collection & content)
+void   setDetailsFetched(bool fetched)
+void   setExtendedAttribute(const QString & attributeType, const QPlaceAttribute & attribute)
+void   setIcon(const QPlaceIcon & icon)
+void   setLocation(const QGeoLocation & location)
+void   setName(const QString & name)
+void   setPlaceId(const QString & identifier)
+void   setRatings(const QPlaceRatings & rating)
+void   setSupplier(const QPlaceSupplier & supplier)
+void   setTotalContentCount(QPlaceContent::Type type, int totalCount)
+void   setVisibility(QLocation::Visibility visibility)
+QPlaceSupplier   supplier() const
+int   totalContentCount(QPlaceContent::Type type) const
+QLocation::Visibility   visibility() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

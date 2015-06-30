@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceSupplier>
+#include <QtLocation/QPlaceIcon>
+
+/*
+ * QPlaceSupplier()
+ * QPlaceSupplier(const QPlaceSupplier & other)
+ * ~QPlaceSupplier()
+ */
+HB_FUNC( QT_QPLACESUPPLIER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceSupplier" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceSupplier( * hbqt_par_QPlaceSupplier( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceSupplier() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QPlaceIcon   icon() const
+bool   isEmpty() const
+QString   name() const
+void   setIcon(const QPlaceIcon & icon)
+void   setName(const QString & name)
+void   setSupplierId(const QString & identifier)
+void   setUrl(const QUrl & url)
+QString   supplierId() const
+QUrl   url() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

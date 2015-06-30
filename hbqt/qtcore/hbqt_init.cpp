@@ -155,6 +155,23 @@ static void hbqt_SlotsExecPointerInt( PHB_ITEM * codeBlock, void ** arguments, Q
    }
 }
 
+static void hbqt_SlotsExecPointerIntString( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, *reinterpret_cast< void*( * ) >( arguments[ 1 ] ) , ( const char * ) pList.at( 0 ).data(), NULL, HBQT_BIT_QOBJECT );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 2 ] ) );
+      QString text = *reinterpret_cast< QString( * ) >( arguments[ 3 ] );
+      hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
+      hb_vmSend( 3 );
+      hb_itemRelease( p0 );
+   }
+}
+
 static void hbqt_SlotsExecBool( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -280,6 +297,18 @@ static void hbqt_SlotsExecString( PHB_ITEM * codeBlock, void ** arguments, QStri
    hb_vmPush( codeBlock );
    hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
    hb_vmSend( 1 );
+}
+
+static void hbqt_SlotsExecStringString( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   QString text = *reinterpret_cast< QString( * ) >( arguments[ 1 ] );
+   QString text1 = *reinterpret_cast< QString( * ) >( arguments[ 2 ] );
+   hb_vmPushEvalSym();
+   hb_vmPush( codeBlock );
+   hb_vmPushString( text.toLatin1().data(), text.toLatin1().length() );
+   hb_vmPushString( text1.toLatin1().data(), text1.toLatin1().length() );
+   hb_vmSend( 2 );
 }
 
 static void hbqt_SlotsExecModel( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
@@ -642,6 +671,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "pointer"                 , hbqt_SlotsExecPointer          );
    hbqt_slots_register_callback( "pointer$pointer"         , hbqt_SlotsExecPointerPointer   );
    hbqt_slots_register_callback( "pointer$int"             , hbqt_SlotsExecPointerInt       );
+   hbqt_slots_register_callback( "pointer$int$QString"     , hbqt_SlotsExecPointerIntString );
    hbqt_slots_register_callback( "QDate"                   , hbqt_SlotsExecQDate            );
    hbqt_slots_register_callback( "QDateTime"               , hbqt_SlotsExecQDateTime        );
    hbqt_slots_register_callback( "QModelIndex"             , hbqt_SlotsExecModel            );
@@ -655,6 +685,8 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QRectF"                  , hbqt_SlotsExecQRectF           );
    hbqt_slots_register_callback( "QSizeF"                  , hbqt_SlotsExecQSizeF           );
    hbqt_slots_register_callback( "QString"                 , hbqt_SlotsExecString           );
+   hbqt_slots_register_callback( "QString$QString"         , hbqt_SlotsExecStringString     );
+   hbqt_slots_register_callback( "QString$QVariant"        , hbqt_SlotsExecStringQVariant   );
    hbqt_slots_register_callback( "QStringList"             , hbqt_SlotsExecStringList       );
    hbqt_slots_register_callback( "QTime"                   , hbqt_SlotsExecQTime            );
    hbqt_slots_register_callback( "QUrl"                    , hbqt_SlotsExecQUrl             );
@@ -665,7 +697,6 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "int$QString"             , hbqt_SlotsExecIntString        );
    hbqt_slots_register_callback( "int$int$QString"         , hbqt_SlotsExecIntIntString     );
    hbqt_slots_register_callback( "int$QString$QVariant"    , hbqt_SlotsExecIntStringQVariant );
-   hbqt_slots_register_callback( "QString$QVariant"        , hbqt_SlotsExecStringQVariant   );
 
    hbqt_events_register_createobj( QEvent::Timer           , "hb_QEvent"                    );
 }

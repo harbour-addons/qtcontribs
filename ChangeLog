@@ -16,6 +16,78 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-06-30 13:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r412)
+  + hbqt/qtlocation
+  + hbqt/qtlocation/doc
+  + hbqt/qtlocation/doc/en
+  + hbqt/qtlocation/hbqt_init.cpp
+  + hbqt/qtlocation/hbqtlocation.ch
+  + hbqt/qtlocation/hbqtlocation.hbc
+  + hbqt/qtlocation/hbqtlocation.hbm
+  + hbqt/qtlocation/hbqtlocation.hbp
+  + hbqt/qtlocation/hbqtlocation.hbx
+  + hbqt/qtlocation/hbqtlocations.hbp
+  + hbqt/qtlocation/qth
+  + hbqt/qtlocation/qth/filelist.hbm
+  + hbqt/qtlocation/qth/QGeoCodeReply.qth
+  + hbqt/qtlocation/qth/QGeoCodingManager.qth
+  + hbqt/qtlocation/qth/QGeoCodingManagerEngine.qth
+  + hbqt/qtlocation/qth/QGeoManeuver.qth
+  + hbqt/qtlocation/qth/QGeoRoute.qth
+  + hbqt/qtlocation/qth/QGeoRouteReply.qth
+  + hbqt/qtlocation/qth/QGeoRouteRequest.qth
+  + hbqt/qtlocation/qth/QGeoRouteSegment.qth
+  + hbqt/qtlocation/qth/QGeoRoutingManager.qth
+  + hbqt/qtlocation/qth/QGeoRoutingManagerEngine.qth
+  + hbqt/qtlocation/qth/QGeoServiceProvider.qth
+  + hbqt/qtlocation/qth/QGeoServiceProviderFactory.qth
+  + hbqt/qtlocation/qth/QPlace.qth
+  + hbqt/qtlocation/qth/QPlaceAttribute.qth
+  + hbqt/qtlocation/qth/QPlaceCategory.qth
+  + hbqt/qtlocation/qth/QPlaceContactDetail.qth
+  + hbqt/qtlocation/qth/QPlaceContent.qth
+  + hbqt/qtlocation/qth/QPlaceContentReply.qth
+  + hbqt/qtlocation/qth/QPlaceContentRequest.qth
+  + hbqt/qtlocation/qth/QPlaceDetailsReply.qth
+  + hbqt/qtlocation/qth/QPlaceEditorial.qth
+  + hbqt/qtlocation/qth/QPlaceIcon.qth
+  + hbqt/qtlocation/qth/QPlaceIdReply.qth
+  + hbqt/qtlocation/qth/QPlaceImage.qth
+  + hbqt/qtlocation/qth/QPlaceManager.qth
+  + hbqt/qtlocation/qth/QPlaceManagerEngine.qth
+  + hbqt/qtlocation/qth/QPlaceMatchReply.qth
+  + hbqt/qtlocation/qth/QPlaceMatchRequest.qth
+  + hbqt/qtlocation/qth/QPlaceProposedSearchResult.qth
+  + hbqt/qtlocation/qth/QPlaceRatings.qth
+  + hbqt/qtlocation/qth/QPlaceReply.qth
+  + hbqt/qtlocation/qth/QPlaceResult.qth
+  + hbqt/qtlocation/qth/QPlaceReview.qth
+  + hbqt/qtlocation/qth/QPlaceSearchReply.qth
+  + hbqt/qtlocation/qth/QPlaceSearchRequest.qth
+  + hbqt/qtlocation/qth/QPlaceSearchResult.qth
+  + hbqt/qtlocation/qth/QPlaceSearchSuggestionReply.qth
+  + hbqt/qtlocation/qth/QPlaceSupplier.qth
+  + hbqt/qtlocation/qth/QPlaceUser.qth
+    + Added: Qt 5.5 published QtLocation library exposing locations API.
+       This library is used in combination with QtPositioning.
+
+  * qtcontribs.hbp
+    + Added: hbqtlocation.hbp 
+
+  * hbqt/hbmk2_qt.hb
+    + Added: QObject derived class identifiers for QtLocation.
+
+  * hbqt/qtcore/hbqt.h
+    + Added: #include <QtCore/QObject>
+       Some headers seem boken in Qt 5.5.
+
+  * hbqt/qtcore/hbqt_init.cpp
+    + Added: QString$QString, pointera$int$QString callbacks.
+       Needed for QtLocation defined signals.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: constants exposed in QtLocation classes.
+
 2015-06-16 16:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r411)
   * hbide/actions.prg
   * hbide/changelog.prg

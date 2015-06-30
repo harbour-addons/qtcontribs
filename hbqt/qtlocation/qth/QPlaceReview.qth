@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     = QPlaceContent
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceReview>
+#include <QtCore/QDateTime>
+
+/*
+ * QPlaceReview()
+ * QPlaceReview(const QPlaceContent & other)
+ * virtual   ~QPlaceReview()
+ */
+HB_FUNC( QT_QPLACEREVIEW )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceContent" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceReview( * hbqt_par_QPlaceContent( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceReview() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QDateTime   dateTime() const
+QString   language() const
+qreal   rating() const
+QString   reviewId() const
+void   setDateTime(const QDateTime & dateTime)
+void   setLanguage(const QString & language)
+void   setRating(qreal rating)
+void   setReviewId(const QString & identifier)
+void   setText(const QString & text)
+void   setTitle(const QString & title)
+QString   text() const
+QString   title() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+

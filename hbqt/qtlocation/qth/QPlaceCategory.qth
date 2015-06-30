@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+QObject     = No
+Inherit     =
+Type        =
+New         =
+Version     = 0x050500
+</CLASS>
+
+<CODE>
+#include <QtLocation/QPlaceCategory>
+#include <QtLocation/QPlaceIcon>
+
+/*
+ * QPlaceCategory()
+ * QPlaceCategory(const QPlaceCategory & other)
+ * virtual   ~QPlaceCategory()
+ */
+HB_FUNC( QT_QPLACECATEGORY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPlaceCategory" ) )
+   {
+      __HB_RETPTRGC__( new QPlaceCategory( * hbqt_par_QPlaceCategory( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPlaceCategory() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   categoryId() const
+QPlaceIcon   icon() const
+bool   isEmpty() const
+QString   name() const
+void   setCategoryId(const QString & identifier)
+void   setIcon(const QPlaceIcon & icon)
+void   setName(const QString & name)
+void   setVisibility(QLocation::Visibility visibility)
+QLocation::Visibility   visibility() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
+
+<VARIABLES>
+</VARIABLES>
+
