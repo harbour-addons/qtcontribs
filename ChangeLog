@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-07-02 08:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r413)
+  * hbqt/qtqml/qth/QJSValue.qth
+    ! Miss from the previous commit. 
+       Qt 5.5 fixed a bug in Qt 5.4.
+
 2015-06-30 13:47 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r412)
   + hbqt/qtlocation
   + hbqt/qtlocation/doc

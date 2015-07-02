@@ -46,10 +46,6 @@ HB_FUNC( QT_QJSVALUE )
    {
       __HB_RETPTRGC__( new QJSValue( *hbqt_par_QJSValue( 1 ) ) );
    }
-   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJSValuePrivate" ) )
-   {
-      __HB_RETPTRGC__( new QJSValue( hbqt_par_QJSValuePrivate( 1 ) ) );
-   }
    else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
    {
       void * pText01 = NULL;
