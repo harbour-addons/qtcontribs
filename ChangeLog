@@ -16,6 +16,50 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-07-30 16:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r414)
+  * hbqt/hbmk2_qt.hb
+    % Changed: hb_regexMatch() -> hb_regexHas().
+    ! Fixed: a nasty bug ( coutesy Francek ).
+
+  * hbqt/qtcore/hbqt_bind.cpp
+    + __HBQT_FINDCHILDOBJECT( oQObjectDerivedObject, cChild )
+    % Some tracing enhancements.
+
+  * hbqt/qtcore/qth/QMetaObject.qth
+    ! Streamlined static function ::invokeMethod().
+       It was necessary to have this method working for QML implementation.
+
+  * hbqt/qtcore/qth/QObject.qth
+    + Added: more Qt 5.5 introduced methods.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added: code to manage QImage referenced slots.
+
+  * hbqt/qtgui/qth/QWidget.qth
+    % Removed and added wrongly brought signals.
+       This had no impact on compiling process.
+
+  * hbqt/qtmultimedia/qth/QCamera.qth
+  * hbqt/qtquick/qth/QQuickWidget.qth
+    % Flagged to be compiled as non-destroyable by Harbour object.
+
+  * hbqt/qzxing/hbqt_hbqzxing.cpp
+  * hbqt/qzxing/hbqt_hbqzxing.h
+  + hbqt/qzxing/hbqt_qabstractvideosurface.cpp
+  + hbqt/qzxing/hbqt_qabstractvideosurface.h
+  + hbqt/qzxing/hbqt_qquickpainteditem.cpp
+  + hbqt/qzxing/hbqt_qquickpainteditem.h
+  * hbqt/qzxing/hbqtzxing.hbm
+  * hbqt/qzxing/imagehandler.cpp
+  * hbqt/qzxing/qth/filelist.hbm
+  + hbqt/qzxing/qth/HBQAbstractVideoSurface.qth
+  * hbqt/qzxing/qth/QZXing.qth
+  * hbqt/qzxing/zxing/zxing/qrcode/decoder/QRDecodedBitStreamParser.cpp
+    ! Restructed QZing to correctly scan barcodes from an image.
+    + Added: class HBQAbstractVideoSurface() to manage video frames 
+       from QML based Camera Type and QWidget based QCamera API's.
+       Gave me tough times but at the end it was nailed down.
+
 2015-07-02 08:41 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r413)
   * hbqt/qtqml/qth/QJSValue.qth
     ! Miss from the previous commit. 

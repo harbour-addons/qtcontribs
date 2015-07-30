@@ -193,6 +193,20 @@ static void hbqt_SlotsExecQBrush( PHB_ITEM * codeBlock, void ** arguments, QStri
    }
 }
 
+static void hbqt_SlotsExecQImage( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QImage( ( *reinterpret_cast< QImage( * ) >( arguments[ 1 ] ) ) ), "HB_QIMAGE", hbqt_del_QImage, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
 static void hbqt_SlotsExecItemSelItemSel( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -711,6 +725,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QTextBlock"                                , hbqt_SlotsExecQTextBlock                       );
    hbqt_slots_register_callback( "QTextCharFormat"                           , hbqt_SlotsExecQTextCharFormat                  );
    hbqt_slots_register_callback( "QTextCursor"                               , hbqt_SlotsExecQTextCursor                      );
+   hbqt_slots_register_callback( "QImage"                                    , hbqt_SlotsExecQImage                           );
 
    hbqt_slots_register_callback( "QAbstractButton*"                          , hbqt_SlotsExecQAbstractButton                  );
    hbqt_slots_register_callback( "QAction*"                                  , hbqt_SlotsExecQAction                          );

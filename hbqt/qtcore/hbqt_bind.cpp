@@ -613,7 +613,7 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
             {
                if( isQObject )
                {
-                  HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_NOT-DESTROYING_qt_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
+                  HB_TRACE( HB_TR_DEBUG, ( "......... HARBOUR_DESTROYING_not-qt-but-only-hb_OBJECT( %i, %i, %p, %s ) )", bind->iThreadId, iFlags, qtObject, bind->szClassName ) );
                   hbqt_bindRemoveBind( bind );  /*  MUST HAVE : hb_arrayFromId() returns NIL onto retained object as such  */
                }
             }
@@ -626,9 +626,10 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
             }
             hbqt_bindRemoveBind( bind );
          }
-         HB_TRACE( HB_TR_DEBUG, ( ".........HARBOUR_DESTROY_ENDS( %p )", qtObject ) );
+         HB_TRACE( HB_TR_DEBUG, ( ".........HARBOUR_DESTROY_ENDS( qtObject: %p )", qtObject ) );
       }
    }
+   HB_TRACE( HB_TR_DEBUG, ( ".........HARBOUR_DESTROY_ENDS..........." ) );
 }
 
 void hbqt_bindDestroyQtObject( void * qtObject, QObject * qObject )
@@ -1149,6 +1150,26 @@ HB_FUNC( __HBQT_FINDCHILD )
           P = parentWidget->findChild<QObject *>( hb_parstr_utf8( 2, &pText01, NULL ) ) ;
           hb_strfree( pText01 );
           hb_itemReturnRelease( hbqt_bindGetHbObjectByQtObject( P ) );
+          return;
+       }
+   }
+   hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+}
+
+HB_FUNC( __HBQT_FINDCHILDOBJECT )
+{
+   QObject * parentWidget;
+   QObject * pObj;
+
+   if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) && HB_ISCHAR( 2 ) )
+   {
+       parentWidget = (QObject *) hbqt_par_ptr( 1 );
+       if( parentWidget )
+       {
+          void * pText01 = NULL;
+          pObj = parentWidget->findChild<QObject *>( hb_parstr_utf8( 2, &pText01, NULL ) ) ;
+          hb_strfree( pText01 );
+          hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, pObj, "HB_QOBJECT", NULL, HBQT_BIT_QOBJECT ) );
           return;
        }
    }

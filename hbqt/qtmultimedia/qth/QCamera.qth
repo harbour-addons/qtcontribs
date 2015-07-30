@@ -16,6 +16,7 @@
 Inherit     = QMediaObject
 QObject     = Yes
 Version     = 0x050300
+Detached    = Yes
 
 </CLASS>
 

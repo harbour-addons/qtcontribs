@@ -15,6 +15,7 @@
 Inherit     = QWidget
 QObject     = Yes
 Version     = 0x050300
+Detached    = Yes
 </CLASS>
 
 
@@ -68,13 +69,16 @@ enum   Status { Null, Ready, Loading, Error }
 </ENUMS>
 
 <PROTOS>
-QQmlEngine *   engine() const
+QQmlEngine *   engine() const                    [*A=1*]
 QList<QQmlError>   errors() const
 QSurfaceFormat   format() const
+QImage   grabFramebuffer() const                 [*V=0x050500*]
 QSize   initialSize() const
+QQuickWindow *  quickWindow() const              [*V=0x050500*]
 ResizeMode   resizeMode() const
-QQmlContext *   rootContext() const
-QQuickItem *   rootObject() const
+QQmlContext *   rootContext() const              [*A=1*]
+QQuickItem *   rootObject() const                [*A=1*]
+void   setClearColor(const QColor & color)       [*V=0x050500*]
 void   setFormat(const QSurfaceFormat & format)
 void   setResizeMode(ResizeMode)
 QUrl   source() const

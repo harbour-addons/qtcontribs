@@ -587,7 +587,7 @@ STATIC FUNCTION uic_to_prg( hbmk, cFileNameSrc, cFileNameDst, cName )
 
    IF hb_FileExists( cFileNameSrc )
       IF ! Empty( cFile := hb_MemoRead( cFileNameSrc ) )
-         IF ! Empty( aLinesPRG := hbqtui_gen_prg( cFile, "hbqtui_" + cName ) )
+         IF ! Empty( aLinesPRG := hbqtui_gen_prg( cFile, "hbqtui_" + cName, hbmk ) )
             cFile := ""
             AEval( aLinesPRG, {| cLine | cFile += cLine + hb_eol() } )
             IF hb_MemoWrit( cFileNameDst, cFile )
@@ -613,10 +613,10 @@ STATIC FUNCTION uic_to_prg( hbmk, cFileNameSrc, cFileNameDst, cName )
 
 #ifndef HBUIC_STANDALONE
 
-STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
+STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName, hbmk )
    LOCAL oHbUic
 
-   oHbUic := THbUIC():New( cFile, cFuncName  )
+   oHbUic := THbUIC():New( cFile, cFuncName, hbmk )
    oHbUic:scanInputFile()
    oHbUic:postProcess()
 
@@ -628,7 +628,7 @@ STATIC FUNCTION hbqtui_gen_prg( cFile, cFuncName )
 CLASS THbUIC
 
 #ifndef HBUIC_STANDALONE
-   METHOD New( cTmpFileSrc, cFuncName )
+   METHOD New( cTmpFileSrc, cFuncName, hbmk )
 #else
    METHOD New( cTmpFileSrc, cUiFile, cOutDir, cFrmFile, cSlotStyle, cTestFile,  cHbmFile, cQrcFile )
 #endif
@@ -704,6 +704,8 @@ CLASS THbUIC
    METHOD buildMethod_on_error()
    METHOD buildReplacedMethods()
 
+   DATA   hbmk
+
    // --------- REGULAR EXPRESSIONS ---------
 
    VAR rxRetransl
@@ -762,9 +764,11 @@ CLASS THbUIC
 
 #ifndef HBUIC_STANDALONE
 
-METHOD THbUIC:New( cTmpFileSrc, cFuncName )
+METHOD THbUIC:New( cTmpFileSrc, cFuncName, hbmk )
 
    LOCAL cSlotStyle
+
+   ::hbmk := hbmk
 
    ::cTmpFileSrc  := cTmpFileSrc
    ::aLinesSrc := hb_ATokens( StrTran( cTmpFileSrc, Chr( 13 ) ), Chr( 10 ) )
@@ -1169,13 +1173,13 @@ METHOD THbUIC:replaceConstants()
 
          cLine := StrTran( cLine, 'QString()', '""' )
 
-         IF hb_regexMatch( regd1, cLine )
+         IF hb_regexHas( regd1, cLine )
             aResult := hb_regex( regd1, cLine )
             cRepl   := StrTran( aResult[ 1 ], '|', ',' )
             cLine   := StrTran( cLine, aResult[ 1 ], hb_StrFormat( "hb_bitOr(%s)", cRepl ) )
          ENDIF
 
-         IF hb_regexMatch( "^const .*", cLine )
+         IF hb_regexHas( "^const .*", cLine )
             cLine   := StrTran( cLine, "const " )
          ENDIF
 
@@ -1223,17 +1227,16 @@ STATIC FUNCTION wrapParams( regx, cStr, cWrap )
 
 
 METHOD THbUIC:pullTranslate( cLine )
-   LOCAL reg := hb_regexComp( "(.+)QApplication::translate(\(.+, 0\))" )
    LOCAL aResult, aArgs
+   LOCAL reg := hb_regexComp( "(.+)QApplication::translate(\(.+, 0\))" )
 	
-   IF hb_regexMatch( reg, cLine )
+   IF hb_regexHas( reg, cLine )
       aResult    := hb_regex( reg, cLine )
       aArgs      := args2array( aResult[ 3 ] )
       aArgs[ 2 ] := ::ParseString( aArgs[ 2 ] )
       aArgs[ 3 ] := '""'
-      cLine      := hb_StrFormat( "%s QApplication():translate(%s))", aResult[ 2 ], ::concatArgs( aArgs ) )
+      cLine      := hb_StrFormat( "%s QApplication().translate(%s))", aResult[ 2 ], ::concatArgs( aArgs ) )
    ENDIF
-
    RETURN cLine
 
 /*
@@ -1242,7 +1245,6 @@ METHOD THbUIC:pullTranslate( cLine )
  *    A line containing declaration is cleared
  */
 METHOD THbUIC:pullWidgets()
-
    LOCAL i, cLine
    LOCAL cCls, cNam
    LOCAL regEx := hb_StrFormat( "^%s \*%s$", RX_Q_TYPE, RX_VAR  )
@@ -1265,7 +1267,6 @@ METHOD THbUIC:pullWidgets()
          ENDIF
       ENDIF
    NEXT
-
    RETURN .T.
 
 /*
@@ -1283,11 +1284,11 @@ METHOD THbUIC:pullLocalObjects( nStartLine, nEndLine )
    FOR i := nStartLine TO nEndLine
       cLine := ::aLinesSrc[ i ]
       IF ! Empty( cLine )
-         IF hb_regexMatch( regEx1, cLine )
+         IF hb_regexHas( regEx1, cLine )
             aReg := hb_regex( regEx1, cLine )
             cCls := aReg[ 2 ]
             cNam := aReg[ 3 ]
-         ELSEIF hb_regexMatch( regEx2, cLine )
+         ELSEIF hb_regexHas( regEx2, cLine )
             aReg := hb_regex( regEx2, cLine )
             cCls := aReg[ 2 ]
             cNam := aReg[ 3 ]
@@ -1301,7 +1302,6 @@ METHOD THbUIC:pullLocalObjects( nStartLine, nEndLine )
          ENDIF
       ENDIF
    NEXT
-
    RETURN .T.
 
 
@@ -1317,11 +1317,10 @@ STATIC FUNCTION stringHasTemplate( s, aTmpl )
    LOCAL el
 
    FOR EACH el IN aTmpl
-      IF hb_regexMatch( el[ 1 ], s ) .AND. Eval( el[ 4 ], s )
+      IF hb_regexHas( el[ 1 ], s ) .AND. Eval( el[ 4 ], s )
          RETURN el:__enumIndex()
       ENDIF
    NEXT
-
    RETURN 0
 
 
@@ -1344,7 +1343,6 @@ METHOD THbUIC:replcmFuncName( cName )
       ::aReplcmFunc[ i, 3 ] := .T.
       cName := ::aReplcmFunc[ i, 2 ]
    ENDIF
-
    RETURN  cName
 
 
@@ -1594,7 +1592,7 @@ METHOD THbUIC:concatArgs( aArgs )
    LOCAL cPars := ""
 
    FOR i := 1 TO Len( aArgs )
-      cPars += aArgs[ i ]  + ', '
+      cPars += aArgs[ i ] + ', '
    NEXT
 
    RETURN stripComma( cPars )
@@ -2539,7 +2537,8 @@ METHOD HbQtSource:getConstructor()
       NEXT
       IF ::isQtObjectAvailable
          AAdd( aLine, " " )
-         AAdd( aLine, '   hb_itemReturnRelease( hbqt_bindSetHbObject( NULL, pObj, "' + "HB_" + upper( ::cQtObject ) + '", hbqt_del_' + ::cQtObject + ", " + qth_get_bits( ::cQtObject, ! ::isDetached ) + " ) );" )
+//         AAdd( aLine, '   hb_itemReturnRelease( hbqt_bindSetHbObject( NULL, pObj, "' + "HB_" + upper( ::cQtObject ) + '", hbqt_del_' + ::cQtObject + ", " + qth_get_bits( ::cQtObject, ! ::isDetached ) + " ) );" )
+         AAdd( aLine, '   hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, pObj, "' + "HB_" + upper( ::cQtObject ) + '", hbqt_del_' + ::cQtObject + ", " + qth_get_bits( ::cQtObject, ! ::isDetached ) + " ) );" )
       ENDIF
    ELSE
       FOR i := 3 TO Len( ::new_ ) - 1
@@ -4699,6 +4698,7 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       "QPlaceReply"                             => NIL , ;
       "QPlaceSearchReply"                       => NIL , ;
       "QPlaceSearchSuggestionReply"             => NIL , ;
+      "QScreen"                                 => NIL , ;
       "x                      "                 => NIL   }
 
    IF lower( left( cWidget, 3 ) ) == "hbq"

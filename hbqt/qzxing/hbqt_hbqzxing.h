@@ -3,7 +3,12 @@
 
 #include "QZXing_global.h"
 #include <QtCore/QObject>
+#include <QtCore/QDebug>
 #include <QtGui/QImage>
+#include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
+#include <QtQuick/QQuickImageProvider>
+
 
 #if QT_VERSION >= 0x040700 && QT_VERSION < 0x050000
 #include <QtDeclarative>
@@ -87,6 +92,12 @@ public slots:
     QString decodeImageFromFile(QString imageFilePath, int maxWidth=-1, int maxHeight=-1, bool smoothTransformation = false);
 
     /**
+      *
+      */
+    QString decodeImageViaPreview( QString preview );
+
+
+    /**
       * The decoding function accessible from QML
       */
     QString decodeImageQML(QObject *item);
@@ -123,6 +134,7 @@ signals:
     void decodingFinished(bool succeeded);
     void tagFound(QString tag);
     void enabledFormatsChanged();
+    void decodingState(int state);
 
 private:
     void* decoder;

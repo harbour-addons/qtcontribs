@@ -331,8 +331,9 @@ void update ()
 </SLOTS>
 
 <SIGNALS>
-void clicked ( bool checked = false )
-void pressed ()
-void released ()
-void toggled ( bool checked )
+void customContextMenuRequested(const QPoint & pos)
+void windowIconChanged(const QIcon & icon)
+void windowIconTextChanged(const QString & iconText)
+void windowTitleChanged(const QString & title)
 </SIGNALS>
+

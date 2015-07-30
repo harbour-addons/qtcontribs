@@ -14,23 +14,25 @@ using namespace zxing;
 QZXing::QZXing(QObject *parent) : QObject(parent)
 {
     decoder = new MultiFormatReader();
-    setDecoder(DecoderFormat_QR_CODE |
-               DecoderFormat_DATA_MATRIX |
-               DecoderFormat_UPC_E |
-               DecoderFormat_UPC_A |
-               DecoderFormat_EAN_8 |
-               DecoderFormat_EAN_13 |
-               DecoderFormat_CODE_128 |
-               DecoderFormat_CODE_39 |
-               DecoderFormat_CODE_93 |
-               DecoderFormat_CODABAR |
-               DecoderFormat_ITF |
-               DecoderFormat_RSS_EXPANDED |
-               DecoderFormat_RSS_14 |
-               DecoderFormat_PDF_417 |
-               DecoderFormat_MAXICODE |
+    setDecoder(
+               DecoderFormat_CODE_39           |
+               DecoderFormat_CODE_93           |
+               DecoderFormat_CODE_128          |
+               DecoderFormat_EAN_13            |
+               DecoderFormat_EAN_8             |
+               DecoderFormat_UPC_E             |
+               DecoderFormat_UPC_A             |
+               DecoderFormat_CODABAR           |
+               DecoderFormat_QR_CODE           |
+               DecoderFormat_PDF_417           |
+               DecoderFormat_DATA_MATRIX       |
+               DecoderFormat_MAXICODE          |
+               DecoderFormat_ITF               |
+               DecoderFormat_RSS_EXPANDED      |
+               DecoderFormat_RSS_14            |
                DecoderFormat_UPC_EAN_EXTENSION |
-               DecoderFormat_Aztec );
+               DecoderFormat_Aztec             |
+                  0 ) ;
 }
 
 QZXing::QZXing(QZXing::DecoderFormat decodeHints, QObject *parent) : QObject(parent)
@@ -105,15 +107,20 @@ QString QZXing::decodeImage(QImage image, int maxWidth, int maxHeight, bool smoo
 {
     QTime t;
     t.start();
+    static bool fdecoding = false;
+
     Ref<Result> res;
     emit decodingStarted();
 
-    if(image.isNull())
+    if(image.isNull() || fdecoding )
     {
         emit decodingFinished(false);
+        emit decodingState(0);
         processingTime = -1;
         return "";
     }
+
+    fdecoding = true;
 
     try{
         CameraImageWrapper* ciw;
@@ -130,21 +137,51 @@ QString QZXing::decodeImage(QImage image, int maxWidth, int maxHeight, bool smoo
         BinaryBitmap* bb = new BinaryBitmap(bz);
 
         Ref<BinaryBitmap> ref(bb);
+        emit decodingState(96);
 
         res = ((MultiFormatReader*)decoder)->decode(ref, DecodeHints((int)enabledDecoders));
+        emit decodingState(95);
 
         QString string = QString(res->getText()->getText().c_str());
+
         processingTime = t.elapsed();
         emit tagFound(string);
         emit decodingFinished(true);
+        emit decodingState(1);
+
+        fdecoding = false;
         return string;
     }
     catch(zxing::Exception& e)
     {
        emit decodingFinished(false);
+       emit decodingState(9);
        processingTime = -1;
+       fdecoding = false;
        return "";
     }
+}
+
+QString QZXing::decodeImageViaPreview( QString preview )
+{
+   {
+      QQmlEngine *engine = QQmlEngine::contextForObject( this )->engine();
+
+      QUrl imageUrl( preview );
+
+      QQmlImageProviderBase* imageProviderBase = engine->imageProvider( imageUrl.host() );
+      QQuickImageProvider* imageProvider = static_cast<QQuickImageProvider*>( imageProviderBase );
+
+      if( imageProvider != NULL )
+      {
+         QSize imageSize;
+         QString imageId = imageUrl.path().remove( 0, 1 );
+         QImage image = imageProvider->requestImage( imageId, &imageSize, imageSize );
+
+         return decodeImage( image );
+      }
+   }
+   return QString();
 }
 
 QString QZXing::decodeImageFromFile(QString imageFilePath, int maxWidth, int maxHeight, bool smoothTransformation)

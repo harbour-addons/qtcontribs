@@ -102,6 +102,7 @@ void DecodedBitStreamParser::append(std::string &result,
   result.append((const char *)bufOut);
   delete[] bufOut;
 #else
+  Q_UNUSED( src );
   result.append((const char *)bufIn, nIn);
 #endif
 }

@@ -54,6 +54,7 @@ virtual bool eventFilter ( QObject * watched, QEvent * event )
 bool inherits ( const char * className ) const
 void installEventFilter ( QObject * filterObj )
 bool isWidgetType () const
+bool isWindowType() const                                         [*V=0x050000*]
 void killTimer ( int id )
 #
 virtual const QMetaObject * metaObject () const                   [*R=1*]

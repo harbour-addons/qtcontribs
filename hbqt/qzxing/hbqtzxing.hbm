@@ -12,11 +12,16 @@
 -i./zxing/zxing/multi
 -i./zxing/zxing/pdf417
 -i./zing/bigint
--i./zxing/win32/zxing
+
+#{android}-i./zxing/android/include
+{win}-i./zxing/win32/zxing
 {msvc}-i./zxing/win32/zxing/msvc
 
--cflag=-DQZXING_LIBRARY
+{android}-cflag=-DNO_ICONV
+{!android}-cflag=-DZXING_ICONV_CONST
+
 -cflag=-DZXING_ICONV_CONST
+-cflag=-DQZXING_LIBRARY
 -cflag=-DDISABLE_LIBRARY_FEATURES
 
 {msvc}-cflag=-EHsc
@@ -24,6 +29,9 @@
 {msvc}-cflag=-wd4245 
 {msvc}-cflag=-FI./zxing/win32/zxing/msvc/stdint.h 
 {msvc}-cflag=-FI./zxing/win32/zxing/iconv.h
+
+#{android}-cflag=-FI./zxing/android/include/iconv.h
+
 
 qth/filelist.hbm
 
@@ -34,6 +42,8 @@ hbqt_init.cpp
 CameraImageWrapper.cpp
 hbqt_hbqzxing.cpp
 imagehandler.cpp
+hbqt_qquickpainteditem.cpp
+hbqt_qabstractvideosurface.cpp
 
 zxing/zxing/ResultIO.cpp
 zxing/zxing/InvertedLuminanceSource.cpp
@@ -135,12 +145,15 @@ zxing/bigint/BigUnsigned.cc
 zxing/bigint/BigIntegerUtils.cc
 zxing/bigint/BigIntegerAlgorithms.cc
 zxing/bigint/BigInteger.cc
-{win}zxing/win32/zxing/win_iconv.c
 
+{win}zxing/win32/zxing/win_iconv.c
+#{android}zxing/android/iconv.c
+#{android}zxing/android/wctomb.c
 
 hbqt_hbqzxing.h
 imagehandler.h
-
+hbqt_qquickpainteditem.h
+hbqt_qabstractvideosurface.h
 
 
 ../qtcore/hbqtcore.hbc
