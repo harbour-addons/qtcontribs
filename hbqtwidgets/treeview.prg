@@ -3,9 +3,7 @@
  */
 
 /*
- * Harbour Project source code:
- *
- * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -64,7 +62,6 @@
 #include "hbclass.ch"
 #include "common.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS HbQtTreeView
 
@@ -95,6 +92,7 @@ CLASS HbQtTreeView
    METHOD   itemMarked( ... )                     SETGET
    METHOD   itemSelected( ... )                   SETGET
    METHOD   contextMenu( ... )                    SETGET
+   METHOD   execContextMenu( oPoint )
 
    DATA     hParentSelected
    DATA     hItemSelected
@@ -109,10 +107,8 @@ PROTECTED:
    DATA     sl_itemSelected
    DATA     sl_contextMenu
 
-
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:init( oParent )
 
@@ -120,7 +116,6 @@ METHOD HbQtTreeView:init( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:create( oParent )
 
@@ -128,13 +123,13 @@ METHOD HbQtTreeView:create( oParent )
    ::oParent := oParent
 
    WITH OBJECT ::oWidget := QTreeWidget( ::oParent )
-      :setMouseTracking( .t. )
+      :setMouseTracking( .T. )
       :setColumnCount( 1 )
-      :setHeaderHidden( .t. )
+      :setHeaderHidden( .T. )
       :setContextMenuPolicy( Qt_CustomContextMenu )
    ENDWITH
 
-   ::oRootItem          := HbQtTreeViewItem():New()
+   ::oRootItem          := HbQtTreeViewItem():new()
    ::oRootItem:hTree    := ::oWidget
    ::oRootItem:oXbpTree := self
 
@@ -144,65 +139,58 @@ METHOD HbQtTreeView:create( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:execSlot( cSlot, p )
-   LOCAL n, qPt, qItem, oItem
+   LOCAL n, oItem
 
-   IF ( n := ascan( ::aItems, {|o| iif( empty( o ), .f., hbqt_IsEqual( o:oWidget, p ) ) } ) ) > 0
+   IF ! HB_ISOBJECT( p )
+      RETURN .F.
+   ENDIF
+   IF ( n := AScan( ::aItems, {|o| iif( Empty( o ), .F., o:oWidget:whatsThis( 0 ) == p:whatsThis( 0 ) ) } ) ) > 0
       oItem := ::aItems[ n ]
    ENDIF
+   IF Empty( oItem )
+      RETURN .F.
+   ENDIF
 
-   DO CASE
-   CASE cSlot == "itemCollapsed(QTreeWidgetItem*)"
-      ::itemCollapsed( oItem, {0,0,0,0} )
-   CASE cSlot == "itemExpanded(QTreeWidgetItem*)"
-      ::itemExpanded( oItem, {0,0,0,0} )
-   CASE cSlot == "itemClicked(QTreeWidgetItem*,int)"
-      ::itemMarked( oItem, {0,0,0,0} )
-   CASE cSlot == "itemDoubleClicked(QTreeWidgetItem*,int)"
-      ::itemSelected( oItem, {0,0,0,0} )
-   CASE cSlot == "itemEntered(QTreeWidgetItem*,int)"
-      ::oWidget:setToolTip( iif( empty( oItem:tooltipText ), oItem:caption, oItem:tooltipText ) )
-   CASE cSlot == "customContextMenuRequested(QPoint)"
-      IF HB_ISBLOCK( ::sl_contextMenu )
-         IF ! empty( qItem := ::oWidget:itemAt( p ) )
-            IF ( n := ascan( ::aItems, {|o| hbqt_IsEqual( o:oWidget, qItem ) } ) ) > 0
-               qPt := ::oWidget:mapToGlobal( p )
-               Eval( ::sl_contextMenu, { qPt:x(), qPt:y() }, NIL, ::aItems[ n ] )
-            ENDIF
-         ENDIF
-      ENDIF
-   #if 0
-   CASE cSlot == "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)"
-   CASE cSlot == "itemPressed(QTreeWidgetItem*,int)"
-   CASE cSlot == "itemActivated(QTreeWidgetItem*,int)"
-   CASE cSlot == "itemChanged(QTreeWidgetItem*,int)"
-   CASE cSlot == "itemSelectionChanged()"
-   #endif
-   ENDCASE
+   SWITCH cSlot
+   CASE "itemCollapsed(QTreeWidgetItem*)"         ; ::itemCollapsed( oItem, {0,0,0,0} ) ; EXIT
+   CASE "itemExpanded(QTreeWidgetItem*)"          ; ::itemExpanded( oItem, {0,0,0,0} ) ; EXIT
+   CASE "itemClicked(QTreeWidgetItem*,int)"       ; ::itemMarked( oItem, {0,0,0,0} ) ; EXIT
+   CASE "itemDoubleClicked(QTreeWidgetItem*,int)" ; ::itemSelected( oItem, {0,0,0,0} ) ; EXIT
+   CASE "itemEntered(QTreeWidgetItem*,int)"       ; ::oWidget:setToolTip( iif( Empty( oItem:tooltipText ), oItem:caption, oItem:tooltipText ) ) ; EXIT
+
+#if 0
+   CASE "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)"
+   CASE "itemPressed(QTreeWidgetItem*,int)"
+   CASE "itemActivated(QTreeWidgetItem*,int)"
+   CASE "itemChanged(QTreeWidgetItem*,int)"
+   CASE "itemSelectionChanged()"
+#endif
+   ENDSWITCH
 
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:connect()
 
    ::oWidget:connect( "itemCollapsed(QTreeWidgetItem*)"                , {|p1  | ::execSlot( "itemCollapsed(QTreeWidgetItem*)"         , p1    ) } )
    ::oWidget:connect( "itemExpanded(QTreeWidgetItem*)"                 , {|p1  | ::execSlot( "itemExpanded(QTreeWidgetItem*)"          , p1    ) } )
-*  ::oWidget:connect( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", {|p,p1| ::execSlot( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", p, p1 ) } )
-*  ::oWidget:connect( "itemActivated(QTreeWidgetItem*,int)"            , {|p,p1| ::execSlot( "itemActivated(QTreeWidgetItem*,int)"     , p, p1 ) } )
-*  ::oWidget:connect( "itemChanged(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemChanged(QTreeWidgetItem*,int)"       , p, p1 ) } )
    ::oWidget:connect( "itemClicked(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemClicked(QTreeWidgetItem*,int)"       , p, p1 ) } )
    ::oWidget:connect( "itemDoubleClicked(QTreeWidgetItem*,int)"        , {|p,p1| ::execSlot( "itemDoubleClicked(QTreeWidgetItem*,int)" , p, p1 ) } )
    ::oWidget:connect( "itemEntered(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemEntered(QTreeWidgetItem*,int)"       , p, p1 ) } )
-*  ::oWidget:connect( "itemPressed(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemPressed(QTreeWidgetItem*,int)"       , p, p1 ) } )
-*  ::oWidget:connect( "itemSelectionChanged()"                         , {|p1  | ::execSlot( "itemSelectionChanged()"                  , p1    ) } )
-   ::oWidget:connect( "customContextMenuRequested(QPoint)"             , {|p1  | ::execSlot( "customContextMenuRequested(QPoint)"      , p1    ) } )
 
+   ::oWidget:connect( "customContextMenuRequested(QPoint)"             , {|p1  | ::execContextMenu( p1 ) } )
+
+#if 0
+   ::oWidget:connect( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", {|p,p1| ::execSlot( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", p, p1 ) } )
+   ::oWidget:connect( "itemActivated(QTreeWidgetItem*,int)"            , {|p,p1| ::execSlot( "itemActivated(QTreeWidgetItem*,int)"     , p, p1 ) } )
+   ::oWidget:connect( "itemChanged(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemChanged(QTreeWidgetItem*,int)"       , p, p1 ) } )
+   ::oWidget:connect( "itemPressed(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemPressed(QTreeWidgetItem*,int)"       , p, p1 ) } )
+   ::oWidget:connect( "itemSelectionChanged()"                         , {|p1  | ::execSlot( "itemSelectionChanged()"                  , p1    ) } )
+#endif
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:itemFromPos( aPos )
 
@@ -210,7 +198,20 @@ METHOD HbQtTreeView:itemFromPos( aPos )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+
+METHOD HbQtTreeView:execContextMenu( oPoint )
+   LOCAL qItem, n, qPt
+
+   IF HB_ISBLOCK( ::sl_contextMenu )
+      IF ! Empty( qItem := ::oWidget:itemAt( oPoint ) )
+         IF ( n := AScan( ::aItems, {|o| o:oWidget:whatsThis( 0 ) == qItem:whatsThis( 0 ) } ) ) > 0
+            qPt := ::oWidget:mapToGlobal( oPoint )
+            Eval( ::sl_contextMenu, { qPt:x(), qPt:y() }, NIL, ::aItems[ n ] )
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN NIL
+
 
 METHOD HbQtTreeView:itemCollapsed( ... )
    LOCAL a_:= hb_aParams()
@@ -221,7 +222,6 @@ METHOD HbQtTreeView:itemCollapsed( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:itemExpanded( ... )
    LOCAL a_:= hb_aParams()
@@ -232,7 +232,6 @@ METHOD HbQtTreeView:itemExpanded( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:itemMarked( ... )
    LOCAL a_:= hb_aParams()
@@ -243,7 +242,6 @@ METHOD HbQtTreeView:itemMarked( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:itemSelected( ... )
    LOCAL a_:= hb_aParams()
@@ -254,7 +252,6 @@ METHOD HbQtTreeView:itemSelected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeView:contextMenu( ... )
    LOCAL a_:= hb_aParams()
@@ -308,18 +305,33 @@ CLASS HbQtTreeViewItem
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
+
+METHOD HbQtTreeViewItem:init()
+   RETURN Self
+
+
+METHOD HbQtTreeViewItem:create()
+
+   WITH OBJECT ::oWidget := QTreeWidgetItem()
+      :setText( 0, ::caption )
+      :setWhatsThis( 0, __hbqtGetNextIdAsString( ::caption ) )
+   ENDWITH
+
+   RETURN Self
+
 
 METHOD HbQtTreeViewItem:addItem( xItem, xNormalImage, xMarkedImage, xExpandedImage, cDllName, xValue )
    Local oItem
 
    HB_SYMBOL_UNUSED( cDllName )
 
-   IF valtype( xItem ) == 'C'
-      oItem := HbQtTreeViewItem():New()
-      oItem:caption := xItem
-      oItem:oWidget := QTreeWidgetItem()
-      oItem:oWidget:setText( 0, oItem:caption )
+   IF ValType( xItem ) == 'C'
+      WITH OBJECT oItem := HbQtTreeViewItem():new()
+         :caption := xItem
+         :oWidget := QTreeWidgetItem()
+         :oWidget:setText( 0, oItem:caption )
+         :oWidget:setWhatsThis( 0, __hbqtGetNextIdAsString( oItem:caption ) )
+      ENDWITH
    ELSE
       oItem := xItem   // aNode
    ENDIF
@@ -342,81 +354,48 @@ METHOD HbQtTreeViewItem:addItem( xItem, xNormalImage, xMarkedImage, xExpandedIma
 
    ::oWidget:addChild( oItem:oWidget )
 
-   aadd( ::aChilds, oItem )
-   aadd( oItem:aChilds, oItem )
-   aadd( oItem:oXbpTree:aItems, oItem )
+   AAdd( ::aChilds, oItem )
+   AAdd( oItem:aChilds, oItem )
+   AAdd( oItem:oXbpTree:aItems, oItem )
 
    RETURN oItem
 
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:init()
-
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:create()
-
-   ::oWidget := QTreeWidgetItem()
-   ::oWidget:setText( 0,::caption )
-
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:setExpandedImage( nResIdoBitmap )
-
-   HB_SYMBOL_UNUSED( nResIdoBitmap )
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:setImage( xIcon )
-
-   ::oWidget:setIcon( 0, iif( HB_ISSTRING( xIcon ), QIcon( xIcon ), xIcon ) )
-
-   RETURN self
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:setMarkedImage( nResIdoBitmap )
-
-   HB_SYMBOL_UNUSED( nResIdoBitmap )
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtTreeViewItem:delItem( oItem )
    LOCAL n
 
-   IF ( n := ascan( ::aChilds, {|o| o == oItem } ) ) > 0
+   IF ( n := AScan( ::aChilds, {|o| o == oItem } ) ) > 0
       ::oWidget:removeChild( ::aChilds[ n ]:oWidget )
       ::aChilds[ n ]:oWidget := NIL
-      adel( ::aChilds, n )
-      asize( ::aChilds, len( ::aChilds )-1 )
+      hb_ADel( ::aChilds, n, .T. )
    ENDIF
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
-METHOD HbQtTreeViewItem:getChildItems()
-
-   RETURN ::aChilds
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:getParentItem()
-
-   RETURN ::oParent
-
-/*----------------------------------------------------------------------*/
-
-METHOD HbQtTreeViewItem:insItem()
-
+METHOD HbQtTreeViewItem:setExpandedImage( nResIdoBitmap )
+   HB_SYMBOL_UNUSED( nResIdoBitmap )
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
+
+METHOD HbQtTreeViewItem:setImage( xIcon )
+   ::oWidget:setIcon( 0, iif( HB_ISSTRING( xIcon ), QIcon( xIcon ), xIcon ) )
+   RETURN self
+
+
+METHOD HbQtTreeViewItem:setMarkedImage( nResIdoBitmap )
+   HB_SYMBOL_UNUSED( nResIdoBitmap )
+   RETURN NIL
+
+
+METHOD HbQtTreeViewItem:getChildItems()
+   RETURN ::aChilds
+
+
+METHOD HbQtTreeViewItem:getParentItem()
+   RETURN ::oParent
+
+
+METHOD HbQtTreeViewItem:insItem()
+   RETURN NIL
+

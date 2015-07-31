@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2012-2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -67,10 +67,17 @@ STATIC s_hQtFuncList := {=>}
 STATIC s_hUserFuncList := {=>}
 STATIC s_timerSingleShot
 STATIC s_aRegisteredBlocksForEventClose := {}
+STATIC s_aRegisteredBlocksForOrientationChange := {}
+STATIC s_primaryScreen
+STATIC s_hbqtLogs
 
 
 INIT PROCEDURE __initHbQtSets()
+#ifdef __ANDROID__
+   LOCAL oFont := QFont( "Droid Sans Mono", 10 )
+#else
    LOCAL oFont := QFont( "Courier New", 10 )
+#endif
 
    oFont:setFixedPitch( .T. )
 
@@ -109,10 +116,12 @@ FUNCTION __hbqtRegisterForEventClose( bBlock )
 
 
 FUNCTION __hbqtBroadcastEventClose( oEvent )
-   LOCAL bBlock
+   LOCAL bBlock, lHandled
 
-   FOR EACH bBlock IN s_aRegisteredBlocksForEventClose
-      IF Eval( bBlock, oEvent )
+   FOR EACH bBlock IN s_aRegisteredBlocksForEventClose DESCEND
+      lHandled := Eval( bBlock, oEvent )
+      IF HB_ISLOGICAL( lHandled ) .AND. lHandled
+         oEvent:ignore()
          RETURN .T.
       ENDIF
    NEXT
@@ -333,6 +342,44 @@ FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
    RETURN 0
 
 
+FUNCTION __hbqtIsAndroid()
+#ifdef __ANDROID__
+   RETURN .T.
+#else
+   RETURN .F.
+#endif
+
+
+FUNCTION __hbqtIsMobile()
+#ifdef __HBQTMOBILE__
+   RETURN .T.
+#else
+   RETURN .F.
+#endif
+
+
+PROCEDURE __hbqtAppRefresh()
+   IF HB_ISOBJECT( __hbqtAppWidget() )
+      __hbqtAppWidget():hide()
+      __hbqtAppWidget():show()
+   ENDIF
+   RETURN
+
+
+PROCEDURE __hbqtWaitState( nSeconds, lExitIf )     // lExitIf must be passed by reference . no error checking
+   LOCAL nSecs := Seconds()
+
+   DEFAULT lExitIf TO .F.
+
+   DO WHILE Abs( Seconds() - nSecs ) < nSeconds
+      QApplication():processEvents()
+      IF lExitIf
+         EXIT
+      ENDIF
+   ENDDO
+   RETURN
+
+
 FUNCTION __hbqtGetWindowFrameWidthHeight( oWnd )
    LOCAL oRectFG := oWnd:frameGeometry()
    LOCAL oRectG  := oWnd:geometry()
@@ -471,6 +518,9 @@ FUNCTION __hbqtXToS( xVrb )
    CASE "D" ; RETURN DToC( xVrb )
    CASE "N" ; RETURN LTrim( Str( xVrb ) )
    CASE "L" ; RETURN iif( xVrb, "Yes", "No" )
+   CASE "A" ; RETURN hb_ValToExp( xVrb )
+   CASE "B" ; RETURN "< block >"
+   CASE "O" ; RETURN "< object >"
    ENDSWITCH
    RETURN ""
 
@@ -814,6 +864,77 @@ PROCEDURE __hbqtActivateTimerSingleShot( nMSeconds, bBlock )
       :connect( "timeout()", bBlock )
       :start()
    ENDWITH
+   RETURN
+
+
+FUNCTION __hbqtLayoutWidgetInParent( oWidget, oParent )
+   LOCAL oLayout
+
+   IF HB_ISOBJECT( oParent ) .AND. ! ( oParent == __hbqtAppWidget() )
+      IF Empty( oLayout := oParent:layout() )
+         oLayout := QHBoxLayout()
+         oParent:setLayout( oLayout )
+         oLayout:addWidget( oWidget )
+      ELSE
+         SWITCH __objGetClsName( oLayout )
+         CASE "QVBOXLAYOUT"
+         CASE "QHBOXLAYOUT"
+            oLayout:addWidget( oWidget )
+            EXIT
+         CASE "QGRIDLAYOUT"
+            oLayout:addWidget( oWidget, 0, 0, 1, 1 )
+            EXIT
+         ENDSWITCH
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+//--------------------------------------------------------------------//
+//                        HbQt Logging Mechanism
+//--------------------------------------------------------------------//
+
+FUNCTION __hbqtLog( xLog )
+   IF ! HB_ISOBJECT( s_hbqtLogs )
+      s_hbqtLogs := HbQtLogs():new():create( __hbqtAppWidget() )
+   ENDIF
+   IF HB_ISOBJECT( s_hbqtLogs )
+      s_hbqtLogs:logText( __hbqtXtoS( xLog ) )
+   ENDIF
+   RETURN NIL
+
+
+FUNCTION __hbqtShowLog()
+   IF HB_ISOBJECT( s_hbqtLogs )
+      s_hbqtLogs:show()
+   ENDIF
+   RETURN NIL
+
+
+FUNCTION __hbqtClearLog()
+   IF HB_ISOBJECT( s_hbqtLogs )
+      s_hbqtLogs:clear()
+   ENDIF
+   RETURN NIL
+
+//--------------------------------------------------------------------//
+//          Orientation Changes - Detection and Broadcasting
+//--------------------------------------------------------------------//
+
+FUNCTION __hbqtRegisterForOrientationChange( bBlock )
+
+   IF HB_ISOBJECT( __hbqtAppWidget() )
+      __hbqtAppWidget():connect( QEvent_Resize, {|| __hbqtBroadcastOrientationChanged() } )
+   ENDIF
+   AAdd( s_aRegisteredBlocksForOrientationChange, bBlock )
+   RETURN Len( s_aRegisteredBlocksForOrientationChange )
+
+
+PROCEDURE __hbqtBroadcastOrientationChanged( nOrientation )
+   LOCAL bBlock
+
+   FOR EACH bBlock IN s_aRegisteredBlocksForOrientationChange
+      Eval( bBlock, nOrientation )
+   NEXT
    RETURN
 
 //--------------------------------------------------------------------//

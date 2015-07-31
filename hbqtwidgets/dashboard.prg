@@ -182,6 +182,8 @@ CLASS HbQtDashboard
 
    DATA   sl_background
    METHOD background                              SETGET
+   DATA   sl_backgroundImage
+   METHOD backgroundImage                         SETGET
 
    DATA   bObjectsBlock
    ACCESS objectsBlock                            INLINE ::bObjectsBlock
@@ -462,6 +464,7 @@ METHOD HbQtDashboard:addPanel( cName )
    ::hMDIs[ cName ] := oMDI
 
    ::background()
+   ::backgroundImage()
 
    ::oStackedWidget:addWidget( oMDI:oWidget )
 
@@ -642,11 +645,28 @@ METHOD HbQtDashboard:background( oBrush )
 
    oOBackground := ::sl_background
    IF HB_ISOBJECT( oBrush )
+      ::sl_background := NIL
       ::sl_background := oBrush
    ENDIF
    IF HB_ISOBJECT( ::sl_background )
       FOR EACH oMDI IN ::hMDIs
          oMDI:setBackground( ::sl_background )
+      NEXT
+   ENDIF
+
+   RETURN oOBackground
+
+
+METHOD HbQtDashboard:backgroundImage( cUrl )
+   LOCAL oOBackground, oMDI
+
+   oOBackground := ::sl_backgroundImage
+   IF HB_ISSTRING( cUrl )
+      ::sl_backgroundImage := cUrl
+   ENDIF
+   IF HB_ISSTRING( ::sl_backgroundImage )
+      FOR EACH oMDI IN ::hMDIs
+         oMDI:setStyleSheet( "background-image: url(" + ::sl_backgroundImage + ")" )// background-attachment: fixed;" )
       NEXT
    ENDIF
 
@@ -868,6 +888,7 @@ CLASS HbQtPanel
    ACCESS isLocked                                INLINE ::lLocked
    METHOD setLocked( lLocked )                    INLINE iif( HB_ISLOGICAL( lLocked ), ::lLocked := lLocked, NIL ), ::oWidget:setEnabled( ! ::lLocked )
 
+   METHOD setStyleSheet( cCSS )                   INLINE iif( HB_ISSTRING( cCSS ), ::oWidget:setStyleSheet( cCSS ), NIL )
    ENDCLASS
 
 

@@ -81,6 +81,7 @@
 #define __ev_tableViewBlock_left__                1502
 #define __ev_tableViewBlock_right__               1503
 
+#define __LETTER__                                "A"
 
 #define HBQTCOL_TYPE_ICON                         1
 #define HBQTCOL_TYPE_BITMAP                       2
@@ -169,18 +170,18 @@ FUNCTION __hbqtBrowseActionsScrollingToolbar( oLayout, oHbQtBrowse, nButtonHeigh
       :create( oLayout )
    ENDWITH
    WITH OBJECT oToolbar
-      IF HB_ISHASH( hOptions ) .AND. hb_HHasKey( hOptions, "menuleft" ) .AND. HB_ISBLOCK( hOptions[ "menuleft" ] )
-         :addToolbarButton( "OPTIONSLEFT", "Naviagte Columns", "vz-menu"    , hOptions[ "menuleft" ] )
-      ENDIF
       IF HB_ISHASH( hOptions ) .AND. hb_HHasKey( hOptions, "exit" ) .AND. HB_ISBLOCK( hOptions[ "exit" ] )
          :addToolbarButton( "EXIT"   , "Exit"            , "prv_undo"       , hOptions[ "exit" ] )
       ENDIF
+      IF HB_ISHASH( hOptions ) .AND. hb_HHasKey( hOptions, "menuleft" ) .AND. HB_ISBLOCK( hOptions[ "menuleft" ] )
+         :addToolbarButton( "OPTIONSLEFT", "Naviagte Columns", "vz-menu"    , hOptions[ "menuleft" ] )
+      ENDIF
       :addToolbarButton( "UP"        , "Up One Row"      , "brw-up"         , {|| __pullBrowser( oHbQtBrowse ):up()       }, .F., .F., .T. )
-      :addToolbarButton( "PAGEUP"    , "Up One Page"     , "brw-page-up"    , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):pageUp()  , HbQtActivateSilverLight( .F. )   } )
-      :addToolbarButton( "TOP"       , "First Row"       , "brw-top"        , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):goTop()    , HbQtActivateSilverLight( .F. )    } )
+      :addToolbarButton( "PAGEUP"    , "Up One Page"     , "brw-page-up"    , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):pageUp()  , HbQtActivateSilverLight( .F. ) } )
+      :addToolbarButton( "TOP"       , "First Row"       , "brw-top"        , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):goTop()   , HbQtActivateSilverLight( .F. ) } )
       :addToolbarButton( "DOWN"      , "Down One Row"    , "brw-down"       , {|| __pullBrowser( oHbQtBrowse ):down()     }, .F., .F., .T. )
       :addToolbarButton( "PAGEDOWN"  , "Down One Page"   , "brw-page-down"  , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):pageDown(), HbQtActivateSilverLight( .F. ) } )
-      :addToolbarButton( "BOTTOM"    , "Last Row"        , "brw-bottom"     , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):goBottom() , HbQtActivateSilverLight( .F. ) } )
+      :addToolbarButton( "BOTTOM"    , "Last Row"        , "brw-bottom"     , {|| HbQtActivateSilverLight( .T., "Loading" ),__pullBrowser( oHbQtBrowse ):goBottom(), HbQtActivateSilverLight( .F. ) } )
       :addToolbarButton( "PANHOME"   , "First Column"    , "brw-far-left"   , {|| __pullBrowser( oHbQtBrowse ):panHome()  } )
       :addToolbarButton( "LEFT"      , "Left One Column" , "brw-left"       , {|| __pullBrowser( oHbQtBrowse ):left()     } )
       :addToolbarButton( "RIGHT"     , "Right One Column", "brw-right"      , {|| __pullBrowser( oHbQtBrowse ):right()    } )
@@ -309,7 +310,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    ASSIGN toolbarLeft                             METHOD manageToolbarLeft
    ACCESS statusbar                               INLINE ::oStatusBar:isVisible()
    ASSIGN statusbar                               METHOD manageStatusbar
-   ASSIGN statusMessage( cMessage )               INLINE iif( Empty( cMessage ), ::oStatusBar:clearMessage(), ::oStatusBar:showMessage( cMessage ) )
+   ASSIGN statusMessage( cMessage )               INLINE ::oStatusLabel:setText( iif( HB_ISSTRING( cMessage ), cMessage, "" ) )
    ACCESS title                                   METHOD getTitle
    ASSIGN title                                   METHOD setTitle
    METHOD toColumn( cnColumn )
@@ -439,7 +440,7 @@ PROTECTED:
    DATA   nLeftFrozen                             INIT   0
    DATA   nRightFrozen                            INIT   0
 
-   DATA   gridStyle                               INIT   Qt_SolidLine
+   DATA   gridStyle                               INIT   Qt_DotLine //Qt_SolidLine
 
    DATA   nCellHeight                             INIT   20
    DATA   oDefaultCellSize
@@ -515,6 +516,7 @@ PROTECTED:
    METHOD execSearchByField()
    //
    DATA   oStatusBar
+   DATA   oStatusLabel
    DATA   oSearchGet
    DATA   oSearchLabel
    DATA   isSearchActive                          INIT .F.
@@ -879,8 +881,11 @@ METHOD HbQtBrowse:create()
    ENDWITH
 
    ::oViewport := ::oTableView:viewport()
-
+#ifdef __HBQTMOBILE__
    WITH OBJECT ::oCellEditor := QLineEdit( iif( HB_ISOBJECT( __hbqtAppWidget() ), __hbqtAppWidget(), ::oViewport ) )
+#else
+   WITH OBJECT ::oCellEditor := QLineEdit( ::oViewport )
+#endif
       ::oCellEditor:hide()
    ENDWITH
 
@@ -920,7 +925,11 @@ METHOD HbQtBrowse:create()
       :hide()
    ENDWITH
    WITH OBJECT ::oStatusBar := QStatusBar( ::oWidget )
-      :setFont( ::oFont )
+      WITH OBJECT ::oStatusLabel := QLabel( ::oStatusBar )
+         :setFont( ::oFont )
+         :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
+      ENDWITH
+      :addPermanentWidget( ::oStatusLabel, 1 )
       :setSizeGripEnabled( .F. )
       :hide()
    ENDWITH
@@ -965,15 +974,15 @@ METHOD HbQtBrowse:refreshWindow()
    LOCAL nViewH, aVal, aCol, oSz
 
    IF Len( ::columns ) > 0
-      oSz := QFontMetrics( ::oTableView:font() ):size( Qt_TextSingleLine, "M" )
+      oSz := QFontMetrics( ::oTableView:font() ):size( Qt_TextSingleLine, __LETTER__ )
 
       ::nCellHeight := oSZ:height() + 3
 
       nViewH := ::oWidget:height() - ;
-                iif( ::oIndicator:isVisible(), ::oIndicator:height(), 0 ) - ;
-                iif( ::oToolbar:isVisible(), ::oToolbar:height(), 0 ) - ;
+                iif( ::oIndicator:isVisible() , ::oIndicator:height(), 0 ) - ;
+                iif( ::oToolbar:isVisible()   , ::oToolbar:height(), 0 ) - ;
                 iif( ::oHScrollBar:isVisible(), ::oHScrollBar:height(), 0 ) - ;
-                iif( ::oStatusBar:isVisible(), ::oStatusBar:height(), 0 ) - ;
+                iif( ::oStatusBar:isVisible() , ::oStatusBar:height(), 0 ) - ;
                 ::oTableView:horizontalHeader():height()
 
       IF nViewH <= 0
@@ -1004,15 +1013,13 @@ METHOD HbQtBrowse:refreshWindow()
             ASize( aCol, ::colCount )
          ENDIF
       NEXT
-
       IF ::nRowPos > ::nRowsInView
          ::nRowPos := ::nRowsInView
       ELSEIF ::nRowPos < 1
          ::nRowPos := 1
       ENDIF
-
-      ::setCellHeight( ::nCellHeight )
       ::refreshAll()
+      ::setCellHeight( ::nCellHeight )
    ENDIF
    RETURN Self
 
@@ -1070,7 +1077,7 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    ::oRightFooterView:setSectionResizeMode( QHeaderView_Fixed )
 
    oFontMetrics := QFontMetrics( ::oTableView:font() )
-   oSz := oFontMetrics:size( Qt_TextSingleLine, "M" )
+   oSz := oFontMetrics:size( Qt_TextSingleLine, __LETTER__ )
    nPadding := 8
 
    IF .T.
@@ -1163,7 +1170,7 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
          ::oFooterView:setSectionHidden( i - 1, .F. )
       ENDIF
    NEXT
-#if 0
+#ifndef __HBQTMOBILE__
    ::refreshWindow()                              // on mobile it causes a lot of issues
 #endif
    ::lStable     := .F.
@@ -2220,13 +2227,13 @@ METHOD HbQtBrowse:setLeftFrozen( aColFrozens )
 METHOD HbQtBrowse:setCellHeight( nCellHeight )
    LOCAL i
 
-   FOR i := 1 TO ::nRowsInView
-      ::oTableView : setRowHeight( i-1, nCellHeight )
-      IF !empty( ::oLeftView )
-         ::oLeftView  : setRowHeight( i-1, nCellHeight )
+   FOR i := 0 TO ::nRowsInView - 1
+      ::oTableView : setRowHeight( i, nCellHeight )
+      IF ! Empty( ::oLeftView )
+         ::oLeftView  : setRowHeight( i, nCellHeight )
       ENDIF
-      IF !empty( ::oRightView )
-         ::oRightView : setRowHeight( i-1, nCellHeight )
+      IF ! Empty( ::oRightView )
+         ::oRightView : setRowHeight( i, nCellHeight )
       ENDIF
    NEXT
    RETURN Self
@@ -3034,9 +3041,7 @@ METHOD HbQtBrowse:editCell( cPicture, cColor, bWhen, bValid, nKey )
 
    WITH OBJECT oDlg
       :setWindowFlags( Qt_Dialog + Qt_FramelessWindowHint )
-#if 0                                             // scheduled to be removed with Qt 5.4.1
       :setAttribute( Qt_WA_TranslucentBackground, .T. )
-#endif
       :move( oPos:x - 6, oPos:y() )
       :connect( QEvent_Show, {||
                                  LOCAL oEdit := GetList[ 1 ]:edit()

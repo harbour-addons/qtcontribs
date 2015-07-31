@@ -411,6 +411,7 @@ METHOD HbQtScrollableToolbar:addSeparator( cName )
       :setMinimumHeight( ::nButtonHeight )
       :setAutoRaise( .T. )
       :setEnabled( .F. )
+      :setFocusPolicy( Qt_NoFocus )
    ENDWITH
    oItm := QListWidgetItem()
    oItm:setSizeHint( oToolBtn:sizeHint() )
@@ -464,6 +465,7 @@ METHOD HbQtScrollableToolbar:buildToolbarButton( nIndex, xCaption, cTooltip, xBu
 
 
    WITH OBJECT oToolBtn := QToolButton()
+      :setFocusPolicy( Qt_NoFocus )
       :setToolButtonStyle( nStyle )
       :setIconSize( QSize( ::nImageWidth, ::nImageHeight ) )
       :setMaximumWidth( ::nButtonWidth )

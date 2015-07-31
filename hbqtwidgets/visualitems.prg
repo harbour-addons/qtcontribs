@@ -1,4 +1,4 @@
-   /*
+/*
  * $Id$
  */
 
@@ -549,6 +549,25 @@ CLASS HbQtVisualItem
    DATA   cMarker                                 INIT ""
    DATA   hCargo
 
+   DATA   cParent                                 INIT ""
+   ACCESS parent()                                INLINE ::cParent
+   METHOD putParent( cParent )
+   ACCESS isAChild()                              INLINE ! Empty( ::cParent )
+
+   DATA   oParentColor                            INIT QColor( 192, 192, 192 )
+   DATA   lChildrenVisible                        INIT .F.
+   DATA   hChildren                               INIT __hbqtStandardHash()
+   DATA   nChildren                               INIT 0
+   ACCESS areChildrenVisible()                    INLINE ::lChildrenVisible
+   METHOD setChildrenVisible( lSet )              //INLINE iif( HB_ISLOGICAL( lSet ), ::lChildrenVisible := lSet, NIL )
+   METHOD addChild( cChild )
+   METHOD removeChild( cChild )
+   ACCESS children()                              INLINE ::hChildren
+   ACCESS childCount()                            INLINE ::nChildren
+
+   DATA   lAsParent                               INIT .F.
+   METHOD setAsParent( lSet )
+
    DATA   cLayer                                  INIT ""
    ACCESS layer()                                 INLINE ::cLayer
    METHOD setLayer( cLayer )
@@ -693,6 +712,9 @@ CLASS HbQtVisualItem
    METHOD drawField( oPainter, oRectF )
    METHOD drawGradient( oPainter, oRectF )
 
+   METHOD drawIsParent( oPainter, oRect )
+   METHOD drawIsChild( oPainter, oRect )
+   METHOD drawAsParent( oPainter, oRect )
    METHOD drawSelection( oPainter, oRect )
 
    DATA   bAction
@@ -861,6 +883,52 @@ METHOD HbQtVisualItem:onError( ... )
       cMsg := SubStr( cMsg, 2 )
    ENDIF
    RETURN ::oWidget:&cMsg( ... )
+
+
+METHOD HbQtVisualItem:putParent( cParent )
+   IF HB_ISSTRING( cParent )
+      ::cParent := cParent
+      ::oWidget:update()
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:setChildrenVisible( lSet )
+   IF HB_ISLOGICAL( lSet )
+      ::lChildrenVisible := lSet
+      ::oParentColor := NIL
+      ::oParentColor := iif( lSet, QColor( 0, 0, 255 ), QColor( 192, 192, 192 ) )
+      ::oWidget:update()
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtVisualItem:addChild( cChild )
+   IF HB_ISSTRING( cChild ) .AND. ! Empty( cChild )
+      ::hChildren[ cChild ] := cChild
+      ::nChildren++
+      ::oWidget:update()
+   ENDIF
+   RETURN ::nChildren
+
+
+METHOD HbQtVisualItem:removeChild( cChild )
+   IF hb_HHasKey( ::hChildren, cChild )
+      hb_HDel( ::hChildren, cChild )
+      IF ::nChildren > 0
+         ::nChildren--
+      ENDIF
+      ::oWidget:update()
+   ENDIF
+   RETURN ::nChildren
+
+
+METHOD HbQtVisualItem:setAsParent( lSet )
+   IF HB_ISLOGICAL( lSet )
+      ::lAsParent := lSet
+      ::oWidget:update()
+   ENDIF
+   RETURN Self
 
 
 METHOD HbQtVisualItem:setLayer( cLayer )
@@ -1529,6 +1597,63 @@ METHOD HbQtVisualItem:setLineType( ... )
    RETURN ::nLineType
 
 
+METHOD HbQtVisualItem:drawIsChild( oPainter, oRect )
+   LOCAL a, p
+
+   oPainter:save()
+   WITH OBJECT a := QBrush()
+      :setColor( QColor( 0, 0, 255 ) )
+      :setStyle( Qt_SolidPattern )
+      WITH OBJECT p := QPen()
+         :setStyle( Qt_DashLine )
+         :setBrush( a )
+         :setWidth( 5 )
+      ENDWITH
+      oPainter:setPen( p )
+      oPainter:drawEllipse( oRect:adjusted( 0, 0, -1, -1 ) )
+   ENDWITH
+   oPainter:restore()
+   RETURN Self
+
+
+METHOD HbQtVisualItem:drawIsParent( oPainter, oRect )
+   LOCAL a, p
+
+   oPainter:save()
+   WITH OBJECT a := QBrush()
+      :setColor( ::oParentColor )
+      :setStyle( Qt_SolidPattern )
+      WITH OBJECT p := QPen()
+         :setStyle( Qt_DashLine )
+         :setBrush( a )
+         :setWidth( 5 )
+      ENDWITH
+      oPainter:setPen( p )
+      oPainter:drawRect( oRect:adjusted( 0, 0, -1, -1 ) )
+   ENDWITH
+   oPainter:restore()
+   RETURN Self
+
+
+METHOD HbQtVisualItem:drawAsParent( oPainter, oRect )
+   LOCAL a, p
+
+   oPainter:save()
+   WITH OBJECT a := QBrush()
+      :setColor( QColor( 0,255,0 ) )
+      :setStyle( Qt_SolidPattern )
+      WITH OBJECT p := QPen()
+         :setStyle( Qt_SolidLine )
+         :setBrush( a )
+         :setWidth( 5 )
+      ENDWITH
+      oPainter:setPen( p )
+      oPainter:drawRect( oRect:adjusted( 0, 0, -1, -1 ) )
+   ENDWITH
+   oPainter:restore()
+   RETURN Self
+
+
 METHOD HbQtVisualItem:drawSelection( oPainter, oRect )
    LOCAL a, p, lt, rt, lb, rb, nW, nH
    LOCAL drawSelectionBorder := .T.
@@ -1656,8 +1781,17 @@ METHOD HbQtVisualItem:draw( oPainter, oRectF, lDrawSelection )
       EXIT
    ENDSWITCH
 
+   IF ::nChildren > 0
+      ::drawIsParent( oPainter, oRectF )
+   ENDIF
+   IF ! Empty( ::parent() )
+      ::drawIsChild( oPainter, oRectF )
+   ENDIF
    IF lDrawSelection
       ::drawSelection( oPainter, oRectF )
+   ENDIF
+   IF ::lAsParent
+      ::drawAsParent( oPainter, oRectF )
    ENDIF
    IF HB_ISOBJECT( ::oState )
       ::state():draw( oPainter, oRectF )

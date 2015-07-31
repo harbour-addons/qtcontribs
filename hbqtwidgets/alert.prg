@@ -109,8 +109,10 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oPare
 
 
 STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent )
-   LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus, nResult
+   LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus, nResult, oLabel1, oWidgetInFocus
    LOCAL aButtons := {}
+
+   oWidgetInFocus := QApplication():focusWidget()
 
    WITH OBJECT oFocus := QFocusFrame()
       :setStyleSheet( "border: 2px solid red;" )
@@ -135,21 +137,23 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    oLabel := QLabel()
 
    oVBLayout:addWidget( oLabel )
+   oVBLayout:addWidget( oLabel1 := QLabel() )
    oVBLayout:addLayout( oHBLayout )
+   oLabel1:setMinimumHeight( 10 )
 
    WITH OBJECT oLabel
       :setAlignment( Qt_AlignHCenter )
       :setText( cMsg )
       :setOpenExternalLinks( .T. )
-      :setFont( QFont( "Courier", 10 ) )
-      :setStyleSheet( "padding: 10px;" )
+      :setFont( QFont( "Courier", iif( __hbqtIsMobile(), __hbqtPixelsByDPI( 12 ), 10 ) ) )
+      :setStyleSheet( __hbqtCSSFromColorString( cColorNorm ) )
    ENDWITH
 
    FOR EACH cBtn IN aOptions
       WITH OBJECT oBtn := QPushButton( oDlg )
          :setText( cBtn )
          :setFocusPolicy( Qt_StrongFocus )
-         :setFont( QFont( "Courier", 10 ) )
+         :setFont( QFont( "Courier", iif( __hbqtIsMobile(), __hbqtPixelsByDPI( 12 ), 10 ) ) )
          :setStyleSheet( "" )
          :setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) + "border-radius: 5px;" )
          :connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
@@ -175,7 +179,11 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    ENDIF
 
    oDlg:setParent( QWidget() )  /* MUST DO - Releases the memory */
+
    QApplication():processEvents()
+   IF HB_ISOBJECT( oWidgetInFocus )
+      oWidgetInFocus:setFocus()
+   ENDIF
 
    RETURN nResult
 
@@ -522,6 +530,7 @@ FUNCTION HbQtMaxCol( oWnd )
 FUNCTION HbQtGetSome( xValue, bEditingFinishedBlock, cLabel, cPicture, cColor, bWhen, bValid )
    STATIC oCellEditor, bEscape
    LOCAL GetList := {}, SayList := {}
+   LOCAL nOffset := __hbqtPixelsByDPI( 50 )
 
    DEFAULT cLabel TO "Enter Some Value"
 
@@ -538,7 +547,7 @@ FUNCTION HbQtGetSome( xValue, bEditingFinishedBlock, cLabel, cPicture, cColor, b
    HbQtActivateSilverLight( .T., cLabel, NIL, .F. )
 
    WITH OBJECT oCellEditor
-      :setGeometry( QRect( 20,__hbqtAppWidget():height() / 4, __hbqtAppWidget():width() - 40, 50 ) )
+      :setGeometry( QRect( nOffset, nOffset, __hbqtAppWidget():width() - nOffset - nOffset, nOffset ) )
       :show()
       :raise()
    ENDWITH
@@ -565,7 +574,6 @@ STATIC FUNCTION __hbqtEditingFinished( bBlock, oCellEditor, bEscape )
    IF HB_ISBLOCK( bBlock )
       Eval( bBlock, xValue )
    ENDIF
-   oCellEditor:setParent( QWidget() )
    RETURN NIL
 
 
@@ -574,7 +582,6 @@ STATIC FUNCTION __hbqtEditingTerminate( oCellEditor, bEscape )
    HbQtActivateSilverLight( .F. )
    SetKey( K_ESC, bEscape )
    HbQtSetGetSomeValue( NIL )
-   oCellEditor:setParent( QWidget() )
    RETURN NIL
 
 

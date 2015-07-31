@@ -148,7 +148,9 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
       :setOpenExternalLinks( .T. )
       :setTextInteractionFlags( Qt_LinksAccessibleByMouse )
       :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
-      :setAttribute( Qt_WA_NoMousePropagation, .T. )
+      :setMouseTracking( .T. )
+      :connect( QEvent_MouseButtonPress  , {|oEvent| oEvent:ignore(), .T. } )
+      :connect( QEvent_MouseButtonRelease, {|oEvent| oEvent:ignore(), .T. } )
    ENDWITH
 
    WITH OBJECT ::oTimer := QTimer()
@@ -189,6 +191,8 @@ METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oPar
 
 
 METHOD HbQtSilverLight:deactivate()
+
+   QApplication():processEvents( 0 )
 
    ::oTimer:stop()
    ::oWidget:hide()
@@ -247,7 +251,7 @@ METHOD HbQtSilverLight:setBackground( oBackground )
    ENDIF
    IF HB_ISOBJECT( ::oWidget )
       IF HB_ISOBJECT( oBG := ::oBackground )
-         ::oWidget:setStyleSheet( "font-size: " + __hbqtCssPX( 36 ) + "color: white; background-color: " + ;
+         ::oWidget:setStyleSheet( "font-size: " + __hbqtCssPX( 24 ) + "color: white; background-color: " + ;
                                              __RGBA_STR__( oBG:red(), oBG:green(), oBG:blue(), ::nIndex ) + ";" )
       ENDIF
    ENDIF
@@ -278,4 +282,96 @@ METHOD HbQtSilverLight:setAnimationOpacity( aOpacity )
    ::nIndex := ::nStart
 
    RETURN Self
+
+//--------------------------------------------------------------------//
+//                           CLASS HbQtLogs
+//--------------------------------------------------------------------//
+
+CLASS HbQtLogs
+
+   DATA   oWidget
+   DATA   oParent
+   DATA   oPlainText
+   DATA   oBtnDone
+
+   METHOD init( oParent )
+   METHOD create( oParent )
+   METHOD logText( cText )
+   METHOD show()
+   METHOD hide()
+   METHOD clear()
+
+   ENDCLASS
+
+
+METHOD HbQtLogs:init( oParent )
+   ::oParent := oParent
+   RETURN Self
+
+
+METHOD HbQtLogs:create( oParent )
+   LOCAL oVLayout
+
+   DEFAULT oParent TO ::oParent
+   ::oParent := oParent
+
+   ::oWidget := QWidget( ::oParent )
+
+   __hbqtLayoutWidgetInParent( ::oWidget, ::oParent )
+
+   WITH OBJECT oVLayout := QVBoxLayout()
+      :setContentsMargins( 0,0,0,0 )
+   ENDWITH
+
+   WITH OBJECT ::oWidget
+      :setLayout( oVLayout )
+      :hide()
+   ENDWITH
+
+   WITH OBJECT ::oPlainText := QPlainTextEdit()
+      :setReadOnly( .T. )
+      :setLineWrapMode( QPlainTextEdit_NoWrap )
+   ENDWITH
+   __hbqtApplyStandardScroller( ::oPlainText )
+
+   WITH OBJECT ::oBtnDone := QPushButton( "Done" )
+      :connect( "clicked()", {|| ::hide() } )
+   ENDWITH
+
+   WITH OBJECT oVLayout
+      :addWidget( ::oPlainText )
+      :addWidget( ::oBtnDone )
+   ENDWITH
+
+      __hbqtRegisterForEventClose( {|| iif( ::oWidget:isVisible(), ::hide(), NIL ), .F. } )
+   RETURN Self
+
+
+METHOD HbQtLogs:logText( cText )
+   ::oPlainText:appendPlainText( cText )
+   RETURN Self
+
+
+METHOD HbQtLogs:clear()
+   ::oPlainText:clear()
+   RETURN Self
+
+
+METHOD HbQtLogs:hide()
+   ::oWidget:hide()
+   HbQtActivateSilverLight( .F. )
+   RETURN Self
+
+
+METHOD HbQtLogs:show()
+   HbQtActivateSilverLight( .T., "" )
+   WITH OBJECT ::oWidget
+      :resize( ::oParent:width() - 120, ::oParent:height() - 120 )
+      :move( 60, 60 )
+      :raise()
+      :show()
+   ENDWITH
+   RETURN Self
+
+//--------------------------------------------------------------------//
 

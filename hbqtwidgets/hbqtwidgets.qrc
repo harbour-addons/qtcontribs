@@ -275,12 +275,15 @@
     <file>resources/vz-menu.png</file>
     <file>resources/vz-chat.png</file>
     <file>resources/vz-chat-2.png</file>
+    <file>resources/vz-parent.png</file>
+    <file>resources/vz-child.png</file>
     <file>resources/left-close.png</file>
     <file>resources/left-open.png</file>
     <file>resources/right-close.png</file>
     <file>resources/right-open.png</file>
     <file>resources/vz-topic.png</file>
     <file>resources/vz-collapse.png</file>
+    <file>resources/vz-expand.png</file>
     <file>resources/vz-clock.png</file>
     <file>resources/vz-threaded.png</file>
     <file>resources/vz-layerchange.png</file>
@@ -300,5 +303,9 @@
     <file>resources/brw-field.png</file>
     <file>resources/brw-search.png</file>
     <file>resources/brw-index.png</file>
+    <file>resources/brw-addcolumn.png</file>
+    <file>resources/brw-goto.png</file>
+    <file>resources/brw-tables.png</file>
+    <file>resources/web.png</file>
   </qresource>
 </RCC>

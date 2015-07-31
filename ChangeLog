@@ -16,6 +16,57 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-07-31 13:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r415)
+  + hbqtwidgets/resources/brw-addcolumn.png
+  + hbqtwidgets/resources/brw-goto.png
+  + hbqtwidgets/resources/brw-index.png
+  + hbqtwidgets/resources/brw-tables.png
+  + hbqtwidgets/resources/vz-child.png
+  + hbqtwidgets/resources/vz-expand.png
+  + hbqtwidgets/resources/vz-parent.png
+  + hbqtwidgets/resources/web.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added more images.
+
+  * hbqtwidgets/hbqtstd.ch
+    + #define __VZOBJ_PARENT
+
+  * hbqtwidgets/alert.prg
+    % Enhancements for mobile platforms.
+
+  * hbqtwidgets/dashboard.prg
+    % Minor.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: editing window transulency.
+    ! Fixed: to behave properly on mobile platforms.
+    + Enhanced: modeless editing protocol.
+
+  * hbqtwidgets/misc.prg
+    + __hbqtIsAndroid() -> lOnAndroid 
+    + __hbqtIsMobile() -> lOnMobile
+    + __hbqtAppRefresh() -> NIL
+      Hides and Shows App Windget.
+    + __hbqtLayoutWidgetInParent( oWidget, oParent )
+    + __hbqtLog( xLog ), __hbqtShowLog(), __hbqtClearLog()
+      A General purpose logging mechanism based on __hbqtAppWidget().
+      Mostly useful on mobile platforms where debugging is a nightmare.
+    + __hbqtRegisterForOrientationChange( bBlock )
+      __hbqtBroadcastOrientationChanged( nOrientation )
+      Actually based on resize event of __hbqtAppWidget() which calls the 
+      bBlock whenever resizing takes place. Mostly useful for mobile platforms.
+
+  * hbqtwidgets/silverlight.prg
+  * hbqtwidgets/slidinglist.prg
+  * hbqtwidgets/toolbarex.prg
+  * hbqtwidgets/treeview.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+    + Many visual enhancements.
+
+  * hbqtwidgets/hbqtwidgets.hbp
+    + {android}-d__ANDROID
+
 2015-07-30 16:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r414)
   * hbqt/hbmk2_qt.hb
     % Changed: hb_regexMatch() -> hb_regexHas().

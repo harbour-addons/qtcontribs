@@ -362,8 +362,9 @@
    #define __VZOBJ_TEXT__                            26
    #define __VZOBJ_DATA__                            27
    #define __VZOBJ_LAYER__                           28
+   #define __VZOBJ_PARENT__                          29
    //
-   #define __VZOBJ_VARIABLES__                       28
+   #define __VZOBJ_VARIABLES__                       29
 
    #define __HBQT_PRP_JUST__                         1000
    #define __HBQT_PRP_EDIT__                         1001

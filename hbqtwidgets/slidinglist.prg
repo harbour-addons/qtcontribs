@@ -308,7 +308,8 @@ METHOD HbQtSlidingList:create( oParent )
       :connect( "itemClicked(QListWidgetItem*)", {|oItem| ::manageItemClicked( oItem:whatsThis() ) } )
       :setFrameShape( QFrame_NoFrame )
    ENDWITH
-   __hbqtApplyTouchScroller( ::oListWidget )
+   //__hbqtApplyTouchScroller( ::oListWidget )
+   __hbqtApplyStandardScroller( ::oListWidget )
 
    WITH OBJECT ::oFiller := QLabel()
       :setAlignment( Qt_AlignHCenter + Qt_AlignVCenter )
