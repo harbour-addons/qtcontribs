@@ -1850,7 +1850,7 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
       ENDIF
    ENDIF
 
-   ::oDockB2:show()
+   //::oDockB2:show()
    ::oOutputResult:oWidget:clear()
 
    IF .F.
@@ -1989,6 +1989,10 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, l
       ::editSource( ::cPPO )
    ENDIF
 
+   IF ! ( nExitCode == 0 )
+      ::oDockB2:show()
+   ENDIF
+
    //::cIfError := NIL
    ::oOutputResult:ensureCursorVisible()
    IF !empty( qCursor )
@@ -2030,6 +2034,7 @@ METHOD IdeProjManager:launchProject( cProject, cExe, cWrkEnviron, lDebug )
    cTargetFN := hbide_pathToOSPath( cTargetFN )
 
    IF ! hb_FileExists( cTargetFN )
+      ::oDockB2:show()
       ::outputText( "Launch error: file not found - " + cTargetFN )
 
    ELSEIF empty( oProject ) .OR. oProject:type == "Executable"

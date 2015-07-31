@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-07-31 15:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r416)
+  * hbide/projmanager.prg
+    % Changed: the behavior of opening "Output Console".
+       In case of any errors in project building Output Console is opened.
+       At all other times no action is taken. It means if console is 
+       already opened or kept opened after an error, it will remain 
+       visible. A request by Daniel Du Pre.
+
 2015-07-31 13:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r415)
   + hbqtwidgets/resources/brw-addcolumn.png
   + hbqtwidgets/resources/brw-goto.png
