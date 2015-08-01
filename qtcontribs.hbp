@@ -41,6 +41,10 @@ hbqt/qzxing/hbqtzxing.hbp
 #    Qt Based Widgets
 hbqtwidgets/hbqtwidgets.hbp
 
+#    Qt QML based Parts
+hbqtqmlparts/hbqtqmlparts.hbp
+
+
 #    Qt based Xbase++ compliant Class Framework
 #
 hbxbp/hbxbp.hbp

@@ -16,6 +16,203 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-07-31 16:05 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r417)
+  + hbqtqmlparts
+
+  + hbqtqmlparts/resources
+  + hbqtqmlparts/resources/png
+  + hbqtqmlparts/resources/png/left-32.png
+  + hbqtqmlparts/resources/png/refresh-32.png
+  + hbqtqmlparts/resources/png/right-32.png
+  + hbqtqmlparts/resources/png/stop-32.png
+  + hbqtqmlparts/resources/qml
+  + hbqtqmlparts/resources/qml/BarcodeReader.qml
+  + hbqtqmlparts/resources/qml/WebView.qml
+  + hbqtqmlparts/resources/wav
+  + hbqtqmlparts/resources/wav/barcode-beep.wav
+  + hbqtqmlparts/resources/wav/camera-flash.wav
+
+  + hbqtqmlparts/misc.prg
+  + hbqtqmlparts/qmlbridge.prg
+  + hbqtqmlparts/barcodereader.prg
+  + hbqtqmlparts/webview.prg
+
+  + hbqtqmlparts/hbqtqmlparts.hbc
+  + hbqtqmlparts/hbqtqmlparts.hbp
+  + hbqtqmlparts/hbqtqmlparts.hbx
+  + hbqtqmlparts/hbqtqmlparts.qrc
+
+  + hbqtqmlparts/tests
+  + hbqtqmlparts/tests/demobarcodereader.prg
+  + hbqtqmlparts/tests/demowebview.prg
+  + hbqtqmlparts/tests/hbmk.hbm
+
+  + qtcontribs.hbp
+    + Added: hbqtqmlparts/hbqtqmlparts.hbp
+
+    Initial commit of Harbour engine for QML manipulation.
+
+    QML is the next-generation offering by Qt which facilitates to develop 
+    modern-looking, javaScript based applications. QML is also the core 
+    language adopted by Ubuntu mobile plaforms and its concept of 
+    one-os-fit-all-devices shift. So seems QML is set to become the 
+    protocol of choice for so many applications.
+
+    Harbour's implementation of Qt, i.e. HbQt, is essentially a widget 
+    based implementation. It took me a while to turn to QML because 
+    of the necessity to have barcode reading inside my mobile offerings.
+    I remained reluctant to give QML a try for a long time because of the 
+    complexity how Signal/Slot mechanism is implemented in Harbour.
+    But when I took initiative, I found that it is simpler than my fear.
+    Bottom line is : we can start using QML to some extent alsong-with 
+    and within our existing widget based apps.
+
+    CLASS HbQtQmlBridge() provides the building blocks to stream-line 
+    the complexity of signal/slots, set/get properties, execute methods, etc.
+    
+       CLASS HbQtQmlBridge()
+
+       METHOD init( oParent )
+       METHOD create( oParent )
+
+       METHOD setQml( cQml )                                -> lSuccess
+       METHOD show()                                        -> NIL
+       METHOD setProperty( cProperty, xValue )              -> lSuccess
+       METHOD setChildProperty( cChild, cProperty, xValue ) -> lSuccess
+       METHOD getProperty( cProperty )                      -> oQVariant | NIL
+       METHOD getChildProperty( cChild, cProperty )         -> oQVariant | NIL
+       METHOD invokeMethod( cMethod, ... )                  -> oQVariant | NIL
+       METHOD connect( cSignal, bBlock )                    -> lSuccess
+       METHOD connectChild( cChild, cSignal, bBlock )       -> lSuccess
+
+       :create() only initiates a QQuickWidget(), set some of its 
+         properties, connects it to error handeling slots and 
+         lays it in a best-judged layout on its parent.
+
+       :setQml( cQml ) is where all the action happens.
+          This is the only place where we could know if a QML 
+          document has been loaded or not. All subsequest operations 
+          are executable only if we succeed here. Be noted that QML 
+          engine is a scripting engine and is based on JavaScript 
+          heavily.
+
+    Lets disect CLASS HbQtBarcodeReader() and BarcodeReader.qml in 
+    relevant context only. HbQtBarcodeReader() is developed to provide 
+    one-line calling methodology in mind and has many other constructs
+    you are already familiar with.
+
+    METHOD HbQtBarcodeReader:create( oParent )    
+       ...
+       ...
+       // register C++ classes in order to access them inside QML
+       // immediately before those are about to be Used
+       //
+       HBQAbstractVideoSurface():registerQmlTypes()
+       QZXing():registerQmlTypes()
+
+      ::oQmlBridge := HbQtQmlBridge():new():create( ::oQmlContainerWidget )
+
+      // provide the QML document location needed
+      //
+      IF ::oQmlBridge:setQml( "qrc:/hbqtqml/resources/qml/BarcodeReader.qml" )
+         ::stopCamera()
+
+         #ifndef __ANDROID__
+            // because QVideoProbe() is only available for Android
+            // we need render the frame ourselves, so this connection
+            //
+            ::oQmlBridge:connectChild( "videosurface", "imageAvailable(QImage)", {| oImage | ::dispImage( oImage ) } )
+         #endif
+         // we could have connected the "qzxing" child also for the same effect
+         // but we decided to receive signal via QML document as it implements 
+         // more constructs.
+         //
+         ::oQmlBridge:connect( "tagFound(QString)", {| cTag | ::manageBarcodeFound( cTag ) } )
+
+         __hbqtAppRefresh()
+      ENDIF
+      ...
+      ...
+      RETURN self   
+
+   
+    BarcodeReader.qml [ only relevant parts ]:
+    =========================================
+
+    Rectangle {
+        id         : cameraUI
+        objectName : "camerainterface"     // name to access the object
+                                           // as this is the root object
+                                           // it can be accessed directly. 
+    
+        property bool stopScanningFrames   // can be set/get via :setProperty
+    
+        signal imageCaptured( string image )
+        signal tagFound( string tag )      // signal we will receive via :connect
+    
+        function startScanning() {
+           stopScanningFrames = false;
+        }
+        function stopScanning() {
+           stopScanningFrames = true;
+        }
+        function stopCamera() {            // method we will invoke via :invokeMethod
+            cameraUI.stopScanning();
+            camera.stop();
+        }
+        function startCamera() {
+            camera.start();
+            cameraUI.startScanning();
+            myVideoSurface.decoder = decoder;
+            myVideoSurface.source  = camera;
+        }
+    
+        Camera {
+            id: camera
+            objectName: "camera"           // can be accessed as QObject
+                                           // from PRG QObject can only be 
+                                           // exploited via :connect()
+        }
+    
+        VideoOutput {
+            id               : viewfinder
+            objectName       : "viewfinder"
+            source           : Qt.platform.os == "android" ? camera : myVideoSurface
+        }
+    
+        QZXing{
+            id         : decoder
+            objectName : "qzxing"
+            onTagFound : {
+                if( ! cameraUI.stopScanningFrames )
+                {
+                    cameraUI.stopScanningFrames = true;
+                    playSoundCameraFlash.play();
+                    cameraUI.tagFound( tag ); // emit the signal which we :connect()ed
+                }
+            }
+        }
+    
+        HBQAbstractVideoSurface{
+            id         : myVideoSurface
+            objectName : "videosurface"   // will connect via :connectChild()
+        }
+    
+        SoundEffect {
+            id      : playSoundCameraFlash
+            source  : "qrc:/hbqtqml/resources/wav/barcode-beep.wav"
+        }
+    }
+    
+    A convinient function, one-liner, can be fired to scan a barcode as:
+    __hbqtActivateBarcodeReader( {|cBarcode| LetMePushIntoField( cBarcode ) } )
+
+    I hope this class will flourish with passage of time as we will gain 
+    more experience into QML and allied technology. I am impressed with 
+    results and plan to share with you whatever meaningful I could muster.
+
+    Enjoy and stay tuned!
+
 2015-07-31 15:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r416)
   * hbide/projmanager.prg
     % Changed: the behavior of opening "Output Console".

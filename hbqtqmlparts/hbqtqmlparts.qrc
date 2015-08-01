@@ -1,0 +1,14 @@
+<RCC>
+  <qresource prefix="hbqtqml">
+    <file>resources/wav/camera-flash.wav</file>
+    <file>resources/wav/barcode-beep.wav</file>
+
+    <file>resources/png/left-32.png</file>
+    <file>resources/png/right-32.png</file>
+    <file>resources/png/refresh-32.png</file>
+    <file>resources/png/stop-32.png</file>
+
+    <file>resources/qml/WebView.qml</file>
+    <file>resources/qml/BarcodeReader.qml</file>
+  </qresource>
+</RCC>
