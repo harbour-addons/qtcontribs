@@ -2537,8 +2537,7 @@ METHOD HbQtSource:getConstructor()
       NEXT
       IF ::isQtObjectAvailable
          AAdd( aLine, " " )
-//         AAdd( aLine, '   hb_itemReturnRelease( hbqt_bindSetHbObject( NULL, pObj, "' + "HB_" + upper( ::cQtObject ) + '", hbqt_del_' + ::cQtObject + ", " + qth_get_bits( ::cQtObject, ! ::isDetached ) + " ) );" )
-         AAdd( aLine, '   hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, pObj, "' + "HB_" + upper( ::cQtObject ) + '", hbqt_del_' + ::cQtObject + ", " + qth_get_bits( ::cQtObject, ! ::isDetached ) + " ) );" )
+         AAdd( aLine, '   hb_itemReturnRelease( hbqt_bindSetHbObject( NULL, pObj, "' + "HB_" + upper( ::cQtObject ) + '", hbqt_del_' + ::cQtObject + ", " + qth_get_bits( ::cQtObject, ! ::isDetached ) + " ) );" )
       ENDIF
    ELSE
       FOR i := 3 TO Len( ::new_ ) - 1
