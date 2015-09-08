@@ -100,6 +100,7 @@ CLASS HbQtEditor
 
    DATA   lModified                               INIT  .F.
    DATA   lIndentIt                               INIT  .F.
+   DATA   nEnterPos                               INIT 0
    DATA   lUpdatePrevWord                         INIT  .F.
    DATA   lCopyWhenDblClicked                     INIT  .F.
    DATA   cCurLineText                            INIT  ""
@@ -174,6 +175,8 @@ CLASS HbQtEditor
    DATA   cISFormat                               INIT "class:method"
 
    DATA   lSelectionMode                          INIT .F.
+
+   DATA   nGotoLast                               INIT 0
 
    METHOD init()
    METHOD create()
@@ -565,6 +568,10 @@ METHOD HbQtEditor:execEvent( nMode, p, p1 )
    RETURN NIL
 
 
+// the method is called prior to applying the key to the buffer
+// and before firing any signals, so, is a placeholder to setup
+// source wide behavior.
+//
 METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
    LOCAL key, kbm, lAlt, lCtrl, lShift, lProcessed
 
@@ -579,7 +586,7 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
 
    SWITCH nEvent
 
-   CASE QEvent_KeyPress     /* The key is sent here prior to applying to editor */
+   CASE QEvent_KeyPress                           /* The key is sent here prior to applying to editor */
       key    := p:key()
       kbm    := p:modifiers()
 
@@ -587,7 +594,7 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
       lCtrl  := hb_bitAnd( kbm, Qt_ControlModifier ) == Qt_ControlModifier
       lShift := hb_bitAnd( kbm, Qt_ShiftModifier   ) == Qt_ShiftModifier
 
-      SWITCH key                            /* On top of any user defined action be executed - QPlainTextEdit's default keys */
+      SWITCH key                                  /* On top of any user defined action be executed - QPlainTextEdit's default keys */
       CASE Qt_Key_Tab
       CASE Qt_Key_Backtab
          IF ! lAlt .AND. ! lCtrl
@@ -638,6 +645,7 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
             RETURN .T.
          ENDIF
          ::lIndentIt := .T.
+         ::nEnterPos := ::getColumnNo()
          EXIT
       CASE Qt_Key_ParenLeft
          IF ! lCtrl .AND. ! lAlt
@@ -2125,7 +2133,7 @@ METHOD HbQtEditor:goto( nLine )
 
    IF empty( nLine )
       nRows := ::qEdit:blockCount()
-      nLine := oTxtCursor:blockNumber()
+      nLine := iif( Empty( ::nGotoLast ), oTxtCursor:blockNumber(), ::nGotoLast )
 
       WITH OBJECT oGo := QInputDialog( ::qEdit )
          :setInputMode( 1 )
@@ -2138,6 +2146,7 @@ METHOD HbQtEditor:goto( nLine )
       oGo:exec()
 
       nLine := oGo:intValue()
+      ::nGotoLast := nLine
       oGo:setParent( QWidget() )
       ::qEdit:setFocus()
    ENDIF
@@ -2674,11 +2683,14 @@ METHOD HbQtEditor:handleCurrentIndent()
    LOCAL oTxtCursor, nSpaces
 
    IF ::lIndentIt
-      ::lIndentIt := .f.
+      ::lIndentIt := .F.
       IF ( nSpaces := ::findLastIndent() ) > 0
          oTxtCursor := ::qEdit:textCursor()
-         oTxtCursor:insertText( space( nSpaces ) )
+         IF ::nEnterPos > nSpaces
+            oTxtCursor:insertText( Space( nSpaces ) )
+         ENDIF
       ENDIF
+      ::nEnterPos := 0
    ENDIF
    RETURN Self
 

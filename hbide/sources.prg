@@ -517,7 +517,6 @@ METHOD IdeSourcesManager:selectSource( cMode, cFile, cTitle, cDftPath )
 
    DEFAULT cDftPath TO ::cLastFileOpenPath
 
-   AAdd( aFltr, { "All Files"      , "*.*"   } )
    AAdd( aFltr, { "PRG Sources"    , "*.prg" } )
    AAdd( aFltr, { "Harbour Scripts", "*.hb"  } )
    AAdd( aFltr, { "C Sources"      , "*.c"   } )
@@ -527,6 +526,7 @@ METHOD IdeSourcesManager:selectSource( cMode, cFile, cTitle, cDftPath )
    AAdd( aFltr, { "UI Files"       , "*.ui"  } )
    AAdd( aFltr, { "QRC Files"      , "*.qrc" } )
    AAdd( aFltr, { "HBC Files"      , "*.hbc" } )
+   AAdd( aFltr, { "All Files"      , "*.*"   } )
 
    oDlg := XbpFileDialog():new():create( ::oDlg, , { 10,10 } )
 
@@ -541,7 +541,7 @@ METHOD IdeSourcesManager:selectSource( cMode, cFile, cTitle, cDftPath )
       ENDIF
 
    ELSEIF cMode == "openmany"
-      oDlg:title       := "Select Sources"
+      oDlg:title       := "Select Source(s)"
       oDlg:center      := .t.
       oDlg:defExtension:= 'prg'
       oDlg:fileFilters := aFltr

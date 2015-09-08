@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-09-08 15:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r419)
+  * hbide/sources.prg
+    % Changed to present .PRG as default source files instead of *.* in 
+       "Source Selection" dialog.
+  * hbqtwidgets/editor.prg
+    ! Fixed to maintain the indent if ENTER is pressed at the begining 
+       of the line.
+
 2015-08-04 16:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r418)
   * hbqt/hbmk2_qt.hb
     ! Reverted an unconscious change which broke direct object inheritance.
