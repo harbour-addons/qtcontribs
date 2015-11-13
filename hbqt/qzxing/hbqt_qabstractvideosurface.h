@@ -64,12 +64,12 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QQmlContext>
 
-#include <QtMultiMedia/QVideoFrame>
-#include <QtMultiMedia/QVideoSurfaceFormat>
-#include <QtMultiMedia/QAbstractVideoSurface>
-#include <QtMultiMedia/QVideoRendererControl>
-#include <QtMultiMedia/QCamera>
-#include <QtMultiMedia/QVideoProbe>
+#include <QtMultimedia/QVideoFrame>
+#include <QtMultimedia/QVideoSurfaceFormat>
+#include <QtMultimedia/QAbstractVideoSurface>
+#include <QtMultimedia/QVideoRendererControl>
+#include <QtMultimedia/QCamera>
+#include <QtMultimedia/QVideoProbe>
 #include <QtMultimedia/QMediaPlayer>
 #include <QtMultimedia/QCameraViewfinderSettings>
 

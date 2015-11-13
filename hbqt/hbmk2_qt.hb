@@ -182,7 +182,8 @@ FUNCTION hbmk_plugin_qt( hbmk )
 
       IF ! hbmk[ "lCLEAN" ]
          IF ! Empty( hbmk[ "vars" ][ "aQRC_Src" ] )
-            hbmk[ "vars" ][ "cRCC_BIN" ] := qt_tool_detect( hbmk, "rcc", "RCC_BIN", .F. )
+            //hbmk[ "vars" ][ "cRCC_BIN" ] := qt_tool_detect( hbmk, "rcc", "RCC_BIN", .F. )
+            hbmk[ "vars" ][ "cRCC_BIN" ] := qt_tool_detect( hbmk, "rcc", "RCC_BIN", .T. )
             IF Empty( hbmk[ "vars" ][ "cRCC_BIN" ] )
                cRetVal := I_( "Required QT tool not found" )
             ENDIF

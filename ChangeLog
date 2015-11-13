@@ -16,6 +16,43 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-11-13 15:20 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r420)
+  * hbqt/qtcore/qth/QDateTime.qth
+    ! Fixed: wrong parameter index.
+
+  + hbqt/qtcore/qth/QJsonArray.qth
+  + hbqt/qtcore/qth/QJsonDocument.qth
+  + hbqt/qtcore/qth/QJsonObject.qth
+  + hbqt/qtcore/qth/QJsonParseError.qth
+  + hbqt/qtcore/qth/QJsonValue.qth
+  * hbqt/qtcore/qth/filelist.hbm
+    + Added: new QJson* classes.
+
+  * hbqt/hbmk2_qt.hb
+    % Applied patch provided by Francesco.
+      Tested on Windows and it does not break anything. Hope on *nixes
+      it will work as intended.
+
+  * hbqt/hbqt_common.hbc
+  * hbqt/hbqt_common.hbm
+    + Applied patches from Luigi and Francesco, all relevant to *nixes.
+       Please verify.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added QCalenderWidget related constants.
+    + Added: QJson* related constants.
+
+  * hbqt/qzxing/hbqt_qabstractvideosurface.h
+    ! Fixed: QtMultiMedia => QtMultimedia, a case sensitivity issue on nixes.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: calculation of column heading width in pixels.
+    ! Fixed: HbQtBrowse:manageMouseRelease( oMouseEvent ) where a button press 
+       has been called wrongly.
+
+  ; All above modifications are requested or forwarded by our esteemed users. 
+     I have tested them just casually. Please report back if you find anomalies.
+
 2015-09-08 15:13 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r419)
   * hbide/sources.prg
     % Changed to present .PRG as default source files instead of *.* in 

@@ -36,6 +36,11 @@ QFileSystemWatcher.qth
 QGenericArgument.qth
 QGenericReturnArgument.qth
 QIODevice.qth
+QJsonArray.qth
+QJsonDocument.qth
+QJsonObject.qth
+QJsonParseError.qth
+QJsonValue.qth
 QLatin1Char.qth
 QLatin1String.qth
 QLine.qth

@@ -18,6 +18,7 @@ plugins=hbmk2_qt.hb
 {beos}ldflags=-L/boot/common/lib
 
 {allwin|os2}libpaths=${HB_WITH_QT}\..\lib
+{linux}ldflags=-L${HB_WITH_QT}\..\lib
 
 {allgcc&!(bsd|darwin)}libs=supc++
 {allgcc&(bsd|darwin)}libs=stdc++

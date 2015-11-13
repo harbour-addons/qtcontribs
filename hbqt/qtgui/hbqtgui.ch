@@ -5274,5 +5274,32 @@
 #define QPlaceIdReply_SaveCategory                           1   // The reply was created for a save category operation
 #define QPlaceIdReply_RemoveCategory                         3   // The reply was created for a remove category operation.
 
+//enum QCalendarWidget::HorizontalHeaderFormat
+//This enum type defines the various formats the horizontal header can display.
+#define QCalendarWidget_SingleLetterDayNames                 1   // The header displays a single letter abbreviation for day names (e.g. M for Monday).
+#define QCalendarWidget_ShortDayNames                        2   // The header displays a short abbreviation for day names (e.g. Mon for Monday).
+#define QCalendarWidget_LongDayNames                         3   // The header displays complete day names (e.g. Monday).
+#define QCalendarWidget_NoHorizontalHeader                   0   // The header is hidden.
+
+//enum QCalendarWidget::SelectionMode
+//This enum describes the types of selection offered to the user for selecting dates in the calendar.
+#define QCalendarWidget_NoSelection                          0   // Dates cannot be selected.
+#define QCalendarWidget_SingleSelection                      1   // Single dates can be selected.
+
+//enum QCalendarWidget::VerticalHeaderFormat
+//This enum type defines the various formats the vertical header can display.
+#define QCalendarWidget_ISOWeekNumbers                       1   // The header displays ISO week numbers as described by QDate::weekNumber().
+#define QCalendarWidget_NoVerticalHeader                     0   // The header is hidden.
+
+//enum QJsonDocument::DataValidation
+//This value is used to tell QJsonDocument whether to validate the binary data when converting to a QJsonDocument using fromBinaryData() or fromRawData().
+#define QJsonDocument_Validate                               0   // Validate the data before using it. This is the default.
+#define QJsonDocument_BypassValidation                       1   // Bypasses data validation. Only use if you received the data from a trusted place and know it's valid, as using of invalid data can crash the application.
+
+//enum QJsonDocument::JsonFormat
+//This value defines the format of the JSON byte array produced when converting to a QJsonDocument using toJson().
+#define QJsonDocument_Indented                               0   // Defines human readable output as follows:
+#define QJsonDocument_Compact                                1   // Defines a compact output as follows: {"Array":[true,999,"string"],"Key":"Value","null":null}
+
 #endif
 

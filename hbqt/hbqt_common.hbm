@@ -17,6 +17,7 @@
 -workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
 
 -w3 -es2
+-pic
 
 -i.
 
@@ -29,6 +30,7 @@
 -depcontrol=qt:no{HB_BUILD_3RDEXT='no'}
 -depcontrol=qt:${HB_WITH_QT}
 {!darwin}-depincpath=qt:/usr/include/qt4
+{!darwin}-depincpath=qt:/usr/include/qt5
 {!darwin}-depincpath=qt:/usr/lib/qt4/include
 {!darwin}-depincpath=qt:/usr/include
 {bsd}-depincpath=qt:/usr/local/include/qt4

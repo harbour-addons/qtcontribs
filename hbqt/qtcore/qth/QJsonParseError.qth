@@ -1,0 +1,46 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QJsonParseError>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QJSONPARSEERROR )
+{
+   HB_FUNC_EXEC( HB_QJSONPARSEERROR );
+}
+</CODE>
+
+<ENUMS>
+enum ParseError { NoError, UnterminatedObject, MissingNameSeparator, UnterminatedArray, ..., GarbageAtEnd }
+</ENUMS>
+
+<PROTOS>
+QString errorString() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,84 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+#include <QtCore/QJsonArray>
+#include <QtCore/QVariant>
+
+/*
+ * QJsonDocument()
+ * QJsonDocument(const QJsonObject & object)
+ * QJsonDocument(const QJsonArray & array)
+ * QJsonDocument(const QJsonDocument & other)
+ * ~QJsonDocument()
+ */
+HB_FUNC( QT_QJSONDOCUMENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJsonDocument" ) )
+   {
+      __HB_RETPTRGC__( new QJsonDocument( * hbqt_par_QJsonDocument( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJsonArray" ) )
+   {
+      __HB_RETPTRGC__( new QJsonDocument( * hbqt_par_QJsonArray( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJsonObject" ) )
+   {
+      __HB_RETPTRGC__( new QJsonDocument( * hbqt_par_QJsonObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QJsonDocument() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   DataValidation { Validate, BypassValidation }
+enum   JsonFormat { Indented, Compact }
+</ENUMS>
+
+<PROTOS>
+QJsonArray   array() const
+bool   isArray() const
+bool   isEmpty() const
+bool   isNull() const
+bool   isObject() const
+QJsonObject   object() const
+const char *   rawData(int * size) const
+void   setArray(const QJsonArray & array)
+void   setObject(const QJsonObject & object)
+QByteArray   toBinaryData() const
+QByteArray   toJson(JsonFormat format = Indented) const
+QVariant   toVariant() const
+
+QJsonDocument   fromBinaryData(const QByteArray & data, DataValidation validation = Validate)
+QJsonDocument   fromJson(const QByteArray & json, QJsonParseError * error = 0)
+QJsonDocument   fromRawData(const char * data, int size, DataValidation validation = Validate)
+QJsonDocument   fromVariant(const QVariant & variant)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

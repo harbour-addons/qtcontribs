@@ -1,0 +1,86 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QJsonArray>
+#include <QtCore/QVariant>
+
+
+/*
+ *   QJsonArray()
+ * QJsonArray(std::initializer_list<QJsonValue> args)
+ * QJsonArray(const QJsonArray & other)
+ * ~QJsonArray()
+ */
+HB_FUNC( QT_QJSONARRAY )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QJsonArray" ) )
+   {
+      __HB_RETPTRGC__( new QJsonArray( *hbqt_par_QJsonArray( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QJsonArray() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   append(const QJsonValue & value)
+QJsonValue   at(int i) const
+//iterator   begin()
+//const_iterator   begin() const
+//const_iterator   constBegin() const
+//const_iterator   constEnd() const
+bool   contains(const QJsonValue & value) const
+int   count() const
+bool   empty() const
+//iterator   end()
+//const_iterator   end() const
+//iterator   erase(iterator it)
+QJsonValue   first() const
+void   insert(int i, const QJsonValue & value)
+//iterator   insert(iterator before, const QJsonValue & value)
+bool   isEmpty() const
+QJsonValue   last() const
+void   pop_back()
+void   pop_front()
+void   prepend(const QJsonValue & value)
+void   push_back(const QJsonValue & value)
+void   push_front(const QJsonValue & value)
+void   removeAt(int i)
+void   removeFirst()
+void   removeLast()
+void   replace(int i, const QJsonValue & value)
+int   size() const
+QJsonValue   takeAt(int i)
+QList<QVariant>   toVariantList() const
+
+QJsonArray fromStringList(const QStringList & list)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

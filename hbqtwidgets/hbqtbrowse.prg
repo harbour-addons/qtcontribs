@@ -1103,7 +1103,8 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       nwVal := oSZ:width() * Len( xVal )
       nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
 
-      ::columns[ i ]:nColWidth := Max( nwVal + nPadding, nwHead )
+      //::columns[ i ]:nColWidth := Max( nwVal + nPadding, nwHead )
+      ::columns[ i ]:nColWidth := Max( nwVal, nwHead ) + nPadding
 
       ::oHeaderView:resizeSection( i-1, ::columns[ i ]:nColWidth )
       ::oFooterView:resizeSection( i-1, ::columns[ i ]:nColWidth )
@@ -1119,7 +1120,8 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
          xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
          nwVal := oSZ:width() * Len( xVal )
          nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
-         nColumnWidth := Max( nwVal + nPadding, nwHead )
+         //nColumnWidth := Max( nwVal + nPadding, nwHead )
+         nColumnWidth := Max( nwVal, nwHead ) + nPadding
 
          ::oLeftHeaderView:resizeSection( n - 1, nColumnWidth )
          ::oLeftFooterView:resizeSection( n - 1, nColumnWidth )
@@ -1139,7 +1141,8 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
          xVal := transform( eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
          nwVal := oSZ:width() * Len( xVal )
          nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
-         nColumnWidth := Max( nwVal + nPadding, nwHead )
+         //nColumnWidth := Max( nwVal + nPadding, nwHead )
+         nColumnWidth := Max( nwVal, nwHead ) + nPadding
 
          ::oRightHeaderView:resizeSection( n-1, nColumnWidth )
          ::oRightFooterView:resizeSection( n-1, nColumnWidth )
@@ -1623,7 +1626,7 @@ METHOD HbQtBrowse:manageMouseRelease( oMouseEvent )
          Eval( ::bNavigationBlock, K_LBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_RightButton
-         Eval( ::bNavigationBlock, K_MBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
+         Eval( ::bNavigationBlock, K_RBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
          EXIT
       CASE Qt_MidButton
          Eval( ::bNavigationBlock, K_MBUTTONUP, { oMouseEvent:x(), oMouseEvent:y() }, Self )
