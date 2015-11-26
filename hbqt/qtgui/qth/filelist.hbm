@@ -287,6 +287,9 @@ QTextList.qth
 QTextListFormat.qth
 QTextObject.qth
 QTextOption.qth
+QTextTable.qth
+QTextTableCell.qth
+QTextTableCellFormat.qth
 QTextTableFormat.qth
 QTimeEdit.qth
 QToolBar.qth

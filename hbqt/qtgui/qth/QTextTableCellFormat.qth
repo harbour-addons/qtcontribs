@@ -1,0 +1,61 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QTextCharFormat
+QObject     = No
+Version     = 0x040800
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QTextTableCellFormat>
+
+
+/*
+ * QTextTableCellFormat()
+ */
+HB_FUNC( QT_QTEXTTABLECELLFORMAT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QTextTableCellFormat" ) )
+   {
+      __HB_RETPTRGC__( new QTextTableCellFormat( * hbqt_par_QTextTableCellFormat( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QTextTableCellFormat() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+qreal   bottomPadding() const
+bool   isValid() const
+qreal   leftPadding() const
+qreal   rightPadding() const
+void   setBottomPadding(qreal padding)
+void   setLeftPadding(qreal padding)
+void   setPadding(qreal padding)
+void   setRightPadding(qreal padding)
+void   setTopPadding(qreal padding)
+qreal   topPadding() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

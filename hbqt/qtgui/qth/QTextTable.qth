@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QTextFrame
+QObject     = Yes
+Version     = 0x040800
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QTextTable>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QTEXTTABLE )
+{
+   HB_FUNC_EXEC( HB_QTEXTTABLE );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   appendColumns(int count)
+void   appendRows(int count)
+QTextTableCell   cellAt(int row, int column) const
+QTextTableCell   cellAt(int position) const
+QTextTableCell   cellAt(const QTextCursor & cursor) const
+int   columns() const
+QTextTableFormat   format() const
+void   insertColumns(int index, int columns)
+void   insertRows(int index, int rows)
+void   mergeCells(int row, int column, int numRows, int numCols)
+void   mergeCells(const QTextCursor & cursor)
+void   removeColumns(int index, int columns)
+void   removeRows(int index, int rows)
+void   resize(int rows, int columns)
+QTextCursor   rowEnd(const QTextCursor & cursor) const
+QTextCursor   rowStart(const QTextCursor & cursor) const
+int   rows() const
+void   setFormat(const QTextTableFormat & format)
+void   splitCell(int row, int column, int numRows, int numCols)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

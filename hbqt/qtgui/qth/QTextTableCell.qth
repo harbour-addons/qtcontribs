@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = No
+Version     = 0x040800
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QTextTableCell>
+
+
+/*
+ * QTextTableCell()
+ * QTextTableCell(const QTextTableCell & other)
+ * ~QTextTableCell()
+ */
+HB_FUNC( QT_QTEXTTABLECELL )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QTextTableCell" ) )
+   {
+      __HB_RETPTRGC__( new QTextTableCell( * hbqt_par_QTextTableCell( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QTextTableCell() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+//QTextFrame::iterator   begin() const
+int   column() const
+int   columnSpan() const
+//QTextFrame::iterator   end() const
+QTextCursor   firstCursorPosition() const
+QTextCharFormat   format() const
+bool   isValid() const
+QTextCursor   lastCursorPosition() const
+int   row() const
+int   rowSpan() const
+void   setFormat(const QTextCharFormat & format)
+int   tableCellFormatIndex() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

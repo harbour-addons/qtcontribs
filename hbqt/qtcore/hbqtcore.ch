@@ -601,4 +601,6 @@
 #define QLocale_MongolianScript                          8
 #define QLocale_TifinaghScript                           9
 
+#define QLocale_AnyLanguage                              0
+
 #endif

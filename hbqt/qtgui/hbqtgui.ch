@@ -3700,12 +3700,15 @@
 #define QStandardPaths_HomeLocation                          8       // Returns the user's home directory.
 #define QStandardPaths_DataLocation                          9       // Returns a directory location where persistent application data can be stored. QCoreApplication::organizationName and QCoreApplication::applicationName are appended to the directory location returned for GenericDataLocation.
 #define QStandardPaths_CacheLocation                         10      // Returns a directory location where user-specific non-essential (cached) data should be written.
-#define QStandardPaths_GenericCacheLocation                  15      // Returns a directory location where user-specific non-essential (cached) data, shared across applications, should be written.
 #define QStandardPaths_GenericDataLocation                   11      // Returns a directory location where persistent data shared across applications can be stored.
 #define QStandardPaths_RuntimeLocation                       12      // Returns a directory location where runtime communication files should be written. For instance unix local sockets.
 #define QStandardPaths_ConfigLocation                        13      // Returns a directory location where user-specific configuration files should be written.
 #define QStandardPaths_DownloadLocation                      14      // Returns a directory for user's downloaded files.
-
+#define QStandardPaths_GenericCacheLocation                  15      // Returns a directory location where user-specific non-essential (cached) data, shared across applications, should be written.
+#define QStandardPaths_GenericConfigLocation                 16      // Returns a directory location where user-specific configuration files shared between multiple applications should be written. This is a generic value and the returned path is never empty.
+#define QStandardPaths_AppDataLocation                       17      // Returns a directory location where persistent application data can be stored. This is an application-specific directory. To obtain a path to store data to be shared with other applications, use QStandardPaths::GenericDataLocation. The returned path is never empty. On the Windows operating system, this returns the roaming path. This enum value was added in Qt 5.4.
+#define QStandardPaths_AppLocalDataLocation                  QStandardPaths_DataLocation      // Returns the local settings path on the Windows operating system. On all other platforms, it returns the same value as AppDataLocation. This enum value was added in Qt 5.4.
+#define QStandardPaths_AppConfigLocation                     18      // Returns a directory location where user-specific configuration files should be written. This is an application-specific directory, and the returned path is never empty. This enum value was added in Qt 5.5.
 
 #define Qt_ImhNone                                           0x0          // No hints.
 #define Qt_ImhHiddenText                                     0x1          // Characters should be hidden, as is typically used when entering passwords. This is automatically set when setting QLineEdit::echoMode to Password.
