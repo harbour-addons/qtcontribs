@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2015-11-26 12:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r422)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QTextFormat_* and QTextFrameFormat_* constants.
+
 2015-11-26 12:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r421)
   + hbqt/qtgui/qth/QTextTable.qth
   + hbqt/qtgui/qth/QTextTableCell.qth

@@ -5304,5 +5304,148 @@
 #define QJsonDocument_Indented                               0   // Defines human readable output as follows:
 #define QJsonDocument_Compact                                1   // Defines a compact output as follows: {"Array":[true,999,"string"],"Key":"Value","null":null}
 
+//enum QTextFrameFormat::BorderStyle
+//This enum describes different border styles for the text frame.
+#define QTextFrameFormat_BorderStyle_None                    0
+#define QTextFrameFormat_BorderStyle_Dotted                  1
+#define QTextFrameFormat_BorderStyle_Dashed                  2
+#define QTextFrameFormat_BorderStyle_Solid                   3
+#define QTextFrameFormat_BorderStyle_Double                  4
+#define QTextFrameFormat_BorderStyle_DotDash                 5
+#define QTextFrameFormat_BorderStyle_DotDotDash              6
+#define QTextFrameFormat_BorderStyle_Groove                  7
+#define QTextFrameFormat_BorderStyle_Ridge                   8
+#define QTextFrameFormat_BorderStyle_Inset                   9
+#define QTextFrameFormat_BorderStyle_Outset                  10
+
+//enum #define QTextFrameFormat_Position
+//This enum describes how a frame is located relative to the surrounding text.
+#define QTextFrameFormat_InFlow                              0
+#define QTextFrameFormat_FloatLeft                           1
+#define QTextFrameFormat_FloatRight                          2
+
+//enum QTextFormat::FormatType
+//This enum describes the text item a QTextFormat object is formatting.
+#define QTextFormat_InvalidFormat                            -1  // An invalid format as created by the default constructor
+#define QTextFormat_BlockFormat                              1   // The object formats a text block
+#define QTextFormat_CharFormat                               2   // The object formats a single character
+#define QTextFormat_ListFormat                               3   // The object formats a list Unused Value, a table's FormatType is FrameFormat.
+#define QTextFormat_FrameFormat                              5   // The object formats a frame
+#define QTextFormat_UserFormat                               100
+
+//enum #define QTextFormat_ObjectTypes
+//This enum describes what kind of QTextObject this format is associated with.
+#define QTextFormat_NoObject                                 0
+#define QTextFormat_ImageObject                              1
+#define QTextFormat_TableObject                              2
+#define QTextFormat_TableCellObject                          3
+#define QTextFormat_UserObject                               0x1000   // The first object that can be used for application-specific purposes.
+
+//enum #define QTextFormat_PageBreakFlag
+//This enum describes how page breaking is performed when printing. It maps to the corresponding css properties.
+#define QTextFormat_PageBreak_Auto                           0        // The page break is determined automatically depending on the available space on the current page
+#define QTextFormat_PageBreak_AlwaysBefore                   0x001    // The page is always broken before the paragraph/table
+#define QTextFormat_PageBreak_AlwaysAfter                    0x010    // A new page is always started after the paragraph/table
+
+//enum #define QTextFormat_Property
+//This enum describes the different properties a format can have.
+#define QTextFormat_ObjectIndex                              0x0      // The index of the formatted object. See objectIndex().
+
+// Paragraph and character properties
+#define QTextFormat_CssFloat                                 0x0800   // How a frame is located relative to the surrounding text
+#define QTextFormat_LayoutDirection                          0x0801   // The layout direction of the text in the document (Qt::LayoutDirection).
+#define QTextFormat_OutlinePen                               0x810
+#define QTextFormat_ForegroundBrush                          0x821
+#define QTextFormat_BackgroundBrush                          0x820
+#define QTextFormat_BackgroundImageUrl                       0x823
+
+//Paragraph properties
+#define QTextFormat_BlockAlignment                           0x1010
+#define QTextFormat_BlockTopMargin                           0x1030
+#define QTextFormat_BlockBottomMargin                        0x1031
+#define QTextFormat_BlockLeftMargin                          0x1032
+#define QTextFormat_BlockRightMargin                         0x1033
+#define QTextFormat_TextIndent                               0x1034
+#define QTextFormat_TabPositions                             0x1035   // Specifies the tab positions. The tab positions are structs of QTextOption::Tab which are stored in a QList (internally, in a QList<QVariant>).
+#define QTextFormat_BlockIndent                              0x1040
+#define QTextFormat_LineHeight                               0x1048
+#define QTextFormat_LineHeightType                           0x1049
+#define QTextFormat_BlockNonBreakableLines                   0x1050
+#define QTextFormat_BlockTrailingHorizontalRulerWidth        0x1060   // The width of a horizontal ruler element.
+
+// Character properties
+#define QTextFormat_FontFamily                               0x2000
+#define QTextFormat_FontPointSize                            0x2001
+#define QTextFormat_FontPixelSize                            0x2009
+#define QTextFormat_FontSizeAdjustment                       0x2002   // Specifies the change in size given to the fontsize already set using FontPointSize or FontPixelSize.
+#define QTextFormat_FontFixedPitch                           0x2008
+#define QTextFormat_FontWeight                               0x2003
+#define QTextFormat_FontItalic                               0x2004
+#define QTextFormat_FontUnderline                            0x2005   // This property has been deprecated. Use #define QTextFormat_TextUnderlineStyle instead.
+#define QTextFormat_FontOverline                             0x2006
+#define QTextFormat_FontStrikeOut                            0x2007
+#define QTextFormat_FontCapitalization                       QTextFormat_FirstFontProperty   // Specifies the capitalization type that is to be applied to the text.
+#define QTextFormat_FontLetterSpacingType                    0x2033   // Specifies the meaning of the FontLetterSpacing property. The default is QFont::PercentageSpacing.
+#define QTextFormat_FontLetterSpacing                        0x1FE1   // Changes the default spacing between individual letters in the font. The value is specified as a percentage or absolute value, depending on FontLetterSpacingType. The default value is 100%.
+#define QTextFormat_FontWordSpacing                          0x1FE2   // Changes the default spacing between individual words. A positive value increases the word spacing by the corresponding pixels; a negative value decreases the spacing.
+#define QTextFormat_FontStretch                              0x2034   // Corresponds to the QFont::Stretch property
+#define QTextFormat_FontStyleHint                            0x1FE3   // Corresponds to the QFont::StyleHint property
+#define QTextFormat_FontStyleStrategy                        0x1FE4   // Corresponds to the QFont::StyleStrategy property
+#define QTextFormat_FontKerning                              0x1FE5   // Specifies whether the font has kerning turned on.
+#define QTextFormat_FontHintingPreference                    0x1FE6   // Controls the use of hinting according to values of the QFont::HintingPreference enum.
+#define QTextFormat_TextUnderlineColor                       0x2010
+#define QTextFormat_TextVerticalAlignment                    0x2021
+#define QTextFormat_TextOutline                              0x2022
+#define QTextFormat_TextUnderlineStyle                       0x2023
+#define QTextFormat_TextToolTip                              0x2024   // Specifies the (optional) tool tip to be displayed for a fragment of text.
+#define QTextFormat_IsAnchor                                 0x2030
+#define QTextFormat_AnchorHref                               0x2031
+#define QTextFormat_AnchorName                               0x2032
+#define QTextFormat_ObjectType                               0x2f00
+
+//List properties
+#define QTextFormat_ListStyle                                0x3000   // Specifies the style used for the items in a list, described by values of the QTextListFormat::Style enum.
+#define QTextFormat_ListIndent                               0x3001   // Specifies the amount of indentation used for a list.
+#define QTextFormat_ListNumberPrefix                         0x3002   // Defines the text which is prepended to item numbers in numeric lists.
+#define QTextFormat_ListNumberSuffix                         0x3003   // Defines the text which is appended to item numbers in numeric lists.
+
+// Table and frame properties
+#define QTextFormat_FrameBorder                              0x4000
+#define QTextFormat_FrameBorderBrush                         0x4009
+#define QTextFormat_FrameBorderStyle                         0x4010   // See the BorderStyle enum.
+#define QTextFormat_FrameBottomMargin                        0x4006
+#define QTextFormat_FrameHeight                              0x4004
+#define QTextFormat_FrameLeftMargin                          0x4007
+#define QTextFormat_FrameMargin                              0x4001
+#define QTextFormat_FramePadding                             0x4002
+#define QTextFormat_FrameRightMargin                         0x4008
+#define QTextFormat_FrameTopMargin                           0x4005
+#define QTextFormat_FrameWidth                               0x4003
+#define QTextFormat_TableCellSpacing                         0x4102
+#define QTextFormat_TableCellPadding                         0x4103
+#define QTextFormat_TableColumns                             0x4100
+#define QTextFormat_TableColumnWidthConstraints              0x4101
+#define QTextFormat_TableHeaderRowCount                      0x4104
+
+// Table cell properties
+#define QTextFormat_TableCellRowSpan                         0x4810
+#define QTextFormat_TableCellColumnSpan                      0x4811
+#define QTextFormat_TableCellLeftPadding                     0x4814
+#define QTextFormat_TableCellRightPadding                    0x4815
+#define QTextFormat_TableCellTopPadding                      0x4812
+#define QTextFormat_TableCellBottomPadding                   0x4813
+
+//Image properties
+#define QTextFormat_ImageName                                0x5000
+#define QTextFormat_ImageWidth                               0x5010
+#define QTextFormat_ImageHeight                              0x5011
+
+//Selection properties
+#define QTextFormat_FullWidthSelection                       0x06000   // When set on the characterFormat of a selection, the whole width of the text will be shown selected.
+
+//Page break properties
+#define QTextFormat_PageBreakPolicy                          0x7000    // Specifies how pages are broken. See the PageBreakFlag enum.
+#define QTextFormat_UserProperty                             0x100000
+
 #endif
 
