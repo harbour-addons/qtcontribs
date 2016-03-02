@@ -5447,5 +5447,9 @@
 #define QTextFormat_PageBreakPolicy                          0x7000    // Specifies how pages are broken. See the PageBreakFlag enum.
 #define QTextFormat_UserProperty                             0x100000
 
+#define QTextLength_VariableLength                           0         // the width of the object is variable
+#define QTextLength_FixedLength                              1         // the width of the object is fixed
+#define QTextLength_PercentageLength                         2         // the width of the object is in percentage of the maximum width
+
 #endif
 

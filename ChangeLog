@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-13-02 13:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r423)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: few QTextLength_* constants.
+
+  * hbqt/qtgui/qth/QComboBox.qth
+    + Added: currentData() method introduced in Qt 5.2.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed to set buffer data if a list box is clicked with mouse.
+
 2015-11-26 12:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r422)
   * hbqt/qtgui/hbqtgui.ch
     + Added: QTextFormat_* and QTextFrameFormat_* constants.

@@ -364,11 +364,12 @@ METHOD HbQtGet:connect()
 
    SWITCH ::cClassName
    CASE "QLINEEDIT"
-      ::oEdit:connect( "textEdited(QString)" , {|| ::lChanged := .T. } )
+      ::oEdit:connect( "textEdited(QString)"    , {|| ::lChanged := .T. } )
       EXIT
    CASE "QPLAINTEXTEDIT"
       EXIT
    CASE "QLISTWIDGET"
+      ::oEdit:connect( "itemSelectionChanged()" , {||  ::cBuffer := ::oEdit:currentItem():text(), ::assign() } )
       EXIT
    CASE "QCOMBOBOX"
       ::oEdit:connect( "currentIndexChanged(QString)", {|p|  ::cBuffer := p, ::assign()            } )

@@ -52,6 +52,7 @@ void addItem ( const QIcon & icon, const QString & text, const QVariant & userDa
 void addItems ( const QStringList & texts )
 QCompleter * completer () const
 int count () const
+QVariant currentData(int role = Qt::UserRole) const                            [*V=0x050200*]
 int currentIndex () const
 QString currentText () const
 bool duplicatesEnabled () const
