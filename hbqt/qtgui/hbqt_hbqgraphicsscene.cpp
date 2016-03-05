@@ -64,8 +64,6 @@
 
 #include "hbqt_hbqgraphicsscene.h"
 
-#include <QtGui/QPageLayout>
-
 static bool bAllowResizing = true;
 static bool bAllowMovement = true;
 

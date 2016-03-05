@@ -66,8 +66,11 @@
 #include "hbextcdp.ch"
 
 
-
+#ifndef __HB_QT_MAJOR_VER_4__
 #define P_XX( n )                                 ( Int( QApplication():primaryScreen():logicalDotsPerInchY() * n / 96 ) )
+#else
+#define P_XX( n )                                 ( n )
+#endif
 #define _T( x )                                   ( mnuNormalizeItem( x ) )
 
 #define __buttonViewTabbed_clicked__              2007

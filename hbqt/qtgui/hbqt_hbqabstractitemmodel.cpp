@@ -177,7 +177,7 @@ static bool hbqt_setData( PHB_ITEM block, int type, int role, int iRow, int iCol
             p4 = hb_itemPutDL( NULL, qD.toJulianDay() );
          }
          break;
-
+#if QT_VERSION >= 0x040900
          case QVariant::DateTime:
          {
             QDateTime qDT;
@@ -187,7 +187,7 @@ static bool hbqt_setData( PHB_ITEM block, int type, int role, int iRow, int iCol
             p4 = hb_itemPutTDT( NULL, qD.toJulianDay(), qDT.time().msecsSinceStartOfDay());
          }
          break;
-
+#endif
          case QVariant::LongLong:
          case QVariant::ULongLong:
          {
@@ -207,7 +207,7 @@ static bool hbqt_setData( PHB_ITEM block, int type, int role, int iRow, int iCol
             p4 = hb_itemPutND( NULL, qVariantObj.toDouble() );
          }
          break;
-
+#if QT_VERSION >= 0x040900
          case QVariant::ModelIndex:
          {
             QModelIndex qMI;
@@ -223,7 +223,7 @@ static bool hbqt_setData( PHB_ITEM block, int type, int role, int iRow, int iCol
             hb_itemRelease( pRow );
          }
          break;
-
+#endif
          default:
             p4 = NULL;
       }

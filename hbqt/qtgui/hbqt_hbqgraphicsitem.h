@@ -55,6 +55,23 @@
 
 #include "hbqt.h"
 
+#if QT_VERSION <= 0x040900
+#include <QtGui/QGraphicsObject>
+#include <QtGui/QGraphicsItem>
+#include <QtGui/QStyleOptionGraphicsItem>
+#include <QtGui/QGraphicsScene>
+#include <QtGui/QGraphicsSceneMouseEvent>
+#include <QtGui/QWidget>
+#include <QtGui/QTreeWidget>
+#include <QtGui/QDesktopWidget>
+#include <QtGui/QGestureEvent>
+#include <QtGui/QGesture>
+#include <QtGui/QTapAndHoldGesture>
+#include <QtGui/QPinchGesture>
+#include <QtGui/QSwipeGesture>
+#include <QtGui/QTapGesture>
+#include <QtGui/QGraphicsPixmapItem>
+#else
 #include <QtWidgets/QGraphicsObject>
 #include <QtWidgets/QGraphicsItem>
 #include <QtWidgets/QStyleOptionGraphicsItem>
@@ -70,6 +87,7 @@
 #include <QtWidgets/QSwipeGesture>
 #include <QtWidgets/QTapGesture>
 #include <QtWidgets/QGraphicsPixmapItem>
+#endif
 
 #include <QtGui/QPainter>
 

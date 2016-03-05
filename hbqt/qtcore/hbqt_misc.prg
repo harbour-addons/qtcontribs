@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -287,4 +287,17 @@ METHOD HbQtTouchPoint:init()
    hb_HCaseMatch( ::hData, .T. )
 
    RETURN Self
+
+//--------------------------------------------------------------------//
+//         Hacks to Cover Qt 4.x Build Issues with .UI Parsing
+//--------------------------------------------------------------------//
+#ifdef __HB_QT_MAJOR_VER_4__
+FUNCTION QApplication_translate( p1, p2 )
+   HB_SYMBOL_UNUSED( p1 )
+   RETURN p2
+
+
+FUNCTION Q_Unused()
+   RETURN NIL
+#endif
 

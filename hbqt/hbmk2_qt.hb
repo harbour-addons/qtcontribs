@@ -68,7 +68,9 @@ FUNCTION hbmk_plugin_qt( hbmk )
 
       cVer := qt_version_detect( hbmk, "uic", "UIC_BIN" )
       cVer := StrTran( cVer, hb_eol() )
-      hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
+      IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )
+         hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
+      ENDIF
 
       IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )
          cTmp1 := MemoRead( "ChangeLog" )
@@ -83,7 +85,11 @@ FUNCTION hbmk_plugin_qt( hbmk )
          cTmp += "#ifndef __HBQT_VERSION_CH" + hb_eol()
          cTmp += "   #define __HBQT_VERSION_CH" + hb_eol()
          cTmp += " " + hb_eol()
-         cTmp += "#define __HB_QT_MAJOR_VERSION_5__        " + '"' + cVer + '"' + hb_eol()
+         IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )
+            cTmp += "#define __HB_QT_MAJOR_VERSION_5__        " + '"' + cVer + '"' + hb_eol()
+         ELSE
+            cTmp += "#define __HB_QT_MAJOR_VERSION_4__        " + '"' + cVer + '"' + hb_eol()
+         ENDIF
          cTmp += "#define __HBQT_REVISION__                " + '"' + cTmp1 + '"' + hb_eol()
          cTmp += " " + hb_eol()
          cTmp += "#endif" + hb_eol()
@@ -2192,6 +2198,19 @@ METHOD HbQtSource:new( cQtModule, cQtVer, cQTHFileName, cCPPFileName, cDOCFileNa
 
 /*----------------------------------------------------------------------*/
 
+STATIC FUNCTION __evalToLogical( cStr )
+   LOCAL xTmp
+   LOCAL lResult := .F.
+
+   BEGIN SEQUENCE
+      xTmp := Eval( &( "{|| " + cStr + " }" ) )
+      IF HB_ISLOGICAL( xTmp )
+         lResult := xTmp
+      ENDIF
+   END SEQUENCE
+   RETURN lResult
+
+
 METHOD HbQtSource:build()
    LOCAL i, s, oMtd, tmp, tmp1, n, k, aLine, uQtObject, aParents, cParent
 
@@ -2275,16 +2294,36 @@ METHOD HbQtSource:build()
    NEXT
    AAdd( aLine, "" )
 
+   s := ""
    n := AScan( ::cls_, {| e_ | Left( Lower( e_[ 1 ] ), 7 ) == "inherit" .and. ! Empty( e_[ 2 ] ) } )
    IF n > 0
       aParents := hb_ATokens( AllTrim( ::cls_[ n, 2 ] ), "," )
-      s := ""
       FOR EACH cParent IN aParents
          IF ! Empty( cParent )
-            s += Upper( "HB_" + AllTrim( cParent ) + iif( cParent:__enumIndex() == Len( aParents ), "", ", " ) )
+            IF ( n := At( "::", cParent ) ) > 0
+               tmp := SubStr( cParent, 1, n - 1 )
+               tmp1 := SubStr( cParent, n + 2 )
+               IF ! Empty( tmp )
+                  IF __evalToLogical( tmp )
+                     cParent := tmp1
+                  ELSE
+                     cParent := ""
+                  ENDIF
+               ELSE
+                  cParent := tmp1
+               ENDIF
+            ENDIF
+            IF ! Empty( cParent )
+               s += Upper( "HB_" + AllTrim( cParent ) + iif( cParent:__enumIndex() == Len( aParents ), "", ", " ) )
+            ENDIF
          ENDIF
       NEXT
-   ELSE
+   ENDIF
+   s := Trim( s )
+   IF Right( s, 1 ) == ","
+      s := Left( s, Len( s ) - 1 )
+   ENDIF
+   IF Empty( s )
       s := "HBQTOBJECTHANDLER"
    ENDIF
 
@@ -2293,11 +2332,13 @@ METHOD HbQtSource:build()
    AAdd( aLine, "" )
 
    FOR EACH k IN hb_aTokens( s, "," )
-      k := lower( AllTrim( k ) )
-      IF k == "hbqtobjecthandler"
-         AAdd( aLine, "HB_FUNC_EXTERN( " + Upper( k ) + " );" )
-      ELSE
-         AAdd( aLine, "extern HB_EXPORT void hbqt_register_" + SubStr( k,4 ) + "();" )
+      IF ! Empty( k )
+         k := lower( AllTrim( k ) )
+         IF k == "hbqtobjecthandler"
+            AAdd( aLine, "HB_FUNC_EXTERN( " + Upper( k ) + " );" )
+         ELSE
+            AAdd( aLine, "extern HB_EXPORT void hbqt_register_" + SubStr( k,4 ) + "();" )
+         ENDIF
       ENDIF
    NEXT
    AAdd( aLine, "" )
@@ -2418,11 +2459,13 @@ METHOD HbQtSource:build()
    AAdd( aLine, "   {" )
    AAdd( aLine, "      s_oClass = hb_itemNew( NULL );" )
    FOR EACH k IN hb_aTokens( s, "," )
-      k := lower( AllTrim( k ) )
-      IF k == "hbqtobjecthandler"
-         AAdd( aLine, "      HB_FUNC_EXEC( " + Upper( k ) + " );" )
-      ELSE
-         AAdd( aLine, "      hbqt_register_" + SubStr( k, 4 ) + "();" )
+      IF ! Empty( k )
+         k := lower( AllTrim( k ) )
+         IF k == "hbqtobjecthandler"
+            AAdd( aLine, "      HB_FUNC_EXEC( " + Upper( k ) + " );" )
+         ELSE
+            AAdd( aLine, "      hbqt_register_" + SubStr( k, 4 ) + "();" )
+         ENDIF
       ENDIF
    NEXT
    AAdd( aLine, '      PHB_ITEM oClass = hbqt_defineClassBegin( "' + uQtObject + '", s_oClass, "' + s + '" );' )

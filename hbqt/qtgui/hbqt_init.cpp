@@ -81,8 +81,6 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QStandardItem>
 #include <QtGui/QCloseEvent>
-#include <QtWidgets/QScroller>
-#include <QtWidgets/QScrollerProperties>
 
 #if QT_VERSION <= 0x040900
 #include <QtGui/QMainWindow>
@@ -106,6 +104,8 @@
 #include <QtWidgets/QMdiSubWindow>
 #include <QtWidgets/QAbstractButton>
 #include <QtWidgets/QWidget>
+#include <QtWidgets/QScroller>
+#include <QtWidgets/QScrollerProperties>
 #endif
 
 
@@ -617,7 +617,7 @@ static void hbqt_SlotsExecIntQImage( PHB_ITEM * codeBlock, void ** arguments, QS
       hb_itemRelease( p0 );
    }
 }
-
+#if QT_VERSION >= 0x050000
 static void hbqt_SlotsExecQScrollerProperties( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -631,7 +631,7 @@ static void hbqt_SlotsExecQScrollerProperties( PHB_ITEM * codeBlock, void ** arg
       hb_itemRelease( p0 );
    }
 }
-
+#endif
 
 HB_FUNC_EXTERN( HB_QABSTRACTBUTTON );
 HB_FUNC_EXTERN( HB_QACTION );
@@ -712,8 +712,10 @@ void _hbqtgui_force_link_for_event( void )
    HB_FUNC_EXEC( HB_QLISTWIDGETITEM );
    HB_FUNC_EXEC( HB_QTABLEWIDGETITEM );
    HB_FUNC_EXEC( HB_QTREEWIDGETITEM );
+#if QT_VERSION >= 0x050000
    HB_FUNC_EXEC( HB_QSCROLLER );
    HB_FUNC_EXEC( HB_QSCROLLERPROPERTIES );
+#endif
 }
 
 static void hbqt_registerCallbacks( void )
@@ -745,8 +747,9 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QRect$int"                                 , hbqt_SlotsExecQRectInt                         );
    hbqt_slots_register_callback( "BlurHints"                                 , hbqt_SlotsExecBlurHints                        );
    hbqt_slots_register_callback( "int$QImage"                                , hbqt_SlotsExecIntQImage                        );
+#if QT_VERSION >= 0x050000
    hbqt_slots_register_callback( "QScrollerProperties"                       , hbqt_SlotsExecQScrollerProperties              );
-
+#endif
    hbqt_events_register_createobj( QEvent::MouseButtonPress                  , "hb_QMouseEvent"                    );
    hbqt_events_register_createobj( QEvent::MouseButtonRelease                , "hb_QMouseEvent"                    );
    hbqt_events_register_createobj( QEvent::MouseButtonDblClick               , "hb_QMouseEvent"                    );
@@ -883,20 +886,18 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::TouchBegin                        , "hb_QTouchEvent"                    );
    hbqt_events_register_createobj( QEvent::TouchUpdate                       , "hb_QTouchEvent"                    );
    hbqt_events_register_createobj( QEvent::TouchEnd                          , "hb_QTouchEvent"                    );
+   hbqt_events_register_createobj( QEvent::RequestSoftwareInputPanel         , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::CloseSoftwareInputPanel           , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::WinIdChange                       , "hb_QEvent"                         );
+   hbqt_events_register_createobj( QEvent::PlatformPanel                     , "hb_QEvent"                         );
+
+#if QT_VERSION >= 0x050000
    hbqt_events_register_createobj( QEvent::TouchCancel                       , "hb_QTouchEvent"                    );
    hbqt_events_register_createobj( QEvent::ScrollPrepare                     , "hb_QScrollPrepareEvent"            );
    hbqt_events_register_createobj( QEvent::Scroll                            , "hb_QScrollEvent"                   );
    hbqt_events_register_createobj( QEvent::InputMethodQuery                  , "hb_QInputMethodQueryEvent"         );
-
-   hbqt_events_register_createobj( QEvent::RequestSoftwareInputPanel         , "hb_QEvent"                         );
-   hbqt_events_register_createobj( QEvent::CloseSoftwareInputPanel           , "hb_QEvent"                         );
-   hbqt_events_register_createobj( QEvent::WinIdChange                       , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::Expose                            , "hb_QEvent"                         );
-   hbqt_events_register_createobj( QEvent::PlatformPanel                     , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::ApplicationStateChange            , "hb_QEvent"                         );
-
-#if 0
-#define QEvent_OrientationChange                  208      // The screens orientation has changes (QScreenOrientationChangeEvent)
 #endif
 }
 

@@ -43,7 +43,7 @@ enum TabShape { Rounded, Triangular }
 </ENUMS>
 
 <PROTOS>
-int addTab ( QWidget * page, const QString & label )   [*X=1*]
+int addTab ( QWidget * page, const QString & label )                       [*X=1*]
 int addTab ( QWidget * page, const QIcon & icon, const QString & label )   [*X=1*]
 void clear ()
 QWidget * cornerWidget ( Qt::Corner corner = Qt::TopRightCorner ) const
@@ -73,7 +73,7 @@ void setTabToolTip ( int index, const QString & tip )
 void setTabWhatsThis ( int index, const QString & text )
 void setTabsClosable ( bool closeable )
 void setUsesScrollButtons ( bool useButtons )
-QTabBar * tabBar() const
+QTabBar * tabBar() const                                             [*V=0x050200*]
 QIcon tabIcon ( int index ) const
 TabPosition tabPosition () const
 TabShape tabShape () const

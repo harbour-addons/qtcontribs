@@ -14,7 +14,7 @@
 <CLASS>
 Inherit     = QEvent
 QObject     = No
-Version     = 0x040800
+Version     = 0x050000
 </CLASS>
 
 

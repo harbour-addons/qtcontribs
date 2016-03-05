@@ -20,7 +20,7 @@ Version     = 0x040800
 
 <CODE>
 #include <QtGui/QTextTable>
-
+#include <QtGui/QTextCursor>
 
 /*
  *

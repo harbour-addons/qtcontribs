@@ -28,6 +28,7 @@ Version     = 0x040600
  */
 HB_FUNC( QT_QVARIANTANIMATION )
 {
+#if QT_VERSION > 0x040900
    if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
    {
       __HB_RETPTRGC__( new QVariantAnimation( hbqt_par_QObject( 1 ) ) );
@@ -36,6 +37,9 @@ HB_FUNC( QT_QVARIANTANIMATION )
    {
       __HB_RETPTRGC__( new QVariantAnimation() );
    }
+#else
+   HB_FUNC_EXEC( HB_QVARIANTANIMATION );
+#endif
 }
 </CODE>
 

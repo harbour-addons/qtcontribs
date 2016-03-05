@@ -58,7 +58,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QUrl>
-#include <QtMultimedia/QSoundEffect>
 
 #include <QtGui/QCursor>
 #include <QtGui/QKeyEvent>
@@ -70,11 +69,13 @@
 #include <QtGui/QGraphicsLineItem>
 #include <QtGui/QGraphicsView>
 #else
+#include <QtGui/QPageLayout>
 #include <QtPrintSupport/QPrinter>
 #include <QtWidgets/QGraphicsScene>
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QGraphicsLineItem>
 #include <QtWidgets/QGraphicsView>
+#include <QtMultimedia/QSoundEffect>
 #endif
 
 #include "hbqt_hbqgraphicsitem.h"

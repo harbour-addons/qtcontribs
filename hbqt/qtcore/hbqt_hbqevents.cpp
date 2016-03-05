@@ -65,7 +65,13 @@
 #include <QtCore/QVariant>
 #include <QtGui/QPainter>
 #include <QtGui/QPaintDevice>
+
+#if QT_VERSION <= 0x040900
+#include <QtGui/QWidget>
+#else
 #include <QtWidgets/QWidget>
+#endif
+
 
 HBQEvents * hbqt_bindGetReceiverEventsByHbObject( PHB_ITEM pObject );
 

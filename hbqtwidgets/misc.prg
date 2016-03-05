@@ -586,6 +586,8 @@ FUNCTION __hbqtRgbaCssStrDarker( aRgb, nFactor )
    RETURN "rgba(" + hb_ntos( oColor:red() ) + "," +  hb_ntos( oColor:green() ) + "," + hb_ntos( oColor:blue() ) + ",255)"
 
 
+#ifndef __HB_QT_MAJOR_VER_4__
+
 FUNCTION __hbqtUndoScroller( oScrollableWidget )
    QScroller():scroller( oScrollableWidget ):ungrabGesture( oScrollableWidget )
    RETURN NIL
@@ -614,8 +616,25 @@ FUNCTION __hbqtApplyTouchScroller( oScrollableWidget )
    ENDWITH
    oScroller:setScrollerProperties( oScrollerProperties )
    oScroller:grabGesture( oScrollableWidget, QScroller_TouchGesture )
-   RETURN oScroller                               // in case to finetune other properties
+   RETURN oScroller
+                               // in case to finetune other properties
+#else
 
+FUNCTION __hbqtUndoScroller( oScrollableWidget )
+   HB_SYMBOL_UNUSED( oScrollableWidget )
+   RETURN NIL
+
+
+FUNCTION __hbqtApplyStandardScroller( oScrollableWidget )
+   HB_SYMBOL_UNUSED( oScrollableWidget )
+   RETURN NIL
+
+
+FUNCTION __hbqtApplyTouchScroller( oScrollableWidget )
+   HB_SYMBOL_UNUSED( oScrollableWidget )
+   RETURN NIL
+
+#endif __HB_QT_MAJOR_VER_4__
 
 FUNCTION __hbqtGradientBrush( oColorStart, oColorStop, nType )
    LOCAL oGrad

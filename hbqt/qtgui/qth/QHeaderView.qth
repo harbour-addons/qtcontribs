@@ -60,37 +60,37 @@ int   logicalIndex(int visualIndex) const
 int   logicalIndexAt(int position) const
 int   logicalIndexAt(int x, int y) const
 int   logicalIndexAt(const QPoint & pos) const
-int   maximumSectionSize() const
-int   minimumSectionSize() const
+int   maximumSectionSize() const                              [*V=0x050200*]
+int   minimumSectionSize() const 
 void   moveSection(int from, int to)
 int   offset() const
 Qt::Orientation   orientation() const
-int   resizeContentsPrecision() const
+int   resizeContentsPrecision() const                         [*V=0x050200*]
 void   resizeSection(int logicalIndex, int size)
 void   resizeSections(QHeaderView::ResizeMode mode)
 bool   restoreState(const QByteArray & state)
 QByteArray   saveState() const
 int   sectionPosition(int logicalIndex) const
-ResizeMode   sectionResizeMode(int logicalIndex) const
+ResizeMode   sectionResizeMode(int logicalIndex) const        [*V=0x050000*]
 int   sectionSize(int logicalIndex) const
 int   sectionSizeHint(int logicalIndex) const
 int   sectionViewportPosition(int logicalIndex) const
-bool   sectionsClickable() const
+bool   sectionsClickable() const                              [*V=0x050000*]
 bool   sectionsHidden() const
-bool   sectionsMovable() const
+bool   sectionsMovable() const                                [*V=0x050000*]
 bool   sectionsMoved() const
 void   setCascadingSectionResizes(bool enable)
 void   setDefaultAlignment(Qt::Alignment alignment)
 void   setDefaultSectionSize(int size)
 void   setHighlightSections(bool highlight)
-void   setMaximumSectionSize(int size)
-void   setMinimumSectionSize(int size)
-void   setResizeContentsPrecision(int precision)
+void   setMaximumSectionSize(int size)                        [*V=0x050200*]
+void   setMinimumSectionSize(int size) 
+void   setResizeContentsPrecision(int precision)              [*V=0x050200*]
 void   setSectionHidden(int logicalIndex, bool hide)
-void   setSectionResizeMode(ResizeMode mode)
+void   setSectionResizeMode(ResizeMode mode)                  [*V=0x050000*]
 void   setSectionResizeMode(int logicalIndex, ResizeMode mode)
-void   setSectionsClickable(bool clickable)
-void   setSectionsMovable(bool movable)
+void   setSectionsClickable(bool clickable)                   [*V=0x050000*]
+void   setSectionsMovable(bool movable)                       [*V=0x050000*]
 void   setSortIndicator(int logicalIndex, Qt::SortOrder order)
 void   setSortIndicatorShown(bool show)
 void   setStretchLastSection(bool stretch)

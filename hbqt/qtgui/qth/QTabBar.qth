@@ -14,11 +14,12 @@
 <CLASS>
 Inherit     = QWidget
 New         = pParent
+Version     = 
 </CLASS>
 
 <CODE>
-#include <QtGui/QTabBar>
 #include <QtCore/QVariant>
+#include <QtGui/QTabBar>
 #include <QtGui/QIcon>
 
 /*

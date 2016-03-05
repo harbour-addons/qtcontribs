@@ -16,6 +16,84 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-13-05 02:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r424)
+  * hbide/actions.prg
+  * hbide/editor.prg
+  * hbqt/hbmk2_qt.hb
+  * hbqt/qtcore/hbqt_hbqevents.cpp
+  * hbqt/qtcore/hbqt_misc.prg
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtcore/qth/QVariantAnimation.qth
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+  * hbqt/qtgui/hbqt_init.cpp
+  * hbqt/qtgui/hbqtgui.hbc
+  * hbqt/qtgui/qth/QApplication.qth
+  * hbqt/qtgui/qth/QComboBox.qth
+  * hbqt/qtgui/qth/QHeaderView.qth
+  * hbqt/qtgui/qth/QPrinter.qth
+  * hbqt/qtgui/qth/QScrollEvent.qth
+  * hbqt/qtgui/qth/QScrollPrepareEvent.qth
+  * hbqt/qtgui/qth/QSplitterHandle.qth
+  * hbqt/qtgui/qth/QTabBar.qth
+  * hbqt/qtgui/qth/QTabWidget.qth
+  * hbqt/qtgui/qth/QTextTable.qth
+  * hbqt/qtgui/qth/QTextTableCell.qth
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/misc.prg
+  * hbqtwidgets/tests/browgets.prg
+  * hbqtwidgets/tests/composite.hbp
+  * hbqtwidgets/tests/validator.prg
+
+  + qtcontribs4.hbp
+    + Added new Qt 4.x relevant Harbour project file.
+
+    ; Brought back Qt 4.x compatibility for QtCore, QtGui and QtNetwork modules.
+      NOTES:  1. Set environment HB_QT_MAJOR_VER=4.
+              2. Set environment HB_USER_PRGFLAGS=-d__HB_QT_MAJOR_VER_4__
+              3. Set environment variable HB_BUILD_NAME=-486 (where -486 == QtVer)
+
+              This is the .bat used to compile for any version of Qt:
+
+              @ECHO OFF
+
+              SET HB_QT_MAJOR_VER=4
+              SET HB_USER_PRGFLAGS=-d__HB_QT_MAJOR_VER_4__
+              SET HB_BUILD_NAME=-486
+
+              SET QT_PATH=C:\Qt486
+              SET GW_PATH=C:\Qt550\Tools\mingw492_32
+
+              SET PATH=D:\harbour\bin\win\mingw%HB_BUILD_NAME%;%GW_PATH%\bin;%QT_PATH%\bin;%PATH%
+
+              SET HB_ARCHITECTURE=win
+              SET HB_COMPILER=mingw
+
+              SET HB_INSTALL_PREFIX=C:\harbour
+
+              SET HB_WITH_QT=%QT_PATH%\include
+              SET HB_QTPATH=%QT_PATH%\bin
+
+              SET HB_USER_CFLAGS=-DHB_LEGACY_TYPES_ON
+
+              SET HB_LEGACY_TYPES_ON=YES
+              SET HB_BUILD_CONTRIB_DYN=no
+              SET HB_TR_SYSOUT=yes
+
+              :__eof__  Add your build relevant other settings
+
+              Convert above to Linux Script syntax.
+
+      Now onwards compatibility for Qt 4.x will be maintain for base 3 modules.
+      HbIDE, HbDBU, and many tests in HbQt and HbQtWidgets are running 
+      normally. HbIDE sometimes throughs exception at exit. Every other 
+      test app works flawlessly.
+      
+      Enjoy
+
 2016-13-02 13:59 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r423)
   * hbqt/qtgui/hbqtgui.ch
     + Added: few QTextLength_* constants.

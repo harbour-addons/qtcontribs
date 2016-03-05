@@ -2053,7 +2053,7 @@ METHOD IdeEditor:buildTabPage( cSource )
    ::oTab:minimized := .F.
 
    ::oTab:create()
-
+#ifndef __HB_QT_MAJOR_VER_4__
    WITH OBJECT ::oTabBar := ::qTabWidget:tabBar()
       :setContextMenuPolicy( Qt_CustomContextMenu )
       :setAcceptDrops( .T. )
@@ -2062,7 +2062,7 @@ METHOD IdeEditor:buildTabPage( cSource )
       :connect( QEvent_Drop     , {|p| p:setDropAction( Qt_IgnoreAction ), p:accept() } )
       :connect( "customContextMenuRequested(QPoint)", {|oPos| ::execTabContextMenu( oPos )  } )
    ENDWITH
-
+#endif
    IF ::oINI:lTabAddClose
       ::qTabWidget:setTabsClosable( .T. )
       ::qTabWidget:connect( "tabCloseRequested(int)", {|i|  ::oSM:closeSource( i + 1 ) } )

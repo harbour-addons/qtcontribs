@@ -11,7 +11,7 @@
  * See COPYING for licensing terms.
  */
 <CLASS>
-Inherit     = QGuiApplication
+Inherit     = GetEnv("HB_QT_MAJOR_VER")>="5"::QGuiApplication,GetEnv("HB_QT_MAJOR_VER")=="4"::QCoreApplication
 New         =
 Constructor = no
 </CLASS>

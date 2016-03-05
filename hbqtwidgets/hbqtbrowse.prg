@@ -4222,7 +4222,9 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
       oPrinter := QPrinter()
       oPrinter:setOutputFormat( QPrinter_PdfFormat )     /* Until issue WITH QPrintDialog() is resolved, Printing will CREATE a .PDF file on disk */
       oPrinter:setPageOrientation( QPrinter_Portrait )
+#ifndef __HB_QT_MAJOR_VER_4__
       oPrinter:setPageSize( QPageSize( QPrinter_A4 ) )
+#endif
    ENDIF
 
    ::printPreview( oPrinter )

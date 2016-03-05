@@ -32,9 +32,6 @@ FUNCTION Main()
    oMain:btnInLayout  : connect( "clicked()", {|| ClipperInLayout( oMain:oWidget ) } )
    oMain:btnYet       : connect( "clicked()", {|| __hbqt_dump_itemsInGlobalList()  } )
 
-   // demonstrates how to use this event to draw anything we want !
-   oMain:btnYet       : connect( QEvent_Paint, {| oEvent, oPainter | __testPainter( oEvent, oPainter, oMain:btnYet ) } )
-
    oMain:show()
 
    SetKey( K_F2, {|| HbQtCalculate( oMain:oWidget ) } )
@@ -396,7 +393,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    SayList       := {}
 
    /* Harbour standards SAYs and GETs */
-   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| lMrd := .F., cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!KA"
+   @ 1, 02 SAY PadL( "Upper Cased Alphabets:", nPdL ) GET cText VALID {|oGet| cText == "ABC" .OR. cText == "DEF" .OR. Udf1( oGet ) } PICTURE "@!KA"
 
    @  2, 02 SAY PadL( "Birthday:", nPdL )
    @  2, nColGet GET dDate WHEN {|| cText == "ABC" } COLOR "B/GR*" VALID dDate >= 0d19560604
@@ -404,7 +401,7 @@ STATIC FUNCTION fetchGets( GetList, SayList )
    @  3, 02 SAY PadL( "Max 6 Decimals:", nPdL ) PROPERTIES {|oSay,aCoord| MySayProperties( oSay, aCoord ) }
    @  3, nColGet GET nNumb PICTURE "@Z 9,999,999.999999" VALID nNumb > 600 .AND. nNumb < 6000000
 
-   @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  WHEN .F. PICTURE "Y"
+   @  4, 02 SAY PadL( "Logical - Married:", nPdL ) GET lMrd  PICTURE "Y"
 
    @  5, 02 SAY PadL( "Telephone Number:", nPdL )
    @  5, nColGet GET cTele PICTURE "@! (999)999-9999"
@@ -505,32 +502,3 @@ STATIC FUNCTION MySayProperties( oSay, aCoord )
    oSay:setText( "Salary..." )
 
    RETURN NIL
-
-
-STATIC FUNCTION __testPainter( oEvent, oPainter, oBtn )
-   LOCAL oR
-   LOCAL oRect := oEvent:rect()
-   LOCAL oGrad := QLinearGradient( oRect:x(), oRect:y(), oRect:width(), oRect:height() )
-
-   WITH OBJECT oGrad
-      :setColorAt( 0, QColor( 255, 255, 255 ) )
-      IF oBtn:isDown()
-         :setColorAt( 1, QColor(  30,  30, 255 ) )
-      ELSE
-         :setColorAt( 1, QColor(   0,   0, 255 ) )
-      ENDIF
-   ENDWITH
-   WITH OBJECT oPainter
-      IF oBtn:isDown()
-         oR := oRect:adjusted( 1, 1, 0, 0 )
-         oRect := NIL
-         oRect := oR
-      ENDIF
-      :fillRect( oRect, QBrush( oGrad ) )
-      :drawRect( oRect:adjusted( 10,10,-10,-10 ) )
-      :drawText( oRect:width() / 2 - 30, oRect:height() / 2, "Yet to be ..." )
-   ENDWITH
-
-   RETURN .T.
-
-

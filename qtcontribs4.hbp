@@ -1,0 +1,36 @@
+#
+# $Id$
+#
+
+-hbcontainer
+
+#    Generate SVN Revision Info
+#-vcshead=hbide/hbide_v.ch
+
+#    HWGDebug
+debug/hwgdebug.hbp
+
+#    Qt Modules - mandatory
+#
+hbqt/qtcore/hbqtcore.hbp
+hbqt/qtgui/hbqtgui.hbp
+hbqt/qtnetwork/hbqtnetwork.hbp
+
+
+#    Qt Based Widgets
+hbqtwidgets/hbqtwidgets.hbp
+
+
+#    Qt based Xbase++ compliant Class Framework
+#
+hbxbp/hbxbp.hbp
+
+#    Qt based Harbour IDE
+#
+hbide/hbide.hbp
+
+#    Qt based Harbour DBU
+#
+hbdbu/hbdbu.hbp
+
+
