@@ -889,8 +889,9 @@ static void hbqt_registerCallbacks( void )
    hbqt_events_register_createobj( QEvent::RequestSoftwareInputPanel         , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::CloseSoftwareInputPanel           , "hb_QEvent"                         );
    hbqt_events_register_createobj( QEvent::WinIdChange                       , "hb_QEvent"                         );
+#if QT_VERSION > 0x040802
    hbqt_events_register_createobj( QEvent::PlatformPanel                     , "hb_QEvent"                         );
-
+#endif
 #if QT_VERSION >= 0x050000
    hbqt_events_register_createobj( QEvent::TouchCancel                       , "hb_QTouchEvent"                    );
    hbqt_events_register_createobj( QEvent::ScrollPrepare                     , "hb_QScrollPrepareEvent"            );

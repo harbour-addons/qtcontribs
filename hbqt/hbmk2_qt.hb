@@ -85,11 +85,7 @@ FUNCTION hbmk_plugin_qt( hbmk )
          cTmp += "#ifndef __HBQT_VERSION_CH" + hb_eol()
          cTmp += "   #define __HBQT_VERSION_CH" + hb_eol()
          cTmp += " " + hb_eol()
-         IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )
-            cTmp += "#define __HB_QT_MAJOR_VERSION_5__        " + '"' + cVer + '"' + hb_eol()
-         ELSE
-            cTmp += "#define __HB_QT_MAJOR_VERSION_4__        " + '"' + cVer + '"' + hb_eol()
-         ENDIF
+         cTmp += "#define __HB_QT_MAJOR_VERSION_" + GetEnv( "HB_QT_MAJOR_VER" ) + "__        " + '"' + cVer + '"' + hb_eol()
          cTmp += "#define __HBQT_REVISION__                " + '"' + cTmp1 + '"' + hb_eol()
          cTmp += " " + hb_eol()
          cTmp += "#endif" + hb_eol()
@@ -1070,7 +1066,7 @@ METHOD THbUIC:pullMainWidget()
 METHOD THbUIC:cleanupLines()
    LOCAL cLine, cStr
    LOCAL blankThem := { "QT_BEGIN_NAMESPACE", "QT_END_NAMESPACE",  "namespace ", "class ", ;
-                           "public:", "/", "*", "{", "}", "if ", "#include", "QMetaObject" }
+                           "public:", "/", "*", "{", "}", "if ", "#include", "QMetaObject", "Q_UNUSED" }
 
    FOR EACH cLine IN ::aLinesSrc
       cLine := AllTrim( cline )
@@ -1097,7 +1093,7 @@ METHOD THbUIC:concatLines( nFrom, nTo )
    LOCAL cLine, cString                           //FR  -- PREVERI
 
    cString := stripRight( ::aLinesSrc[ nFrom ], '"' )
-   cString := stripRight( cString, '\n' )
+   //cString := stripRight( cString, '\n' )       // what if we use line breaks on labels etc. It broke validatormain.ui.
    nFrom++
    DO WHILE nFrom <= nTo
       cLine := AllTrim( ::aLinesSrc[ nFrom ] )
@@ -1105,7 +1101,7 @@ METHOD THbUIC:concatLines( nFrom, nTo )
          EXIT
       ENDIF
       cLine := stripRight( cLine, '"' )
-      cLine := stripRight( cLine, '\n' )
+      //cLine := stripRight( cLine, '\n' )
       cString += SubStr( cLine, 2 )
       ::aLinesSrc[ nFrom ] := ""
       nFrom++

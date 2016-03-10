@@ -647,13 +647,19 @@ void hbqt_bindDestroyQtObject( void * qtObject, QObject * qObject )
          {
             qObject->removeEventFilter( hbqt_bindGetThreadData()->pReceiverEvents );
          }
+#if 0
 #if QT_VERSION <= 0x050300
          if( ( bind->iFlags & HBQT_BIT_QOBJECT ) && ( bind->hbObject ) )
          {
-            hb_vmPushDynSym( s_dynsym_DISCONNECT );
-            hb_vmPush( hb_arrayFromId( NULL, bind->hbObject ) );
-            hb_vmSend( 0 );
+            void * pPtr = hb_arrayFromId( NULL, bind->hbObject );
+            if( pPtr )
+            {
+               hb_vmPushDynSym( s_dynsym_DISCONNECT );
+               hb_vmPush( pPtr );
+               hb_vmSend( 0 );
+            }
          }
+#endif
 #endif
          hbqt_bindRemoveBind( bind );
       }
@@ -676,13 +682,19 @@ static void hbqt_bindDestroyQtObjectA( void * qtObject, QObject * qObject )
          {
             qObject->removeEventFilter( hbqt_bindGetThreadData()->pReceiverEvents );
          }
+#if 0
 #if QT_VERSION <= 0x050300
          if( ( bind->iFlags & HBQT_BIT_QOBJECT ) && ( bind->hbObject ) )
          {
-            hb_vmPushDynSym( s_dynsym_DISCONNECT );
-            hb_vmPush( hb_arrayFromId( NULL, bind->hbObject ) );
-            hb_vmSend( 0 );
+            void * pPtr = hb_arrayFromId( NULL, bind->hbObject );
+            if( pPtr )
+            {
+               hb_vmPushDynSym( s_dynsym_DISCONNECT );
+               hb_vmPush( pPtr );
+               hb_vmSend( 0 );
+            }
          }
+#endif
 #endif
          int iFlags = bind->iFlags;
          PHBQT_DEL_FUNC pDelFunc = bind->pDelFunc;

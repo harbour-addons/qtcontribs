@@ -16,7 +16,33 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2016-13-05 02:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r424)
+2016-03-10 13:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r425)
+  * hbqt/hbmk2_qt.hb
+    % Refined Qt major version detection and implementation.
+       Forwarded by Luigi, thanks.
+    ! Fixed: "\n" was being stripped out in translations effectively 
+       denying the use of line breaks in labels, specially of QPushButtons.
+    + Added: "Q_UNUSED" in the list of non performing lines in uic->c.
+
+  * hbqt/qtcore/hbqt_bind.cpp
+    % Protected code responsible for calling PRG level symbol 
+       s_dynsym_DISCONNECT.
+    ! Then guraded the whole above code under #if 0 as this code is 
+       no longer required under the current parsing engine. 
+       this fixes exception errors at application exit for Qt 4.x versions.
+       HbIDE runs fine now.
+ 
+       Thanks to Rolf for pointing it out.
+
+  * hbqt/qtcore/hbqt_misc.prg
+    - Removed public function Q_UNUSED() as this has been fixed in 
+       parsing engine for .ui files.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    % Guarded QEvent::PlatformPanel agains Qt's minor versions.
+       Detected by Rolf, thanks.
+
+2016-03-05 02:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r424)
   * hbide/actions.prg
   * hbide/editor.prg
   * hbqt/hbmk2_qt.hb
