@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QXYModelMapper
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QHXYModelMapper>
+
+
+/*
+ * QHXYModelMapper(QObject *parent = Q_NULLPTR)
+ */
+HB_FUNC( QT_QHXYMODELMAPPER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QHXYModelMapper( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QHXYModelMapper() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   columnCount() const
+int   firstColumn() const
+QAbstractItemModel *   model() const
+QXYSeries *   series() const
+void   setColumnCount(int columnCount)
+void   setFirstColumn(int firstColumn)
+void   setModel(QAbstractItemModel *model)
+void   setSeries(QXYSeries *series)
+void   setXRow(int xRow)
+void   setYRow(int yRow)
+int   xRow() const
+int   yRow() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   columnCountChanged()
+void   firstColumnChanged()
+void   modelReplaced()
+void   seriesReplaced()
+void   xRowChanged()
+void   yRowChanged()
+</SIGNALS>

@@ -1,0 +1,79 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractSeries
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QBoxPlotSeries>
+
+
+/*
+ * QBoxPlotSeries(QObject *parent = Q_NULLPTR)
+ * ~QBoxPlotSeries()
+ */
+HB_FUNC( QT_QBOXPLOTSERIES )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QBoxPlotSeries( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBoxPlotSeries() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   append(QBoxSet *set)
+bool   append(QList<QBoxSet *> sets)
+bool   boxOutlineVisible()
+QList<QBoxSet *>   boxSets() const
+qreal   boxWidth()
+QBrush   brush() const
+void   clear()
+int   count() const
+bool   insert(int index, QBoxSet *set)
+QPen   pen() const
+bool   remove(QBoxSet *set)
+void   setBoxOutlineVisible(bool visible)
+void   setBoxWidth(qreal width)
+void   setBrush(const QBrush &brush)
+void   setPen(const QPen &pen)
+bool   take(QBoxSet *set)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   boxOutlineVisibilityChanged()
+void   boxWidthChanged()
+void   boxsetsAdded(QList<QBoxSet *> sets)               // can't be implemented
+void   boxsetsRemoved(QList<QBoxSet *> sets)             // can't be implemented
+void   brushChanged()
+void   clicked(QBoxSet *boxset)
+void   countChanged()
+void   doubleClicked(QBoxSet *boxset)
+void   hovered(bool status, QBoxSet *boxset)
+void   penChanged()
+void   pressed(QBoxSet *boxset)
+void   released(QBoxSet *boxset)
+</SIGNALS>

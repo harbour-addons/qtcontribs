@@ -1,0 +1,70 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QXYSeries
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QScatterSeries>
+
+
+/*
+ * QScatterSeries(QObject *parent = Q_NULLPTR)
+ * ~QScatterSeries()
+ */
+HB_FUNC( QT_QSCATTERSERIES )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QScatterSeries( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QScatterSeries() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   MarkerShape { MarkerShapeCircle, MarkerShapeRectangle }
+enum SeriesType { SeriesTypeLine, SeriesTypeArea, SeriesTypeBar, SeriesTypeStackedBar, ..., SeriesTypeBoxPlot }
+</ENUMS>
+
+<PROTOS>
+QColor   borderColor() const
+QBrush   brush() const
+MarkerShape   markerShape() const
+qreal   markerSize() const
+void   setBorderColor(const QColor &color)
+void   setMarkerShape(MarkerShape shape)
+void   setMarkerSize(qreal size)
+
+virtual QColor   color() const
+virtual void   setBrush(const QBrush &brush)
+virtual void   setColor(const QColor &color)
+virtual void   setPen(const QPen &pen)
+virtual SeriesType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   borderColorChanged(QColor color)
+void   colorChanged(QColor color)
+void   markerShapeChanged(MarkerShape shape)
+void   markerSizeChanged(qreal size)
+</SIGNALS>

@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QValueAxis
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QCategoryAxis>
+
+
+/*
+ * QCategoryAxis(QObject *parent = Q_NULLPTR)
+ * ~QCategoryAxis()
+ */
+HB_FUNC( QT_QCATEGORYAXIS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QCategoryAxis( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QCategoryAxis() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   append(const QString &categoryLabel, qreal categoryEndValue)
+QStringList   categoriesLabels()
+int   count() const
+qreal   endValue(const QString &categoryLabel) const
+QCategoryAxis::AxisLabelsPosition   labelsPosition() const
+void   remove(const QString &categoryLabel)
+void   replaceLabel(const QString &oldLabel, const QString &newLabel)
+void   setLabelsPosition(QCategoryAxis::AxisLabelsPosition position)
+void   setStartValue(qreal min)
+qreal   startValue(const QString &categoryLabel = QString()) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   categoriesChanged()
+void   labelsPositionChanged(QCategoryAxis::AxisLabelsPosition position)
+</SIGNALS>

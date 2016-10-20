@@ -1,0 +1,53 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractBarSeries
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QHorizontalPercentBarSeries>
+
+
+/*
+ * QHorizontalPercentBarSeries(QObject *parent = Q_NULLPTR)
+ * ~QHorizontalPercentBarSeries()
+ */
+HB_FUNC( QT_QHORIZONTALPERCENTBARSERIES )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QHorizontalPercentBarSeries( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QHorizontalPercentBarSeries() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum SeriesType { SeriesTypeLine, SeriesTypeArea, SeriesTypeBar, SeriesTypeStackedBar, ..., SeriesTypeBoxPlot }
+</ENUMS>
+
+<PROTOS>
+virtual SeriesType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

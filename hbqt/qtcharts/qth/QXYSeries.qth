@@ -1,0 +1,97 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractSeries
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QXYSeries>
+
+
+/*
+ * ~QXYSeries()
+ */
+HB_FUNC( QT_QXYSERIES )
+{
+   HB_FUNC_EXEC( HB_QXYSERIES );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   append(qreal x, qreal y)
+void   append(const QPointF &point)
+void   append(const QList<QPointF> &points)
+const QPointF &   at(int index) const
+QBrush   brush() const
+void   clear()
+virtual QColor   color() const
+int   count() const
+void   insert(int index, const QPointF &point)
+QPen   pen() const
+bool   pointLabelsClipping() const
+QColor   pointLabelsColor() const
+QFont   pointLabelsFont() const
+QString   pointLabelsFormat() const
+bool   pointLabelsVisible() const
+QList<QPointF>   points() const
+QVector<QPointF>   pointsVector() const
+bool   pointsVisible() const
+void   remove(qreal x, qreal y)
+void   remove(const QPointF &point)
+void   remove(int index)
+void   removePoints(int index, int count)
+void   replace(qreal oldX, qreal oldY, qreal newX, qreal newY)
+void   replace(const QPointF &oldPoint, const QPointF &newPoint)
+void   replace(int index, qreal newX, qreal newY)
+void   replace(int index, const QPointF &newPoint)
+void   replace(QList<QPointF> points)
+void   replace(QVector<QPointF> points)
+virtual void   setBrush(const QBrush &brush)
+virtual void   setColor(const QColor &color)
+virtual void   setPen(const QPen &pen)
+void   setPointLabelsClipping(bool enabled = true)
+void   setPointLabelsColor(const QColor &color)
+void   setPointLabelsFont(const QFont &font)
+void   setPointLabelsFormat(const QString &format)
+void   setPointLabelsVisible(bool visible = true)
+void   setPointsVisible(bool visible = true)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   clicked(const QPointF &point)
+void   colorChanged(QColor color)
+void   doubleClicked(const QPointF &point)
+void   hovered(const QPointF &point, bool state)
+void   penChanged(const QPen &pen)
+void   pointAdded(int index)
+void   pointLabelsClippingChanged(bool clipping)
+void   pointLabelsColorChanged(const QColor &color)
+void   pointLabelsFontChanged(const QFont &font)
+void   pointLabelsFormatChanged(const QString &format)
+void   pointLabelsVisibilityChanged(bool visible)
+void   pointRemoved(int index)
+void   pointReplaced(int index)
+void   pointsRemoved(int index, int count)
+void   pointsReplaced()
+void   pressed(const QPointF &point)
+void   released(const QPointF &point)
+</SIGNALS>

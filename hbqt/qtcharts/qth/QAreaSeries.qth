@@ -1,0 +1,99 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractSeries
+QObject     = Yes
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QAreaSeries>
+
+
+/*
+ * QAreaSeries(QObject *parent = Q_NULLPTR)
+ * QAreaSeries(QLineSeries *upperSeries, QLineSeries *lowerSeries = Q_NULLPTR)
+ * ~QAreaSeries()
+ */
+HB_FUNC( QT_QAREASERIES )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QLineSeries" ) && hbqt_par_isDerivedFrom( 2, "QLineSeries" ) )
+   {
+      __HB_RETPTRGC__( new QAreaSeries( hbqt_par_QLineSeries( 1 ), hbqt_par_QLineSeries( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QLineSeries" ) )
+   {
+      __HB_RETPTRGC__( new QAreaSeries( hbqt_par_QLineSeries( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QAreaSeries() );
+   }
+}
+</CODE>
+
+<ENUMS>
+
+enum
+SeriesType { SeriesTypeLine, SeriesTypeArea, SeriesTypeBar, SeriesTypeStackedBar, ..., SeriesTypeBoxPlot }
+</ENUMS>
+
+<PROTOS>
+QColor   borderColor() const
+QBrush   brush() const
+QColor   color() const
+QLineSeries *   lowerSeries() const
+QPen   pen() const
+bool   pointLabelsClipping() const
+QColor   pointLabelsColor() const
+QFont   pointLabelsFont() const
+QString   pointLabelsFormat() const
+bool   pointLabelsVisible() const
+bool   pointsVisible() const
+void   setBorderColor(const QColor &color)
+void   setBrush(const QBrush &brush)
+void   setColor(const QColor &color)
+void   setLowerSeries(QLineSeries *series)
+void   setPen(const QPen &pen)
+void   setPointLabelsClipping(bool enabled = true)
+void   setPointLabelsColor(const QColor &color)
+void   setPointLabelsFont(const QFont &font)
+void   setPointLabelsFormat(const QString &format)
+void   setPointLabelsVisible(bool visible = true)
+void   setPointsVisible(bool visible = true)
+void   setUpperSeries(QLineSeries *series)
+QLineSeries *   upperSeries() const
+
+virtual SeriesType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   borderColorChanged(QColor color)
+void   clicked(const QPointF &point)
+void   colorChanged(QColor color)
+void   doubleClicked(const QPointF &point)
+void   hovered(const QPointF &point, bool state)
+void   pointLabelsClippingChanged(bool clipping)
+void   pointLabelsColorChanged(const QColor &color)
+void   pointLabelsFontChanged(const QFont &font)
+void   pointLabelsFormatChanged(const QString &format)
+void   pointLabelsVisibilityChanged(bool visible)
+void   pressed(const QPointF &point)
+void   released(const QPointF &point)
+void   selected()
+</SIGNALS>

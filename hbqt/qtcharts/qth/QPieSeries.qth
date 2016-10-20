@@ -1,0 +1,81 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractSeries
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QPieSeries>
+#include <QtCharts/QPieSlice>
+
+
+/*
+ * QPieSeries(QObject *parent = Q_NULLPTR)
+ * virtual   ~QPieSeries()
+ */
+HB_FUNC( QT_QPIESERIES )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPieSeries( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPieSeries() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum SeriesType { SeriesTypeLine, SeriesTypeArea, SeriesTypeBar, SeriesTypeStackedBar, ..., SeriesTypeBoxPlot }
+//enum LabelPosition { LabelOutside, LabelInsideHorizontal, LabelInsideTangential, LabelInsideNormal }
+</ENUMS>
+
+<PROTOS>
+bool   append(QPieSlice *slice)
+bool   append(QList<QPieSlice *> slices)
+QPieSlice *   append(QString label, qreal value)
+void   clear()
+int   count() const
+qreal   holeSize() const
+qreal   horizontalPosition() const
+bool   insert(int index, QPieSlice *slice)
+bool   isEmpty() const
+qreal   pieEndAngle() const
+qreal   pieSize() const
+qreal   pieStartAngle() const
+bool   remove(QPieSlice *slice)
+void   setHoleSize(qreal holeSize)
+void   setHorizontalPosition(qreal relativePosition)
+//void   setLabelsPosition(QPieSlice::LabelPosition position)
+void   setLabelsVisible(bool visible = true)
+void   setPieEndAngle(qreal angle)
+void   setPieSize(qreal relativeSize)
+void   setPieStartAngle(qreal startAngle)
+void   setVerticalPosition(qreal relativePosition)
+QList<QPieSlice *>   slices() const
+qreal   sum() const
+bool   take(QPieSlice *slice)
+qreal   verticalPosition() const
+
+virtual SeriesType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

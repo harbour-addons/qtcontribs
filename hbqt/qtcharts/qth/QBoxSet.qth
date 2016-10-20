@@ -1,0 +1,82 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QBoxSet>
+
+
+/*
+ * QBoxSet(const QString label = QString(), QObject *parent = Q_NULLPTR)
+ * QBoxSet(const qreal le, const qreal lq, const qreal m, const qreal uq, const qreal ue, const QString label = QString(), QObject *parent = Q_NULLPTR)
+ * virtual   ~QBoxSet()
+ */
+HB_FUNC( QT_QBOXSET )
+{
+   if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QBoxSet( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QBoxSet( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBoxSet() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   append(const qreal value)
+void   append(const QList<qreal> &values)
+qreal   at(const int index) const
+QBrush   brush() const
+void   clear()
+int   count() const
+QString   label() const
+QPen   pen() const
+void   setBrush(const QBrush &brush)
+void   setLabel(const QString label)
+void   setPen(const QPen &pen)
+void   setValue(const int index, const qreal value)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   brushChanged()
+void   cleared()
+void   clicked()
+void   doubleClicked()
+void   hovered(bool status)
+void   penChanged()
+void   pressed()
+void   released()
+void   valueChanged(int index)
+void   valuesChanged()
+</SIGNALS>

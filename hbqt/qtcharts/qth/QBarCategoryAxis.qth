@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractAxis
+QObject     = Yes
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QBarCategoryAxis>
+
+
+/*
+ * QBarCategoryAxis(QObject *parent = Q_NULLPTR)
+ * ~QBarCategoryAxis()
+ */
+HB_FUNC( QT_QBARCATEGORYAXIS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QBarCategoryAxis( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QBarCategoryAxis() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   append(const QStringList &categories)
+void   append(const QString &category)
+QString   at(int index) const
+QStringList   categories()
+void   clear()
+int   count() const
+void   insert(int index, const QString &category)
+QString   max() const
+QString   min() const
+void   remove(const QString &category)
+void   replace(const QString &oldCategory, const QString &newCategory)
+void   setCategories(const QStringList &categories)
+void   setMax(const QString &max)
+void   setMin(const QString &min)
+void   setRange(const QString &minCategory, const QString &maxCategory)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

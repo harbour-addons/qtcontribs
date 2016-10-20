@@ -1,0 +1,77 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QGraphicsWidget
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QGraphicsWidget>
+#include <QtCharts/QLegend>
+
+
+/*
+ * ~QLegend()
+ */
+HB_FUNC( QT_QLEGEND )
+{
+   HB_FUNC_EXEC( HB_QLEGEND );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+Qt::Alignment   alignment() const
+void   attachToChart()
+QColor   borderColor()
+QBrush   brush() const
+QColor   color()
+void   detachFromChart()
+QFont   font() const
+bool   isAttachedToChart()
+bool   isBackgroundVisible() const
+QBrush   labelBrush() const
+QColor   labelColor() const
+QList<QLegendMarker *>   markers(QAbstractSeries *series = Q_NULLPTR) const
+QPen   pen() const
+bool   reverseMarkers()
+void   setAlignment(Qt::Alignment alignment)
+void   setBackgroundVisible(bool visible = true)
+void   setBorderColor(const QColor &color)
+void   setBrush(const QBrush &brush)
+void   setColor(const QColor &color)
+void   setFont(const QFont &font)
+void   setLabelBrush(const QBrush &brush)
+void   setLabelColor(const QColor &color)
+void   setPen(const QPen &pen)
+void   setReverseMarkers(bool reverseMarkers = true)
+void   setShowToolTips(bool show)
+bool   showToolTips() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   backgroundVisibleChanged(bool visible)
+void   borderColorChanged(QColor color)
+void   colorChanged(QColor color)
+void   fontChanged(QFont font)
+void   labelColorChanged(QColor color)
+void   reverseMarkersChanged(bool reverseMarkers)
+void   showToolTipsChanged(bool showToolTips)
+</SIGNALS>

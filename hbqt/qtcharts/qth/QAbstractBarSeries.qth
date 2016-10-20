@@ -1,0 +1,76 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractSeries
+QObject     = Yes
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QAbstractBarSeries>
+#include <QtCharts/QBarSet>
+
+
+/*
+ * virtual   ~QAbstractBarSeries()
+ */
+HB_FUNC( QT_QABSTRACTBARSERIES )
+{
+   HB_FUNC_EXEC( HB_QABSTRACTBARSERIES );
+}
+</CODE>
+
+<ENUMS>
+enum LabelsPosition { LabelsCenter, LabelsInsideEnd, LabelsInsideBase, LabelsOutsideEnd }
+</ENUMS>
+
+<PROTOS>
+bool   append(QBarSet *set)
+bool   append(QList<QBarSet *> sets)
+QList<QBarSet *>   barSets() const
+qreal   barWidth() const
+void   clear()
+int   count() const
+bool   insert(int index, QBarSet *set)
+bool   isLabelsVisible() const
+qreal   labelsAngle() const
+QString   labelsFormat() const
+QAbstractBarSeries::LabelsPosition   labelsPosition() const
+bool   remove(QBarSet *set)
+void   setBarWidth(qreal width)
+void   setLabelsAngle(qreal angle)
+void   setLabelsFormat(const QString &format)
+void   setLabelsPosition(QAbstractBarSeries::LabelsPosition position)
+void   setLabelsVisible(bool visible = true)
+bool   take(QBarSet *set)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   barsetsAdded(QList<QBarSet *> sets)                 // cannot be implemented
+void   barsetsRemoved(QList<QBarSet *> sets)               // cannot be implemented
+void   clicked(int index, QBarSet *barset)
+void   countChanged()
+void   doubleClicked(int index, QBarSet *barset)
+void   hovered(bool status, int index, QBarSet *barset)
+void   labelsAngleChanged(qreal angle)
+void   labelsFormatChanged(const QString &format)
+void   labelsPositionChanged(QAbstractBarSeries::LabelsPosition position)
+void   labelsVisibleChanged()
+void   pressed(int index, QBarSet *barset)
+void   released(int index, QBarSet *barset)
+</SIGNALS>

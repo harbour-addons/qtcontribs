@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QPieModelMapper
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QVPieModelMapper>
+
+
+/*
+ * QVPieModelMapper(QObject *parent = Q_NULLPTR)
+ */
+HB_FUNC( QT_QVPIEMODELMAPPER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QVPieModelMapper( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVPieModelMapper() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   firstRow() const
+int   labelsColumn() const
+QAbstractItemModel *   model() const
+int   rowCount() const
+QPieSeries *   series() const
+void   setFirstRow(int firstRow)
+void   setLabelsColumn(int labelsColumn)
+void   setModel(QAbstractItemModel *model)
+void   setRowCount(int rowCount)
+void   setSeries(QPieSeries *series)
+void   setValuesColumn(int valuesColumn)
+int   valuesColumn() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   firstRowChanged()
+void   labelsColumnChanged()
+void   modelReplaced()
+void   rowCountChanged()
+void   seriesReplaced()
+void   valuesColumnChanged()
+</SIGNALS>

@@ -16,6 +16,76 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-19 17:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r428)
+  + hbqt/qtcharts
+  + hbqt/qtcharts/doc
+  + hbqt/qtcharts/doc/en
+  + hbqt/qtcharts/hbqt_init.cpp
+  + hbqt/qtcharts/hbqtcharts.ch
+  + hbqt/qtcharts/hbqtcharts.hbc
+  + hbqt/qtcharts/hbqtcharts.hbm
+  + hbqt/qtcharts/hbqtcharts.hbp
+  + hbqt/qtcharts/hbqtcharts.hbx
+  + hbqt/qtcharts/hbqtchartss.hbp
+  + hbqt/qtcharts/qth
+  + hbqt/qtcharts/qth/filelist.hbm
+  + hbqt/qtcharts/qth/QAbstractAxis.qth
+  + hbqt/qtcharts/qth/QAbstractBarSeries.qth
+  + hbqt/qtcharts/qth/QAbstractSeries.qth
+  + hbqt/qtcharts/qth/QAreaLegendMarker.qth
+  + hbqt/qtcharts/qth/QAreaSeries.qth
+  + hbqt/qtcharts/qth/QBarCategoryAxis.qth
+  + hbqt/qtcharts/qth/QBarLegendMarker.qth
+  + hbqt/qtcharts/qth/QBarModelMapper.qth
+  + hbqt/qtcharts/qth/QBarSeries.qth
+  + hbqt/qtcharts/qth/QBarSet.qth
+  + hbqt/qtcharts/qth/QBoxPlotModelMapper.qth
+  + hbqt/qtcharts/qth/QBoxPlotSeries.qth
+  + hbqt/qtcharts/qth/QBoxSet.qth
+  + hbqt/qtcharts/qth/QCategoryAxis.qth
+  + hbqt/qtcharts/qth/QChart.qth
+  + hbqt/qtcharts/qth/QChartView.qth
+  + hbqt/qtcharts/qth/QDateTimeAxis.qth
+  + hbqt/qtcharts/qth/QHBarModelMapper.qth
+  + hbqt/qtcharts/qth/QHorizontalBarSeries.qth
+  + hbqt/qtcharts/qth/QHorizontalPercentBarSeries.qth
+  + hbqt/qtcharts/qth/QHorizontalStackedBarSeries.qth
+  + hbqt/qtcharts/qth/QHPieModelMapper.qth
+  + hbqt/qtcharts/qth/QHXYModelMapper.qth
+  + hbqt/qtcharts/qth/QLegend.qth
+  + hbqt/qtcharts/qth/QLegendMarker.qth
+  + hbqt/qtcharts/qth/QLineSeries.qth
+  + hbqt/qtcharts/qth/QLogValueAxis.qth
+  + hbqt/qtcharts/qth/QPercentBarSeries.qth
+  + hbqt/qtcharts/qth/QPieLegendMarker.qth
+  + hbqt/qtcharts/qth/QPieModelMapper.qth
+  + hbqt/qtcharts/qth/QPieSeries.qth
+  + hbqt/qtcharts/qth/QPieSlice.qth
+  + hbqt/qtcharts/qth/QPolarChart.qth
+  + hbqt/qtcharts/qth/QScatterSeries.qth
+  + hbqt/qtcharts/qth/QSplineSeries.qth
+  + hbqt/qtcharts/qth/QStackedBarSeries.qth
+  + hbqt/qtcharts/qth/QValueAxis.qth
+  + hbqt/qtcharts/qth/QVBarModelMapper.qth
+  + hbqt/qtcharts/qth/QVBoxPlotModelMapper.qth
+  + hbqt/qtcharts/qth/QVPieModelMapper.qth
+  + hbqt/qtcharts/qth/QVXYModelMapper.qth
+  + hbqt/qtcharts/qth/QXYLegendMarker.qth
+  + hbqt/qtcharts/qth/QXYModelMapper.qth
+  + hbqt/qtcharts/qth/QXYSeries.qth
+  
+  + hbqt/hbqtcharts.hbc
+    + Initial commit of QtCharts module introduced in Qt 5.7.
+	
+  * hbqt/qtgui/hbqtgui.ch
+    + Many constants used throughout in QtChart module.
+	
+  + hbqt/tests/barchart.prg
+    + QtCharts module based example application. 
+	  Code is exact replica of Simple BarChart Example contained in 
+	  Qt 5.7 distribution.
+	  Link and run as: hbmk2 barchart hbqtcharts.hbc -run
+
 2016-10-19 17:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r427)
   * debug/dbgdop.c
     % Commented-out for only ver-old xHarbour versions.

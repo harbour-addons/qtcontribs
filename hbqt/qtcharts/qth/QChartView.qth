@@ -1,0 +1,67 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QGraphicsView
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QGraphicsView>
+#include <QtCharts/QChartView>
+
+
+/*
+ * QChartView(QWidget *parent = Q_NULLPTR)
+ * QChartView(QChart *chart, QWidget *parent = Q_NULLPTR)
+ * ~QChartView()
+ */
+HB_FUNC( QT_QCHARTVIEW )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QChartView( hbqt_par_QWidget( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QChart" ) )
+   {
+      __HB_RETPTRGC__( new QChartView( hbqt_par_QChart( 1 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QChart" ) && hbqt_par_isDerivedFrom( 2, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QChartView( hbqt_par_QChart( 1 ), hbqt_par_QWidget( 2 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QChartView() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   RubberBand { NoRubberBand, VerticalRubberBand, HorizontalRubberBand, RectangleRubberBand }
+flags   RubberBands
+</ENUMS>
+
+<PROTOS>
+QChart *   chart() const
+RubberBands   rubberBand() const
+void   setChart(QChart *chart)
+void   setRubberBand(const RubberBands &rubberBand)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

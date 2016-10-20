@@ -1,0 +1,123 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QGraphicsWidget
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QEasingCurve>
+#include <QtCore/QLocale>
+#include <QtGui/QGraphicsWidget>
+#include <QtCharts/QChart>
+
+
+/*
+ * QChart(QGraphicsItem *parent = Q_NULLPTR, Qt::WindowFlags wFlags = Qt::WindowFlags())
+* ~QChart()
+ */
+HB_FUNC( QT_QCHART )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QGraphicsItem" ) && HB_ISNUM( 2 ) )
+   {
+      __HB_RETPTRGC__( new QChart( hbqt_par_QGraphicsItem( 1 ), ( Qt::WindowFlags ) hb_parni( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGraphicsItem" ) )
+   {
+      __HB_RETPTRGC__( new QChart( hbqt_par_QGraphicsItem( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QChart() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   AnimationOption { NoAnimation, GridAxisAnimations, SeriesAnimations, AllAnimations }
+flags   AnimationOptions
+enum   ChartTheme { ChartThemeLight, ChartThemeBlueCerulean, ChartThemeDark, ChartThemeBrownSand, ..., ChartThemeQt }
+enum   ChartType { ChartTypeUndefined, ChartTypeCartesian, ChartTypePolar }
+</ENUMS>
+
+<PROTOS>
+void   addAxis(QAbstractAxis *axis, Qt::Alignment alignment)
+void   addSeries(QAbstractSeries *series)
+int   animationDuration() const
+QEasingCurve   animationEasingCurve() const
+AnimationOptions   animationOptions() const
+QList<QAbstractAxis *>   axes(Qt::Orientations orientation = Qt::Horizontal | Qt::Vertical, QAbstractSeries *series = Q_NULLPTR) const
+QAbstractAxis *   axisX(QAbstractSeries *series = Q_NULLPTR) const
+QAbstractAxis *   axisY(QAbstractSeries *series = Q_NULLPTR) const
+QBrush   backgroundBrush() const
+QPen   backgroundPen() const
+qreal   backgroundRoundness() const
+ChartType   chartType() const
+void   createDefaultAxes()
+bool   isBackgroundVisible() const
+bool   isDropShadowEnabled() const
+bool   isPlotAreaBackgroundVisible() const
+bool   isZoomed()
+QLegend *   legend() const
+QLocale   locale() const
+bool   localizeNumbers() const
+QPointF   mapToPosition(const QPointF &value, QAbstractSeries *series = Q_NULLPTR)
+QPointF   mapToValue(const QPointF &position, QAbstractSeries *series = Q_NULLPTR)
+QMargins   margins() const
+QRectF   plotArea() const
+QBrush   plotAreaBackgroundBrush() const
+QPen   plotAreaBackgroundPen() const
+void   removeAllSeries()
+void   removeAxis(QAbstractAxis *axis)
+void   removeSeries(QAbstractSeries *series)
+void   scroll(qreal dx, qreal dy)
+QList<QAbstractSeries *>   series() const
+void   setAnimationDuration(int msecs)
+void   setAnimationEasingCurve(const QEasingCurve &curve)
+void   setAnimationOptions(AnimationOptions options)
+void   setAxisX(QAbstractAxis *axis, QAbstractSeries *series = Q_NULLPTR)
+void   setAxisY(QAbstractAxis *axis, QAbstractSeries *series = Q_NULLPTR)
+void   setBackgroundBrush(const QBrush &brush)
+void   setBackgroundPen(const QPen &pen)
+void   setBackgroundRoundness(qreal diameter)
+void   setBackgroundVisible(bool visible = true)
+void   setDropShadowEnabled(bool enabled = true)
+void   setLocale(const QLocale &locale)
+void   setLocalizeNumbers(bool localize)
+void   setMargins(const QMargins &margins)
+void   setPlotAreaBackgroundBrush(const QBrush &brush)
+void   setPlotAreaBackgroundPen(const QPen &pen)
+void   setPlotAreaBackgroundVisible(bool visible = true)
+void   setTheme(QChart::ChartTheme theme)
+void   setTitle(const QString &title)
+void   setTitleBrush(const QBrush &brush)
+void   setTitleFont(const QFont &font)
+QChart::ChartTheme   theme() const
+QString   title() const
+QBrush   titleBrush() const
+QFont   titleFont() const
+void   zoom(qreal factor)
+void   zoomIn()
+void   zoomIn(const QRectF &rect)
+void   zoomOut()
+void   zoomReset()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   plotAreaChanged(const QRectF &plotArea)
+</SIGNALS>

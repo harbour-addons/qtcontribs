@@ -1,0 +1,66 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QLegendMarker>
+
+
+/*
+ * virtual   ~QLegendMarker()
+ */
+HB_FUNC( QT_QLEGENDMARKER )
+{
+   HB_FUNC_EXEC( HB_QLEGENDMARKER );
+}
+</CODE>
+
+<ENUMS>
+enum   LegendMarkerType { LegendMarkerTypeArea, LegendMarkerTypeBar, LegendMarkerTypePie, LegendMarkerTypeXY, LegendMarkerTypeBoxPlot }
+</ENUMS>
+
+<PROTOS>
+QBrush   brush() const
+QFont   font() const
+bool   isVisible() const
+QString   label() const
+QBrush   labelBrush() const
+QPen   pen() const
+virtual QAbstractSeries *   series() = 0
+void   setBrush(const QBrush &brush)
+void   setFont(const QFont &font)
+void   setLabel(const QString &label)
+void   setLabelBrush(const QBrush &brush)
+void   setPen(const QPen &pen)
+void   setVisible(bool visible)
+virtual LegendMarkerType   type() = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   brushChanged()
+void   clicked()
+void   fontChanged()
+void   hovered(bool status)
+void   labelBrushChanged()
+void   labelChanged()
+void   penChanged()
+void   visibleChanged()
+</SIGNALS>

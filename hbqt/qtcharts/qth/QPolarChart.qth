@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QChart
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QGraphicsItem>
+#include <QtCharts/QPolarChart>
+
+
+/*
+ * QPolarChart(QGraphicsItem *parent = Q_NULLPTR, Qt::WindowFlags wFlags = Qt::WindowFlags())
+ * ~QPolarChart()
+ */
+HB_FUNC( QT_QPOLARCHART )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QGraphicsItem" ) )
+   {
+      __HB_RETPTRGC__( new QPolarChart( hbqt_par_QGraphicsItem( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPolarChart() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   PolarOrientation { PolarOrientationRadial, PolarOrientationAngular }
+flags   PolarOrientations
+</ENUMS>
+
+<PROTOS>
+void   addAxis(QAbstractAxis *axis, PolarOrientation polarOrientation)
+//QList<QAbstractAxis *>   axes(PolarOrientations polarOrientation = PolarOrientations( PolarOrientationRadial | PolarOrientationAngular ), QAbstractSeries *series = Q_NULLPTR) const
+QList<QAbstractAxis *>   axes(PolarOrientations polarOrientation = PolarOrientationRadial, QAbstractSeries *series = Q_NULLPTR) const
+
+PolarOrientation   axisPolarOrientation(QAbstractAxis *axis)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

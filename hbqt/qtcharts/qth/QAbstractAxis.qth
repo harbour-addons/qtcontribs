@@ -1,0 +1,129 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050700
+Constructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QAbstractAxis>
+
+
+/*
+ * ~QAbstractAxis()
+ */
+HB_FUNC( QT_QABSTRACTAXIS )
+{
+   HB_FUNC_EXEC( HB_QABSTRACTAXIS );
+}
+</CODE>
+
+<ENUMS>
+AxisType { AxisTypeNoAxis, AxisTypeValue, AxisTypeBarCategory, AxisTypeCategory, AxisTypeDateTime, AxisTypeLogValue }
+flags AxisTypes
+</ENUMS>
+
+<PROTOS>
+Qt::Alignment alignment() const
+QColor gridLineColor()
+QPen gridLinePen() const
+void hide()
+bool isGridLineVisible() const
+bool isLineVisible() const
+bool isMinorGridLineVisible() const
+bool isReverse() const
+bool isTitleVisible() const
+bool isVisible() const
+int labelsAngle() const
+QBrush labelsBrush() const
+QColor labelsColor() const
+QFont labelsFont() const
+bool labelsVisible() const
+QPen linePen() const
+QColor linePenColor() const
+QColor minorGridLineColor()
+QPen minorGridLinePen() const
+Qt::Orientation orientation() const
+void setGridLineColor(const QColor &color)
+void setGridLinePen(const QPen &pen)
+void setGridLineVisible(bool visible = true)
+void setLabelsAngle(int angle)
+void setLabelsBrush(const QBrush &brush)
+void setLabelsColor(const QColor &color)
+void setLabelsFont(const QFont &font)
+void setLabelsVisible(bool visible = true)
+void setLinePen(const QPen &pen)
+void setLinePenColor(const QColor &color)
+void setLineVisible(bool visible = true)
+void setMax(const QVariant &max)
+void setMin(const QVariant &min)
+void setMinorGridLineColor(const QColor &color)
+void setMinorGridLinePen(const QPen &pen)
+void setMinorGridLineVisible(bool visible = true)
+void setRange(const QVariant &min, const QVariant &max)
+void setReverse(bool reverse = true)
+void setShadesBorderColor(const QColor &color)
+void setShadesBrush(const QBrush &brush)
+void setShadesColor(const QColor &color)
+void setShadesPen(const QPen &pen)
+void setShadesVisible(bool visible = true)
+void setTitleBrush(const QBrush &brush)
+void setTitleFont(const QFont &font)
+void setTitleText(const QString &title)
+void setTitleVisible(bool visible = true)
+void setVisible(bool visible = true)
+QColor shadesBorderColor() const
+QBrush shadesBrush() const
+QColor shadesColor() const
+QPen shadesPen() const
+bool shadesVisible() const
+void show()
+QBrush titleBrush() const
+QFont titleFont() const
+QString titleText() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void colorChanged(QColor color)
+void gridLineColorChanged(const QColor &color)
+void gridLinePenChanged(const QPen &pen)
+void gridVisibleChanged(bool visible)
+void labelsAngleChanged(int angle)
+void labelsBrushChanged(const QBrush &brush)
+void labelsColorChanged(QColor color)
+void labelsFontChanged(const QFont &font)
+void labelsVisibleChanged(bool visible)
+void linePenChanged(const QPen &pen)
+void lineVisibleChanged(bool visible)
+void minorGridLineColorChanged(const QColor &color)
+void minorGridLinePenChanged(const QPen &pen)
+void minorGridVisibleChanged(bool visible)
+void reverseChanged(bool reverse)
+void shadesBorderColorChanged(QColor color)
+void shadesBrushChanged(const QBrush &brush)
+void shadesColorChanged(QColor color)
+void shadesPenChanged(const QPen &pen)
+void shadesVisibleChanged(bool visible)
+void titleBrushChanged(const QBrush &brush)
+void titleFontChanged(const QFont &font)
+void titleTextChanged(const QString &text)
+void titleVisibleChanged(bool visible)
+void visibleChanged(bool visible)
+</SIGNALS>

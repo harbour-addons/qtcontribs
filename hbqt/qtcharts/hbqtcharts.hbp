@@ -1,0 +1,16 @@
+#
+# $Id$
+#
+
+{__ios__}-stop='QtCharts is not available for ios...'
+
+-cflag=-I${HB_WITH_QT}/QtCore
+
+../hbqt_common.hbm
+
+hbqtcharts.hbm
+
+-instfile=inc:hbqtcharts.ch
+-instfile=inc:hbqtcharts.hbx
+
+hbqtchartss.hbp

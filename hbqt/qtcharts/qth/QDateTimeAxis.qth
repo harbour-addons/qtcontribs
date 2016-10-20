@@ -1,0 +1,69 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractAxis
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QDateTime>
+#include <QtCharts/QDateTimeAxis>
+
+
+/*
+ * QDateTimeAxis(QObject *parent = Q_NULLPTR)
+ * ~QDateTimeAxis()
+ */
+HB_FUNC( QT_QDATETIMEAXIS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QDateTimeAxis( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDateTimeAxis() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   AxisType { AxisTypeNoAxis, AxisTypeValue, AxisTypeBarCategory, AxisTypeCategory, AxisTypeDateTime, AxisTypeLogValue }
+</ENUMS>
+
+<PROTOS>
+QString   format() const
+QDateTime   max() const
+QDateTime   min() const
+void   setFormat(QString format)
+void   setMax(const QDateTime &max)
+void   setMin(const QDateTime &min)
+void   setRange(const QDateTime &min, const QDateTime &max)
+void   setTickCount(int count)
+int   tickCount() const
+
+virtual AxisType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   formatChanged(QString format)
+void   maxChanged(QDateTime max)
+void   minChanged(QDateTime min)
+void   rangeChanged(QDateTime min, QDateTime max)
+void   tickCountChanged(int tickCount)
+</SIGNALS>

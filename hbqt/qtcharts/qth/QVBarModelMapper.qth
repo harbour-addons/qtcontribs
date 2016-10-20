@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QBarModelMapper
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QVBarModelMapper>
+
+
+/*
+ * QVBarModelMapper(QObject *parent = Q_NULLPTR)
+ */
+HB_FUNC( QT_QVBARMODELMAPPER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QVBarModelMapper( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVBarModelMapper() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   firstBarSetColumn() const
+int   firstRow() const
+int   lastBarSetColumn() const
+QAbstractItemModel *   model() const
+int   rowCount() const
+QAbstractBarSeries *   series() const
+void   setFirstBarSetColumn(int firstBarSetColumn)
+void   setFirstRow(int firstRow)
+void   setLastBarSetColumn(int lastBarSetColumn)
+void   setModel(QAbstractItemModel *model)
+void   setRowCount(int rowCount)
+void   setSeries(QAbstractBarSeries *series)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   firstBarSetColumnChanged()
+void   firstRowChanged()
+void   lastBarSetColumnChanged()
+void   modelReplaced()
+void   rowCountChanged()
+void   seriesReplaced()
+</SIGNALS>

@@ -1,0 +1,43 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QBarModelMapper>
+
+
+/*
+ * virtual ~QBarModelMapper();
+ */
+HB_FUNC( QT_QBARMODELMAPPER )
+{
+   HB_FUNC_EXEC( HB_QBARMODELMAPPER );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

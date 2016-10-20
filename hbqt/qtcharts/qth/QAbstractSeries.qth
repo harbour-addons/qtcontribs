@@ -1,0 +1,63 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QAbstractSeries>
+
+
+/*
+ * ~QAbstractSeries()
+ */
+HB_FUNC( QT_QABSTRACTSERIES )
+{
+   HB_FUNC_EXEC( HB_QABSTRACTSERIES );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   attachAxis(QAbstractAxis *axis)
+QList<QAbstractAxis *>   attachedAxes()
+QChart *   chart() const
+bool   detachAxis(QAbstractAxis *axis)
+void   hide()
+bool   isVisible() const
+QString   name() const
+qreal   opacity() const
+void   setName(const QString &name)
+void   setOpacity(qreal opacity)
+void   setUseOpenGL(bool enable = true)
+void   setVisible(bool visible = true)
+void   show()
+virtual SeriesType   type() const = 0
+bool   useOpenGL() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   nameChanged()
+void   opacityChanged()
+void   useOpenGLChanged()
+void   visibleChanged()
+</SIGNALS>

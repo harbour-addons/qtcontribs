@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractAxis
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QValueAxis>
+
+
+/*
+ * QValueAxis(QObject *parent = Q_NULLPTR)
+ * ~QValueAxis()
+ */
+HB_FUNC( QT_QVALUEAXIS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QValueAxis( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QValueAxis() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   AxisType { AxisTypeNoAxis, AxisTypeValue, AxisTypeBarCategory, AxisTypeCategory, AxisTypeDateTime, AxisTypeLogValue }
+</ENUMS>
+
+<PROTOS>
+QString   labelFormat() const
+qreal   max() const
+qreal   min() const
+int   minorTickCount() const
+void   setLabelFormat(const QString &format)
+void   setMax(qreal max)
+void   setMin(qreal min)
+void   setMinorTickCount(int count)
+void   setRange(qreal min, qreal max)
+void   setTickCount(int count)
+int   tickCount() const
+
+virtual AxisType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

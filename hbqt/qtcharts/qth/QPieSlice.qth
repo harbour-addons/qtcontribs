@@ -1,0 +1,106 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QPieSlice>
+
+
+/*
+ * QPieSlice(QObject *parent = Q_NULLPTR)
+ * QPieSlice(QString label, qreal value, QObject *parent = Q_NULLPTR)
+ * virtual   ~QPieSlice()
+ */
+HB_FUNC( QT_QPIESLICE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QPieSlice( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QPieSlice() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   LabelPosition { LabelOutside, LabelInsideHorizontal, LabelInsideTangential, LabelInsideNormal }
+</ENUMS>
+
+<PROTOS>
+qreal   angleSpan() const
+QColor   borderColor()
+int   borderWidth()
+QBrush   brush() const
+QColor   color()
+qreal   explodeDistanceFactor() const
+bool   isExploded() const
+bool   isLabelVisible() const
+QString   label() const
+qreal   labelArmLengthFactor() const
+QBrush   labelBrush() const
+QColor   labelColor()
+QFont   labelFont() const
+LabelPosition   labelPosition()
+QPen   pen() const
+qreal   percentage() const
+QPieSeries *   series() const
+void   setBorderColor(const QColor &color)
+void   setBorderWidth(int width)
+void   setBrush(const QBrush &brush)
+void   setColor(const QColor &color)
+void   setExplodeDistanceFactor(qreal factor)
+void   setExploded(bool exploded = true)
+void   setLabel(QString label)
+void   setLabelArmLengthFactor(qreal factor)
+void   setLabelBrush(const QBrush &brush)
+void   setLabelColor(const QColor &color)
+void   setLabelFont(const QFont &font)
+void   setLabelPosition(LabelPosition position)
+void   setLabelVisible(bool visible = true)
+void   setPen(const QPen &pen)
+void   setValue(qreal value)
+qreal   startAngle() const
+qreal   value() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   angleSpanChanged()
+void   borderColorChanged()
+void   borderWidthChanged()
+void   brushChanged()
+void   clicked()
+void   colorChanged()
+void   doubleClicked()
+void   hovered(bool state)
+void   labelBrushChanged()
+void   labelChanged()
+void   labelColorChanged()
+void   labelFontChanged()
+void   labelVisibleChanged()
+void   penChanged()
+void   percentageChanged()
+void   pressed()
+void   released()
+void   startAngleChanged()
+void   valueChanged()
+</SIGNALS>

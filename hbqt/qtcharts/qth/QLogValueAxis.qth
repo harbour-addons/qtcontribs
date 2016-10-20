@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QAbstractAxis
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QLogValueAxis>
+
+
+/*
+ * QLogValueAxis(QObject *parent = Q_NULLPTR)
+ * ~QLogValueAxis()
+ */
+HB_FUNC( QT_QLOGVALUEAXIS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QLogValueAxis( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QLogValueAxis() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   AxisType { AxisTypeNoAxis, AxisTypeValue, AxisTypeBarCategory, AxisTypeCategory, AxisTypeDateTime, AxisTypeLogValue }
+</ENUMS>
+
+<PROTOS>
+qreal   base() const
+QString   labelFormat() const
+qreal   max() const
+qreal   min() const
+void   setBase(qreal base)
+void   setLabelFormat(const QString &format)
+void   setMax(qreal max)
+void   setMin(qreal min)
+void   setRange(qreal min, qreal max)
+
+virtual AxisType   type() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   baseChanged(qreal base)
+void   labelFormatChanged(const QString &format)
+void   maxChanged(qreal max)
+void   minChanged(qreal min)
+void   rangeChanged(qreal min, qreal max)
+</SIGNALS>

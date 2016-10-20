@@ -1,0 +1,48 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QLegendMarker
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QBarLegendMarker>
+
+
+/*
+ * virtual   ~QBarLegendMarker()
+ */
+HB_FUNC( QT_QBARLEGENDMARKER )
+{
+   HB_FUNC_EXEC( HB_QBARLEGENDMARKER );
+}
+</CODE>
+
+<ENUMS>
+LegendMarkerType { LegendMarkerTypeArea, LegendMarkerTypeBar, LegendMarkerTypePie, LegendMarkerTypeXY, LegendMarkerTypeBoxPlot }
+</ENUMS>
+
+<PROTOS>
+QBarSet *   barset()
+
+virtual QAbstractBarSeries *   series()
+virtual LegendMarkerType   type()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -5450,6 +5450,80 @@
 #define QTextLength_VariableLength                           0         // the width of the object is variable
 #define QTextLength_FixedLength                              1         // the width of the object is fixed
 #define QTextLength_PercentageLength                         2         // the width of the object is in percentage of the maximum width
+
+#define QAbstractAxis_AxisTypeNoAxis                         0x0
+#define QAbstractAxis_AxisTypeValue                          0x1
+#define QAbstractAxis_AxisTypeBarCategory                    0x2
+#define QAbstractAxis_AxisTypeCategory                       0x4
+#define QAbstractAxis_AxisTypeDateTime                       0x8
+#define QAbstractAxis_AxisTypeLogValue                       0x10
+
+#define QAbstractBarSeries_LabelsCenter                      0         // Label is in the center of the bar.
+#define QAbstractBarSeries_LabelsInsideEnd                   1         // Label is inside the bar at the high end of it.
+#define QAbstractBarSeries_LabelsInsideBase                  2         // Label is inside the bar at the low end of it.
+#define QAbstractBarSeries_LabelsOutsideEnd                  3         // Label is outside the bar at the high end of it.
+
+#define QAbstractSeries_SeriesTypeLine                       0
+#define QAbstractSeries_SeriesTypeArea                       1
+#define QAbstractSeries_SeriesTypeBar                        2
+#define QAbstractSeries_SeriesTypeStackedBar                 3
+#define QAbstractSeries_SeriesTypePercentBar                 4
+#define QAbstractSeries_SeriesTypePie                        5
+#define QAbstractSeries_SeriesTypeScatter                    6
+#define QAbstractSeries_SeriesTypeSpline                     7
+#define QAbstractSeries_SeriesTypeHorizontalBar              8
+#define QAbstractSeries_SeriesTypeHorizontalStackedBar       9
+#define QAbstractSeries_SeriesTypeHorizontalPercentBar       10
+#define QAbstractSeries_SeriesTypeBoxPlot                    11
+
+#define QBoxSet_LowerExtreme                                 0
+#define QBoxSet_LowerQuartile                                1
+#define QBoxSet_Median                                       2
+#define QBoxSet_UpperQuartile                                3
+#define QBoxSet_UpperExtreme                                 4
+
+#define QCategoryAxis_AxisLabelsPositionCenter               0x0       // Labels are centered to category.
+#define QCategoryAxis_AxisLabelsPositionOnValue              0x1       // Labels are positioned to the high end limit of the category.
+
+#define QChart_NoAnimation                                   0x0
+#define QChart_GridAxisAnimations                            0x1
+#define QChart_SeriesAnimations                              0x2
+#define QChart_AllAnimations                                 0x3
+
+#define QChart_ChartThemeLight                               0
+#define QChart_ChartThemeBlueCerulean                        1
+#define QChart_ChartThemeDark                                2
+#define QChart_ChartThemeBrownSand                           3
+#define QChart_ChartThemeBlueNcs                             4
+#define QChart_ChartThemeHighContrast                        5
+#define QChart_ChartThemeBlueIcy                             6
+#define QChart_ChartThemeQt                                  7
+
+#define QChart_ChartTypeUndefined                            0
+#define QChart_ChartTypeCartesian                            1
+#define QChart_ChartTypePolar                                2
+
+#define QChartView_NoRubberBand                              0x0
+#define QChartView_VerticalRubberBand                        0x1
+#define QChartView_HorizontalRubberBand                      0x2
+#define QChartView_RectangleRubberBand                       0x3
+
+#define QLegendMarker_LegendMarkerTypeArea                   0
+#define QLegendMarker_LegendMarkerTypeBar                    1
+#define QLegendMarker_LegendMarkerTypePie                    2
+#define QLegendMarker_LegendMarkerTypeXY                     3
+#define QLegendMarker_LegendMarkerTypeBoxPlot                4
+
+#define QPieSlice_LabelOutside                               0         // Label is outside the slice with an arm.
+#define QPieSlice_LabelInsideHorizontal                      1         // Label is centered inside the slice and laid out horizontally.
+#define QPieSlice_LabelInsideTangential                      2         // Label is centered inside the slice and rotated to be parallel to the tangential of the slice's arc.
+#define QPieSlice_LabelInsideNormal                          3         // Label is centered inside the slice rotated to be parallel to the normal of the slice's arc.
+
+#define QPolarChart_PolarOrientationRadial                   0x1
+#define QPolarChart_PolarOrientationAngular                  0x2
+
+#define QScatterSeries_MarkerShapeCircle                     0
+#define QScatterSeries_MarkerShapeRectangle                  1
 
 #endif
 

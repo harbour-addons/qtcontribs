@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QBoxPlotModelMapper
+Version     = 0x050700
+</CLASS>
+
+
+<CODE>
+#include <QtCharts/QVBoxPlotModelMapper>
+
+
+/*
+ * QVBoxPlotModelMapper(QObject *parent = Q_NULLPTR)
+ */
+HB_FUNC( QT_QVBOXPLOTMODELMAPPER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QVBoxPlotModelMapper( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QVBoxPlotModelMapper() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+int   firstBoxSetColumn() const
+int   firstRow() const
+int   lastBoxSetColumn() const
+QAbstractItemModel *   model() const
+int   rowCount() const
+QBoxPlotSeries *   series() const
+void   setFirstBoxSetColumn(int firstBoxSetColumn)
+void   setFirstRow(int firstRow)
+void   setLastBoxSetColumn(int lastBoxSetColumn)
+void   setModel(QAbstractItemModel *model)
+void   setRowCount(int rowCount)
+void   setSeries(QBoxPlotSeries *series)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   firstBoxSetColumnChanged()
+void   firstRowChanged()
+void   lastBoxSetColumnChanged()
+void   modelReplaced()
+void   rowCountChanged()
+void   seriesReplaced()
+</SIGNALS>
