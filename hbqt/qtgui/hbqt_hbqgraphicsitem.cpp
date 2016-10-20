@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2010-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify

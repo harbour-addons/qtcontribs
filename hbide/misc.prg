@@ -54,7 +54,7 @@
  *
  *                            Harbour-Qt IDE
  *
- *                  Pritpal Bedi <pritpal@vouchcac.com>
+ *                  Pritpal Bedi <bedipritpal@hotmail.com>
  *                               23Nov2009
  */
 /*----------------------------------------------------------------------*/
@@ -570,6 +570,10 @@ FUNCTION hbide_pathToOSPath( cPath )
 
 STATIC FUNCTION hbide_buildRegExpressList( aRegList )
 
+   AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( ".ch\("                         ) } )
+   AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( ".CH\("                         ) } )
+   AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( ".prg\("                        ) } )
+   AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( ".PRG\("                        ) } )
    AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( ".*: warning.*"                 ) } )
    AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( ".*\) Warning W.*"              ) } )
    AAdd( aRegList, { MSG_TYPE_WARN, hb_RegexComp( "^Warning W([0-9]+).*"          ) } )
@@ -705,7 +709,7 @@ FUNCTION hbide_convertBuildStatusMsgToHtml( cText, oWidget )
    aLines := hb_aTokens( cText, Chr( 10 ) )
 
    FOR EACH cLine IN aLines
-      IF !Empty( cLine )
+      IF ! Empty( cLine )
          IF ( nPos := aScan( aRegList, {| reg | !Empty( hb_RegEx( reg[ 2 ], cLine ) ) } ) ) > 0
             IF aRegList[ nPos,1 ] == MSG_TYPE_ERR
                cIfError := cLine

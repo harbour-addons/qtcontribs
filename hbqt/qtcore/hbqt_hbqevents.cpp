@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
  * Copyright 2009 Marcos Antonio Gambeta <marcosgambeta at gmail dot com>
  * www - http://harbour-project.org

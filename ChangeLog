@@ -16,6 +16,78 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-19 16:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r426)
+  * hbide/actions.prg
+  * hbide/console.prg
+  * hbide/docks.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/environ.prg
+  * hbide/findreplace.prg
+  * hbide/functions.prg
+  * hbide/harbourhelp.prg
+  * hbide/home.prg
+  * hbide/misc.prg
+  * hbide/object.prg
+  * hbide/parseexpr.c
+  * hbide/parts.prg
+  * hbide/plugins.prg
+  * hbide/projmanager.prg
+  * hbide/requests.ch
+  * hbide/saveload.prg
+  * hbide/sources.prg
+  * hbide/stylesheets.prg
+  * hbide/tags.prg
+  * hbide/themes.prg
+  * hbqt/qscintilla/hbqscintilla.ch
+  * hbqt/qscintilla/hbqt_hbqsciscintilla.cpp
+  * hbqt/qscintilla/hbqt_hbqsciscintilla.h
+  * hbqt/qtbluetooth/hbqtbluetooth.ch
+  * hbqt/qtcore/hbqt_bind.cpp
+  * hbqt/qtcore/hbqt_destroyer.cpp
+  * hbqt/qtcore/hbqt_destroyer.h
+  * hbqt/qtcore/hbqt_hbqevents.cpp
+  * hbqt/qtcore/hbqt_hbqevents.h
+  * hbqt/qtcore/hbqt_hbqslots.cpp
+  * hbqt/qtcore/hbqt_hbqslots.h
+  * hbqt/qtcore/hbqt_hbqstring.cpp
+  * hbqt/qtcore/hbqt_hbqstring.h
+  * hbqt/qtcore/hbqtcore.ch
+  * hbqt/qtgui/hbqt_flickcharm.cpp
+  * hbqt/qtgui/hbqt_flickcharm.h
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.cpp
+  * hbqt/qtgui/hbqt_hbqabstractitemmodel.h
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+  * hbqt/qtgui/hbqt_hbqplaintextedit.cpp
+  * hbqt/qtgui/hbqt_hbqplaintextedit.h
+  * hbqt/qtgui/hbqt_hbqproxystyle.cpp
+  * hbqt/qtgui/hbqt_hbqproxystyle.h
+  * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.cpp
+  * hbqt/qtgui/hbqt_hbqsyntaxhighlighter.h
+  * hbqt/qtgui/hbqt_hbqtableview.cpp
+  * hbqt/qtgui/hbqt_hbqtableview.h
+  * hbqt/qtgui/hbqt_hbqvalidator.cpp
+  * hbqt/qtgui/hbqt_hbqvalidator.h
+  * hbqt/qtgui/hbqt_utils.cpp
+  * hbqt/qtlocation/hbqtlocation.ch
+  * hbqt/qtpositioning/hbqtpositioning.ch
+  * hbqt/qtsql/hbqtsql.ch
+  * hbqt/qtwebkit/hbqtwebkit.ch
+  * hbqt/qtwebsockets/hbqtwebsockets.ch
+  * hbqt/tests/demoqt.prg
+  * hbqtwidgets/editor.prg
+  * hbxbp/hbpprocess.prg
+  * hbxbp/misc.prg
+  * hbxbp/reports.prg
+  * hbxbp/sle.prg
+  * hbxbp/tests/demoxbp.prg
+  * hbxbp/tests/dialogqt.prg
+  * hbxbp/tests/wvtqt.prg
+  * hbxbp/tests/xbpqtc.prg
+    % Copyright Bump.
+
 2016-03-10 13:52 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r425)
   * hbqt/hbmk2_qt.hb
     % Refined Qt major version detection and implementation.

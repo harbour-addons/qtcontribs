@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Harbour-Qt wrapper generator.
  *
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * Copyright 2009 Gancov Kostya <kossne@mail.ru>
  * www - http://harbour-project.org
  *

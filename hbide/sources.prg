@@ -55,7 +55,7 @@
  *
  *                            Harbour-Qt IDE
  *
- *                  Pritpal Bedi <pritpal@vouchcac.com>
+ *                  Pritpal Bedi <bedipritpal@hotmail.com>
  *                               09Jan2010
  */
 /*----------------------------------------------------------------------*/

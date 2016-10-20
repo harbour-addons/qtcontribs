@@ -7,7 +7,7 @@
  * QT wrapper main header
  *
  * Copyright 2009 Marcos Antonio Gambeta (marcosgambeta at gmail dot com)
- * Copyright 2009 Pritpal Bedi (pritpal@vouchcac.com)
+ * Copyright 2009-2016 Pritpal Bedi (pritpal@vouchcac.com)
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
  * Copyright 2010 Francesco Perillo ()
  * www - http://harbour-project.org
@@ -297,7 +297,7 @@ int HBQSlots::qt_metacall( QMetaObject::Call c, int id, void ** arguments )
                            HB_TRACE( HB_TR_DEBUG, ( "Firing Signal( %p, %s )", object, paramString.data() ) );
                            pCallback( ( PHB_ITEM * ) codeBlock, arguments, pList );
                            HB_TRACE( HB_TR_DEBUG, ( "Fired ( %p )", object ) );
-                        }   
+                        }
                      }
                   }
                }

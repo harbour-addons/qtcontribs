@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009 Pritpal Bedi <bedipritpal@hotmail.com>
  *
  * http://www.harbour-project.org
  *
@@ -58,7 +58,7 @@
  *
  *                         QScintilla Headers
  *
- *                  Pritpal Bedi <pritpal@vouchcac.com>
+ *                  Pritpal Bedi <bedipritpal@hotmail.com>
  *                              22May2010
  */
 /*----------------------------------------------------------------------*/

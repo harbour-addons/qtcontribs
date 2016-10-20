@@ -7,7 +7,7 @@
  * QT wrapper source code
  *
  * Copyright 2012 Przemyslaw Czerpak (druzus/at/poczta.onet.pl)
- * Copyright 2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify

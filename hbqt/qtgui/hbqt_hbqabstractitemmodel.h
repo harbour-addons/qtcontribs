@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * Copyright 2010 Carlos Bacco <carlosbacco at gmail.com>
  * www - http://harbour-project.org
  *
