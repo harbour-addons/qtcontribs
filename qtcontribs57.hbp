@@ -1,0 +1,58 @@
+#
+# $Id$
+#
+
+-hbcontainer
+
+#    Generate SVN Revision Info
+#-vcshead=hbide/hbide_v.ch
+
+#    HWGDebug
+debug/hwgdebug.hbp
+
+#    Qt Modules - mandatory
+#
+hbqt/qtcore/hbqtcore.hbp
+hbqt/qtgui/hbqtgui.hbp
+hbqt/qtnetwork/hbqtnetwork.hbp
+
+#    Uncomment whatever module is not required
+#
+hbqt/qtlocation/hbqtlocation.hbp
+hbqt/qtmultimedia/hbqtmultimedia.hbp
+hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbp
+hbqt/qtopengl/hbqtopengl.hbp
+hbqt/qtscript/hbqtscript.hbp
+hbqt/qtsql/hbqtsql.hbp
+hbqt/qtsvg/hbqtsvg.hbp
+hbqt/qtxml/hbqtxml.hbp
+hbqt/qtpositioning/hbqtpositioning.hbp
+hbqt/qtwebsockets/hbqtwebsockets.hbp
+hbqt/qtbluetooth/hbqtbluetooth.hbp
+hbqt/qtqml/hbqtqml.hbp
+hbqt/qtquick/hbqtquick.hbp
+hbqt/qtsensors/hbqtsensors.hbp
+hbqt/qtdesigner/hbqtdesigner.hbp
+hbqt/qtcharts/hbqtcharts.hbp
+hbqt/qzxing/hbqtzxing.hbp
+
+
+#    Qt Based Widgets
+hbqtwidgets/hbqtwidgets.hbp
+
+#    Qt QML based Parts
+hbqtqmlparts/hbqtqmlparts.hbp
+
+
+#    Qt based Xbase++ compliant Class Framework
+#
+hbxbp/hbxbp.hbp
+
+#    Qt based Harbour IDE
+#
+hbide/hbide.hbp
+
+#    Qt based Harbour DBU
+#
+hbdbu/hbdbu.hbp
+

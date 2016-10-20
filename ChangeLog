@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-19 18:11 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r429)
+  + qtcontribs57.hbp
+    + Project file to compile Qt 5.7.
+
 2016-10-19 17:48 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r428)
   + hbqt/qtcharts
   + hbqt/qtcharts/doc
