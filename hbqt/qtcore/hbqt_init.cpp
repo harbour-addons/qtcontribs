@@ -7,7 +7,7 @@
  * QT wrapper main header
  *
  * Copyright 2009 Marcos Antonio Gambeta (marcosgambeta at gmail dot com)
- * Copyright 2009 Pritpal Bedi (pritpal@vouchcac.com)
+ * Copyright 2009-2016 Pritpal Bedi (pritpal@hotmail.com)
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
  * Copyright 2010 Francesco Perillo ()
  * www - http://harbour-project.org
@@ -387,6 +387,21 @@ static void hbqt_SlotsExecQPointF( PHB_ITEM * codeBlock, void ** arguments, QStr
    }
 }
 
+static void hbqt_SlotsExecQPointFBool( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QPointF( ( *reinterpret_cast< QPointF( * ) >( arguments[ 1 ] ) ) ), "HB_QPOINTF", hbqt_del_QPointF, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmPushLogical( *reinterpret_cast< bool( * ) >( arguments[ 2 ] ) );
+      hb_vmSend( 2 );
+      hb_itemRelease( p0 );
+   }
+}
+
 static void hbqt_SlotsExecQUrl( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -425,6 +440,26 @@ static void hbqt_SlotsExecQDateTime( PHB_ITEM * codeBlock, void ** arguments, QS
       hb_vmPush( codeBlock );
       hb_vmPush( p0 );
       hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQDateTimeQDateTime( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QDateTime( ( *reinterpret_cast< QDateTime( * ) >( arguments[ 1 ] ) ) ), "HB_QDATETIME", hbqt_del_QDateTime, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, new QDateTime( ( *reinterpret_cast< QDateTime( * ) >( arguments[ 2 ] ) ) ), "HB_QDATETIME", hbqt_del_QDateTime, HBQT_BIT_OWNER );
+      if( p1 )
+      {
+         hb_vmPushEvalSym();
+         hb_vmPush( codeBlock );
+         hb_vmPush( p0 );
+         hb_vmPush( p1 );
+         hb_vmSend( 2 );
+         hb_itemRelease( p1 );
+      }
       hb_itemRelease( p0 );
    }
 }
@@ -674,12 +709,14 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "pointer$int$QString"     , hbqt_SlotsExecPointerIntString );
    hbqt_slots_register_callback( "QDate"                   , hbqt_SlotsExecQDate            );
    hbqt_slots_register_callback( "QDateTime"               , hbqt_SlotsExecQDateTime        );
+   hbqt_slots_register_callback( "QDateTime$QDateTime"     , hbqt_SlotsExecQDateTimeQDateTime );
    hbqt_slots_register_callback( "QModelIndex"             , hbqt_SlotsExecModel            );
    hbqt_slots_register_callback( "QModelIndex$int$int"     , hbqt_SlotsExecModelIndexIntInt );
    hbqt_slots_register_callback( "QModelIndexList"         , hbqt_SlotsExecModelIndexList   );
    hbqt_slots_register_callback( "QModelIndex$QModelIndex" , hbqt_SlotsExecModelModel       );
    hbqt_slots_register_callback( "QPoint"                  , hbqt_SlotsExecQPoint           );
    hbqt_slots_register_callback( "QPointF"                 , hbqt_SlotsExecQPointF          );
+   hbqt_slots_register_callback( "QPointF$bool"            , hbqt_SlotsExecQPointFBool      );
    hbqt_slots_register_callback( "QRect$int"               , hbqt_SlotsExecQRectInt         );
    hbqt_slots_register_callback( "QRect"                   , hbqt_SlotsExecQRect            );
    hbqt_slots_register_callback( "QRectF"                  , hbqt_SlotsExecQRectF           );

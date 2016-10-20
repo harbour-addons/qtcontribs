@@ -16,6 +16,59 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-19 17:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r427)
+  * debug/dbgdop.c
+    % Commented-out for only ver-old xHarbour versions.
+	
+  * hbdbu/hbdbu.hbp
+    % Minor.
+	
+  * hbqt/hbmk2_qt.hb
+    + Added neccessary modifications to honor Qt 5.7.
+    % Copyright Bumped.
+	% doc/en/*.txt to have correct Qt documentation site link.
+	
+  * hbqt/qtcore/hbqt.h
+	+ #include <QtCore/qmath.h>
+  * hbqt/qtcore/hbqt_init.cpp
+    + Added few more signal implementation required for new 
+	  Qt 5.7 introduced modules.
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Some experimental code needed for static linking.
+  * hbqt/qtcore/hbqtcore.hbc
+    ! Fixed library name for static links.
+	
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+    % Replaced abs() => qFabs()- Pointed out by Alex - LINUX.
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added more signal implementation required for new 
+	  Qt 5.7 introduced modules.
+  * hbqt/qtgui/hbqtgui.hbc
+    ! Fixed library name for static links.
+	
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+    ! Fixed library name for static links.
+	
+  * hbqt/qtnetwork/qth/QNetworkAccessManager.qth
+  * hbqt/qtnetwork/qth/QNetworkReply.qth
+  * hbqt/qtwebsockets/qth/QWebSocket.qth
+  * hbqt/qtwebsockets/qth/QWebSocketServer.qth
+    % Fixed for static builds.
+  
+  * hbqt/qzxing/CameraImageWrapper.cpp
+  * hbqt/qzxing/zxing/zxing/ZXing.h
+    % Fixed to be compiled for newer mingw versions.
+	
+  + hbqtwidgets/resources/font-minus.png
+  + hbqtwidgets/resources/font-plus.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: a couple of new resources.
+	
+  * hbqtwidgets/alert.prg
+    % Fixes for HbQtGetSome() implementation.
+  * hbqtwidgets/silverlight.prg
+    % Some refinements.
+
 2016-10-19 16:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r426)
   * hbide/actions.prg
   * hbide/console.prg

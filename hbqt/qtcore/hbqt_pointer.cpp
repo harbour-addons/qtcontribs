@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2009 Pritpal Bedi <pritpal@vouchcac.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -68,6 +68,15 @@
 #if QT_VERSION >= 0x040500
 
 #include <QtCore/QDebug>
+
+#ifdef HB_QT_STATIC
+#include <QtCore/qplugin.h>
+
+Q_IMPORT_PLUGIN(QWindowsIntegration)
+Q_IMPORT_PLUGIN(qwindowsprintersupport)
+Q_IMPORT_PLUGIN(qico)
+Q_IMPORT_PLUGIN(qwindows)
+#endif
 
 /*----------------------------------------------------------------------*/
 

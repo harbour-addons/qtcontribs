@@ -71,6 +71,10 @@ FUNCTION hbmk_plugin_qt( hbmk )
       IF Empty( GetEnv( "HB_QT_MAJOR_VER" ) )
          hb_SetEnv( "HB_QT_MAJOR_VER", "5" )
       ENDIF
+      IF "5.7" $ cVer .AND. hbmk[ "cCOMP" ] == "mingw"
+         hb_SetEnv( "HB_QT_MINOR_VER", "7" )
+         hb_SetEnv( "HB_USER_CFLAGS", hb_GetEnv( "HB_USER_CFLAGS" ) + " -std=c++11" )
+      ENDIF
 
       IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )
          cTmp1 := MemoRead( "ChangeLog" )
@@ -2208,7 +2212,7 @@ STATIC FUNCTION __evalToLogical( cStr )
 
 
 METHOD HbQtSource:build()
-   LOCAL i, s, oMtd, tmp, tmp1, n, k, aLine, uQtObject, aParents, cParent
+   LOCAL i, s, oMtd, tmp, tmp1, n, k, aLine, uQtObject, aParents, cParent, cNameSpace
 
    uQtObject := Upper( ::cQtObject )
 
@@ -2365,7 +2369,7 @@ METHOD HbQtSource:build()
       ELSEIF s:__enumKey() == "QModelIndexList" /* TOFIX: Ugly hack */
          tmp := "QList< QModelIndex >"
       ELSE
-         tmp := s:__enumKey()
+         tmp := qth_prefix_namespace( s:__enumKey() )
       ENDIF
       AAdd( aLine, PadR( "#define hbqt_par_" + s:__enumKey() + "( n )", 64 ) + PadR( "( ( " + tmp, 48 ) + "* ) hbqt_par_ptr( n ) )" )
    NEXT
@@ -2523,6 +2527,12 @@ METHOD HbQtSource:build()
    /* Build Document File */
    ::buildDOC()
 
+   // 2016-10-17
+   IF ! Empty( cNameSpace := qth_has_namespace( ::cQtObject ) )
+      AEval( aLine, {|e,i| aLine[ i ] := StrTran( e, " " + ::cQtObject, " " + cNameSpace + "::" + ::cQtObject ) } )
+      AEval( aLine, {|e,i| aLine[ i ] := StrTran( e, "<" + ::cQtObject, "<" + cNameSpace + "::" + ::cQtObject ) } )
+   ENDIF
+
    /* Distribute in specific lib subfolder */
    hbqtgen_CreateTarget( ::cCPPFileName, aLine )
 
@@ -2638,6 +2648,9 @@ METHOD HbQtSource:getReturnAsList( oMtd, FP, cPrefix )
          ENDIF
       ENDIF
       IF ! Empty( cCast )
+         // 2016-10-17
+         cRetCast := StrTran( cRetCast, cCast, qth_prefix_namespace( cCast ) )
+
          cParas := oMtd:cParas
          nStrCnt := 0
          DO WHILE "%%%" $ cParas
@@ -3040,7 +3053,7 @@ METHOD HbQtSource:buildDOC()
    hEntry[ "NAME"         ] := ::cQtObject + "()"
    hEntry[ "CATEGORY"     ] := "Harbour Bindings for Qt"
    hEntry[ "SUBCATEGORY"  ] := "GUI"
-   hEntry[ "EXTERNALLINK" ] := "http://doc.trolltech.com/" + cQT_VER + "/" + Lower( ::cQtObject ) + ".html"
+   hEntry[ "EXTERNALLINK" ] := "http://doc.qt.io/qt-" + cQT_VER + "/" + Lower( ::cQtObject ) + ".html"
    hEntry[ "ONELINER"     ] := "Creates a new " + ::cQtObject + " object."
    hEntry[ "INHERITS"     ] := cInherits
    hEntry[ "SYNTAX"       ] := ::cQtObject + "( ... )" + hb_eol()
@@ -3910,7 +3923,7 @@ STATIC FUNCTION hbqtgen_BuildCopyrightText()
    AAdd( txt_, "/* WARNING: Automatically generated source file. DO NOT EDIT! */" )
    AAdd( txt_, ""                                                                 )
    AAdd( txt_, "/* Harbour QT wrapper"                                            )
-   AAdd( txt_, "   Copyright 2009-2013 Pritpal Bedi <bedipritpal@hotmail.com>"    )
+   AAdd( txt_, "   Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>"    )
    AAdd( txt_, "   www - http://harbour-project.org */"                           )
    AAdd( txt_, ""                                                                 )
    AAdd( txt_, '#include "hbqt.h"'                                                )
@@ -4738,6 +4751,51 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       "QPlaceSearchReply"                       => NIL , ;
       "QPlaceSearchSuggestionReply"             => NIL , ;
       "QScreen"                                 => NIL , ;
+      "QAbstractAxis"                           => NIL , ;
+      "QAbstractBarSeries"                      => NIL , ;
+      "QAbstractSeries"                         => NIL , ;
+      "QAreaLegendMarker"                       => NIL , ;
+      "QAreaSeries"                             => NIL , ;
+      "QBarCategoryAxis"                        => NIL , ;
+      "QBarLegendMarker"                        => NIL , ;
+      "QBarSeries"                              => NIL , ;
+      "QBarSet"                                 => NIL , ;
+      "QBoxPlotLegendMarker"                    => NIL , ;
+      "QBoxPlotSeries"                          => NIL , ;
+      "QBoxSet"                                 => NIL , ;
+      "QCategoryAxis"                           => NIL , ;
+      "QChart"                                  => NIL , ;
+      "QChartView"                              => NIL , ;
+      "QDateTimeAxis"                           => NIL , ;
+      "QHBarModelMapper"                        => NIL , ;
+      "QHPieModelMapper"                        => NIL , ;
+      "QHXYModelMapper"                         => NIL , ;
+      "QHorizontalBarSeries"                    => NIL , ;
+      "QHorizontalPercentBarSeries"             => NIL , ;
+      "QHorizontalStackedBarSeries"             => NIL , ;
+      "QLegend"                                 => NIL , ;
+      "QLegendMarker"                           => NIL , ;
+      "QLineSeries"                             => NIL , ;
+      "QLogValueAxis"                           => NIL , ;
+      "QPercentBarSeries"                       => NIL , ;
+      "QPieLegendMarker"                        => NIL , ;
+      "QPieSeries"                              => NIL , ;
+      "QPieSlice"                               => NIL , ;
+      "QPolarChart"                             => NIL , ;
+      "QScatterSeries"                          => NIL , ;
+      "QSplineSeries"                           => NIL , ;
+      "QStackedBarSeries"                       => NIL , ;
+      "QVBarModelMapper"                        => NIL , ;
+      "QVBoxPlotModelMapper"                    => NIL , ;
+      "QVPieModelMapper"                        => NIL , ;
+      "QVXYModelMapper"                         => NIL , ;
+      "QValueAxis"                              => NIL , ;
+      "QXYLegendMarker"                         => NIL , ;
+      "QXYSeries"                               => NIL , ;
+      "QBarModelMapper"                         => NIL , ;
+      "QPieModelMapper"                         => NIL , ;
+      "QXYModelMapper"                          => NIL , ;
+      "QBoxPlotModelMapper"                     => NIL , ;
       "x                      "                 => NIL   }
 
    IF lower( left( cWidget, 3 ) ) == "hbq"
@@ -4747,4 +4805,65 @@ STATIC FUNCTION qth_is_QObject( cWidget )
    RETURN cWidget $ s_b_
 
 /*----------------------------------------------------------------------*/
+
+STATIC FUNCTION qth_has_namespace( cQtObject )
+   STATIC s_b_:= { ;
+      "QAbstractAxis"                           => "QtCharts" , ;
+      "QAbstractBarSeries"                      => "QtCharts" , ;
+      "QAbstractSeries"                         => "QtCharts" , ;
+      "QAreaLegendMarker"                       => "QtCharts" , ;
+      "QAreaSeries"                             => "QtCharts" , ;
+      "QBarCategoryAxis"                        => "QtCharts" , ;
+      "QBarLegendMarker"                        => "QtCharts" , ;
+      "QBarSeries"                              => "QtCharts" , ;
+      "QBarSet"                                 => "QtCharts" , ;
+      "QBoxPlotLegendMarker"                    => "QtCharts" , ;
+      "QBoxPlotSeries"                          => "QtCharts" , ;
+      "QBoxSet"                                 => "QtCharts" , ;
+      "QCategoryAxis"                           => "QtCharts" , ;
+      "QChart"                                  => "QtCharts" , ;
+      "QChartView"                              => "QtCharts" , ;
+      "QDateTimeAxis"                           => "QtCharts" , ;
+      "QHBarModelMapper"                        => "QtCharts" , ;
+      "QHPieModelMapper"                        => "QtCharts" , ;
+      "QHXYModelMapper"                         => "QtCharts" , ;
+      "QHorizontalBarSeries"                    => "QtCharts" , ;
+      "QHorizontalPercentBarSeries"             => "QtCharts" , ;
+      "QHorizontalStackedBarSeries"             => "QtCharts" , ;
+      "QLegend"                                 => "QtCharts" , ;
+      "QLegendMarker"                           => "QtCharts" , ;
+      "QLineSeries"                             => "QtCharts" , ;
+      "QLogValueAxis"                           => "QtCharts" , ;
+      "QPercentBarSeries"                       => "QtCharts" , ;
+      "QPieLegendMarker"                        => "QtCharts" , ;
+      "QPieSeries"                              => "QtCharts" , ;
+      "QPieSlice"                               => "QtCharts" , ;
+      "QPolarChart"                             => "QtCharts" , ;
+      "QScatterSeries"                          => "QtCharts" , ;
+      "QSplineSeries"                           => "QtCharts" , ;
+      "QStackedBarSeries"                       => "QtCharts" , ;
+      "QVBarModelMapper"                        => "QtCharts" , ;
+      "QVBoxPlotModelMapper"                    => "QtCharts" , ;
+      "QVPieModelMapper"                        => "QtCharts" , ;
+      "QVXYModelMapper"                         => "QtCharts" , ;
+      "QValueAxis"                              => "QtCharts" , ;
+      "QXYLegendMarker"                         => "QtCharts" , ;
+      "QXYSeries"                               => "QtCharts" , ;
+      "QBarModelMapper"                         => "QtCharts" , ;
+      "QPieModelMapper"                         => "QtCharts" , ;
+      "QXYModelMapper"                          => "QtCharts" , ;
+      "QBoxPlotModelMapper"                     => "QtCharts" , ;
+      "xxxxx"                                   => "........"   ;
+                 }
+   RETURN iif( hb_HHasKey( s_b_, cQtObject ), s_b_[ cQtObject ], NIL )
+
+/*----------------------------------------------------------------------*/
+
+STATIC FUNCTION qth_prefix_namespace( cQtObject )
+   LOCAL cNameSpace := qth_has_namespace( cQtObject )
+   RETURN iif( Empty( cNameSpace ), cQtObject, cNameSpace + "::" + cQtObject )
+
+/*----------------------------------------------------------------------*/
+
+
 

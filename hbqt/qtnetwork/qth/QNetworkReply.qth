@@ -53,8 +53,8 @@ QList<QByteArray>   rawHeaderList() const
 qint64   readBufferSize() const
 QNetworkRequest   request() const
 virtual void   setReadBufferSize(qint64 size)
-void   setSslConfiguration(const QSslConfiguration & config)         [*F=#ifndef HB_BUILD_IOS*]
-QSslConfiguration   sslConfiguration() const                         [*F=#ifndef HB_BUILD_IOS*]
+void   setSslConfiguration(const QSslConfiguration & config)         [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
+QSslConfiguration   sslConfiguration() const                         [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
 QUrl   url() const
 
 virtual void   close()

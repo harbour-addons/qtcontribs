@@ -41,11 +41,24 @@ typedef bool boolean;
 
 #include <float.h>
 
+   #if !( defined( __GNUC__ ) && ( __GNUC__ - 0 >= 5 ) )
 namespace zxing {
 inline bool isnan_z(float v) {return _isnan(v) != 0;}
 inline bool isnan_z(double v) {return _isnan(v) != 0;}
 inline float nan() {return std::numeric_limits<float>::quiet_NaN();}
 }
+   #else
+
+//#include <cmath>
+
+namespace zxing {
+inline bool isnan_z(float v) {return v != v;}
+inline bool isnan_z(double v) {return v != v;}
+//inline bool isnan_z(float v) {return _isnan(v) != 0;}
+//inline bool isnan_z(double v) {return _isnan(v) != 0;}
+inline float nan() {return std::numeric_limits<float>::quiet_NaN();}
+}
+   #endif
 
 #else
 

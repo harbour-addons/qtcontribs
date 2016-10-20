@@ -105,6 +105,7 @@ CLASS HbQtSilverLight
    DATA   nIndex                                  INIT 127
    DATA   nDirection                              INIT 1
 
+   DATA   oFocusWidget
    ENDCLASS
 
 
@@ -151,6 +152,7 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
       :setMouseTracking( .T. )
       :connect( QEvent_MouseButtonPress  , {|oEvent| oEvent:ignore(), .T. } )
       :connect( QEvent_MouseButtonRelease, {|oEvent| oEvent:ignore(), .T. } )
+      :connect( QEvent_Close             , {|oEvent| oEvent:ignore(), .T. } )
    ENDWITH
 
    WITH OBJECT ::oTimer := QTimer()
@@ -185,6 +187,7 @@ METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oPar
          ::oTimer:start()
       ENDIF
    ENDWITH
+   ::oFocusWidget := ::oParent:focusWidget()
    QApplication():processEvents()
 
    RETURN Self
@@ -195,11 +198,16 @@ METHOD HbQtSilverLight:deactivate()
    QApplication():processEvents( 0 )
 
    ::oTimer:stop()
+   ::oWidget:lower()
    ::oWidget:hide()
 
    ::nIndex     := ::nStart
    ::nDirection := 1
 
+   IF HB_ISOBJECT( ::oFocusWidget )
+      ::oFocusWidget:setFocus()
+      ::oFocusWidget := NIL
+   ENDIF
    RETURN Self
 
 

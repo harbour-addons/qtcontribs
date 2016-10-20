@@ -72,9 +72,9 @@ void   setMaxPendingConnections(int numConnections)
 void   setProxy(const QNetworkProxy & networkProxy)
 void   setServerName(const QString & serverName)
 bool   setSocketDescriptor(int socketDescriptor)
-void   setSslConfiguration(const QSslConfiguration & sslConfiguration)   [*F=#ifndef HB_BUILD_IOS*]
+void   setSslConfiguration(const QSslConfiguration & sslConfiguration)   [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
 int   socketDescriptor() const
-QSslConfiguration   sslConfiguration() const                             [*F=#ifndef HB_BUILD_IOS*]
+QSslConfiguration   sslConfiguration() const                             [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
 QList<QWebSocketProtocol::Version>   supportedVersions() const
 </PROTOS>
 

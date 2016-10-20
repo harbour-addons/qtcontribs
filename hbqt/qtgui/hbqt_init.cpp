@@ -7,7 +7,7 @@
  * QT wrapper main header
  *
  * Copyright 2009 Marcos Antonio Gambeta (marcosgambeta at gmail dot com)
- * Copyright 2009 Pritpal Bedi (pritpal@vouchcac.com)
+ * Copyright 2009-2016 Pritpal Bedi (pritpal@vouchcac.com)
  * Copyright 2010 Viktor Szakats (harbour syenar.net)
  * Copyright 2010 Francesco Perillo ()
  * www - http://harbour-project.org
@@ -76,6 +76,7 @@
 #include <QtGui/QTextBlock>
 #include <QtGui/QSessionManager>
 #include <QtGui/QColor>
+#include <QtGui/QPen>
 #include <QtGui/QBrush>
 #include <QtGui/QImage>
 #include <QtGui/QKeyEvent>
@@ -113,6 +114,7 @@ HB_EXTERN_BEGIN
 
 extern void hbqt_del_QObject( void * pObj, int iFlags );
 extern void hbqt_del_QColor( void * pObj, int iFlags );
+extern void hbqt_del_QPen( void * pObj, int iFlags );
 extern void hbqt_del_QBrush( void * pObj, int iFlags );
 extern void hbqt_del_QImage( void * pObj, int iFlags );
 extern void hbqt_del_QItemSelection( void * pObj, int iFlags );
@@ -169,6 +171,20 @@ static void hbqt_SlotsExecQColor( PHB_ITEM * codeBlock, void ** arguments, QStri
 {
    Q_UNUSED( pList );
    PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QColor( ( *reinterpret_cast< QColor( * ) >( arguments[ 1 ] ) ) ), "HB_QCOLOR", hbqt_del_QColor, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmSend( 1 );
+      hb_itemRelease( p0 );
+   }
+}
+
+static void hbqt_SlotsExecQPen( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QPen( ( *reinterpret_cast< QPen( * ) >( arguments[ 1 ] ) ) ), "HB_QPEN", hbqt_del_QPen, HBQT_BIT_OWNER );
    if( p0 )
    {
       hb_vmPushEvalSym();
@@ -721,6 +737,7 @@ void _hbqtgui_force_link_for_event( void )
 static void hbqt_registerCallbacks( void )
 {
    hbqt_slots_register_callback( "QColor"                                    , hbqt_SlotsExecQColor                           );
+   hbqt_slots_register_callback( "QPen"                                      , hbqt_SlotsExecQPen                             );
    hbqt_slots_register_callback( "QBrush"                                    , hbqt_SlotsExecQBrush                           );
    hbqt_slots_register_callback( "QFont"                                     , hbqt_SlotsExecQFont                            );
    hbqt_slots_register_callback( "QItemSelection$QItemSelection"             , hbqt_SlotsExecItemSelItemSel                   );

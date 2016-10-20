@@ -58,7 +58,7 @@ QString   closeReason() const
 QAbstractSocket::SocketError   error() const
 QString   errorString() const
 bool   flush()
-void   ignoreSslErrors(const QList<QSslError> & errors)                [*F=#ifndef HB_BUILD_IOS*]
+void   ignoreSslErrors(const QList<QSslError> & errors)                [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
 bool   isValid() const
 QHostAddress   localAddress() const
 quint16   localPort() const
@@ -79,15 +79,15 @@ void   setMaskGenerator(const QMaskGenerator * maskGenerator)
 void   setPauseMode(QAbstractSocket::PauseModes pauseMode)
 void   setProxy(const QNetworkProxy & networkProxy)
 void   setReadBufferSize(qint64 size)
-void   setSslConfiguration(const QSslConfiguration & sslConfiguration)   [*F=#ifndef HB_BUILD_IOS*]
-QSslConfiguration   sslConfiguration() const                             [*F=#ifndef HB_BUILD_IOS*]
+void   setSslConfiguration(const QSslConfiguration & sslConfiguration)   [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
+QSslConfiguration   sslConfiguration() const                             [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
 QAbstractSocket::SocketState   state() const
 QWebSocketProtocol::Version   version() const
 </PROTOS>
 
 <SLOTS>
 void   close(QWebSocketProtocol::CloseCode closeCode = QWebSocketProtocol::CloseCodeNormal, const QString & reason = QString())
-void   ignoreSslErrors()                                                 [*F=#ifndef HB_BUILD_IOS*]
+void   ignoreSslErrors()                                                 [*F=#ifndef HB_BUILD_IOS;F=#ifndef HB_QT_STATIC*]
 void   open(const QUrl & url)
 void   ping(const QByteArray & payload = QByteArray())
 </SLOTS>

@@ -528,7 +528,8 @@ FUNCTION HbQtMaxCol( oWnd )
 
 
 FUNCTION HbQtGetSome( xValue, bEditingFinishedBlock, cLabel, cPicture, cColor, bWhen, bValid )
-   STATIC oCellEditor, bEscape
+   STATIC bEscape
+   LOCAL oCellEditor
    LOCAL GetList := {}, SayList := {}
    LOCAL nOffset := __hbqtPixelsByDPI( 50 )
 
@@ -556,7 +557,7 @@ FUNCTION HbQtGetSome( xValue, bEditingFinishedBlock, cLabel, cPicture, cColor, b
                      PICTURE cPicture ;
                      COLOR   iif( Empty( cColor ), "N/BG*", cColor ) ;
                      WHEN    {|oGet| iif( HB_ISBLOCK( bWhen  ), Eval( bWhen , oGet ), .T. ) } ;
-                     VALID   {|oGet| iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), .T. ) }
+                     VALID   {|oGet| HbQtSetGetSomeValue( oGet:varGet() ), iif( HB_ISBLOCK( bValid ), Eval( bValid, oGet ), .T. ) }
    QREAD PARENT __hbqtAppWidget() NOFOCUSFRAME LASTGETBLOCK  {|| __hbqtEditingFinished( bEditingFinishedBlock, oCellEditor, bEscape ) }
 
    oCellEditor:setFocus()
@@ -564,21 +565,21 @@ FUNCTION HbQtGetSome( xValue, bEditingFinishedBlock, cLabel, cPicture, cColor, b
 
 
 STATIC FUNCTION __hbqtEditingFinished( bBlock, oCellEditor, bEscape )
-   LOCAL xValue := iif( Empty( GetActive() ), NIL, GetActive():varGet() )
 
    oCellEditor:hide()
+   oCellEditor:setParent( QWidget() )
    HbQtActivateSilverLight( .F. )
    SetKey( K_ESC, bEscape )
-
-   HbQtSetGetSomeValue( xValue )
    IF HB_ISBLOCK( bBlock )
-      Eval( bBlock, xValue )
+      Eval( bBlock, HbQtSetGetSomeValue() )
    ENDIF
    RETURN NIL
 
 
 STATIC FUNCTION __hbqtEditingTerminate( oCellEditor, bEscape )
+
    oCellEditor:hide()
+   oCellEditor:setParent( QWidget() )
    HbQtActivateSilverLight( .F. )
    SetKey( K_ESC, bEscape )
    HbQtSetGetSomeValue( NIL )

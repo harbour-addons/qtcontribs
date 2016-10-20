@@ -26,7 +26,6 @@ HB_FUNC( HB_RELEASECPU )
 }
 
 #endif
-#endif
 
 
 #if defined( HB_OS_UNIX )
@@ -37,4 +36,6 @@ HB_FUNC( __DBGPROCESSRUN )
    hb_retl( g_spawn_async( NULL, argv,
          NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, NULL, NULL ) );
 }
+#endif
+
 #endif

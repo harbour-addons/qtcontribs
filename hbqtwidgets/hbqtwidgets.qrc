@@ -307,5 +307,7 @@
     <file>resources/brw-goto.png</file>
     <file>resources/brw-tables.png</file>
     <file>resources/web.png</file>
+    <file>resources/font-plus.png</file>
+    <file>resources/font-minus.png</file>
   </qresource>
 </RCC>

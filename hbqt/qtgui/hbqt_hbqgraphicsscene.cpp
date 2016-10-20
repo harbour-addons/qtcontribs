@@ -1,4 +1,4 @@
-   /*
+/*
  * $Id$
  */
 
@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * QT wrapper main header
  *
- * Copyright 2010-2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -778,7 +778,7 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
       if( ! ite || ite == item )
          continue;
 
-      if( ( m_magnets & Left ) && abs( item->mapToScene( QPointF( 0, 0 ) ).x() - ite->mapToScene( QPointF( 0, 0 ) ).x() ) <= m_magnetArea )
+      if( ( m_magnets & Left ) && qFabs( item->mapToScene( QPointF( 0, 0 ) ).x() - ite->mapToScene( QPointF( 0, 0 ) ).x() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( ite->mapToItem( item->parentItem(), QPointF( 0, 0 ) ).x(), item->geometry().y(), item->geometry().width(), item->geometry().height() ) );
 
@@ -788,7 +788,7 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
             m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), ite->mapToScene( 0, 0 ).y(), item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() ).y(), p ) );
       }
 
-      if( ( m_magnets & Left ) && abs( item->mapToScene( QPointF( 0, 0 ) ).x() - ite->mapToScene( QPointF( ite->geometry().width(), 0 ) ).x() ) <= m_magnetArea )
+      if( ( m_magnets & Left ) && qFabs( item->mapToScene( QPointF( 0, 0 ) ).x() - ite->mapToScene( QPointF( ite->geometry().width(), 0 ) ).x() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( ite->mapToItem( item->parentItem(), QPointF( ite->geometry().width(), 0 ) ).x(), item->geometry().y(), item->geometry().width(), item->geometry().height() ) );
 
@@ -798,7 +798,7 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
             m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), ite->mapToScene( 0, 0 ).y(), item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() ).y(), p ) );
       }
 
-      if( ( m_magnets & Right ) && abs( item->mapToScene( item->geometry().width(), 0 ).x() - ite->mapToScene( 0, 0 ).x() ) <= m_magnetArea )
+      if( ( m_magnets & Right ) && qFabs( item->mapToScene( item->geometry().width(), 0 ).x() - ite->mapToScene( 0, 0 ).x() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( ite->mapToItem( item->parentItem(), 0, 0 ).x() - item->geometry().width(), item->geometry().y(), item->geometry().width(), item->geometry().height() ) );
 
@@ -808,7 +808,7 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
             m_gideLines.push_back( addLine( item->mapToScene( item->geometry().width(), 0 ).x(), ite->mapToScene( ite->geometry().width(), 0 ).y(), item->mapToScene( item->geometry().width(), 0 ).x(), item->mapToScene( item->geometry().width(), item->geometry().height() ).y(), p ) );
       }
 
-      if( ( m_magnets & Right ) && abs( item->mapToScene( item->geometry().width(), 0 ).x() - ite->mapToScene( ite->geometry().width(), 0 ).x() ) <= m_magnetArea )
+      if( ( m_magnets & Right ) && qFabs( item->mapToScene( item->geometry().width(), 0 ).x() - ite->mapToScene( ite->geometry().width(), 0 ).x() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( ite->mapToItem( item->parentItem(), ite->geometry().width(), 0 ).x() - item->geometry().width(), item->geometry().y(), item->geometry().width(), item->geometry().height() ) );
 
@@ -818,37 +818,37 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
             m_gideLines.push_back( addLine( ite->mapToScene( ite->geometry().width(), 0 ).x(), ite->mapToScene( ite->geometry().width(), 0 ).y(), item->mapToScene( item->geometry().width(), 0 ).x(), item->mapToScene( item->geometry().width(), item->geometry().height() ).y(), p ) );
       }
 
-      if( ( m_magnets & Top ) && abs( item->mapToScene( QPointF( 0, 0 ) ).y() - ite->mapToScene( QPointF( 0, 0 ) ).y() ) <= m_magnetArea )
+      if( ( m_magnets & Top ) && qFabs( item->mapToScene( QPointF( 0, 0 ) ).y() - ite->mapToScene( QPointF( 0, 0 ) ).y() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( item->geometry().x(), ite->mapToItem( item->parentItem(), QPointF( 0, 0 ) ).y(), item->geometry().width(), item->geometry().height() ) );
          m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, 0 ).y(), ite->mapToScene( 0, 0 ).x(), item->mapToScene( 0, 0 ).y(), p ) );
       }
 
-      if( ( m_magnets & Top ) && abs( item->mapToScene( QPointF( 0, 0 ) ).y() - ite->mapToScene( QPointF( 0, ite->geometry().height() ) ).y() ) <= m_magnetArea )
+      if( ( m_magnets & Top ) && qFabs( item->mapToScene( QPointF( 0, 0 ) ).y() - ite->mapToScene( QPointF( 0, ite->geometry().height() ) ).y() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( item->geometry().x(), ite->mapToItem( item->parentItem(), QPointF( 0, ite->geometry().height() ) ).y(), item->geometry().width(), item->geometry().height() ) );
          m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, 0 ).y(), ite->mapToScene( 0, 0 ).x(), item->mapToScene( 0, 0 ).y(), p ) );
       }
 
-      if( ( m_magnets & Bottom ) && abs( item->mapToScene( QPointF( 0, item->geometry().height() ) ).y() - ite->mapToScene( QPointF( 0, ite->geometry().height() ) ).y() ) <= m_magnetArea )
+      if( ( m_magnets & Bottom ) && qFabs( item->mapToScene( QPointF( 0, item->geometry().height() ) ).y() - ite->mapToScene( QPointF( 0, ite->geometry().height() ) ).y() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( item->geometry().x(), ite->mapToItem( item->parentItem(), QPointF( 0, ite->geometry().height() ) ).y() - item->geometry().height(), item->geometry().width(), item->geometry().height() ) );
          m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() ).y(), ite->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() ).y(), p ) );
       }
 
-      if( ( m_magnets & Bottom ) && abs( item->mapToScene( QPointF( 0, item->geometry().height() ) ).y() - ite->mapToScene( QPointF( 0, 0 ) ).y() ) <= m_magnetArea )
+      if( ( m_magnets & Bottom ) && qFabs( item->mapToScene( QPointF( 0, item->geometry().height() ) ).y() - ite->mapToScene( QPointF( 0, 0 ) ).y() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( item->geometry().x(), ite->mapToItem( item->parentItem(), QPointF( 0, 0 ) ).y() - item->geometry().height(), item->geometry().width(), item->geometry().height() ) );
          m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() ).y(), ite->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() ).y(), p ) );
       }
 
-      if( ( m_magnets & Horizontal ) && abs( item->mapToScene( QPointF( 0, item->geometry().height() / 2 ) ).y() - ite->mapToScene( QPointF( 0, ite->geometry().height() / 2 ) ).y() ) <= m_magnetArea )
+      if( ( m_magnets & Horizontal ) && qFabs( item->mapToScene( QPointF( 0, item->geometry().height() / 2 ) ).y() - ite->mapToScene( QPointF( 0, ite->geometry().height() / 2 ) ).y() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( item->geometry().x(), ite->mapToItem( item->parentItem(), QPointF( 0, ite->geometry().height() / 2 ) ).y() - item->geometry().height() / 2, item->geometry().width(), item->geometry().height() ) );
          m_gideLines.push_back( addLine( item->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() / 2 ).y(), ite->mapToScene( 0, 0 ).x(), item->mapToScene( 0, item->geometry().height() / 2 ).y(), p ) );
       }
 
-      if( ( m_magnets & Vertical ) && abs( item->mapToScene( QPointF( item->geometry().width() / 2, 0 ) ).x() - ite->mapToScene( QPointF( ite->geometry().width() / 2, 0 ) ).x() ) <= m_magnetArea )
+      if( ( m_magnets & Vertical ) && qFabs( item->mapToScene( QPointF( item->geometry().width() / 2, 0 ) ).x() - ite->mapToScene( QPointF( ite->geometry().width() / 2, 0 ) ).x() ) <= m_magnetArea )
       {
          item->setGeometry( QRectF( ite->mapToItem( item->parentItem(), QPointF( ite->geometry().width() / 2, 0 ) ).x() - item->geometry().width() / 2, item->geometry().y(), item->geometry().width(), item->geometry().height() ) );
          m_gideLines.push_back( addLine( item->mapToScene( item->geometry().width() / 2, 0 ).x(), item->mapToScene( 0, 0 ).y(), item->mapToScene( item->geometry().width() / 2, 0 ).x(), ite->mapToScene( 0, ite->geometry().height() ).y(), p ) );
