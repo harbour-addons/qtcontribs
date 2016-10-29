@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-28 22:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r432)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Bump.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed: Navigation of QGETs with Tab/Sh+Tab key with validations.
+     Note that navigation with Tab keys will not work if Gets are 
+     initiated directly via class - like: oGet := HbQtGet():new().
+     STATIC FUNCTION OOPLayout( oMain ) of validator.prg is one such 
+     example. In all other cases, tab behaves exactly like RETURN.
+
 2016-10-28 19:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r431)
   * hbide/actions.prg
     % Commented out IdeREPORTS icon and menu entry - Pointed by Massimo.

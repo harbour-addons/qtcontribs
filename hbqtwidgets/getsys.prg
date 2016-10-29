@@ -1339,20 +1339,18 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
       ENDIF
       EXIT
 
-#if 0                    /* WHY ? Because navigation is already validated in other keys and TAB is posted from there */
    CASE Qt_Key_Tab
    CASE Qt_Key_Backtab
-      IF ! ::lValidWhen
-         ::lValidWhen := .T.
-         EXIT
-      ELSE
-         IF ::postValidate()
-            ::navigate( iif( oKeyEvent:key() == Qt_Key_Tab, _QGET_NAV_NEXT, _QGET_NAV_PREVIOUS ) )
+      IF ! Empty( ::oGetList )
+         IF ( nKey == Qt_Key_Tab .AND. ! ::oGetList:isLastGet( Self ) ) .OR. ;
+            ( nKey == Qt_Key_Backtab .AND. ! ::oGetList:isFirstGet( Self ) )
+            IF ::postValidate()
+               ::navigate( iif( oKeyEvent:key() == Qt_Key_Tab, _QGET_NAV_NEXT, _QGET_NAV_PREVIOUS ) )
+            ENDIF
          ENDIF
          oKeyEvent:accept() ; RETURN .T.
       ENDIF
       EXIT
-#endif
 
    ENDSWITCH
 
@@ -1425,17 +1423,13 @@ METHOD HbQtGet:handlePushButton()
 METHOD HbQtGet:navigate( nDirection )
 
    IF ! Empty( ::oGetList )
-      IF     nDirection == _QGET_NAV_NEXT
-         ::oGetList:goNext( Self )
-      ELSEIF nDirection == _QGET_NAV_PREVIOUS
-         ::oGetList:goPrevious( Self )
-      ELSEIF nDirection == _QGET_NAV_TOP
-         ::oGetList:goTop( Self )
-      ELSEIF nDirection == _QGET_NAV_BOTTOM
-         ::oGetList:goBottom( Self )
-      ELSEIF nDirection == _QGET_NAV_SELF
-         ::oGetList:setFocus( Self )
-      ENDIF
+      SWITCH nDirection
+      CASE _QGET_NAV_NEXT     ; ::oGetList:goNext( Self )     ; EXIT
+      CASE _QGET_NAV_PREVIOUS ; ::oGetList:goPrevious( Self ) ; EXIT
+      CASE _QGET_NAV_TOP      ; ::oGetList:goTop( Self )      ; EXIT
+      CASE _QGET_NAV_BOTTOM   ; ::oGetList:goBottom( Self )   ; EXIT
+      CASE _QGET_NAV_SELF     ; ::oGetList:setFocus( Self )   ; EXIT
+      ENDSWITCH
    ELSE
       IF nDirection == _QGET_NAV_NEXT
          QApplication():sendEvent( ::oEdit, QKeyEvent( QEvent_KeyPress, Qt_Key_Tab, Qt_NoModifier ) )
