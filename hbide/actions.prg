@@ -421,7 +421,7 @@ METHOD IdeActions:loadActions()
    aadd( aAct, { "IdePARTS"            , "IdePARTS"                      , "ideparts"       , ""     , "No", "Yes" } )
    aadd( aAct, { "DBU"                 , "IdeDBU"                        , "browser"        , ""     , "No", "Yes" } )
    aadd( aAct, { "EDITOR"              , "IdeEDITOR"                     , "editor"         , ""     , "No", "Yes" } )
-   aadd( aAct, { "REPORTS"             , "IdeREPORTS"                    , "designer"       , ""     , "No", "Yes" } )
+   //aadd( aAct, { "REPORTS"             , "IdeREPORTS"                    , "designer"       , ""     , "No", "Yes" } )
    //
    aadd( aAct, { "NumObjects"          , "Number of Qt Objects"          , ""               , ""     , "No", "Yes" } )
    //
@@ -1116,7 +1116,7 @@ METHOD IdeActions:buildToolbarParts()
 
    ::qPartsToolbar:addAction( "IdeEDITOR" , ::getAction( "EDITOR"  ), {|| ::oIde:execAction( "EDITOR"  ) } )
    ::qPartsToolbar:addAction( "IdeDBU"    , ::getAction( "DBU"     ), {|| ::oIde:execAction( "DBU"     ) } )
-   ::qPartsToolbar:addAction( "IdeREPORTS", ::getAction( "REPORTS" ), {|| ::oIde:execAction( "REPORTS" ) } )
+   //::qPartsToolbar:addAction( "IdeREPORTS", ::getAction( "REPORTS" ), {|| ::oIde:execAction( "REPORTS" ) } )
 
    ::oDlg:oWidget:addToolBar( Qt_TopToolBarArea, ::qPartsToolbar:oWidget )
 

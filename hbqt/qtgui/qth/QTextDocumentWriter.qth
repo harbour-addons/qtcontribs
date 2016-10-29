@@ -13,9 +13,9 @@
 
 <CLASS>
 QObject     = no
-Inherit     = 
+Inherit     =
 Type        = Core
-New         = 
+New         =
 </CLASS>
 
 <CODE>
@@ -30,7 +30,26 @@ New         =
  */
 HB_FUNC( QT_QTEXTDOCUMENTWRITER )
 {
-   __HB_RETPTRGC__( new QTextDocumentWriter() );
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QIODEVICE" ) && hbqt_par_isDerivedFrom( 2, "QBYTEARRAY" ) )
+   {
+      __HB_RETPTRGC__( new QTextDocumentWriter( hbqt_par_QIODevice( 1 ), *hbqt_par_QByteArray( 2 ) ) );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QBYTEARRAY" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QTextDocumentWriter( hb_parstr_utf8( 1, &pText01, NULL ), *hbqt_par_QByteArray( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QTextDocumentWriter( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QTextDocumentWriter() );
+   }
 }
 </CODE>
 

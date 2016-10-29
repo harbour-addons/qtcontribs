@@ -1418,6 +1418,13 @@ METHOD IdeDocks:buildStatusBar()
    FOR i := 1 TO 6
       ::oSBar:oWidget:addWidget( ::getMarkWidget( i ) )
    NEXT
+   WITH OBJECT ::oIde:oProgBar := QProgressBar( ::oSBar:oWidget )
+      :setMaximumWidth( 50 )
+      :setMaximum( 20 )
+      :setTextVisible( .F. )
+      :hide()
+   ENDWITH
+   ::oSBar:oWidget:addWidget( ::oProgBar )
    RETURN Self
 
 

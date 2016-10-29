@@ -471,6 +471,7 @@ CLASS IdeProjManager INHERIT IdeObject
    DATA   oEdit
    DATA   oTheme
    DATA   oHiliter
+   DATA   nProgValue                              INIT 0
 
    METHOD new( oIDE )
    METHOD create( oIDE )
@@ -1672,6 +1673,12 @@ METHOD IdeProjManager:showOutput( cOutput, mp2, oProcess )
    HB_SYMBOL_UNUSED( mp2 )
    HB_SYMBOL_UNUSED( oProcess )
 
+   ::nProgValue++
+   IF ::nProgValue > 20
+      ::nProgValue := 1
+   ENDIF
+   ::oProgBar:setValue( ::nProgValue )
+
    cIfError := hbide_convertBuildStatusMsgToHtml( cOutput, ::oOutputResult:oWidget )
    IF ! empty( cIfError ) //.AND. empty( ::cIfError )
       ::cIfError := cIfError
@@ -1884,6 +1891,10 @@ METHOD IdeProjManager:buildProject( cProject, lLaunch, lRebuild, lPPO, lViaQt, c
       cCmdParams := hbide_array2cmdParams( aHbp )
 
       oProcess := HbpProcess():new()
+
+      ::nProgValue := 0
+      ::oProgBar:show()
+      ::oProgBar:setValue( ::nProgValue )
       //
       oProcess:output      := {|cOut, mp2, oHbp| ::showOutput( cOut,mp2,oHbp ) }
       oProcess:finished    := {|nEC , nES, oHbp| FErase( cBatch ), ::finished( nEC, nES, oHbp, cWrkEnviron, lDebug ) }
@@ -1969,6 +1980,9 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, l
       hb_fNameSplit( cExe, @cTmp )
       hbide_setProjectOutputPath( cTmp )
    ENDIF
+
+   ::oProgBar:setValue( 0 )
+   ::oProgBar:hide()
 
    IF ::lLaunch
       ::outputText( " " )

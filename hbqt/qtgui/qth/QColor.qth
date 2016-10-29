@@ -73,6 +73,7 @@ HB_FUNC( QT_QCOLOR )
 
 <ENUMS>
 enum Spec { Rgb, Hsv, Cmyk, Invalid }
+enum NameFormat { HexRgb, HexArgb }
 </ENUMS>
 
 <PROTOS>
@@ -145,4 +146,30 @@ QColor fromRgb ( int r, int g, int b, int a = 255 )
 QColor fromRgbF ( qreal r, qreal g, qreal b, qreal a = 1.0 )
 QColor fromRgba ( QRgb rgba )
 //void setAllowX11ColorNames ( bool enabled )
+
+
+void     getHsl(int *h, int *s, int *l, int *a = 0) const                   [*V=0x040600*]
+void     getHslF(qreal *h, qreal *s, qreal *l, qreal *a = 0) const          [*V=0x040600*]
+int     hslHue() const                                                      [*V=0x040600*]
+qreal     hslHueF() const                                                   [*V=0x040600*]
+int     hslSaturation() const                                               [*V=0x040600*]
+qreal     hslSaturationF() const                                            [*V=0x040600*]
+int     hsvHue() const                                                      [*V=0x040600*]
+qreal     hsvHueF() const                                                   [*V=0x040600*]
+int     hsvSaturation() const                                               [*V=0x040600*]
+qreal     hsvSaturationF() const                                            [*V=0x040600*]
+int     lightness() const                                                   [*V=0x040600*]
+qreal     lightnessF() const                                                [*V=0x040600*]
+QString     name(NameFormat format) const                                   [*V=0x050200*]
+//QRgba64     rgba64() const                                                [*V=0x050600*]
+void     setHsl(int h, int s, int l, int a = 255)                           [*V=0x040600*]
+void     setHslF(qreal h, qreal s, qreal l, qreal a = 1.0)                  [*V=0x040600*]
+//void     setRgba64(QRgba64 rgba)                                          [*V=0x040600*]
+QColor     toHsl() const                                                    [*V=0x040600*]
+QColor     fromHsl(int h, int s, int l, int a = 255)                        [*V=0x040600*]
+QColor     fromHslF(qreal h, qreal s, qreal l, qreal a = 1.0)               [*V=0x040600*]
+//QColor     fromRgba64(ushort r, ushort g, ushort b, ushort a = USHRT_MAX) [*V=0x050600*]
+//QColor     fromRgba64(QRgba64 rgba64)                                     [*V=0x050600*]
+bool     isValidColor(const QString &name)                                  [*V=0x040700*]
+
 </PROTOS>

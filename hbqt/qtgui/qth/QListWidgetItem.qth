@@ -31,13 +31,39 @@ Detached    = yes
  */
 HB_FUNC( QT_QLISTWIDGETITEM )
 {
-   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QLISTWIDGET" ) )
+   if( hb_pcount() == 4 && hbqt_par_isDerivedFrom( 1, "QICON" ) && HB_ISCHAR( 2 ) && hbqt_par_isDerivedFrom( 3, "QLISTWIDGET" ) && HB_ISNUM( 4 ) )
    {
-      __HB_RETPTRGC__( new QListWidgetItem( hbqt_par_QListWidget( 1 ) ) );
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QListWidgetItem( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), hbqt_par_QListWidget( 3 ), hb_parni( 4 ) ) );
+      hb_strfree( pText01 );
    }
-   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QLISTWIDGET" ) && HB_ISNUM( 2 ) )
+   else if( hb_pcount() == 3 && hbqt_par_isDerivedFrom( 1, "QICON" ) && HB_ISCHAR( 2 ) &&  hbqt_par_isDerivedFrom( 3, "QLISTWIDGET" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QListWidgetItem( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), hbqt_par_QListWidget( 3 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 3 && HB_ISCHAR( 1 ) &&  hbqt_par_isDerivedFrom( 2, "QLISTWIDGET" ) && HB_ISNUM( 3 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QListWidgetItem( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QListWidget( 2 ), hb_parni( 3 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QLISTWIDGET" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QListWidgetItem( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QListWidget( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QLISTWIDGET" ) && HB_ISNUM( 2 )  )
    {
       __HB_RETPTRGC__( new QListWidgetItem( hbqt_par_QListWidget( 1 ), hb_parni( 2 ) ) );
+   }
+   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QICON" ) && HB_ISCHAR( 2 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QListWidgetItem( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
    }
    else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QLISTWIDGETITEM" ) )
    {
@@ -49,23 +75,9 @@ HB_FUNC( QT_QLISTWIDGETITEM )
       __HB_RETPTRGC__( new QListWidgetItem( hb_parstr_utf8( 1, &pText01, NULL ) ) );
       hb_strfree( pText01 );
    }
-   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QLISTWIDGET" ) )
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QLISTWIDGET" ) )
    {
-      void * pText01 = NULL;
-      __HB_RETPTRGC__( new QListWidgetItem( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QListWidget( 2 ) ) );
-      hb_strfree( pText01 );
-   }
-   else if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QICON" ) && HB_ISCHAR( 2 ) )
-   {
-      void * pText01 = NULL;
-      __HB_RETPTRGC__( new QListWidgetItem( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ) ) );
-      hb_strfree( pText01 );
-   }
-   else if( hb_pcount() == 3 && hbqt_par_isDerivedFrom( 1, "QICON" ) && HB_ISCHAR( 2 ) && hbqt_par_isDerivedFrom( 3, "QLISTWIDGET" ) )
-   {
-      void * pText01 = NULL;
-      __HB_RETPTRGC__( new QListWidgetItem( *hbqt_par_QIcon( 1 ), hb_parstr_utf8( 2, &pText01, NULL ), hbqt_par_QListWidget( 3 ) ) );
-      hb_strfree( pText01 );
+      __HB_RETPTRGC__( new QListWidgetItem( hbqt_par_QListWidget( 1 ) ) );
    }
    else
    {

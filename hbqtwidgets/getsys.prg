@@ -1328,7 +1328,7 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
          IF nHbKey == K_CTRL_ENTER
             ::navigate( _QGET_NAV_NEXT )
          ENDIF
-      ELSEIF ::cClassName == "QFRAME"
+      ELSEIF ::cClassName == "QLABEL"
          ::navigate( _QGET_NAV_NEXT )
       ENDIF
       EXIT

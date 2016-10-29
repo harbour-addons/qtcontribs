@@ -227,6 +227,7 @@ CLASS HbIde
    DATA   oDlg
    DATA   oDa
    DATA   oSBar
+   DATA   oProgBar
    DATA   oMenu
    DATA   oTBar
    DATA   oStackedWidget

@@ -426,7 +426,7 @@ CLASS IdeFindReplace INHERIT IdeObject
    METHOD replace()
    METHOD onClickFind( nFrom )
    METHOD find( lWarn )
-   METHOD updateFindReplaceData( cMode )
+   METHOD updateFindReplaceData( cMode, lFound )
 
    ENDCLASS
 
@@ -448,7 +448,7 @@ METHOD IdeFindReplace:getFocus()
 
    IF ! empty( ::cText := ::oEM:getSelectedText() )
       ::qLineEdit:setText( ::cText )
-      ::updateFindReplaceData( "find" )
+      //::updateFindReplaceData( "find" )
    ENDIF
    ::qLineEdit:selectAll()
 
@@ -485,11 +485,14 @@ METHOD IdeFindReplace:create( oIde )
                                                                              iif( p == 1, ::oUI:buttonReplace:setEnabled( .f. ), NIL ) } )
 
    ::qLineEdit := ::oUI:comboFindWhat:lineEdit()
-   ::qLineEdit:connect( "returnPressed()"     , {|| ::updateFindReplaceData( "find" ), ::onClickFind( 1 ) } )
-   ::qLineEdit:connect( "textChanged(QString)", {|| ::oUI:radioEntire:setChecked( .t. ) } )
+   //::qLineEdit:connect( "returnPressed()"     , {|| ::updateFindReplaceData( "find" ), ::onClickFind( 1 ) } )
+   ::qLineEdit:connect( "returnPressed()"     , {|| ::onClickFind( 1 ) } )
+   //::qLineEdit:connect( "textChanged(QString)", {|| ::oUI:radioEntire:setChecked( .t. ) } )
+   ::qLineEdit:connect( "textChanged(QString)", {|| ::oUI:radioFromCursor:setChecked( .t. ) } )
 
    ::qReplaceEdit := ::oUI:comboReplaceWith:lineEdit()
-   ::qReplaceEdit:connect( "returnPressed()", {|| ::updateFindReplaceData( "replace" ), ::onClickReplace( 1 ) } )
+   //::qReplaceEdit:connect( "returnPressed()", {|| ::updateFindReplaceData( "replace" ), ::onClickReplace( 1 ) } )
+   ::qReplaceEdit:connect( "returnPressed()", {|| ::onClickReplace( 1 ) } )
 
    ::oUI:comboFindWhat:setCurrentIndex( -1 )
    ::oUI:comboReplaceWith:setCurrentIndex( -1 )
@@ -539,10 +542,14 @@ METHOD IdeFindReplace:onClickFind( nFrom )
    ENDIF
 
    IF lFound
+      ::updateFindReplaceData( "find", .T. )
+
       ::oUI:buttonReplace:setEnabled( .t. )
       ::oUI:checkGlobal:setEnabled( .t. )
       ::oUI:checkNoPrompting:setEnabled( .t. )
    ELSE
+      ::updateFindReplaceData( "find", .F. )
+
       ::getFocus()
       ::oUI:buttonReplace:setEnabled( .f. )
       ::oUI:checkGlobal:setEnabled( .f. )
@@ -566,7 +573,7 @@ METHOD IdeFindReplace:find( lWarn )
 
       IF ! ( lFound := ::oEM:getEditObjectCurrent():findEx( cText, nFlags ) ) .AND. lWarn
          ::oEM:getEditObjectCurrent():clearSelection()
-         hbide_showWarning( "Cannot find : " + cText )
+         // hbide_showWarning( "Cannot find : " + cText )
       ENDIF
    ENDIF
 
@@ -634,7 +641,7 @@ METHOD IdeFindReplace:replace()
    RETURN Self
 
 
-METHOD IdeFindReplace:updateFindReplaceData( cMode )
+METHOD IdeFindReplace:updateFindReplaceData( cMode, lFound )
    LOCAL cData, nIndex
 
    IF cMode == "find"
@@ -645,7 +652,11 @@ METHOD IdeFindReplace:updateFindReplaceData( cMode )
             ::oUI:comboFindWhat:insertItem( 0, cData )
          ENDIF
       ENDIF
-      ::oDK:setStatusText( SB_PNL_SEARCH, cData )
+      IF lFound
+         ::oDK:setStatusText( SB_PNL_SEARCH, cData )
+      ELSE
+         ::oDK:setStatusText( SB_PNL_SEARCH, "<font color = red><b><s>" + cData + "</s></b></font>" )
+      ENDIF
    ELSE
       cData := ::oUI:comboReplaceWith:lineEdit():text()
       IF !empty( cData )

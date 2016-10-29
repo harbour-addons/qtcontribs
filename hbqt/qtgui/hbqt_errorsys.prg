@@ -51,14 +51,15 @@
  */
 
 #include "error.ch"
-
 #include "hbqtgui.ch"
+
 
 PROCEDURE hbqt_ErrorSys()
 
    ErrorBlock( {| oError | DefError( oError ) } )
 
    RETURN
+
 
 STATIC FUNCTION DefError( oError )
    LOCAL cMessage
@@ -158,15 +159,28 @@ STATIC FUNCTION DefError( oError )
                  "(" + hb_NToS( ProcLine( n ) ) + ")"
    ENDDO
 
-   hbqt_messageBox( cMsg, NIL, "HBQT Runtime Error", QMessageBox_Critical )
+   nChoice := hbqt_messageBox( cMsg, NIL, "HBQT Runtime Error", QMessageBox_Critical, oError )
+   IF nChoice == QMessageBox_Abort
+      // this make the difference; break means returns oError object to the recover procedure (CLIPPER)
+      // BREAK( oError )
+   ELSEIF nChoice == QMessageBox_Retry
+      RETURN .T.
+   ELSEIF nChoice == QMessageBox_Ignore
+      RETURN .F.
+   ENDIF
+
+   IF hbqt_IsActiveApplication()
+      QApplication():closeAllWindows()
+      QApplication():exit( 1 )
+   END IF
 
    ErrorLevel( 1 )
    QUIT
 
    RETURN .F.
 
-STATIC FUNCTION ErrorMessage( oError )
 
+STATIC FUNCTION ErrorMessage( oError )
    // start error message
    LOCAL cMessage := iif( oError:severity > ES_WARNING, "Error", "Warning" ) + " "
 
@@ -199,9 +213,43 @@ STATIC FUNCTION ErrorMessage( oError )
 
    RETURN cMessage
 
-/*----------------------------------------------------------------------*/
 
-STATIC PROCEDURE hbqt_messageBox( cMsg, cInfo, cTitle, nIcon )
+STATIC FUNCTION hbqt_messageBox( cMsg, cInfo, cTitle, nIcon, oError )
+   LOCAL oMB, nButtons
+   LOCAL nReturn := QMessageBox_Abort
+
+   IF hbqt_IsActiveApplication()
+
+      hb_default( @cTitle, "Information" )
+      hb_default( @nIcon, QMessageBox_Information )
+
+      nButtons := QMessageBox_Abort
+      IF oError:canRetry
+         nButtons := hb_BitOr( nButtons, QMessageBox_Retry )
+      ENDIF
+      IF oError:canDefault
+         nButtons := hb_BitOr( nButtons, QMessageBox_Ignore )
+      ENDIF
+
+      WITH OBJECT oMB := QMessageBox()
+         :setText( cMsg )
+         IF ! Empty( cInfo )
+            :setInformativeText( cInfo )
+         ENDIF
+         :setIcon( nIcon )
+         :setWindowTitle( cTitle )
+         :setStyleSheet( "background-color: white;" )
+         :setStandardButtons( nButtons )
+         :setDefaultButton( QMessageBox_Abort )
+      END WITH
+      nReturn := oMB:exec()
+   ENDIF
+
+   RETURN nReturn
+
+
+#if 0
+STATIC PROCEDURE hbqt_messageBox( cMsg, cInfo, cTitle, nIcon, oError )
    LOCAL oMB
 
    IF hbqt_IsActiveApplication()
@@ -225,5 +273,5 @@ STATIC PROCEDURE hbqt_messageBox( cMsg, cInfo, cTitle, nIcon )
    ENDIF
 
    RETURN
+#endif
 
-/*----------------------------------------------------------------------*/

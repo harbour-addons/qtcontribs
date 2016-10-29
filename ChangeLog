@@ -16,6 +16,60 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-28 19:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r431)
+  * hbide/actions.prg
+    % Commented out IdeREPORTS icon and menu entry - Pointed by Massimo.
+
+  * hbide/docks.prg
+    + Added QProgressBar as one of the components of HbIDE's statusbar.
+
+  * hbide/findreplace.prg
+    % Changed the behavior of search starting from current cursor position 
+     instead of from begining of file, if something was typed in the search 
+     test edit line. 
+
+    - Removed "Not Found" dialog if a serach string could not been found 
+       via CTRL+F. Instead, not found string is displayed in 
+       "Find:" statusbar panel, in bold, red, strike-out format.
+
+  * hbide/main.prg
+    + Added DATA member - oProgBar.
+
+  * hbide/object.prg
+    + Made oProBar accessible throught-out HbIDE classes.
+
+  * hbide/projmanager.prg
+    + Implemented to show up the progessbar in statusbar when linking 
+     or compilation is in progress.
+
+  * hbqt/qtcore/hbqt_pointer.cpp
+    ! Fixed: correct plugin names for static linking.
+
+  * hbqt/qtcore/hbqtcore.hbc
+    + Readied for static linking.
+
+  * hbqt/qtgui/hbqt_errorsys.prg
+    % Implemented patch provided by Luigi - not tested. Please report.
+
+  * hbqt/qtgui/hbqt_init.cpp
+    + Added __HBQTLIBRARYPATH() call before QApplication() is initiated.
+     Somehow it went missing in some commit.
+
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added constants provided by Luigi.
+
+  * hbqt/qtgui/qth/QColor.qth
+  * hbqt/qtgui/qth/QListWidgetItem.qth
+  * hbqt/qtgui/qth/QTextDocumentWriter.qth
+  * hbqt/qtquick/qth/QQuickWidget.qth
+    + Added methods introduced by Qt's next versions. Patch provided by Luigi.
+
+  * hbqtwidgets/getsys.prg
+    ! Fixed a typo resulting from copy/paste.
+
 2016-10-20 12:23 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r430)
   * hbqt/qtgui/hbqt_version.ch
     % Version Updated.

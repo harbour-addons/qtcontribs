@@ -958,6 +958,23 @@ static void hbqt_lib_init( void * cargo )
       s_qtapp = qApp;
       if( ! s_qtapp )
       {
+         PHB_DYNS pDynsym = hb_dynsymFind( "__HBQTLIBRARYPATH" );
+         if( pDynsym && hb_vmRequestReenter() )
+         {
+            hb_vmPushDynSym( pDynsym );
+            hb_vmPushNil();
+            hb_vmDo( 0 );
+            if( hb_vmRequestQuery() == 0 )
+            {
+               PHB_ITEM pReturn = hb_stackReturnItem();
+
+               if( pReturn && ( hb_itemType( pReturn ) & HB_IT_STRING ) )
+               {
+                  QCoreApplication::addLibraryPath( ( QString ) hb_itemGetC( pReturn ) );
+               }
+            }
+            hb_vmRequestRestore();
+         }
          static char ** s_argv;
          static int s_argc;
 

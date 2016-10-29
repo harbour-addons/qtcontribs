@@ -111,6 +111,7 @@ CLASS IdeObject
 
    ACCESS oFont                                   INLINE ::oIde:oFont
    ACCESS oSBar                                   INLINE ::oIde:oSBar
+   ACCESS oProgBar                                INLINE ::oIde:oProgBar
    ACCESS oDlg                                    INLINE ::oIde:oDlg
    ACCESS oDA                                     INLINE ::oIde:oDA
 

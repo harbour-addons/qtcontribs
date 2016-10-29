@@ -70,12 +70,10 @@
 #include <QtCore/QDebug>
 
 #ifdef HB_QT_STATIC
+#define QT_STATICPLUGIN
 #include <QtCore/qplugin.h>
-
-Q_IMPORT_PLUGIN(QWindowsIntegration)
-Q_IMPORT_PLUGIN(qwindowsprintersupport)
-Q_IMPORT_PLUGIN(qico)
-Q_IMPORT_PLUGIN(qwindows)
+Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+Q_IMPORT_PLUGIN(QICOPlugin)
 #endif
 
 /*----------------------------------------------------------------------*/

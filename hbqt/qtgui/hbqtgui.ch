@@ -2468,6 +2468,11 @@
 #define QKeySequence_WhatsThis                    2  // Activate whats this.
 #define QKeySequence_ZoomIn                       16 // Zoom in.
 #define QKeySequence_ZoomOut                      17 // Zoom out.
+#define QKeySequence_Backspace                    69 // Delete previous character.
+#define QKeySequence_DeleteCompleteLine           68 // Delete the entire line.
+#define QKeySequence_Deselect                     67 // Deselect text. Since 5.1
+#define QKeySequence_FullScreen                   66 // Toggle the window state to/from full screen.
+#define QKeySequence_Cancel                       70 // Cancel the current operation.
 
 //enum QDateTimeEdit::Section
 #define QDateTimeEdit_NoSection                   0x0000
@@ -5524,6 +5529,15 @@
 
 #define QScatterSeries_MarkerShapeCircle                     0
 #define QScatterSeries_MarkerShapeRectangle                  1
+
+#define QColor_Rgb                                           1
+#define QColor_Hsv                                           2
+#define QColor_Cmyk                                          3
+#define QColor_Hsl                                           4
+#define QColor_Invalid                                       0
+
+#define QListWidgetItem_Type                                 0         // The default type for list widget items.
+#define QListWidgetItem_UserType                             1000      // The minimum value for custom types. Values below UserType are reserved by Qt.
 
 #endif
 
