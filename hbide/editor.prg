@@ -1113,9 +1113,13 @@ METHOD IdeEditsManager:zoom( nKey )
 
 
 METHOD IdeEditsManager:printPreview()
-   LOCAL oEdit
+   LOCAL oEdit, cCode
    IF !empty( oEdit := ::getEditObjectCurrent() )
-      oEdit:printPreview()
+      IF ! Empty( cCode := oEdit:getSelectedText() )
+         ::oIde:showFragment( cCode, "Selected Text", QIcon( hbide_image( "selectionline" ) ), oEdit:theme(), .T. )
+      ELSE
+         oEdit:printPreview()
+      ENDIF
    ENDIF
    RETURN self
 
@@ -1655,6 +1659,7 @@ METHOD IdeEditor:buildHbQtEditor( lBase )
          ::connectBlocks( oHbQtEditor )
       ELSE
          oHbQtEditor:setHilighter( ::oTH:setSyntaxHilighting( oHbQtEditor:widget(), @::cTheme ) )
+         oHbQtEditor:setTheme( ::cTheme )
       ENDIF
    ENDIF
    RETURN oHbQtEditor

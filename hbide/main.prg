@@ -374,7 +374,7 @@ CLASS HbIde
    METHOD parseParams()
    METHOD showCodeFregment( oXbp )
    METHOD setCodePage( cCodePage )
-   METHOD showFragment( cCode, cTitle, oIcon, cTheme )
+   METHOD showFragment( cCode, cTitle, oIcon, cTheme, lAutoPrintPreview )
    METHOD showHeaderFile( cCode, cTitle, oIcon, lSave )
    METHOD printFragment( oPlainTextEdit )
    METHOD ideAlert( ... )                            INLINE Alert( ... )
@@ -1279,10 +1279,11 @@ METHOD HbIde:showCodeFregment( oXbp )
    RETURN Self
 
 
-METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme )
+METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme, lAutoPrintPreview )
    LOCAL qWidget, qH
 
    DEFAULT cTheme TO "Pritpal's Favourite"
+   DEFAULT lAutoPrintPreview TO .F.
 
    WITH OBJECT qWidget := QPlainTextEdit( ::oDlg:oWidget )
       :setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
@@ -1304,6 +1305,9 @@ METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme )
                                     RETURN .F.
                                  } )
       :show()
+      IF lAutoPrintPreview
+         ::printFragment( qWidget )
+      ENDIF
    ENDWITH
    RETURN Self
 

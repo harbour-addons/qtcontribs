@@ -16,6 +16,25 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-10-29 11:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r433)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Bump.
+
+  * hbide/editor.prg
+  * hbide/main.prg
+  * hbqtwidgets/editor.prg
+    % Changed behavior of main-toolbar icon "Print".
+     Now, if some text is found selected in the source is sent to the 
+     print preview instead of entire source. This is a two-phase 
+     implementation: 
+     1. A new editor window is opened with selected text inside.
+     2. Print Preview is called automatically for the contents of such window.
+     Editor window opened stays on top of the editor window whcih you need 
+     to close explicitly. Until closed you can agian call Print Preview 
+     by pressing Ctrl+P.
+
+     A feature request by Massimo.
+
 2016-10-28 22:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r432)
   * hbqt/qtgui/hbqt_version.ch
     % Version Bump.

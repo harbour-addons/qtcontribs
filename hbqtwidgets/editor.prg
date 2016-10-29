@@ -350,6 +350,10 @@ CLASS HbQtEditor
 
    METHOD documentContentsChanged( nPosition, nCharsRemoved, nCharsAdded )
 
+   DATA   cTheme
+   METHOD setTheme( cTheme )                      INLINE ::cTheme := cTheme
+   ACCESS theme()                                 INLINE ::cTheme
+
    PROTECTED:
    DATA   oDocument
 
