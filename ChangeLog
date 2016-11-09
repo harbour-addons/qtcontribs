@@ -16,6 +16,112 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-11-08 17:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r434)
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothaddress.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothdevicediscoveryagent.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothdeviceinfo.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothhostinfo.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothlocaldevice.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothserver.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothservicediscoveryagent.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothserviceinfo.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothsocket.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothtransfermanager.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothtransferreply.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothtransferrequest.txt
+  * hbqt/qtbluetooth/doc/en/class_qbluetoothuuid.txt
+
+  * hbqt/qtpositioning/doc/en/class_qgeoaddress.txt
+  * hbqt/qtpositioning/doc/en/class_qgeoareamonitorinfo.txt
+  * hbqt/qtpositioning/doc/en/class_qgeoareamonitorsource.txt
+  * hbqt/qtpositioning/doc/en/class_qgeocircle.txt
+  * hbqt/qtpositioning/doc/en/class_qgeocoordinate.txt
+  * hbqt/qtpositioning/doc/en/class_qgeolocation.txt
+  * hbqt/qtpositioning/doc/en/class_qgeopositioninfo.txt
+  * hbqt/qtpositioning/doc/en/class_qgeopositioninfosource.txt
+  * hbqt/qtpositioning/doc/en/class_qgeopositioninfosourcefactory.txt
+  * hbqt/qtpositioning/doc/en/class_qgeorectangle.txt
+  * hbqt/qtpositioning/doc/en/class_qgeosatelliteinfo.txt
+  * hbqt/qtpositioning/doc/en/class_qgeosatelliteinfosource.txt
+  * hbqt/qtpositioning/doc/en/class_qgeoshape.txt
+  * hbqt/qtpositioning/doc/en/class_qnmeapositioninfosource.txt
+
+  * hbqt/qtwebsockets/doc/en/class_qmaskgenerator.txt
+  * hbqt/qtwebsockets/doc/en/class_qwebsocket.txt
+  * hbqt/qtwebsockets/doc/en/class_qwebsocketcorsauthenticator.txt
+  * hbqt/qtwebsockets/doc/en/class_qwebsocketserver.txt
+    % Auto updated.
+
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Bump.
+
+  * hbqt/qtcore/qth/QEventLoop.qth
+  * hbqt/qtgui/qth/QBoxLayout.qth
+  * hbqt/qtgui/qth/QGridLayout.qth
+  * hbqt/qtgui/qth/QHBoxLayout.qth
+  * hbqt/qtgui/qth/QLayout.qth
+  * hbqt/qtgui/qth/QToolBar.qth
+  * hbqt/qtgui/qth/QVBoxLayout.qth
+  * hbqt/qtgui/qth/QWidgetAction.qth
+  * hbqt/qtquick/qth/QQuickWidget.qth
+    ! Fixed: to be usable WITHOUT cppmm. Dynamic as well as Static builds.
+
+  * hbqt/hbmk2_qt.hb
+    + Introduced Q_NULLPTR macro instead of NULL.
+       This macro is backward compatible with Qt 4.x as well but this commit 
+       has it on for Qt 5.7+ versions.
+
+  * hbqt/qtcharts/hbqtcharts.hbx
+    % Missing prototypes.
+
+  * hbqt/qtcore/hbqt_bind.cpp
+    % Few debugging change plus introducing Q_NULLPTR.
+
+  * hbqt/qtcore/hbqt_destroyer.cpp
+    % Introduced VM protection.
+
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Added: commented-out plugins for QtMultimedia needed for static builds.
+
+  * hbqt/hbqt_common.hbc
+    - Changed not to use hbcppmm implementation.
+       Now Qt's own overloads are requested instead.
+       The protocol is function for both Dynamic and Static linking.
+
+  * hbqt/qtcharts/hbqtcharts.hbc
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+  * hbqt/qtqml/hbqtqml.hbc
+    + Prepared for Static builds based on Mingw 5.3 shipped with Qt 5.7.
+
+  * hbqt/qtnetwork/qth/filelist.hbm
+    - Guarded some SSL related methods not available in static builds.
+
+  * hbqtwidgets/editor.prg
+  * hbqtwidgets/getsys.prg
+    * Minor.
+
+  * hbide/actions.prg
+  * hbide/debugger.prg
+  * hbide/docks.prg
+  * hbide/editor.prg
+  * hbide/findreplace.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/main.prg
+  * hbide/projectwizard.prg
+  * hbide/tools.prg
+  * hbide/uisrcmanager.prg
+    % Fixed to exit HbIDE promptly. Only modified source tabs are initiated.
+
+    % Changed: Find & Replace dialog behavior - Whenever CTRL+F is used,
+       the radio button <EntireFile> is checked. It means first time 
+       search is initiated from begining of file.
+
+    % Initiate QToolButton() with a parent to avoid unwanted gpf on exits.
+
+  * qtcontribs57.hbp
+    - Removed QtDesigner module.
+
 2016-10-29 11:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r433)
   * hbqt/qtgui/hbqt_version.ch
     % Version Bump.

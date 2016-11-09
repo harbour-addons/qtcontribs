@@ -1300,37 +1300,41 @@ METHOD HbQtGet:execKeyPress( oKeyEvent )
 
    CASE Qt_Key_Enter
    CASE Qt_Key_Return
-      IF ::cClassName $ "QLISTWIDGET,QCOMBOBOX,QPUSHBUTTON"
-         IF ::postValidate()
-            IF ::cClassName == "QPUSHBUTTON"
-               ::handlePushButton()
-            ELSE
-               ::navigate( _QGET_NAV_NEXT )
-            ENDIF
-         ENDIF
-         oKeyEvent:accept() ; RETURN .T.
-      ELSEIF ::cClassName == "QPLAINTEXTEDIT" .AND. hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+      SWITCH ::cClassName
+      CASE "QLISTWIDGET"
+      CASE "QCOMBOBOX"
+      CASE "QCHECKBOX"
+      CASE "QLINEEDIT"
          IF ::postValidate()
             ::navigate( _QGET_NAV_NEXT )
          ENDIF
-         oKeyEvent:accept() ; RETURN .T.
-      ELSEIF ::cClassName == "QCHECKBOX"
+         oKeyEvent:accept()
+         RETURN .T.
+      CASE "QPUSHBUTTON"
          IF ::postValidate()
-            ::navigate( _QGET_NAV_NEXT )
+            ::handlePushButton()
          ENDIF
-         oKeyEvent:accept() ; RETURN .T.
-      ELSEIF ::cClassName == "QLINEEDIT"
-         IF ::postValidate()
-            ::navigate( _QGET_NAV_NEXT )
-         ENDIF
-         oKeyEvent:accept() ; RETURN .T.
-      ELSEIF ::cClassName == "QFRAME"
+         oKeyEvent:accept()
+         RETURN .T.
+      CASE "QFRAME"
          IF nHbKey == K_CTRL_ENTER
             ::navigate( _QGET_NAV_NEXT )
          ENDIF
-      ELSEIF ::cClassName == "QLABEL"
+         EXIT
+      CASE "QLABEL"
          ::navigate( _QGET_NAV_NEXT )
-      ENDIF
+         EXIT
+      CASE "QPLAINTEXTEDIT"
+         IF hb_bitAnd( oKeyEvent:modifiers(), Qt_ControlModifier ) == Qt_ControlModifier
+            IF ::postValidate()
+               ::navigate( _QGET_NAV_NEXT )
+            ENDIF
+            oKeyEvent:accept()
+            RETURN .T.
+         ENDIF
+         EXIT
+      ENDSWITCH
+
       EXIT
 
    CASE Qt_Key_W

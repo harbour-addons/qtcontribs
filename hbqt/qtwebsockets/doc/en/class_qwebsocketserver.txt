@@ -9,7 +9,7 @@
    $SUBCATEGORY$
       GUI
    $EXTERNALLINK$
-      http://doc.trolltech.com/5.3/qwebsocketserver.html
+      http://doc.qt.io/qt-5.3/qwebsocketserver.html
    $ONELINER$
       Creates a new QWebSocketServer object.
    $INHERITS$

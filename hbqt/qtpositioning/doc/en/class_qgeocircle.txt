@@ -9,7 +9,7 @@
    $SUBCATEGORY$
       GUI
    $EXTERNALLINK$
-      http://doc.trolltech.com/5.2/qgeocircle.html
+      http://doc.qt.io/qt-5.2/qgeocircle.html
    $ONELINER$
       Creates a new QGeoCircle object.
    $INHERITS$

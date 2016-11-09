@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -407,7 +407,7 @@ METHOD IdeSearchReplace:startFromTop()
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-//                           IdeFindReplace
+//                       IdeFindReplace - Ctrl+F
 /*----------------------------------------------------------------------*/
 
 CLASS IdeFindReplace INHERIT IdeObject
@@ -448,7 +448,6 @@ METHOD IdeFindReplace:getFocus()
 
    IF ! empty( ::cText := ::oEM:getSelectedText() )
       ::qLineEdit:setText( ::cText )
-      //::updateFindReplaceData( "find" )
    ENDIF
    ::qLineEdit:selectAll()
 
@@ -485,13 +484,10 @@ METHOD IdeFindReplace:create( oIde )
                                                                              iif( p == 1, ::oUI:buttonReplace:setEnabled( .f. ), NIL ) } )
 
    ::qLineEdit := ::oUI:comboFindWhat:lineEdit()
-   //::qLineEdit:connect( "returnPressed()"     , {|| ::updateFindReplaceData( "find" ), ::onClickFind( 1 ) } )
+
    ::qLineEdit:connect( "returnPressed()"     , {|| ::onClickFind( 1 ) } )
-   //::qLineEdit:connect( "textChanged(QString)", {|| ::oUI:radioEntire:setChecked( .t. ) } )
-   ::qLineEdit:connect( "textChanged(QString)", {|| ::oUI:radioFromCursor:setChecked( .t. ) } )
 
    ::qReplaceEdit := ::oUI:comboReplaceWith:lineEdit()
-   //::qReplaceEdit:connect( "returnPressed()", {|| ::updateFindReplaceData( "replace" ), ::onClickReplace( 1 ) } )
    ::qReplaceEdit:connect( "returnPressed()", {|| ::onClickReplace( 1 ) } )
 
    ::oUI:comboFindWhat:setCurrentIndex( -1 )
@@ -512,6 +508,7 @@ METHOD IdeFindReplace:show()
    ::oUI:checkGlobal:setEnabled( .f. )
    ::oUI:checkNoPrompting:setEnabled( .f. )
    ::oUI:checkListOnly:setChecked( .f. )
+   ::oUI:radioEntire:setChecked( .t. )
 
    ::getFocus()
 
@@ -555,6 +552,7 @@ METHOD IdeFindReplace:onClickFind( nFrom )
       ::oUI:checkGlobal:setEnabled( .f. )
       ::oUI:checkNoPrompting:setEnabled( .f. )
    ENDIF
+   ::oUI:radioFromCursor:setChecked( .t. )
 
    RETURN Self
 

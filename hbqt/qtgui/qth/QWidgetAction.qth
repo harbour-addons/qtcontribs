@@ -45,7 +45,7 @@ HB_FUNC( QT_QWIDGETACTION )
 QWidget * defaultWidget () const
 void releaseWidget ( QWidget * widget )
 QWidget * requestWidget ( QWidget * parent )
-void setDefaultWidget ( QWidget * widget )
+void setDefaultWidget ( QWidget * widget )                       [*D=1*]
 </PROTOS>
 
 <SLOTS>

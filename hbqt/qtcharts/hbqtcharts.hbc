@@ -19,4 +19,4 @@ libs=../qtgui/hbqtgui.hbc
 
 {HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 {HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
-{HB_STATIC_QT&(allwin|linux|beos)}libs=QtCharts
+{HB_STATIC_QT&(allwin|linux|beos)}libs=Qt5Charts

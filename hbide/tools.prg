@@ -484,7 +484,7 @@ METHOD IdeToolsManager:buildUserToolbars()
                                 iif( ::aUserToolbars[ nn,7 ] == "YES", Qt_RightToolBarArea , 0 ) )
 
          FOR EACH b_ IN a_
-            qTBtn := QToolButton()
+            qTBtn := QToolButton( qTBar )
             qTBtn:setText( b_[ 1 ] )
             qTBtn:setTooltip( b_[ 10 ] )
             qTBtn:setIcon( QIcon( hbide_pathToOSPath( b_[ 9 ] ) ) )

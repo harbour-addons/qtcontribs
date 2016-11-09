@@ -9,7 +9,7 @@
    $SUBCATEGORY$
       GUI
    $EXTERNALLINK$
-      http://doc.trolltech.com/5.2/qbluetoothdevicediscoveryagent.html
+      http://doc.qt.io/qt-5.2/qbluetoothdevicediscoveryagent.html
    $ONELINER$
       Creates a new QBluetoothDeviceDiscoveryAgent object.
    $INHERITS$

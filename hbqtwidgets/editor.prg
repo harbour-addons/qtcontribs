@@ -2143,9 +2143,9 @@ METHOD HbQtEditor:goto( nLine )
          :setInputMode( 1 )
          :setIntMinimum( 1 )
          :setIntMaximum( nRows )
-         :setIntValue( nLine + 1 )
+         :setIntValue( nLine )
          :setLabelText( "Goto Line Number [1-" + hb_ntos( nRows ) + "]" )
-         :setWindowTitle( "Harbour" )
+         :setWindowTitle( "HbIDE" )
       ENDWITH
       oGo:exec()
 
@@ -2237,7 +2237,7 @@ METHOD HbQtEditor:reformatLine( nPos, nDeleted, nAdded )
    LOCAL cRest   := ""
    LOCAL oTxtCursor := ::qEdit:textCursor()
 
-   IF .T.
+   IF ! Empty( oTxtCursor )
       oTxtCursor:joinPreviousEditBlock()
       IF ! __IsInCommentOrString( oTxtCursor:block():text(), oTxtCursor:columnNumber() )
 

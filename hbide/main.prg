@@ -1117,12 +1117,12 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
    ENDIF
 
    DO CASE
-   CASE n ==  0  // Source File - nothing to do
+   CASE n ==  0  // Source File
    CASE n == -2  // "Files"
    CASE n == -1  // Project Root
-      aadd( aPops, { ::oAC:getAction( "CreateProject" )  , {|| ::oPM:loadProperties( NIL, .t., .t., .t. ) } } )
+      aadd( aPops, { ::oAC:getAction( "CreateProject" ), {|| ::oPM:loadProperties( NIL, .t., .t., .t. ) } } )
       aadd( aPops, { "" } )
-      aadd( aPops, { ::oAC:getAction( "OpenProject" )    , {|| ::oPM:loadProperties( NIL, .f., .f., .t. ) } } )
+      aadd( aPops, { ::oAC:getAction( "OpenProject" )  , {|| ::oPM:loadProperties( NIL, .f., .f., .t. ) } } )
       aadd( aPops, { "" } )
       //
       IF !empty( ::oEV:getNames() )
@@ -1182,7 +1182,9 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
 
    CASE ::aProjData[ n, TRE_TYPE ] == "Source File"
+      aadd( aPops, { "Collapse Parent", {|| oXbpTreeItem:getParentItem():expand( .F. ) } } )
       //
+      hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
 
    CASE ::aProjData[ n, TRE_TYPE ] == "Opened Source"
       n := ::oEM:getTabBySource( ::aProjData[ n, 5 ] )
@@ -1291,7 +1293,7 @@ METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme, lAutoPrintPreview )
       :setWindowIcon( oIcon )
       :setWordWrapMode( QTextOption_NoWrap )
       :setFont( QFont( "Courier New", 8 ) )
-      qH := ::oTH:setSyntaxHilighting( qWidget, cTheme, , .F. )
+      qH := ::oTH:setSyntaxHilighting( qWidget, cTheme, NIL, .F. )
       qH:hbSetInitialized( .T. )
       :setPlainText( cCode )
       :setGeometry( iif( Empty( ::qFuncFragmentWindowGeometry ), QRect( 500, 200, 300, 300 ), ::qFuncFragmentWindowGeometry:translated( 10,20 ) ) )

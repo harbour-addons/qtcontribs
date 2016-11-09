@@ -9,7 +9,7 @@
    $SUBCATEGORY$
       GUI
    $EXTERNALLINK$
-      http://doc.trolltech.com/5.2/qbluetoothtransferreply.html
+      http://doc.qt.io/qt-5.2/qbluetoothtransferreply.html
    $ONELINER$
       Creates a new QBluetoothTransferReply object.
    $INHERITS$

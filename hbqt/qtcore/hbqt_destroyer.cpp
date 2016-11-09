@@ -72,10 +72,15 @@ HBQDestroyer::~HBQDestroyer()
 
 void HBQDestroyer::destroyer( QObject * obj )
 {
-   Q_UNUSED( obj );
-   HB_TRACE( HB_TR_DEBUG, ( "............HBQDestroyer::destroyer( %p )", this->sender() ) );
+   if( hb_vmRequestReenter() )
+   {
+      Q_UNUSED( obj );
+      HB_TRACE( HB_TR_DEBUG, ( "............HBQDestroyer::destroyer( %p )", this->sender() ) );
 
-   hbqt_bindDestroyQtObject( this->sender(), obj );
+      hbqt_bindDestroyQtObject( this->sender(), obj );
+
+      hb_vmRequestRestore();
+   }
 }
 
 

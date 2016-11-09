@@ -300,7 +300,7 @@ METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDra
    DEFAULT lCheckable   TO .f.
    DEFAULT lDragEnabled TO .f.
 
-   WITH OBJECT oButton := QToolButton()
+   WITH OBJECT oButton := QToolButton( ::oWidget )
       :setObjectName( cName )
       :setTooltip( cDesc )
       :setIcon( QIcon( cImage ) )

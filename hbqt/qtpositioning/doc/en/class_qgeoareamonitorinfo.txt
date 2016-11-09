@@ -9,7 +9,7 @@
    $SUBCATEGORY$
       GUI
    $EXTERNALLINK$
-      http://doc.trolltech.com/5.2/qgeoareamonitorinfo.html
+      http://doc.qt.io/qt-5.2/qgeoareamonitorinfo.html
    $ONELINER$
       Creates a new QGeoAreaMonitorInfo object.
    $INHERITS$

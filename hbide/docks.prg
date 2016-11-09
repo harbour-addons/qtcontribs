@@ -1097,7 +1097,7 @@ METHOD IdeDocks:buildViewWidget( cView )
 
    oFrame:oTabWidget := XbpTabWidget():new():create( oFrame, , {0,0}, {200,200}, , .t. )
 
-   qTBtnClose := QToolButton()
+   qTBtnClose := QToolButton( oFrame:oTabWidget:oWidget )
    qTBtnClose:setTooltip( "Close Tab" )
    qTBtnClose:setAutoRaise( .t. )
    qTBtnClose:setIcon( QIcon( hbide_image( "closetab" ) ) )
@@ -1147,7 +1147,6 @@ METHOD IdeDocks:buildSearchReplaceWidget()
 
 
 METHOD IdeDocks:buildUpDownWidget()
-
    ::oIde:oUpDn := IdeUpDown():new( ::oIde ):create()
    ::oUpDn:oUI:hide()
 
@@ -1497,7 +1496,7 @@ METHOD IdeDocks:getMarkWidget( nIndex )
    LOCAL aColors  := { "rgb( 255,255,127 )", "rgb( 175,175,255 )", "rgb( 255,175,175 )", ;
                        "rgb( 175,255,175 )", "rgb( 255,190,125 )", "rgb( 175,255,255 )"  }
 
-   ::oIde:aMarkTBtns[ nIndex ] := QToolButton()
+   ::oIde:aMarkTBtns[ nIndex ] := QToolButton( ::oSBar:oWidget )
 
    ::oIde:aMarkTBtns[ nIndex ]:setMaximumHeight( 12 )
    ::oIde:aMarkTBtns[ nIndex ]:setMaximumWidth( 12 )

@@ -1888,7 +1888,7 @@ METHOD IdeDebugger:ui_init( oUI )
    oUI:tabWidgetMain:setCurrentIndex( 0 )
    oUI:tabWidgetVariables:setCurrentIndex( 0 )
 
-   WITH OBJECT ::btnLoadAll := QToolButton()
+   WITH OBJECT ::btnLoadAll := QToolButton( oUI:tabWidgetMain )
       :setIcon( QIcon( hbide_image( "go-jump" ) ) )
       :setTooltip( "Downlaod All Info" )
       :setAutoRaise( .T. )

@@ -2009,8 +2009,10 @@ METHOD IdeEditor:activateTab( mp1, mp2, oXbp )
    HB_SYMBOL_UNUSED( mp1 )
    HB_SYMBOL_UNUSED( mp2 )
 
-   IF !empty( oEdit := ::oEM:getEditorByTabObject( oXbp ) )
-      oEdit:updateComponents()
+   IF ! ::lQuitting
+      IF ! Empty( oEdit := ::oEM:getEditorByTabObject( oXbp ) )
+         oEdit:updateComponents()
+      ENDIF
    ENDIF
 
    RETURN Self

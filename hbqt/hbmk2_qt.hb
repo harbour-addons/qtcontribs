@@ -2446,7 +2446,11 @@ METHOD HbQtSource:build()
          AAdd( aLine, "      delete ( " + ::cQtObject + " * ) pObj;" )
       ENDIF
    ENDIF
+   AAdd( aLine, "#if QT_VERSION >= 0x050700" )
+   AAdd( aLine, "      pObj = Q_NULLPTR;" )
+   AAdd( aLine, "#else" )
    AAdd( aLine, "      pObj = NULL;" )
+   AAdd( aLine, "#endif" )
    AAdd( aLine, "   }" )
    AAdd( aLine, "}" )
    AAdd( aLine, "" )

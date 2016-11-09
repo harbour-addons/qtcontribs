@@ -9,7 +9,7 @@
    $SUBCATEGORY$
       GUI
    $EXTERNALLINK$
-      http://doc.trolltech.com/5.3/qwebsocketcorsauthenticator.html
+      http://doc.qt.io/qt-5.3/qwebsocketcorsauthenticator.html
    $ONELINER$
       Creates a new QWebSocketCorsAuthenticator object.
    $INHERITS$

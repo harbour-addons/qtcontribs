@@ -1444,6 +1444,7 @@ METHOD IdeActions:buildContextToolWidget()
    aBtns := {}
    AEval( ::loadContextButtons(), {|e_| AAdd( aBtns, ::buildToolButton( e_[ 1 ], e_[ 2 ], e_[ 3 ], e_[ 4 ], e_[ 5 ] ) ) } )
 
+   AEval( aBtns, {|oToolButton| oToolButton:setParent( ::qContextWidget ) } )
    ::buildToolsLayout( aBtns )
    RETURN Self
 

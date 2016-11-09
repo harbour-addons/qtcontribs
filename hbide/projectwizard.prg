@@ -611,7 +611,7 @@ METHOD IdeProjectWizard:deleteTreeItem( oChild )
 
 
 METHOD IdeProjectWizard:addDropIndicator( oTree, oNode, nMsg, cCSS, nIndex )
-   LOCAL qTBtn := QToolButton()
+   LOCAL qTBtn := QToolButton( oTree )
 
    qTBtn:setIcon( QIcon( hbide_image( "expand_m" ) ) )
    qTBtn:setAutoFillBackground( .t. )

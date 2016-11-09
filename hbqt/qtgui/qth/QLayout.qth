@@ -37,8 +37,8 @@ enum SizeConstraint { SetDefaultConstraint, SetFixedSize, SetMinimumSize, SetMax
 
 <PROTOS>
 bool activate ()
-virtual void addItem ( QLayoutItem * item )     [*D=1*]
-void addWidget ( QWidget * w )                  [*X=1*]
+virtual void addItem ( QLayoutItem * item )       [*D=1*]
+void addWidget ( QWidget * w )                    [*D=1*]
 QMargins   contentsMargins() const                [*V=0x040600*]
 QRect contentsRect () const
 virtual int count () const = 0

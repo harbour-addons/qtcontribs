@@ -36,10 +36,6 @@ HB_FUNC( QT_QQUICKWIDGET )
    {
       __HB_RETPTRGC__( new QQuickWidget( hbqt_par_QWidget( 1 ) ) );
    }
-   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QQmlEngine" ) )
-   {
-      __HB_RETPTRGC__( new QQuickWidget( hbqt_par_QQmlEngine( 1 ) ) );
-   }
    else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QUrl" ) )
    {
       __HB_RETPTRGC__( new QQuickWidget( *hbqt_par_QUrl( 1 ) ) );

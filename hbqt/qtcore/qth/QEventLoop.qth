@@ -33,7 +33,7 @@ HB_FUNC( QT_QEVENTLOOP )
    }
    else
    {      
-      __HB_RETPTRGC__( new QEventLoop( 0 ) );
+      __HB_RETPTRGC__( new QEventLoop( Q_NULLPTR ) );
    }   
 }
 </CODE>

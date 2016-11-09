@@ -808,7 +808,7 @@ METHOD IdeUISrcManager:buildToolButton( qToolbar, aBtn )
    IF empty( aBtn )
       qToolbar:addSeparator()
    ELSE
-      qBtn := QToolButton()
+      qBtn := QToolButton( qToolBar )
       qBtn:setTooltip( aBtn[ 1 ] )
       qBtn:setAutoRaise( .t. )
       qBtn:setIcon( QIcon( hbide_image( aBtn[ 2 ] ) ) )

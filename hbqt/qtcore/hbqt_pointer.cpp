@@ -74,6 +74,8 @@
 #include <QtCore/qplugin.h>
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
+//Q_IMPORT_PLUGIN(DSServicePlugin)
+//Q_IMPORT_PLUGIN(AudioCaptureServicePlugin)
 #endif
 
 /*----------------------------------------------------------------------*/
