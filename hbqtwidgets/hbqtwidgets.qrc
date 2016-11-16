@@ -309,5 +309,9 @@
     <file>resources/web.png</file>
     <file>resources/font-plus.png</file>
     <file>resources/font-minus.png</file>
+    <file>resources/tree-collapse-all.png</file>
+    <file>resources/tree-collapse-soft.png</file>
+    <file>resources/tree-expand-all.png</file>
+    <file>resources/tree-expand-soft.png</file>
   </qresource>
 </RCC>

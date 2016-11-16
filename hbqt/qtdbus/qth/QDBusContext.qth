@@ -1,0 +1,52 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusContext>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusMessage>
+
+
+/*
+ * QDBusContext()
+ * ~QDBusContext()
+ */
+HB_FUNC( QT_QDBUSCONTEXT )
+{
+   __HB_RETPTRGC__( new QDBusContext() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   calledFromDBus() const
+QDBusConnection   connection() const
+bool   isDelayedReply() const
+const QDBusMessage &   message() const
+void   sendErrorReply(const QString & name, const QString & msg = QString()) const
+void   sendErrorReply(QDBusError::ErrorType type, const QString & msg = QString()) const
+void   setDelayedReply(bool enable) const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

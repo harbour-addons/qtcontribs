@@ -720,7 +720,8 @@ METHOD HbQtDashboard:createObject( cName, cAttrbs )
          IF ! Empty( oDashObj := ::oActivePanel:addObject( aObject ) )
             Eval( ::objectsBlock, "Configure", iif( Empty( oDashObj:oHbQtWidget ), oDashObj:oWidget, oDashObj:oHbQtWidget ), aObject )
          ENDIF
-         Alert( "Created", , , 0.05 )         // a hack - need to be investigated deeper
+         //Alert( "Created", , , 0.100 )         // a hack - waitstate needed - need to be investigated deeper
+         __hbqtWaitState( 0.100 )
       ENDIF
    ENDIF
 

@@ -1,0 +1,16 @@
+#
+# $Id$
+#
+
+-i.
+
+qth/filelist.hbm
+
+hbqtdbus.hbx
+
+hbqt_init.cpp
+
+
+../qtcore/hbqtcore.hbc
+
+

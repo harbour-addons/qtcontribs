@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QDBusAbstractInterface
+DESTRUCTOR  = no
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusConnectionInterface>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QDBUSCONNECTIONINTERFACE )
+{
+   HB_FUNC_EXEC( HB_QDBUSCONNECTIONINTERFACE );
+}
+</CODE>
+
+<ENUMS>
+enum   RegisterServiceReply { ServiceNotRegistered, ServiceRegistered, ServiceQueued }
+enum   ServiceQueueOptions { DontQueueService, QueueService, ReplaceExistingService }
+enum   ServiceReplacementOptions { DontAllowReplacement, AllowReplacement }
+</ENUMS>
+
+<PROTOS>
+QDBusReply<QStringList> registeredServiceNames() const
+</PROTOS>
+
+<SLOTS>
+QDBusReply<bool>   isServiceRegistered(const QString & serviceName) const
+QDBusReply<QDBusConnectionInterface::RegisterServiceReply>   registerService(const QString & serviceName, ServiceQueueOptions qoption = DontQueueService, ServiceReplacementOptions roption = DontAllowReplacement)
+QDBusReply<QStringList>   registeredServiceNames() const
+QDBusReply<QString>   serviceOwner(const QString & name) const
+QDBusReply<uint>   servicePid(const QString & serviceName) const
+QDBusReply<uint>   serviceUid(const QString & serviceName) const
+QDBusReply<void>   startService(const QString & name)
+QDBusReply<bool>   unregisterService(const QString & serviceName)
+</SLOTS>
+
+<SIGNALS>
+void   callWithCallbackFailed(const QDBusError & error, const QDBusMessage & call)
+void   serviceOwnerChanged(const QString & name, const QString & oldOwner, const QString & newOwner)
+void   serviceRegistered(const QString & serviceName)
+void   serviceUnregistered(const QString & serviceName)
+</SIGNALS>

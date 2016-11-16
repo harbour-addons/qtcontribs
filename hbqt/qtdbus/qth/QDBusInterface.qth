@@ -1,0 +1,73 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QDBusAbstractInterface
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusInterface>
+
+
+/*
+ * QDBusInterface(const QString & service, const QString & path, const QString & interface = QString(), const QDBusConnection & connection = QDBusConnection::sessionBus(), QObject * parent = 0)
+ * ~QDBusInterface()
+ */
+HB_FUNC( QT_QDBUSINTERFACE )
+{
+   void * pText01 = NULL;
+   void * pText02 = NULL;
+   void * pText03 = NULL;
+
+   if( hb_pcount() == 5 && HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) && hbqt_par_isDerivedFrom( 4, "QDBusConnection" ) && hbqt_par_isDerivedFrom( 5, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QDBusInterface( hb_parstr_utf8( 1, &pText01, NULL ), hb_parstr_utf8( 2, &pText02, NULL ), hb_parstr_utf8( 3, &pText03, NULL ), * hbqt_par_QDBusConnection( 4 ), hbqt_par_QObject( 5 ) ) );
+   }
+   else if( hb_pcount() == 4 && HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) && hbqt_par_isDerivedFrom( 4, "QDBusConnection" ) )
+   {
+      __HB_RETPTRGC__( new QDBusInterface( hb_parstr_utf8( 1, &pText01, NULL ), hb_parstr_utf8( 2, &pText02, NULL ), hb_parstr_utf8( 3, &pText03, NULL ), * hbqt_par_QDBusConnection( 4 ) ) );
+   }
+   else if( hb_pcount() == 3 && HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) && HB_ISCHAR( 3 ) )
+   {
+      __HB_RETPTRGC__( new QDBusInterface( hb_parstr_utf8( 1, &pText01, NULL ), hb_parstr_utf8( 2, &pText02, NULL ), hb_parstr_utf8( 3, &pText03, NULL ) ) );
+   }
+   else if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && HB_ISCHAR( 2 ) )
+   {
+      __HB_RETPTRGC__( new QDBusInterface( hb_parstr_utf8( 1, &pText01, NULL ), hb_parstr_utf8( 2, &pText02, NULL ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+
+   if( pText01 )
+      hb_strfree( pText01 );
+   if( pText02 )
+      hb_strfree( pText02 );
+   if( pText03 )
+      hb_strfree( pText03 );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

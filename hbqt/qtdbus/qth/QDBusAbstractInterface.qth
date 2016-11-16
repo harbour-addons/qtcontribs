@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusAbstractInterface>
+#include <QtDBus/QDBusPendingCall>
+#include <QtCore/QVariant>
+
+
+/*
+ * ~QDBusAbstractInterface()
+ */
+HB_FUNC( QT_QDBUSABSTRACTINTERFACE )
+{
+   HB_FUNC_EXEC( HB_QDBUSABSTRACTINTERFACE );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QDBusPendingCall   asyncCall(const QString & method, const QVariant & arg1 = QVariant(), const QVariant & arg2 = QVariant(), const QVariant & arg3 = QVariant(), const QVariant & arg4 = QVariant(), const QVariant & arg5 = QVariant(), const QVariant & arg6 = QVariant(), const QVariant & arg7 = QVariant(), const QVariant & arg8 = QVariant())
+QDBusPendingCall   asyncCallWithArgumentList(const QString & method, const QList<QVariant> & args)
+QDBusMessage   call(const QString & method, const QVariant & arg1 = QVariant(), const QVariant & arg2 = QVariant(), const QVariant & arg3 = QVariant(), const QVariant & arg4 = QVariant(), const QVariant & arg5 = QVariant(), const QVariant & arg6 = QVariant(), const QVariant & arg7 = QVariant(), const QVariant & arg8 = QVariant())
+QDBusMessage   call(QDBus::CallMode mode, const QString & method, const QVariant & arg1 = QVariant(), const QVariant & arg2 = QVariant(), const QVariant & arg3 = QVariant(), const QVariant & arg4 = QVariant(), const QVariant & arg5 = QVariant(), const QVariant & arg6 = QVariant(), const QVariant & arg7 = QVariant(), const QVariant & arg8 = QVariant())
+QDBusMessage   callWithArgumentList(QDBus::CallMode mode, const QString & method, const QList<QVariant> & args)
+bool   callWithCallback(const QString & method, const QList<QVariant> & args, QObject * receiver, const char * returnMethod, const char * errorMethod)
+bool   callWithCallback(const QString & method, const QList<QVariant> & args, QObject * receiver, const char * slot)
+QDBusConnection   connection() const
+QString   interface() const
+bool   isValid() const
+QDBusError   lastError() const
+QString   path() const
+QString   service() const
+void   setTimeout(int timeout)
+int   timeout() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

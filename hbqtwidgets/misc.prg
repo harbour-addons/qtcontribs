@@ -367,12 +367,13 @@ PROCEDURE __hbqtAppRefresh()
 
 
 PROCEDURE __hbqtWaitState( nSeconds, lExitIf )     // lExitIf must be passed by reference . no error checking
+   LOCAL oApp := QApplication()
    LOCAL nSecs := Seconds()
 
    DEFAULT lExitIf TO .F.
 
    DO WHILE Abs( Seconds() - nSecs ) < nSeconds
-      QApplication():processEvents()
+      oApp:processEvents()
       IF lExitIf
          EXIT
       ENDIF
@@ -1043,6 +1044,73 @@ STATIC FUNCTION __hbqtPullQtFunctions( cBuffer )
       NEXT
    ENDIF
    RETURN aDynamic
+
+
+FUNCTION HbQtOpenFileDialog( cDefaultPath, cTitle, cFilter, lAllowMultiple, lCanCreate, aPos )
+   LOCAL oWidget
+   LOCAL cFiles := NIL
+   LOCAL i, oList, nResult, cPath, cFile, cExt, qFocus, xRes, oFiles, aFilters
+
+   WITH OBJECT oWidget := QFileDialog() // __hbqtAppWidget() )
+      :setOption( QFileDialog_DontResolveSymlinks, .t. )
+      :setAcceptMode( QFileDialog_AcceptOpen )
+   ENDWITH
+
+   DEFAULT lAllowMultiple TO .F.
+   IF lAllowMultiple
+      oWidget:setFileMode( QFileDialog_ExistingFiles )
+   ENDIF
+   IF HB_ISSTRING( cTitle )
+      oWidget:setWindowTitle( cTitle )
+   ENDIF
+   IF HB_ISSTRING( cDefaultPath )
+      hb_fNameSplit( cDefaultPath, @cPath, @cFile, @cExt )
+      oWidget:setDirectory( cPath )
+      IF ! Empty( cFile )
+         oWidget:selectFile( cFile + cExt )
+      ENDIF
+   ENDIF
+
+   IF Empty( cFilter )
+      oWidget:setNameFilter( "All Files (*)" )
+   ELSE
+      aFilters := hb_ATokens( cFilter, ";" )
+      oList := QStringList()
+      FOR i := 1 TO Len( aFilters )
+         oList:append( aFilters[ i ] )
+      NEXT
+      oWidget:setNameFilters( oList )
+   ENDIF
+
+   DEFAULT lCanCreate TO .F.
+   IF ! lCanCreate
+      oWidget:setOption( QFileDialog_ReadOnly, .T. )
+   ENDIF
+
+   IF HB_ISARRAY( aPos )
+      oWidget:move( aPos[ 1 ], aPos[ 2 ] )
+   ENDIF
+
+   qFocus := QApplication():focusWidget()
+   nResult := oWidget:exec()
+   IF HB_ISOBJECT( qFocus )
+      qFocus:setFocus( 0 )
+   ENDIF
+
+   IF nResult == QDialog_Accepted
+      xRes := {}
+      oFiles := oWidget:selectedFiles()
+      FOR i := 1 TO oFiles:size()
+         AAdd( xRes, oFiles:at( i-1 ) )
+      NEXT
+      IF ! lAllowMultiple
+         xRes := xRes[ 1 ]
+      ENDIF
+   ENDIF
+
+   oWidget:setParent( QWidget() )
+   oWidget := NIL
+   RETURN xRes
 
 //--------------------------------------------------------------------//
 //           This Section Must be the Last in this Source

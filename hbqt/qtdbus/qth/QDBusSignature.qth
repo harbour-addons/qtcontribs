@@ -1,0 +1,60 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusSignature>
+
+
+/*
+ * QDBusSignature()
+ * QDBusSignature(const char * signature)
+ * QDBusSignature(const QLatin1String & signature)
+ * QDBusSignature(const QString & signature)
+ */
+HB_FUNC( QT_QDBUSSIGNATURE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QLatin1String" ) )
+   {
+      __HB_RETPTRGC__( new QDBusSignature( *hbqt_par_QLatin1String( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QDBusSignature( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDBusSignature() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void   setSignature(const QString & signature)
+QString   signature() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

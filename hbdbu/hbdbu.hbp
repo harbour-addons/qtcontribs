@@ -26,6 +26,7 @@
 hbqtwidgets.hbc
 hbqt.hbc
 hbct.hbc
+{allwin}gtwvg.hbc
 
 dbu.prg
 dbu.ui

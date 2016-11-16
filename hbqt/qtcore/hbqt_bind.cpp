@@ -54,6 +54,7 @@
 
 #include "hbapi.h"
 #include "hbapiitm.h"
+#include "hbapicls.h"
 #include "hbstack.h"
 #include "hbthread.h"
 #include "hbvm.h"
@@ -610,7 +611,6 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
                }
                hbqt_bindRemoveBind( bind );
                pDelFunc( qtObject, iFlags );
-//               hb_itemRelease( bind );
             }
             else
             {
@@ -635,6 +635,8 @@ void hbqt_bindDestroyHbObject( PHB_ITEM pObject )
    }
 }
 
+// Always called by the destroyed() signal - we just need to invoke Harbour GC.
+//
 void hbqt_bindDestroyQtObject( void * qtObject, QObject * qObject )
 {
    HB_TRACE( HB_TR_DEBUG, ( ".........QT_DESTROY_BEGINS...............%p %p", qtObject, qObject ) );
@@ -1116,7 +1118,10 @@ HB_FUNC( __HBQT_DESTROY )
 
    PHB_ITEM pObject = hb_stackSelfItem();
    if( pObject )
+   {
+      HB_TRACE( HB_TR_DEBUG, ( "... HbQtObjectHandler( DESTRUCTOR FUNCTION __hbqt_destroy() - %s ) ...", hb_objGetClsName( pObject ) ) );
       hbqt_bindDestroyHbObject( pObject );
+   }
 }
 
 HB_FUNC( __HBQT_DELETE )

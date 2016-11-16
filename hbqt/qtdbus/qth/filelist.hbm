@@ -1,0 +1,27 @@
+#
+# $Id$
+#
+
+-pflag=-qtver=0x040500
+-pflag=-qtmodule=qtdbus
+-pflag=-qthdocdir=../doc/
+
+QDBusAbstractAdaptor.qth
+QDBusAbstractInterface.qth
+QDBusArgument.qth
+QDBusConnection.qth
+QDBusConnectionInterface.qth
+QDBusContext.qth
+QDBusError.qth
+QDBusInterface.qth
+QDBusMessage.qth
+QDBusObjectPath.qth
+QDBusPendingCall.qth
+QDBusPendingCallWatcher.qth
+QDBusPendingReply.qth
+QDBusReply.qth
+QDBusServer.qth
+QDBusServiceWatcher.qth
+QDBusSignature.qth
+QDBusUnixFileDescriptor.qth
+QDBusVariant.qth

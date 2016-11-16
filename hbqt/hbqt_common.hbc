@@ -23,7 +23,7 @@ plugins=hbmk2_qt.hb
 {allgcc&!(bsd|darwin)}libs=supc++
 {allgcc&(bsd|darwin)}libs=stdc++
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}cflags=-O2 -static -static-libgcc -std=gnu++11 -Wno-c++14-compat -momit-leaf-frame-pointer
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}cflags=-O2 -static -static-libgcc -std=c++11 -Wno-c++14-compat -momit-leaf-frame-pointer
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}libs=mingw32 opengl32 qtpcre qtfreetype qtharfbuzzng qwindows qico
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}ldflags=-static -static-libgcc -L${HB_WITH_QT}/../plugins/platforms -L${HB_WITH_QT}/../plugins/imageformats
 

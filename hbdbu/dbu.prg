@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -60,8 +58,6 @@
  *                             Pritpal Bedi
  *                              17Jan2013
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 
@@ -94,9 +90,33 @@ REQUEST PadR
 REQUEST AllTrim
 REQUEST Transform
 
+#define __PAGE_fDBU__                             0
+#define __PAGE_HELP__                             1
+#define __PAGE_ONLINE__                           2
+#define __PAGE_MISC__                             3
+#define __PAGE_DBU__                              4
+
+
+STATIC s_isDbfServer := .F.
+STATIC s_oMem
+
 
 FUNCTION Main( ... )
    LOCAL oMgr, oSplash
+
+   s_oMem := QSharedMemory( "HbDBU" )
+   IF s_oMem:create( 255 )
+      s_isDbfServer := .T.
+   ELSE
+      IF Lower( Right( hb_AParams()[ 1 ], 4 ) ) == ".dbf"
+         IF s_oMem:error() == QSharedMemory_AlreadyExists
+            s_oMem:attach()
+            s_oMem:hbWriteData( hb_AParams()[ 1 ] )
+            s_oMem:detach()
+            RETURN NIL
+         ENDIF
+      ENDIF
+   ENDIF
 
    hbqt_errorSys()
    QResource():registerResource_1( hbqtres_dbu() )
@@ -115,6 +135,10 @@ FUNCTION Main( ... )
    oSplash:setParent( QWidget() )
 
    QApplication():exec()
+
+   IF HB_ISOBJECT( s_oMem )
+      s_oMem:detach()
+   ENDIF
 
    RETURN NIL
 
@@ -136,6 +160,8 @@ CREATE CLASS DbuMGR
    DATA   oSaveAct
    DATA   oRestAct
    DATA   oHelpAct
+   DATA   oOnline
+   DATA   oDbuAct
 
    DATA   oContextMenu
 
@@ -149,13 +175,16 @@ CREATE CLASS DbuMGR
    DATA   cSettingsPath                           INIT ""
    DATA   cSettingsFile                           INIT "settings.dbu"
    DATA   cDefaultRDD                             INIT "DBFCDX"
+   DATA   oActiveX
+   DATA   oTimer
+   DATA   cLastTable                              INIT ""
 
    METHOD getImage( cName )                       INLINE QIcon( ":/dbu/resources/" + cName + ".png" )
 
    METHOD new( aParams )
    METHOD create()
    METHOD exit( lAsk, oEvent )
-   METHOD help()
+   METHOD online()
    METHOD openConnections( aConxns )
    METHOD populateProdTables()
    METHOD setMyConnections( cDriver )
@@ -183,6 +212,9 @@ CREATE CLASS DbuMGR
    METHOD showStats( oMdiBrowse )
    METHOD saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
    METHOD manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu )
+   METHOD buildOnlineHelp()
+   METHOD navigate( oItem )
+   METHOD checkForDbfs()
 
    ENDCLASS
 
@@ -211,8 +243,8 @@ METHOD DbuMGR:new( aParams )
 
 
 METHOD DbuMGR:create()
+   LOCAL cTitle, cParam
    LOCAL aRdds := {}
-   LOCAL cTitle, cParam, s
    LOCAL lDbf := .F.
    LOCAL lDbu := .F.
 
@@ -247,6 +279,9 @@ METHOD DbuMGR:create()
       :setIcon( ::getImage( "dashboard" ) )
       :setTooltip( "Cache Servers Dashboard" )
       :connect( "triggered()", {|| ::execDashboard() } )
+#ifndef __CACHE__
+      :setEnabled( .F. )
+#endif
    ENDWITH
    WITH OBJECT ::oSaveAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( ::getImage( "save-env" ) ) )
@@ -258,15 +293,32 @@ METHOD DbuMGR:create()
       :setTooltip( "Merge Environment From..." )
       :connect( "triggered()", {|| ::restEnvFrom() } )
    ENDWITH
+
+   WITH OBJECT ::oDbuAct := QAction( ::oUI:oWidget )
+      :setIcon( QIcon( __hbqtImage( "cube-2" ) ) )
+      :setTooltip( "HbDBU" )
+      :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_DBU__ ) } )
+   ENDWITH
+
    WITH OBJECT ::oInfoAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "info" ) ) )
       :setTooltip( "About HbDBU" )
       :connect( "triggered()", {|| dbu_help( 1 ) } )
    ENDWITH
+
    WITH OBJECT ::oHelpAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( ::getImage( "help" ) ) )
       :setTooltip( "HbDBU Help" )
-      :connect( "triggered()", {|| ::help() } )
+      :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_HELP__ ) } )
+   ENDWITH
+
+   WITH OBJECT ::oOnline := QAction( ::oUI:oWidget )
+      :setIcon( QIcon( ::getImage( "online" ) ) )
+      :setTooltip( "Online Help" )
+      :connect( "triggered()", {|| ::online() } )
+#if ! defined( __PLATFORM__WINDOWS )
+      :setEnabled( .F. )
+#endif
    ENDWITH
 
    WITH OBJECT ::oToolbar := QToolBar( ::oUI:oWidget )
@@ -278,8 +330,11 @@ METHOD DbuMGR:create()
       :addAction( ::oSaveAct )
       :addAction( ::oRestAct )
       :addSeparator()
-      :addAction( ::oHelpAct )
+      :addAction( ::oDbuAct )
+      :addSeparator()
       :addAction( ::oInfoAct )
+      :addAction( ::oHelpAct )
+      :addAction( ::oOnline )
    ENDWITH
    ::oUI:oWidget:addToolbar( Qt_TopToolBarArea, ::oToolbar )
 
@@ -294,13 +349,18 @@ METHOD DbuMGR:create()
       :saveTableBlock       := {|cDriver,xConxn,aStruct,aIndex,oDbu| ::saveMyTable( cDriver,xConxn,aStruct,aIndex,oDbu ) }
    ENDWITH
    ::oUI:stackedWidget:addWidget( ::oDbu:oWidget )
-   ::oUI:stackedWidget:setCurrentIndex( 2 )
+   ::oUI:stackedWidget:setCurrentIndex( __PAGE_DBU__ )
 
    ::oUI:helpBrowser:setSource( QUrl( "qrc:///dbu/resources/hbdbu.htm" ) )
 
+   WITH OBJECT ::oTimer := QTimer()
+      :setInterval( 2000 )
+      :connect( "timeout()", {|| ::checkForDbfs() } )
+   ENDWITH
+
    /* Process command line params */
    FOR EACH cParam IN ::aParams
-      IF Len( hb_ATokens( cParam, "," ) ) > 0
+      IF At( ",", cParam ) > 0 .AND. Len( hb_ATokens( cParam, "," ) ) > 0
          ::oDBU:openATable( cParam )
 
       ELSEIF ".dbu" $ Lower( cParam )
@@ -308,10 +368,8 @@ METHOD DbuMGR:create()
          lDbu := .T.
 
       ELSEIF ".dbf" $ Lower( cParam )
-         // Parse to pull-out RDD
-         s := ::getPath( cParam )
-         IF ! Empty( s )
-            ::oDBU:openATable( s )
+         IF ! Empty( cParam )
+            ::oDBU:openATable( cParam )
             lDbf := .T.
          ENDIF
 
@@ -322,7 +380,6 @@ METHOD DbuMGR:create()
       ENDIF
    NEXT
 
-   ::oDbu:clearTablesTree()
    ::populateProdTables()
 
    ::oUI:dockCache:hide()
@@ -335,31 +392,90 @@ METHOD DbuMGR:create()
    ENDIF
 
    ::oUI:oWidget:show()
+   ::oTimer:start()
 
    ::oDbu:setCurrentDriver( ::cDefaultRDD )
-
    RETURN Self
 
 
-METHOD DbuMGR:help()
-
-   WITH OBJECT ::oHelpAct
-      IF :toolTip() == "HbDBU DBU"
-         :setIcon( QIcon( ::getImage( "help" ) ) )
-         :setTooltip( "HbDBU Help" )
-         ::oUI:stackedWidget:setCurrentIndex( 2 )
-         ::oSaveAct:setEnabled( .T. )
-         ::oRestAct:setEnabled( .T. )
-      ELSE
-         :setIcon( QIcon( __hbqtImage( "cube-2" ) ) )
-         :setTooltip( "HbDBU DBU" )
-         ::oUI:stackedWidget:setCurrentIndex( 1 )
-         ::oSaveAct:setEnabled( .F. )
-         ::oRestAct:setEnabled( .F. )
+METHOD DbuMGR:checkForDbfs()
+   LOCAL cTable
+   IF HB_ISOBJECT( s_oMem ) .AND. s_oMem:isAttached()
+      cTable := Trim( s_oMem:hbReadData() )
+      IF ! ( cTable == ::cLastTable )
+         ::cLastTable := cTable
+         ::oDBU:openATable( cTable )
       ENDIF
-   ENDWITH
+   ENDIF
+   RETURN NIL
 
+
+METHOD DbuMGR:navigate( oItem )
+   IF HB_ISOBJECT( ::oActiveX )
+      ::oActiveX:navigate( oItem:whatsThis( 0 ) )
+   ENDIF
    RETURN Self
+
+
+STATIC FUNCTION __addTreeItem( oTree, cText, cWhatsThis )
+   LOCAL oItem
+
+   oItem := QTreeWidgetItem()
+   oItem:setText( 0, cText )
+   oItem:setWhatsThis( 0, cWhatsThis )
+   oTree:addTopLevelItem( oItem )
+   RETURN NIL
+
+
+METHOD DbuMGR:buildOnlineHelp()
+#if defined( __PLATFORM__WINDOWS )
+   LOCAL oXbp, oTree
+
+   IF .T.
+      WITH OBJECT oTree := ::oUI:treeOnline
+         :setColumnCount( 1 )
+         :setHeaderHidden( .F. )
+         :setHeaderLabel( " Help Destinations" )
+         :setRootIsDecorated( .T. )
+         :setItemsExpandable( .T. )
+         :setUniformRowHeights( .T. )
+         :setIndentation( 10 )
+         :setIconSize( QSize( 8,8 ) )
+         :setContextMenuPolicy( Qt_CustomContextMenu )
+         :connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|oItem| ::navigate( oItem ) } )
+      ENDWITH
+      __addTreeItem( oTree, "Harbour Home"          , "https://harbour.github.io/" )
+      __addTreeItem( oTree, "Harbour Docs"          , "https://harbour.github.io/doc/" )
+      __addTreeItem( oTree, "Clipper Docs"          , "https://harbour.github.io/doc/clc53.html" )
+      __addTreeItem( oTree, "Clipper Tools 3 Docs"  , "https://harbour.github.io/doc/clct3.html" )
+      __addTreeItem( oTree, "QtContribs"            , "http://qtcontribs.sourceforge.net/" )
+      __addTreeItem( oTree, "CacheRDD"              , "http://cacherdd.sourceforge.net/" )
+
+      oXbp := WvgWindow():new( , , { 0, 0 }, { 640, 400 }, , .T. )
+      oXbp:hWnd := ::oUI:frameOnline:winID()
+
+      ::oActiveX := WvgActiveXControl():new( oXbp, , { 0, 0 }, { 100, 100 }, , .t. )
+      ::oActiveX:CLSID := "Shell.Explorer.2"
+
+      ::oActiveX:create()
+
+      ::oActiveX:navigate( "http://qtcontribs.sourceforge.net/index.html#hbdbu.html" )
+      ::oUI:frameOnline:connect( QEvent_Resize, {|| ::oActiveX:setSize( { ::oUI:frameOnline:width(), ::oUI:frameOnline:height() } ) } )
+      ::oActiveX:setSize( { ::oUI:frameOnline:width(), ::oUI:frameOnline:height() } )
+      ::oActiveX:show()
+   ENDIF
+#endif
+   RETURN Self
+
+
+METHOD DbuMGR:online()
+
+   IF ! HB_ISOBJECT( ::oActiveX )
+      ::buildOnlineHelp()
+   ENDIF
+   ::oUI:stackedWidget:setCurrentIndex( __PAGE_ONLINE__ )
+   RETURN Self
+
 
 METHOD DbuMGR:exit( lAsk, oEvent )
    LOCAL lExit := .T.
@@ -376,7 +492,6 @@ METHOD DbuMGR:exit( lAsk, oEvent )
    IF lExit
       QApplication():exit( 0 )
    ENDIF
-
    RETURN .T.
 
 
@@ -433,7 +548,6 @@ METHOD DbuMGR:setDatabaseParams()
    CacheLockTimeout( 0 )
    CacheSetUseExclusive( 1 )
 #endif
-
    RETURN .T.
 
 
@@ -549,7 +663,6 @@ METHOD DbuMGR:saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
    HB_SYMBOL_UNUSED( aStruct )
    HB_SYMBOL_UNUSED( aIndexes )
 #endif
-
    RETURN cTable
 
 METHOD DbuMGR:openMyTable( cTable, cAlias, cDriver, cConxn )
@@ -601,7 +714,6 @@ METHOD DbuMGR:getATable( cConxn )
       cTable := oDlg:getItem( QApplication():focusWidget(), cConxn, "Table?", qStrList )
       oDlg:setParent( QWidget() )
    ENDIF
-
    RETURN cTable
 
 
@@ -629,7 +741,6 @@ METHOD DbuMGR:fetchDbuData()
          ENDIF
       ENDIF
    NEXT
-
    RETURN Self
 
 
@@ -656,7 +767,6 @@ METHOD DbuMGR:populateProdTables()
          ::oDbu:populateTree( "CACHERDD", "Test", cTable, cTable, "CACHERDD", "Test", NIL )
       ENDIF
    NEXT
-
    RETURN NIL
 
 
@@ -687,7 +797,6 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
    IF oMdiBrowse:connection() $ "ECP_1,ECP_2,ECP_3,Cluster"
       oHbQtBrowse:showIndicator( "red" )
    ENDIF
-
    RETURN NIL
 
 
@@ -710,7 +819,6 @@ METHOD DbuMGR:saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
       oMdiBrowse:unlock()
       oMdiBrowse:refreshAll()
    ENDIF
-
    RETURN .T.
 
 
@@ -735,8 +843,8 @@ METHOD DbuMGR:manageExSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
          oHbQtBrowse:refreshAll()
       ENDIF
    ENDIF
-
    RETURN NIL
+
 
 METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
@@ -756,7 +864,6 @@ METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
          RETURN Eval( oHbQtBrowse:getColumn( oHbQtBrowse:colPos ):block ) = xValue
       ENDIF
    ENDIF
-
    RETURN .T.
 
 
@@ -927,7 +1034,6 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
       lHandelled := .F.
 
    ENDCASE
-
    RETURN lHandelled
 
 
@@ -964,7 +1070,6 @@ METHOD DbuMGR:manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu )
    ENDWITH
 
    oContextMenu:popUp( aPos )
-
    RETURN Self
 
 
@@ -990,8 +1095,8 @@ METHOD DbuMGR:showStats( oMdiBrowse )
    aadd( aStats, Pad( 'OrdKey()        = ' + hb_ntos( oMdiBrowse:ordKey() ),           32 ) + "." )
 
    Alert( aStats, , , , "Various Statistics" )
-
    RETURN NIL
+
 
 METHOD DbuMGR:getSearchValue( oMdiBrowse, xValue )
    IF oMdiBrowse:indexOrd() > 0
@@ -1010,6 +1115,7 @@ METHOD DbuMGR:saveEnvAs()
    cFile := hbdbu_saveAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
    IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
       ::getPath( cFile )
+      ::saveEnvironment()
    ENDIF
 
    RETURN Self
@@ -1037,9 +1143,9 @@ METHOD DbuMGR:saveEnvironment()
 
 
 METHOD DbuMGR:restEnvironment()
-   LOCAL oSettings, oWgt := ::oUI:oWidget
+   LOCAL oSettings, oRect, lVal, cInfo
+   LOCAL oWgt := ::oUI:oWidget
    LOCAL cFile := ::getPath()
-   LOCAL oRect, lVal, cInfo
 
    oSettings := QSettings( cFile, QSettings_IniFormat )
    oWgt:restoreState( oSettings:value( "dbuSettings" ):toByteArray() )
@@ -1105,19 +1211,22 @@ METHOD DbuMGR:restEnvironment()
 
 
 METHOD DbuMGR:restEnvFrom()
-   LOCAL cFile
+   LOCAL cFile, oProcess
 
    cFile := hbdbu_fetchAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
    IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
-      ::getPath( cFile )
-
-      // Close existing panels and browsers or should we merge ?
-      // merging make sense as .dbu can be opened via "Open With" option of explorer.
-      //
-      ::restEnvironment()
+      IF hb_FileExists( cFile )                   // execute another copy of HbDBU
+         oProcess := QProcess()
+         WITH OBJECT oProcess
+            :startDetached( hb_argv(), QStringList( cFile ) )
+            :waitForStarted( 3000 )
+         ENDWITH
+         oProcess := NIL
+      ENDIF
    ENDIF
 
    RETURN Self
+
 
 METHOD DbuMGR:getPath( cFile )
    LOCAL cPath, cName, cExt
@@ -1419,8 +1528,8 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, "Qt " + QT_VERSION_STR() )
       AAdd( txt_, "" )
       AAdd( txt_, "Visit the project website at:" )
-      AAdd( txt_, "<a href='http://harbour-project.org/'>http://harbour-project.org/</a>" )
-      AAdd( txt_, "<a href='http://hbide.vouch.info/'>http://hbide.vouch.info/</a>" )
+      AAdd( txt_, "<a href='https://harbour.github.io/'>Harbour Project</a>" )
+      AAdd( txt_, "<a href='http://qtcontribs.sourceforge.net/'>HbDBU Project</a>" )
       EXIT
 
    CASE 2
@@ -1447,7 +1556,7 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, 'collection of libraries and interfaces to many popular APIs."' )
       AAdd( txt_, "" )
       AAdd( txt_, "Get downloads, samples, contribs and much more at:" )
-      AAdd( txt_, "<a href='http://harbour-project.org/'>http://harbour-project.org/</a>" )
+      AAdd( txt_, "<a href='https://harbour.github.io/'>Harbour Project</a>" )
       EXIT
 
    END

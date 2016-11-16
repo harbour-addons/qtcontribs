@@ -5,7 +5,7 @@
 /*
  * Harbour Qt wrapper generator control file
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://www.harbour-project.org
  *
  * See COPYING for licensing terms.
@@ -14,13 +14,12 @@
 <CLASS>
 Inherit     = QAbstractItemModel
 Type        = Core
-New         = 
+New         =
 VersionUpto = 0x040900
 </CLASS>
 
 <CODE>
 #include <QtGui/QDirModel>
-
 
 /*
  * QDirModel ( const QStringList & nameFilters, QDir::Filters filters, QDir::SortFlags sort, QObject * parent = 0 )
@@ -43,7 +42,7 @@ HB_FUNC( QT_QDIRMODEL )
    }
    else
    {
-      __HB_RETPTRGC__( new QDirModel() );   
+      __HB_RETPTRGC__( new QDirModel() );
    }
 }
 </CODE>

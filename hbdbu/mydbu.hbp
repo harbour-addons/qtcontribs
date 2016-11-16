@@ -34,6 +34,7 @@ hbqtwidgets.hbc
 hbqt.hbc
 {__ADS__}rddads.hbc
 {__CACHE__}xhb.hbc
+{allwin}gtwvg.hbc
 
 # Library Paths
 #

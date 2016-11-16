@@ -1,0 +1,49 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+Destructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusReply>
+
+
+/*
+ * QDBusReply(const QDBusMessage & reply)
+ * QDBusReply(const QDBusPendingCall & pcall)
+ * QDBusReply(const QDBusPendingReply<T> & reply)
+ * QDBusReply(const QDBusError & error = QDBusError())
+ */
+HB_FUNC( QT_QDBUSREPLY )
+{
+   HB_FUNC_EXEC( HB_QDBUSREPLY );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+//const QDBusError &   error()
+//bool   isValid() const
+//Type   value() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

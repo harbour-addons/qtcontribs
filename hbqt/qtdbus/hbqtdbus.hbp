@@ -1,0 +1,16 @@
+#
+# $Id$
+#
+
+{allwin|os2}-stop='QtDBus is only available for Unix...'
+
+-cflag=-I${HB_WITH_QT}/QtCore
+
+../hbqt_common.hbm
+
+hbqtdbus.hbm
+
+-instfile=inc:hbqtdbus.ch
+-instfile=inc:hbqtdbus.hbx
+
+hbqtdbuss.hbp

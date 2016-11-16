@@ -1,0 +1,65 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusServiceWatcher>
+#include <QtDBus/QDBusConnection>
+
+
+/*
+ * QDBusServiceWatcher(QObject * parent = 0)
+ * QDBusServiceWatcher(const QString & service, const QDBusConnection & connection, WatchMode watchMode = WatchForOwnerChange, QObject * parent = 0)
+ * ~QDBusServiceWatcher()
+ */
+HB_FUNC( QT_QDBUSSERVICEWATCHER )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QDBusServiceWatcher( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDBusServiceWatcher() );
+   }
+}
+</CODE>
+
+<ENUMS>
+flags   WatchMode
+enum   WatchModeFlag { WatchForRegistration, WatchForUnregistration, WatchForOwnerChange }
+</ENUMS>
+
+<PROTOS>
+void   addWatchedService(const QString & newService)
+QDBusConnection   connection() const
+bool   removeWatchedService(const QString & service)
+void   setConnection(const QDBusConnection & connection)
+void   setWatchMode(WatchMode mode)
+void   setWatchedServices(const QStringList & services)
+WatchMode   watchMode() const
+QStringList   watchedServices() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   serviceOwnerChanged(const QString & serviceName, const QString & oldOwner, const QString & newOwner)
+void   serviceRegistered(const QString & serviceName)
+void   serviceUnregistered(const QString & serviceName)
+</SIGNALS>

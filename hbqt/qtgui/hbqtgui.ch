@@ -5539,5 +5539,106 @@
 #define QListWidgetItem_Type                                 0         // The default type for list widget items.
 #define QListWidgetItem_UserType                             1000      // The minimum value for custom types. Values below UserType are reserved by Qt.
 
+#define QDBus_NoBlock                                        0         // Place the call but don't wait for the reply (the reply's contents will be discarded).
+#define QDBus_Block                                          1         // Don't use an event loop to wait for a reply, but instead block on network operations while waiting. This means the user-interface may not be updated until the function returns.
+#define QDBus_BlockWithGui                                   2         // Use the Qt event loop to wait for a reply. This means that the user-interface will stay responsive (processing input events), but it also means other events may happen, like signal delivery and other D-Bus method calls.
+#define QDBus_AutoDetect                                     3         // Automatically detect if the called function has a reply.
+                                                                       //
+#define QDBusArgument_BasicType                              0         // A basic element, which is understood by QVariant. The following types are considered basic: bool, byte, short, ushort, int, uint, qint64, quint64, double, QString, QByteArray, QDBusObjectPath, QDBusSignature
+#define QDBusArgument_VariantType                            1         // The variant element (QDBusVariant)
+#define QDBusArgument_ArrayType                              2         // An array element, usually represented by QList<T> or QVector<T>. Note: QByteArray and associative maps are not considered arrays, even if the D-Bus protocol transports them as such.
+#define QDBusArgument_StructureType                          3         // A custom type represented by a structure, like QDateTime, QPoint, etc.
+#define QDBusArgument_MapType                                4         // An associative container, like QMap<Key, Value> or QHash<Key, Value>
+#define QDBusArgument_MapEntryType                           5         // One entry in an associative container: both the key and the value form one map-entry type.
+#define QDBusArgument_UnknownType   -                        1         // The type is unknown or we have reached the end of the list.
+                                                                       //
+#define QDBusConnection_SessionBus                           0         // the session bus, associated with the running desktop session
+#define QDBusConnection_SystemBus                            1         // the system bus, used to communicate with system-wide processes
+#define QDBusConnection_ActivationBus                        2         // the activation bus, the "alias" for the bus that started the service
+                                                                       //
+#define QDBusConnection_UnixFileDescriptorPassing            0x0001    // enables passing of Unix file descriptors to other processes (see QDBusUnixFileDescriptor)
+                                                                       //
+#define QDBusConnection_ExportAdaptors                       0x01      // export the contents of adaptors found in this object
+#define QDBusConnection_ExportScriptableSlots                0x10      // export this object's scriptable slots
+#define QDBusConnection_ExportScriptableSignals              0x20      // export this object's scriptable signals
+#define QDBusConnection_ExportScriptableProperties           0x40      // export this object's scriptable properties
+#define QDBusConnection_ExportScriptableInvokables           0x80      // export this object's scriptable invokables
+#define QDBusConnection_ExportScriptableContents             0xf0      // shorthand form for ExportScriptableSlots | ExportScriptableSignals | ExportScriptableProperties
+#define QDBusConnection_ExportNonScriptableSlots             0x100     // export this object's non-scriptable slots
+#define QDBusConnection_ExportNonScriptableSignals           0x200     // export this object's non-scriptable signals
+#define QDBusConnection_ExportNonScriptableProperties        0x400     // export this object's non-scriptable properties
+#define QDBusConnection_ExportNonScriptableInvokables        0x800     // export this object's non-scriptable invokables
+#define QDBusConnection_ExportNonScriptableContents          0xf00     // shorthand form for ExportNonScriptableSlots | ExportNonScriptableSignals | ExportNonScriptableProperties
+#define QDBusConnection_ExportAllSlots                       hb_bitOr( QBusConnection_ExportScriptableSlots      , QBusConnection_ExportNonScriptableSlots      ) // export all of this object's slots
+#define QDBusConnection_ExportAllSignals                     hb_bitOr( QBusConnection_ExportScriptableSignals    , QBusConnection_ExportNonScriptableSignals    ) // export all of this object's signals
+#define QDBusConnection_ExportAllProperties                  hb_bitOr( QBusConnection_ExportScriptableProperties , QBusConnection_ExportNonScriptableProperties ) // export all of this object's properties
+#define QDBusConnection_ExportAllInvokables                  hb_bitOr( QBusConnection_ExportScriptableInvokables , QBusConnection_ExportNonScriptableInvokables ) // export all of this object's invokables
+#define QDBusConnection_ExportAllContents                    hb_bitOr( QBusConnection_ExportScriptableContents   , QBusConnection_ExportNonScriptableContents   ) // export all of this object's contents
+#define QDBusConnection_ExportChildObjects                   0x1000
+
+#define QDBusConnection_UnregisterNode                       0         // unregister this node only: do not unregister child objects
+#define QDBusConnection_UnregisterTree                       1         // unregister this node and all its sub-tree
+                                                                       //
+#define QDBusConnectionInterface_ServiceNotRegistered        0         // The call failed and the service name was not registered.
+#define QDBusConnectionInterface_ServiceRegistered           1         // The caller is now the owner of the service name.
+#define QDBusConnectionInterface_ServiceQueued               2         // The caller specified the QueueService flag and the service was already registered, so we are in queue.
+                                                                       //
+#define QDBusConnectionInterface_DontQueueService            0         // If an application requests a name that is already owned, no queueing will be performed. The registeredService() call will simply fail. This is the default.
+#define QDBusConnectionInterface_QueueService                1         // Attempts to register the requested service, but do not try to replace it if another application already has it registered. Instead, simply put this application in queue, until it is given up. The serviceRegistered() signal will be emitted when that happens.
+#define QDBusConnectionInterface_ReplaceExistingService      2         // If another application already has the service name registered, attempt to replace it.
+                                                                       //
+#define QDBusConnectionInterface_DontAllowReplacement        0         // Do not allow another application to replace us. The service must be explicitly unregistered with unregisterService() for another application to acquire it. This is the default.
+#define QDBusConnectionInterface_AllowReplacement            1         // Allow other applications to replace us with the ReplaceExistingService option to registerService() without intervention. If that happens, the serviceUnregistered() signal will be emitted.
+                                                                       //
+#define QDBusError_NoError                                   0         // QDBusError is invalid (i.e., the call succeeded)
+#define QDBusError_Other                                     1         // QDBusError contains an error that is one of the well-known ones
+#define QDBusError_Failed                                    2         // The call failed (org.freedesktop.DBus.Error.Failed)
+#define QDBusError_NoMemory                                  3         // Out of memory (org.freedesktop.DBus.Error.NoMemory)
+#define QDBusError_ServiceUnknown                            4         // The called service is not known (org.freedesktop.DBus.Error.ServiceUnknown)
+#define QDBusError_NoReply                                   5         // The called method did not reply within the specified timeout (org.freedesktop.DBus.Error.NoReply)
+#define QDBusError_BadAddress                                6         // The address given is not valid (org.freedesktop.DBus.Error.BadAddress)
+#define QDBusError_NotSupported                              7         // The call/operation is not supported (org.freedesktop.DBus.Error.NotSupported)
+#define QDBusError_LimitsExceeded                            8         // The limits allocated to this process/call/connection exceeded the pre-defined values (org.freedesktop.DBus.Error.LimitsExceeded)
+#define QDBusError_AccessDenied                              9         // The call/operation tried to access a resource it isn't allowed to (org.freedesktop.DBus.Error.AccessDenied)
+#define QDBusError_NoServer                                  10        // Documentation doesn't say what this is for (org.freedesktop.DBus.Error.NoServer)
+#define QDBusError_Timeout                                   11        // Documentation doesn't say what this is for or how it's used (org.freedesktop.DBus.Error.Timeout)
+#define QDBusError_NoNetwork                                 12        // Documentation doesn't say what this is for (org.freedesktop.DBus.Error.NoNetwork)
+#define QDBusError_AddressInUse                              13        // QDBusServer tried to bind to an address that is already in use (org.freedesktop.DBus.Error.AddressInUse)
+#define QDBusError_Disconnected                              14        // The call/process/message was sent after QDBusConnection disconnected (org.freedesktop.DBus.Error.Disconnected)
+#define QDBusError_InvalidArgs                               15        // The arguments passed to this call/operation are not valid (org.freedesktop.DBus.Error.InvalidArgs)
+#define QDBusError_UnknownMethod                             16        // The method called was not found in this object/interface with the given parameters (org.freedesktop.DBus.Error.UnknownMethod)
+#define QDBusError_TimedOut                                  17        // Documentation doesn't say... (org.freedesktop.DBus.Error.TimedOut)
+#define QDBusError_InvalidSignature                          18        // The type signature is not valid or compatible (org.freedesktop.DBus.Error.InvalidSignature)
+#define QDBusError_UnknownInterface                          19        // The interface is not known
+#define QDBusError_InternalError                             20        // An internal error occurred (com.trolltech.QtDBus.Error.InternalError)
+#define QDBusError_InvalidObjectPath                         23        // The object path provided is invalid.
+#define QDBusError_InvalidService                            22        // The service requested is invalid.
+#define QDBusError_InvalidMember                             25        // The member is invalid.
+#define QDBusError_InvalidInterface                          24        // The interface is invalid.
+#define QDBusError_UnknownObject                             21        // The remote object could not be found.
+                                                                       //
+#define QDBusMessage_MethodCallMessage                       1         // a message representing an outgoing or incoming method call
+#define QDBusMessage_SignalMessage                           4         // a message representing an outgoing or incoming signal emission
+#define QDBusMessage_ReplyMessage                            2         // a message representing the return values of a method call
+#define QDBusMessage_ErrorMessage                            3         // a message representing an error condition in response to a method call
+#define QDBusMessage_InvalidMessage                          0         // an invalid message: this is never set on messages received from D-Bus
+                                                                       //
+#define QDBusServiceWatcher_WatchForRegistration             0x01      // watch for service registration only, ignoring any signals related to other service ownership change.
+#define QDBusServiceWatcher_WatchForUnregistration           0x02      // watch for service unregistration only, ignoring any signals related to other service ownership change.
+#define QDBusServiceWatcher_WatchForOwnerChange              0x03      // watch for any kind of service ownership change.
+
+#define QSharedMemory_ReadOnly                               0         // The shared memory segment is read-only. Writing to the shared memory segment is not allowed. An attempt to write to a shared memory segment created with ReadOnly causes the program to abort.
+#define QSharedMemory_ReadWrite                              1         // Reading and writing the shared memory segment are both allowed.
+
+#define QSharedMemory_NoError                                0         // No error occurred.
+#define QSharedMemory_PermissionDenied                       1         // The operation failed because the caller didn't have the required permissions.
+#define QSharedMemory_InvalidSize                            2         // A create operation failed because the requested size was invalid.
+#define QSharedMemory_KeyError                               3         // The operation failed because of an invalid key.
+#define QSharedMemory_AlreadyExists                          4         // A create() operation failed because a shared memory segment with the specified key already existed.
+#define QSharedMemory_NotFound                               5         // An attach() failed because a shared memory segment with the specified key could not be found.
+#define QSharedMemory_LockError                              6         // The attempt to lock() the shared memory segment failed because create() or attach() failed and returned false, or because a system error occurred in QSystemSemaphore_acquire().
+#define QSharedMemory_OutOfResources                         7         // A create() operation failed because there was not enough memory available to fill the request.
+#define QSharedMemory_UnknownError                           8         // Something else happened and it was bad.
+
 #endif
 

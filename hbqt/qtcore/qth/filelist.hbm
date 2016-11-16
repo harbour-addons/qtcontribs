@@ -74,6 +74,7 @@ QRegularExpressionMatchIterator.qth
 QResource.qth
 QSequentialAnimationGroup.qth
 QSettings.qth
+QSharedMemory.qth
 QSignalMapper.qth
 QSize.qth
 QSizeF.qth
@@ -94,8 +95,4 @@ QUrl.qth
 QUuid.qth
 QVariant.qth
 QVariantAnimation.qth
-
-
-
-
 

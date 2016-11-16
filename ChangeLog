@@ -16,6 +16,127 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-11-15 17:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r435)
+  + hbqt/qtdbus
+  + hbqt/qtdbus/doc
+  + hbqt/qtdbus/doc/en
+  + hbqt/qtdbus/hbqt_init.cpp
+  + hbqt/qtdbus/hbqtdbus.ch
+  + hbqt/qtdbus/hbqtdbus.hbc
+  + hbqt/qtdbus/hbqtdbus.hbm
+  + hbqt/qtdbus/hbqtdbus.hbp
+  + hbqt/qtdbus/hbqtdbus.hbx
+  + hbqt/qtdbus/hbqtdbuss.hbp
+  + hbqt/qtdbus/qth
+  + hbqt/qtdbus/qth/filelist.hbm
+  + hbqt/qtdbus/qth/QDBusAbstractAdaptor.qth
+  + hbqt/qtdbus/qth/QDBusAbstractInterface.qth
+  + hbqt/qtdbus/qth/QDBusArgument.qth
+  + hbqt/qtdbus/qth/QDBusConnection.qth
+  + hbqt/qtdbus/qth/QDBusConnectionInterface.qth
+  + hbqt/qtdbus/qth/QDBusContext.qth
+  + hbqt/qtdbus/qth/QDBusError.qth
+  + hbqt/qtdbus/qth/QDBusInterface.qth
+  + hbqt/qtdbus/qth/QDBusMessage.qth
+  + hbqt/qtdbus/qth/QDBusObjectPath.qth
+  + hbqt/qtdbus/qth/QDBusPendingCall.qth
+  + hbqt/qtdbus/qth/QDBusPendingCallWatcher.qth
+  + hbqt/qtdbus/qth/QDBusPendingReply.qth
+  + hbqt/qtdbus/qth/QDBusReply.qth
+  + hbqt/qtdbus/qth/QDBusServer.qth
+  + hbqt/qtdbus/qth/QDBusServiceWatcher.qth
+  + hbqt/qtdbus/qth/QDBusSignature.qth
+  + hbqt/qtdbus/qth/QDBusUnixFileDescriptor.qth
+  + hbqt/qtdbus/qth/QDBusVariant.qth
+  + hbqt/hbqtdbus.hbc
+    + Added QtDBus module (Since Qt 4.2). 
+       The module is valid for Unix distros and hence it is 
+       not added to the default builds. You have to add it 
+       in QtContribs-N.hbp manually. All classes are compiled 
+       without errors ( except for a hack I had to deploy 
+       in Qt's QDBusConnect.h header )( from Windows compilation
+       perspective only ). So hope that these will compile 
+       on unix systems without problems.
+
+  * hbqt/hbqt_common.hbc
+  * hbqt/qtcore/hbqt_bind.cpp
+  * hbqt/qtcore/hbqtcore.hbc
+    % Minors.
+
+  + hbqt/qtcore/qth/QSharedMemory.qth
+  * hbqt/qtcore/qth/filelist.hbm
+    + Added: another very useful class QSharedMemory.
+       Implementation can be viewed in hbdbu/dbu.prg.
+   
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Bump.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: constants for QtDBus module and QSharedMemory class.
+
+  * hbqt/qtgui/qth/QDirModel.qth
+    % Minor.
+
+  + hbqtwidgets/resources/tree-collapse-all.png
+  + hbqtwidgets/resources/tree-collapse-soft.png
+  + hbqtwidgets/resources/tree-expand-all.png
+  + hbqtwidgets/resources/tree-expand-soft.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: few more images used in HbDBU interface.
+
+  * hbqtwidgets/dashboard.prg
+  * hbqtwidgets/hbqtdbu.prg
+  * hbqtwidgets/misc.prg
+
+  + hbdbu/resources/online.png
+  * hbdbu/dbu.prg
+  * hbdbu/dbu.qrc
+  * hbdbu/dbu.ui
+  * hbdbu/hbdbu.hbp
+  * hbdbu/mydbu.hbp
+    + Added following features in HbDBU:
+      1 Tables TreeView - Added 4 icons on the top of left-pane.
+         a. Collapse Soft - Collapses all "Driver" nodes.
+         b. Collapse All - Collapses "Paths" nodes in addition to "Driver" nodes
+         c. Expand Soft - Expands only "Driver" nodes.
+         d. Expand All - Expands "paths" nodes as well.
+
+      2 By default all nodes of tables tree are shown expanded when invoked.
+
+      3 Right-clicking on "path" node will open FileOpen dialog with all 
+         the .dbfs present in the folder. A feature request by Massimo.
+
+    % <Save Env> button on the top-toolbar now saves settings in 
+       user-defined *.dbu files. Before the settings were saved in file 
+       which was used to invoke HbDBU.
+
+    + <Rest Env> has undergone a fundamental change. This now invokes 
+       another copy of HbDBU with environment picked from selected file.
+       This way you can have multiple HbDBU's on screen with different 
+       settings. This is a productivity feature. Before, the selected environment
+       was merged with the current one.
+
+    + Added <Online> icon on the top-toolbar which opens up the Windows only 
+       interface which implements "shell.explorer.2" activex via 
+       GtWVG class WvgActiveX(). The interface shows up a Harbour help 
+       links on the left pane and web-browser on the right. By default 
+       link for HbDBU ( http://qtcontribs.sourceforge.net ) is activated.
+       The complete help for HbDBU is scheduled for next few days. Daily 
+       I will be updating the site. Keep on visiting as needed.
+       Also links of Harbour/Clipper/Clipper Tools ( recently revamped 
+       by Viktor ) are also included. Allow scripts to run in IE for 
+       flawless experience.
+
+       This feature, in my opinion, comes handy for developers. I resorted to 
+       GtWVG because Qt has discontinued QtWebkit and QWebView implementation 
+       is well beyond our scope.
+
+     + Implemented single HbDBU instance (Server) to accept multiple .dbf(s) 
+        when a .dbf is double-clicked in the explorer, and extention .dbf has 
+        been assigned to application HbDBU. Before, every invocation was opening 
+        a separate copy of HbDBU. Class QSharedMemory() has been used to 
+        implement this feature. Examine dbu.prg for details.
+
 2016-11-08 17:55 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r434)
   * hbqt/qtbluetooth/doc/en/class_qbluetoothaddress.txt
   * hbqt/qtbluetooth/doc/en/class_qbluetoothdevicediscoveryagent.txt

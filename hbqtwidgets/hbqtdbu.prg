@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -120,6 +120,14 @@ REQUEST DBFNSX
 #define __dbu_treeTableDoubleClicked__            2051
 #define __buttonLink_clicked__                    2052
 #define __buttonOpenIndex_clicked__               2053
+#define __dbu_customContextMenuRequested__        2054
+
+#define __dbu_treeTablesHeaderSingleClicked__     2055
+#define __dbu_treeTablesCollapseSoft__            2055
+#define __dbu_treeTablesHeaderDoubleClicked__     2056
+#define __dbu_treeTablesCollapseAll__             2056
+#define __dbu_treeTablesExpandAll__               2057
+#define __dbu_treeTablesExpandSoft__              2058
 
 /*----------------------------------------------------------------------*/
 
@@ -314,6 +322,7 @@ PROTECTED:
 
    DATA   qMainHLayout
    DATA   qLeftFrameLay
+   DATA   qLeftFrameToolsLay
    DATA   qRightFrameLay
    DATA   qStack
    DATA   qLayout
@@ -322,6 +331,7 @@ PROTECTED:
    DATA   qRightFrame
    DATA   qLeftSplitter
    DATA   oTreeTables
+   DATA   oHdrTreeTables
    DATA   qVSplitter
    DATA   qToolBar
    DATA   qToolBarL
@@ -356,6 +366,11 @@ PROTECTED:
    DATA   nPrevMode                               INIT  0
    DATA   cSettingsPath                           INIT  ""
    DATA   cSettingsFile                           INIT  ""
+
+   DATA   oBtnTreeTablesCAll
+   DATA   oBtnTreeTablesCSoft
+   DATA   oBtnTreeTablesEAll
+   DATA   oBtnTreeTablesESoft
 
    METHOD open( aDbfs )
    METHOD buildToolbar()
@@ -452,6 +467,10 @@ METHOD HbQtDBU:create( oParent )
       :setContentsMargins( 0,0,0,0 )
       :setSpacing( 0 )
    ENDWITH
+   WITH OBJECT ::qLeftFrameToolsLay := QHBoxLayout()
+      :setContentsMargins( 0,0,0,0 )
+      :setSpacing( 0 )
+   ENDWITH
    WITH OBJECT ::qLayout := QGridLayout()
       :setContentsMargins( 0,0,0,0 )
       :setSpacing( 0 )
@@ -491,15 +510,58 @@ METHOD HbQtDBU:create( oParent )
       :setColumnCount( 1 )
       :setHeaderHidden( .F. )
       :setHeaderLabel( " Tables" )
-//    :setAnimated( .T. )
       :setRootIsDecorated( .T. )
       :setItemsExpandable( .T. )
       :setUniformRowHeights( .T. )
       :setIndentation( 10 )
       :setIconSize( QSize( 8,8 ) )
+      :setContextMenuPolicy( Qt_CustomContextMenu )
       :connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|oItem,nColumn| ::execEvent( __dbu_treeTableDoubleClicked__, oItem, nColumn ) } )
+      :connect( "customContextMenuRequested(QPoint)"     , {|oPoint| ::execEvent( __dbu_customContextMenuRequested__, oPoint ) } )
+      :headerItem():setTooltip( 0, "<Single-Click: Soft Collapse>  <Double-Click: Complete Collapse>" )
+      WITH OBJECT ::oHdrTreeTables := :header()
+         :setSectionsClickable( .T. )
+         :connect( "sectionClicked(int)", {|| ::execEvent( __dbu_treeTablesHeaderSingleClicked__ ) } )
+         :connect( "sectionDoubleClicked(int)", {|| ::execEvent( __dbu_treeTablesHeaderDoubleClicked__ ) } )
+      ENDWITH
    ENDWITH
+   ::qLeftFrameLay:addLayout( ::qLeftFrameToolsLay )
    ::qLeftFrameLay:addWidget( ::oTreeTables )
+
+   ::qLeftFrameToolsLay:addStretch( 0 )
+   WITH OBJECT ::oBtnTreeTablesCSoft := QToolButton()
+      :setTooltip( "Collapse Soft" )
+      :setAutoRaise( .T. )
+      :setIcon( QIcon( __hbqtImage( "tree-collapse-soft" ) ) )
+      :connect( "clicked()", {|| ::execEvent( __dbu_treeTablesHeaderSingleClicked__ ) } )
+   ENDWITH
+   ::qLeftFrameToolsLay:addWidget( ::oBtnTreeTablesCSoft )
+
+   WITH OBJECT ::oBtnTreeTablesCAll := QToolButton()
+      :setTooltip( "Collapse All" )
+      :setAutoRaise( .T. )
+      :setIcon( QIcon( __hbqtImage( "tree-collapse-all" ) ) )
+      :connect( "clicked()", {|| ::execEvent( __dbu_treeTablesHeaderDoubleClicked__ ) } )
+   ENDWITH
+   ::qLeftFrameToolsLay:addWidget( ::oBtnTreeTablesCAll )
+
+   WITH OBJECT ::oBtnTreeTablesESoft := QToolButton()
+      :setTooltip( "Expand Soft" )
+      :setAutoRaise( .T. )
+      :setIcon( QIcon( __hbqtImage( "tree-expand-soft" ) ) )
+      :connect( "clicked()", {|| ::execEvent( __dbu_treeTablesExpandSoft__ ) } )
+   ENDWITH
+   ::qLeftFrameToolsLay:addWidget( ::oBtnTreeTablesESoft )
+
+   WITH OBJECT ::oBtnTreeTablesEAll := QToolButton()
+      :setTooltip( "Expand All" )
+      :setAutoRaise( .T. )
+      :setIcon( QIcon( __hbqtImage( "tree-expand-all" ) ) )
+      :connect( "clicked()", {|| ::execEvent( __dbu_treeTablesExpandAll__ ) } )
+   ENDWITH
+   ::qLeftFrameToolsLay:addWidget( ::oBtnTreeTablesEAll )
+   ::qLeftFrameToolsLay:addStretch( 0 )
+
 
    ::qLeftFrame:setMinimumWidth( 120 )
    ::qLeftFrame:hide()
@@ -704,8 +766,10 @@ METHOD HbQtDBU:setSelectTableBlock( bBlock )
    ENDIF
    RETURN ::bSelectTable
 
+
 METHOD HbQtDBU:getSelectTableBlock()
    RETURN ::bSelectTable
+
 
 METHOD HbQtDBU:setOpenTableBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -713,8 +777,10 @@ METHOD HbQtDBU:setOpenTableBlock( bBlock )
    ENDIF
    RETURN ::bOpenTable
 
+
 METHOD HbQtDBU:getOpenTableBlock()
    RETURN ::bOpenTable
+
 
 METHOD HbQtDBU:setSaveTableBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -722,8 +788,10 @@ METHOD HbQtDBU:setSaveTableBlock( bBlock )
    ENDIF
    RETURN ::bSaveTable
 
+
 METHOD HbQtDBU:getSaveTableBlock()
    RETURN ::bSaveTable
+
 
 METHOD HbQtDBU:setConnectionsBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -731,8 +799,10 @@ METHOD HbQtDBU:setConnectionsBlock( bBlock )
    ENDIF
    RETURN ::bConnections
 
+
 METHOD HbQtDBU:getConnectionsBlock()
    RETURN ::bConnections
+
 
 METHOD HbQtDBU:setExistsTableBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -740,8 +810,10 @@ METHOD HbQtDBU:setExistsTableBlock( bBlock )
    ENDIF
    RETURN ::bExistsTable
 
+
 METHOD HbQtDBU:getExistsTableBlock()
    RETURN ::bExistsTable
+
 
 METHOD HbQtDBU:setRddsBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -750,8 +822,10 @@ METHOD HbQtDBU:setRddsBlock( bBlock )
    ENDIF
    RETURN ::bRdds
 
+
 METHOD HbQtDBU:getRddsBlock()
    RETURN ::bRdds
+
 
 METHOD HbQtDBU:setPopulateTreeBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -759,14 +833,17 @@ METHOD HbQtDBU:setPopulateTreeBlock( bBlock )
    ENDIF
    RETURN ::bPopulateTree
 
+
 METHOD HbQtDBU:getPopulateTreeBlock()
    RETURN ::bPopulateTree
+
 
 METHOD browseConfigureBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
       ::bBrowseConfigure := bBlock
    ENDIF
    RETURN ::bBrowseConfigure
+
 
 METHOD browseColumnsBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
@@ -776,6 +853,7 @@ METHOD browseColumnsBlock( bBlock )
 
 METHOD HbQtDBU:getTablesTreeEnabled()
    RETURN ::lTablesTree
+
 
 METHOD HbQtDBU:setTablesTreeEnabled( lEnabled )
    IF HB_ISLOGICAL( lEnabled )
@@ -788,8 +866,10 @@ METHOD HbQtDBU:setTablesTreeEnabled( lEnabled )
    ENDIF
    RETURN ::lTablesTree
 
+
 METHOD HbQtDBU:getTablesStructureEnabled()
    RETURN ::lTablesTree
+
 
 METHOD HbQtDBU:setTablesStructureEnabled( lEnabled )
    IF HB_ISLOGICAL( lEnabled )
@@ -849,13 +929,13 @@ METHOD HbQtDBU:getTreeInfo()
          NEXT
       NEXT
    NEXT
-
    RETURN aInfo
 
 
 METHOD HbQtDBU:clearTablesTree()
    ::oTreeTables:clear()
    RETURN Self
+
 
 METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, cIcon )
    LOCAL oTreeItem, oParent, cSection, oSection, oNode
@@ -873,7 +953,6 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
       cSection := xSection
    ENDIF
    cTable := StrTran( cTable, "&", ":" )
-
    IF HB_ISCHAR( cSection ) .AND. ! Empty( cSection )
       oSection := findItem( ::oTreeTables:invisibleRootItem(), cSection )
       IF oSection == NIL
@@ -896,7 +975,7 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
       ENDIF
 
       oNode := findItem( oParent, cNode )
-      IF oNode == nil
+      IF oNode == NIL
          WITH OBJECT oTreeItem := QTreeWidgetItem()
             :setText( 0, cNode )
             :setTooltip( 0, cTable + " [" + cDriver + iif( Empty( cConxn ), "", "][" + cConxn ) + "]" )
@@ -904,6 +983,7 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
          ENDWITH
          oParent:addChild( oTreeItem )
          oParent:sortChildren( 0, Qt_AscendingOrder )
+         oParent:setExpanded( .T. )
       ENDIF
    ENDIF
 
@@ -912,7 +992,6 @@ METHOD HbQtDBU:populateTree( xSection, cParent, cNode, cTable, cDriver, cConxn, 
          ::qLeftFrame:show()
       ENDIF
    ENDIF
-
    RETURN Self
 
 
@@ -928,7 +1007,6 @@ METHOD HbQtDBU:getPanelNames()
 
       aadd( aNames, hbide_array2String( aAttr, "," ) )
    NEXT
-
    RETURN aNames
 
 
@@ -969,7 +1047,6 @@ METHOD HbQtDBU:getPanelsInfo()
          aadd( aInfo, hbide_array2String( aAttr, "," ) )
       NEXT
    NEXT
-
    RETURN aInfo
 
 
@@ -1002,7 +1079,6 @@ METHOD HbQtDBU:addPanel( cPanel )
    ::qStack:addWidget( qPanel:oWidget )
    aadd( ::aPanels, qPanel )
    ::addPanelsMenu( cPanel )
-
    RETURN Self
 
 
@@ -1016,7 +1092,6 @@ METHOD HbQtDBU:setPanel( cPanel )
       ::oCurPanel:prepare()
       ::oCurPanel:activateBrowser()
    ENDIF
-
    RETURN Self
 
 
@@ -1064,7 +1139,6 @@ METHOD HbQtDBU:fetchFldsList( cAlias )
       ENDIF
       EXIT
    ENDSWITCH
-
    RETURN aFlds
 
 
@@ -1088,7 +1162,6 @@ METHOD HbQtDBU:dispStatusInfo()
 
    ::aStatusPnls[ PNL_MISC   ]:setText( "M:"    )
    ::aStatusPnls[ PNL_READY  ]:setText( "Ready" )
-
    RETURN Self
 
 
@@ -1110,12 +1183,11 @@ METHOD HbQtDBU:buildStatusPanels()
    qLabel := QLabel(); qLabel:setMinimumWidth( 40 )
    ::qStatus:addPermanentWidget( qLabel, 1 )
    aadd( ::aStatusPnls, qLabel )
-
    RETURN Self
 
 
 METHOD HbQtDBU:execEvent( nEvent, p, p1 )
-   LOCAL cTable, cPath, cPanel, qMime, qList, i, cExt, qUrl, aPopulate, cInfo, n, nn, cDriver, cConxn
+   LOCAL cTable, cPath, cPanel, qMime, qList, i, cExt, qUrl, aPopulate, cInfo, n, nn, cDriver, cConxn, qItem, aFiles, qPt
 
    HB_SYMBOL_UNUSED( p1 )
 
@@ -1197,6 +1269,50 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
          ENDIF
          ::oCurPanel:addBrowser( { NIL, cTable, NIL, cDriver, , , , , , , , cConxn } )
       ENDIF
+      EXIT
+
+   CASE __dbu_customContextMenuRequested__
+      IF ! empty( qItem := ::oTreeTables:itemAt( p ) )
+         IF Right( cPath := qItem:text( 0 ), 1 ) == hb_ps()
+            qPt := ::oTreeTables:mapToGlobal( p )
+            aFiles := HbQtOpenFileDialog( cPath, "Select Tables", "Database Tables (*.dbf)", /*lAllowMultiple*/ .T., /*lCanCreate*/ .F., { qPt:x(), qPt:y() } )
+            IF HB_ISARRAY( aFiles ) .AND. ! Empty( aFiles )
+               FOR EACH cTable IN aFiles
+                  ::oCurPanel:addBrowser( { NIL, cTable, NIL, qItem:parent():text( 0 ), , , , , , , , NIL } )
+               NEXT
+            ENDIF
+         ENDIF
+      ENDIF
+      EXIT
+
+   CASE __dbu_treeTablesHeaderSingleClicked__
+      FOR i := 0 TO ::oTreeTables:topLevelItemCount() - 1
+         ::oTreeTables:topLevelItem( i ):setExpanded( .F. )
+      NEXT
+      EXIT
+
+   CASE __dbu_treeTablesHeaderDoubleClicked__
+      FOR i := 0 TO ::oTreeTables:topLevelItemCount() - 1
+         FOR n := 0 TO ::oTreeTables:topLevelItem( i ):childCount() - 1
+            ::oTreeTables:topLevelItem( i ):child( n ):setExpanded( .F. )
+         NEXT
+         ::oTreeTables:topLevelItem( i ):setExpanded( .F. )
+      NEXT
+      EXIT
+
+   CASE __dbu_treeTablesExpandSoft__
+      FOR i := 0 TO ::oTreeTables:topLevelItemCount() - 1
+         ::oTreeTables:topLevelItem( i ):setExpanded( .T. )
+      NEXT
+      EXIT
+
+   CASE __dbu_treeTablesExpandAll__
+      FOR i := 0 TO ::oTreeTables:topLevelItemCount() - 1
+         FOR n := 0 TO ::oTreeTables:topLevelItem( i ):childCount() - 1
+            ::oTreeTables:topLevelItem( i ):child( n ):setExpanded( .T. )
+         NEXT
+         ::oTreeTables:topLevelItem( i ):setExpanded( .T. )
+      NEXT
       EXIT
 
    CASE __buttonShowForm_clicked__
@@ -1352,9 +1468,7 @@ METHOD HbQtDBU:execEvent( nEvent, p, p1 )
       ::copyStructToClipboard()
       EXIT
    /*  End - left-toolbar actions */
-
    ENDSWITCH
-
    RETURN Self
 
 
@@ -1377,7 +1491,6 @@ METHOD HbQtDBU:copyStructToClipboard()
 
       QClipboard():setText( cTmp )
    ENDIF
-
    RETURN cTmp
 
 
@@ -1395,7 +1508,6 @@ METHOD HbQtDBU:updateLinks( cAlias )
          ENDIF
       NEXT
    ENDIF
-
    RETURN .F.
 
 
@@ -1417,7 +1529,6 @@ METHOD HbQtDBU:setLinksInfo( aInfo )
          ::hMaps[ cPanel ] := a_
       ENDIF
    NEXT
-
    RETURN Self
 
 
@@ -1433,7 +1544,6 @@ METHOD HbQtDBU:getLinksInfo()
          AAdd( aInfo, aMap:__enumKey() + ":" + s )
       NEXT
    ENDIF
-
    RETURN aInfo
 
 
@@ -1610,8 +1720,8 @@ METHOD HbQtDBU:fetchLinkedChildren( qItm, aMaps )
          ::fetchLinkedChildren( qItm:child( i ), @aMaps )
       NEXT
    ENDIF
-
    RETURN Self
+
 
 METHOD HbQtDBU:manageLinkTree( nMode, p, p1 )
    LOCAL nW, nX, nY, nCol, oRec, oPos, cPic, cVar, cAlias, kf2
@@ -1654,7 +1764,6 @@ METHOD HbQtDBU:manageLinkTree( nMode, p, p1 )
    CASE 13
       EXIT
    ENDSWITCH
-
    RETURN Self
 
 
@@ -1699,7 +1808,6 @@ METHOD HbQtDBU:selectAField( cAlias )
       GetActive():display()
       GetActive():pos := nPos + Len( cAlias + "->" + aStruct[ nChoice, 1 ] )
    ENDIF
-
    RETURN NIL
 
 
@@ -1792,22 +1900,26 @@ METHOD HbQtDBU:createTable( cDriver, cConxn, aStruct, aIndexes )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN Self
 
 
 METHOD HbQtDBU:openATable( cDBF )
+   LOCAL aPopulate, cRddDriver
    LOCAL aInfo := hb_ATokens( cDbf, "," )
 
    IF Len( aInfo ) == 1
-      ::oCurPanel:addBrowser( { NIL, ;
-                             cDBF, ;
-                             NIL, ;
-                             iif( ! ( ::qRddCombo:currentText() $ "DBFCDX,DBFNTX,DBFNSX" ), "DBFCDX", ::qRddCombo:currentText() ) } )
+      cRddDriver := iif( ! ( ::qRddCombo:currentText() $ "DBFCDX,DBFNTX,DBFNSX" ), "DBFCDX", ::qRddCombo:currentText() )
+      ::oCurPanel:addBrowser( { NIL, cDBF, NIL, cRddDriver } )
+
+      IF HB_ISBLOCK( ::populateTreeBlock )
+         aPopulate := Eval( ::populateTreeBlock(), hbide_pathToOSPath( cDbf ), cRddDriver, ::currentConxn() )
+         IF HB_ISARRAY( aPopulate ) .AND. Len( aPopulate ) >= 6
+            ::populateTree( aPopulate )
+         ENDIF
+      ENDIF
    ELSE
       ::oCurPanel:addBrowser( aInfo )
    ENDIF
-
    RETURN Self
 
 
@@ -1825,7 +1937,6 @@ METHOD HbQtDBU:open( aDbfs )
 
       ::oCurPanel:addBrowser( aInfo )
    NEXT
-
    RETURN Self
 
 
@@ -1847,7 +1958,6 @@ METHOD HbQtDBU:loadTables( aPanelsInfo )
    IF HB_ISOBJECT( oCurPanel )
       ::qStack:setCurrentWidget( oCurPanel:oWidget )
    ENDIF
-
    RETURN Self
 
 
@@ -1855,12 +1965,10 @@ METHOD HbQtDBU:addArray( aData, aAttr )
 
    HB_SYMBOL_UNUSED( aData )
    HB_SYMBOL_UNUSED( aAttr )
-
    RETURN Self
 
 
 METHOD HbQtDBU:buildToolbar()
-
    LOCAL nW := 20
    LOCAL qTBar
 
@@ -1905,12 +2013,10 @@ METHOD HbQtDBU:buildToolbar()
    qTBar:addItem( , , , , , HBQTTOOLBAR_BUTTON_SEPARATOR )
    qTBar:addItem( { "SaveEnvAs", "Save Environment As..."         , QIcon( __hbqtImage( "save3"     ) ), {|| ::saveEnvAs() }                            , .F. } )
    qTBar:addItem( { "RestEnv"  , "Merge Environment"              , QIcon( __hbqtImage( "rest-env"  ) ), {|| ::restEnvFrom() }                          , .F. } )
-
    RETURN Self
 
 
 METHOD HbQtDBU:buildLeftToolbar()
-
    LOCAL qTBar
 
    qTBar             := HbQtToolbar():new()
@@ -1964,7 +2070,6 @@ METHOD HbQtDBU:buildPanelsButton()
    ENDWITH
 
    ::qToolbar:addItem( ::qPanelsButton )
-
    RETURN Self
 
 
@@ -2010,8 +2115,8 @@ METHOD HbQtDBU:fetchRddInfo( cDriver )
          oDlg:setParent( QWidget() )
       ENDIF
    ENDIF
-
    RETURN Self
+
 
 METHOD HbQtDBU:buildRddsCombo()
 
@@ -2023,8 +2128,8 @@ METHOD HbQtDBU:buildRddsCombo()
    ::loadRddsCombo( ::qRddCombo )
    ::qRddCombo:setCurrentIndex( 0 )
    ::qRddCombo:connect( "currentIndexChanged(QString)", {|p| ::fetchRddInfo( p ), ::loadConxnCombo( p, ::qConxnCombo ) } )
-
    RETURN Self
+
 
 METHOD HbQtDBU:loadRddsCombo( oRddCombo )
    LOCAL aRdds := {}, r_, cRdd
@@ -2048,8 +2153,8 @@ METHOD HbQtDBU:buildConxnCombo()
    ::qConxnCombo := QComboBox()
    ::qConxnCombo:setToolTip( "Connection to open next table" )
    ::qToolBar:addItem( ::qConxnCombo )
-
    RETURN Self
+
 
 METHOD HbQtDBU:loadConxnCombo( cDriver, oConxnCombo )
    LOCAL aConxns, cConxn, a_
@@ -2067,7 +2172,6 @@ METHOD HbQtDBU:loadConxnCombo( cDriver, oConxnCombo )
          oConxnCombo:addItem( alltrim( a_[ 1 ] ) )
       NEXT
    ENDIF
-
    RETURN Self
 
 
@@ -2101,7 +2205,6 @@ METHOD HbQtDBU:buildIndexButton()
    ::qIndexButton:connect( "clicked()", {|| ::execEvent( __buttonIndex_clicked__ ) } )
 
    ::qToolbar:addItem( ::qIndexButton )
-
    RETURN Self
 
 
@@ -2126,9 +2229,7 @@ METHOD HbQtDBU:updateIndexMenu( oBrw )
       qAct:connect( "triggered(bool)", hbide_getMenuBlock( ::oCurPanel, oBrw, cIndex ) )
       aadd( ::aIndexAct, qAct )
    NEXT
-
    RETURN Self
-
 
 /*----------------------------------------------------------------------*/
 //             Methods TO ACCESS HbQtMdiBrowse methods
@@ -2408,12 +2509,14 @@ METHOD HbQtDBU:next( cAlias )
    ENDIF
    RETURN NIL
 
+
 METHOD HbQtDBU:previous( cAlias )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
       RETURN oMdiBrowse:previous()
    ENDIF
    RETURN NIL
+
 
 METHOD HbQtDBU:search( cAlias, cSearch, lSoft, lLast, nMode )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
@@ -2422,6 +2525,7 @@ METHOD HbQtDBU:search( cAlias, cSearch, lSoft, lLast, nMode )
    ENDIF
    RETURN NIL
 
+
 METHOD HbQtDBU:searchAsk( cAlias, nMode )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
@@ -2429,12 +2533,14 @@ METHOD HbQtDBU:searchAsk( cAlias, nMode )
    ENDIF
    RETURN NIL
 
+
 METHOD HbQtDBU:seekAsk( cAlias, nMode )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
    IF ! Empty( oMdiBrowse )
       RETURN oMdiBrowse:seekAsk( nMode )
    ENDIF
    RETURN NIL
+
 
 METHOD HbQtDBU:dispInfo( cAlias )
    LOCAL oMdiBrowse := ::getBrowserByAlias( cAlias )
@@ -2459,13 +2565,11 @@ METHOD HbQtDBU:saveEnvironment( cFile )
       :setValue( "dbuLinksInfo"    , QVariant( __arrayToString( ::getLinksInfo() , "~" ) ) )
       :setValue( "dbuDriver"       , QVariant( ::currentDriver() ) )
    ENDWITH
-
    RETURN oSettings
 
 
 METHOD HbQtDBU:restEnvironment( cFile )
-   LOCAL oSettings
-   LOCAL lVal, cInfo
+   LOCAL oSettings, lVal, cInfo
 
    DEFAULT cFile TO ::getPath()
 
@@ -2519,7 +2623,6 @@ METHOD HbQtDBU:restEnvironment( cFile )
    IF oSettings:contains( "dbuDriver" )
       ::cDefaultRDD := Upper( oSettings:value( "dbuDriver" ):toString() )
    ENDIF
-
    RETURN NIL
 
 
@@ -2572,16 +2675,13 @@ METHOD HbQtDBU:getPath( cFile )
 
       ::cSettingsPath := cPath
       ::cSettingsFile := cName + cExt
-
    ELSE
       IF Empty( cPath )
          cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
       ELSEIF Left( cPath, 2 ) == ".."
          cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
       ENDIF
-
    ENDIF
-
    RETURN ( cPath + cName + cExt )
 
 
@@ -2671,7 +2771,6 @@ METHOD HbQtPanelBrowse:destroy()
    ::qMenuWindows := NIL
    ::qStruct      := NIL
    ::oWidget      := NIL
-
    RETURN Self
 
 
@@ -2825,13 +2924,17 @@ METHOD HbQtPanelBrowse:destroyBrw( oBrw )
    LOCAL n, oSub
 
    IF ( n := ascan( ::aBrowsers, {|e_| e_[ SUB_BROWSER ] == oBrw } ) )  > 0
+      HB_TRACE( HB_TR_ALWAYS, "/////////////////   ...before " )
+      HB_TRACE( HB_TR_ALWAYS, __HBQT_ITEMSINGLOBALLIST() )
       ::oManager:aBrwStruct := {}
       ::oManager:oBrwStruct:goTop()
       oSub := ::aBrowsers[ n, SUB_WINDOW ]
-      ::oWidget:removeSubWindow( oSub )
       hb_ADel( ::aBrowsers, n, .t. )
+      ::oWidget:removeSubWindow( oSub )
       oSub:setParent( QWidget() )
       oBrw:destroy()
+      HB_TRACE( HB_TR_ALWAYS, "/////////////////   ...after" )
+      HB_TRACE( HB_TR_ALWAYS, __HBQT_ITEMSINGLOBALLIST() )
    ENDIF
 
    RETURN Self
@@ -3069,7 +3172,7 @@ METHOD HbQtMdiBrowser:init( oManager, oPanel, aInfo )
 METHOD HbQtMdiBrowser:destroy()
    LOCAL nArea
 
-   IF !empty( ::qTimer )
+   IF ! Empty( ::qTimer )
       ::qTimer:disconnect( "timeout()" )
    ENDIF
    ::qTimer := NIL

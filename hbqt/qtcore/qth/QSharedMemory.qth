@@ -1,0 +1,113 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QSharedMemory>
+
+
+/*
+ * QSharedMemory(const QString & key, QObject * parent = 0)
+ * QSharedMemory(QObject * parent = 0)
+ * ~QSharedMemory()
+ */
+HB_FUNC( QT_QSHAREDMEMORY )
+{
+   if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QSharedMemory( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QSharedMemory( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QSharedMemory( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QSharedMemory() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum AccessMode { ReadOnly, ReadWrite }
+enum SharedMemoryError { NoError, PermissionDenied, InvalidSize, KeyError, ..., UnknownError }
+</ENUMS>
+
+<PROTOS>
+bool   attach(AccessMode mode = ReadWrite)
+const void *   constData() const
+bool   create(int size, AccessMode mode = ReadWrite)
+void *   data()
+const void *   data() const
+bool   detach()
+SharedMemoryError   error() const
+QString   errorString() const
+bool   isAttached() const
+QString   key() const
+bool   lock()
+QString   nativeKey() const
+void   setKey(const QString & key)
+void   setNativeKey(const QString & key)
+int   size() const
+bool   unlock()
+
+// Harbour extentions
+//
+QString hbReadData () const {
+   QSharedMemory * p = ( QSharedMemory * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      if( p->lock() )
+      {
+         hb_retstr_utf8( ( const char * ) p->data() );
+         p->unlock();
+      }
+   }
+}
+
+bool hbWriteData () {
+   bool success = false;
+   QSharedMemory * p = ( QSharedMemory * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      if( p->lock() )
+      {
+         void * pText01 = NULL;
+         memcpy( p->data(), hb_parstr_utf8( 1, &pText01, NULL ), p->size() );
+         hb_strfree( pText01 );
+         p->unlock();
+         success = true;
+      }
+   }
+   hb_retl( success );
+}
+
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

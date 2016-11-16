@@ -1,0 +1,71 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusArgument>
+
+
+/*
+ * QDBusArgument()
+ * QDBusArgument(const QDBusArgument & other)
+ * ~QDBusArgument()
+ */
+HB_FUNC( QT_QDBUSARGUMENT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QDBusArgument" ) )
+   {
+      __HB_RETPTRGC__( new QDBusArgument( *hbqt_par_QDBusArgument( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDBusArgument() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   ElementType { BasicType, VariantType, ArrayType, StructureType, ..., UnknownType }
+</ENUMS>
+
+<PROTOS>
+QVariant   asVariant() const
+bool   atEnd() const
+void   beginArray(int id)
+void   beginArray() const
+void   beginMap(int kid, int vid)
+void   beginMap() const
+void   beginMapEntry()
+void   beginMapEntry() const
+void   beginStructure()
+void   beginStructure() const
+ElementType   currentType() const
+void   endArray()
+void   endArray() const
+void   endMap()
+void   endMap() const
+void   endMapEntry()
+void   endMapEntry() const
+void   endStructure()
+void   endStructure() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

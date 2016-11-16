@@ -1,0 +1,49 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusError>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QDBUSERROR )
+{
+   HB_FUNC_EXEC( HB_QDBUSERROR );
+}
+</CODE>
+
+<ENUMS>
+enum   ErrorType { NoError, Other, Failed, NoMemory, ..., UnknownObject }
+</ENUMS>
+
+<PROTOS>
+bool   isValid() const
+QString   message() const
+QString   name() const
+ErrorType   type() const
+
+QString   errorString(ErrorType error)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

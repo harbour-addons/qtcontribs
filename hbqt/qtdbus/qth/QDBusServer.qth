@@ -1,0 +1,64 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusServer>
+#include <QtDBus/QDBusError>
+
+
+/*
+ * QDBusServer(const QString &address, QObject *parent = Q_NULLPTR)
+ * QDBusServer(QObject *parent = Q_NULLPTR)
+ * virtual   ~QDBusServer()
+ */
+HB_FUNC( QT_QDBUSSERVER )
+{
+   if( hb_pcount() == 2 && HB_ISCHAR( 1 ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QDBusServer( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ) );
+      hb_strfree( pText01 );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QDBusServer( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDBusServer() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString   address() const
+bool   isAnonymousAuthenticationAllowed() const                  [*V=0x050300*]
+bool   isConnected() const
+QDBusError   lastError() const
+void   setAnonymousAuthenticationAllowed(bool value)             [*V=0x050300*]
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void newConnection(const QDBusConnection &connection)
+</SIGNALS>

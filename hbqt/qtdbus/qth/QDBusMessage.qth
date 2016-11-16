@@ -1,0 +1,78 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusMessage>
+
+
+/*
+ * QDBusMessage()
+ * QDBusMessage(const QDBusMessage & other)
+ * ~QDBusMessage()
+ */
+HB_FUNC( QT_QDBUSMESSAGE )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QDBusMessage" ) )
+   {
+      __HB_RETPTRGC__( new QDBusMessage( *hbqt_par_QDBusMessage( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QDBusMessage() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   MessageType { MethodCallMessage, SignalMessage, ReplyMessage, ErrorMessage, InvalidMessage }
+</ENUMS>
+
+<PROTOS>
+QList<QVariant>   arguments() const
+bool   autoStartService() const
+QDBusMessage   createErrorReply(const QString name, const QString & msg) const
+QDBusMessage   createErrorReply(const QDBusError & error) const
+QDBusMessage   createErrorReply(QDBusError::ErrorType type, const QString & msg) const
+QDBusMessage   createReply(const QList<QVariant> & arguments = QList<QVariant> ()) const
+QDBusMessage   createReply(const QVariant & argument) const
+QString   errorMessage() const
+QString   errorName() const
+QString   interface() const
+bool   isDelayedReply() const
+bool   isReplyRequired() const
+QString   member() const
+QString   path() const
+QString   service() const
+void   setArguments(const QList<QVariant> & arguments)
+void   setAutoStartService(bool enable)
+void   setDelayedReply(bool enable) const
+QString   signature() const
+MessageType   type() const
+
+QDBusMessage   createError(const QString & name, const QString & msg)
+QDBusMessage   createError(const QDBusError & error)
+QDBusMessage   createError(QDBusError::ErrorType type, const QString & msg)
+QDBusMessage   createMethodCall(const QString & service, const QString & path, const QString & interface, const QString & method)
+QDBusMessage   createSignal(const QString & path, const QString & interface, const QString & name)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

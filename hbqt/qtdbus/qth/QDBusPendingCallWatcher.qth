@@ -1,0 +1,57 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject, QDBusPendingCall
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusPendingCallWatcher>
+
+
+/*
+ * QDBusPendingCallWatcher(const QDBusPendingCall & call, QObject * parent = 0)
+ * ~QDBusPendingCallWatcher()
+ */
+HB_FUNC( QT_QDBUSPENDINGCALLWATCHER )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QDBusPendingCall" ) && hbqt_par_isDerivedFrom( 2, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QDBusPendingCallWatcher( *hbqt_par_QDBusPendingCall( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QDBusPendingCall" ) )
+   {
+      __HB_RETPTRGC__( new QDBusPendingCallWatcher( *hbqt_par_QDBusPendingCall( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   isFinished() const
+void   waitForFinished()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   finished(QDBusPendingCallWatcher * self)
+</SIGNALS>

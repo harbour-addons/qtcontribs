@@ -1,0 +1,97 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+</CLASS>
+
+
+<CODE>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusPendingCall>
+#include <QtDBus/QDBusConnectionInterface>
+
+#undef interface
+
+/*
+ * QDBusConnection(const QString & name)
+ * QDBusConnection(const QDBusConnection & other)
+ *~QDBusConnection()
+ */
+HB_FUNC( QT_QDBUSCONNECTION )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QDBusConnection" ) )
+   {
+      __HB_RETPTRGC__( new QDBusConnection( *hbqt_par_QDBusConnection( 1 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QDBusConnection( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   BusType { SessionBus, SystemBus, ActivationBus }
+flags   ConnectionCapabilities
+enum   ConnectionCapability { UnixFileDescriptorPassing }
+enum   RegisterOption { ExportAdaptors, ExportScriptableSlots, ExportScriptableSignals, ExportScriptableProperties, ..., ExportChildObjects }
+flags   RegisterOptions
+enum   UnregisterMode { UnregisterNode, UnregisterTree }
+</ENUMS>
+
+<PROTOS>
+QDBusPendingCall   asyncCall(const QDBusMessage & message, int timeout = -1) const
+QString   baseService() const
+QDBusMessage   call(const QDBusMessage & message, QDBus::CallMode mode = QDBus::Block, int timeout = -1) const
+bool   callWithCallback(const QDBusMessage & message, QObject * receiver, const char * returnMethod, const char * errorMethod, int timeout = -1) const
+bool   connect(const QString & service, const QString & path, const QString & interface, const QString & name, QObject * receiver, const char * slot)
+bool   connect(const QString & service, const QString & path, const QString & interface, const QString & name, const QString & signature, QObject * receiver, const char * slot)
+bool   connect(const QString & service, const QString & path, const QString & interface, const QString & name, const QStringList & argumentMatch, const QString & signature, QObject * receiver, const char * slot)
+ConnectionCapabilities   connectionCapabilities() const
+bool   disconnect(const QString & service, const QString & path, const QString & interface, const QString & name, QObject * receiver, const char * slot)
+bool   disconnect(const QString & service, const QString & path, const QString & interface, const QString & name, const QString & signature, QObject * receiver, const char * slot)
+bool   disconnect(const QString & service, const QString & path, const QString & interface, const QString & name, const QStringList & argumentMatch, const QString & signature, QObject * receiver, const char * slot)
+QDBusConnectionInterface *   interface() const
+bool   isConnected() const
+QDBusError   lastError() const
+QString   name() const
+QObject *   objectRegisteredAt(const QString & path) const
+bool   registerObject(const QString & path, QObject * object, RegisterOptions options = ExportAdaptors)
+bool   registerService(const QString & serviceName)
+bool   send(const QDBusMessage & message) const
+void   unregisterObject(const QString & path, UnregisterMode mode = UnregisterNode)
+bool   unregisterService(const QString & serviceName)
+
+QDBusConnection   connectToBus(BusType type, const QString & name)
+QDBusConnection   connectToBus(const QString & address, const QString & name)
+QDBusConnection   connectToPeer(const QString & address, const QString & name)
+void   disconnectFromBus(const QString & name)
+void   disconnectFromPeer(const QString & name)
+QByteArray   localMachineId()
+QDBusConnection   sender()
+QDBusConnection   sessionBus()
+QDBusConnection   systemBus()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>
