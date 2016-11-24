@@ -16,6 +16,276 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-11-24 11:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r438)
+  * hbxbp/hbxbp.hbp
+    - Removed some parts which are now contained in HbQtWidgets.
+
+  * hbxbp/hbxbp.hbx
+    * Regenerated.
+
+  * hbide/editor.prg
+  * hbide/main.prg
+  * hbide/hbide.hbp
+
+  * hbqtwidgets/hbqtwidgets.hbx
+    * Regenerated.
+
+  * hbqtwidgets/alert.prg
+    + Added: HbQtFetchString( oParent, cDftText, cWhat, cTitle )
+             HbQtFetchInteger( oParent, nDftInteger, nMin, nMax, cWhat, cTitle )
+
+  * hbqtwidgets/editor.prg
+    + Underwent a major overhaul. Now a fully functional, features rich 
+      HbQtEditor can be initiated with a single call like:
+
+      oEditor := HbQtEditor():new( [oHbqPlainTextEdit], [cTheme] ):create()
+
+      oEditor then have almost everything a HbIDE contained editor has, viz., 
+      syntax-hilighting, code formatting, cut, copy, paste, undo, redo, column 
+      copy and paste, a very unique context toolbar which can be placed anywhere
+      inside the editing window, horizontally or verically, and can be called 
+      anytime anywhere with right-click. In a nutshell, this editor can serve 
+      many of programmers needs. Note that it does not implement traditional 
+      toolbars as such ( except for the right-click context toolbar ).
+      All actions are carried by keyboard. 
+
+      Actions available with keyboard:
+
+      Ctrl_A    Select All
+      Ctrl_C    Copy Selection
+      Ctrl_V    Paste Selection 
+      Ctrl_X    Copy Selection and Cut
+      Ctrl_Z    Undo
+      Ctrl_R    Redo
+      Ctrl_F    Ask for serach string and find it - from current cursor position
+      Ctrl_N    Continue search of last find downward
+      Alt_N     Continue search of last find upward
+      Ctrl_G    Ask for line number to jump at
+      Ctrl_D    Duplicate current line
+      Ctrl_Del  Delete current line 
+      Ctrl_Up   Move current line one line up
+      Ctrl_Down Moce current line one line down.
+      Ctrl_P    Print preview
+      Ctrl_L    Jump to last editing position
+
+      Actions available in right-click context toolbar:
+               
+      1         Change selection mode - stream to column or vice versa
+      2         Convert selection to upper case
+      3         Convert selection to lower case
+      4         Convert selection to invert case
+      5         Comment out block
+      6         Comment out stream
+      7         Indent selection to the right
+      8         Indent selection to the left
+      9         Convert single quotes to double
+      10        Convert double quotes to single
+      11        Stringify selection
+      12        Align column selection to...
+      13        Toggle toolbar orintation
+      14        Hide toolbar - bring it back with right-click
+
+      Context toolbar is opened exactly at location you right-click in the 
+      editor. The location can be changed just by right-clicking anywhere
+      giving you the flexibility to hook it at least disturbing corner. 
+      Once displayed, it stays there until you hide it with right-most 
+      "X" icon.
+
+  * hbqtwidgets/getlist.prg
+    % Minor.
+
+  * hbqtwidgets/toolbar.prg
+    + Restructured and enhanced HbQtToolbar class.
+
+  * hbqtwidgets/misc.prg
+    + Added Functions to create proprietory event loop for any top level widget.
+
+      HbQtExit( cUnique, lExit, lDelete )
+      HbQtExec( cUnique )
+      //
+         cUnique := __hbqtUniqueString( oWnd:objectName() )
+         oWnd:connect( QEvent_Close, {|| HbQtExit( cUnique ) } )
+         ...
+         ...
+         oWnd:show()
+         HbQtExec( cUnique )
+         oWnd:setParent( QWidget() )
+         oWnd := nil 
+         RETURN 
+      //
+      __hbqtUniqueString( cBaseStr )
+      __hbqtTreeFindNode( oNode, cText )
+      __hbqtTreeCollapseAll( oNode, lDirectChildrenOnly )
+      __hbqtTreeExpandAll( oNode, lDirectChildrenOnly )
+      __hbqtExecPopup( aOptions, oPoint )
+
+      Please look for the implementation in scripts.prg.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + HbQtBrowseDB( nTop, nLeft, nBottom, nRight, hConfig )
+
+      A GUI replacement for Clipper Browse() function. The function creates
+      a separate window displaying the browser and deploys its own even loop.
+      This function consumes HbQtExit()/HbQtExec() functions and demonstrates
+      its powerful usage. You can call this function for many tables 
+      simultaneously.
+
+  * hbqtwidgets/hbqtdbu.prg
+    % Minor.
+
+  + hbqtwidgets/hilighter.prg
+    + Added class HbQtHilighter()
+       Pulled from HbIDE but without user interface. Implements only default 
+       themes, viz., Bare Minimum, City Lights, Sand Storm, Pritpal's Favourite
+       Classical, Evening Glamour.
+
+  + hbqtwidgets/scripts.ui
+  + hbqtwidgets/scripts.prg
+    + Added: class HbQtScripts() - An interface to create, organize, manage 
+      and run Harbour scripts. The component is implemnted to be callable 
+      within an applcation via a single line call.
+
+      oScripts := HbQtScripts():new():create( oParent )
+
+      If oParent == nil then a top-level widget is presented. 
+      If oParent is passed then make sure that no layout is applied to it.
+      Alternatively you can provide a container yourself, like,
+      
+      oMainWindow:setCentralWidget( oScripts:widget() )
+      OR
+      oStackedWidget:addWidget( oScripts:widget() )
+      OR 
+      oLayout:addWidget( oScripts:widget() )
+      
+
+      The interface is divided into four sections. 
+
+      Top    - A slim layout containing following elements:
+
+        1  Name of the script file on disk - "new..." if none is loaded
+        2  CheckBox for compiler switch -w3 - default checked 
+        3  CheckBox for compiler switch -es2 - default checked
+        4  LineEdit to provide other compiler switches; prefixed by "-" 
+           and separated by space.
+        5  LineEdit to provide include paths; a space separated list of 
+           paths but without "-i" prefix. Run component adds "-i" in front 
+           of each path.
+
+      Left   - A tree widget to manage scripts. Bottom of tree widget contains 
+               actions to manage the tree, viz., expand/collapse all/soft. 
+               Tree widget also implements context menu with right-click.
+
+      Right  - A fully loaded source editor - HbQtEditor(). Source contained
+               in the editor is RUN as script. Please read above various 
+               actions available in the editor.
+
+      Middle - A thin, vertical toolbar containing following actions:
+
+        1  Open [close] Left Pane   
+            Can be clicked to close or open left pane.
+
+        2  Load Script  
+            Presents a file-open dialog. When invoked first time, navigation 
+            points to executable's root folder. All subsequent openings, either 
+            to open or save files remember and navigate to last folder.
+            Scripts of type .prg or .hb can be opened. An entry into left-pane
+            Scripts tree is recorded in the "Default" section or group which 
+            you can arrange to your liking by dragging and dropping in 
+            required section. The contents of the script file are loaded in 
+            right-pane HbQtEditor. You are free to edit / run / and save.
+
+        3  New Script
+            Clears the contents of HbQtEditor and a FUNCTION __test() is 
+            deposited in the editor. Obiviously name of the buffer is displayed 
+            as "new..." on the top-left element. You are free to 
+            edit / run / and save ( with a valid name ).
+
+        4  Save Scripts
+            Presents a Save File dialog if it is a "new..." script. Otherwise 
+            saves the script to already loaded name just like you would press
+            Ctrl_S in the editor.
+
+        5  Run Console Scripts
+            Script engine is divided into two modes, console and GUI. Console 
+            mode is executed in a threaded environment and hence is the safest. 
+            A WVG console is fired on Windows and TRM on *nixes.            
+
+        6  Run GUI Scripts
+            This is a tricky part as HbQt cannot be executed in threaded mode.
+            You would need to respect certain constructs as are employed in 
+            hbqtwidgets/hbqtbrowse/HbQtBrowseDB() function. Mainly the whole 
+            point involves application's and local event loop. Also you 
+            can run plain vanilla scripts - no .ui integration yet. So 
+            somewhat it is a limited implementation. Many of the 
+            hbqtwidgets/tests/*.prg are working though, with some changes, 
+            about to be committed next.
+
+        7  Add Scripts Group
+            Offers an input dialog to provide a Group name which will be added 
+            as a top level node in the left-pane scripts tree. Then you are free 
+            to organize it whereever you want.
+
+        8  Restore Scripts View
+            Restrores the entire environment of HbQtScripts from a 
+            .hsv ( Harbour's Scripts View ) which has been saved via next action.
+            Opens a File Open dialog to select a scripts. Read below what it 
+            contains. When a new environment is loaded, all elements are 
+            refreshed, current HbQtEditor contents are cleared, and a "new..."
+            buffer is restored.
+
+        9  Save Scripts View
+            Saves the entire environment of HbQtScripts contents which include:
+             a) Compiler switches
+             b) Include paths
+             c) The entire contents of Scripts Tree
+             The environment is saved as a .hsv file in JSON format.
+      
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: hbqtwidgets.hbx
+             hilighter.prg
+             scripts.prg
+             scripts.ui
+
+  * hbdbu/dbu.prg
+    + REQUEST __HB_EXTERN__
+
+      REQUEST __HBEXTERN__HBCT__
+      REQUEST __HBEXTERN__HBNF__
+      REQUEST __HBEXTERN__HBTIP__
+      REQUEST __HBEXTERN__HBNETIO__
+      REQUEST __HBEXTERN__HBMXML__
+      REQUEST __HBEXTERN__HBMEMIO__
+      REQUEST __HBEXTERN__HBMZIP__
+      REQUEST __HBEXTERN__HBSMS__
+      REQUEST __HBEXTERN__HBTCPIO__
+      REQUEST __HBEXTERN__HBZIPARC__
+
+      REQUEST __HBEXTERN__HBQTCORE__
+      REQUEST __HBEXTERN__HBQTGUI__
+      REQUEST __HBEXTERN__HBXBP__
+      REQUEST __HBEXTERN__HBQTWIDGETS__
+
+    + Added: Scripts top-toolbar icon.
+    % Rearranged top-toolbar icons and few changed. 
+    + Added HbQtScripts. A productivity tool for programmers. A test suit 
+       for HbQt developers, especially who have started to look into GUI 
+       world. Please read above for the details.
+
+  * hbdbu/dbu.ui
+  * hbdbu/hbdbu.hbp
+    + Added: -mt switch required for console mode scripting to be flawless.
+    + Added: hbnf, hbxbp, gtqtc.hbc. and many other contrib libs.
+
+  ; HbDBU, now onwards, can be used to test your code piece-by-piece. It 
+    will be uploaded to SVN in a couple of hours, as a statically linked, 
+    stand-alone application, bundelling entire Harbour core, many contribs, 
+    QtCore, QtGui and statically linked OpenSSL. 
+
+    For beginners, either on HbQt or core Harbour, this tool can prove to
+    be very productive, believe me, and give it a shot.
+
+    Enjoy !
+
 2016-11-23 21:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r437)
   * hbqt/qtcore/hbqtcore.hbx
   * hbqt/qtgui/hbqtgui.hbx

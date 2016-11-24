@@ -2020,10 +2020,10 @@ METHOD HbQtDBU:buildLeftToolbar()
    LOCAL qTBar
 
    qTBar             := HbQtToolbar():new()
-   qTBar:orientation := Qt_Vertical
    qTBar:imageWidth  := 12
    qTBar:imageHeight := 12
    qTBar:create()
+   qTBar:setOrientation( Qt_Vertical )
    qTBar:buttonClick := {|oButton| iif( HB_ISBLOCK( oButton:key ), Eval( oButton:key ), NIL ) }
 
    ::qToolbarL := qTBar

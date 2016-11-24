@@ -922,13 +922,9 @@ METHOD IdeEditsManager:convertDQuotes()
 
 
 METHOD IdeEditsManager:alignAt()
-   LOCAL oEdit, cWord
+   LOCAL oEdit
    IF !empty( oEdit := ::getEditObjectCurrent() )
-      IF oEdit:aSelectionInfo[ 5 ] == __selectionMode_column__
-         IF Len( cWord := hbide_fetchAString( ::oDlg:oWidget, "", "Align At ?", "Selected-Text Alignment Proto" ) ) > 0
-            oEdit:alignAt( cWord )
-         ENDIF
-      ENDIF
+      oEdit:alignAt()
    ENDIF
    RETURN Self
 

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2012-2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2016 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -195,6 +195,135 @@ FUNCTION __hbqtBrowseActionsScrollingToolbar( oLayout, oHbQtBrowse, nButtonHeigh
 
 STATIC FUNCTION __pullBrowser( oHbQtBrowse )
    RETURN iif( HB_ISBLOCK( oHbQtBrowse ), Eval( oHbQtBrowse ), oHbQtBrowse )
+
+
+FUNCTION HbQtBrowseDB( nTop, nLeft, nBottom, nRight, hConfig )
+   LOCAL oWnd, oLayout, oBrw, cAlias, n, cUnique, i, cKey, a_
+
+   HB_SYMBOL_UNUSED( nTop + nLeft + nBottom + nRight )
+   IF ! Used()
+      RETURN .F.
+   ENDIF
+   cAlias := Alias()
+   cUnique := __hbqtUniqueString( cAlias )
+
+   DEFAULT hConfig TO {=>}
+   hb_HCaseMatch( hConfig, .F. )
+
+   WITH OBJECT oLayout := QHBoxLayout( oWnd )
+      :setContentsMargins( 0,0,0,0 )
+      :setSpacing( 0 )
+   ENDWITH
+   WITH OBJECT oWnd := QWidget()
+      :setLayout( oLayout )
+      :resize( 600, 300 )
+      :connect( QEvent_Close, {|| HbQtExit( cUnique, .T. ) } )
+   ENDWITH
+   WITH OBJECT oBrw := HbQtBrowseNew( 0, 0, 10, 10, oWnd, QFont( "Courier new", 10 ), .F. )
+      :skipBlock             := {|n| ( cAlias )->( __skipped( n, .F. ) ) }
+      :goTopBlock            := {| | ( cAlias )->( dbGoTop()      ) }
+      :goBottomBlock         := {| | ( cAlias )->( dbGoBottom()   ) }
+      :gotoBlock             := {|n| ( cAlias )->( dbGoto( n )    ) }
+
+      :firstPosBlock         := {| | 1 }
+      :lastPosBlock          := {| | iif( ( cAlias )->( IndexOrd() ) == 0, ( cAlias )->( lastRec()   ), ( cAlias )->( ordKeyCount()   ) ) }
+      :posBlock              := {| | iif( ( cAlias )->( IndexOrd() ) == 0, ( cAlias )->( recNo()     ), ( cAlias )->( ordKeyNo()      ) ) }
+      :goPosBlock            := {|n| iif( ( cAlias )->( IndexOrd() ) == 0, ( cAlias )->( dbGoto( n ) ), ( cAlias )->( ordKeyGoto( n ) ) ) }
+      :phyPosBlock           := {| | iif( ( cAlias )->( IndexOrd() ) == 0, ( cAlias )->( recNo()     ), ( cAlias )->( ordKeyNo()      ) ) }
+   ENDWITH
+   oLayout:addWidget( oBrw:oWidget )
+
+   IF hb_HHasKey( hConfig, "title" )
+      oWnd:setWindowTitle( hConfig[ "title" ] )
+   ENDIF
+   IF hb_HHasKey( hConfig, "cursormoderow" )
+      oBrw:cursorMode := HBQTBRW_CURSOR_ROW
+   ENDIF
+   IF hb_HHasKey( hConfig, "hscrollbar" )
+      oBrw:horizontalScrollbar := .T.
+   ENDIF
+   IF hb_HHasKey( hConfig, "vscrollbar" )
+      oBrw:verticalScrollbar := .T.
+   ENDIF
+   IF hb_HHasKey( hConfig, "toptoolbar" )
+      oBrw:toolbar := .T.
+   ENDIF
+   IF hb_HHasKey( hConfig, "lefttoolbar" )
+      oBrw:toolbarLeft := .T.
+   ENDIF
+   IF hb_HHasKey( hConfig, "statusbar" )
+      oBrw:statusbar := .T.
+   ENDIF
+   IF hb_HHasKey( hConfig, "statusmessage" )
+      oBrw:statusMessage := hConfig[ "statusmessage" ]
+   ENDIF
+
+   a_:={}
+   FOR i := 1 to 50
+      IF ( cKey := ( cAlias )->( IndexKey( i ) ) ) == ""
+         EXIT
+      ENDIF
+      aadd( a_, { ( cAlias )->( OrdName( i ) ) + " : " + cKey, __indexOrdBlock( cAlias, i ) } )
+   NEXT
+   IF ! Empty( a_ )
+      oBrw:indexes := a_
+   ENDIF
+
+   FOR n := 1 TO ( cAlias )->( FCount() )
+      oBrw:AddColumn( HbQtColumnNew( FieldName( n ), __fieldBlock( cAlias, n ) ) )
+   NEXT
+
+   IF ( cAlias )->( Eof() )
+      ( cAlias )->( dbGoTop() )
+   ENDIF
+   oBrw:ForceStable()
+
+   oWnd:show()
+   HbQtExec( cUnique )
+   oWnd:setParent( QWidget() )
+   oWnd := NIL
+
+   RETURN NIL
+
+
+STATIC FUNCTION __indexOrdBlock( cAlias, nOrder )
+   RETURN {|oBrw| ( cAlias )->( dbSetOrder( nOrder ) ), oBrw:refreshAll(), oBrw:forceStable() }
+
+
+STATIC FUNCTION __fieldBlock( cAlias, nField )
+   RETURN {|x| iif( x == NIL, ( cAlias )->( fieldget( nField ) ), ( cAlias )->( FieldPut( nField, x ) ) ) }
+
+
+STATIC FUNCTION __skipped( nRecs, lAppend )
+   LOCAL nSkipped := 0
+
+   IF LastRec() != 0
+      IF nRecs == 0
+         dbSkip( 0 )
+      ELSEIF nRecs > 0 .AND. RecNo() != LastRec() + 1
+         DO WHILE nSkipped < nRecs
+            dbSkip()
+            IF Eof()
+               IF lAppend
+                  ++nSkipped
+               ELSE
+                  dbSkip( -1 )
+               ENDIF
+               EXIT
+            ENDIF
+            ++nSkipped
+         ENDDO
+      ELSEIF nRecs < 0
+         DO WHILE nSkipped > nRecs
+            dbSkip( -1 )
+            IF Bof()
+               EXIT
+            ENDIF
+            --nSkipped
+         ENDDO
+      ENDIF
+   ENDIF
+   RETURN nSkipped
 
 
 FUNCTION HbQtBrowseNew( nTop, nLeft, nBottom, nRight, oParent, oFont, lOnTop )

@@ -20,6 +20,7 @@
 -o../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
 -workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
 
+
 hbqt.hbc
 hbct.hbc
 
@@ -28,6 +29,8 @@ hbct.hbc
 -instfile=inc:hbqtwidgets.hbx
 
 -3rd=hbide_file=hbqtwidgets.hbx
+
+hbqtwidgets.hbx
 
 getsys.prg
 getlist.prg
@@ -54,12 +57,15 @@ slidinglist.prg
 silverlight.prg
 editor.prg
 messages.prg
+hilighter.prg
+scripts.prg
 
 hbqtwidgets.qrc
 
 scroll.ui
 visualizer.ui
 messages.ui
+scripts.ui
 
 
 $hb_pkg_install.hbm

@@ -33,9 +33,9 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="pageDbu"/>
+      <widget class="QWidget" name="pageScripts"/>
       <widget class="QWidget" name="pageHelp">
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
@@ -99,7 +99,6 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <zorder>treeOnline</zorder>
          </widget>
         </item>
        </layout>

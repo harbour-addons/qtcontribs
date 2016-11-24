@@ -38,6 +38,7 @@ hbsms.hbc
 hbtcpio.hbc
 hbzebra.hbc
 hbziparc.hbc
+hbssl.hbc
 
 -env:HB_DYNLOAD_RDDADS=yes
 rddads.hbc

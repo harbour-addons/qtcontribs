@@ -65,6 +65,7 @@
 #include "hbqtgui.ch"
 #include "common.ch"
 #include "hbclass.ch"
+#include "hbtrace.ch"
 
 #define __textChanged__                           2
 #define __copyAvailable__                         3
@@ -85,6 +86,7 @@ CLASS HbQtEditor
 
    DATA   qEdit
    ACCESS widget()                                INLINE ::qEdit
+   METHOD setWidget( qHBQPlainTextEditor )        INLINE ::qEdit := qHBQPlainTextEditor
    ACCESS document()                              INLINE ::oDocument
    METHOD setDocument( oDocument )                INLINE ::oDocument := oDocument, ::qEdit:setDocument( oDocument )
 
@@ -116,9 +118,9 @@ CLASS HbQtEditor
    DATA   nProtoCols                              INIT 10
 
    DATA   oFont
-   DATA   fontFamily
-   DATA   pointSize
-   DATA   currentPointSize
+   DATA   fontFamily                              INIT "Courier New"
+   DATA   pointSize                               INIT 10
+   DATA   currentPointSize                        INIT 10
    DATA   qFont
 
    DATA   aLastEditingPosition                    INIT {}
@@ -177,13 +179,16 @@ CLASS HbQtEditor
    DATA   lSelectionMode                          INIT .F.
 
    DATA   nGotoLast                               INIT 0
+   DATA   cSearch                                 INIT ""
+   DATA   oToolbar
 
-   METHOD init()
-   METHOD create()
+   METHOD init( oHbqPlainTextEdit, cTheme )
+   METHOD create( oHbqPlainTextEdit, cTheme )
    METHOD destroy()
 
    METHOD execEvent( nMode, p, p1 )
    METHOD execKeyEvent( nMode, nEvent, p, p1, p2 )
+   METHOD execContextMenu( oPos )
 
    METHOD connectEditSignals()
    METHOD disconnectEditSignals()
@@ -192,6 +197,10 @@ CLASS HbQtEditor
    METHOD setFontInfo( cFontFamily, nPointSize )
    METHOD setFont( oFont )
    METHOD isModified()                            INLINE ::document():isModified()
+
+   METHOD clear()                                 INLINE ::widget():clear()
+   METHOD setSource( cSource )                    INLINE ::widget():clear(), ::widget():setPlainText( cSource )
+   METHOD getSource()                             INLINE ::widget():toPlainText()
 
    METHOD redo()
    METHOD undo()
@@ -301,11 +310,12 @@ CLASS HbQtEditor
    METHOD goto( nLine )
 
    METHOD upperCaseKeywords()
+   METHOD parseCodeCompletion( cSyntax )
+
    METHOD highlightAll( cText )
    METHOD unHighlight()
    METHOD highlightPage()
    METHOD initHighlighter()
-   METHOD parseCodeCompletion( cSyntax )
 
    METHOD reformatLine( nPos, nDeleted, nAdded )
    METHOD handleTab( key )
@@ -360,7 +370,13 @@ CLASS HbQtEditor
    ENDCLASS
 
 
-METHOD HbQtEditor:init()
+METHOD HbQtEditor:init( oHbqPlainTextEdit, cTheme )
+
+   DEFAULT oHbqPlainTextEdit TO ::qEdit
+   DEFAULT cTheme TO ::cTheme
+
+   ::qEdit := oHbqPlainTextEdit
+   ::cTheme := cTheme
 
    ::hLogicals[ "t"   ] := NIL
    ::hLogicals[ "f"   ] := NIL
@@ -371,10 +387,17 @@ METHOD HbQtEditor:init()
    RETURN Self
 
 
-METHOD HbQtEditor:create()
+METHOD HbQtEditor:create( oHbqPlainTextEdit, cTheme )
    LOCAL oPalette
 
-   IF ! HB_ISOBJECT( ::qEdit )
+   DEFAULT oHbqPlainTextEdit TO ::qEdit
+   DEFAULT cTheme TO ::cTheme
+
+   ::qEdit := oHbqPlainTextEdit
+   ::cTheme := cTheme
+
+   IF ! HB_ISOBJECT( ::qEdit ) .OR. ! __objGetClsName( ::qEdit ) == "HBQPLAINTEXTEDIT"
+      ::qEdit := NIL
       ::qEdit := HBQPlainTextEdit()
    ENDIF
    WITH OBJECT ::qEdit
@@ -403,6 +426,9 @@ METHOD HbQtEditor:create()
       :connect( QEvent_FocusOut           , {| | ::execKeyEvent( 105, QEvent_FocusOut               ) } )
       :connect( QEvent_MouseButtonPress   , {| | ::execKeyEvent( 106, QEvent_MouseButtonPress       ) } )
 
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :connect( "customContextMenuRequested(QPoint)", {| oPos | ::execContextMenu( oPos ) } )
+
       ::oDocument:connect( "contentsChange(int,int,int)", {| nPosition, nCharsRemoved, nCharsAdded | ::documentContentsChanged( nPosition, nCharsRemoved, nCharsAdded ) } )
 
       :hbSetEventBlock( {|p,p1,p2| ::execKeyEvent( 115, 1001, p, p1, p2 ) } )
@@ -412,6 +438,14 @@ METHOD HbQtEditor:create()
       :setInterval( 2000 )
       :connect( "timeout()",  {|| ::execEvent( __timerTimeout__ ) } )
    ENDWITH
+
+   ::setCurrentLineHighlightMode( .T. )
+
+   IF ! Empty( ::cTheme )
+      ::oHilighter := HbQtHilighter():new():create():setSyntaxHilighting( ::widget(), cTheme, .F. )
+      ::setHilighter( ::oHilighter )
+      ::initHighlighter()
+   ENDIF
    RETURN Self
 
 
@@ -477,8 +511,6 @@ METHOD HbQtEditor:contextMenuBlock( bBlock )
    LOCAL bOldBlock := ::bContextMenuBlock
    IF HB_ISBLOCK( bBlock )
       ::bContextMenuBlock := bBlock
-      ::qEdit:setContextMenuPolicy( Qt_CustomContextMenu )
-      ::qEdit:connect( "customContextMenuRequested(QPoint)", {| oPos | Eval( ::bContextMenuBlock, oPos, Self ) } )
    ENDIF
    RETURN bOldBlock
 
@@ -523,10 +555,25 @@ METHOD HbQtEditor:connectEditSignals()
 
 
 METHOD HbQtEditor:disconnectEditSignals()
-   ::qEdit:disConnect( "selectionChanged()"                 )
-   ::qEdit:disConnect( "cursorPositionChanged()"            )
-   ::qEdit:disConnect( "copyAvailable(bool)"                )
+   ::qEdit:disConnect( "selectionChanged()"      )
+   ::qEdit:disConnect( "cursorPositionChanged()" )
+   ::qEdit:disConnect( "copyAvailable(bool)"     )
    RETURN NIL
+
+
+METHOD HbQtEditor:execContextMenu( oPos )
+   IF HB_ISBLOCK( ::bContextMenuBlock )
+      RETURN Eval( ::bContextMenuBlock, oPos, Self )
+   ENDIF
+   IF ! HB_ISOBJECT( ::oToolbar )
+      ::oToolbar := HbQtEditorToolbar( Self )
+      ::oToolbar:setParent( ::widget() )
+   ENDIF
+   WITH OBJECT ::oToolbar
+      :move( oPos )
+      :show()
+   ENDWITH
+   RETURN Self
 
 
 METHOD HbQtEditor:execEvent( nMode, p, p1 )
@@ -627,7 +674,102 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
          ENDIF
       ENDIF
 
-      SWITCH ( key )
+      SWITCH ( key )                              // outer interface has not processed the key, fallback to defaults
+      CASE Qt_Key_C
+         IF lCtrl
+            ::copy()
+         ENDIF
+         EXIT
+      CASE Qt_Key_V
+         IF lCtrl
+            ::paste()
+         ENDIF
+         EXIT
+      CASE Qt_Key_X
+         IF lCtrl
+            ::cut()
+         ENDIF
+         EXIT
+      CASE Qt_Key_Z
+         IF lCtrl
+            ::undo()
+         ENDIF
+         EXIT
+      CASE Qt_Key_R
+         IF lCtrl
+            ::redo()
+         ENDIF
+         EXIT
+      CASE Qt_Key_A
+         IF lCtrl
+            ::selectAll()
+         ENDIF
+         EXIT
+      CASE Qt_Key_F
+         IF lCtrl
+            ::cSearch := HbQtFetchString( ::widget(), ::cSearch, "Find What?" )
+            IF ! Empty( ::cSearch )
+               ::findEx( ::cSearch )
+            ENDIF
+         ENDIF
+         EXIT
+      CASE Qt_Key_N
+         IF lCtrl .AND. lAlt
+            IF Len( ::cSearch ) > 0
+               ::highlightAll( ::cSearch )
+               RETURN .T.
+            ENDIF
+         ELSEIF lCtrl
+            IF Len( ::cSearch ) > 0
+               ::findEx( ::cSearch )
+            ENDIF
+         ELSEIF lAlt
+            IF Len( ::cSearch ) > 0
+               ::findEx( ::cSearch, QTextDocument_FindBackward )
+               RETURN .T.
+            ENDIF
+         ENDIF
+         EXIT
+      CASE Qt_Key_G
+         IF lCtrl
+            ::goto()
+         ENDIF
+         EXIT
+      CASE Qt_Key_D
+         IF lCtrl
+            ::duplicateLine()
+         ENDIF
+         EXIT
+      CASE Qt_Key_Delete
+         IF lCtrl
+            ::deleteLine()
+         ENDIF
+         EXIT
+      CASE Qt_Key_Up
+         IF lCtrl
+            ::moveLine( -1 )
+         ENDIF
+         EXIT
+      CASE Qt_Key_Down
+         IF lCtrl
+            ::moveLine( 1 )
+         ENDIF
+         EXIT
+      CASE Qt_Key_QuoteDbl
+         IF lCtrl
+            ::convertDQuotes()
+         ENDIF
+         EXIT
+      CASE Qt_Key_Apostrophe
+         IF lCtrl
+            ::convertQuotes()
+         ENDIF
+         EXIT
+      CASE Qt_Key_P
+         IF lCtrl
+            ::printPreview()
+         ENDIF
+         EXIT
       CASE Qt_Key_Insert
          IF lCtrl
             ::copy()
@@ -1342,6 +1484,15 @@ METHOD HbQtEditor:alignAt( cAt )
    IF ::lReadOnly
       RETURN Self
    ENDIF
+   IF ! ( ::aSelectionInfo[ 5 ] == __selectionMode_column__ )
+      RETURN Self
+   ENDIF
+   IF Empty( cAt )
+      cAt := HbQtFetchString( ::widget(), "", "Align At?", "Selected-Text Alignment Proto" )
+   ENDIF
+   IF Len( cAt ) == 0
+      RETURN Self
+   ENDIF
 
    nMax := 0
    aCord := ::aSelectionInfo
@@ -1659,10 +1810,9 @@ METHOD HbQtEditor:undo()
 
 
 METHOD HbQtEditor:cut()
-   IF ::lReadOnly
-      RETURN Self
+   IF ! ::lReadOnly
+      ::cutBlockContents( Qt_Key_X )
    ENDIF
-   ::cutBlockContents( Qt_Key_X )
    RETURN Self
 
 
@@ -1950,10 +2100,12 @@ METHOD HbQtEditor:pageDown()
 METHOD HbQtEditor:printPreview()
    LOCAL qDlg := QPrintPreviewDialog( ::qEdit )
 
-   qDlg:setWindowTitle( "HbIDE Preview Dialog" )
-   qDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
-   qDlg:exec()
-   qDlg:disconnect( "paintRequested(QPrinter*)" )
+   WITH OBJECT qDlg
+      :setWindowTitle( "HbQtEditor Preview Dialog" )
+      :connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+      :exec()
+      :disconnect( "paintRequested(QPrinter*)" )
+   ENDWITH
 
    RETURN self
 
@@ -2144,8 +2296,8 @@ METHOD HbQtEditor:goto( nLine )
          :setIntMinimum( 1 )
          :setIntMaximum( nRows )
          :setIntValue( nLine )
-         :setLabelText( "Goto Line Number [1-" + hb_ntos( nRows ) + "]" )
-         :setWindowTitle( "HbIDE" )
+         :setLabelText( "Goto Line [ 1-" + hb_ntos( nRows ) + " ]" )
+         :setWindowTitle( "HbQtEditor" )
       ENDWITH
       oGo:exec()
 
@@ -2491,6 +2643,7 @@ METHOD HbQtEditor:appendCLASS( oTxtCursor, cClassName )
       :insertBlock()
       :setPosition( nPostn )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2506,19 +2659,18 @@ METHOD HbQtEditor:appendFUNCTION( oTxtCursor )
       ENDIF
       IF ::lISReturn
          :insertBlock()
-         :insertText( Space( iif( ::lReturnAsBeginKeyword, 0, ::nTabSpaces ) ) + "RETURN " )
+         :insertText( Space( iif( ::lReturnAsBeginKeyword, 0, ::nTabSpaces ) ) + "RETURN NIL" )
          :insertBlock()
          IF ::lISSeparator
             :insertBlock()
             :insertText( ::cSeparator )
-            :insertBlock()
-         ELSE
             :insertBlock()
          ENDIF
       ENDIF
       :insertBlock()
       :setPosition( nPostn )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2543,6 +2695,7 @@ METHOD HbQtEditor:appendCASE( oTxtCursor )
       :movePosition( QTextCursor_NextBlock )
       :movePosition( QTextCursor_EndOfLine )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2571,6 +2724,7 @@ METHOD HbQtEditor:appendSWITCH( oTxtCursor )
       :insertText( Space( nIndent ) + "ENDSWITCH" )
       :setPosition( nCurPos )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2584,6 +2738,7 @@ METHOD HbQtEditor:appendWHILE( oTxtCursor )
       :insertText( Space( nIndent ) + "ENDDO" )
       :setPosition( nCurPos )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2597,6 +2752,7 @@ METHOD HbQtEditor:appendFOR( oTxtCursor )
       :insertText( Space( nIndent ) + "NEXT" )
       :setPosition( nCurPos )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2610,6 +2766,7 @@ METHOD HbQtEditor:appendWITH( oTxtCursor )
       :insertText( Space( nIndent ) + "ENDWITH" )
       :setPosition( nCurPos )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -2654,6 +2811,7 @@ METHOD HbQtEditor:appendIF( oTxtCursor )
       :insertText( Space( nIndent ) + "ENDIF" )
       :setPosition( nCurPos )
    ENDWITH
+   ::highlightPage()
    RETURN NIL
 
 
@@ -3156,6 +3314,7 @@ STATIC FUNCTION __normalizeRect( aCord, nT, nL, nB, nR )
    nR := iif( aCord[ 2 ] > aCord[ 4 ], aCord[ 2 ], aCord[ 4 ] )
    RETURN NIL
 
+
 STATIC FUNCTION __isHarbourKeyword( cWord )
    RETURN cWord $ __harbourKeywords()
 
@@ -3268,7 +3427,7 @@ STATIC FUNCTION __isStartingKeyword( cWord, lReturnAsBeginKeyword )
       s_b_[ 'method'    ] := NIL
       s_b_[ 'static'    ] := NIL
 
-      IF ! lReturnAsBeginKeyword
+      IF lReturnAsBeginKeyword
          s_b_[ 'return'    ] := NIL
       ENDIF
    ENDIF
@@ -3282,19 +3441,14 @@ STATIC FUNCTION __isMinimumIndentableKeyword( cWord, lReturnAsBeginKeyword )
       s_b_:= {=>}
       hb_HCaseMatch( s_b_, .F. )
 
+      s_b_[ 'local'    ] := NIL
+      s_b_[ 'private'  ] := NIL
+      s_b_[ 'public'   ] := NIL
+      s_b_[ 'endclass' ] := NIL
+      s_b_[ 'default'  ] := NIL
+
       IF ! lReturnAsBeginKeyword
-         s_b_[ 'local'    ] := NIL
-         s_b_[ 'private'  ] := NIL
-         s_b_[ 'public'   ] := NIL
-         s_b_[ 'endclass' ] := NIL
-         s_b_[ 'default'  ] := NIL
          s_b_[ 'return'   ] := NIL
-      ELSE
-         s_b_[ 'local'    ] := NIL
-         s_b_[ 'private'  ] := NIL
-         s_b_[ 'public'   ] := NIL
-         s_b_[ 'endclass' ] := NIL
-         s_b_[ 'default'  ] := NIL
       ENDIF
    ENDIF
    RETURN cWord $ s_b_

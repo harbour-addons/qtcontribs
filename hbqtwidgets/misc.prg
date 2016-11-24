@@ -366,6 +366,37 @@ PROCEDURE __hbqtAppRefresh()
    RETURN
 
 
+FUNCTION HbQtExit( cUnique, lExit, lDelete )
+   STATIC s_lExit := {=>}
+
+   IF HB_ISLOGICAL( lDelete )
+      hb_HDel( s_lExit, cUnique )
+   ENDIF
+   IF HB_ISLOGICAL( lExit )
+      s_lExit[ cUnique ] := lExit
+   ENDIF
+   RETURN iif( hb_HHasKey( s_lExit, cUnique ), s_lExit[ cUnique ], .F. )
+
+
+FUNCTION HbQtExec( cUnique )
+   LOCAL oEventLoop
+
+   oEventLoop := QEventLoop()
+   DO WHILE .T.
+      oEventLoop:processEvents( 0 )
+      IF HbQtExit( cUnique )
+         HbQtExit( cUnique, NIL, .T. )
+         EXIT
+      ENDIF
+   ENDDO
+   oEventLoop:exit( 0 )
+   RETURN NIL
+
+
+FUNCTION __hbqtUniqueString( cBaseStr )
+   RETURN "A" + StrZero( hb_Random( 99999999 ), 8 ) + "_" + cBaseStr
+
+
 PROCEDURE __hbqtWaitState( nSeconds, lExitIf )     // lExitIf must be passed by reference . no error checking
    LOCAL oApp := QApplication()
    LOCAL nSecs := Seconds()
@@ -1111,6 +1142,71 @@ FUNCTION HbQtOpenFileDialog( cDefaultPath, cTitle, cFilter, lAllowMultiple, lCan
    oWidget:setParent( QWidget() )
    oWidget := NIL
    RETURN xRes
+
+
+FUNCTION __hbqtTreeFindNode( oNode, cText )
+   LOCAL i, oChild
+
+   IF oNode:text( 0 ) == cText
+      RETURN oNode
+   ELSE
+      FOR i := 0 TO oNode:childCount() - 1
+         IF ! Empty( oChild := __hbqtTreeFindNode( oNode:child( i ), cText ) )
+            RETURN oChild
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN NIL
+
+
+FUNCTION __hbqtTreeCollapseAll( oNode, lDirectChildrenOnly )
+   LOCAL i
+
+   DEFAULT lDirectChildrenOnly TO .F.
+
+   FOR i := 0 TO oNode:childCount() - 1
+      IF lDirectChildrenOnly
+         oNode:child( i ):setExpanded( .F. )
+      ELSE
+         __hbqtTreeCollapseAll( oNode:child( i ) )
+      ENDIF
+   NEXT
+   oNode:setExpanded( .F. )
+   RETURN NIL
+
+
+FUNCTION __hbqtTreeExpandAll( oNode, lDirectChildrenOnly )
+   LOCAL i
+
+   DEFAULT lDirectChildrenOnly TO .F.
+
+   FOR i := 0 TO oNode:childCount() - 1
+      IF lDirectChildrenOnly
+         oNode:child( i ):setExpanded( .T. )
+      ELSE
+         __hbqtTreeExpandAll( oNode:child( i ) )
+      ENDIF
+   NEXT
+   oNode:setExpanded( .T. )
+   RETURN NIL
+
+
+FUNCTION __hbqtExecPopup( aOptions, oPoint )
+   LOCAL i, oMenu, oAct, cAct
+
+   oMenu := QMenu()
+
+   FOR i := 1 TO Len( aOptions )
+      IF Empty( aOptions[ i ] )
+         oMenu:addSeparator()
+      ELSE
+         oMenu:addAction( aOptions[ i ] )
+      ENDIF
+   NEXT
+   IF __objGetClsName( oAct := oMenu:exec( oPoint ) ) == "QACTION"
+      cAct := oAct:text()
+   ENDIF
+   RETURN cAct
 
 //--------------------------------------------------------------------//
 //           This Section Must be the Last in this Source

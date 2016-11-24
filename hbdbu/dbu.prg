@@ -60,6 +60,23 @@
  */
 /*----------------------------------------------------------------------*/
 
+REQUEST __HB_EXTERN__
+
+REQUEST __HBEXTERN__HBCT__
+REQUEST __HBEXTERN__HBNF__
+REQUEST __HBEXTERN__HBTIP__
+REQUEST __HBEXTERN__HBNETIO__
+REQUEST __HBEXTERN__HBMXML__
+REQUEST __HBEXTERN__HBMEMIO__
+REQUEST __HBEXTERN__HBMZIP__
+REQUEST __HBEXTERN__HBSMS__
+REQUEST __HBEXTERN__HBTCPIO__
+REQUEST __HBEXTERN__HBZIPARC__
+
+REQUEST __HBEXTERN__HBQTCORE__
+REQUEST __HBEXTERN__HBQTGUI__
+REQUEST __HBEXTERN__HBXBP__
+REQUEST __HBEXTERN__HBQTWIDGETS__
 
 #include "inkey.ch"
 #include "hbtoqt.ch"
@@ -77,6 +94,7 @@
 REQUEST CACHERDD
 #endif
 
+
 REQUEST Descend
 REQUEST Stuff
 REQUEST StrTran
@@ -90,7 +108,7 @@ REQUEST PadR
 REQUEST AllTrim
 REQUEST Transform
 
-#define __PAGE_fDBU__                             0
+#define __PAGE_SCRIPTS__                          0
 #define __PAGE_HELP__                             1
 #define __PAGE_ONLINE__                           2
 #define __PAGE_MISC__                             3
@@ -147,6 +165,8 @@ CREATE CLASS DbuMGR
    DATA   oUI
    DATA   oToolbar
    DATA   oDbu
+   DATA   oScripts
+   DATA   oHbQtEditor
 
    DATA   oDashBoard
    DATA   oLayDash
@@ -162,6 +182,8 @@ CREATE CLASS DbuMGR
    DATA   oHelpAct
    DATA   oOnline
    DATA   oDbuAct
+   DATA   oScriptAct
+   DATA   oSep1, oSep2, oSep3
 
    DATA   oContextMenu
 
@@ -271,12 +293,12 @@ METHOD DbuMGR:create()
    ENDWITH
 
    WITH OBJECT ::oExitAct := QAction( ::oUI:oWidget )
-      :setIcon( ::getImage( "exit" ) )
+      :setIcon( QIcon( __hbqtImage( "exit" ) ) )
       :setTooltip( "Exit DbuMGR" )
       :connect( "triggered()", {|| ::exit( .F. ) } )
    ENDWITH
    WITH OBJECT ::oDashAct := QAction( ::oUI:oWidget )
-      :setIcon( ::getImage( "dashboard" ) )
+      :setIcon( QIcon( __hbqtImage( "dashboard-2" ) ) )
       :setTooltip( "Cache Servers Dashboard" )
       :connect( "triggered()", {|| ::execDashboard() } )
 #ifndef __CACHE__
@@ -284,13 +306,13 @@ METHOD DbuMGR:create()
 #endif
    ENDWITH
    WITH OBJECT ::oSaveAct := QAction( ::oUI:oWidget )
-      :setIcon( QIcon( ::getImage( "save-env" ) ) )
+      :setIcon( QIcon( __hbqtImage( "down-2" ) ) )
       :setTooltip( "Save Environment As..." )
       :connect( "triggered()", {|| ::saveEnvAs() } )
    ENDWITH
    WITH OBJECT ::oRestAct := QAction( ::oUI:oWidget )
-      :setIcon( QIcon( ::getImage( "rest-env" ) ) )
-      :setTooltip( "Merge Environment From..." )
+      :setIcon( QIcon( __hbqtImage( "up-2" ) ) )
+      :setTooltip( "Load Environment From..." )
       :connect( "triggered()", {|| ::restEnvFrom() } )
    ENDWITH
 
@@ -300,6 +322,12 @@ METHOD DbuMGR:create()
       :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_DBU__ ) } )
    ENDWITH
 
+   WITH OBJECT ::oScriptAct := QAction( ::oUI:oWidget )
+      :setIcon( QIcon( __hbqtImage( "build-run-48" ) ) )
+      :setTooltip( "Harbour Scripts" )
+      :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_SCRIPTS__ ) } )
+   ENDWITH
+
    WITH OBJECT ::oInfoAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "info" ) ) )
       :setTooltip( "About HbDBU" )
@@ -307,13 +335,13 @@ METHOD DbuMGR:create()
    ENDWITH
 
    WITH OBJECT ::oHelpAct := QAction( ::oUI:oWidget )
-      :setIcon( QIcon( ::getImage( "help" ) ) )
+      :setIcon( QIcon( __hbqtImage( "help-1" ) ) )
       :setTooltip( "HbDBU Help" )
       :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_HELP__ ) } )
    ENDWITH
 
    WITH OBJECT ::oOnline := QAction( ::oUI:oWidget )
-      :setIcon( QIcon( ::getImage( "online" ) ) )
+      :setIcon( QIcon( __hbqtImage( "online" ) ) )
       :setTooltip( "Online Help" )
       :connect( "triggered()", {|| ::online() } )
 #if ! defined( __PLATFORM__WINDOWS )
@@ -321,17 +349,31 @@ METHOD DbuMGR:create()
 #endif
    ENDWITH
 
+   WITH OBJECT ::oSep1 := QToolButton()
+      :setEnabled( .F. )
+      :setAutoRaise( .T. )
+   ENDWITH
+   WITH OBJECT ::oSep2 := QToolButton()
+      :setEnabled( .F. )
+      :setAutoRaise( .T. )
+   ENDWITH
+   WITH OBJECT ::oSep3 := QToolButton()
+      :setEnabled( .F. )
+      :setAutoRaise( .T. )
+   ENDWITH
+
    WITH OBJECT ::oToolbar := QToolBar( ::oUI:oWidget )
       :setObjectName( "MainToolBar" )
       :setIconSize( QSize( 24,24 ) )
       :addAction( ::oExitAct )
-      :addSeparator()
-      :addAction( ::oDashAct )
+      :addWidget( ::oSep1 )
       :addAction( ::oSaveAct )
       :addAction( ::oRestAct )
-      :addSeparator()
+      :addWidget( ::oSep2 )
       :addAction( ::oDbuAct )
-      :addSeparator()
+      :addAction( ::oDashAct )
+      :addAction( ::oScriptAct )
+      :addWidget( ::oSep3 )
       :addAction( ::oInfoAct )
       :addAction( ::oHelpAct )
       :addAction( ::oOnline )
@@ -352,6 +394,8 @@ METHOD DbuMGR:create()
    ::oUI:stackedWidget:setCurrentIndex( __PAGE_DBU__ )
 
    ::oUI:helpBrowser:setSource( QUrl( "qrc:///dbu/resources/hbdbu.htm" ) )
+
+   ::oScripts := HbQTScripts():new():create( ::oUI:pageScripts )
 
    WITH OBJECT ::oTimer := QTimer()
       :setInterval( 2000 )
@@ -1568,4 +1612,5 @@ FUNCTION dbu_help( nOption )
    ENDIF
 
    RETURN nil
+
 

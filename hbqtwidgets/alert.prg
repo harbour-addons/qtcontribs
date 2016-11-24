@@ -594,3 +594,46 @@ FUNCTION HbQtSetGetSomeValue( xValue )
    ENDIF
    RETURN l_value
 
+
+FUNCTION HbQtFetchString( oParent, cDftText, cWhat, cTitle )
+   LOCAL oInput, cText
+
+   DEFAULT cDftText TO ""
+   DEFAULT cWhat    TO ""
+   DEFAULT cTitle   TO "A String Value"
+
+   WITH OBJECT oInput := QInputDialog( oParent )
+      :setTextValue( cDftText )
+      :setLabelText( cWhat )
+      :setWindowTitle( cTitle )
+      :exec()
+   ENDWITH
+   cText := oInput:textValue()
+   oInput:setParent( QWidget() )
+   RETURN cText
+
+
+FUNCTION HbQtFetchInteger( oParent, nDftInteger, nMin, nMax, cWhat, cTitle )
+   LOCAL oInput, nInteger
+
+   DEFAULT nDftInteger TO 0
+   DEFAULT nMin        TO 0
+   DEFAULT nMax        TO 99999999999999999
+   DEFAULT cWhat       TO ""
+   DEFAULT cTitle      TO "An Integer Value"
+
+   WITH OBJECT oInput := QInputDialog( oParent )
+      :setInputMode( 1 )
+      :setIntMinimum( nMin )
+      :setIntMaximum( nMax )
+      //
+      :setIntValue( nDftInteger )
+      :setLabelText( cWhat )
+      :setWindowTitle( cTitle )
+      :exec()
+   ENDWITH
+   nInteger := oInput:intValue()
+   oInput:setParent( QWidget() )
+   RETURN nInteger
+
+

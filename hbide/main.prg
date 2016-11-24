@@ -98,10 +98,11 @@ REQUEST __HBEXTERN__HBMZIP__
 REQUEST __HBEXTERN__HBSMS__
 REQUEST __HBEXTERN__HBTCPIO__
 REQUEST __HBEXTERN__HBZIPARC__
+REQUEST __HBEXTERN__HBSSL__
 
-//REQUEST __HBEXTERN__HBXBP__
-//REQUEST __HBEXTERN__HBQTCORE__
-//REQUEST __HBEXTERN__HBQTGUI__
+REQUEST __HBEXTERN__HBXBP__
+REQUEST __HBEXTERN__HBQTCORE__
+REQUEST __HBEXTERN__HBQTGUI__
 //REQUEST __HBEXTERN__HBQTNETWORK__
 //REQUEST __HBEXTERN__HBQTSQL__
 
@@ -528,7 +529,7 @@ METHOD HbIde:create( aParams )
    ::oDebugger := IdeDebugger():new( Self ):create()
 
    /* Reports Manager */
-   ::oRM := HbpReports():new():create( ::oParts:oStackReports )
+   //::oRM := HbpReports():new():create( ::oParts:oStackReports )
 
    /* Code Formatter Manager */
    ::oFmt := IdeFormat():new( Self ):create()

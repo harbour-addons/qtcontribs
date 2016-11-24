@@ -102,6 +102,8 @@ CLASS HbQtScripts
    DATA   hScripts                                INIT {=>}
    DATA   oRootNode
 
+   ACCESS widget()                                INLINE ::oUI:widget()
+
    METHOD init( oParent )
    METHOD create( oParent )
    METHOD execEvent( nEvent, p1, p2 )
@@ -590,8 +592,6 @@ STATIC FUNCTION __runScript( cBuffer, cCompFlags, xParam, lThreaded )
       IF ! Empty( cFile )
          IF lThreaded
             pHrb := hb_hrbLoad( HB_HRB_BIND_OVERLOAD, cFile )
-//          pHrb := hb_hrbLoad( HB_HRB_BIND_FORCELOCAL, cFile )
-//          pHrb := hb_hrbLoad( HB_HRB_BIND_LOCAL, cFile )
          ELSE
             pHrb := hb_hrbLoad( HB_HRB_BIND_LOCAL, cFile )
          ENDIF

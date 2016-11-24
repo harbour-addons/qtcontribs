@@ -1,18 +1,14 @@
-/*
- * $Id$
+/* --------------------------------------------------------------------
+ * NOTE: You can add manual override which functions to include or
+ *       exclude from automatically generated EXTERNAL/DYNAMIC list.
+ *          Syntax: // HB_FUNC_INCLUDE <func>
+ *                  // HB_FUNC_EXCLUDE <func>
  */
 
-/* -------------------------------------------------------------------- */
-/* NOTE: You can add manual override which functions to include or      */
-/*       exclude from automatically generated EXTERNAL/DYNAMIC list.    */
-/*          Syntax: // HB_FUNC_INCLUDE <func>                           */
-/*                  // HB_FUNC_EXCLUDE <func>                           */
-/* -------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------- */
-/* WARNING: Automatically generated code below. DO NOT EDIT!            */
-/*          Regenerate using hbmk2 '-hbx=' option.                      */
-/* -------------------------------------------------------------------- */
+/* --------------------------------------------------------------------
+ * WARNING: Automatically generated code below. DO NOT EDIT! (except casing)
+ *          Regenerate using hbmk2 '-hbx=' option.
+ */
 
 #ifndef __HBEXTERN_CH__HBXBP__
 #define __HBEXTERN_CH__HBXBP__
@@ -70,9 +66,11 @@ DYNAMIC GRASPLINE
 DYNAMIC GRASTRINGAT
 DYNAMIC GRATRANSLATE
 DYNAMIC HBPAPPDESKTOP
-DYNAMIC HBPDBU
 DYNAMIC HBPPROCESS
-DYNAMIC HBPREPORTS
+DYNAMIC HBQTRES_XBP
+DYNAMIC HBQTUI_HBPDBSTRUCT
+DYNAMIC HBQTUI_HBPFETCHDATE
+DYNAMIC HBQTUI_HBPTABLES
 DYNAMIC HBXBP_APPEVENTMODIFIER
 DYNAMIC HBXBP_APPEVENTTOQKEYEVENT
 DYNAMIC HBXBP_CLEAREVENTBUFFER
@@ -90,6 +88,9 @@ DYNAMIC POSTAPPEVENT
 DYNAMIC SETAPPEVENT
 DYNAMIC SETAPPFOCUS
 DYNAMIC SETAPPWINDOW
+DYNAMIC UI_HBPDBSTRUCT
+DYNAMIC UI_HBPFETCHDATE
+DYNAMIC UI_HBPTABLES
 DYNAMIC XBP3STATE
 DYNAMIC XBPBITMAP
 DYNAMIC XBPBROWSE

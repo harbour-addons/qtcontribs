@@ -160,6 +160,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
       nLHeight   := nObjHeight + nLineSpacing
       nAvgWid    := oFontM:averageCharWidth()
       oEdit      :  setParent( QWidget() )        /* We no longer need it, destroy */
+      oEdit      := NIL
    ENDIF
 
    IF HB_ISOBJECT( oParent )

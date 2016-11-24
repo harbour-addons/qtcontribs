@@ -11,6 +11,7 @@
 -w3
 -es2
 -inc
+-mt
 
 -icon={allwin}hbdbu.ico
 
@@ -26,6 +27,22 @@
 hbqtwidgets.hbc
 hbqt.hbc
 hbct.hbc
+hbnf.hbc
+hbxbp.hbc
+gtqtc.hbc
+
+hbformat.hbc
+hbtip.hbc
+hbnetio.hbc
+hbmxml.hbc
+hbmemio.hbc 
+hbmzip.hbc
+hbsms.hbc
+hbtcpio.hbc
+hbzebra.hbc
+hbziparc.hbc
+hbssl.hbc
+
 {allwin}gtwvg.hbc
 
 dbu.prg
