@@ -16,6 +16,81 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-11-23 21:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r436)
+  + hbqtwidgets/resources/align_at.png
+  + hbqtwidgets/resources/b_1.png
+  + hbqtwidgets/resources/b_10.png
+  + hbqtwidgets/resources/b_11.png
+  + hbqtwidgets/resources/b_12.png
+  + hbqtwidgets/resources/b_13.png
+  + hbqtwidgets/resources/b_14.png
+  + hbqtwidgets/resources/b_15.png
+  + hbqtwidgets/resources/b_16.png
+  + hbqtwidgets/resources/b_17.png
+  + hbqtwidgets/resources/b_18.png
+  + hbqtwidgets/resources/b_19.png
+  + hbqtwidgets/resources/b_2.png
+  + hbqtwidgets/resources/b_20.png
+  + hbqtwidgets/resources/b_3.png
+  + hbqtwidgets/resources/b_4.png
+  + hbqtwidgets/resources/b_5.png
+  + hbqtwidgets/resources/b_6.png
+  + hbqtwidgets/resources/b_7.png
+  + hbqtwidgets/resources/b_8.png
+  + hbqtwidgets/resources/b_9.png
+  + hbqtwidgets/resources/blockcomment.png
+  + hbqtwidgets/resources/blockindentl.png
+  + hbqtwidgets/resources/blockindentr.png
+  + hbqtwidgets/resources/build-run-48.png
+  + hbqtwidgets/resources/build-run.png
+  + hbqtwidgets/resources/console.png
+  + hbqtwidgets/resources/cut.png
+  + hbqtwidgets/resources/dashboard-1.png
+  + hbqtwidgets/resources/dashboard-2.png
+  + hbqtwidgets/resources/dashboard.png
+  + hbqtwidgets/resources/dbl2sglquote.png
+  + hbqtwidgets/resources/down-2.png
+  + hbqtwidgets/resources/exit.png
+  + hbqtwidgets/resources/help-1.png
+  + hbqtwidgets/resources/invertcase.png
+  + hbqtwidgets/resources/n-0.png
+  + hbqtwidgets/resources/n-1.png
+  + hbqtwidgets/resources/n-2.png
+  + hbqtwidgets/resources/n-3.png
+  + hbqtwidgets/resources/n-4.png
+  + hbqtwidgets/resources/n-5.png
+  + hbqtwidgets/resources/n-6.png
+  + hbqtwidgets/resources/n-7.png
+  + hbqtwidgets/resources/n-8.png
+  + hbqtwidgets/resources/n-9.png
+  + hbqtwidgets/resources/new-2.png
+  + hbqtwidgets/resources/online.png
+  + hbqtwidgets/resources/paste.png
+  + hbqtwidgets/resources/plus-16.png
+  + hbqtwidgets/resources/plus-3.png
+  + hbqtwidgets/resources/redo.png
+  + hbqtwidgets/resources/run-2.png
+  + hbqtwidgets/resources/run-3.png
+  + hbqtwidgets/resources/run-4.png
+  + hbqtwidgets/resources/run-script.png
+  + hbqtwidgets/resources/run.png
+  + hbqtwidgets/resources/settings-down.png
+  + hbqtwidgets/resources/settings-up.png
+  + hbqtwidgets/resources/sgl2dblquote.png
+  + hbqtwidgets/resources/stream.png
+  + hbqtwidgets/resources/streamcomment.png
+  + hbqtwidgets/resources/stringify.png
+  + hbqtwidgets/resources/tolower.png
+  + hbqtwidgets/resources/toupper.png
+  + hbqtwidgets/resources/undo.png
+  + hbqtwidgets/resources/up-2.png
+  + hbqtwidgets/scripts.prg
+
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Transferred many icons from hbide and hbdbu to hbqtwidgets.
+      Idea is to keep a single resource repository so that every
+      application can benefit.
+
 2016-11-15 17:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r435)
   + hbqt/qtdbus
   + hbqt/qtdbus/doc
