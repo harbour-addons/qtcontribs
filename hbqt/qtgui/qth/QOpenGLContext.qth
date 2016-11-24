@@ -1,0 +1,86 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+QObject     = Yes
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QOpenGLContext>
+
+
+/*
+ * QOpenGLContext(QObject *parent = Q_NULLPTR)
+ * ~QOpenGLContext()
+ */
+HB_FUNC( QT_QOPENGLCONTEXT )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QObject" ) )
+   {
+      __HB_RETPTRGC__( new QOpenGLContext( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QOpenGLContext() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum   OpenGLModuleType { LibGL, LibGLES }
+</ENUMS>
+
+<PROTOS>
+bool   create()
+GLuint   defaultFramebufferObject() const
+void   doneCurrent()
+QSet<QByteArray>   extensions() const
+//QOpenGLExtraFunctions *   extraFunctions() const
+QSurfaceFormat   format() const
+//QOpenGLFunctions *   functions() const
+//QFunctionPointer   getProcAddress(const QByteArray &procName) const
+//QFunctionPointer   getProcAddress(const char *procName) const
+bool   hasExtension(const QByteArray &extension) const
+bool   isOpenGLES() const
+bool   isValid() const
+bool   makeCurrent(QSurface *surface)
+QVariant   nativeHandle() const
+QScreen *   screen() const
+void   setFormat(const QSurfaceFormat &format)
+void   setNativeHandle(const QVariant &handle)
+void   setScreen(QScreen *screen)
+void   setShareContext(QOpenGLContext *shareContext)
+QOpenGLContext *   shareContext() const
+//QOpenGLContextGroup *   shareGroup() const
+QSurface *   surface() const
+void   swapBuffers(QSurface *surface)
+//QAbstractOpenGLFunctions *   versionFunctions(const QOpenGLVersionProfile &versionProfile = QOpenGLVersionProfile()) const
+//TYPE *   versionFunctions() const
+
+bool   areSharing(QOpenGLContext *first, QOpenGLContext *second)
+QOpenGLContext *   currentContext()
+QOpenGLContext *   globalShareContext()
+void *   openGLModuleHandle()
+OpenGLModuleType   openGLModuleType()
+bool   supportsThreadedOpenGL()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void   aboutToBeDestroyed()
+</SIGNALS>

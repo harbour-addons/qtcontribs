@@ -16,6 +16,32 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-11-23 21:15 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r437)
+  * hbqt/qtcore/hbqtcore.hbx
+  * hbqt/qtgui/hbqtgui.hbx
+    * regenerated.
+
+  + hbqt/qtgui/qth/QTouchDevice.qth
+  + hbqt/qtgui/qth/QOpenGLContext.qth
+    + Added missing classes needed to link QtGui only module.
+
+  * hbqt/qtgui/qth/QTouchEvent.qth
+    - Commented-out manually written one class method which was breaking
+      modularity of QtGui.
+
+  * hbqt/qtgui/qth/QSound.qth
+    % Prepared to be compiled in QtGui namespace until v 4.9.
+
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added new classes.
+
+  + hbqt/qtmultimedia/qth/QSound.qth
+  * hbqt/qtmultimedia/qth/filelist.hbm
+    + Added QSound.qth needed for this namespace after v 4.9.
+
+  * hbqt/qtpositioning/hbqtpositioning.hbc
+    % Fixed to be linkable in static mode.
+
 2016-11-23 21:01 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r436)
   + hbqtwidgets/resources/align_at.png
   + hbqtwidgets/resources/b_1.png

@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+QObject     = Yes
+Version     = 0x050000
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QTouchDevice>
+
+
+/*
+ * QTouchDevice()
+ * ~QTouchDevice()
+ */
+HB_FUNC( QT_QTOUCHDEVICE )
+{
+   __HB_RETPTRGC__( new QTouchDevice() );
+}
+</CODE>
+
+<ENUMS>
+flags   Capabilities
+enum   CapabilityFlag { Position, Area, Pressure, Velocity, ..., MouseEmulation }
+enum   DeviceType { TouchScreen, TouchPad }
+</ENUMS>
+
+<PROTOS>
+Capabilities   capabilities() const
+int   maximumTouchPoints() const
+QString   name() const
+void   setCapabilities(Capabilities caps)
+void   setMaximumTouchPoints(int max)
+void   setName(const QString &name)
+void   setType(DeviceType devType)
+DeviceType   type() const
+
+//QList<const QTouchDevice *>   devices()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

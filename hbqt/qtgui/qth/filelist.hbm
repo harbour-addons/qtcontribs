@@ -169,6 +169,7 @@ QMouseEvent.qth
 QMoveEvent.qth
 QMovie.qth
 {!__ios__}QOpenGLBuffer.qth
+{!__ios__}QOpenGLContext.qth
 {!__ios__}QOpenGLWidget.qth
 QPageLayout.qth
 QPageSetupDialog.qth
@@ -296,6 +297,7 @@ QToolBar.qth
 QToolBox.qth
 QToolButton.qth
 QToolTip.qth
+QTouchDevice.qth
 QTouchEvent.qth
 QTransform.qth
 QTreeView.qth

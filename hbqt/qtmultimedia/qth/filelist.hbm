@@ -74,6 +74,7 @@ QRadioData.qth
 QRadioDataControl.qth
 QRadioTuner.qth
 QRadioTunerControl.qth
+QSound.qth
 QSoundEffect.qth
 QVideoDeviceSelectorControl.qth
 QVideoEncoderSettings.qth

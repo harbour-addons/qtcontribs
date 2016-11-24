@@ -20,9 +20,9 @@ Version     = 0x050000
 
 <CODE>
 #include <QtGui/QTouchEvent>
-#include <QtCore/QRectF>
+//#include <QtCore/QRectF>
 
-extern HB_EXPORT void hbqt_del_QRectF( void * pObj, int iFlags );
+//extern HB_EXPORT void hbqt_del_QRectF( void * pObj, int iFlags );
 
 /*
  * QTouchEvent(QEvent::Type eventType, QTouchDevice * device = 0, Qt::KeyboardModifiers modifiers = Qt::NoModifier, Qt::TouchPointStates touchPointStates = 0, const QList<QTouchEvent::TouchPoint> & touchPoints = QList<QTouchEvent::TouchPoint> ())
@@ -51,6 +51,7 @@ QObject * target() const
 Qt::TouchPointStates touchPointStates() const
 //const QList<QTouchEvent::TouchPoint> & touchPoints() const{
 const QList< void * > touchPoints(){
+#if 0
    QTouchEvent * p = ( QTouchEvent * ) hbqt_par_ptr( 0 );
    if( p )
    {
@@ -91,6 +92,7 @@ const QList< void * > touchPoints(){
       }
       hb_itemReturnRelease( hbqt_bindGetHbObject( NULL, qList, "HB_QLIST", hbqt_del_QList, HBQT_BIT_OWNER ) );
    }
+#endif
 }
 QWindow * window() const
 </PROTOS>
