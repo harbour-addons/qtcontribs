@@ -61,6 +61,7 @@
 
 
 THREAD STATIC t_sets := {=>}
+THREAD STATIC t_HbQtExec := {=>}
 
 STATIC s_hHarbourFuncList := {=>}
 STATIC s_hQtFuncList := {=>}
@@ -378,18 +379,64 @@ FUNCTION HbQtExit( cUnique, lExit, lDelete )
    RETURN iif( hb_HHasKey( s_lExit, cUnique ), s_lExit[ cUnique ], .F. )
 
 
-FUNCTION HbQtExec( cUnique )
+FUNCTION HbQtExec( cUnique, bBlock )
    LOCAL oEventLoop
+
+   IF ! HB_ISBLOCK( bBlock )
+      bBlock := {|| .T. }
+   ENDIF
 
    oEventLoop := QEventLoop()
    DO WHILE .T.
       oEventLoop:processEvents( 0 )
+      Eval( bBlock )
       IF HbQtExit( cUnique )
          HbQtExit( cUnique, NIL, .T. )
          EXIT
       ENDIF
    ENDDO
    oEventLoop:exit( 0 )
+   RETURN NIL
+
+
+FUNCTION HbQtExitX( pPtr )
+   LOCAL oWidget, bBlock, oEventLoop
+
+   IF hb_HHasKey( t_HbQtExec, pPtr )
+      oWidget := t_HbQtExec[ pPtr ][ 1 ]
+      bBlock := t_HbQtExec[ pPtr ][ 2 ]
+      oEventLoop := t_HbQtExec[ pPtr ][ 3 ]
+   ENDIF
+   hb_HDel( t_HbQtExec, pPtr )
+   IF HB_ISOBJECT( oEventLoop )
+      oEventLoop:exit( 0 )
+   ENDIF
+   IF HB_ISBLOCK( bBlock )
+      Eval( bBlock )
+   ENDIF
+   oWidget:setParent( QWidget() )
+   oWidget := NIL
+   oEventLoop := NIL
+   RETURN NIL
+
+
+FUNCTION HbQtExecX( oWidget, bBlock, lLocalLoop )
+   LOCAL pPtr := oWidget:getPointer()
+   LOCAL oEventLoop
+
+   DEFAULT lLocalLoop TO .F.
+
+   oWidget:connect( QEvent_Close, {|| HbQtExitX( pPtr ) } )
+   oWidget:show()
+
+   IF ! hb_HHasKey( t_HbQtExec, pPtr )
+      t_HbQtExec[ pPtr ] := { oWidget, bBlock, @oEventLoop }
+   ENDIF
+
+   IF lLocalLoop
+      oEventLoop := QEventLoop()
+      oEventLoop:exec( 0 )
+   ENDIF
    RETURN NIL
 
 
