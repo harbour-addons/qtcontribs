@@ -705,9 +705,7 @@ FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
       lTableExists := hb_FileExists( cTable )
       EXIT
    CASE "CACHERDD"
-#if defined( __CACHE__ )
-      lTableExists := CacheExistTable( cName )
-#endif
+      lTableExists := .T.
       EXIT
    ENDSWITCH
 
