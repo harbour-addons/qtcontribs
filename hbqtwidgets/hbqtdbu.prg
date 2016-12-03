@@ -1887,8 +1887,8 @@ METHOD HbQtDBU:createTable( cDriver, cConxn, aStruct, aIndexes )
                      FOR EACH aIdx IN aIndexes
                         INDEX ON &( aIdx[ 2 ] ) TAG ( aIdx[ 1 ] )
                      NEXT
-                     USE
-                     Alert( "Table: " + cTable + ", has been created successfully!" )
+                     dbCloseArea()
+                     Alert( { "Table:", cTable, "has been created successfully!" } )
                   ELSE
                      Alert( "Some error in creating : " + cTable )
                   ENDIF
@@ -3601,6 +3601,9 @@ METHOD HbQtMdiBrowser:fetchAlias( cTable )
 
 
 METHOD HbQtMdiBrowser:saveField( nField, x )
+   IF ( ::cAlias )->( Eof() )
+      ::append()
+   ENDIF
    IF ( ::cAlias )->( DbrLock() )
       ( ::cAlias )->( FieldPut( nField, x ) )
       ( ::cAlias )->( DbCommit() )

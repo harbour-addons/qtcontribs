@@ -88,7 +88,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="editSwitches"/>
+      <widget class="QLineEdit" name="editSwitches">
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label">
@@ -98,15 +105,18 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="editIncludes">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>16777215</height>
-        </size>
+      <widget class="QComboBox" name="comboInc">
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
        </property>
        <property name="toolTip">
-        <string>Space separated list of include paths</string>
+        <string>Type in one nclude path and press Enter.</string>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="sizeAdjustPolicy">
+        <enum>QComboBox::AdjustToContents</enum>
        </property>
       </widget>
      </item>
@@ -134,7 +144,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QSplitter" name="splitter">
+       <widget class="QSplitter" name="splitterMid">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

@@ -16,6 +16,114 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-12-02 14:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r439)
+  * hbdbu/dbu.prg
+  * hbdbu/hbdbu.hbp
+    + Added few more contribs.
+
+  * hbqtwidgets/dbucreate.prg
+    ! Fixed: <Create> and <Cancel> buttons on the "Create Table" 
+       interface were not working.
+
+  * hbqtwidgets/getlist.prg
+    ! Fixed a potential memoty leak. (Not confirmed).
+
+  * hbqtwidgets/hbqtdbu.prg
+    ! Fixed: application freeze if editing was performed on ghost record.
+       Now a blank record is appeneded as soon as first editing action 
+       is confirmed with ENTER.
+
+  * hbqtwidgets/scripts.ui
+  * hbqtwidgets/scripts.prg
+    - Removed: <-include> line edit. 
+
+    + Added: <-include> combo-box where multiple paths can be added and 
+       managed as a drop-down list.
+
+       How to Add   : Just type in the path in combo's edit field and 
+                      press ENTER.
+       How to Delete: Select the desired entry so that you can see it 
+                      in the combo's edit field, right-click, select 
+                      <Delete> from the context menu.
+
+       In single lineEdit control it was a mess to organize the paths.
+
+    + The .hsv (Harbour Scripts View) filename is dispalyed on the 
+       header of scripts tree. While saving and opening a new .hsv 
+       the file open dialog now respects this path for .hsv files.
+
+    + The path to the root of HbDBU is passed as an -i(nclude) directive 
+       when a script is run.
+    + If the script is a saved disk file, then, this path is also sent 
+       as an -i(nclude) directive. Moreover, for console mode run, 
+       the script is run while thread stays in this path.
+
+    + Added: FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto ) 
+       which is activated with a statement like:
+
+       SELECT first,last,age,state FROM c:\harbour\tests\test.dbf ;
+       ORDER BY age-desc,state WHERE age>60
+
+       #command SELECT <fld,...> FROM <from> ;
+                  [INTO <into>] ;
+                  [ORDER BY <order,...>] ;
+                  [WHERE <*whr*>] ;
+              => ;
+        __hbqtExecSelect( #<fld>, <"from">, #<whr>, #<order>, <"into"> )
+
+       preprocessor directive is sent with the script buffer automatically.
+
+     ; Yes, you read it right. HbQtScripts now implement a sub-set of 
+        SQL SELECT statement which is translated to database commands and 
+        result is displayed via Browse(). Let us understand the difference
+        in true SQL statement components vs HbQt.
+         
+        SELECT    * | comma sapartaed list of valid field names - no UDFs yet.
+
+        FROM      fully qualified table name with path and extention. By default 
+                  DBFCDX driver is used, but to use another driver prefix the 
+                  table name with driver and "|", like:
+                        dbfcdx|c:\harbour\tests\test.dbf
+                  This must be the 2nd component of the statement.
+
+        INTO      fully qualified table name with path and extention where 
+                  results will be deposited. DBFCDX is used for this purpose.
+
+        ORDER BY  a comma separated list of field names contained in the result
+                  set. Keyword "-desc" can be post-fixed with a fieldname to 
+                  present in descending order. In example statement as above 
+                  it is represented as - age-desc,state - where the whole result 
+                  is sorted descending on age first, then within each age group
+                  state is sorted ascending.
+
+        WHERE     This must be the last component of the statement.
+                  The only operator supported for multiple conditions is 
+                  "AND" only, like: age > 90 and last = 'Thomas'.
+                  The supported operators within a single condition are 
+                  >=, <=, !=, <>, =, <, >. 
+
+                  A condition has 3 components
+                  //
+                  1. FieldName - must be present in the table
+                  2. Operator  - one of the >=, <=, !=, <>, =, <, >
+                  3. Value     - string 'Thomas', numeric 90.0, date '2016-12-02'
+
+                  a '=' condition is looked for if any index starting with its 
+                  FieldName is available or not. If available, then index order 
+                  is set to it and seek is performed with Value part which 
+                  greately enhances the speed.
+
+    ; You can test it by simply placing the above SQL statement in a function 
+      and just run it in console mode, assuming that test.dbf actually resides
+      where it is pointed to.
+
+      FUNCTION __test()
+
+         SELECT first,last,age,state FROM c:\harbour\tests\test.dbf ;
+         ORDER BY age-desc,state WHERE age>60
+
+         RETURN NIL 
+
 2016-11-24 11:50 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r438)
   * hbxbp/hbxbp.hbp
     - Removed some parts which are now contained in HbQtWidgets.

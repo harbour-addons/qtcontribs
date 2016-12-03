@@ -76,6 +76,7 @@ FUNCTION __hbqtGetsActiveWindow( oWindow )
 FUNCTION HbQtClearGets( oWnd, ... )
    LOCAL oParent
 
+   __hbqtBindGetList( oWnd, NIL )
    FOR EACH oParent IN hb_AParams()
       __hbqtBindGetList( oParent, NIL )
    NEXT

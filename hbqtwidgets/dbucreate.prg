@@ -77,6 +77,7 @@ CLASS HbQtCreateTable
    DATA   oLbl
    DATA   oComboRDD, oComboConxn
    DATA   oBrwStruct, oBrwIndex
+   DATA   oBtnOK, oBtnCN
 
    METHOD new( oDbu )
    METHOD create()
@@ -99,7 +100,7 @@ METHOD HbQtCreateTable:new( oDbu )
 
 METHOD HbQtCreateTable:create()
    LOCAL oLay, oHLay1, oHLay2, oBrwStruct
-   LOCAL oBtnOK, oBtnCn, aData, oBrwIndex, aIndex
+   LOCAL aData, oBrwIndex, aIndex
    LOCAL nW := 256 + 17
 
    WITH OBJECT oHLay1 := QHBoxLayout()
@@ -153,17 +154,17 @@ METHOD HbQtCreateTable:create()
    ::createIndexesBrowser( oBrwIndex, @aIndex )
    oLay:addWidget( oBrwIndex:oWidget )
 
-   WITH OBJECT oBtnOK := QPushButton( ::oWidget )
+   WITH OBJECT ::oBtnOK := QPushButton( ::oWidget )
       :setText( "Create" )
       :connect( "clicked()", {|| ::createTable() } )
    ENDWITH
-   WITH OBJECT oBtnCN := QPushButton( ::oWidget )
+   WITH OBJECT ::oBtnCN := QPushButton( ::oWidget )
       :setText( "Cancel" )
       :connect( "clicked()", {|| ::oWidget:close() } )
    ENDWITH
    oHLay2:addStretch()
-   oHLay2:addWidget( oBtnOK )
-   oHLay2:addWidget( oBtnCN )
+   oHLay2:addWidget( ::oBtnOK )
+   oHLay2:addWidget( ::oBtnCN )
 
    oLay:addLayout( oHLay2 )
 
@@ -443,6 +444,7 @@ METHOD HbQtCreateTable:createTable()
          AAdd( aStruct, aStr )
       ENDIF
    NEXT
+
    IF ! Empty( aStruct )
       FOR EACH aIdx IN ::oBrwIndex:cargo
          IF ! Empty( aIdx[ 1 ] )
