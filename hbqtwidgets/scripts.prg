@@ -669,12 +669,10 @@ STATIC FUNCTION __runScript( cBuffer, cCompFlags, xParam, lThreaded )
 //--------------------------------------------------------------------//
 
 FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
-   LOCAL n, nS, nE, i, cDriver, aFields, cField, nField, cPath, cName, cExt, aStruct, xTmp, cTable
-   LOCAL aWhere, aTags, nWhere, aData, cSearch, cMsg, cValue, cFor, bFor, aOrder, cE, nLastOrder
+   LOCAL n, cDriver, aFields, cField, cPath, cName, cExt, aStruct, cTable, xTmp, nField
+   LOCAL aWhere, aTags, nWhere, aData, cSearch, cSearchType, cMsg, cValue, cFor, bFor, nFields
    LOCAL cAlias := "__SOURCE__"
-   LOCAL cTarget := "__TARGET__"
    LOCAL lTableExists := .F.
-   LOCAL cOrgInto := cInto
    LOCAL nIndex := 0
 
    IF Empty( cFrom )
@@ -721,6 +719,7 @@ FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
    ENDIF
    aStruct:= dbStruct()
 
+   nFields := {}
    IF "*" == cFields
       aFields := {}
       AEval( aStruct, {|e_| AAdd( aFields, e_[ 1 ] ) } )
@@ -729,8 +728,9 @@ FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
       xTmp := hb_ATokens( cFields, "," )
       FOR EACH cField IN xTmp
          cField := Upper( AllTrim( cField ) )
-         IF AScan( aStruct, {|e_| e_[ 1 ] == cField } ) > 0
+         IF ( nField := AScan( aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
             AAdd( aFields, cField )
+            AAdd( nFields, nField )
          ENDIF
       NEXT
    ENDIF
@@ -754,7 +754,7 @@ FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
          nWhere := 0
          IF ! Empty( aTags )
             FOR EACH xTmp IN aWhere
-               IF xTmp[ 3 ] == "="
+               IF xTmp[ 3 ] == "=" .OR. xTmp[ 3 ] == "LIKE"
                   n := Len( xTmp[ 1 ] )
                   IF ( nIndex := AScan( aTags, {|e| Left( e, n ) == xTmp[ 1 ] } ) ) > 0
                      dbSetOrder( nIndex )
@@ -762,6 +762,12 @@ FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
                      cSearch := xTmp[ 2 ]
                      IF Left( cSearch, 1 ) == '"'
                         cSearch := SubStr( cSearch, 2, Len( cSearch ) - 2 )
+                     ENDIF
+                     IF Right( cSearch, 1 ) == "%"
+                        cSearch = Left( cSearch, Len( cSearch ) - 1 )
+                        cSearchType := "="
+                     ELSE
+                        cSearchType := "=="
                      ENDIF
                      xTmp[ 4 ] := cSearch
                      EXIT
@@ -810,143 +816,181 @@ FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
    ENDIF
 
    aData := {}
-   IF ! HB_ISBLOCK( bFor )
-      IF nIndex > 0                                  // We have the index
-         IF dbSeek( cSearch )
-            DO WHILE ( cAlias )->( &( IndexKey( nIndex ) ) ) = cSearch
-               xTmp := {}
-               FOR EACH cField IN aFields
-                  AAdd( xTmp, ( cAlias )->&cField )
-               NEXT
-               AAdd( aData, xTmp )
-               ( cAlias )->( dbSkip() )
-            ENDDO
-         ENDIF
-      ELSE
-         DO WHILE ! ( cAlias )->( Eof() )
-            xTmp := {}
-            FOR EACH cField IN aFields
-               AAdd( xTmp, ( cAlias )->&cField )
-            NEXT
-            AAdd( aData, xTmp )
-            ( cAlias )->( dbSkip() )
-         ENDDO
-      ENDIF
-   ELSE
-      IF nIndex > 0                                  // We have the index
-         IF dbSeek( cSearch )
-            DO WHILE ( cAlias )->( &( IndexKey( nIndex ) ) ) = cSearch
-               IF Eval( bFor )
-                  xTmp := {}
-                  FOR EACH cField IN aFields
-                     AAdd( xTmp, ( cAlias )->&cField )
-                  NEXT
-                  AAdd( aData, xTmp )
-               ENDIF
-               ( cAlias )->( dbSkip() )
-            ENDDO
-         ENDIF
-      ELSE
-         DO WHILE ! ( cAlias )->( Eof() )
-            IF Eval( bFor )
-               xTmp := {}
-               FOR EACH cField IN aFields
-                  AAdd( xTmp, ( cAlias )->&cField )
-               NEXT
-               AAdd( aData, xTmp )
-            ENDIF
-            ( cAlias )->( dbSkip() )
-         ENDDO
-      ENDIF
-   ENDIF
-   Select( cAlias )                               // we are done with the source, close it
+   // Collect data from the source table based on WHERE clause
+   //
+   __collectData( @aData, cAlias, nFields, cSearch, cSearchType, bFor, nIndex )
+
+   // We have pulled data, close the source table
+   //
+   Select( cAlias )
    dbCloseArea()
 
    IF ! Empty( aData )
-      IF ! Empty( cOrder )
-         cOrder := Upper( cOrder )
-         aOrder := hb_ATokens( cOrder, "," )
-         FOR EACH cOrder IN aOrder
-            IF Right( cOrder, 4 ) == "-ASC"
-               cOrder := Left( cOrder, Len( cOrder ) - 4 )
-            ENDIF
-            xTmp := Right( cOrder, 5 ) == "-DESC"
-            IF xTmp
-               cOrder := Left( cOrder, Len( cOrder ) - 5 )
-            ENDIF
-            nS := 1
-            IF ( n := AScan( aFields, {|e| e == cOrder } ) ) > 0
-               cFor := "e_[" + hb_ntos( n ) + "]" + iif( xTmp, ">", "<" ) +  "f_[" + hb_ntos( n ) + "]"
-               bFor := &( "{|e_,f_| " + cFor + " }" )
+      // Sort data per ORDER BY clause
+      //
+      __orderData( aData, cOrder, aFields )
 
-               IF cOrder:__enumIndex() == 1
-                  ASort( aData, NIL, NIL, bFor )
-               ELSE
-                  cE := aData[ nS, nLastOrder ]
-                  nE := 0
-                  DO WHILE .T.
-                     FOR i := nS TO Len( aData )
-                        IF aData[ i, nLastOrder ] != cE
-                           ASort( aData, nS, nE, bFor )
-                           cE := aData[ i, nLastOrder ]
-                           nS := i
-                           nE := 0
-                           EXIT
-                        ENDIF
-                        nE++
-                     NEXT
-                     IF nE >= Len( aData )
-                        EXIT
-                     ENDIF
-                  ENDDO
-                  IF nS < Len( aData )
-                     ASort( aData, nS, NIL, bFor )
-                  ENDIF
-               ENDIF
-               nLastOrder := n
-            ENDIF
-         NEXT
-      ENDIF
-      IF Empty( cInto )
-         IF ( xTmp := hb_FTempCreateEx( @cInto, NIL, NIL, ".dbf" ) ) != F_ERROR
-            FClose( xTmp )
-         ENDIF
-      ENDIF
       xTmp := {}
       FOR EACH cField IN aFields
          IF ( n := AScan( aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
             AAdd( xTmp, aStruct[ n ] )
          ENDIF
       NEXT
-      IF ! Empty( cInto )
-         dbCreate( cInto, xTmp, "DBFCDX" )
-         IF ! NetErr() .AND. hb_FileExists( cInto )
-            USE ( cInto ) ALIAS ( cTarget ) EXCLUSIVE NEW VIA "DBFCDX"
-            IF ! NetErr()
-               FOR EACH xTmp IN aData
-                  dbAppend()
-                  FOR EACH cField IN aFields
-                     REPLACE ( cTarget )->&cField WITH xTmp[ cField:__enumIndex() ]
-                  NEXT
-               NEXT
-               dbCommit()
-               dbGoTop()
-               Browse()
-               dbCloseArea()
-               IF Empty( cOrgInto )
-                  FErase( cInto )
-               ENDIF
-            ENDIF
-         ELSE
-            Alert( "Some error in opening result cursor" )
-         ENDIF
-      ENDIF
+      aStruct := xTmp
+
+      // Save if INTO clause is present
+      //
+      __saveData( aData, aStruct, aFields, cInto )
+
+      // We are done, browse results
+      //
+      __browseData( aData, aStruct )
    ENDIF
+
 #ifdef __HBQTSCRIPTS__
    RETURN Alert( cFields + ";" + cFrom + ";" + cWhere + ";" + cOrder + ";" + cInto )
 #else
    RETURN NIL
 #endif
+
+
+STATIC FUNCTION __collectData( aData, cAlias, nFields, cSearch, cSearchType, bFor, nIndex )
+
+   IF ! HB_ISBLOCK( bFor )
+      IF nIndex > 0
+         IF dbSeek( cSearch )
+            IF cSearchType == "=="
+               DO WHILE Trim( ( cAlias )->( &( IndexKey( nIndex ) ) ) ) == cSearch
+                  __collectFields( @aData, cAlias, nFields )
+                  ( cAlias )->( dbSkip() )
+               ENDDO
+            ELSE
+               DO WHILE ( cAlias )->( &( IndexKey( nIndex ) ) ) = cSearch
+                  __collectFields( @aData, cAlias, nFields )
+                  ( cAlias )->( dbSkip() )
+               ENDDO
+            ENDIF
+         ENDIF
+      ELSE
+         DO WHILE ! ( cAlias )->( Eof() )
+            __collectFields( @aData, cAlias, nFields )
+            ( cAlias )->( dbSkip() )
+         ENDDO
+      ENDIF
+   ELSE
+      IF nIndex > 0                                  // We have the index
+         IF dbSeek( cSearch )
+            IF cSearchType == "=="
+               DO WHILE Trim( ( cAlias )->( &( IndexKey( nIndex ) ) ) ) == cSearch
+                  IF Eval( bFor )
+                     __collectFields( @aData, cAlias, nFields )
+                  ENDIF
+                  ( cAlias )->( dbSkip() )
+               ENDDO
+            ELSE
+               DO WHILE ( cAlias )->( &( IndexKey( nIndex ) ) ) = cSearch
+                  IF Eval( bFor )
+                     __collectFields( @aData, cAlias, nFields )
+                  ENDIF
+                  ( cAlias )->( dbSkip() )
+               ENDDO
+            ENDIF
+         ENDIF
+      ELSE
+         DO WHILE ! ( cAlias )->( Eof() )
+            IF Eval( bFor )
+               __collectFields( @aData, cAlias, nFields )
+            ENDIF
+            ( cAlias )->( dbSkip() )
+         ENDDO
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+STATIC FUNCTION __collectFields( aData, cAlias, nFields )
+   LOCAL aTmp, nField
+
+   aTmp := {}
+   FOR EACH nField IN nFields
+      AAdd( aTmp, ( cAlias )->( FieldGet( nField ) ) )
+   NEXT
+   AAdd( aData, aTmp )
+   RETURN NIL
+
+
+STATIC FUNCTION __orderData( aData, cOrder, aFields )
+   LOCAL aOrder, xTmp, nS, n, cE, nE, i, cFor, bFor, nLastOrder
+
+   IF ! Empty( cOrder )
+      cOrder := Upper( cOrder )
+      aOrder := hb_ATokens( cOrder, "," )
+      FOR EACH cOrder IN aOrder
+         IF Right( cOrder, 4 ) == "-ASC"
+            cOrder := Left( cOrder, Len( cOrder ) - 4 )
+         ENDIF
+         xTmp := Right( cOrder, 5 ) == "-DESC"
+         IF xTmp
+            cOrder := Left( cOrder, Len( cOrder ) - 5 )
+         ENDIF
+         nS := 1
+         IF ( n := AScan( aFields, {|e| e == cOrder } ) ) > 0
+            cFor := "e_[" + hb_ntos( n ) + "]" + iif( xTmp, ">", "<" ) +  "f_[" + hb_ntos( n ) + "]"
+            bFor := &( "{|e_,f_| " + cFor + " }" )
+
+            IF cOrder:__enumIndex() == 1
+               ASort( aData, NIL, NIL, bFor )
+            ELSE
+               cE := aData[ nS, nLastOrder ]
+               nE := 0
+               DO WHILE .T.
+                  FOR i := nS TO Len( aData )
+                     IF aData[ i, nLastOrder ] != cE
+                        ASort( aData, nS, nE, bFor )
+                        cE := aData[ i, nLastOrder ]
+                        nS := i
+                        nE := 0
+                        EXIT
+                     ENDIF
+                     nE++
+                  NEXT
+                  IF nE >= Len( aData )
+                     EXIT
+                  ENDIF
+               ENDDO
+               IF nS < Len( aData )
+                  ASort( aData, nS, NIL, bFor )
+               ENDIF
+            ENDIF
+            nLastOrder := n
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN NIL
+
+
+STATIC FUNCTION __saveData( aData, aStruct, aFields, cInto )
+   LOCAL xTmp, cField
+   LOCAL cTarget := "__TARGET__"
+
+   IF ! Empty( cInto )
+      dbCreate( cInto, aStruct, "DBFCDX" )
+      IF ! NetErr() .AND. hb_FileExists( cInto )
+         USE ( cInto ) ALIAS ( cTarget ) EXCLUSIVE NEW VIA "DBFCDX"
+         IF ! NetErr()
+            FOR EACH xTmp IN aData
+               dbAppend()
+               FOR EACH cField IN aFields
+                  REPLACE ( cTarget )->&cField WITH xTmp[ cField:__enumIndex() ]
+               NEXT
+            NEXT
+            dbCommit()
+            dbGoTop()
+         ENDIF
+         dbCloseArea()
+      ENDIF
+   ENDIF
+   RETURN NIL
 
 
 STATIC FUNCTION __pullWheres( aStruct, cWhere, aWhere, cMsg )
@@ -973,6 +1017,8 @@ STATIC FUNCTION __pullWheres( aStruct, cWhere, aWhere, cMsg )
    NEXT
 
    FOR EACH cWhere IN a_
+      cWhere := StrTran( cWhere, " like ", " LIKE " )
+
       DO CASE
       CASE At( ">=", cWhere ) > 0
          AAdd( aWhere, __pullKeyValueOperator( cWhere, ">=" ) )
@@ -988,6 +1034,8 @@ STATIC FUNCTION __pullWheres( aStruct, cWhere, aWhere, cMsg )
          AAdd( aWhere, __pullKeyValueOperator( cWhere, ">" ) )
       CASE At( "<", cWhere ) > 0
          AAdd( aWhere, __pullKeyValueOperator( cWhere, "<" ) )
+      CASE At( "LIKE", cWhere ) > 0
+         AAdd( aWhere, __pullKeyValueOperator( cWhere, "LIKE" ) )
       ENDCASE
    NEXT
 
@@ -1021,4 +1069,101 @@ STATIC FUNCTION __closeAndAlert( cAlert )
    Select( "__SOURCE__" )
    dbCloseArea()
    RETURN Alert( cAlert )
+
+
+STATIC FUNCTION __browseData( aData, aStruct )
+   LOCAL i, oBrw
+
+   WITH OBJECT oBrw := TBrowseNew( 0, 0, MaxRow(), MaxCol() )
+      :cargo         := { aData, 1 }
+      :goTopBlock    := {|| 1 }
+      :goBottomBlock := {|| Len( oBrw:cargo[ 1 ] ) }
+      :SkipBlock     := {| nSkip, nPos | nPos := oBrw:cargo[ 2 ], ;
+                           oBrw:cargo[ 2 ] := iif( nSkip > 0, Min( Len( oBrw:cargo[ 1 ] ), oBrw:cargo[ 2 ] + nSkip ), ;
+                           Max( 1, oBrw:cargo[ 2 ] + nSkip ) ), oBrw:cargo[ 2 ] - nPos }
+      :HeadSep       := Chr( 196 ) + Chr( 194 ) + Chr( 196 )
+      :ColSep        := ' ' + Chr( 179 ) + ' '
+      :ColorSpec     := 'N/W,W+/R,N/W,N/W'
+   ENDWITH
+   FOR i := 1 TO Len( aStruct )
+      oBrw:addColumn( TBColumnNew( aStruct[ i, 1 ], __buildColumnBlock( oBrw, i ) ) )
+      oBrw:getColumn( i ):picture := __buildPicture( aStruct, i )
+   NEXT
+
+   __handleBrowse( oBrw )
+   RETURN NIL
+
+
+STATIC FUNCTION __buildColumnBlock( oBrw, i )
+   RETURN {|| oBrw:cargo[ 1 ][ oBrw:cargo[ 2 ], i ] }
+
+
+STATIC FUNCTION __buildPicture( aStruct, i )
+
+   SWITCH aStruct[ i,2 ]
+   CASE "C" ; RETURN "@ " + Replicate( "X", aStruct[ i, 3 ] )
+   CASE "N" ; RETURN iif( aStruct[ i, 4 ] == 0, "@Z " + Replicate( "9", aStruct[ i, 3 ] ), ;
+                    "@Z " + Replicate( "9", aStruct[ i, 3 ] - 1 - aStruct[ i, 4 ] ) + "." + Replicate( "9", aStruct[ i, 4 ] ) )
+   ENDSWITCH
+   RETURN NIL
+
+
+STATIC FUNCTION  __handleBrowse( oBrw )
+   LOCAL nLastKey
+   LOCAL lContinue := .T.
+
+   SetCursor( 0 )
+
+   WHILE ( ! oBrw:stabilize() ) ; END
+
+   DO WHILE lContinue
+      DO WHILE ( ( nLastKey := Inkey( NIL, INKEY_ALL + HB_INKEY_GTEVENT ) ) == 0 .OR. nLastKey == 1001 ) .AND. !( oBrw:Stabilize() )
+      ENDDO
+      IF nLastKey == 0
+         HB_GtInfo( HB_GTI_WINTITLE, '[ ' + LTrim( Transform( oBrw:cargo[ 2 ], "999,999,999,999" ) ) + '/' + ;
+                                            LTrim( Transform( Len( oBrw:cargo[ 1 ] ),"999,999,999,999" ) ) + ' ]' )
+         DO WHILE ( nLastKey == 0 .OR. nLastKey == 1001 )
+            nLastKey := Inkey( 0, INKEY_ALL + HB_INKEY_GTEVENT )
+            hb_idleSleep()
+         ENDDO
+      ENDIF
+      DO CASE
+      CASE nLastKey == K_ESC
+         lContinue := .F.
+      CASE nLastKey == K_UP
+         oBrw:Up()
+      CASE nLastKey == K_DOWN
+         oBrw:Down()
+      CASE nLastKey == K_PGUP
+         oBrw:PageUp()
+      CASE nLastKey == K_PGDN
+         oBrw:PageDown()
+      CASE nLastKey == K_CTRL_PGUP
+         oBrw:GoTop()
+      CASE nLastKey == K_CTRL_PGDN
+         oBrw:GoBottom()
+      CASE nLastKey == K_RIGHT
+         oBrw:Right()
+      CASE nLastKey == K_LEFT
+         oBrw:left()
+      CASE nLastKey == K_HOME
+         oBrw:home()
+      CASE nLastKey == K_END
+         oBrw:end()
+      CASE nLastKey == K_CTRL_HOME
+         oBrw:PanHome()
+      CASE nLastKey == K_CTRL_END
+         oBrw:PanEnd()
+      CASE nLastKey == K_MWBACKWARD
+         oBrw:down()
+      CASE nLastKey == K_MWFORWARD
+         oBrw:up()
+      CASE nLastKey == HB_K_RESIZE
+         oBrw:nBottom := MaxRow()
+         oBrw:nRight := MaxCol()
+         oBrw:RefreshAll()
+         DispBox( 0, 0, MaxRow(), MaxCol(), "         ", "N/W" )
+      ENDCASE
+   ENDDO
+   RETURN NIL
 

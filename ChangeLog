@@ -16,6 +16,33 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-12-06 16:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r442)
+  * hbqtwidgets/scripts.prg
+    + Implemented LIKE operator in WHERE clause.
+      SELECT first,last,age,state,zip ;
+        FROM c:\harbour\tests\test.dbf ;
+        ORDER BY age-desc,state ;
+        WHERE last LIKE 'Vedal%'
+
+      OR
+
+      SELECT first,last,age,state,zip ;
+        FROM c:\harbour\tests\test.dbf ;
+        ORDER BY age-desc,state ;
+        WHERE last LIKE 'Vedal'
+
+      If "%" is not postfixed with search string then the behavior will 
+      be exactly the same as "=" opertaor.
+
+      "=" operator matches the exact string.
+      "LIKE" without "%" will match the exact string.
+      "LIKE" with "%" will match the first characters of the string.
+
+    + Implemented local resizable array browser to display the result set.
+       instead of calling Browse() which reduces the overhead to save 
+       results in a table and then display. INTO clause is still respected,
+       though.
+
 2016-12-02 16:39 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r441)
   * hbqtwidgets/scripts.prg
     ! Fixed: not to call 3rd rdd functions under a directive.
