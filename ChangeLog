@@ -16,6 +16,46 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-12-12 16:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r443)
+  * hbqtwidgets/scripts.prg
+    % Changed : SQL parser from procedural to class code.
+
+    + Array browser window adjusts to number of columns in the record upto 
+       maximum columns which can be accomodated on the screen.
+
+    + Implemented: SQL aggregate functions:
+       a) Count( * )
+       b) Min( cNumFieldName *|+|-|/ cSecondNumField *|+|-|/ cThirdNumField )
+       c) Max( cNumFieldName *|+|-|/ cSecondNumField *|+|-|/ cThirdNumField )
+       d) Avg( cNumFieldName *|+|-|/ cSecondNumField *|+|-|/ cThirdNumField )
+       e) Sum( cNumFieldName *|+|-|/ cSecondNumField *|+|-|/ cThirdNumField )
+ 
+    + Implemented: SQL string functions:
+       a) SubStr( cCharFieldName, nFrom [, nCount ] )
+       b) Left( cCharFieldName, nCount )
+       c) Right( cCharFieldName, nCount )
+       d) Upper( cCharFieldName )
+       e) Lower( cCharFieldName )
+
+    + Implemented: A general purpose field to club multiple numeric columns.
+       It is like SUM() function but is not an aggregate function. Syntax is:
+       a) Func( salary * age )
+
+        
+    ; WARNING: no parenthesis inside the function body.
+    ; Title of the column representing above functions is constructed 
+       automatically. Still, I am at a loss how to implement AS clause.
+       [ Preprocessor Limitation ].
+
+    ; Example calls:
+       SELECT * FROM c:\harbour\tests\test.dbf ORDER BY age WHERE age>=90
+
+       SELECT first,last,age,state,zip,sum(age * age),count(*) ;
+       FROM c:\harbour\tests\test.dbf ORDER BY age-desc,state WHERE age>66
+
+       SELECT age,state,Func(age*salary),Right(state,1),Sum(salary),Min(salary),Max(salary),Avg(salary),Count(*) ;
+       FROM c:\harbour\tests\test.dbf GROUP BY age,state ORDER BY age-desc,state WHERE age > 66
+
 2016-12-06 16:27 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r442)
   * hbqtwidgets/scripts.prg
     + Implemented LIKE operator in WHERE clause.

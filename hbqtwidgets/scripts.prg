@@ -607,9 +607,9 @@ METHOD HbQtScripts:runScript( nMode )
 
    cBuffer := ::oHbQtEditor:getSource()
 
-   cBuffer := '#command SELECT <fld,...> FROM <from> [INTO <into>] [ORDER BY <order,...>] [WHERE <*whr*>] ' + ;
+   cBuffer := '#command SELECT <fld,...> FROM <from> [INTO <into>] [ORDER BY <order,...>] [GROUP BY <group,...>] [WHERE <*whr*>] ' + ;
               ' => ' + ;
-              ' __hbqtExecSelect( #<fld>, <"from">, #<whr>, #<order>, <"into"> )' + ;
+              ' __hbqtExecSelect( #<fld>, <"from">, #<whr>, #<order>, <"into">, #<group> )' + ;
               Chr( 10 ) + Chr( 10 ) + cBuffer
 
    xParam := NIL
@@ -668,416 +668,31 @@ STATIC FUNCTION __runScript( cBuffer, cCompFlags, xParam, lThreaded )
 //               Select Statement Parser & Executer
 //--------------------------------------------------------------------//
 
-FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto )
-   LOCAL n, cDriver, aFields, cField, cPath, cName, cExt, aStruct, cTable, xTmp, nField
-   LOCAL aWhere, aTags, nWhere, aData, cSearch, cSearchType, cMsg, cValue, cFor, bFor, nFields
-   LOCAL cAlias := "__SOURCE__"
-   LOCAL lTableExists := .F.
-   LOCAL nIndex := 0
+FUNCTION __hbqtExecSelect( cFields, cFrom, cWhere, cOrder, cInto, cGroup )
+   LOCAL oSQL
 
-   IF Empty( cFrom )
-      Alert( "FROM clause missing!" )
-      RETURN NIL
-   ENDIF
+   SetColor( "N/W" )
+   CLS
+
    DEFAULT cWhere TO ""
    DEFAULT cOrder TO ""
    DEFAULT cInto  TO ""
+   DEFAULT cGroup TO ""
 
-   IF ( n := At( "|", cFrom ) ) > 0
-      cDriver := SubStr( cFrom, 1, n - 1 )
-      cTable := SubStr( cFrom, n + 1 )
-   ELSE
-      cDriver := "DBFCDX"
-      cTable := cFrom
-   ENDIF
-   hb_FNameSplit( cTable, @cPath, @cName, @cExt )
+   oSQL := HbSQL():new():create( cFields, cFrom, cWhere, cOrder, cInto, cGroup )
 
-   SWITCH Upper( cDriver )
-   CASE "DBFCDX"
-   CASE "DBFNTX"
-   CASE "DBFNSX"
-   CASE "ADS"
-      IF Empty( cExt )
-         cTable := cTable + ".dbf"
-      ENDIF
-      lTableExists := hb_FileExists( cTable )
-      EXIT
-   CASE "CACHERDD"
-      lTableExists := .T.
-      EXIT
-   ENDSWITCH
-
-   IF ! lTableExists
-      Alert( "Table " + cTable + ";" + "does not exists!" )
-      RETURN NIL
-   ENDIF
-
-   USE ( cTable ) VIA ( cDriver ) Alias ( cAlias ) SHARED NEW
-   IF NetErr()
-      Alert( "Some error in opening ;" + cTable )
-      RETURN NIL
-   ENDIF
-   aStruct:= dbStruct()
-
-   nFields := {}
-   IF "*" == cFields
-      aFields := {}
-      AEval( aStruct, {|e_| AAdd( aFields, e_[ 1 ] ) } )
-   ELSE
-      aFields := {}
-      xTmp := hb_ATokens( cFields, "," )
-      FOR EACH cField IN xTmp
-         cField := Upper( AllTrim( cField ) )
-         IF ( nField := AScan( aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
-            AAdd( aFields, cField )
-            AAdd( nFields, nField )
-         ENDIF
-      NEXT
-   ENDIF
-   IF Empty( aFields )
-      RETURN __closeAndAlert( "Fields requested are not present in the table!" )
-   ENDIF
-
-   aTags := {}
-   FOR n := 1 TO 50
-      IF ( xTmp := ( cAlias )->( IndexKey( n ) ) ) == ""
-         EXIT
-      ENDIF
-      AAdd( aTags, Upper( xTmp ) )
-   NEXT
-
-   IF ! Empty( cWhere )
-      IF ! __pullWheres( aStruct, cWhere, @aWhere, @cMsg )
-         RETURN __closeAndAlert( cMsg )
-      ENDIF
-      IF ! Empty( aWhere )
-         nWhere := 0
-         IF ! Empty( aTags )
-            FOR EACH xTmp IN aWhere
-               IF xTmp[ 3 ] == "=" .OR. xTmp[ 3 ] == "LIKE"
-                  n := Len( xTmp[ 1 ] )
-                  IF ( nIndex := AScan( aTags, {|e| Left( e, n ) == xTmp[ 1 ] } ) ) > 0
-                     dbSetOrder( nIndex )
-                     nWhere := xTmp:__enumIndex()
-                     cSearch := xTmp[ 2 ]
-                     IF Left( cSearch, 1 ) == '"'
-                        cSearch := SubStr( cSearch, 2, Len( cSearch ) - 2 )
-                     ENDIF
-                     IF Right( cSearch, 1 ) == "%"
-                        cSearch = Left( cSearch, Len( cSearch ) - 1 )
-                        cSearchType := "="
-                     ELSE
-                        cSearchType := "=="
-                     ENDIF
-                     xTmp[ 4 ] := cSearch
-                     EXIT
-                  ENDIF
-               ENDIF
-            NEXT
-         ENDIF
-         //
-         cFor := ""
-         FOR EACH xTmp IN aWhere
-            n := xTmp:__enumIndex()
-            IF n != nWhere       // we already processed it as seek field
-               nField := AScan( aStruct, {|e_| e_[ 1 ] == xTmp[ 1 ] } )
-               cValue := xTmp[ 2 ]
-               IF Left( cValue, 1 ) == '"'
-                  cValue := SubStr( cValue, 2, Len( cValue ) - 2 )
-               ENDIF
-               xTmp[ 2 ] := cValue
-               SWITCH aStruct[ nField, 2 ]
-               CASE "C"
-                  cValue := '"' + cValue + '"'
-                  EXIT
-               CASE "D"
-                  cValue := StrTran( cValue, "-", "" )
-                  cValue := "StoD('" + cValue + "')"
-                  EXIT
-               CASE "N"
-                  cValue := Val( cValue )
-                  cValue := hb_ntos( cValue )
-                  EXIT
-               ENDSWITCH
-               xTmp[ 2 ] := cValue
-               xTmp[ 5 ] := nField
-               //                                               operator          value
-               cFor += "fieldget(" + hb_ntos( nField ) + ") " + xTmp[ 3 ] + " " + xTmp[ 2 ] + " .AND. "
-            ENDIF
-         NEXT
-         IF Right( cFor,7 ) == " .AND. "
-            cFor := Left( cFor, Len( cFor ) - 7 )
-         ENDIF
-
-         IF ! Empty( cFor )
-            bFor := &( "{|| " + cFor + "}" )
-         ENDIF
-      ENDIF
-   ENDIF
-
-   aData := {}
-   // Collect data from the source table based on WHERE clause
-   //
-   __collectData( @aData, cAlias, nFields, cSearch, cSearchType, bFor, nIndex )
-
-   // We have pulled data, close the source table
-   //
-   Select( cAlias )
-   dbCloseArea()
-
-   IF ! Empty( aData )
-      // Sort data per ORDER BY clause
-      //
-      __orderData( aData, cOrder, aFields )
-
-      xTmp := {}
-      FOR EACH cField IN aFields
-         IF ( n := AScan( aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
-            AAdd( xTmp, aStruct[ n ] )
-         ENDIF
-      NEXT
-      aStruct := xTmp
-
-      // Save if INTO clause is present
-      //
-      __saveData( aData, aStruct, aFields, cInto )
-
-      // We are done, browse results
-      //
-      __browseData( aData, aStruct )
-   ENDIF
-
-#ifdef __HBQTSCRIPTS__
-   RETURN Alert( cFields + ";" + cFrom + ";" + cWhere + ";" + cOrder + ";" + cInto )
-#else
-   RETURN NIL
-#endif
-
-
-STATIC FUNCTION __collectData( aData, cAlias, nFields, cSearch, cSearchType, bFor, nIndex )
-
-   IF ! HB_ISBLOCK( bFor )
-      IF nIndex > 0
-         IF dbSeek( cSearch )
-            IF cSearchType == "=="
-               DO WHILE Trim( ( cAlias )->( &( IndexKey( nIndex ) ) ) ) == cSearch
-                  __collectFields( @aData, cAlias, nFields )
-                  ( cAlias )->( dbSkip() )
-               ENDDO
-            ELSE
-               DO WHILE ( cAlias )->( &( IndexKey( nIndex ) ) ) = cSearch
-                  __collectFields( @aData, cAlias, nFields )
-                  ( cAlias )->( dbSkip() )
-               ENDDO
-            ENDIF
-         ENDIF
-      ELSE
-         DO WHILE ! ( cAlias )->( Eof() )
-            __collectFields( @aData, cAlias, nFields )
-            ( cAlias )->( dbSkip() )
-         ENDDO
-      ENDIF
-   ELSE
-      IF nIndex > 0                                  // We have the index
-         IF dbSeek( cSearch )
-            IF cSearchType == "=="
-               DO WHILE Trim( ( cAlias )->( &( IndexKey( nIndex ) ) ) ) == cSearch
-                  IF Eval( bFor )
-                     __collectFields( @aData, cAlias, nFields )
-                  ENDIF
-                  ( cAlias )->( dbSkip() )
-               ENDDO
-            ELSE
-               DO WHILE ( cAlias )->( &( IndexKey( nIndex ) ) ) = cSearch
-                  IF Eval( bFor )
-                     __collectFields( @aData, cAlias, nFields )
-                  ENDIF
-                  ( cAlias )->( dbSkip() )
-               ENDDO
-            ENDIF
-         ENDIF
-      ELSE
-         DO WHILE ! ( cAlias )->( Eof() )
-            IF Eval( bFor )
-               __collectFields( @aData, cAlias, nFields )
-            ENDIF
-            ( cAlias )->( dbSkip() )
-         ENDDO
-      ENDIF
-   ENDIF
+   HB_SYMBOL_UNUSED( oSQL )
    RETURN NIL
 
-
-STATIC FUNCTION __collectFields( aData, cAlias, nFields )
-   LOCAL aTmp, nField
-
-   aTmp := {}
-   FOR EACH nField IN nFields
-      AAdd( aTmp, ( cAlias )->( FieldGet( nField ) ) )
-   NEXT
-   AAdd( aData, aTmp )
-   RETURN NIL
-
-
-STATIC FUNCTION __orderData( aData, cOrder, aFields )
-   LOCAL aOrder, xTmp, nS, n, cE, nE, i, cFor, bFor, nLastOrder
-
-   IF ! Empty( cOrder )
-      cOrder := Upper( cOrder )
-      aOrder := hb_ATokens( cOrder, "," )
-      FOR EACH cOrder IN aOrder
-         IF Right( cOrder, 4 ) == "-ASC"
-            cOrder := Left( cOrder, Len( cOrder ) - 4 )
-         ENDIF
-         xTmp := Right( cOrder, 5 ) == "-DESC"
-         IF xTmp
-            cOrder := Left( cOrder, Len( cOrder ) - 5 )
-         ENDIF
-         nS := 1
-         IF ( n := AScan( aFields, {|e| e == cOrder } ) ) > 0
-            cFor := "e_[" + hb_ntos( n ) + "]" + iif( xTmp, ">", "<" ) +  "f_[" + hb_ntos( n ) + "]"
-            bFor := &( "{|e_,f_| " + cFor + " }" )
-
-            IF cOrder:__enumIndex() == 1
-               ASort( aData, NIL, NIL, bFor )
-            ELSE
-               cE := aData[ nS, nLastOrder ]
-               nE := 0
-               DO WHILE .T.
-                  FOR i := nS TO Len( aData )
-                     IF aData[ i, nLastOrder ] != cE
-                        ASort( aData, nS, nE, bFor )
-                        cE := aData[ i, nLastOrder ]
-                        nS := i
-                        nE := 0
-                        EXIT
-                     ENDIF
-                     nE++
-                  NEXT
-                  IF nE >= Len( aData )
-                     EXIT
-                  ENDIF
-               ENDDO
-               IF nS < Len( aData )
-                  ASort( aData, nS, NIL, bFor )
-               ENDIF
-            ENDIF
-            nLastOrder := n
-         ENDIF
-      NEXT
-   ENDIF
-   RETURN NIL
-
-
-STATIC FUNCTION __saveData( aData, aStruct, aFields, cInto )
-   LOCAL xTmp, cField
-   LOCAL cTarget := "__TARGET__"
-
-   IF ! Empty( cInto )
-      dbCreate( cInto, aStruct, "DBFCDX" )
-      IF ! NetErr() .AND. hb_FileExists( cInto )
-         USE ( cInto ) ALIAS ( cTarget ) EXCLUSIVE NEW VIA "DBFCDX"
-         IF ! NetErr()
-            FOR EACH xTmp IN aData
-               dbAppend()
-               FOR EACH cField IN aFields
-                  REPLACE ( cTarget )->&cField WITH xTmp[ cField:__enumIndex() ]
-               NEXT
-            NEXT
-            dbCommit()
-            dbGoTop()
-         ENDIF
-         dbCloseArea()
-      ENDIF
-   ENDIF
-   RETURN NIL
-
-
-STATIC FUNCTION __pullWheres( aStruct, cWhere, aWhere, cMsg )
-   LOCAL xTmp, n, cClone, cField
-   LOCAL a_:={}
-
-   aWhere := {}
-
-   cClone := StrTran( cWhere, " and ", " AND " )
-   DO WHILE .T.
-      IF ( n := At( " AND ", cClone ) ) > 0
-         AAdd( a_, AllTrim( SubStr( cClone, 1, n - 1 ) ) )
-         cClone := SubStr( cClone, n + 5 )
-      ELSE
-         EXIT
-      ENDIF
-   ENDDO
-   IF ! Empty( cClone )
-      AAdd( a_, cClone )
-   ENDIF
-
-   FOR EACH xTmp IN a_
-      // parse for OR condition
-   NEXT
-
-   FOR EACH cWhere IN a_
-      cWhere := StrTran( cWhere, " like ", " LIKE " )
-
-      DO CASE
-      CASE At( ">=", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, ">=" ) )
-      CASE At( "<=", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, "<=" ) )
-      CASE At( "!=", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, "!=" ) )
-      CASE At( "<>", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, "<>" ) )
-      CASE At( "=", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, "=" ) )
-      CASE At( ">", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, ">" ) )
-      CASE At( "<", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, "<" ) )
-      CASE At( "LIKE", cWhere ) > 0
-         AAdd( aWhere, __pullKeyValueOperator( cWhere, "LIKE" ) )
-      ENDCASE
-   NEXT
-
-   FOR EACH a_ IN aWhere
-      IF ! HB_ISARRAY( a_ )
-         cMsg := "WHERE clause - mal-formed!"
-         RETURN .F.
-      ENDIF
-      cField := a_[ 1 ]
-      IF AScan( aStruct, {|e_| e_[ 1 ] == cField } ) == 0
-         cMsg := "WHERE clause - field does not exists!"
-         RETURN .F.
-      ENDIF
-   NEXT
-   HB_SYMBOL_UNUSED( cMsg )
-   RETURN .T.
-
-
-STATIC FUNCTION __pullKeyValueOperator( cWhere, cOperator )
-   LOCAL cField, cValue
-   LOCAL n := hb_At( cOperator, cWhere )
-   IF n > 0
-      cField := Upper( AllTrim( SubStr( cWhere, 1, n - 1 ) ) )
-      cValue := AllTrim( SubStr( cWhere, n + Len( cOperator ) ) )
-      RETURN { cField, cValue, cOperator, NIL, NIL, NIL }
-   ENDIF
-   RETURN NIL
-
-
-STATIC FUNCTION __closeAndAlert( cAlert )
-   Select( "__SOURCE__" )
-   dbCloseArea()
-   RETURN Alert( cAlert )
-
+//--------------------------------------------------------------------//
 
 STATIC FUNCTION __browseData( aData, aStruct )
    LOCAL i, oBrw
 
    WITH OBJECT oBrw := TBrowseNew( 0, 0, MaxRow(), MaxCol() )
       :cargo         := { aData, 1 }
-      :goTopBlock    := {|| 1 }
-      :goBottomBlock := {|| Len( oBrw:cargo[ 1 ] ) }
+      :goTopBlock    := {|| oBrw:cargo[ 2 ] := 1 }
+      :goBottomBlock := {|| oBrw:cargo[ 2 ] := Len( oBrw:cargo[ 1 ] ) }
       :SkipBlock     := {| nSkip, nPos | nPos := oBrw:cargo[ 2 ], ;
                            oBrw:cargo[ 2 ] := iif( nSkip > 0, Min( Len( oBrw:cargo[ 1 ] ), oBrw:cargo[ 2 ] + nSkip ), ;
                            Max( 1, oBrw:cargo[ 2 ] + nSkip ) ), oBrw:cargo[ 2 ] - nPos }
@@ -1086,12 +701,22 @@ STATIC FUNCTION __browseData( aData, aStruct )
       :ColorSpec     := 'N/W,W+/R,N/W,N/W'
    ENDWITH
    FOR i := 1 TO Len( aStruct )
-      oBrw:addColumn( TBColumnNew( aStruct[ i, 1 ], __buildColumnBlock( oBrw, i ) ) )
+      oBrw:addColumn( TBColumnNew( __formatHeading( aStruct, i ), __buildColumnBlock( oBrw, i ) ) )
       oBrw:getColumn( i ):picture := __buildPicture( aStruct, i )
    NEXT
 
    __handleBrowse( oBrw )
    RETURN NIL
+
+
+STATIC FUNCTION __formatHeading( aStruct, i )
+   LOCAL cHeading := aStruct[ i, 1 ]
+   IF aStruct[ i, 2 ] == "N"
+      IF aStruct[ i, 3 ] > Len( cHeading )
+         cHeading := PadL( cHeading, aStruct[ i, 3 ] )
+      ENDIF
+   ENDIF
+   RETURN cHeading
 
 
 STATIC FUNCTION __buildColumnBlock( oBrw, i )
@@ -1130,20 +755,24 @@ STATIC FUNCTION  __handleBrowse( oBrw )
       DO CASE
       CASE nLastKey == K_ESC
          lContinue := .F.
+      CASE nLastKey == HB_K_CLOSE
+         lContinue := .F.
       CASE nLastKey == K_UP
          oBrw:Up()
       CASE nLastKey == K_DOWN
          oBrw:Down()
       CASE nLastKey == K_PGUP
-         oBrw:PageUp()
+         oBrw:pageUp()
       CASE nLastKey == K_PGDN
-         oBrw:PageDown()
+         oBrw:pageDown()
       CASE nLastKey == K_CTRL_PGUP
-         oBrw:GoTop()
+         oBrw:goTop()
+         oBrw:refreshAll()
+         oBrw:forceStable()
       CASE nLastKey == K_CTRL_PGDN
-         oBrw:GoBottom()
+         oBrw:goBottom()
       CASE nLastKey == K_RIGHT
-         oBrw:Right()
+         oBrw:right()
       CASE nLastKey == K_LEFT
          oBrw:left()
       CASE nLastKey == K_HOME
@@ -1167,3 +796,812 @@ STATIC FUNCTION  __handleBrowse( oBrw )
    ENDDO
    RETURN NIL
 
+//--------------------------------------------------------------------//
+
+CLASS HbSQL
+
+   DATA   cFields                                  INIT ""
+   DATA   cFrom                                    INIT ""
+   DATA   cWhere                                   INIT ""
+   DATA   cOrder                                   INIT ""
+   DATA   cGroup                                   INIT ""
+   DATA   cInto                                    INIT ""
+
+   DATA   aData                                    INIT {}
+   DATA   aStruct                                  INIT {}
+   DATA   aStructF                                 INIT {}
+   DATA   aFields                                  INIT {}
+   DATA   nFields                                  INIT {}
+   DATA   aTags                                    INIT {}
+   DATA   aInfo                                    INIT {}
+   DATA   aWhere                                   INIT {}
+
+   DATA   cAlias                                   INIT "__SOURCE__"
+   DATA   cDriver
+   DATA   cTable
+   DATA   cPath
+   DATA   cName
+   DATA   cExt
+   DATA   cMsg                                     INIT ""
+   DATA   cSearch                                  INIT ""
+   DATA   nIndex                                   INIT 0
+   DATA   cFor                                     INIT ""
+   DATA   bFor
+   DATA   cSearchType                              INIT ""
+   DATA   lAggregate                               INIT .F.
+
+   METHOD init()
+   METHOD create( cFields, cFrom, cWhere, cOrder, cInto, cGroup )
+   METHOD openTable()
+   METHOD parseFields()
+   METHOD pullIndexes()
+   METHOD closeAndAlert( cAlert )
+   METHOD parseWhere()
+   METHOD pullWheres()
+   METHOD pullKeyValueOperator( cWhere, cOperator )
+   METHOD collectData()
+   METHOD collectFields()
+   METHOD orderData( cOrderBy )
+   METHOD saveData()
+   METHOD consolidateData()
+   METHOD browseData()
+   METHOD parseParams( cFunc, aParam, aResult )
+
+   ENDCLASS
+
+
+METHOD HbSQL:init()
+   RETURN Self
+
+
+METHOD HbSQL:create( cFields, cFrom, cWhere, cOrder, cInto, cGroup )
+
+   DEFAULT cFields TO ::cFields
+   DEFAULT cFrom   TO ::cFrom
+   DEFAULT cWhere  TO ::cWhere
+   DEFAULT cOrder  TO ::cOrder
+   DEFAULT cInto   TO ::cInto
+   DEFAULT cGroup  TO ::cGroup
+
+   ::cFields := cFields
+   ::cFrom   := cFrom
+   ::cWhere  := cWhere
+   ::cOrder  := cOrder
+   ::cInto   := cInto
+   ::cGroup  := cGroup
+
+   IF ::openTable()
+      IF ! ::parseFields()
+         RETURN ::closeAndAlert( ::cMsg )
+      ENDIF
+      IF ! ::lAggregate .AND. Empty( ::aFields )
+         RETURN ::closeAndAlert( "Fields requested are not present in the table!" )
+      ENDIF
+      ::pullIndexes()
+      IF ::parseWhere()
+         // Collect data from the source table based on WHERE clause
+         //
+         ::collectData()
+         // We have pulled data, close the source table
+         //
+         Select( ::cAlias )
+         dbCloseArea()
+         //
+         IF ! Empty( ::aData )
+            IF ::lAggregate
+               IF ! ::consolidateData()
+                  RETURN ::closeAndAlert( ::cMsg )
+               ENDIF
+            ENDIF
+            // Sort data per ORDER BY clause
+            //
+            ::orderData()
+            // Save if INTO clause is present
+            //
+            ::saveData()
+            // We are done, browse results
+            //
+            ::browseData()
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbSQL:collectData()
+
+   IF ! HB_ISBLOCK( ::bFor )
+      IF ::nIndex > 0
+         IF dbSeek( ::cSearch )
+            IF ::cSearchType == "=="
+               DO WHILE Trim( ( ::cAlias )->( &( IndexKey( ::nIndex ) ) ) ) == ::cSearch
+                  ::collectFields()
+                  ( ::cAlias )->( dbSkip() )
+               ENDDO
+            ELSE
+               DO WHILE ( ::cAlias )->( &( IndexKey( ::nIndex ) ) ) = ::cSearch
+                  ::collectFields()
+                  ( ::cAlias )->( dbSkip() )
+               ENDDO
+            ENDIF
+         ENDIF
+      ELSE
+         DO WHILE ! ( ::cAlias )->( Eof() )
+            ::collectFields()
+            ( ::cAlias )->( dbSkip() )
+         ENDDO
+      ENDIF
+   ELSE
+      IF ::nIndex > 0
+         IF dbSeek( ::cSearch )
+            IF ::cSearchType == "=="
+               DO WHILE Trim( ( ::cAlias )->( &( IndexKey( ::nIndex ) ) ) ) == ::cSearch
+                  IF Eval( ::bFor )
+                     ::collectFields()
+                  ENDIF
+                  ( ::cAlias )->( dbSkip() )
+               ENDDO
+            ELSE
+               DO WHILE ( ::cAlias )->( &( IndexKey( ::nIndex ) ) ) = ::cSearch
+                  IF Eval( ::bFor )
+                     ::collectFields()
+                  ENDIF
+                  ( ::cAlias )->( dbSkip() )
+               ENDDO
+            ENDIF
+         ENDIF
+      ELSE
+         DO WHILE ! ( ::cAlias )->( Eof() )
+            IF Eval( ::bFor )
+               ::collectFields()
+            ENDIF
+            ( ::cAlias )->( dbSkip() )
+         ENDDO
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbSQL:collectFields()
+   LOCAL aTmp, aField
+
+   aTmp := {}
+   FOR EACH aField IN ::aInfo
+      AAdd( aTmp, Eval( aField[ 6 ] ) )
+   NEXT
+   AAdd( ::aData, aTmp )
+   RETURN NIL
+
+
+METHOD HbSQL:parseFields()
+   LOCAL xTmp, cField, nField, aToken, n, aParam, aF, cFunc, cParams
+   LOCAL rx := hb_regexComp( "\b([A-Z,a-z,_]\w*\(.*?\))|\b([A-Z,a-z,_]\w*)" )
+   LOCAL px := hb_regexComp( "\b([A-Z,a-z,_]\w*)|[\*\+-/]" )
+   LOCAL gx := hb_regexComp( "\b([A-Z,a-z,_]\w*)|\b[0-9]\w*" )
+
+   IF "*" == ::cFields
+      FOR EACH xTmp IN ::aStruct
+         n := xTmp:__enumIndex()
+         AAdd( ::aFields, xTmp[ 1 ] )
+         AAdd( ::nFields, n )
+         AAdd( ::aInfo, { xTmp[ 1 ], xTmp[ 2 ], xTmp[ 3 ], xTmp[ 4 ], "FIELD", &( "{|| fieldget(" + hb_ntos( n ) + ") }" ) } )
+      NEXT
+      AEval( ::aStruct, {|e_,i| AAdd( ::aFields, e_[ 1 ] ), AAdd( ::nFields, i ) } )
+   ELSE
+      xTmp := hb_regexAll( rx, " " + ::cFields, ,,,,, .T. )
+      FOR EACH aToken IN xTmp
+         cField := Upper( aToken[ 1 ] )
+
+         IF ( n := At( "(", cField ) ) > 0
+            cFunc := Left( cField, n - 1 )
+            cParams := " " + SubStr( cField, n + 1 )
+            cParams := Left( cParams, Len( cParams ) - 1 )   // truncate function closing parenthesis
+            aParam := hb_regexAll( px, cParams, ,,,,, .T. )
+
+            SWITCH cFunc
+            CASE "SUM"
+            CASE "AVG"
+            CASE "MIN"
+            CASE "MAX"
+            CASE "COUNT"
+               ::lAggregate := .T.                 // it is an aggregate function
+               IF ::parseParams( cFunc, aParam, @aF )
+                  AAdd( ::aInfo, aF )
+               ENDIF
+               EXIT
+            CASE "SUBSTR"
+            CASE "LEFT"
+            CASE "RIGHT"
+               aParam := hb_regexAll( gx, cParams, ,,,,, .T. )
+               IF ( n := AScan( ::aStruct, {|e_| e_[ 1 ] == aParam[ 1,1 ] } ) ) > 0 .AND. ::aStruct[ n,2 ] == "C"
+                  IF Len( aParam ) >= 2 .AND. Val( aParam[ 2, 1 ] ) > 0
+                     IF cFunc == "SUBSTR"
+                        xTmp := iif( Len( aParam ) >= 3, Val( aParam[ 3,1 ] ), ::aStruct[ n, 3 ] - Val( aParam[ 2, 1 ] ) + 1 )
+                        AAdd( ::aInfo, { cField, "C", xTmp, 0, cFunc, &( "{|| SubStr( fieldget(" + hb_ntos( n ) + ")," + aParam[ 2,1 ] + ;
+                                                                         iif( Len( aParam ) >= 3, ", " + aParam[ 3,1 ], "" ) + ") }" ) } )
+                     ELSEIF cFunc == "LEFT"
+                        xTmp := Val( aParam[ 2, 1 ] )
+                        AAdd( ::aInfo, { cField, "C", xTmp, 0, cFunc, &( "{|| Left( fieldget(" + hb_ntos( n ) + ")," + aParam[ 2,1 ] + ") }" ) } )
+                     ELSEIF cFunc == "RIGHT"
+                        xTmp := Val( aParam[ 2, 1 ] )
+                        AAdd( ::aInfo, { cField, "C", xTmp, 0, cFunc, &( "{|| Right( fieldget(" + hb_ntos( n ) + ")," + aParam[ 2,1 ] + ") }" ) } )
+                     ENDIF
+                  ENDIF
+               ENDIF
+               EXIT
+            CASE "LOWER"
+            CASE "UPPER"
+               IF Len( aParam ) == 1
+                  IF ( n := AScan( ::aStruct, {|e_| e_[ 1 ] == aParam[ 1,1 ] } ) ) > 0 .AND. ::aStruct[ n,2 ] == "C"
+                     IF cFunc == "LOWER"
+                        AAdd( ::aInfo, { cField, "C", ::aStruct[ n,3 ], 0, cFunc, &( "{|| Lower( fieldget(" + hb_ntos( n ) + ") ) }" ) } )
+                     ELSEIF cFunc == "UPPER"
+                        AAdd( ::aInfo, { cField, "C", ::aStruct[ n,3 ], 0, cFunc, &( "{|| Upper( fieldget(" + hb_ntos( n ) + ") ) }" ) } )
+                     ENDIF
+                  ENDIF
+               ENDIF
+               EXIT
+            CASE "FUNC"
+               aParam := hb_regexAll( px, " " + cParams, ,,,,, .T. )
+               FOR EACH xTmp IN ::aStruct
+                  IF AScan( aParam, {|e_| e_[ 1 ] == xTmp[ 1 ] } ) > 0
+                     cParams := StrTran( cParams, xTmp[ 1 ], "fieldget(" + hb_ntos( xTmp:__enumIndex() ) + ")" )
+                  ENDIF
+               NEXT
+               xTmp := NIL
+               IF HB_ISHASH( xTmp := __evalAsIs( cParams ) )
+                  AAdd( ::aInfo, { cField, xTmp[ "type" ], xTmp[ "length" ], xTmp[ "dec" ], cFunc, &( "{|| " + cParams + " }" ) } )
+               ENDIF
+               EXIT
+            ENDSWITCH
+         ELSE
+            IF ( nField := AScan( ::aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
+               AAdd( ::aFields, cField )
+               AAdd( ::nFields, nField )
+               AAdd( ::aInfo, { cField, ::aStruct[ nField, 2 ], ::aStruct[ nField, 3 ], ::aStruct[ nField, 4 ], ;
+                                "FIELD", &( "{|| FieldGet(" + hb_ntos( nField ) + ") }" ) } )
+            ELSE
+               ::aFields := {}
+               ::cMsg := "Defined field does not exist in table!"
+               RETURN .F.
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
+   IF ::lAggregate
+      AAdd( ::aInfo, { "_$B$_", "N", 1, 0, "BASE", {|| 1 } } )
+   ENDIF
+
+   IF ! Empty( ::aFields )
+      FOR EACH cField IN ::aFields
+         IF ( nField := AScan( ::aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
+            AAdd( ::aStructF, ::aStruct[ nField ] )
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN .T.
+
+
+STATIC FUNCTION __evalAsIs( cParams )
+   LOCAL hRet, xTmp
+   LOCAL bError := ErrorBlock( {|| Break() } )
+
+   BEGIN SEQUENCE
+      xTmp := Eval( &( "{|| " + cParams + " }" ) )
+      hRet := {=>}
+      hRet[ "type"   ] := ValType( xTmp )
+      hRet[ "length" ] := iif( hRet[ "type" ] == "C", Len( xTmp ), iif( hRet[ "type" ] == "N", 15, iif( hRet[ "type" ] == "D", 8, 1 ) ) )
+      hRet[ "dec"    ] := iif( hRet[ "type" ] == "N", 3, 0 )
+   RECOVER
+      // nothing to do
+   END SEQUENCE
+   ErrorBlock( bError )
+   RETURN hRet
+
+
+METHOD HbSQL:parseParams( cFunc, aParam, aResult )
+   LOCAL lError := .F.
+   LOCAL cF, aF, nField, nWid, nDec, cN
+
+   nWid := nDec := 0
+   cN := ""
+   IF Len( aParam ) >= 1 .AND. ! ( Len( aParam ) % 2 == 0 )
+      FOR EACH aF IN aParam
+         cF := aF[ 1 ]
+         cN += cF
+         IF ! cF $ "+*-/"
+            IF ( nField := AScan( ::aStruct, {|e_| e_[ 1 ] == cF } ) ) > 0
+               IF ::aStruct[ nField, 2 ] == "N"
+                  aF[ 2 ] := "fieldget(" + hb_ntos( nField ) + ")"
+                  nWid := Max( nWid, ::aStruct[ nField, 3 ] )
+                  nDec := Max( nDec, ::aStruct[ nField, 4 ] )
+               ELSE
+                  lError := .T.
+               ENDIF
+            ELSE
+               lError := .T.
+            ENDIF
+         ENDIF
+         IF lError
+            ::cMsg := "Defined field does not exist in table!"
+            RETURN .F.
+         ENDIF
+      NEXT
+      IF cFunc == "COUNT"
+         aResult := { cFunc + "(" + cN + ")", "N", 8, 0, cFunc, &( "{|| 1 }" ) }
+      ELSE
+         IF Len( aParam ) == 5
+            cF := aParam[ 1, 2 ] + aParam[ 2, 1 ] + aParam[ 3,2 ] + aParam[ 4, 1 ] + aParam[ 5,2 ]
+         ELSEIF Len( aParam ) == 3
+            cF := aParam[ 1, 2 ] + aParam[ 2, 1 ] + aParam[ 3,2 ]
+         ELSEIF Len( aParam ) == 1
+            cF := aParam[ 1, 2 ]
+         ENDIF
+         aResult := { cFunc + "(" + cN + ")", "N", 12, nDec, cFunc,  &( "{|| " + cF + "}" ) }
+      ENDIF
+   ELSE
+      ::cMsg := "Defined field does not exist in table!"
+      RETURN .F.
+   ENDIF
+   RETURN .T.
+
+
+METHOD HbSQL:consolidateData()
+   LOCAL aGroup, cGroup, aData, ele_, nAdd_, aInfo, n, aOpr_
+
+   IF ! Empty( ::cGroup )
+      aGroup := hb_ATokens( Upper( ::cGroup ), "," )
+      FOR EACH cGroup IN aGroup
+         cGroup := AllTrim( cGroup )
+         IF AScan( ::aFields, {|e| e == cGroup } ) == 0
+            ::cMsg := "Group By field is not included in SELECT clause!"
+            RETURN .F.
+         ENDIF
+      NEXT
+
+      ele_:= {}
+      FOR EACH cGroup IN aGroup
+         IF ( n := AScan( ::aInfo, {|e_| e_[ 1 ] == cGroup } ) ) > 0
+            AAdd( ele_, n )
+         ENDIF
+      NEXT
+      nAdd_:= {} ; aOpr_:= {}
+      FOR EACH aInfo IN ::aInfo
+         IF aInfo[ 5 ] $ "SUM,AVG,MIN,MAX,COUNT"
+            AAdd( nAdd_, aInfo:__enumIndex() )
+            AAdd( aOpr_, aInfo[ 5 ] )
+         ENDIF
+      NEXT
+      //
+      aData := AAddUnique( ::aData, ele_, nAdd_, aOpr_ )
+
+      ::aData := aData
+   ELSE
+      ele_:= { Len( ::aInfo ) }
+      nAdd_:= {} ; aOpr_:= {}
+      FOR EACH aInfo IN ::aInfo
+         IF aInfo[ 5 ] $ "SUM,AVG,MIN,MAX,COUNT"
+            AAdd( nAdd_, aInfo:__enumIndex() )
+            AAdd( aOpr_, aInfo[ 5 ] )
+         ENDIF
+      NEXT
+      aData := AAddUnique( ::aData, ele_, nAdd_, aOpr_ )
+      ::aData := aData
+   ENDIF
+   RETURN .T.
+
+
+STATIC FUNCTION AAddUnique( d1_, ele_, nAdd_, aOpr_ )
+   LOCAL i, v, v1, d_, nCounter
+   LOCAL v_:= {}
+   LOCAL dd_:= {}
+   LOCAL sum_:= AFill( Array( Len( nAdd_ ) ), 0 )
+
+   d_:= ASortEle( d1_, ele_ )
+
+   AEval( ele_, {|e| AAdd( v_, d_[ 1, e ] ) } )
+   v := AIndexCmp( v_ )
+   nCounter := 0
+   FOR i := 1 TO Len( d_ )
+      v_:= {}
+      AEval( ele_, {|e| AAdd( v_, d_[ i, e ] ) } )
+      IF ! ( v == ( v1 := AIndexCmp( v_ ) ) )
+         __adjustForAvg( sum_, nCounter, aOpr_ )
+         AAdd( dd_, d_[ i - 1 ] )
+         AEval( nAdd_, {|e, j| dd_[ Len( dd_ ), e ] := sum_[ j ] } )
+         sum_:= AFill( sum_, 0 )
+         v := v1
+         nCounter := 0
+      ENDIF
+      nCounter++
+      __applyOperation( nAdd_, sum_, d_[ i ], nCounter, aOpr_ )
+   NEXT
+   __adjustForAvg( sum_, nCounter, aOpr_ )
+   AAdd( dd_, d_[ i - 1 ] )
+   AEval( nAdd_, {|e, j| dd_[ Len( dd_ ), e ] := sum_[ j ] } )
+   RETURN dd_
+
+
+STATIC FUNCTION __adjustForAvg( sum_, nCounter, aOpr_ )
+   LOCAL j
+
+   FOR j := 1 TO Len( aOpr_ )
+      IF aOpr_[ j ] == "AVG"
+         sum_[ j ] := sum_[ j ] / nCounter
+      ENDIF
+   NEXT
+   RETURN NIL
+
+
+STATIC FUNCTION __applyOperation( nAdd_, sum_, d_, nCounter, aOpr_ )
+   LOCAL j
+
+   FOR j := 1 TO Len( aOpr_ )
+      SWITCH aOpr_[ j ]
+      CASE "COUNT"
+      CASE "SUM"
+      CASE "AVG"
+         sum_[ j ] += d_[ nAdd_[ j ] ]
+         EXIT
+      CASE "MIN"
+         sum_[ j ] := iif( nCounter == 1, d_[ nAdd_[ j ] ], Min( sum_[ j ], d_[ nAdd_[ j ] ] ) )
+         EXIT
+      CASE "MAX"
+         sum_[ j ] := Max( sum_[ j ], d_[ nAdd_[ j ] ] )
+         EXIT
+      ENDSWITCH
+   NEXT
+   RETURN NIL
+
+
+STATIC FUNCTION ASortEle( ddd_, ele_ )
+   LOCAL i, s, j, k
+   LOCAL dum_:= {}
+   LOCAL dat_:= {}
+   LOCAL nRecs := Len( ddd_ )
+   LOCAL nEle := Len( ele_ )
+   LOCAL typ_:= Array( nEle )
+
+   AEval( ele_, {|e,i| typ_[ i ] := ValType( ddd_[ 1, e ] ) } )
+
+   FOR i := 1 TO nRecs
+       s := ""
+       FOR j := 1 TO nEle
+          k := ele_[ j ]
+          SWITCH typ_[ j ]
+          CASE "C" ; s += ddd_[ i, k ] ; EXIT
+          CASE "D" ; s += DToS( ddd_[ i, k ] ) ; EXIT
+          CASE "N" ; s += Str( ddd_[ i, k ], 17, 4 ) ; EXIT
+          CASE "L" ; s += iif( ddd_[ i, k ], "T", "F" ) ; EXIT
+          ENDSWITCH
+       NEXT
+       AAdd( dum_, { s, i } )
+   NEXT
+
+   ASort( dum_, NIL, NIL, {|e_, f_| e_[ 1 ] < f_[ 1 ] } )
+
+   FOR i := 1 TO Len( dum_ )
+      AAdd( dat_, ddd_[ dum_[ i, 2 ] ] )
+   NEXT
+   RETURN dat_
+
+
+STATIC FUNCTION AIndexCmp( a_ )
+   LOCAL i
+   LOCAL s := ''
+   FOR i := 1 TO Len( a_ )
+      s := AIndexKey( s, a_[ i ] )
+   NEXT
+   RETURN s
+
+
+STATIC FUNCTION AIndexKey( s, v )
+   SWITCH ValType( v )
+   CASE "C" ; RETURN s += v
+   CASE "N" ; RETURN s += Str( v, 17, 4 )
+   CASE "D" ; RETURN s += DToS( v )
+   CASE "L" ; RETURN s += iif( v, "T", "F" )
+   ENDSWITCH
+   RETURN s
+
+
+METHOD HbSQL:orderData( cOrderBy )
+   LOCAL aOrder, cOrder, xTmp, nS, n, cE, nE, i, cFor, bFor, nLastOrder
+
+   DEFAULT cOrderBy TO ::cOrder
+
+   IF ! Empty( cOrderBy )
+      cOrderBy := Upper( cOrderBy )
+      aOrder := hb_ATokens( cOrderBy, "," )
+      FOR EACH cOrder IN aOrder
+         IF Right( cOrder, 4 ) == "-ASC"
+            cOrder := Left( cOrder, Len( cOrder ) - 4 )
+         ENDIF
+         xTmp := Right( cOrder, 5 ) == "-DESC"
+         IF xTmp
+            cOrder := Left( cOrder, Len( cOrder ) - 5 )
+         ENDIF
+         nS := 1
+         //IF ( n := AScan( ::aFields, {|e| e == cOrder } ) ) > 0
+         IF ( n := AScan( ::aInfo, {|e_| e_[ 1 ] == cOrder } ) ) > 0
+            cFor := "e_[" + hb_ntos( n ) + "]" + iif( xTmp, ">", "<" ) +  "f_[" + hb_ntos( n ) + "]"
+            bFor := &( "{|e_,f_| " + cFor + " }" )
+
+            IF cOrder:__enumIndex() == 1
+               ASort( ::aData, NIL, NIL, bFor )
+            ELSE
+               cE := ::aData[ nS, nLastOrder ]
+               nE := 0
+               DO WHILE .T.
+                  FOR i := nS TO Len( ::aData )
+                     IF ::aData[ i, nLastOrder ] != cE
+                        ASort( ::aData, nS, nE, bFor )
+                        cE := ::aData[ i, nLastOrder ]
+                        nS := i
+                        nE := 0
+                        EXIT
+                     ENDIF
+                     nE++
+                  NEXT
+                  IF nE >= Len( ::aData )
+                     EXIT
+                  ENDIF
+               ENDDO
+               IF nS < Len( ::aData )
+                  ASort( ::aData, nS, NIL, bFor )
+               ENDIF
+            ENDIF
+            nLastOrder := n
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbSQL:saveData()
+   LOCAL xTmp, cField
+   LOCAL cTarget := "__TARGET__"
+   LOCAL nArea := Select()
+
+   IF ! Empty(:: cInto )
+      dbCreate( ::cInto, ::aStructF, "DBFCDX" )
+      IF ! NetErr() .AND. hb_FileExists( ::cInto )
+         USE ( ::cInto ) ALIAS ( cTarget ) EXCLUSIVE NEW VIA "DBFCDX"
+         IF ! NetErr()
+            FOR EACH xTmp IN ::aData
+               dbAppend()
+               FOR EACH cField IN ::aFields
+                  REPLACE ( cTarget )->&cField WITH xTmp[ cField:__enumIndex() ]
+               NEXT
+            NEXT
+            dbCommit()
+         ENDIF
+         dbCloseArea()
+      ENDIF
+   ENDIF
+   Select( nArea )
+   RETURN NIL
+
+
+METHOD HbSQL:parseWhere()
+   LOCAL xTmp, nWhere, n, nField, cValue
+
+   IF ! Empty( ::cWhere )
+      IF ! ::pullWheres()
+         RETURN ::closeAndAlert( ::cMsg )
+      ENDIF
+
+      IF ! Empty( ::aWhere )
+         nWhere := 0
+         IF ! Empty( ::aTags )
+            FOR EACH xTmp IN ::aWhere
+               IF xTmp[ 3 ] == "=" .OR. xTmp[ 3 ] == "LIKE"
+                  n := Len( xTmp[ 1 ] )
+                  IF ( ::nIndex := AScan( ::aTags, {|e| Left( e, n ) == xTmp[ 1 ] } ) ) > 0
+                     dbSetOrder( ::nIndex )
+                     nWhere := xTmp:__enumIndex()
+                     ::cSearch := xTmp[ 2 ]
+                     IF Left( ::cSearch, 1 ) == '"'
+                        ::cSearch := SubStr( ::cSearch, 2, Len( ::cSearch ) - 2 )
+                     ENDIF
+                     IF Right( ::cSearch, 1 ) == "%"
+                        ::cSearch := Left( ::cSearch, Len( ::cSearch ) - 1 )
+                        ::cSearchType := "="
+                     ELSE
+                        ::cSearchType := "=="
+                     ENDIF
+                     xTmp[ 4 ] := ::cSearch
+                     EXIT
+                  ENDIF
+               ENDIF
+            NEXT
+         ENDIF
+         //
+         ::cFor := ""
+         FOR EACH xTmp IN ::aWhere
+            n := xTmp:__enumIndex()
+            IF n != nWhere       // we already processed it as seek field
+               nField := AScan( ::aStruct, {|e_| e_[ 1 ] == xTmp[ 1 ] } )
+               cValue := xTmp[ 2 ]
+               IF Left( cValue, 1 ) == '"'
+                  cValue := SubStr( cValue, 2, Len( cValue ) - 2 )
+               ENDIF
+               xTmp[ 2 ] := cValue
+               SWITCH ::aStruct[ nField, 2 ]
+               CASE "C"
+                  cValue := '"' + cValue + '"'
+                  EXIT
+               CASE "D"
+                  cValue := StrTran( cValue, "-", "" )
+                  cValue := "StoD('" + cValue + "')"
+                  EXIT
+               CASE "N"
+                  cValue := Val( cValue )
+                  cValue := hb_ntos( cValue )
+                  EXIT
+               ENDSWITCH
+               xTmp[ 2 ] := cValue
+               xTmp[ 5 ] := nField
+               //                                                                operator                             value
+               ::cFor += "fieldget(" + hb_ntos( nField ) + ") " + iif( xTmp[ 3 ] == "LIKE", "=", xTmp[ 3 ] ) + " " + xTmp[ 2 ] + " .AND. "
+            ENDIF
+         NEXT
+         IF Right( ::cFor,7 ) == " .AND. "
+            ::cFor := Left( ::cFor, Len( ::cFor ) - 7 )
+         ENDIF
+         IF ! Empty( ::cFor )
+            ::bFor := &( "{|| " + ::cFor + "}" )
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN .T.
+
+
+METHOD HbSQL:pullWheres()
+   LOCAL n, cClone, cField, cWhere
+   LOCAL a_:={}
+
+   cClone := StrTran( ::cWhere, " and ", " AND " )
+   DO WHILE .T.
+      IF ( n := At( " AND ", cClone ) ) > 0
+         AAdd( a_, AllTrim( SubStr( cClone, 1, n - 1 ) ) )
+         cClone := SubStr( cClone, n + 5 )
+      ELSE
+         EXIT
+      ENDIF
+   ENDDO
+   IF ! Empty( cClone )
+      AAdd( a_, cClone )
+   ENDIF
+
+   FOR EACH cWhere IN a_
+      cWhere := StrTran( cWhere, " like ", " LIKE " )
+
+      DO CASE
+      CASE At( ">=", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, ">=" ) )
+      CASE At( "<=", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, "<=" ) )
+      CASE At( "!=", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, "!=" ) )
+      CASE At( "<>", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, "<>" ) )
+      CASE At( "=", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, "=" ) )
+      CASE At( ">", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, ">" ) )
+      CASE At( "<", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, "<" ) )
+      CASE At( "LIKE", cWhere ) > 0
+         AAdd( ::aWhere, ::pullKeyValueOperator( cWhere, "LIKE" ) )
+      ENDCASE
+   NEXT
+
+   FOR EACH a_ IN ::aWhere
+      IF ! HB_ISARRAY( a_ )
+         ::cMsg := "WHERE clause - mal-formed!"
+         RETURN .F.
+      ENDIF
+      cField := a_[ 1 ]
+      IF AScan( ::aStruct, {|e_| e_[ 1 ] == cField } ) == 0
+         ::cMsg := "WHERE clause - field does not exists!"
+         RETURN .F.
+      ENDIF
+   NEXT
+   RETURN .T.
+
+
+METHOD HbSQL:pullIndexes()
+   LOCAL n, xTmp
+
+   FOR n := 1 TO 50
+      IF ( xTmp := ( ::cAlias )->( IndexKey( n ) ) ) == ""
+         EXIT
+      ENDIF
+      AAdd( ::aTags, Upper( xTmp ) )
+   NEXT
+   RETURN Self
+
+
+METHOD HbSQL:openTable()
+   LOCAL lTableExists, n
+
+   IF Empty( ::cFrom )
+      Alert( "FROM clause missing!" ) ; RETURN .F.
+   ENDIF
+   IF ( n := At( "|", ::cFrom ) ) > 0
+      ::cDriver := SubStr( ::cFrom, 1, n - 1 )
+      ::cTable := SubStr( ::cFrom, n + 1 )
+   ELSE
+      ::cDriver := "DBFCDX"
+      ::cTable := ::cFrom
+   ENDIF
+   hb_FNameSplit( ::cTable, @::cPath, @::cName, @::cExt )
+
+   SWITCH Upper( ::cDriver )
+   CASE "DBFCDX"
+   CASE "DBFNTX"
+   CASE "DBFNSX"
+   CASE "ADS"
+      IF Empty( ::cExt )
+         ::cTable := ::cTable + ".dbf"
+      ENDIF
+      lTableExists := hb_FileExists( ::cTable )
+      EXIT
+   CASE "CACHERDD"
+      lTableExists := .T.
+      EXIT
+   ENDSWITCH
+
+   IF ! lTableExists
+      Alert( "Table;" + ::cTable + ";" + "does not exists!" )
+      RETURN .F.
+   ENDIF
+
+   USE ( ::cTable ) VIA ( ::cDriver ) Alias ( ::cAlias ) SHARED NEW
+   IF NetErr()
+      Alert( "Some error in opening ;" + ::cTable )
+      RETURN .F.
+   ENDIF
+   ::aStruct:= dbStruct()
+   RETURN .T.
+
+
+METHOD HbSQL:closeAndAlert( cAlert )
+   IF Select( ::cAlias ) > 0
+      Select( ::cAlias )
+      dbCloseArea()
+   ENDIF
+   RETURN Alert( cAlert ) == 99                    // always return false
+
+
+METHOD HbSQL:pullKeyValueOperator( cWhere, cOperator )
+   LOCAL cField, cValue
+   LOCAL n := hb_At( cOperator, cWhere )
+   IF n > 0
+      cField := Upper( AllTrim( SubStr( cWhere, 1, n - 1 ) ) )
+      cValue := AllTrim( SubStr( cWhere, n + Len( cOperator ) ) )
+      RETURN { cField, cValue, cOperator, NIL, NIL, NIL }
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbSQL:browseData()
+   LOCAL aField, nColumns, nDTCols
+   LOCAL aStr := {}
+
+   nColumns := 0
+   FOR EACH aField IN ::aInfo
+      IF aField[ 1 ] != "_$B$_"
+         AAdd( aStr, { aField[ 1 ], aField[ 2 ], aField[ 3 ], aField[ 4 ] } )
+         nColumns += Max( aField[ 3 ], Len( aField[ 1 ] ) )
+      ENDIF
+   NEXT
+   nColumns += ( 3 * Len( ::aInfo ) ) + 3
+   nDTCols := hb_gtInfo( HB_GTI_DESKTOPCOLS )
+   SetMode( 25, Max( 80, Min( nColumns, nDTCols ) ) )
+   //
+   hb_gtInfo( HB_GTI_SCREENHEIGHT, hb_gtInfo( HB_GTI_SCREENHEIGHT ) + 1 )
+
+   __browseData( ::aData, aStr )
+   RETURN NIL
