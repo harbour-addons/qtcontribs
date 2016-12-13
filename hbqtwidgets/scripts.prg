@@ -1053,6 +1053,9 @@ METHOD HbSQL:parseFields()
                   AAdd( ::aInfo, { cField, xTmp[ "type" ], xTmp[ "length" ], xTmp[ "dec" ], cFunc, &( "{|| " + cParams + " }" ) } )
                ENDIF
                EXIT
+            CASE "RECNO"
+               AAdd( ::aInfo, { cField, "N", 10, 0, cFunc, &( "{|| RecNo() }" ) } )
+               EXIT
             ENDSWITCH
          ELSE
             IF ( nField := AScan( ::aStruct, {|e_| e_[ 1 ] == cField } ) ) > 0
@@ -1427,7 +1430,7 @@ METHOD HbSQL:parseWhere()
                   cValue := SubStr( cValue, 2, Len( cValue ) - 2 )
                ENDIF
                xTmp[ 2 ] := cValue
-               SWITCH ::aStruct[ nField, 2 ]
+               SWITCH Left( ::aStruct[ nField, 2 ], 1 )
                CASE "C"
                   cValue := '"' + cValue + '"'
                   EXIT

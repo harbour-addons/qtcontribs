@@ -16,6 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2016-12-12 18:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r444)
+  * hbqtwidgets/scripts.prg
+    + Added: RecNo() field in SELECT statement. At times it is a must have info.
+
+      SELECT age,state,RecNo(),func(age*salary),Right(state,1),sum(salary),Min(salary),Max(salary),avg(salary),count(*) ;
+      FROM c:\harbour\tests\test.dbf GROUP BY age,state ORDER BY age-desc,state WHERE age > 66
+
 2016-12-12 16:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r443)
   * hbqtwidgets/scripts.prg
     % Changed : SQL parser from procedural to class code.
