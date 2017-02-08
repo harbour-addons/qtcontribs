@@ -60,6 +60,8 @@
  */
 /*----------------------------------------------------------------------*/
 
+#include "hbgtinfo.ch"
+
 REQUEST __HB_EXTERN__
 
 REQUEST __HBEXTERN__HBCT__
@@ -151,7 +153,7 @@ FUNCTION Main( ... )
    hbqt_errorSys()
    QResource():registerResource_1( hbqtres_dbu() )
 
-   oSplash := QSplashScreen( QPixmap( __hbqtImage( "hbdbu-2014" ) ) )
+   oSplash := QSplashScreen( QPixmap( __hbqtImage( "hbdbu-2017" ) ) )
    oSplash:show()
    QApplication():processEvents()
 
@@ -196,6 +198,9 @@ CREATE CLASS DbuMGR
    DATA   oDbuAct
    DATA   oScriptAct
    DATA   oSep1, oSep2, oSep3
+   DATA   oErrorLog
+
+   DATA   oLogAnalyzer
 
    DATA   oContextMenu
 
@@ -249,6 +254,8 @@ CREATE CLASS DbuMGR
    METHOD buildOnlineHelp()
    METHOD navigate( oItem )
    METHOD checkForDbfs()
+
+   METHOD errorLog()
 
    ENDCLASS
 
@@ -361,6 +368,12 @@ METHOD DbuMGR:create()
 #endif
    ENDWITH
 
+   WITH OBJECT ::oErrorLog := QAction( ::oUI:oWidget )
+      :setIcon( QIcon( __hbqtImage( "analysis-2" ) ) )
+      :setTooltip( "ErrorLog Analyzer" )
+      :connect( "triggered()", {|| ::errorLog() } )
+   ENDWITH
+
    WITH OBJECT ::oSep1 := QToolButton()
       :setEnabled( .F. )
       :setAutoRaise( .T. )
@@ -385,6 +398,7 @@ METHOD DbuMGR:create()
       :addAction( ::oDbuAct )
       :addAction( ::oDashAct )
       :addAction( ::oScriptAct )
+      :addAction( ::oErrorLog )
       :addWidget( ::oSep3 )
       :addAction( ::oInfoAct )
       :addAction( ::oHelpAct )
@@ -476,9 +490,10 @@ METHOD DbuMGR:navigate( oItem )
 STATIC FUNCTION __addTreeItem( oTree, cText, cWhatsThis )
    LOCAL oItem
 
-   oItem := QTreeWidgetItem()
-   oItem:setText( 0, cText )
-   oItem:setWhatsThis( 0, cWhatsThis )
+   WITH OBJECT oItem := QTreeWidgetItem()
+      :setText( 0, cText )
+      :setWhatsThis( 0, cWhatsThis )
+   ENDWITH
    oTree:addTopLevelItem( oItem )
    RETURN NIL
 
@@ -521,6 +536,16 @@ METHOD DbuMGR:buildOnlineHelp()
       ::oActiveX:show()
    ENDIF
 #endif
+   RETURN Self
+
+
+METHOD DbuMGR:errorLog()
+   IF Empty( ::oLogAnalyzer )
+      ::oLogAnalyzer := HbQtLogAnalyzer():new():create()
+      ::oUI:hLayLogsAnaluzer:addWidget( ::oLogAnalyzer:widget )
+      ::oLogAnalyzer:show()
+   ENDIF
+   ::oUI:stackedWidget:setCurrentIndex( __PAGE_MISC__ )
    RETURN Self
 
 

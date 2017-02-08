@@ -60,6 +60,10 @@ CREATE CLASS HbQtObjectHandler
    VAR    __Slots
    VAR    __Events
 
+   VAR    pPtr
+   ACCESS pointer()                               INLINE ::pPtr
+   METHOD getPointer()
+
    METHOD connect( cnEvent, bBlock )
    METHOD disconnect( cnEvent )
    METHOD setSlots()
@@ -67,6 +71,7 @@ CREATE CLASS HbQtObjectHandler
    METHOD findChild( cObjectName )
    METHOD isConnected( cnEvent )
    METHOD initialize()
+   METHOD connectClose( bBlock )
 
    DESTRUCTOR FUNCTION __hbqt_destroy()
    ERROR HANDLER onError()
@@ -266,6 +271,55 @@ METHOD HbQtObjectHandler:disconnect( cnEvent )
    __hbqt_error( 1300 + nResult )
    RETURN .F.
 
+
+METHOD HbQtObjectHandler:getPointer()
+   ::pPtr := __hbqt_getptr( Self )
+   RETURN ::pointer()
+
+
+METHOD HbQtObjectHandler:connectClose( bBlock )
+   LOCAL pPtr := __hbqt_getptr( Self )
+
+   IF HB_ISPOINTER( pPtr )
+      ::pPtr := pPtr
+      RETURN ::connect( /*QEvent_Close*/ 19, {|| HbQtExitEx( ::pPtr, .T. ), QApplication():processEvents( 0 ), iif( HB_ISBLOCK( bBlock ), Eval( bBlock ), NIL ) } )
+   ENDIF
+   RETURN .F.
+
+
+FUNCTION HbQtExitEx( cUnique, lExit, lDelete )
+   STATIC s_lExit := {=>}
+
+   IF HB_ISLOGICAL( lDelete )
+      hb_HDel( s_lExit, cUnique )
+   ENDIF
+   IF HB_ISLOGICAL( lExit )
+      s_lExit[ cUnique ] := lExit
+   ENDIF
+   RETURN iif( hb_HHasKey( s_lExit, cUnique ), s_lExit[ cUnique ], .F. )
+
+
+FUNCTION HbQtExecEx( oWidget, bBlock )
+   LOCAL oEventLoop
+
+   IF ! HB_ISBLOCK( bBlock )
+      bBlock := {|| .T. }
+   ENDIF
+
+   oEventLoop := QEventLoop()
+   DO WHILE .T.
+      oEventLoop:processEvents( 0 )
+      Eval( bBlock )
+      IF HbQtExitEx( oWidget:pointer() )
+         HbQtExitEx( oWidget:pointer(), NIL, .T. )
+         EXIT
+      ENDIF
+   ENDDO
+   oEventLoop:exit( 0 )
+   RETURN NIL
+
+
+
 //--------------------------------------------------------------------//
 //                          CLASS HbQtTouchPoint
 //--------------------------------------------------------------------//
@@ -289,11 +343,12 @@ METHOD HbQtTouchPoint:init()
    RETURN Self
 
 //--------------------------------------------------------------------//
-//         Hacks to Cover Qt 4.x Build Issues with .UI Parsing
+//   Hacks to Cover Qt 4.x and 5.7.1 Build Issues with .UI Parsing
 //--------------------------------------------------------------------//
-#ifdef __HB_QT_MAJOR_VER_4__
+
 FUNCTION QApplication_translate( p1, p2 )
    HB_SYMBOL_UNUSED( p1 )
    RETURN p2
-#endif
+
+
 

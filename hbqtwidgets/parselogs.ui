@@ -1,0 +1,2125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PrseLogs</class>
+ <widget class="QWidget" name="PrseLogs">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>975</width>
+    <height>734</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ParseLogs</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QSplitter" name="splitter">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QFrame" name="frame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QTreeWidget" name="treeErrorLog">
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <column>
+          <property name="text">
+           <string notr="true">1</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QFrame" name="frame_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <property name="rightMargin">
+          <number>5</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QToolButton" name="btnCopySelect">
+           <property name="toolTip">
+            <string>Paste selection on clipboard...</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/paste.png</normaloff>:/hbqt/resources/paste.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnSaveCsv">
+           <property name="toolTip">
+            <string>Save selection as .csv file...</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/save-env.png</normaloff>:/hbqt/resources/save-env.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnExpandTree">
+           <property name="toolTip">
+            <string>Expand Summary Tree</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/tree-expand-all.png</normaloff>:/hbqt/resources/tree-expand-all.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnCollapseTree">
+           <property name="toolTip">
+            <string>Collapse Summary Tree</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/tree-collapse-all.png</normaloff>:/hbqt/resources/tree-collapse-all.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>ErrorLog:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnOpenErrorLog">
+           <property name="toolTip">
+            <string>Open an ErrorLog</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/open3.png</normaloff>:/hbqt/resources/open3.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="editErrorLog"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTabWidget" name="tabWidgetErrorLog">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="tabAnalysis">
+          <attribute name="icon">
+           <iconset resource="hbqtwidgets.qrc">
+            <normaloff>:/hbqt/resources/table.png</normaloff>:/hbqt/resources/table.png</iconset>
+          </attribute>
+          <attribute name="title">
+           <string>Analysis</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6"/>
+           </item>
+           <item>
+            <widget class="QTableWidget" name="tableErrorLog">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::ContiguousSelection</enum>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="horizontalHeaderStretchLastSection">
+              <bool>true</bool>
+             </attribute>
+             <attribute name="verticalHeaderVisible">
+              <bool>false</bool>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_7"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tabSummary">
+          <attribute name="icon">
+           <iconset resource="hbqtwidgets.qrc">
+            <normaloff>:/hbqt/resources/chart_bar.png</normaloff>:/hbqt/resources/chart_bar.png</iconset>
+          </attribute>
+          <attribute name="title">
+           <string>Summaries</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_8">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QSplitter" name="splitterSummary">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <widget class="QTreeWidget" name="treeNumbers">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>1</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="allColumnsShowFocus">
+               <bool>true</bool>
+              </property>
+              <property name="columnCount">
+               <number>4</number>
+              </property>
+              <attribute name="headerDefaultSectionSize">
+               <number>500</number>
+              </attribute>
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string notr="true">2</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string notr="true">3</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string notr="true">4</string>
+               </property>
+              </column>
+             </widget>
+             <widget class="QFrame" name="frameCharts">
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>145</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="hLaySummary">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tabConfigure">
+          <property name="styleSheet">
+           <string notr="true">QWidget#tabConfigure{ background-color: rgb(192,192,192); };</string>
+          </property>
+          <attribute name="icon">
+           <iconset resource="hbqtwidgets.qrc">
+            <normaloff>:/hbqt/resources/run-2.png</normaloff>:/hbqt/resources/run-2.png</iconset>
+          </attribute>
+          <attribute name="title">
+           <string>Configure</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QFrame" name="frameConfigure">
+             <property name="minimumSize">
+              <size>
+               <width>710</width>
+               <height>520</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>710</width>
+               <height>520</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QFrame#frameConfigure{ background-color: rgb(240,240,240); border: 1px solid gray; border-radius: 10px; };</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <widget class="QLabel" name="label_3">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>120</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 01:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_4">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>144</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 02:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_5">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>168</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 03:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_6">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>192</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 04:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_7">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>216</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 05:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_8">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>240</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 06:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_9">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>264</y>
+                <width>53</width>
+                <height>13</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 07:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editDateName">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>116</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Date</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editTimeName">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>140</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Time</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF3Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>164</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Description</string>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF4Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>188</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF5Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>212</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF6Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>236</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF7Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>260</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_10">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>20</y>
+                <width>69</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>EntryToken :</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editEntryToken">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>20</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>EntryToken</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF3Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>164</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF5Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>212</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF6Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>236</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editTimeToken">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>140</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF4Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>188</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF7Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>260</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editDateToken">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>116</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_14">
+              <property name="geometry">
+               <rect>
+                <x>392</x>
+                <y>20</y>
+                <width>69</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Date Format:</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editDateFormat">
+              <property name="geometry">
+               <rect>
+                <x>456</x>
+                <y>20</y>
+                <width>69</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_11">
+              <property name="geometry">
+               <rect>
+                <x>26</x>
+                <y>284</y>
+                <width>53</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 08:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_15">
+              <property name="geometry">
+               <rect>
+                <x>24</x>
+                <y>308</y>
+                <width>57</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 09:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_16">
+              <property name="geometry">
+               <rect>
+                <x>24</x>
+                <y>332</y>
+                <width>57</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 10:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_17">
+              <property name="geometry">
+               <rect>
+                <x>24</x>
+                <y>356</y>
+                <width>57</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 11:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_18">
+              <property name="geometry">
+               <rect>
+                <x>24</x>
+                <y>380</y>
+                <width>57</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Field # 12:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF8Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>284</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF9Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>308</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF10Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>332</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF11Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>356</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF12Name">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>380</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnLoadCfg">
+              <property name="geometry">
+               <rect>
+                <x>24</x>
+                <y>476</y>
+                <width>75</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Load</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSaveCfgAs">
+              <property name="geometry">
+               <rect>
+                <x>528</x>
+                <y>476</y>
+                <width>75</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Save As</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnSaveCfg">
+              <property name="geometry">
+               <rect>
+                <x>608</x>
+                <y>476</y>
+                <width>75</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editLoadHlg">
+              <property name="geometry">
+               <rect>
+                <x>108</x>
+                <y>478</y>
+                <width>317</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_19">
+              <property name="geometry">
+               <rect>
+                <x>24</x>
+                <y>424</y>
+                <width>57</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>TraceBack:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editTraceName">
+              <property name="geometry">
+               <rect>
+                <x>84</x>
+                <y>424</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_2">
+              <property name="geometry">
+               <rect>
+                <x>232</x>
+                <y>20</y>
+                <width>117</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Header Fields Delimiter:</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editHdrDlm">
+              <property name="geometry">
+               <rect>
+                <x>348</x>
+                <y>20</y>
+                <width>29</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF10Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>332</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF11Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>356</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF9Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>308</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editTraceToken">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>424</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF12Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>380</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF8Token">
+              <property name="geometry">
+               <rect>
+                <x>268</x>
+                <y>284</y>
+                <width>113</width>
+                <height>20</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinDateHdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>116</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinTimeHdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>140</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF3Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>164</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF4Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>188</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF5Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>212</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF6Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>236</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF7Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>260</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF9Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>308</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF11Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>356</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF12Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>380</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF10Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>332</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF8Hdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>284</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_12">
+              <property name="geometry">
+               <rect>
+                <x>87</x>
+                <y>92</y>
+                <width>105</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>&lt;B&gt;&lt;U&gt;Field Name&lt;/U&gt;&lt;/B&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_13">
+              <property name="geometry">
+               <rect>
+                <x>272</x>
+                <y>92</y>
+                <width>109</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>&lt;B&gt;&lt;U&gt;Log Token&lt;/U&gt;&lt;/B&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_20">
+              <property name="geometry">
+               <rect>
+                <x>208</x>
+                <y>64</y>
+                <width>47</width>
+                <height>45</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>&lt;b&gt;Header&lt;br&gt;Field&lt;br&gt;&lt;u&gt;Index&lt;/u&gt;&lt;/b&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinTraceHdr">
+              <property name="geometry">
+               <rect>
+                <x>212</x>
+                <y>424</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_40">
+              <property name="geometry">
+               <rect>
+                <x>164</x>
+                <y>408</y>
+                <width>129</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>&lt;b&gt;# of Entries to Analyze&lt;b&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF12Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>380</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinDateOff">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>116</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF11Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>356</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF3Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>164</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF7Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>260</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF10Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>332</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF5Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>212</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF6Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>236</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinTraceOff">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>424</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF8Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>284</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF4Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>188</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinTimeOff">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>140</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinF9Off">
+              <property name="geometry">
+               <rect>
+                <x>396</x>
+                <y>308</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_41">
+              <property name="geometry">
+               <rect>
+                <x>392</x>
+                <y>80</y>
+                <width>47</width>
+                <height>29</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>&lt;b&gt;Value&lt;br&gt;&lt;u&gt;Offset&lt;/u&gt;&lt;/b&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editDateExp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>116</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 1</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_63">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>92</y>
+                <width>185</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>Use variable &quot;cText&quot; containing the rest after Field Token</string>
+              </property>
+              <property name="text">
+               <string>&lt;B&gt;&lt;U&gt;Harbour Expression to Pull Value&lt;/U&gt;&lt;/B&gt;</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editTimeExp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>140</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 2</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF3Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>164</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 3</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF4Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>188</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 4</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF5Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>212</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 5</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF9Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>308</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 9</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF10Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>332</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 10</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF7Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>260</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 7</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF6Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>236</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 6</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF8Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>284</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 8</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF12Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>380</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 12</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editF11Exp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>356</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 11</string>
+              </property>
+             </widget>
+             <widget class="QLineEdit" name="editTraceExp">
+              <property name="geometry">
+               <rect>
+                <x>452</x>
+                <y>424</y>
+                <width>185</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="whatsThis">
+               <string>Field # 13 (R)</string>
+              </property>
+             </widget>
+             <widget class="Line" name="line">
+              <property name="geometry">
+               <rect>
+                <x>2</x>
+                <y>48</y>
+                <width>713</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+             <widget class="Line" name="line_2">
+              <property name="geometry">
+               <rect>
+                <x>2</x>
+                <y>452</y>
+                <width>717</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_64">
+              <property name="geometry">
+               <rect>
+                <x>572</x>
+                <y>20</y>
+                <width>77</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>HeaderOffset:</string>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="spinOffset">
+              <property name="geometry">
+               <rect>
+                <x>644</x>
+                <y>20</y>
+                <width>42</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkDateAtv">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>116</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_65">
+              <property name="geometry">
+               <rect>
+                <x>660</x>
+                <y>92</y>
+                <width>25</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>&lt;b&gt;&lt;u&gt;Anz&lt;/u&gt;&lt;/b&gt;</string>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkTimeAtv">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>140</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF3Atv">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>164</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF4Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>188</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF7Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>260</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF5Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>212</y>
+                <width>17</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF6Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>236</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF8Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>284</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF12Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>380</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF10Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>332</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF9Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>308</y>
+                <width>17</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkF11Atv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>356</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QCheckBox" name="chkTraceAtv">
+              <property name="geometry">
+               <rect>
+                <x>668</x>
+                <y>424</y>
+                <width>17</width>
+                <height>21</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="btnClearCfg">
+              <property name="geometry">
+               <rect>
+                <x>436</x>
+                <y>476</y>
+                <width>75</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Clear</string>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnEntryExp">
+              <property name="geometry">
+               <rect>
+                <x>196</x>
+                <y>20</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnDateExp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>116</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnTimeExp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>140</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF3Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>164</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF4Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>188</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF5Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>212</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF6Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>236</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF9Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>308</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF8Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>284</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF7Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>260</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF11Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>356</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF12Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>380</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnF10Exp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>332</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+             <widget class="QToolButton" name="btnTraceExp">
+              <property name="geometry">
+               <rect>
+                <x>636</x>
+                <y>424</y>
+                <width>25</width>
+                <height>19</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="hbqtwidgets.qrc">
+                <normaloff>:/hbqt/resources/vz-expand.png</normaloff>:/hbqt/resources/vz-expand.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="hbqtwidgets.qrc"/>
+ </resources>
+ <connections/>
+</ui>

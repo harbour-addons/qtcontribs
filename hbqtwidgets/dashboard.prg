@@ -571,10 +571,10 @@ METHOD HbQtDashboard:buildToolbars()
 METHOD HbQtDashboard:buildToolbarLeft()
 
    WITH OBJECT ::oToolbar := HbQtToolbar():new()
-      :orientation := Qt_Vertical
       :imageWidth  := 12
       :imageHeight := 12
       :create()
+      :setOrientation( Qt_Vertical )
 
       :buttonClick := {|oButton| iif( HB_ISBLOCK( oButton:key ), Eval( oButton:key ), NIL ) }
 

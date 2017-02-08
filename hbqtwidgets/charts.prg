@@ -77,8 +77,9 @@
 
 CLASS HbQtCharts
 
-   DATA   oParent
    DATA   oWidget
+   ACCESS widget()                                INLINE ::oWidget
+   DATA   oParent
    DATA   oLay
    DATA   oToolbar
    DATA   oLabel
@@ -308,7 +309,7 @@ METHOD HbQtCharts:create()
    IF HB_ISOBJECT( ::oParent )
       ::oWidget:resize( ::oParent:width(), ::oParent:height() )
    ELSE
-      ::oWidget:resize( 200, 150 )
+      ::oWidget:resize( 200, 200 )
    ENDIF
 
    RETURN Self
@@ -394,7 +395,7 @@ METHOD HbQtCharts:buildToolbar()
       :connect( "triggered()", {|| ::printPreview() } )
    ENDWITH
 
-   WITH OBJECT ::oToolbar := QToolBar()
+   WITH OBJECT ::oToolbar := QToolBar( ::oWidget )
       :setOrientation( Qt_Vertical )
       :setIconSize( QSize( 12,12 ) )
       :setMovable( .F. )
@@ -403,12 +404,12 @@ METHOD HbQtCharts:buildToolbar()
 
       :addAction( ::oActBars )
       :addAction( ::oActPie )
+      :addAction( ::oActPrint )
       :addWidget( ::sp0 )
       :addAction( ::oActLegends )
       :addAction( ::oActShadows )
       :addAction( ::oActLabels )
       :addAction( ::oActValues )
-      :addAction( ::oActPrint )
    ENDWITH
 
    RETURN Self
@@ -470,12 +471,12 @@ METHOD HbQtCharts:addMulibarColor( name, color )
 METHOD HbQtCharts:refresh()
 
    IF HB_ISOBJECT( ::oWidget )
+      ::oPixmap := NIL
       ::oLabel:resize( ::oScrollArea:width(), ::oScrollArea:height() )
       ::oPixmap := QPixmap( ::oScrollArea:width()-10, ::oScrollArea:height()-10 )
       ::oPixmap:fill( QColor( 240,240,240 ) )
       ::draw( ::oPixmap )
       ::oLabel:setPixmap( ::oPixmap )
-      ::oPixmap := NIL
    ENDIF
 
    RETURN Self
@@ -1364,7 +1365,7 @@ METHOD HbQtCharts:printPreview()
    WITH OBJECT oPrinter := QPrinter()
       :setOutputFormat( QPrinter_PdfFormat )
       :setPageOrientation( QPrinter_Landscape )
-      :setPaperSize( QPageSize( QPrinter_A4 ) )
+      :setPageSize( QPageSize( QPageSize_Letter ) )
    ENDWITH
 
    oDlg := QPrintPreviewDialog( oPrinter )
@@ -1393,7 +1394,7 @@ METHOD HbQtCharts:printChart( oPrinter )
    nW     := oPrinter:width()  - nMX
    nH     := oPrinter:height() - nMY
 
-   oImage := QImage( nW, nH, QImage_Format_ARGB32 )
+   oImage := QImage( nW*10, nH*10, QImage_Format_ARGB32 )
    ::draw( oImage )
    oPainter:drawPixmap( QPoint( nMX, nMY ), QPixmap():fromImage( oImage ) )
 

@@ -24,6 +24,7 @@
     <file>resources/new-2.png</file>
     <file>resources/open3.png</file>
     <file>resources/save3.png</file>
+    <file>resources/save-6.png</file>
     <file>resources/close3.png</file>
     <file>resources/print.png</file>
     <file>resources/load_1.png</file>
@@ -137,6 +138,7 @@
     <file>resources/link.png</file>
     <file>resources/hbdbu-2013.png</file>
     <file>resources/hbdbu-2014.png</file>
+    <file>resources/hbdbu-2017.png</file>
     <file>resources/table-add.png</file>
     <file>resources/cube-2.png</file>
     <file>resources/copy.png</file>
@@ -380,5 +382,8 @@
     <file>resources/dashboard-1.png</file>
     <file>resources/dashboard-2.png</file>
     <file>resources/console.png</file>
+    <file>resources/analysis.png</file>
+    <file>resources/analysis-1.png</file>
+    <file>resources/analysis-2.png</file>
   </qresource>
 </RCC>

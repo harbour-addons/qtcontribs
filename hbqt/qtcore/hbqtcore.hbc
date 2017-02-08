@@ -21,10 +21,16 @@ libs=../hbqt_common.hbc
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|os2|linux)}libs=Qt5Core
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&darwin}frameworks=QtCore
 
+# Static Builds
 
 {HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 {HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(allwin|linux|beos)}libs=QtCore
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos)}libs=Qt5PlatformSupport Qt5DBus Qt5Core
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos)}libs=Qt5DBus Qt5Core
+
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&!(HB_QT_MINOR_VER='8')&(allwin|linux|darwin|beos)}libs=Qt5PlatformSupport
+
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')&(allwin|linux|darwin|beos)}libs=Qt5PlatformCompositorSupport Qt5FontDatabaseSupport Qt5FbSupport
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')&(allwin|linux|darwin|beos)}libs=Qt5EventDispatcherSupport Qt5DeviceDiscoverySupport Qt5ThemeSupport

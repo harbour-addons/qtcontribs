@@ -74,6 +74,9 @@ FUNCTION hbmk_plugin_qt( hbmk )
       IF "5.7" $ cVer .AND. hbmk[ "cCOMP" ] == "mingw"
          hb_SetEnv( "HB_QT_MINOR_VER", "7" )
          hb_SetEnv( "HB_USER_CFLAGS", hb_GetEnv( "HB_USER_CFLAGS" ) + " -std=c++11" )
+      ELSEIF "5.8" $ cVer .AND. hbmk[ "cCOMP" ] == "mingw"
+         hb_SetEnv( "HB_QT_MINOR_VER", "8" )
+         hb_SetEnv( "HB_USER_CFLAGS", hb_GetEnv( "HB_USER_CFLAGS" ) + " -std=c++11" )
       ENDIF
 
       IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )
@@ -1616,6 +1619,10 @@ METHOD THbUIC:buildHeader()
    WR_PRG( '#include "hbqtgui.ch"' )
    WR_PRG( '#include "hbclass.ch"' )
    WR_PRG( '#include "error.ch"' )
+   WR_PRG( "" )
+   WR_PRG( "#ifndef Q_NULLPTR" )                   // Qt 5.7.1 introduced patch-up
+   WR_PRG( "#define Q_NULLPTR   0" )
+   WR_PRG( "#endif" )
    WR_PRG( "" )
    WR_PRG( "" )
    WR_PRG( "FUNCTION " + ::cFuncName + "( oParent )" )

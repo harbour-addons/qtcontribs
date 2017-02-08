@@ -59,6 +59,7 @@ editor.prg
 messages.prg
 hilighter.prg
 scripts.prg
+parselogs.prg
 
 hbqtwidgets.qrc
 
@@ -66,7 +67,8 @@ scroll.ui
 visualizer.ui
 messages.ui
 scripts.ui
-
+parselogs.ui
+expandtext.ui
 
 $hb_pkg_install.hbm
 

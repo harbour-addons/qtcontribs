@@ -402,7 +402,7 @@ METHOD HbIde:create( aParams )
 
    ::oColorizeEffect := QGraphicsColorizeEffect()
 
-   qPixmap := QPixmap( ":/resources/hbide-2014.png" )
+   qPixmap := QPixmap( ":/resources/hbide-2017.png" )
    qSplash := QSplashScreen()
    qSplash:setPixmap( qPixmap )
    qSplash:show()

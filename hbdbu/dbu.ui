@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>909</width>
-    <height>525</height>
+    <width>870</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
     <item row="0" column="0">
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="pageScripts"/>
       <widget class="QWidget" name="pageHelp">
@@ -103,7 +103,22 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="pageMisc"/>
+      <widget class="QWidget" name="pageMisc">
+       <layout class="QHBoxLayout" name="hLayLogsAnaluzer">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -113,7 +128,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>909</width>
+     <width>870</width>
      <height>21</height>
     </rect>
    </property>
@@ -197,6 +212,7 @@
  </widget>
  <resources>
   <include location="dbu.qrc"/>
+  <include location="../hbqtwidgets/hbqtwidgets.qrc"/>
  </resources>
  <connections/>
 </ui>

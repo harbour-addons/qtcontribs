@@ -17,6 +17,7 @@
     <file>resources/save-env.png</file>
     <file>resources/rest-env.png</file>
     <file>resources/help.png</file>
-    <file>resources/online.png</file> 
+    <file>resources/online.png</file>
+    <file>resources/hbdbu-2017.png</file>
   </qresource>
 </RCC>

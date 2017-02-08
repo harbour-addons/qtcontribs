@@ -137,6 +137,11 @@ HB_FUNC( __HBQT_SETUTF8 )
    }
 }
 
+HB_FUNC( __HBQT_GETPTR )
+{
+   hb_retptr( hbqt_par_ptr( 1 ) );
+}
+
 PHB_ITEM hbqt_defineClassBegin( const char * pszClsName, PHB_ITEM s_oClass, const char * pszParentClsStr )
 {
    static PHB_DYNS s__CLSLOCKDEF = NULL;

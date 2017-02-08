@@ -16,6 +16,168 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-02-07 19:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r445)
+  * hbqt/hbmk2_qt.hb
+    + Added logic to detect Qt minor version also.
+	+ Added constructs to #define Q_NULLPTR 0 in .ui => .prg sources.
+	   A constant introduced by Qt since version 5.7.
+	   
+  * hbqt/hbqt_common.hbc
+  * hbqt/qtcore/hbqtcore.hbc
+    + Tweaked to honor Qt 5.8 specific static builds.
+	
+  * hbqt/qtcore/hbqt_misc.prg
+    + Added some experimental methods. 
+	  DO NOT USE - may be removed in next commits.
+	% FUNCTION QApplication_translate(...) made public.
+       Qt has made some difficult-to-comprehend changes in uic tool.
+       So this function is called for some builds above Qt 5.6.
+	   
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Added an experimental function - DO NOT USE.
+	
+  * hbqt/qtgui/hbqt_version.ch
+    % Version bump.
+	
+  + hbdbu/resources/hbdbu-2017.png
+  * hbdbu/dbu.prg
+  * hbdbu/dbu.ui
+  * hbdbu/dbu.qrc
+    + Added another page to host HbQtLogAnalyzer (details below).
+    % Changed: splash screen showing copyright year to 2017.
+
+  * hbide/hbide.qrc
+  * hbide/main.prg
+  + hbide/resources/hbide-2017.png
+    % Changed: splash screen showing copyright year to 2017.
+
+  + hbqtwidgets/resources/analysis-1.png
+  + hbqtwidgets/resources/analysis-2.png
+  + hbqtwidgets/resources/analysis.png
+  + hbqtwidgets/resources/save-6.png
+  + hbqtwidgets/resources/hbdbu-2017.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: few more images required here and there.
+
+  * hbqtwidgets/charts.prg
+    % Some refinements.
+
+  * hbqtwidgets/dashboard.prg
+    ! Fixed to use HbQtToolbar's refined parameters.
+
+  * hbqtwidgets/misc.prg
+    + Added: FUNCTION __hbqtAProcessUniqueEx( aData, ele_, add_, opr_, bFor )
+             FUNCTION __hbqtAProcessUnique( dat_, ele_, nAdd_, aOpr_ )
+             +
+             Supporting Static Functions.
+               To consolidate arrays by elements and numeric contents.
+
+             FUNCTION __hbqtV( cVrb, xValue )
+               A general-purpose SET|GET function where key-value pairs 
+               can be stored inside a hash. Was required to parse 
+               Error Logs efficiently, if needed, inside HbQtLogAnalyzer().
+
+  * hbqtwidgets/scripts.prg
+    + Implemented: Using Harbour expressions in any of the SELECT fields,
+       be it aggregate field - COUNT, MIN, MAX, AVG, SUM 
+       or value field - SUBSTR, LEFT, RIGHT, LOWER, UPPER 
+       or non-SQL-compliant value field FUNC (examples below).
+
+    + Extended: INTO clause to save result as Excel compliant .csv file.
+       This is in addition to saving result as a .dbf file. The type is 
+       determined by the extention of file provided through INTO clause.
+    
+    + Extended: SELECT fields can contain parenthesis.
+
+    ; Until now Harbour's SQL query looks like 
+                                                                Clause Order
+       SELECT   <* | ListOfFieldsSeperatedByComma> ;                 1     Mandatory
+       FROM     <[cDriver|]cFullyQualifiedTableName> ;               2     Mandatory
+       INTO     <cFullyQualifiedDbf|CsvFilenameWithExtention> ;      v     Optional
+       ORDER BY <ListOfFieldNamesProvidedInSELECTseparatedByComma> ; v     Optional
+       GROUP BY <ListOfFieldNamesProvidedInSELECTseparatedByComma> ; v     Optional 
+       WHERE    <ConditionsComparingFieldsInTheTableWithSomeValue> ; LAST  Optional 
+
+    ; Examples:
+       SELECT   age, state, Func(age*salary/2), Func(Right(state,1)+Left(State,1)), Count(*) ;
+       FROM     C:\harbour\tests\test.csv ;
+       GROUP BY age,state ;
+       ORDER BY age-desc,state ;
+       WHERE    age > 66
+
+    ; WHERE clause totally rely on fieldnames and literal values and only "AND" clause.
+
+  + hbqtwidgets/parselogs.prg
+  + hbqtwidgets/parselogs.ui
+  + hbqtwidgets/expandtext.ui
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: A self contained class to analyze application logs - of any kind - almost.
+
+  ; Presenting HbQtLogAnalyzer() - A Tool to Analyze Logs in a Variety of Ways
+
+    ; The Background:
+       At Curacao, a shade less than 1000 users/terminals remains on for the 
+       best part of the day, spreading accross different cities and locations,
+       all accessing the same business application. Usually users do not report 
+       if any error is generated. For days it goes on unnoticed until reported 
+       or looked into error logs regularly. Even looking into error logs does 
+       not yield accurate state of things. 
+
+       This motivated me to develop a tool, from Harbour's point-of-view specifically,
+       which could provide enough insite into the state of errors, and from 
+       different angels. Initially I started with our standatd errorlog, 
+       but soon realized that with some little more effort it can be a generic 
+       tool. That little effort resulted in HbQtLogAnalyzer() class, which to my 
+       amazement, could parse all other logs generated in our organization. And 
+       I am sure that this tool will be good for any type of log generated 
+       from any language, machine, or server.
+
+    : How to implement in your application:
+
+       WITH OBJECT oAnalyzer := HbQtLogAnalyzer():new( oParent ):create()
+          :loadConfiguration( hb_DirBase() + "errors.hlg" )
+          :loadLog( hb_DirBase() + "errors12.16" )
+       ENDWITH 
+       // Provide a container to LogAnalyzer widget
+       //
+       oParent:layout():addWidget( oAnalyzer:widget() )
+      
+    : The Interface:
+       LEFT Pane: 
+        TreeView containing all the entries in the log chronologically. 
+        Each entry is serialized and depicted with the <Description> field 
+        defined in the log definition. The child node of each entry contains 
+        all other fields defined in the definition. 
+
+       RIGHT Pane: 
+        A context sensitive toolbar at the top - TOP-TOOLBAR:
+        .
+        ToolButton - Paste selection on clipboard.
+         This button is active when ANALYSIS tab is in focus. 
+         Copies the contents of selected fields and rows on clipboard.
+
+        ToolButton - Save selection as .csv file.
+         This button is active when ANALYSIS tab is in focus. 
+         Opens a FileSave dialog to fetch the .csv filename, then
+         Saves the contents of selected fields and rows in a provided .csv file.
+
+        A Tab Widget at the bottom containing following tabs:
+        .
+        ANALYSIS  : Contains a table widget containing field values of log entries.
+        SUMMARIES : Contains a tree-view at the top depicting summaries of entries 
+                    grouped by fields defined to be analyzed.
+        CONFIGURE : An interface to define definition files for each type of 
+                    log you intend to analyze. A very intuitive and powerful   
+                    definition writer.
+
+        ( SEEMS the textual help as above will not be useful, so I will post on 
+          QtContribs site at source-forge some detailed GUI aided pages which will 
+          demonstrate how to use this tool to the best of your advantage. 
+		  
+		  Infact, I wanted to present this tool to you as a new year gift for 2017
+		  but on 31st I fell sick and it took me a while to recover. So, please 
+		  accept it as originally intended. )		  
+
 2016-12-12 18:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r444)
   * hbqtwidgets/scripts.prg
     + Added: RecNo() field in SELECT statement. At times it is a must have info.

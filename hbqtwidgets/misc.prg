@@ -1256,6 +1256,156 @@ FUNCTION __hbqtExecPopup( aOptions, oPoint )
    RETURN cAct
 
 //--------------------------------------------------------------------//
+
+FUNCTION __hbqtAProcessUniqueEx( aData, ele_, add_, opr_, bFor )
+   LOCAL d_, dd_
+   LOCAL dat_:= {}
+
+   dd_:= __aSortEle( AClone( aData ), ele_ )
+
+   FOR EACH d_ IN dd_
+      IF Eval( bFor, d_ )
+         AAdd( dat_, d_ )
+      ENDIF
+   NEXT
+   IF ! Empty( dat_ )
+      dat_:= __hbqtAProcessUnique( dat_, ele_, add_, opr_ )
+   ENDIF
+   RETURN dat_
+
+
+FUNCTION __hbqtAProcessUnique( dat_, ele_, nAdd_, aOpr_ )
+   LOCAL i, v, v1, d_, nCounter
+   LOCAL v_:= {}
+   LOCAL dd_:= {}
+   LOCAL sum_:= AFill( Array( Len( nAdd_ ) ), 0 )
+
+   d_:= __aSortEle( AClone( dat_ ), ele_ )
+
+   AEval( ele_, {|e| AAdd( v_, d_[ 1, e ] ) } )
+   v := __aIndexCmp( v_ )
+   nCounter := 0
+   FOR i := 1 TO Len( d_ )
+      v_:= {}
+      AEval( ele_, {|e| AAdd( v_, d_[ i, e ] ) } )
+      IF ! ( v == ( v1 := __aIndexCmp( v_ ) ) )
+         __aAdjustForAvg( sum_, nCounter, aOpr_ )
+         AAdd( dd_, d_[ i - 1 ] )
+         AEval( nAdd_, {|e, j| dd_[ Len( dd_ ), e ] := sum_[ j ] } )
+         sum_:= AFill( sum_, 0 )
+         v := v1
+         nCounter := 0
+      ENDIF
+      nCounter++
+      __aApplyOperation( nAdd_, sum_, d_[ i ], nCounter, aOpr_ )
+   NEXT
+   __aAdjustForAvg( sum_, nCounter, aOpr_ )
+   AAdd( dd_, d_[ i - 1 ] )
+   AEval( nAdd_, {|e, j| dd_[ Len( dd_ ), e ] := sum_[ j ] } )
+   RETURN dd_
+
+
+STATIC FUNCTION __aAdjustForAvg( sum_, nCounter, aOpr_ )
+   LOCAL j
+   FOR j := 1 TO Len( aOpr_ )
+      IF aOpr_[ j ] == "AVG"
+         sum_[ j ] := sum_[ j ] / nCounter
+      ENDIF
+   NEXT
+   RETURN NIL
+
+
+STATIC FUNCTION __aApplyOperation( nAdd_, sum_, d_, nCounter, aOpr_ )
+   LOCAL j
+
+   FOR j := 1 TO Len( aOpr_ )
+      SWITCH aOpr_[ j ]
+      CASE "COUNT"
+      CASE "SUM"
+      CASE "AVG"
+         sum_[ j ] += d_[ nAdd_[ j ] ]
+         EXIT
+      CASE "MIN"
+         sum_[ j ] := iif( nCounter == 1, d_[ nAdd_[ j ] ], Min( sum_[ j ], d_[ nAdd_[ j ] ] ) )
+         EXIT
+      CASE "MAX"
+         sum_[ j ] := Max( sum_[ j ], d_[ nAdd_[ j ] ] )
+         EXIT
+      ENDSWITCH
+   NEXT
+   RETURN NIL
+
+
+STATIC FUNCTION __aSortEle( ddd_, ele_ )
+   LOCAL i, s, j, k
+   LOCAL dum_:= {}
+   LOCAL dat_:= {}
+   LOCAL nRecs := Len( ddd_ )
+   LOCAL nEle := Len( ele_ )
+   LOCAL typ_:= Array( nEle )
+
+   AEval( ele_, {|e,i| typ_[ i ] := ValType( ddd_[ 1, e ] ) } )
+
+   FOR i := 1 TO nRecs
+       s := ""
+       FOR j := 1 TO nEle
+          k := ele_[ j ]
+          SWITCH typ_[ j ]
+          CASE "C" ; s += ddd_[ i, k ] ; EXIT
+          CASE "D" ; s += DToS( ddd_[ i, k ] ) ; EXIT
+          CASE "N" ; s += Str( ddd_[ i, k ], 17, 4 ) ; EXIT
+          CASE "L" ; s += iif( ddd_[ i, k ], "T", "F" ) ; EXIT
+          ENDSWITCH
+       NEXT
+       AAdd( dum_, { s, i } )
+   NEXT
+
+   ASort( dum_, NIL, NIL, {|e_, f_| e_[ 1 ] < f_[ 1 ] } )
+
+   FOR i := 1 TO Len( dum_ )
+      AAdd( dat_, ddd_[ dum_[ i, 2 ] ] )
+   NEXT
+   RETURN dat_
+
+
+STATIC FUNCTION __aIndexCmp( a_ )
+   LOCAL i
+   LOCAL s := ''
+   FOR i := 1 TO Len( a_ )
+      s := __aIndexKey( s, a_[ i ] )
+   NEXT
+   RETURN s
+
+
+STATIC FUNCTION __aIndexKey( s, v )
+   SWITCH ValType( v )
+   CASE "C" ; RETURN s += v
+   CASE "N" ; RETURN s += Str( v, 17, 4 )
+   CASE "D" ; RETURN s += DToS( v )
+   CASE "L" ; RETURN s += iif( v, "T", "F" )
+   ENDSWITCH
+   RETURN s
+
+
+FUNCTION __hbqtV( cVrb, xValue )
+   LOCAL l_xValue
+
+   STATIC hVrb := NIL
+   IF hVrb == NIL
+      hVrb := {=>}
+      hb_HCaseMatch( hVrb, .F. )
+   ENDIF
+   IF HB_ISSTRING( cVrb )
+      IF hb_HHasKey( hVrb, cVrb )
+         l_xValue := hVrb[ cVrb ]
+      ENDIF
+      IF ! xValue == NIL
+         hVrb[ cVrb ] := xValue
+      ENDIF
+   ENDIF
+   RETURN l_xValue
+
+//--------------------------------------------------------------------//
 //           This Section Must be the Last in this Source
 //--------------------------------------------------------------------//
 
