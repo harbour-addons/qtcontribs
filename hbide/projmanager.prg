@@ -1972,7 +1972,7 @@ METHOD IdeProjManager:finished( nExitCode, nExitStatus, oProcess, cWrkEnviron, l
    IF HB_ISOBJECT( ::cargo )
       cExe := hb_PathJoin( hbide_pathToOSPath( ::cargo:cPath ), cExe )
    ELSE
-      cExe := hb_PathJoin( hbide_pathToOSPath( ::oProject:location ), cExe )
+      cExe := hb_PathJoin( hbide_pathToOSPath( iif( HB_ISOBJECT( ::oProject ), ::oProject:location, "" ) ), cExe )
    ENDIF
    ::outputText( "[..." + cExe + "..]" )
 

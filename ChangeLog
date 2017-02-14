@@ -16,6 +16,76 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-02-14 12:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r446)
+  * hbdbu/dbu.prg
+    ! Fixed: an assertion check.
+  * hbdbu/hbdbu.hbp
+    + hbqtcharts.hbc
+  
+  * hbide/debugger.prg
+    ! Fixed: another non-sense bug bypassing another assertion check.
+  * hbide/projmanager.prg
+    ! Fixed: if another project is initiated while one is in build state,
+	   fake method call was being reported.
+    
+  * hbqt/hbmk2_qt.hb
+    - Removed: #define Q_NULLPTR.
+	! Fixed: parsing of QApplication::translate(*.*). Now HbQt compiles 
+	   good with any version of Qt.
+  * hbqt/hbqt_common.hbc
+    % Formatting.
+	
+  * hbqt/qtcharts/qth/QAbstractBarSeries.qth
+  * hbqt/qtcharts/qth/QChartView.qth
+    ! Preliminary effort to stramline child ownership. Still generates 
+	   GPF on exit in some circumstances.
+  * hbqt/qtcore/hbqt_misc.prg
+    - Guarded again - QApplication_translate() - for Qt v4.x only.
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Introduced : define HBQT_WITH_QML_SUPPORT needed to link 
+	   QtQuick and QtQml plugins in static builds.
+	   So, if you are building QML based applications then 
+	   compile hbqtcore with -DHBQT_WITH_QML_SUPPORT compiler flag.
+	   
+      #ifdef HBQT_WITH_QML_SUPPORT
+         Q_IMPORT_PLUGIN(QtQuickLayoutsPlugin)
+         Q_IMPORT_PLUGIN(QtQuickControls1Plugin)
+         Q_IMPORT_PLUGIN(QtQuickControls2Plugin)
+         Q_IMPORT_PLUGIN(QtQuick2Plugin)
+         Q_IMPORT_PLUGIN(QtQuick2DialogsPrivatePlugin)
+         Q_IMPORT_PLUGIN(QtQuick2DialogsPlugin)
+         Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
+         Q_IMPORT_PLUGIN(QtQuick2PrivateWidgetsPlugin)
+         Q_IMPORT_PLUGIN(QtQuick2ParticlesPlugin)
+         Q_IMPORT_PLUGIN(QmlFolderListModelPlugin)
+         Q_IMPORT_PLUGIN(QmlSettingsPlugin)
+         Q_IMPORT_PLUGIN(QtQmlModelsPlugin)
+         Q_IMPORT_PLUGIN(QmlXmlListModelPlugin)
+         Q_IMPORT_PLUGIN(QQmlLocalStoragePlugin)
+      #endif	
+	
+  * hbqt/qtdesigner/qth/filelist.hbm
+    ! Fixed to compilable in static mode.
+	
+  * hbqt/qtqml/hbqtqml.hbc
+    + Added: ldflags, libs for static builds - v5.8.0 onwards only.
+	
+  * hbqt/qtquick/hbqtquick.hbc
+    + Added: flags for static builds - v5.8.0 onwards only.
+	
+  * hbqtqmlparts/qmlbridge.prg
+    % Some refinement in error reporting.
+	
+  * hbqtwidgets/parselogs.prg
+    + Implemented: a stand alone charting sheet - auto refreshed - details later.
+  * hbqtwidgets/silverlight.prg
+    % Some refinements.
+	
+  + hbqtwidgets/loggraphics.ui
+  * hbqtwidgets/parselogs.ui
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: loggraphics.ui
+
 2017-02-07 19:03 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r445)
   * hbqt/hbmk2_qt.hb
     + Added logic to detect Qt minor version also.

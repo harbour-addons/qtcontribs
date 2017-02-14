@@ -441,7 +441,7 @@ FUNCTION hbmk_plugin_qt( hbmk )
 
 STATIC FUNCTION qt_version_detect( hbmk, cName, cEnvQT, lPostfix )
    LOCAL cStdOut := ""
-	LOCAL cStdErr := ""
+   LOCAL cStdErr := ""
    LOCAL cBIN := qt_tool_detect( hbmk, cName, cEnvQT, lPostfix )
 
    IF ! Empty( cBIN )
@@ -699,7 +699,7 @@ CLASS THbUIC
    METHOD parseTypFunc( s )
    METHOD parseAssign( s )
    METHOD parseAssignNew( s )
-	
+
    METHOD IsQMainWindowSlot( cSlot )
    METHOD IsQDialogSlot( cSlot )
    METHOD IsQWidgetSlot( cSlot )
@@ -755,7 +755,7 @@ CLASS THbUIC
    VAR aLocalObjs                                 INIT {}
    VAR aSlots                                     INIT {}
    VAR aReplcmFunc                                INIT {}   // list or replacement functions {{cOldName,cNewname,lUsed},...}
-	
+
    VAR aNotImplementedMethods                     INIT {}
    VAR nSetupUiStartLine                          INIT 0    // Start line of  void setupUi( ) method
    VAR nSetupUiEndLine                            INIT 0    // End line of  void setupUi( ) method
@@ -768,7 +768,7 @@ CLASS THbUIC
    VAR cSlotStyle
    VAR cFormClass
    VAR cFormName
-	
+
    ENDCLASS
 
 
@@ -803,7 +803,7 @@ METHOD THbUIC:New( cTmpFileSrc, cUiFile, cOutDir, cFrmFile, cSlotStyle, cTestFil
    ::cClass := StrTran( ::cFuncName, "hbqtui_", "ui_" )
 
    ::oWriter := TWriter():new( self, cUiFile, cOutDir, cFrmFile, cSlotStyle, cTestFile,  cHbmFile, cQrcFile )
-	
+
    // ::aNotImplementedMethods := { "setAccessibleName" }
    // ::aReplcmFunc := { };
 
@@ -905,11 +905,11 @@ METHOD THbUIC:regexInit
 
 
 METHOD THbUIC:scanInputFile()
-	
+
    IF ! ::getMethodsBounds()
       RETURN NIL
    ENDIF
-	
+
    ::pullMainWidget()
    ::cleanupLines()
    ::removeNonImplMethods()
@@ -918,14 +918,14 @@ METHOD THbUIC:scanInputFile()
 
    ::buildHeader()
    ::buildClass()
-	
+
    ::buildMethod( "init", ::nSetupUiStartLine, ::nSetupUiEndLine, "oParent" )
    ::scanLines( ::nSetupUiStartLine, ::nSetupUiEndLine )
    IF ! Empty( GetEnv( "HBQT_UIC_GEN_ACTIONS" ) )
       ::processActions()
    ENDIF
    ::buildCloseMethod()
-	
+
    ::buildMethod( "retranslate",  ::nRetranslateUiStartLine, ::nRetranslateUiEndLine, ""  )
    ::scanLines( ::nRetranslateUiStartLine, ::nRetranslateUiEndLine )
    ::buildCloseMethod()
@@ -988,7 +988,7 @@ STATIC FUNCTION firstColonPos( s )
 
 METHOD THbUIC:scanLines( nStart, nEnd )
    LOCAL cLine, nLine, n
-	
+
    FOR nLine := nStart + 1 TO nEnd - 1
       cLine := ::aLinesSrc[ nLine ]
 
@@ -1039,7 +1039,7 @@ METHOD THbUIC:getMethodsBounds()
       RETURN .F.
    ENDIF
    ::aLinesSrc[ ::nRetranslateUiStartLine ] := ""
-	
+
    FOR nLine := ::nRetranslateUiEndLine + 1 TO Len( ::aLinesSrc )
       ::aLinesSrc[ nLine ] := ""
    NEXT
@@ -1167,7 +1167,7 @@ METHOD THbUIC:replaceConstants()
    FOR EACH cLine IN ::aLinesSrc
       IF ! Empty( cLine )
          cLine := ::pullTranslate( cLine )
-			
+
          FOR EACH rx in ::arxRemoveFunc
             cLine := keepOnlyParams( rx, cLine )
          NEXT
@@ -1239,13 +1239,22 @@ STATIC FUNCTION wrapParams( regx, cStr, cWrap )
 METHOD THbUIC:pullTranslate( cLine )
    LOCAL aResult, aArgs
    LOCAL reg := hb_regexComp( "(.+)QApplication::translate(\(.+, 0\))" )
-	
+
    IF hb_regexHas( reg, cLine )
       aResult    := hb_regex( reg, cLine )
       aArgs      := args2array( aResult[ 3 ] )
       aArgs[ 2 ] := ::ParseString( aArgs[ 2 ] )
       aArgs[ 3 ] := '""'
       cLine      := hb_StrFormat( "%s QApplication().translate(%s))", aResult[ 2 ], ::concatArgs( aArgs ) )
+   ELSE
+      reg := hb_regexComp( "(.+)QApplication::translate(\(.+, Q_NULLPTR\))" )
+      IF hb_regexHas( reg, cLine )
+         aResult    := hb_regex( reg, cLine )
+         aArgs      := args2array( aResult[ 3 ] )
+         aArgs[ 2 ] := ::ParseString( aArgs[ 2 ] )
+         aArgs[ 3 ] := '""'
+         cLine      := hb_StrFormat( "%s QApplication().translate(%s))", aResult[ 2 ], ::concatArgs( aArgs ) )
+      ENDIF
    ENDIF
    RETURN cLine
 
@@ -1288,7 +1297,7 @@ METHOD THbUIC:pullLocalObjects( nStartLine, nEndLine )
    LOCAL i, cLine, cCls, cNam, aReg
    LOCAL regEx1 := hb_StrFormat( "^%s \*?%s.*", RX_Q_TYPE, RX_VAR  )
    LOCAL regEx2 := hb_StrFormat( "^%s %s .*",   RX_C_TYPE, RX_VAR )
-	
+
    ::aLocalObjs := {}
 
    FOR i := nStartLine TO nEndLine
@@ -1582,7 +1591,7 @@ METHOD THbUIC:parseTypVar( s )
 
    cClass := aResult[ 2 ]
    cName  := aResult[ 3 ]
-	
+
    RETURN hb_StrFormat( "%s := %s()", cName, cClass )
 
 
@@ -1619,10 +1628,6 @@ METHOD THbUIC:buildHeader()
    WR_PRG( '#include "hbqtgui.ch"' )
    WR_PRG( '#include "hbclass.ch"' )
    WR_PRG( '#include "error.ch"' )
-   WR_PRG( "" )
-   WR_PRG( "#ifndef Q_NULLPTR" )                   // Qt 5.7.1 introduced patch-up
-   WR_PRG( "#define Q_NULLPTR   0" )
-   WR_PRG( "#endif" )
    WR_PRG( "" )
    WR_PRG( "" )
    WR_PRG( "FUNCTION " + ::cFuncName + "( oParent )" )
@@ -1691,7 +1696,7 @@ METHOD THbUIC:buildMethod( cName, nStartLine, nEndLine, cParent )
       WR_PRG( "   LOCAL " + item[ 2 ] )
    NEXT
    WR_PRG( "" )
-	
+
    IF nStartLine == ::nSetupUiStartLine
       SWITCH ::cFormClass
       CASE "QDialog"

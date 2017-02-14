@@ -56,7 +56,7 @@ flags   RubberBands
 <PROTOS>
 QChart *   chart() const
 RubberBands   rubberBand() const
-void   setChart(QChart *chart)
+void   setChart(QChart *chart)                           [*D=1*]
 void   setRubberBand(const RubberBands &rubberBand)
 </PROTOS>
 

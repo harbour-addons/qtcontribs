@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2014 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2014-2017 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -86,6 +86,7 @@ CLASS HbQtSilverLight
    METHOD setAnimation( lAnimate )                INLINE iif( HB_ISLOGICAL( lAnimate ), ::lAnimate := lAnimate, NIL )
    METHOD setAnimationOpacity( aOpacity )
    METHOD setParent( oParent )                    INLINE iif( HB_ISOBJECT( oParent ), ::oParent := oParent, NIL )
+   ACCESS widget()                                INLINE ::oWidget
 
    PROTECTED:
 
@@ -170,7 +171,11 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
 
 METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oParent )
 
-   DEFAULT oParent TO ::oParent
+   DEFAULT xContent    TO ::xContent
+   DEFAULT oBackground TO ::oBackground
+   DEFAULT lAnimate    TO ::lAnimate
+   DEFAULT aOpacity    TO ::aOpacity
+   DEFAULT oParent     TO ::oParent
 
    WITH OBJECT ::oWidget
       ::setContent( xContent )
@@ -180,14 +185,14 @@ METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oPar
 
       :setGeometry( oParent:geometry() )
       :move( 0, 0 )
-      :resize( ::oParent:width(), ::oParent:height() )
+      :resize( oParent:width(), oParent:height() )
       :raise()
       :show()
-      IF ::lAnimate
+      IF lAnimate
          ::oTimer:start()
       ENDIF
    ENDWITH
-   ::oFocusWidget := ::oParent:focusWidget()
+   ::oFocusWidget := oParent:focusWidget()
    QApplication():processEvents()
 
    RETURN Self
@@ -380,6 +385,4 @@ METHOD HbQtLogs:show()
       :show()
    ENDWITH
    RETURN Self
-
-//--------------------------------------------------------------------//
 

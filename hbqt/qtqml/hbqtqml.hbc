@@ -20,7 +20,15 @@ libs=../qtcore/hbqtcore.hbc
 {HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 {HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 #
-{HB_STATIC_QT&(allwin|linux|darwin|beos)}libs=Qt5Qml
+{HB_STATIC_QT&(allwin|linux|darwin|beos)}libs=Qt5Qml Qt5Xml Qt5XmlPatterns Qt5Sql
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../plugins/qmltooling
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../plugins/Generic -L${HB_WITH_QT}/../plugins/qmltooling -L${HB_WITH_QT}/../qml/QtQuick/Controls 
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../qml/QtQuick/Controls.2 -L${HB_WITH_QT}/../qml/QtQuick/Dialogs -L${HB_WITH_QT}/../qml/QtQuick/Dialogs/Private 
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../qml/QtQuick/Layouts  -L${HB_WITH_QT}/../qml/QtQuick/Window.2 -L${HB_WITH_QT}/../qml/Qt/labs/settings 
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../qml/Qt/labs/folderlistmodel -L${HB_WITH_QT}/../qml/QtQuick/PrivateWidgets -L${HB_WITH_QT}/../qml/QtQuick/Particles.2 
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../qml/QtQml/Models.2 -L${HB_WITH_QT}/../qml/QtQuick/XmlListModel -L${HB_WITH_QT}/../qml/QtQuick/LocalStorage
+
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)}libs=qmldbg_debugger qmldbg_inspector qmldbg_server qmldbg_local qmldbg_native qmldbg_profiler qmldbg_tcp
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)}libs=qtquick2plugin qtquickcontrolsplugin qtquickcontrols2plugin dialogplugin qquicklayoutsplugin windowplugin 
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)}libs=qmlsettingsplugin widgetsplugin qmlfolderlistmodelplugin dialogsprivateplugin particlesplugin modelsplugin 
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)}libs=qmlxmllistmodelplugin qmllocalstorageplugin

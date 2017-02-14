@@ -137,6 +137,20 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="btnGraphics">
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/prv_charts.png</normaloff>:/hbqt/resources/prv_charts.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QToolButton" name="toolButton">
            <property name="enabled">
             <bool>false</bool>

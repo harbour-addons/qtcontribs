@@ -37,7 +37,7 @@ enum LabelsPosition { LabelsCenter, LabelsInsideEnd, LabelsInsideBase, LabelsOut
 </ENUMS>
 
 <PROTOS>
-bool   append(QBarSet *set)
+bool   append(QBarSet *set)                 [*D=1*]
 bool   append(QList<QBarSet *> sets)
 QList<QBarSet *>   barSets() const
 qreal   barWidth() const

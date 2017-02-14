@@ -109,7 +109,7 @@ METHOD HbQtQmlBridge:create( oParent )
       :setResizeMode( QQuickWidget_SizeRootObjectToView )
       :setFocusPolicy( Qt_NoFocus )
       :connect( "sceneGraphError(QQuickWindow::SceneGraphError,QString)", {|nError,cDesc| __hbqtLog( hb_ntos( nError ) + ":" + cDesc ) } )
-      :connect( "statusChanged(QQuickWidget::Status)"                   , {|nStatus     | __hbqtLog( hb_ntos( nStatus ) ) } )
+      :connect( "statusChanged(QQuickWidget::Status)"                   , {|nStatus     | __logErrors( ::oWidget, nStatus ) } )
    ENDWITH
 
    __hbqtLayoutWidgetInParent( ::oWidget, ::oParent )
@@ -117,6 +117,19 @@ METHOD HbQtQmlBridge:create( oParent )
    __hbqtRegisterForEventClose( {|| ::manageEventClose() } )
 
    RETURN Self
+
+
+STATIC FUNCTION __logErrors( oQWidget, nStatus )
+   LOCAL oErrors, i, s
+
+   s := "Status : " + hb_ntos( nStatus ) + chr( 10 )
+   oErrors := oQWidget:errors()
+   FOR i := 0 TO oErrors:count() - 1
+      s += "         " + oErrors:at( i ):description() + chr( 10 )
+   NEXT
+   __hbqtLog( s )
+
+   RETURN NIL
 
 
 METHOD HbQtQmlBridge:setQml( cQml )

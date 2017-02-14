@@ -6,11 +6,11 @@
 -pflag=-qtmodule=qtdesigner
 -pflag=-qthdocdir=../doc/
 
-QDesignerActionEditorInterface.qth
-QDesignerFormEditorInterface.qth
-QDesignerFormWindowCursorInterface.qth
-QDesignerFormWindowInterface.qth
-QDesignerFormWindowManagerInterface.qth
-QDesignerObjectInspectorInterface.qth
-QDesignerPropertyEditorInterface.qth
-QDesignerWidgetBoxInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerActionEditorInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerFormEditorInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerFormWindowCursorInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerFormWindowInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerFormWindowManagerInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerObjectInspectorInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerPropertyEditorInterface.qth
+{!(HB_STATIC_QT|__ios__)}QDesignerWidgetBoxInterface.qth

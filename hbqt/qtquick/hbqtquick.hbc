@@ -22,4 +22,5 @@ libs=../qtqml/hbqtqml.hbc
 {HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 {HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 #
-{HB_STATIC_QT&(allwin|linux|darwin|beos)}libs=Qt5Quick Qt5QuickWidgets Qt5Qml
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(mingw)}ldflags=-L${HB_WITH_QT}/../qml/QtQuick.2
+{HB_STATIC_QT&(allwin|linux|darwin|beos)}libs=Qt5Quick Qt5QuickControls2 Qt5QuickTemplates2 Qt5QuickParticles Qt5QuickWidgets Qt5Qml

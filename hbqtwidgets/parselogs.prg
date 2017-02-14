@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2016-2017 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -117,6 +117,10 @@ CLASS HbQtLogAnalyzer
    DATA   oUI
    DATA   oParent
    DATA   oChart
+   DATA   oTimer
+   DATA   oGraphics
+
+   DATA   dir_
 
    DATA   nKeyOffset                              INIT 15
    DATA   cNewEntryToken                          INIT ""
@@ -167,6 +171,7 @@ CLASS HbQtLogAnalyzer
    METHOD clear()
    METHOD dialogExpandExpression( oEditControl )
    METHOD switchOnOff( nIndex )
+   METHOD reloadLogIfChanged()
 
    ENDCLASS
 
@@ -190,6 +195,7 @@ METHOD HbQtLogAnalyzer:create( oParent )
       ::oUI:btnOpenErrorLog:connect( "clicked()", {||
                                        LOCAL cFile := HbQtOpenFileDialog( NIL, "Select ErrorLog", "ErrorLog (*.*)", .F., .F., NIL )
                                        IF ! Empty( cFile )
+                                          ::oUI:editErrorLog:setText( "" )
                                           ::oUI:editErrorLog:setText( cFile )
                                        ENDIF
                                        RETURN NIL
@@ -253,6 +259,16 @@ METHOD HbQtLogAnalyzer:create( oParent )
       ::oUI:tabWidgetErrorLog:setCurrentIndex( 1 )
       ::oUI:treeErrorLog:hide()
       ::loadConfiguration()
+
+      WITH OBJECT ::oTimer := QTimer()
+         :setInterval( 60000 )
+         :connect( "timeout()", {|| ::reloadLogIfChanged() } )
+         :start()
+      ENDWITH
+
+      ::oGraphics := HbQtLogGraphics():new():create( ::oWidget )
+
+      ::oUI:btnGraphics:connect( "clicked()", {|| ::oGraphics:show() } )
    ENDIF
    RETURN Self
 
@@ -320,6 +336,8 @@ METHOD HbQtLogAnalyzer:clear()
    ::axErrors     := {}
    ::axFields     := {}
    ::axAnalyze    := {}
+
+   ::oChart:clear()
 
    ::oUI:treeErrorLog:clear()
    ::oUI:tableErrorLog:clear()
@@ -600,6 +618,26 @@ METHOD HbQtLogAnalyzer:parseConfiguration()
    RETURN .T.
 
 
+METHOD HbQtLogAnalyzer:reloadLogIfChanged()
+   LOCAL dir_
+   LOCAL cErrorLog := ::oUI:editErrorLog:text()
+
+   IF ! Empty( cErrorLog )
+      dir_:= Directory( cErrorLog )
+      IF ! Empty( dir_ )
+         IF Empty( ::dir_ )
+            ::dir_:= dir_
+         ELSE
+            IF ! dir_[ 1,4 ] == ::dir_[ 1,4 ]
+               ::oUI:editErrorLog:setText( "" )
+               ::oUI:editErrorLog:setText( cErrorLog )
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
 METHOD HbQtLogAnalyzer:parseLog( cErrorLog )
    LOCAL cLog, aLog, cValue, n, n1, xTmp, cKey, hFields, hTokens, cField, cToken, cFormat
    LOCAL nRow, hRows, lRestCallStack, cKeyCallStack, lIsRest
@@ -615,6 +653,7 @@ METHOD HbQtLogAnalyzer:parseLog( cErrorLog )
    IF ! ::parseConfiguration()
       RETURN NIL
    ENDIF
+   ::dir_:= Directory( cErrorLog )
 
    lRestCallStack := .F.
    xTmp := ::axDefintn[ Len( ::axDefintn ) ]
@@ -717,6 +756,9 @@ METHOD HbQtLogAnalyzer:parseLog( cErrorLog )
          ENDIF
       ENDIF
    NEXT
+   IF ! Empty( hEntry )
+      AAdd( aEntries, hEntry )
+   ENDIF
 
    FOR EACH hEntry IN aEntries
       hTokens := hEntry[ "tokens" ]
@@ -769,6 +811,8 @@ METHOD HbQtLogAnalyzer:parseLog( cErrorLog )
    ::buildTreeErrorlog()
    ::buildTableErrorlog()
    ::buildErrorsSummary()
+
+   ::oGraphics:setData( ::aEntries )
 
    ::oUI:tabWidgetErrorLog:setCurrentIndex( 1 )
    RETURN NIL
@@ -1448,4 +1492,245 @@ METHOD HbQtLogAnalyzer:loadConfiguration( cHlgFile )
    ENDIF
    RETURN hHlg
 
+//--------------------------------------------------------------------//
+//                        CLASS HbQtLogGraphics
+//--------------------------------------------------------------------//
+
+CLASS HbQtLogGraphics
+
+   DATA   oWidget
+   DATA   oUI
+   DATA   oParent
+   DATA   aData
+   DATA   dRefresh
+
+   DATA   oChartView
+   DATA   oChartHrs
+   DATA   oLineSeries
+   DATA   aBarSets
+   DATA   aPallete                                INIT {}
+
+   DATA   oChartViewDesc
+   DATA   oChartDesc
+   DATA   oBarSeries
+
+   ACCESS widget()                                INLINE ::oWidget
+
+   METHOD init( oParent )
+   METHOD create( oParent )
+
+   METHOD show()                                  INLINE ::oWidget:show()
+   METHOD hide()                                  INLINE ::oWidget:hide()
+   METHOD setData( aData )                        INLINE iif( HB_ISARRAY( aData ), ::aData := aData, NIL ), ::refresh( Date() )
+   METHOD refresh( dToday )
+   METHOD loadPallete()
+
+   ENDCLASS
+
+
+METHOD HbQtLogGraphics:init( oParent )
+   DEFAULT oParent TO ::oParent
+   ::oParent := oParent
+   RETURN Self
+
+
+METHOD HbQtLogGraphics:create( oParent )
+
+   DEFAULT oParent TO ::oParent
+   ::oParent := oParent
+
+   ::loadPallete()
+
+   ::oUI := hbqtui_loggraphics( ::oParent )
+   WITH OBJECT ::oWidget := ::oUI:widget()
+      :setWindowFlags( Qt_Sheet )
+      :connect( QEvent_Close, {|oEvent| oEvent:ignore(), ::hide() } )
+   ENDWITH
+
+   WITH OBJECT ::oChartDesc := QChart()
+      :legend():setVisible( .F. )
+      :setMargins( QMargins( 10,10,10,10 ) )
+   ENDWITH
+   WITH OBJECT ::oChartViewDesc := QChartView( ::oWidget )
+      :setChart( ::oChartDesc )
+      :setRenderHint( QPainter_Antialiasing )
+   ENDWITH
+   ::oUI:hLayDesc:addWidget( ::oChartViewDesc )
+
+   WITH OBJECT ::oChartHrs := QChart()
+      :legend():setVisible( .F. )
+      :setMargins( QMargins( 10,10,10,10 ) )
+   ENDWITH
+   WITH OBJECT ::oChartView := QChartView( ::oWidget )
+      :setChart( ::oChartHrs )
+      :setRenderHint( QPainter_Antialiasing )
+   ENDWITH
+   ::oUI:hLayHourly:addWidget( ::oChartView )
+
+   ::refresh()
+   RETURN Self
+
+
+STATIC FUNCTION __seconds2slot( nSeconds )
+   LOCAL n := nSeconds / 3600
+   RETURN Int( n ) + 1
+
+
+METHOD HbQtLogGraphics:loadPallete()
+
+   AAdd( ::aPallete, QColor( Qt_yellow    ) )
+   AAdd( ::aPallete, QColor( Qt_green     ) )
+   AAdd( ::aPallete, QColor( Qt_blue      ) )
+   AAdd( ::aPallete, QColor( Qt_cyan      ) )
+   AAdd( ::aPallete, QColor( Qt_magenta   ) )
+   AAdd( ::aPallete, QColor( Qt_red       ) )
+   AAdd( ::aPallete, QColor( Qt_lightGray ) )
+
+   AAdd( ::aPallete, QColor( 255,250,205  ) )    // LemonChiffon
+   AAdd( ::aPallete, QColor( 124,255,0    ) )    // ChartReuse
+   AAdd( ::aPallete, QColor( 0  ,191,255  ) )    // DeepSkyblue
+   AAdd( ::aPallete, QColor( 127,255,212  ) )    // Aquamarine
+   AAdd( ::aPallete, QColor( 238,130,238  ) )    // Violet
+   AAdd( ::aPallete, QColor( 220,20,60    ) )    // Crimson
+   AAdd( ::aPallete, QColor( 119,136,53   ) )    // LightSlateGray
+
+   AAdd( ::aPallete, QColor( 240,230,140  ) )    // Khaki
+   AAdd( ::aPallete, QColor( 60 ,179,113  ) )    // MediumGreen
+   AAdd( ::aPallete, QColor( 30 ,144,255  ) )    // DoggerBlue
+   AAdd( ::aPallete, QColor( 64 ,224,208  ) )    // Turquoise
+   AAdd( ::aPallete, QColor( 123,104,238  ) )    // MediumSlateBlue
+   AAdd( ::aPallete, QColor( 240,128,128  ) )    // LightCoral
+   AAdd( ::aPallete, QColor( 255,240,245  ) )    // LavendarBlush
+
+   RETURN NIL
+
+
+STATIC FUNCTION __blockLabelClicked( oWidget, oSet )
+   RETURN {|| oWidget:setWindowTitle( oSet:label() ) }
+
+
+METHOD HbQtLogGraphics:refresh( dToday )
+   LOCAL hEntry, hFields, nSecs, nSlot, nY, nErrors, oAxisX, oAxisY, nMax, nX, oSet, oLegend, nColor
+   LOCAL hSlots := {=>}
+   LOCAL hDesc := {=>}
+
+   IF Empty( ::aData )
+      RETURN self
+   ENDIF
+
+   hb_HKeepOrder( hDesc, .F. )
+
+   DEFAULT dToday TO Date()
+
+   hSlots[ 0.00 ] := 0
+   FOR nSlot := 1 TO 24
+      hSlots[ nSlot ] := 0
+   NEXT
+
+   nErrors := 0
+   FOR EACH hEntry IN ::aData
+      hFields := hEntry[ "fields" ]
+      IF hFields[ "date" ] == dToday
+         nErrors++
+         nSecs := TimeToSec( hFields[ "time" ] )
+         nSlot := __seconds2slot( nSecs )
+         IF ! hb_HHasKey( hSlots, nSlot )
+            hSlots[ nSlot ] := 0
+         ENDIF
+         hSlots[ nSlot ]++
+         IF ! hb_HHasKey( hDesc, hFields[ "Description" ] )
+            hDesc[ hFields[ "Description" ] ] := 0
+         ENDIF
+         hDesc[ hFields[ "Description" ] ]++
+      ENDIF
+   NEXT
+   ::oUI:labelErrors:setText( DToC( dToday ) + " - Number of Errors - " + hb_ntos( nErrors ) )
+
+   // Chart by Description
+   //
+   nMax := 0
+   FOR EACH nX IN hDesc
+      nMax := Max( nMax, nX )
+   NEXT
+   WITH OBJECT oAxisX := QValueAxis( ::oChartDesc )
+      :setMin( 0.0 )
+      :setMax( nMax )
+      :setTickCount( nMax + 1 )
+      :setLabelFormat( "%.0f" )
+   ENDWITH
+   WITH OBJECT oAxisY := QBarCategoryAxis( ::oChartDesc )
+      :append( " " )
+   ENDWITH
+   IF ! HB_ISOBJECT( ::oBarSeries )
+      ::oBarSeries := QHorizontalBarSeries()
+   ENDIF
+   ::oBarSeries:clear()
+   ::aBarSets := {}
+   FOR EACH nX IN hDesc
+      oSet := NIL
+      WITH OBJECT oSet := QBarSet( nX:__enumKey() )
+         AAdd( ::aBarSets, oSet )
+         :setLabel( Left( nX:__enumKey(), 50 ) )
+         nColor := nX:__enumIndex() % 21
+         nColor := iif( nColor <= 0, 1, nColor )
+         :SetColor( ::aPallete[ nColor ] )
+         :append( nX )
+         :connect( "clicked(int)", __blockLabelClicked( ::oWidget, oSet ) )
+      ENDWITH
+      ::oBarSeries:append( oSet )
+   NEXT
+   WITH OBJECT ::oChartDesc
+      :addSeries( ::oBarSeries )
+      :createDefaultAxes()
+      :setAxisX( oAxisX )
+      :setAxisY( oAxisY )
+      :setTitle( "By Description" )
+      :setAnimationOptions( QChart_SeriesAnimations )
+      :legend():setVisible( .F. )
+      :legend():setAlignment( Qt_AlignLeft )
+      :legend():setReverseMarkers( .T. )
+      :legend():setShowTooltips( .T. )
+   ENDWITH
+   ::oChartViewDesc:setChart( ::oChartDesc )
+
+   //  Chart by Hour
+   //
+   nMax := 0
+   FOR EACH nY IN hSlots
+      nMax := Max( nMax, nY )
+   NEXT
+   WITH OBJECT oAxisY := QValueAxis( ::oChartHrs )
+      :setMin( 0.0 )
+      :setMax( nMax )
+      :setTickCount( nMax + 1 )
+      :setLabelFormat( "%.0f" )
+   ENDWITH
+   WITH OBJECT oAxisX := QValueAxis( ::oChartHrs )
+      :setMin( 0.0 )
+      :setMax( 24.0 )
+      :setTickCount( 25 )
+      :setLabelFormat( "%.0f" )
+   ENDWITH
+   IF ! HB_ISOBJECT( ::oLineSeries )
+      ::oLineSeries := QLineSeries()
+   ENDIF
+   ::oLineSeries:clear()
+   FOR EACH nY IN hSlots
+      ::oLineSeries:append( nY:__enumKey(), nY )
+   NEXT
+   WITH OBJECT ::oChartHrs
+      :addSeries( ::oLineSeries )
+      :setAxisX( oAxisX )
+      :setAxisY( oAxisY )
+      :setTitle( "By Hours" )
+      :setAnimationOptions( QChart_SeriesAnimations )
+      WITH OBJECT oLegend := :legend()
+         :detachFromChart()
+         :setVisible( .F. )
+         :hide()
+         :setPen( QPen() )
+      ENDWITH
+   ENDWITH
+   HB_SYMBOL_UNUSED( oLegend )
+   RETURN Self
 

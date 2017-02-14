@@ -69,6 +69,7 @@ messages.ui
 scripts.ui
 parselogs.ui
 expandtext.ui
+loggraphics.ui
 
 $hb_pkg_install.hbm
 

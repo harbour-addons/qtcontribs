@@ -140,12 +140,14 @@ FUNCTION Main( ... )
    IF s_oMem:create( 255 )
       s_isDbfServer := .T.
    ELSE
-      IF Lower( Right( hb_AParams()[ 1 ], 4 ) ) == ".dbf"
-         IF s_oMem:error() == QSharedMemory_AlreadyExists
-            s_oMem:attach()
-            s_oMem:hbWriteData( hb_AParams()[ 1 ] )
-            s_oMem:detach()
-            RETURN NIL
+      IF HB_ISARRAY( hb_AParams() ) .AND. ! Empty( hb_AParams() )
+         IF Lower( Right( hb_AParams()[ 1 ], 4 ) ) == ".dbf"
+            IF s_oMem:error() == QSharedMemory_AlreadyExists
+               s_oMem:attach()
+               s_oMem:hbWriteData( hb_AParams()[ 1 ] )
+               s_oMem:detach()
+               RETURN NIL
+            ENDIF
          ENDIF
       ENDIF
    ENDIF

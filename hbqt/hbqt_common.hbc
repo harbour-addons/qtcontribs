@@ -23,11 +23,17 @@ plugins=hbmk2_qt.hb
 {allgcc&!(bsd|darwin)}libs=supc++
 {allgcc&(bsd|darwin)}libs=stdc++
 
+# Static Builds 
+
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}cflags=-O2 -static -static-libgcc -std=c++11 -Wno-c++14-compat -momit-leaf-frame-pointer
+
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}ldflags=-static -static-libgcc -L${HB_WITH_QT}/../plugins/platforms -L${HB_WITH_QT}/../plugins/imageformats
+
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}libs=mingw32 opengl32 qtpcre qtfreetype qwindows qico
+#
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&!(HB_QT_MINOR_VER='8')&(allwin)&(mingw)}libs=qtharfbuzzng
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')&(allwin)&(mingw)}libs=qtharfbuzz qtlibpng uxtheme dwmapi
+
 
 #{win|os2}hbcppmm=yes
 {win|os2}hbcppmm=no

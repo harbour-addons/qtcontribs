@@ -1698,6 +1698,9 @@ METHOD IdeDebugger:watch_rest()
       nSel := Alert( "Merge with existing watches ?", { "Yes", "No" } )
       QApplication():processEvents()
    ENDIF
+   IF Empty( aWatches )
+      RETURN Self
+   ENDIF
 
    IF ::oUI:tableWatchExpressions:isVisible()
       IF nSel != 1
