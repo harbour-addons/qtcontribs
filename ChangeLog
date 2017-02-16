@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-02-15 17:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r447)
+  * hbqt/qtcore/hbqt_init.cpp
+    + Added: Code to manage SIGNAL with parameters bool,int.
+
+  * hbdbu/dbu.prg
+    % Passed mainwindow to __hbqtAppWidget()
+
+  * hbqtwidgets/loggraphics.ui
+  * hbqtwidgets/parselogs.prg
+    % Refined the way current-day visual analyzer's look and feel. 
+
 2017-02-14 12:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r446)
   * hbdbu/dbu.prg
     ! Fixed: an assertion check.

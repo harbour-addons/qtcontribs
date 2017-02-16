@@ -181,6 +181,16 @@ static void hbqt_SlotsExecBool( PHB_ITEM * codeBlock, void ** arguments, QString
    hb_vmSend( 1 );
 }
 
+static void hbqt_SlotsExecBoolInt( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   hb_vmPushEvalSym();
+   hb_vmPush( codeBlock );
+   hb_vmPushLogical( *reinterpret_cast< bool( * ) >( arguments[ 1 ] ) );
+   hb_vmPushInteger( *reinterpret_cast< int( * ) >( arguments[ 2 ] ) );
+   hb_vmSend( 2 );
+}
+
 static void hbqt_SlotsExecDouble( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -700,6 +710,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "int$int$int"             , hbqt_SlotsExecIntIntInt        );
    hbqt_slots_register_callback( "int$int$int$int"         , hbqt_SlotsExecIntIntIntInt     );
    hbqt_slots_register_callback( "bool"                    , hbqt_SlotsExecBool             );
+   hbqt_slots_register_callback( "bool$int"                , hbqt_SlotsExecBoolInt          );
    hbqt_slots_register_callback( "double"                  , hbqt_SlotsExecDouble           );
    hbqt_slots_register_callback( "qreal"                   , hbqt_SlotsExecQReal            );
    hbqt_slots_register_callback( "qreal$qreal"             , hbqt_SlotsExecQRealQReal       );

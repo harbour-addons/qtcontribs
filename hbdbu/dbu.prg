@@ -312,6 +312,7 @@ METHOD DbuMGR:create()
       :statusBar():hide()
       :connect( QEvent_Close, {|oEvent| ::exit( .T., oEvent ) } )
    ENDWITH
+   __hbqtAppWidget( ::oUI:widget() )
 
    WITH OBJECT ::oExitAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "exit" ) ) )

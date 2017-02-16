@@ -109,6 +109,9 @@
 #define __DFN_ANALYZE__                           6
 
 
+STATIC s_LastActivity := 0
+
+
 CLASS HbQtLogAnalyzer
 
    DATA   oWidget
@@ -265,7 +268,10 @@ METHOD HbQtLogAnalyzer:create( oParent )
          :connect( "timeout()", {|| ::reloadLogIfChanged() } )
          :start()
       ENDWITH
-
+      WITH OBJECT ::oWidget
+         :connect( QEvent_KeyPress          , {|| s_LastActivity := Seconds() } )
+         :connect( QEvent_MouseButtonRelease, {|| s_LastActivity := Seconds() } )
+      ENDWITH
       ::oGraphics := HbQtLogGraphics():new():create( ::oWidget )
 
       ::oUI:btnGraphics:connect( "clicked()", {|| ::oGraphics:show() } )
@@ -1519,7 +1525,7 @@ CLASS HbQtLogGraphics
    METHOD init( oParent )
    METHOD create( oParent )
 
-   METHOD show()                                  INLINE ::oWidget:show()
+   METHOD show()
    METHOD hide()                                  INLINE ::oWidget:hide()
    METHOD setData( aData )                        INLINE iif( HB_ISARRAY( aData ), ::aData := aData, NIL ), ::refresh( Date() )
    METHOD refresh( dToday )
@@ -1548,7 +1554,6 @@ METHOD HbQtLogGraphics:create( oParent )
    ENDWITH
 
    WITH OBJECT ::oChartDesc := QChart()
-      :legend():setVisible( .F. )
       :setMargins( QMargins( 10,10,10,10 ) )
    ENDWITH
    WITH OBJECT ::oChartViewDesc := QChartView( ::oWidget )
@@ -1558,7 +1563,6 @@ METHOD HbQtLogGraphics:create( oParent )
    ::oUI:hLayDesc:addWidget( ::oChartViewDesc )
 
    WITH OBJECT ::oChartHrs := QChart()
-      :legend():setVisible( .F. )
       :setMargins( QMargins( 10,10,10,10 ) )
    ENDWITH
    WITH OBJECT ::oChartView := QChartView( ::oWidget )
@@ -1571,46 +1575,17 @@ METHOD HbQtLogGraphics:create( oParent )
    RETURN Self
 
 
-STATIC FUNCTION __seconds2slot( nSeconds )
-   LOCAL n := nSeconds / 3600
-   RETURN Int( n ) + 1
-
-
-METHOD HbQtLogGraphics:loadPallete()
-
-   AAdd( ::aPallete, QColor( Qt_yellow    ) )
-   AAdd( ::aPallete, QColor( Qt_green     ) )
-   AAdd( ::aPallete, QColor( Qt_blue      ) )
-   AAdd( ::aPallete, QColor( Qt_cyan      ) )
-   AAdd( ::aPallete, QColor( Qt_magenta   ) )
-   AAdd( ::aPallete, QColor( Qt_red       ) )
-   AAdd( ::aPallete, QColor( Qt_lightGray ) )
-
-   AAdd( ::aPallete, QColor( 255,250,205  ) )    // LemonChiffon
-   AAdd( ::aPallete, QColor( 124,255,0    ) )    // ChartReuse
-   AAdd( ::aPallete, QColor( 0  ,191,255  ) )    // DeepSkyblue
-   AAdd( ::aPallete, QColor( 127,255,212  ) )    // Aquamarine
-   AAdd( ::aPallete, QColor( 238,130,238  ) )    // Violet
-   AAdd( ::aPallete, QColor( 220,20,60    ) )    // Crimson
-   AAdd( ::aPallete, QColor( 119,136,53   ) )    // LightSlateGray
-
-   AAdd( ::aPallete, QColor( 240,230,140  ) )    // Khaki
-   AAdd( ::aPallete, QColor( 60 ,179,113  ) )    // MediumGreen
-   AAdd( ::aPallete, QColor( 30 ,144,255  ) )    // DoggerBlue
-   AAdd( ::aPallete, QColor( 64 ,224,208  ) )    // Turquoise
-   AAdd( ::aPallete, QColor( 123,104,238  ) )    // MediumSlateBlue
-   AAdd( ::aPallete, QColor( 240,128,128  ) )    // LightCoral
-   AAdd( ::aPallete, QColor( 255,240,245  ) )    // LavendarBlush
-
+METHOD HbQtLogGraphics:show()
+   IF HB_ISOBJECT( __hbqtAppWidget() )
+      ::oWidget:setGeometry( __hbqtAppWidget():geometry() )
+      ::oWidget:move( __hbqtAppWidget():pos() )
+   ENDIF
+   ::oWidget:show()
    RETURN NIL
 
 
-STATIC FUNCTION __blockLabelClicked( oWidget, oSet )
-   RETURN {|| oWidget:setWindowTitle( oSet:label() ) }
-
-
 METHOD HbQtLogGraphics:refresh( dToday )
-   LOCAL hEntry, hFields, nSecs, nSlot, nY, nErrors, oAxisX, oAxisY, nMax, nX, oSet, oLegend, nColor
+   LOCAL hEntry, hFields, nSecs, nSlot, nY, nErrors, oAxisX, oAxisY, nMax, nMaxDesc, nX, oSet, nColor, nMaxSlot, cMaxDesc
    LOCAL hSlots := {=>}
    LOCAL hDesc := {=>}
 
@@ -1644,14 +1619,18 @@ METHOD HbQtLogGraphics:refresh( dToday )
          hDesc[ hFields[ "Description" ] ]++
       ENDIF
    NEXT
-   ::oUI:labelErrors:setText( DToC( dToday ) + " - Number of Errors - " + hb_ntos( nErrors ) )
 
    // Chart by Description
    //
    nMax := 0
+   cMaxDesc := ""
    FOR EACH nX IN hDesc
-      nMax := Max( nMax, nX )
+      IF nX > nMax
+         nMax := nX
+         cMaxDesc := nX:__enumKey()
+      ENDIF
    NEXT
+   nMaxDesc := nMax
    WITH OBJECT oAxisX := QValueAxis( ::oChartDesc )
       :setMin( 0.0 )
       :setMax( nMax )
@@ -1662,7 +1641,9 @@ METHOD HbQtLogGraphics:refresh( dToday )
       :append( " " )
    ENDWITH
    IF ! HB_ISOBJECT( ::oBarSeries )
-      ::oBarSeries := QHorizontalBarSeries()
+      WITH OBJECT ::oBarSeries := QHorizontalBarSeries()
+         :setBarWidth( 1.0 )
+      ENDWITH
    ENDIF
    ::oBarSeries:clear()
    ::aBarSets := {}
@@ -1676,6 +1657,7 @@ METHOD HbQtLogGraphics:refresh( dToday )
          :SetColor( ::aPallete[ nColor ] )
          :append( nX )
          :connect( "clicked(int)", __blockLabelClicked( ::oWidget, oSet ) )
+         :connect( "hovered(bool,int)", __blockLabelHovered( ::oUI:labelDesc, oSet ) )
       ENDWITH
       ::oBarSeries:append( oSet )
    NEXT
@@ -1686,8 +1668,7 @@ METHOD HbQtLogGraphics:refresh( dToday )
       :setAxisY( oAxisY )
       :setTitle( "By Description" )
       :setAnimationOptions( QChart_SeriesAnimations )
-      :legend():setVisible( .F. )
-      :legend():setAlignment( Qt_AlignLeft )
+      :legend():setAlignment( Qt_AlignBottom )
       :legend():setReverseMarkers( .T. )
       :legend():setShowTooltips( .T. )
    ENDWITH
@@ -1696,9 +1677,14 @@ METHOD HbQtLogGraphics:refresh( dToday )
    //  Chart by Hour
    //
    nMax := 0
+   nMaxSlot := hSlots[ 1 ]
    FOR EACH nY IN hSlots
-      nMax := Max( nMax, nY )
+      IF nY > nMax
+         nMaxSlot := nY:__enumIndex()
+         nMax := nY
+      ENDIF
    NEXT
+   nMaxSlot--
    WITH OBJECT oAxisY := QValueAxis( ::oChartHrs )
       :setMin( 0.0 )
       :setMax( nMax )
@@ -1724,13 +1710,63 @@ METHOD HbQtLogGraphics:refresh( dToday )
       :setAxisY( oAxisY )
       :setTitle( "By Hours" )
       :setAnimationOptions( QChart_SeriesAnimations )
-      WITH OBJECT oLegend := :legend()
-         :detachFromChart()
-         :setVisible( .F. )
-         :hide()
-         :setPen( QPen() )
-      ENDWITH
    ENDWITH
-   HB_SYMBOL_UNUSED( oLegend )
+
+   ::oUI:labelErrors:setText( "<font color=yellow>" + DToC( dToday ) + " - Total Errors [ " + hb_ntos( nErrors ) + " ]</font>" + ;
+                              "<font color=red> Peak Hour " + hb_ntos( nMaxSlot - 1 ) + ":00-" + hb_ntos( nMaxSlot ) + ":00 [ " + hb_ntos( nMax ) + " ]</font>" + ;
+                              "<font color=white>  Top Error"  + " [ " + hb_ntos( nMaxDesc ) + " ] " + Trim( Left( cMaxDesc, 30 ) ) + "</font>" )
+
+   ::oUI:labelDesc:setText( DToC( Date() ) )
    RETURN Self
 
+
+METHOD HbQtLogGraphics:loadPallete()
+
+   AAdd( ::aPallete, QColor( Qt_yellow    ) )
+   AAdd( ::aPallete, QColor( Qt_green     ) )
+   AAdd( ::aPallete, QColor( Qt_blue      ) )
+   AAdd( ::aPallete, QColor( Qt_cyan      ) )
+   AAdd( ::aPallete, QColor( Qt_magenta   ) )
+   AAdd( ::aPallete, QColor( Qt_red       ) )
+   AAdd( ::aPallete, QColor( Qt_lightGray ) )
+
+   AAdd( ::aPallete, QColor( 255,250,205  ) )    // LemonChiffon
+   AAdd( ::aPallete, QColor( 124,255,0    ) )    // ChartReuse
+   AAdd( ::aPallete, QColor( 0  ,191,255  ) )    // DeepSkyblue
+   AAdd( ::aPallete, QColor( 127,255,212  ) )    // Aquamarine
+   AAdd( ::aPallete, QColor( 238,130,238  ) )    // Violet
+   AAdd( ::aPallete, QColor( 220,20,60    ) )    // Crimson
+   AAdd( ::aPallete, QColor( 119,136,53   ) )    // LightSlateGray
+
+   AAdd( ::aPallete, QColor( 240,230,140  ) )    // Khaki
+   AAdd( ::aPallete, QColor( 60 ,179,113  ) )    // MediumGreen
+   AAdd( ::aPallete, QColor( 30 ,144,255  ) )    // DoggerBlue
+   AAdd( ::aPallete, QColor( 64 ,224,208  ) )    // Turquoise
+   AAdd( ::aPallete, QColor( 123,104,238  ) )    // MediumSlateBlue
+   AAdd( ::aPallete, QColor( 240,128,128  ) )    // LightCoral
+   AAdd( ::aPallete, QColor( 255,240,245  ) )    // LavendarBlush
+
+   RETURN NIL
+
+
+STATIC FUNCTION __seconds2slot( nSeconds )
+   LOCAL n := nSeconds / 3600
+   RETURN Int( n ) + 1
+
+
+STATIC FUNCTION __blockLabelClicked( oWidget, oSet )
+   RETURN {|| oWidget:setWindowTitle( oSet:label() ) }
+
+
+STATIC FUNCTION __blockLabelHovered( oLabel, oSet )
+   RETURN {|lIn|
+               LOCAL cColor := oSet:brush():color():name()
+               IF lIn
+                 oLabel:setStyleSheet( "background-color: " + oSet:brush():color():darker():name() + ";" )
+                 oLabel:setText( "<font color=" + cColor + ">" + oSet:label() + " [ " + LTrim( Str( oSet:At( 0 ), 5, 0 ) ) + " ]" + "</font>" )
+               ELSE
+                 oLabel:setStyleSheet( "" )
+                 oLabel:setText( DToC( Date() ) )
+               ENDIF
+               RETURN NIL
+          }
