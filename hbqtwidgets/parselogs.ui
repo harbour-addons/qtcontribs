@@ -198,6 +198,36 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="toolButton_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="btnAutoOnOff">
+           <property name="toolTip">
+            <string>Disable auto refresh</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+           <property name="icon">
+            <iconset resource="hbqtwidgets.qrc">
+             <normaloff>:/hbqt/resources/auto_on.png</normaloff>:/hbqt/resources/auto_on.png</iconset>
+           </property>
+           <property name="autoRaise">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>

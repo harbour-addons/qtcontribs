@@ -385,5 +385,7 @@
     <file>resources/analysis.png</file>
     <file>resources/analysis-1.png</file>
     <file>resources/analysis-2.png</file>
+    <file>resources/auto_on.png</file>
+    <file>resources/auto_off.png</file>
   </qresource>
 </RCC>

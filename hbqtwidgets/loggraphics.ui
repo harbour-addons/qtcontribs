@@ -149,7 +149,7 @@
         </font>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 0, 0);</string>
+        <string notr="true">background-color: rgb(0, 0, 0);padding-right: 20px;</string>
        </property>
        <property name="text">
         <string>...</string>

@@ -54,7 +54,7 @@ flags   RubberBands
 </ENUMS>
 
 <PROTOS>
-QChart *   chart() const
+QChart *   chart() const                                 [*R=1*]
 RubberBands   rubberBand() const
 void   setChart(QChart *chart)                           [*D=1*]
 void   setRubberBand(const RubberBands &rubberBand)

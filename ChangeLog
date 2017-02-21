@@ -16,6 +16,21 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-02-20 16:29 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r448)
+  * hbqt/qtcharts/qth/QChartView.qth
+    + Applied [*R=1*] to QChart * chart() method. 
+	   Trasfers the ownership of <chart> back to Harbour.
+	   
+  * hbqtwidgets/resources/auto_off.png
+  * hbqtwidgets/resources/auto_on.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: some more images.
+	
+  * hbqtwidgets/loggraphics.ui
+  * hbqtwidgets/parselogs.prg
+  * hbqtwidgets/parselogs.ui
+    + Many enhancements to HbQtLogsAnalyzer() interface. Details will follow.
+
 2017-02-15 17:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r447)
   * hbqt/qtcore/hbqt_init.cpp
     + Added: Code to manage SIGNAL with parameters bool,int.
