@@ -32,6 +32,7 @@ plugins=hbmk2_qt.hb
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}libs=mingw32 opengl32 qtpcre qtfreetype qwindows qico
 #
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&!(HB_QT_MINOR_VER='8')&(allwin)&(mingw)}libs=qtharfbuzzng
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='7')&(allwin)&(mingw)}libs=qtpng
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')&(allwin)&(mingw)}libs=qtharfbuzz qtlibpng uxtheme dwmapi
 
 

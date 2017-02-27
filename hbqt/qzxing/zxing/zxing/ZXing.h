@@ -41,7 +41,13 @@ typedef bool boolean;
 
 #include <float.h>
 
-   #if !( defined( __GNUC__ ) && ( __GNUC__ - 0 >= 5 ) )
+#if defined( __GNUC__ )
+#define GCC_VERSION (__GNUC__ * 10000 \
+                     + __GNUC_MINOR__ * 100 \
+                     + __GNUC_PATCHLEVEL__)
+#endif
+//   #if !( defined( __GNUC__ ) && ( __GNUC__ - 0 >= 5 ) )
+   #if !( defined( __GNUC__ ) && ( GCC_VERSION > 491 ) )
 namespace zxing {
 inline bool isnan_z(float v) {return _isnan(v) != 0;}
 inline bool isnan_z(double v) {return _isnan(v) != 0;}

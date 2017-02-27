@@ -1548,6 +1548,8 @@ METHOD HbQtLogAnalyzer:loadConfiguration( cHlgFile )
 //                        CLASS HbQtLogGraphics
 //--------------------------------------------------------------------//
 
+#if defined( HBQT_WITH_CHARTS_SUPPORT )
+
 CLASS HbQtLogGraphics
 
    DATA   oWidget
@@ -1941,3 +1943,23 @@ STATIC FUNCTION __blockLabelHovered( oLabel, oSet, dToday, nErrors )
                ENDIF
                RETURN NIL
           }
+#else 
+
+CLASS HbQtLogGraphics
+
+   METHOD init()                                  
+   METHOD create()                                
+   METHOD setData()                               VIRTUAL
+   METHOD show()                                  VIRTUAL 
+   
+   ENDCLASS 
+
+
+METHOD HbQtLogGraphics:init()
+   RETURN Self 
+
+   
+METHOD HbQtLogGraphics:create()
+   RETURN Self 
+   
+#endif 

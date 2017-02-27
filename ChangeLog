@@ -16,6 +16,23 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-02-27 13:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r450)
+  * hbdbu/hbdbu.hbp
+    % Adjustments for hbqtcharts.hbc based on Qt's minor version.
+	
+  * hbqt/hbqt_common.hbc
+    ! Fixed to link applications statically for lib name changes in 
+	  Qt's minor versions. 
+	  
+  * hbqt/qzxing/zxing/zxing/ZXing.h
+    ! Fixed to resolve _isnan() calls if HbQt is compiled with older 
+	  and latest Mingw versions. A constant issue not fixed properly 
+	  in Mingw.
+	  
+  * hbqtwidgets/parselogs.prg
+    ! Guarded Class HbQtLogGraphics via #if defined( HBQT_WITH_CHARTS_SUPPORT ).
+	   QtCharts are only available from Qt 5.7 onwards.
+
 2017-02-20 17:37 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r449)
   + hbqtqmlparts/tests/calqlatr
   + hbqtqmlparts/tests/calqlatr/calqlatr.hbp
