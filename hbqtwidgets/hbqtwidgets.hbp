@@ -60,6 +60,7 @@ messages.prg
 hilighter.prg
 scripts.prg
 parselogs.prg
+signature.prg
 
 hbqtwidgets.qrc
 

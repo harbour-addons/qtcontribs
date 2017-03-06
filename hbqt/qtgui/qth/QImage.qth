@@ -103,6 +103,8 @@ int depth () const
 int dotsPerMeterX () const
 int dotsPerMeterY () const
 void fill ( uint pixelValue )
+void fill(const QColor &color)                                         [*V=0x40800*]
+//void fill(Qt::GlobalColor color)                                       [*V=0x40800*]
 Format format () const
 bool hasAlphaChannel () const
 int height () const

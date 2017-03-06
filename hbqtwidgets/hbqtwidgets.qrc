@@ -387,5 +387,9 @@
     <file>resources/analysis-2.png</file>
     <file>resources/auto_on.png</file>
     <file>resources/auto_off.png</file>
+    <file>resources/cancel.png</file>
+    <file>resources/refresh.png</file>
+    <file>resources/refresh-2.png</file>
+    <file>resources/select-3.png</file>
   </qresource>
 </RCC>

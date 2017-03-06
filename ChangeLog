@@ -16,6 +16,34 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-03-05 13:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r451)
+  * hbqt/qtgui/qth/QImage.qth
+    + Added: methods introduced in later versions of Qt.
+	
+  + hbqtwidgets/resources/cancel.png
+  + hbqtwidgets/resources/refresh-2.png
+  + hbqtwidgets/resources/refresh.png
+  + hbqtwidgets/resources/select-3.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: few more images.
+	
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: signature.prg.
+	
+  + hbqtwidgets/signature.prg
+    + Implemented: Class HbQtSignature - to fetch signatures over the touch-screen devices. 
+	   A blocking but non-modal interface to fetch signatures from party of interest.
+	   Testing can be done via mouse on standard screens though. For details 
+	   please look into HbQtFetchSignature() function.
+	   
+	+ Added: HbQtFetchSignature( bBlock ) -> NIL 
+       <bBlock> == { | nStatus, oImage | __doWhateverWith( nStatus, oImage ) }
+       One-liner function to fetch signatures.
+	   
+  + hbqtwidgets/tests/signatures.prg
+	+ An application demonstrating implementation of HbQtSignature class via 
+	   HbQtFetchSignature() function.
+    
 2017-02-27 13:07 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r450)
   * hbdbu/hbdbu.hbp
     % Adjustments for hbqtcharts.hbc based on Qt's minor version.
