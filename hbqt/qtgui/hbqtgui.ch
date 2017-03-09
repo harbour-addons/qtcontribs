@@ -5640,5 +5640,9 @@
 #define QSharedMemory_OutOfResources                         7         // A create() operation failed because there was not enough memory available to fill the request.
 #define QSharedMemory_UnknownError                           8         // Something else happened and it was bad.
 
+#define QSqlTableModel_OnFieldChange                         0
+#define QSqlTableModel_OnRowChange                           1
+#define QSqlTableModel_OnManualSubmit                        2
+
 #endif
 

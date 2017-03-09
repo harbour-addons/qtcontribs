@@ -1569,7 +1569,9 @@ CLASS HbQtLogGraphics
 
    DATA   oChartViewHrs
    DATA   oChartViewDesc
+   DATA   oChartViewMonthlyDesc
    DATA   aBarSets
+   DATA   aBarAnimations
 
    DATA   cTotalErr                               INIT ""
    DATA   cPeakErr                                INIT ""
@@ -1580,6 +1582,10 @@ CLASS HbQtLogGraphics
    DATA   nStrIndex                               INIT 0
    DATA   nSpeed                                  INIT 200
    DATA   oTimer
+   DATA   oTimerMonthlyDesc
+   DATA   cLastDesc                               INIT ""
+
+   DATA   oChartMonthlyNumbers
 
    ACCESS widget()                                INLINE ::oWidget
 
@@ -1594,6 +1600,9 @@ CLASS HbQtLogGraphics
    METHOD displayBanner()
    METHOD buildChartDesc()
    METHOD buildChartHrs()
+   METHOD buildChartMonthlyNumbers()
+   METHOD buildChartMonthlyDesc( cDesc )
+   METHOD refreshChartMonthlyDesc()
 
    ENDCLASS
 
@@ -1627,12 +1636,24 @@ METHOD HbQtLogGraphics:create( oParent )
    ENDWITH
    ::oUI:hLayHourly:addWidget( ::oChartViewHrs )
 
+   WITH OBJECT ::oChartViewMonthlyDesc := QChartView( ::oWidget )
+      :setRenderHint( QPainter_Antialiasing )
+   ENDWITH
+   ::oUI:vLayMonthlyDesc:addWidget( ::oChartViewMonthlyDesc )
+
    WITH OBJECT ::oTimer := QTimer()
       :setInterval( ::nSpeed )
       :connect( "timeout()", {|| ::displayBanner() } )
       :start()
    ENDWITH
+
    ::refresh()
+
+   WITH OBJECT ::oTimerMonthlyDesc := QTimer()
+      :setInterval( 60000 )
+      :connect( "timeout()", {|| ::refreshChartMonthlyDesc() } )
+      :start()
+   ENDWITH
    RETURN Self
 
 
@@ -1646,7 +1667,7 @@ METHOD HbQtLogGraphics:show()
 
 
 METHOD HbQtLogGraphics:buildChartDesc()
-   LOCAL xTmp, nMax, nX, oAxisY, oBarSeries, oSet, oFont, nColor, oChartDesc, oGradient
+   LOCAL xTmp, nMax, nX, oAxisY, oBarSeries, oSet, oFont, nColor, oChartDesc, oGradient, oAnimtn
 
    nMax := 0
    ::cMaxDesc := ""
@@ -1682,9 +1703,19 @@ METHOD HbQtLogGraphics:buildChartDesc()
          :setColor( ::aPallete[ nColor ] )
          :setLabelColor( ::aPallete[ nColor ]:darker() )
          :connect( "clicked(int)", __blockLabelClicked( ::oWidget, oSet ) )
-         :connect( "hovered(bool,int)", __blockLabelHovered( ::oUI:labelDesc, oSet, ::dToday, ::nErrors ) )
+         :connect( "hovered(bool,int)", __blockLabelHovered( oSet, Self ) )
+#if 0
+         //
+         WITH OBJECT oAnimtn := QPropertyAnimation( oSet, "color" )
+            :setStartValue( QVariant( ::aPallete[ nColor ] ) )
+            :setEndValue( QVariant( ::aPallete[ nColor ]:darker() ) )
+            :setDuration( 10000 )
+         ENDWITH
+         AAdd( ::aBarAnimations, oAnimtn )
+#endif
       ENDWITH
       oBarSeries:append( oSet )
+      oAnimtn:start()
    NEXT
 
    WITH OBJECT oFont := QFont()
@@ -1707,7 +1738,7 @@ METHOD HbQtLogGraphics:buildChartDesc()
       :addSeries( oBarSeries )
       :createDefaultAxes()
       :setAxisX( oAxisY, oBarSeries )
-      :setTitle( "By Description" )
+      :setTitle( "Today by Description" )
       :setAnimationOptions( QChart_SeriesAnimations )
       //
       :legend():setAlignment( Qt_AlignBottom )
@@ -1720,6 +1751,157 @@ METHOD HbQtLogGraphics:buildChartDesc()
    ::oChartViewDesc:setChart( oChartDesc )
    HB_SYMBOL_UNUSED( xTmp )
 
+   RETURN NIL
+
+
+METHOD HbQtLogGraphics:refreshChartMonthlyDesc()
+   LOCAL oSet, oS
+
+   IF Empty( ::aBarSets )
+      RETURN NIL
+   ENDIF
+   IF Empty( ::cLastDesc )
+      ::cLastDesc := ::aBarSets[ 1 ]:label()
+   ENDIF
+
+   FOR EACH oS IN ::aBarSets
+      IF oS:label() == ::cLastDesc
+         oSet := iif( oS:__enumIndex() < Len( ::aBarSets ), ::aBarSets[ oS:__enumIndex() + 1 ], ::aBarSets[ 1 ] )
+         EXIT
+      ENDIF
+   NEXT
+
+   IF ! Empty( oSet )
+      ::cLastDesc := oSet:label()
+      ::buildChartMonthlyDesc( ::cLastDesc )
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtLogGraphics:buildChartMonthlyDesc( cDesc )
+   LOCAL hEntry, hFields, hInfo, nDateLast, oAxisX, oLineSeries, nY, oChart, xTmp, nDay, oSet, oS, oFont, oGradient
+
+   IF Empty( ::aBarSets )
+      RETURN NIL
+   ENDIF
+
+   DEFAULT cDesc TO ::aBarSets[ 1 ]:label()
+
+   nDateLast := Day( ::aData[ Len( ::aData ) ][ "fields" ][ "date" ] )
+
+   FOR EACH oS IN ::aBarSets
+      IF oS:label() == cDesc
+         oSet := oS
+         EXIT
+      ENDIF
+   NEXT
+
+   hInfo := {=>}
+   hb_HKeepOrder( hInfo )
+
+   FOR EACH hEntry IN ::aData
+      hFields := hEntry[ "fields" ]
+      IF hFields[ "Description" ] == cDesc
+         nDay := Day( hFields[ "date" ] )
+         IF ! hb_HHasKey( hInfo, nDay )
+            hInfo[ nDay ] := 0
+         ENDIF
+         hInfo[ nDay ]++
+      ENDIF
+   NEXT
+   IF Empty( hInfo )
+      RETURN NIL
+   ENDIF
+
+   WITH OBJECT oAxisX := QValueAxis()
+      :setMin( 0.0 )
+      :setMax( nDateLast )
+      :setTickCount( nDateLast + 1 )
+      :setLabelFormat( "%.0f" )
+   ENDWITH
+
+   WITH OBJECT oLineSeries := QLineSeries()
+      FOR nY := 0 TO nDateLast
+         IF hb_HHasKey( hInfo, nY )
+            :append( nY, hInfo[ nY ] )
+         ELSE
+            :append( nY, 0 )
+         ENDIF
+      NEXT
+      IF HB_ISOBJECT( oSet )
+         :setPointLabelsColor( oSet:brush():color():darker() )
+         :setColor( oSet:brush():color():darker() )
+      ENDIF
+   ENDWITH
+
+   WITH OBJECT oFont := QFont()
+      :setPixelSize( 18 )
+   ENDWITH
+
+   WITH OBJECT oChart := QChart()
+      :setMargins( QMargins( 10,10,10,10 ) )
+      :setTitleFont( oFont )
+      :addSeries( oLineSeries )
+      :createDefaultAxes()
+      :setAxisX( oAxisX, oLineSeries )
+      :setTitle( cMonth( ::aData[ 1 ][ "fields" ][ "date" ] ) + " by " + cDesc )
+      :setAnimationOptions( QChart_SeriesAnimations )
+      IF HB_ISOBJECT( oSet )
+         :setTitleBrush( QBrush( oSet:brush():color():darker() ) )
+      ENDIF
+      WITH OBJECT oGradient := QLinearGradient()
+         :setStart( QPointF( 0, 0 ) )
+         :setFinalStop( QPointF( 0, 1 ) )
+         :setColorAt( 0.0, QColor( 255,255,255 ) )
+         :setColorAt( 0.3, QColor( 255,255,255 ) )
+         :setColorAt( 1.0, oSet:brush():color() )
+         :setCoordinateMode( QGradient_ObjectBoundingMode )
+      ENDWITH
+      :setBackgroundBrush( QBrush( oGradient ) )
+   ENDWITH
+
+   xTmp := ::oChartViewMonthlyDesc:chart()
+   WITH OBJECT ::oChartViewMonthlyDesc
+      :setChart( oChart )
+   ENDWITH
+   IF ! Empty( xTmp )
+      xTmp:setParent( QWidget() )
+   ENDIF
+   RETURN NIL
+
+
+METHOD HbQtLogGraphics:buildChartMonthlyNumbers()
+   LOCAL hEntry, hFields, hInfo, xTmp
+
+   IF ! HB_ISOBJECT( ::oChartMonthlyNumbers )
+      WITH OBJECT ::oChartMonthlyNumbers := HbQtCharts():new( ::oUI:frameMonthlyNumbers ):create()
+         :enableShadows( .F. )
+         :enableLegend( .F. )
+         :enableTitle( .T. )
+         :enableToolbar( .F. )
+         :widget():setMaximumHeight( 145 )
+      ENDWITH
+      ::oUI:hLayMonthlyNumbers:addWidget( ::oChartMonthlyNumbers:widget() )
+      ::oChartMonthlyNumbers:widget():show()
+   ENDIF
+   ::oChartMonthlyNumbers:clear()
+   IF .T.
+      hInfo := {=>}
+      hb_HKeepOrder( hInfo )
+      FOR EACH hEntry IN ::aData
+         hFields := hEntry[ "fields" ]
+         IF ! hb_HHasKey( hInfo, hFields[ "date" ] )
+            hInfo[ hFields[ "date" ] ] := 0
+         ENDIF
+         hInfo[ hFields[ "date" ] ]++
+      NEXT
+      IF ! Empty( hInfo )
+         FOR EACH xTmp IN hInfo
+            ::oChartMonthlyNumbers:addItem( StrZero( Day( xTmp:__enumKey() ), 2 ), xTmp )
+         NEXT
+      ENDIF
+   ENDIF
+   ::oChartMonthlyNumbers:setTitle( CMonth( ::aData[ 1 ][ "fields" ][ "date" ] ) + " " + Str( Year( ::aData[ 1 ][ "fields" ][ "date" ] ), 4, 0 ) + " Daily by Numbers")
    RETURN NIL
 
 
@@ -1774,7 +1956,7 @@ METHOD HbQtLogGraphics:buildChartHrs()
       :addSeries( oLineSeries )
       :setAxisX( oAxisX, oLineSeries )
       :setAxisY( oAxisY )
-      :setTitle( "By Hours" )
+      :setTitle( "Today by Hours" )
       :setAnimationOptions( QChart_SeriesAnimations )
       //:setTheme( QChart_ChartThemeBlueIcy )
    ENDWITH
@@ -1787,7 +1969,7 @@ METHOD HbQtLogGraphics:buildChartHrs()
 
 
 METHOD HbQtLogGraphics:refresh( dToday )
-   LOCAL hEntry, hFields, nSecs, nSlot, nErrors
+   LOCAL hEntry, hFields, nSecs, nSlot, nErrors, oSet
    LOCAL hSlots := {=>}
    LOCAL hDesc := {=>}
 
@@ -1798,7 +1980,14 @@ METHOD HbQtLogGraphics:refresh( dToday )
 
    DEFAULT dToday TO ::aData[ Len( ::aData ) ][ "fields" ][ "date" ]
    ::dToday := dToday
+
+   IF ! Empty( ::aBarSets )
+      FOR EACH oSet IN ::aBarSets
+         oSet:setParent( QWidget() )
+      NEXT
+   ENDIF
    ::aBarSets := {}
+   ::aBarAnimations := {}
 
    hSlots[ 0.00 ] := 0
    FOR nSlot := 1 TO 24
@@ -1826,9 +2015,12 @@ METHOD HbQtLogGraphics:refresh( dToday )
    ::hSlots := hSlots
    ::nErrors := nErrors
 
+   ::buildChartMonthlyNumbers()
+   //
    ::buildChartDesc()
-
    ::buildChartHrs()
+   //
+   ::buildChartMonthlyDesc()
 
    ::cTotalErr := "Total [ " + hb_ntos( ::nErrors ) + " ] " + __ansiDate( ::dToday )
    ::nTotalErr := Len( ::cTotalErr )
@@ -1930,36 +2122,29 @@ STATIC FUNCTION __blockLabelClicked( oWidget, oSet )
    RETURN {|| oWidget:setWindowTitle( oSet:label() ) }
 
 
-STATIC FUNCTION __blockLabelHovered( oLabel, oSet, dToday, nErrors )
-   RETURN {|lIn|
-               LOCAL cColor := oSet:brush():color():name()
-               IF lIn
-                 oLabel:setStyleSheet( "background-color: " + oSet:brush():color():darker():name() + ";" )
-                 oLabel:setText( "<font color=" + cColor + ">" + oSet:label() + " [ " + LTrim( Str( oSet:At( 0 ), 5, 0 ) ) + " ]" + "</font>" )
-               ELSE
-                 oLabel:setStyleSheet( "" )
-                 //oLabel:setText( DToC( dToday ) + " - [ " + hb_ntos( nErrors ) + " ] " )
-                 oLabel:setText( __ansiDate( dToday ) + "  Errors  " + hb_ntos( nErrors ) )
-               ENDIF
+STATIC FUNCTION __blockLabelHovered( oSet, oSelf )
+   RETURN {||
+               oSelf:buildChartMonthlyDesc( oSet:label() )
                RETURN NIL
           }
-#else 
+
+#else
 
 CLASS HbQtLogGraphics
 
-   METHOD init()                                  
-   METHOD create()                                
+   METHOD init()
+   METHOD create()
    METHOD setData()                               VIRTUAL
-   METHOD show()                                  VIRTUAL 
-   
-   ENDCLASS 
+   METHOD show()                                  VIRTUAL
+
+   ENDCLASS
 
 
 METHOD HbQtLogGraphics:init()
-   RETURN Self 
+   RETURN Self
 
-   
+
 METHOD HbQtLogGraphics:create()
-   RETURN Self 
-   
-#endif 
+   RETURN Self
+
+#endif
