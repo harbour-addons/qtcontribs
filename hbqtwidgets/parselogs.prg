@@ -1667,7 +1667,7 @@ METHOD HbQtLogGraphics:show()
 
 
 METHOD HbQtLogGraphics:buildChartDesc()
-   LOCAL xTmp, nMax, nX, oAxisY, oBarSeries, oSet, oFont, nColor, oChartDesc, oGradient, oAnimtn
+   LOCAL xTmp, nMax, nX, oAxisY, oBarSeries, oSet, oFont, nColor, oChartDesc, oGradient
 
    nMax := 0
    ::cMaxDesc := ""
@@ -1704,18 +1704,8 @@ METHOD HbQtLogGraphics:buildChartDesc()
          :setLabelColor( ::aPallete[ nColor ]:darker() )
          :connect( "clicked(int)", __blockLabelClicked( ::oWidget, oSet ) )
          :connect( "hovered(bool,int)", __blockLabelHovered( oSet, Self ) )
-#if 0
-         //
-         WITH OBJECT oAnimtn := QPropertyAnimation( oSet, "color" )
-            :setStartValue( QVariant( ::aPallete[ nColor ] ) )
-            :setEndValue( QVariant( ::aPallete[ nColor ]:darker() ) )
-            :setDuration( 10000 )
-         ENDWITH
-         AAdd( ::aBarAnimations, oAnimtn )
-#endif
       ENDWITH
       oBarSeries:append( oSet )
-      oAnimtn:start()
    NEXT
 
    WITH OBJECT oFont := QFont()

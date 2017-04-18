@@ -158,6 +158,7 @@ METHOD HbQtSignature:create( oParent, bBlock )
       :setLayout( oVLay )
       :setMaximumWidth( 500 )
       :setMaximumHeight( 350 )
+      :setStyleSheet( "background-color: rgb(100,100,100);" )
    ENDWITH
    WITH OBJECT ::oSignature := QWidget( ::oWidget )
       :setAttribute( Qt_WA_StaticContents )
@@ -306,7 +307,7 @@ METHOD HbQtSignature:drawLineTo( oEndPoint )
    LOCAL oPainter, nRad
 
    WITH OBJECT oPainter := QPainter( ::oImage )
-      :setPen( QPen( ::oPenColor, ::nPenWidth, Qt_SolidLine, Qt_RoundCap, Qt_RoundJoin ) )
+      :setPen( QPen( QBrush( ::oPenColor ), ::nPenWidth, Qt_SolidLine, Qt_RoundCap, Qt_RoundJoin ) )
       :drawLine( ::oLastPoint, oEndPoint )
    ENDWITH
 
@@ -355,6 +356,7 @@ FUNCTION HbQtFetchSignature( bBlock )
    ENDIF
    IF HB_ISOBJECT( oSignature )
       WITH OBJECT oSignature
+         :setPenWidth( 2 )
          :setSilverLightColor( QColor( 100,100,100 ) )
          :setSilverLightAnimation( .T. )
          :setFinishedBlock( bBlock )

@@ -16,6 +16,42 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-04-18 16:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r453)
+  * hbqt/hbqt_common.hbc
+  * hbqt/qtcore/hbqt_pointer.cpp
+    + Added more plugins for static builds.
+	
+  * hbqt/qtcore/qth/QLocale.qth
+    + Readded methods which were guarded agains wrong version.
+	
+  + hbqt/qtmultimedia/qth/QCameraViewFinderSettings.qth
+  * hbqt/qtmultimedia/qth/filelist.hbm
+    + Added another class.
+	
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+  * hbqt/qtmultimedia/qth/QCamera.qth
+    +Enhanced QCamera to take advantage of latest offerings.
+	
+  + hbqtwidgets/resources/camera.png
+  + hbqtwidgets/resources/redo-1.png
+  + hbqtwidgets/resources/round-green.png
+  + hbqtwidgets/resources/round-red.png
+  + hbqtwidgets/resources/round-yellow.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added more icons.
+	
+  * hbqtwidgets/editor.prg
+    I Fixed CTRL+L press in a source which was not navigated before.
+	
+  * hbqtwidgets/parselogs.prg
+    ! Fixed some nasty animation constructs.
+	
+  * hbqtwidgets/signature.prg
+    % Minor improvements.
+	
+  * hbide/debugger.prg
+    + Enhanced to respect last active alias and publish the fields auto.
+  
 2017-03-09 13:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r452)
   * hbqt/qtgui/hbqtgui.ch
     + Added: QSqlTableModel_* constants.

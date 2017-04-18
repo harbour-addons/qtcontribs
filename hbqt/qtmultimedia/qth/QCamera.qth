@@ -84,9 +84,16 @@ QCamera::LockTypes   requestedLocks() const
 void   setViewfinder(QVideoWidget * viewfinder)
 void   setViewfinder(QGraphicsVideoItem * viewfinder)
 void   setViewfinder(QAbstractVideoSurface * surface)
+void   setViewfinderSettings(const QCameraViewfinderSettings &settings)       [*V=0x050500*]
 State   state() const
 Status   status() const
 LockTypes   supportedLocks() const
+
+//QList<FrameRateRange>   supportedViewfinderFrameRateRanges(const QCameraViewfinderSettings &settings = QCameraViewfinderSettings()) const       [*V=0x050500*]
+QList<QVideoFrame::PixelFormat>   supportedViewfinderPixelFormats(const QCameraViewfinderSettings &settings = QCameraViewfinderSettings()) const       [*V=0x050500*]
+QList<QSize>   supportedViewfinderResolutions(const QCameraViewfinderSettings &settings = QCameraViewfinderSettings()) const       [*V=0x050500*]
+QList<QCameraViewfinderSettings>   supportedViewfinderSettings(const QCameraViewfinderSettings &settings = QCameraViewfinderSettings()) const       [*V=0x050500*]
+QCameraViewfinderSettings   viewfinderSettings() const       [*V=0x050500*]
 
 virtual QMultimedia::AvailabilityStatus   availability() const
 </PROTOS>

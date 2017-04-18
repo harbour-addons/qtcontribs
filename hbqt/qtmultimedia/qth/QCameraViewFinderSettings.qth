@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2017 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = 
+QObject     = 
+Version     = 0x050500
+Detached    = 
+</CLASS>
+
+
+<CODE>
+#include <QtMultimedia/QCameraViewFinderSettings>
+
+
+/*
+ * QCameraViewfinderSettings()
+ * QCameraViewfinderSettings(const QCameraViewfinderSettings &other)
+ * ~QCameraViewfinderSettings() 
+*/
+HB_FUNC( QT_QCAMERAVIEWFINDERSETTINGS )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QCameraViewfinderSettings" ) )
+   {
+      __HB_RETPTRGC__( new QCameraViewfinderSettings( *hbqt_par_QCameraViewfinderSettings( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QCameraViewfinderSettings() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+bool   isNull() const
+qreal   maximumFrameRate() const
+qreal   minimumFrameRate() const
+QSize   pixelAspectRatio() const
+QVideoFrame::PixelFormat   pixelFormat() const
+QSize   resolution() const
+void   setMaximumFrameRate(qreal rate)
+void   setMinimumFrameRate(qreal rate)
+void   setPixelAspectRatio(const QSize &ratio)
+void   setPixelAspectRatio(int horizontal, int vertical)
+void   setPixelFormat(QVideoFrame::PixelFormat format)
+void   setResolution(const QSize &resolution)
+void   setResolution(int width, int height)
+void   swap(QCameraViewfinderSettings &other)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

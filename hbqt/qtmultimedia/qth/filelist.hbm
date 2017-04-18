@@ -39,6 +39,7 @@ QCameraImageProcessingControl.qth
 QCameraInfo.qth
 QCameraInfoControl.qth
 QCameraLocksControl.qth
+QCameraViewfinderSettings.qth
 QCameraViewfinderSettingsControl.qth
 QCameraZoomControl.qth
 QImageEncoderControl.qth

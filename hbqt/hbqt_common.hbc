@@ -29,7 +29,7 @@ plugins=hbmk2_qt.hb
 
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}ldflags=-static -static-libgcc -L${HB_WITH_QT}/../plugins/platforms -L${HB_WITH_QT}/../plugins/imageformats
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}libs=mingw32 opengl32 qtpcre qtfreetype qwindows qico
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}libs=mingw32 opengl32 qtpcre qtfreetype qwindows qico qjpeg qtiff qgif
 #
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&!(HB_QT_MINOR_VER='8')&(allwin)&(mingw)}libs=qtharfbuzzng
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='7')&(allwin)&(mingw)}libs=qtpng

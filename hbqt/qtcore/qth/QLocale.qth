@@ -65,39 +65,39 @@ enum Script { AnyScript, ArabicScript, CyrillicScript, DeseretScript, ..., Tifin
 
 <PROTOS>
 QString amText () const
-QString bcp47Name () const                                                      [*V=-0x040800*]
+QString bcp47Name () const                                                      [*V=0x040800*]
 Country country () const
-QString createSeparatedList ( const QStringList & list ) const                  [*V=-0x040800*]
-QString currencySymbol ( CurrencySymbolFormat format = CurrencySymbol ) const   [*V=-0x040800*]
+QString createSeparatedList ( const QStringList & list ) const                  [*V=0x040800*]
+QString currencySymbol ( CurrencySymbolFormat format = CurrencySymbol ) const   [*V=0x040800*]
 QString dateFormat ( FormatType format = LongFormat ) const
 QString dateTimeFormat ( FormatType format = LongFormat ) const
 QString dayName ( int day, FormatType type = LongFormat ) const
 QChar decimalPoint () const
 QChar exponential () const
-Qt::DayOfWeek firstDayOfWeek () const                                           [*V=-0x040800*]
+Qt::DayOfWeek firstDayOfWeek () const                                           [*V=0x040800*]
 QChar groupSeparator () const
 Language language () const
 MeasurementSystem measurementSystem () const
 QString monthName ( int month, FormatType type = LongFormat ) const
 QString name () const
-QString nativeCountryName () const                                              [*V=-0x040800*]
-QString nativeLanguageName () const                                             [*V=-0x040800*]
+QString nativeCountryName () const                                              [*V=0x040800*]
+QString nativeLanguageName () const                                             [*V=0x040800*]
 QChar negativeSign () const
 NumberOptions numberOptions () const
 QChar percent () const
 QString pmText () const
 QChar positiveSign () const
-QString quoteString ( const QString & str, QuotationStyle style = StandardQuotation ) const     [*V=-0x040800*]
-QString quoteString ( const QStringRef & str, QuotationStyle style = StandardQuotation ) const  [*V=-0x040800*]
-Script script () const                                                                          [*V=-0x040800*]
+QString quoteString ( const QString & str, QuotationStyle style = StandardQuotation ) const     [*V=0x040800*]
+QString quoteString ( const QStringRef & str, QuotationStyle style = StandardQuotation ) const  [*V=0x040800*]
+Script script () const                                                                          [*V=0x040800*]
 void setNumberOptions ( NumberOptions options )
 QString standaloneDayName ( int day, FormatType type = LongFormat ) const
 QString standaloneMonthName ( int month, FormatType type = LongFormat ) const
-Qt::LayoutDirection textDirection () const                                                      [*V=-0x040700*]
+Qt::LayoutDirection textDirection () const                                                      [*V=0x040700*]
 
 //QString toCurrencyString ( qlonglong value, const QString & symbol = QString() ) const
 //QString toCurrencyString ( qulonglong value, const QString & symbol = QString() ) const
-QString toCurrencyString ( double value, const QString & symbol = QString() ) const             [*V=-0x040800*]
+QString toCurrencyString ( double value, const QString & symbol = QString() ) const             [*V=0x040800*]
 //QString toCurrencyString ( short value, const QString & symbol = QString() ) const
 //QString toCurrencyString ( ushort value, const QString & symbol = QString() ) const
 //QString toCurrencyString ( int value, const QString & symbol = QString() ) const              [*V=-0x040800*]
@@ -114,7 +114,7 @@ float toFloat ( const QString & s, bool * ok = 0 ) const
 int toInt ( const QString & s, bool * ok = 0 ) const
 qlonglong toLongLong ( const QString & s, bool * ok = 0 ) const
 
-QString toLower ( const QString & str ) const                                                   [*V=-0x040800*]
+QString toLower ( const QString & str ) const                                                   [*V=0x040800*]
 
 short toShort ( const QString & s, bool * ok = 0 ) const
 
@@ -139,10 +139,10 @@ uint toUInt ( const QString & s, bool * ok = 0 ) const
 qlonglong toULongLong ( const QString & s, bool * ok = 0 ) const
 ushort toUShort ( const QString & s, bool * ok = 0 ) const
 
-QString toUpper ( const QString & str ) const                                                   [*V=-0x040800*]
+QString toUpper ( const QString & str ) const                                                   [*V=0x040800*]
 
-QStringList uiLanguages () const                                                                [*V=-0x040800*]
-//QList<Qt::DayOfWeek> weekdays () const                                                        [*V=-0x040800*]
+QStringList uiLanguages () const                                                                [*V=0x040800*]
+QList<Qt::DayOfWeek> weekdays () const                                                          [*V=0x040800*]
 
 QChar zeroDigit () const
 

@@ -391,5 +391,10 @@
     <file>resources/refresh.png</file>
     <file>resources/refresh-2.png</file>
     <file>resources/select-3.png</file>
+    <file>resources/camera.png</file>
+    <file>resources/redo-1.png</file>
+    <file>resources/round-green.png</file>
+    <file>resources/round-red.png</file>
+    <file>resources/round-yellow.png</file>
   </qresource>
 </RCC>

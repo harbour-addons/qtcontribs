@@ -657,9 +657,11 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
       CASE Qt_Key_L
          IF lCtrl
             IF ! Empty( ::aLastEditingPosition )
-               ::qEdit:horizontalScrollBar():setValue( ::aLastEditingPosition[ 1 ] )
-               ::qEdit:verticalScrollBar():setValue( ::aLastEditingPosition[ 2 ] )
-               ::qEdit:setTextCursor( ::aLastEditingPosition[ 3 ] )
+               IF ! ::aLastEditingPosition[ 3 ]:isNull()
+                  ::qEdit:horizontalScrollBar():setValue( ::aLastEditingPosition[ 1 ] )
+                  ::qEdit:verticalScrollBar():setValue( ::aLastEditingPosition[ 2 ] )
+                  ::qEdit:setTextCursor( ::aLastEditingPosition[ 3 ] )
+               ENDIF
                RETURN .T.
             ENDIF
          ENDIF
