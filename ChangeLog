@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-04-18 18:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r454)
+  * hbide/debugger.prg
+    ! Fixed to publish fields of last activated alias with each next step.
+
 2017-04-18 16:26 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r453)
   * hbqt/hbqt_common.hbc
   * hbqt/qtcore/hbqt_pointer.cpp

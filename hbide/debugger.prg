@@ -208,6 +208,7 @@ CLASS IdeDebugger INHERIT IdeObject
    //
    DATA   hBrowsers                               INIT {=>}
    DATA   cActiveBrowser                          INIT ""
+   DATA   cAliasArea                              INIT ""
 
    METHOD init( oIde )
    METHOD create( oIde )
@@ -1593,6 +1594,9 @@ METHOD IdeDebugger:ui_loadAll()
       ::requestVars( 2 )
       ::requestVars( 3 )
       ::requestObject()
+      IF ! Empty( ::cAliasArea )
+         ::doCommand( CMD_REC, ::cAliasArea )
+      ENDIF
    ENDIF
    RETURN NIL
 
@@ -2855,8 +2859,8 @@ METHOD IdeDebugger:manageNavigation( cBrowse, nKey, aXY, oBrw )
          IF !__isRowEmpty( oBrw, aXY, @oModelIndex )
             IF ( nCol := oModelIndex:column() + 1 ) == 2
                nRow := ::hBrowsers[ "Areas" ][ "rec" ]
-               cAlias := StrTran( ::hBrowsers[ "Areas" ][ "dat" ][ nRow, nCol - 1 ], "*" )
-               ::doCommand( CMD_REC, cAlias )
+               ::cAliasArea := StrTran( ::hBrowsers[ "Areas" ][ "dat" ][ nRow, nCol - 1 ], "*" )
+               ::doCommand( CMD_REC, ::cAliasArea )
             ENDIF
          ENDIF
          EXIT
