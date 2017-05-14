@@ -28,6 +28,7 @@ hbqtwidgets.hbc
 {(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='7')}hbqtcharts.hbc
 {(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')}hbqtcharts.hbc
 hbqt.hbc
+hbqtmultimedia.hbc
 hbct.hbc
 hbnf.hbc
 hbxbp.hbc

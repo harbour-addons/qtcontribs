@@ -33,6 +33,7 @@ HB_FUNC( QT_QFONTDATABASE )
 </CODE>
 
 <ENUMS>
+enum SystemFont { GeneralFont, FixedFont, TitleFont, SmallestReadableFont }
 enum WritingSystem { Any, Latin, Greek, Cyrillic, ..., Runic }
 </ENUMS>
 
@@ -41,6 +42,7 @@ bool bold ( const QString & family, const QString & style ) const
 QStringList families ( WritingSystem writingSystem = Any ) const
 QFont font ( const QString & family, const QString & style, int pointSize ) const
 bool isBitmapScalable ( const QString & family, const QString & style = QString() ) const
+bool isPrivateFamily(const QString &family) const                                        [*V=0x050500*]
 bool isFixedPitch ( const QString & family, const QString & style = QString() ) const
 bool isScalable ( const QString & family, const QString & style = QString() ) const
 bool isSmoothlyScalable ( const QString & family, const QString & style = QString() ) const
@@ -51,8 +53,8 @@ QString styleString ( const QFont & font )
 QString styleString ( const QFontInfo & fontInfo )
 QStringList styles ( const QString & family ) const
 int weight ( const QString & family, const QString & style ) const
-//QList<WritingSystem> writingSystems () const
-//QList<WritingSystem> writingSystems ( const QString & family ) const
+QList<QFontDatabase::WritingSystem> writingSystems () const
+QList<QFontDatabase::WritingSystem> writingSystems ( const QString & family ) const
 
 
 int addApplicationFont ( const QString & fileName )
@@ -62,6 +64,7 @@ bool removeAllApplicationFonts ()
 bool removeApplicationFont ( int id )
 QList<int> standardSizes ()
 bool supportsThreadedFontRendering ()
+QFont systemFont(SystemFont type)                                                       [*V=0x050200*]
 QString writingSystemName ( WritingSystem writingSystem )
 QString writingSystemSample ( WritingSystem writingSystem )
 </PROTOS>

@@ -65,7 +65,28 @@ QObject * parent () const
 QVariant property ( const char * name ) const
 void removeEventFilter ( QObject * obj )
 void setObjectName ( const QString & name )
-void setParent ( QObject * parent )
+void setParent ( QObject * parent ){
+   QObject * p = ( QObject * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      if( hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+      {
+         p->setParent( hbqt_par_QObject( 1 ) );
+         return;
+      }
+      else if( HB_ISNUM( 1 ) && hb_parni( 1 ) == 0 )
+      {
+#if QT_VERSION >= 0x050700
+         p->setParent( Q_NULLPTR );
+#else
+         p->setParent( NULL );
+#endif
+         return;
+      }
+
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
 bool setProperty ( const char * name, const QVariant & value )
 bool signalsBlocked () const
 int startTimer ( int interval )

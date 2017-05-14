@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-05-14 13:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r455)
+  * hbqt/qtcore/qth/QObject.qth
+    + Refined Method setParent() which now can receive 0 as a parameter 
+       more like C++ calling convension, in place of NULL pointer.
+       Until Now:
+        oWidget:setParent( QWidget() )
+       Now:
+        oWidget:setParent( 0 )
+
+      Suggested and patch supplied by Luigi.
+   
+  * hbqt/qtgui/qth/QFontDatabase.qth
+    + Added a couple of methods which were introduced by Qt's later versions.
+
+  * hbqt/qtgui/hbqtgui.ch
+    + Added constants for QFontDatabase_*.
+
+  * hbdbu/hbdbu.hbp
+  * hbide/hbide.hbp
+    + Added: hbqtmultimedia.hbc
+
 2017-04-18 18:43 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r454)
   * hbide/debugger.prg
     ! Fixed to publish fields of last activated alias with each next step.
