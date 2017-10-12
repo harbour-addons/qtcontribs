@@ -20,7 +20,7 @@ Detached    =
 
 
 <CODE>
-#include <QtMultimedia/QCameraViewFinderSettings>
+#include <QtMultimedia/QCameraViewfinderSettings>
 
 
 /*
