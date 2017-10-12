@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-11 21:09 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r459)
+  * hbqt/qtgui/qth/QWidget.qth
+    + Implemented: QWidget:setParent( 0 ).
+      Patch submitted by Luigi.
+
 2017-10-11 20:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r458)
   * hbqtwidgets/misc.prg
     + Added: __hbqtHashPullValue( hHash, cKey, xDefault )

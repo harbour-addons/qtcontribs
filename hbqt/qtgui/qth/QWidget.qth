@@ -234,7 +234,44 @@ void setMouseTracking ( bool enable )
 void setPalette ( const QPalette & )
 
 //void setParent ( QWidget * parent = 0 )
-void setParent ( QWidget * parent = 0, Qt::WindowFlags f = 0 )
+void setParent ( QWidget * parent = 0, Qt::WindowFlags f = 0 ){
+   QWidget * p = ( QWidget * ) hbqt_par_ptr( 0 );
+   if( p )
+   {
+      switch( hb_pcount() )
+      {
+         case 2:
+         {
+            if( hbqt_par_isDerivedFrom( 1, "QWIDGET" ) && HB_ISNUM( 2 ) )
+            {
+               p->setParent( ( HB_ISOBJECT( 1 ) ? hbqt_par_QWidget( 1 ) : 0 ), ( Qt::WindowFlags ) hb_parni( 2 ) );
+               return;
+            }
+            break;
+         }
+         case 1:
+         {
+            if( HB_ISOBJECT( 1 ) && hbqt_par_isDerivedFrom( 1, "QWIDGET" ) )
+            {
+               p->setParent( ( HB_ISOBJECT( 1 ) ? hbqt_par_QWidget( 1 ) : 0 ), ( Qt::WindowFlags ) hb_parni( 2 ) );
+               return;
+            }
+            else if( HB_ISNUM( 1 ) && hb_parni( 1 ) == 0 )
+            {
+               p->setParent( 0 );
+               return;
+            }
+            break;
+         }
+         case 0:
+         {
+            p->setParent( ( HB_ISOBJECT( 1 ) ? hbqt_par_QWidget( 1 ) : 0 ), ( Qt::WindowFlags ) hb_parni( 2 ) );
+            return;
+         }
+      }
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
 
 void setShortcutAutoRepeat ( int id, bool enable = true )
 void setShortcutEnabled ( int id, bool enable = true )
