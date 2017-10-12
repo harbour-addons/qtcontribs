@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-12 08:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r461)
+  * hbqt/qtcore/qth/QFile.qth
+    % Fixed: QFile( oFile ) - pointed-out by Luigi.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + Refined :goTo() method to position vertical scrollbar when no :goto
+      block is defined.
+
 2017-10-11 22:16 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r460)
   * hbdbu/dbu.prg
   * hbdbu/hbdbu.hbp

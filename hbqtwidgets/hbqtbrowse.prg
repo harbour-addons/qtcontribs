@@ -2792,6 +2792,8 @@ METHOD HbQtBrowse:goTo()
          ::updateVertScrollBar()
          ::manageVerticalMovement( -1 )
       ENDIF
+   ELSE
+      ::updateVertScrollBar()
    ENDIF
 
    RETURN Self
