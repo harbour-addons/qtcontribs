@@ -1405,6 +1405,23 @@ FUNCTION __hbqtV( cVrb, xValue )
    ENDIF
    RETURN l_xValue
 
+
+FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
+   LOCAL xTmp
+
+   IF HB_ISHASH( hHash )
+      IF hb_HHasKey( hHash, cKey )
+         RETURN hHash[ cKey ]
+      ELSE
+         FOR EACH xTmp IN hHash
+            IF HB_ISHASH( xTmp )
+               RETURN __hbqtHashPullValue( xTmp, cKey, xDefault )
+            ENDIF
+         NEXT
+      ENDIF
+   ENDIF
+   RETURN xDefault
+
 //--------------------------------------------------------------------//
 //           This Section Must be the Last in this Source
 //--------------------------------------------------------------------//

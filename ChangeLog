@@ -16,6 +16,14 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-11 20:40 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r458)
+  * hbqtwidgets/misc.prg
+    + Added: __hbqtHashPullValue( hHash, cKey, xDefault )
+      A very useful function.
+
+  * hbqtwidgets/scripts.prg
+    * Put var cPath under HB_SYMBOL_UNUSED, was raising warnings.
+
 2017-10-11 20:30 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r457)
   * hbqt/qtcore/qth/filelist.hbm
   * hbqt/qtcore/qth/QAbstractEventDispatcher.qth

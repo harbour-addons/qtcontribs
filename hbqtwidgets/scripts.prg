@@ -565,6 +565,7 @@ STATIC FUNCTION __consoleScript( cBuffer, cCompFlags, xParam, cPath )
    ELSE
       __runScript( cBuffer, cCompFlags, xParam, .F. )
    ENDIF
+   HB_SYMBOL_UNUSED( cPath )
    RETURN NIL
 
 
