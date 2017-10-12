@@ -27,14 +27,7 @@ New         =
  */
 HB_FUNC( QT_QABSTRACTEVENTDISPATCHER )
 {
-   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
-   {
-      __HB_RETPTRGC__( new QAbstractEventDispatcher( hbqt_par_QObject( 1 ) ) );
-   }
-   else
-   {
-      __HB_RETPTRGC__( new QAbstractEventDispatcher() );
-   }
+   HB_FUNC_EXEC( HB_QABSTRACTEVENTDISPATCHER );
 }
 </CODE>
 
@@ -42,15 +35,15 @@ HB_FUNC( QT_QABSTRACTEVENTDISPATCHER )
 </ENUMS>
 
 <PROTOS>
-bool filterEvent ( void * message )
+//bool filterEvent ( void * message )
 virtual void flush () = 0
 virtual bool hasPendingEvents () = 0
 virtual void interrupt () = 0
 virtual bool processEvents ( QEventLoop::ProcessEventsFlags flags ) = 0
 virtual void registerSocketNotifier ( QSocketNotifier * notifier ) = 0
-int registerTimer ( int interval, QObject * object )
-virtual void registerTimer ( int timerId, int interval, QObject * object ) = 0
-virtual QList<TimerInfo> registeredTimers ( QObject * object ) const = 0
+//int registerTimer ( int interval, QObject * object )
+//virtual void registerTimer ( int timerId, int interval, QObject * object ) = 0
+//virtual QList<TimerInfo> registeredTimers ( QObject * object ) const = 0
 EventFilter setEventFilter ( EventFilter filter )
 virtual void unregisterSocketNotifier ( QSocketNotifier * notifier ) = 0
 virtual bool unregisterTimer ( int timerId ) = 0

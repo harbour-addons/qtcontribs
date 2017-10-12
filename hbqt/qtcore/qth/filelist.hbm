@@ -8,7 +8,7 @@
 
 HBQString.qth
 
-# QAbstractEventDispatcher.qth
+QAbstractEventDispatcher.qth
 QAbstractAnimation.qth
 QAbstractItemModel.qth
 QAbstractListModel.qth
