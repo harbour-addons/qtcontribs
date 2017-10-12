@@ -23,11 +23,11 @@
 {!(android|__ios__)}-instpath=${HB_BIN}/
 {android|__ios__}-instpath=${HB_LIB}/
 
-
-hbqtwidgets.hbc
 {(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='7')}hbqtcharts.hbc
-{(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')}hbqtcharts.hbc
+{(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER>'7')}hbqtcharts.hbc
 hbqt.hbc
+hbqtcore.hbc
+hbqtwidgets.hbc
 hbqtmultimedia.hbc
 hbct.hbc
 hbnf.hbc
@@ -35,7 +35,6 @@ hbxbp.hbc
 gtqtc.hbc
 
 hbformat.hbc
-hbtip.hbc
 hbnetio.hbc
 hbmxml.hbc
 hbmemio.hbc 
@@ -45,9 +44,9 @@ hbtcpio.hbc
 hbzebra.hbc
 hbziparc.hbc
 hbssl.hbc
+hbtip.hbc
 hbcomio.hbc
 hbcomm.hbc
-hbhpdf.hbc
 xhb.hbc
 
 {allwin}gtwvg.hbc

@@ -5644,6 +5644,9 @@
 #define QSqlTableModel_OnRowChange                           1
 #define QSqlTableModel_OnManualSubmit                        2
 
+#define QAbstractScrollArea_AdjustIgnored                    0   // The scroll area will behave like before - and not do any adjust.
+#define QAbstractScrollArea_AdjustToContents                 2   // The scroll area will always adjust to the viewport
+#define QAbstractScrollArea_AdjustToContentsOnFirstShow      1
 
 // enum QFontDatabase::SystemFont   This enum was introduced or modified in Qt 5.2.
 #define QFontDatabase_GeneralFont                            0     // The default system font.

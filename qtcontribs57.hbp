@@ -22,7 +22,6 @@ hbqt/qtlocation/hbqtlocation.hbp
 hbqt/qtmultimedia/hbqtmultimedia.hbp
 hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbp
 hbqt/qtopengl/hbqtopengl.hbp
-hbqt/qtscript/hbqtscript.hbp
 hbqt/qtsql/hbqtsql.hbp
 hbqt/qtsvg/hbqtsvg.hbp
 hbqt/qtxml/hbqtxml.hbp

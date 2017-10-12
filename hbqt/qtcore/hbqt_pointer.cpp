@@ -77,7 +77,8 @@ Q_IMPORT_PLUGIN(QICOPlugin)
 Q_IMPORT_PLUGIN(QJpegPlugin)
 Q_IMPORT_PLUGIN(QTiffPlugin)
 Q_IMPORT_PLUGIN(QGifPlugin)
-Q_IMPORT_PLUGIN(DSServicePlugin)
+#if QT_VERSION < 0x050900
+   Q_IMPORT_PLUGIN(DSServicePlugin)
 #ifdef HBQT_WITH_QML_SUPPORT
    Q_IMPORT_PLUGIN(QtQuickLayoutsPlugin)
    Q_IMPORT_PLUGIN(QtQuickControls1Plugin)
@@ -93,6 +94,7 @@ Q_IMPORT_PLUGIN(DSServicePlugin)
    Q_IMPORT_PLUGIN(QtQmlModelsPlugin)
    Q_IMPORT_PLUGIN(QmlXmlListModelPlugin)
    Q_IMPORT_PLUGIN(QQmlLocalStoragePlugin)
+#endif
 #endif
 #endif
 

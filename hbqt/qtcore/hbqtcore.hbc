@@ -30,7 +30,7 @@ libs=../hbqt_common.hbc
 
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos)}libs=Qt5DBus Qt5Core
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&!(HB_QT_MINOR_VER='8')&(allwin|linux|darwin|beos)}libs=Qt5PlatformSupport
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER<'8')&(allwin|linux|darwin|beos)}libs=Qt5PlatformSupport
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')&(allwin|linux|darwin|beos)}libs=Qt5PlatformCompositorSupport Qt5FontDatabaseSupport Qt5FbSupport
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER='8')&(allwin|linux|darwin|beos)}libs=Qt5EventDispatcherSupport Qt5DeviceDiscoverySupport Qt5ThemeSupport
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER>'7')&(allwin|linux|darwin|beos)}libs=Qt5PlatformCompositorSupport Qt5FontDatabaseSupport Qt5FbSupport
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER>'7')&(allwin|linux|darwin|beos)}libs=Qt5EventDispatcherSupport Qt5DeviceDiscoverySupport Qt5ThemeSupport

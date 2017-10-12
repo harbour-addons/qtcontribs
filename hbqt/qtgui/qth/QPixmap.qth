@@ -76,6 +76,7 @@ qint64 cacheKey () const
 #
 // QRgb * clut () const
 #
+bool convertFromImage(const QImage &image, Qt::ImageConversionFlags flags = Qt::AutoColor) [*V=0x040700*]
 QPixmap copy ( const QRect & rectangle = QRect() ) const
 QPixmap copy ( int x, int y, int width, int height ) const
 QBitmap createHeuristicMask ( bool clipTight = true ) const
