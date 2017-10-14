@@ -16,6 +16,16 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-14 08:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r462)
+  * hbdbu/dbu.prg
+    % Guarded: __addTreeItem() with #if defined( __PLATFORM__WINDOWS ).
+      was raising warning on Linux.
+
+  * hbqtwidgets/editor.prg
+    ! Fixed (tried-not tested) rte reported by hb_xfree for a null pointer.
+      This is unusual to have this error or source line reported by 
+      traceback is wrong. Reported by Luigi. [ HbDBU ]
+
 2017-10-12 08:28 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r461)
   * hbqt/qtcore/qth/QFile.qth
     % Fixed: QFile( oFile ) - pointed-out by Luigi.

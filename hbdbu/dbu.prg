@@ -489,7 +489,7 @@ METHOD DbuMGR:navigate( oItem )
    ENDIF
    RETURN Self
 
-
+#if defined( __PLATFORM__WINDOWS )
 STATIC FUNCTION __addTreeItem( oTree, cText, cWhatsThis )
    LOCAL oItem
 
@@ -499,7 +499,7 @@ STATIC FUNCTION __addTreeItem( oTree, cText, cWhatsThis )
    ENDWITH
    oTree:addTopLevelItem( oItem )
    RETURN NIL
-
+#endif
 
 METHOD DbuMGR:buildOnlineHelp()
 #if defined( __PLATFORM__WINDOWS )

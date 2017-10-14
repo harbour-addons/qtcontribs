@@ -131,7 +131,7 @@ CLASS HbQtEditor
 
    DATA   isColumnSelectionON                     INIT .F.
    DATA   lReadOnly                               INIT .F.
-   DATA   isHighLighted                           INIT .f.
+   DATA   isHighLighted                           INIT .F.
    DATA   cLastWord, cCurWord
    DATA   hLogicals                               INIT __hbqtStandardHash()
    DATA   isMatchingPair                          INIT .F.
@@ -474,9 +474,11 @@ METHOD HbQtEditor:destroy()
 
 METHOD HbQtEditor:documentContentsChanged( nPosition, nCharsRemoved, nCharsAdded )
    ::reformatLine( nPosition, nCharsRemoved, nCharsAdded )
-   ::aLastEditingPosition := { ::qEdit:horizontalScrollBar():value(), ;
-                               ::qEdit:verticalScrollBar():value()  , ;
-                               ::qEdit:textCursor() }
+   IF nCharsRemoved > 0 .OR. nCharsAdded > 0
+      ::aLastEditingPosition := { ::qEdit:horizontalScrollBar():value(), ;
+                                  ::qEdit:verticalScrollBar():value()  , ;
+                                  ::qEdit:textCursor() }
+   ENDIF
    RETURN Self
 
 
