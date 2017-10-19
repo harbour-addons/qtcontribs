@@ -414,8 +414,8 @@ FUNCTION HbQtAChoice( nTop, nLeft, nBottom, nRight, acMenuItems, xSelectableItem
    RETURN nChoice
 
 
-FUNCTION HbQtMsgBox( cMsg, cTitle )
-   LOCAL oMB
+FUNCTION HbQtMsgbox( cMsg, cTitle, cnBGround, nTimeout, nX, nY )
+   LOCAL oMB, oTimer
 
    hb_default( @cTitle, "  " )
 
@@ -423,13 +423,33 @@ FUNCTION HbQtMsgBox( cMsg, cTitle )
    cMsg := strtran( cMsg, chr( 13 ), "<br />" )
    cMsg := strtran( cMsg, chr( 10 ), "<br />" )
 
-   oMB := QMessageBox()
-   oMB:setText( /* "<b>" + */ cMsg /* + "</b>" */ )
-   oMB:setIcon( QMessageBox_Information )
-   oMB:setWindowFlags( Qt_Dialog )
-   oMB:setWindowTitle( cTitle )
+   WITH OBJECT oMB := QMessageBox( __hbqtAppWidget() )
+      :setText( /* "<b>" + */ cMsg /* + "</b>" */ )
+      :setIcon( QMessageBox_Information )
+      :setWindowFlags( Qt_Dialog )
+      :setWindowTitle( cTitle )
+      IF HB_ISSTRING( cnBGround )
+         :setStyleSheet( "background-color: " + cnBGround + ";" )
+      ELSEIF HB_ISNUMERIC( cnBGround )
+         :setStyleSheet( "background-color: " + QColor( cnBGround ):name() + ";" )
+      ELSEIF HB_ISOBJECT( cnBGround )
+         :setStyleSheet( "background-color: " + cnBGround:name() + ";" )
+      ENDIF
+      IF HB_ISNUMERIC( nX ) .AND. HB_ISNUMERIC( nY )
+         :move( nX, nY )
+      ENDIF
+   ENDWITH 
+   IF HB_ISNUMERIC( nTimeout ) .AND. nTimeout > 0
+      WITH OBJECT oTimer := QTimer()
+         :setInterval( nTimeout * 1000 )
+         :setSingleShot( .T. )
+         :connect( "timeout()", {|| oMB:done( 0 ) } )
+      ENDWITH 
+      oTimer:start()
+   ENDIF
    oMB:exec()
-
+   oMB:setParent( QWidget() )
+   
    RETURN NIL
 
 

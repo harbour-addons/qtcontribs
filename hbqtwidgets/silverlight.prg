@@ -1,4 +1,4 @@
-      /*
+/*
  * $Id$
  */
 
@@ -75,13 +75,15 @@
 
 CLASS HbQtSilverLight
 
-   METHOD init( xContent, oBackground, lAnimate, aOpacity, oParent )
-   METHOD create( xContent, oBackground, lAnimate, aOpacity, oParent )
+   METHOD init( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
+   METHOD create( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
 
-   METHOD activate( xContent, oBackground, lAnimate, aOpacity, oParent )
+   METHOD activate( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
    METHOD deactivate()
 
    METHOD setContent( xContent )
+   METHOD setDuration( nDuration )                INLINE iif( HB_ISNUMERIC( nDuration ) .AND. nDuration > 1, ::nDuration := nDuration, ::nDuration := -1 )
+   METHOD setExecutionBlock( bExecute )           INLINE iif( HB_ISBLOCK( bExecute ), ::bExecute := bExecute, ::bExecute := NIL )
    METHOD setBackground( oBackground )
    METHOD setAnimation( lAnimate )                INLINE iif( HB_ISLOGICAL( lAnimate ), ::lAnimate := lAnimate, NIL )
    METHOD setAnimationOpacity( aOpacity )
@@ -95,6 +97,7 @@ CLASS HbQtSilverLight
    DATA   oWidget
    DATA   oParent
    DATA   oTimer
+   DATA   oTimerDuration
 
    DATA   oBackground                             INIT QColor( 50,50,50 )
    DATA   xContent                                INIT ""
@@ -105,41 +108,52 @@ CLASS HbQtSilverLight
    DATA   nEnd                                    INIT 200
    DATA   nIndex                                  INIT 127
    DATA   nDirection                              INIT 1
-
+   DATA   nDuration                               INIT -1
+   DATA   bExecute 
+   
    DATA   oFocusWidget
+   
    ENDCLASS
 
 
-METHOD HbQtSilverLight:init( xContent, oBackground, lAnimate, aOpacity, oParent )
+METHOD HbQtSilverLight:init( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
 
    DEFAULT xContent    TO ::xContent
    DEFAULT oBackground TO ::oBackground
    DEFAULT lAnimate    TO ::lAnimate
    DEFAULT aOpacity    TO ::aOpacity
    DEFAULT oParent     TO ::oParent
+   DEFAULT nDuration   TO ::nDuration
+   DEFAULT bExecute    TO ::bExecute
 
    ::xContent    := xContent
    ::oBackground := oBackground
    ::lAnimate    := lAnimate
    ::aOpacity    := aOpacity
    ::oParent     := oParent
+   ::nDuration   := nDuration
+   ::bExecute    := bExecute
 
    RETURN Self
 
 
-METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParent )
+METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
 
    DEFAULT xContent    TO ::xContent
    DEFAULT oBackground TO ::oBackground
    DEFAULT lAnimate    TO ::lAnimate
    DEFAULT aOpacity    TO ::aOpacity
    DEFAULT oParent     TO ::oParent
+   DEFAULT nDuration   TO ::nDuration
+   DEFAULT bExecute    TO ::bExecute
 
    ::xContent    := xContent
    ::oBackground := oBackground
    ::lAnimate    := lAnimate
    ::aOpacity    := aOpacity
    ::oParent     := oParent
+   ::nDuration   := nDuration
+   ::bExecute    := bExecute
 
    DEFAULT ::oParent TO __hbqtAppWidget()
 
@@ -160,7 +174,11 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
       :setInterval( 10 )
       :connect( "timeout()", {|| ::manageAnimation() } )
    ENDWITH
-
+   WITH OBJECT ::oTimerDuration := QTimer()
+      :setInterval( 1000 )
+      :connect( "timeout()", {|| ::deactivate() } )
+   ENDWITH
+   
    ::setContent( ::xContent )
    ::setAnimation( ::lAnimate )
    ::setAnimationOpacity( ::aOpacity )
@@ -169,14 +187,23 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
    RETURN Self
 
 
-METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oParent )
+METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
 
+   // hide it if already running
+   ::oFocusWidget := NIL 
+   ::deactivate()
+   
    DEFAULT xContent    TO ::xContent
    DEFAULT oBackground TO ::oBackground
    DEFAULT lAnimate    TO ::lAnimate
    DEFAULT aOpacity    TO ::aOpacity
    DEFAULT oParent     TO ::oParent
-
+   DEFAULT nDuration   TO ::nDuration
+   DEFAULT bExecute    TO ::bExecute
+   
+   ::nDuration := nDuration
+   ::bExecute := bExecute
+   
    WITH OBJECT ::oWidget
       ::setContent( xContent )
       ::setAnimation( lAnimate )
@@ -191,7 +218,14 @@ METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oPar
       IF lAnimate
          ::oTimer:start()
       ENDIF
+      IF ::nDuration > -1
+         WITH OBJECT ::oTimerDuration
+            :setInterval( ::nDuration * 1000 )
+            :start()
+         ENDWITH
+      ENDIF
    ENDWITH
+   
    ::oFocusWidget := oParent:focusWidget()
    QApplication():processEvents()
 
@@ -213,6 +247,14 @@ METHOD HbQtSilverLight:deactivate()
       ::oFocusWidget:setFocus()
       ::oFocusWidget := NIL
    ENDIF
+   IF ::oTimerDuration:isActive()
+      ::oTimerDuration:stop()
+   ENDIF 
+   IF HB_ISBLOCK( ::bExecute )
+      Eval( ::bExecute )
+      ::bExecute := NIL 
+   ENDIF
+   ::nDuration := -1
    RETURN Self
 
 

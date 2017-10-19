@@ -16,6 +16,71 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-18 19:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r463)
+  * hbide/editor.prg
+    % Minor fix.
+	
+  * hbide/shortcuts.prg
+    % Fixed: CTRL+SHIFT+W to fire EXIT from HbIDE.
+	
+  * hbqtwidgets/alert.prg
+    + Improved: HbQtMsgbox( cMsg, cTitle, cnBGround, nTimeout, nX, nY )
+	  Now background color, timeout in seconds, X and Y
+	  positions can be applied.
+	  
+  * hbqtwidgets/signature.prg
+    % Minor: Color of signatures changed from blue to black.
+	
+  * hbqtwidgets/silverlight.prg
+    + Implemented: [<nDuration>] and [<bExecutionBlock>].
+	<nDuration> is the timeout seconds after which 
+	oSilverLight will be deactivated automatically.
+	<bExecutionBlock> is the call-back which will be 
+	fired when oSilverLight is deactivated. 
+	Very useful extention.
+	
+  * hbqtwidgets/misc.prg
+    + Extended: HbQtActivateSilverLight( lActivate, xContent, oColor, ;
+	                 lAnimate, aOpacity, oWidget, nDuration, bExecute )  
+	  This function has been upgraded to correspond SilverLight.
+	  
+  + hbqtwidgets/keyboard.prg
+  + hbqtwidgets/keyboard.ui
+  + hbqtwidgets/keyboardn.ui
+    + A work-in-progress on-screen keyboard meant for 
+	  touch-screen applications like kiosks.
+	  Shortly I will publish the semantics of 
+	  in-production kiosk application which consumes
+	  this component. Note that many parts of this 
+	  component has to be polished as in its current 
+	  state code has been separated from application.
+	  It is functional though.
+	  
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added: keyboard.prg, keyboard.ui, keyboardn.ui
+  
+  + hbqtwidgets/resources/back-g-w.png
+  + hbqtwidgets/resources/backspace.png
+  + hbqtwidgets/resources/checkbox-checked-w.png
+  + hbqtwidgets/resources/checkbox-unchecked-w.png
+  + hbqtwidgets/resources/clear.png
+  + hbqtwidgets/resources/click.wav
+  + hbqtwidgets/resources/enter-g-w.png
+  + hbqtwidgets/resources/enter.png
+  + hbqtwidgets/resources/prv_down-4.png
+  + hbqtwidgets/resources/prv_up-4.png
+  + hbqtwidgets/resources/round-blue.png
+  + hbqtwidgets/resources/round-gray.png
+  + hbqtwidgets/resources/s-delete.png
+  + hbqtwidgets/resources/s-down.png
+  + hbqtwidgets/resources/s-left.png
+  + hbqtwidgets/resources/s-plus.png
+  + hbqtwidgets/resources/s-right.png
+  + hbqtwidgets/resources/s-up.png
+  + hbqtwidgets/resources/s-yes.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: many images needed for new components.  
+
 2017-10-14 08:33 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r462)
   * hbdbu/dbu.prg
     % Guarded: __addTreeItem() with #if defined( __PLATFORM__WINDOWS ).

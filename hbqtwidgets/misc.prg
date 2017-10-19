@@ -810,14 +810,14 @@ FUNCTION __hbqtTreeViewStyleSheet()
    RETURN cCSS
 
 
-FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacity, oWidget )
+FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacity, oWidget, nDuration, bExecute )
    STATIC oSilverLight
 
    IF Empty( oSilverLight )
       oSilverLight := HbQtSilverLight():new():create( "Please Wait..." )
    ENDIF
    IF lActivate
-      oSilverLight:activate( xContent, oColor, lAnimate, aOpacity, oWidget )
+      oSilverLight:activate( xContent, oColor, lAnimate, aOpacity, oWidget, nDuration, bExecute )
    ELSE
       oSilverLight:deactivate()
    ENDIF

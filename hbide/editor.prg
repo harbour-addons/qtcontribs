@@ -1925,6 +1925,9 @@ METHOD IdeEditor:handleKeyPressed( nQtKey, aModifiers, oEdit )
       RETURN .T.
    ENDIF
 
+   IF nQtKey == Qt_Key_Control .OR. nQtKey == Qt_Key_Shift .OR. nQtKey == Qt_Key_Alt
+      RETURN .F.
+   ENDIF
    IF ::oSC:execKey( oEdit, nQtKey, lAlt, lCtrl, lShift )   /* User Defined Actions */
       RETURN .T.
    ENDIF
@@ -2068,7 +2071,7 @@ METHOD IdeEditor:buildTabPage( cSource )
 #endif
    IF ::oINI:lTabAddClose
       ::qTabWidget:setTabsClosable( .T. )
-      ::qTabWidget:connect( "tabCloseRequested(int)", {|i|  ::oSM:closeSource( i + 1 ) } )
+      ::qTabWidget:connect( "tabCloseRequested(int)", {|i| ::oSM:closeSource( i + 1 ) } )
    ENDIF
    ::qTabWidget:setTabTooltip( ::qTabWidget:indexOf( ::oTab:oWidget ), cSource )
    ::oTab:tabActivate := {|mp1,mp2,oXbp| ::activateTab( mp1, mp2, oXbp ) }

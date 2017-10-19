@@ -90,7 +90,7 @@ CLASS HbQtSignature
    DATA   lScribbling                             INIT .F.
    DATA   oImage
    DATA   oLastPoint
-   DATA   oPenColor                               INIT QColor( Qt_blue )
+   DATA   oPenColor                               INIT QColor( Qt_black )
    DATA   nWaitPeriod                             INIT 60
    DATA   bFinishedBlock
 

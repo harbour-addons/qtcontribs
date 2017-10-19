@@ -61,6 +61,7 @@ hilighter.prg
 scripts.prg
 parselogs.prg
 signature.prg
+keyboard.prg
 
 hbqtwidgets.qrc
 
@@ -71,6 +72,8 @@ scripts.ui
 parselogs.ui
 expandtext.ui
 loggraphics.ui
+keyboard.ui
+keyboardn.ui
 
 $hb_pkg_install.hbm
 

@@ -747,7 +747,6 @@ METHOD IdeShortcuts:evalMacro( cString )
    LOCAL lEvaluated := .f.
 
    cBlock := ::buildBlock( cString )
-
    bBlock := &( cBlock )
 
    BEGIN SEQUENCE
@@ -1142,9 +1141,11 @@ METHOD IdeShortcuts:help( cTopic )
 METHOD IdeShortcuts:exit( lWarn )
    IF HB_ISLOGICAL( lWarn ) .AND. lWarn
       IF hbide_getYesNo( "Exit HbIDE ?", , "Macro Executed" )
+         hbide_setClose( .T. )
          PostAppEvent( xbeP_Close, NIL, NIL, ::oDlg )
       ENDIF
    ELSE
+      hbide_setClose( .T. )
       PostAppEvent( xbeP_Close, NIL, NIL, ::oDlg )
    ENDIF
    RETURN Self

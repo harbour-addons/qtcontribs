@@ -165,6 +165,8 @@
     <file>resources/prv_fit-best.png</file>
     <file>resources/prv_fit-width.png</file>
     <file>resources/prv_landscape.png</file>
+    <file>resources/prv_up-4.png</file>
+    <file>resources/prv_down-4.png</file>
     <file>resources/prv_left-4.png</file>
     <file>resources/prv_leftall-4.png</file>
     <file>resources/prv_page_double.png</file>
@@ -250,7 +252,7 @@
     <file>resources/arrow-bottom-left.png</file>
     <file>resources/arrow-bottom-right.png</file>
     <file>resources/arrow-contract.png</file>
-    <file>resources/arrow-down.png</file>
+    <file>resources/arrow-down.png</file> 
     <file>resources/arrow-expand.png</file>
     <file>resources/arrow-lft.png</file>
     <file>resources/resize.png</file>
@@ -265,6 +267,8 @@
     <file>resources/checkbox-unchecked-1.png</file>
     <file>resources/checkbox-checked-g.png</file>
     <file>resources/checkbox-unchecked-g.png</file>
+    <file>resources/checkbox-checked-w.png</file>
+    <file>resources/checkbox-unchecked-w.png</file>
     <file>resources/eye-open.png</file>
     <file>resources/eye-close.png</file>
     <file>resources/eye-open-48.png</file>
@@ -392,9 +396,24 @@
     <file>resources/refresh-2.png</file>
     <file>resources/select-3.png</file>
     <file>resources/camera.png</file>
-    <file>resources/redo-1.png</file>
+    <file>resources/redo-1.png</file> 
     <file>resources/round-green.png</file>
     <file>resources/round-red.png</file>
     <file>resources/round-yellow.png</file>
+    <file>resources/round-blue.png</file>
+    <file>resources/round-gray.png</file>
+    <file>resources/click.wav</file>
+    <file>resources/enter.png</file> 
+    <file>resources/s-yes.png</file> 
+    <file>resources/s-delete.png</file> 
+    <file>resources/s-left.png</file> 
+    <file>resources/s-right.png</file> 
+    <file>resources/s-up.png</file> 
+    <file>resources/s-down.png</file> 
+    <file>resources/s-plus.png</file> 
+    <file>resources/enter-g-w.png</file> 
+    <file>resources/back-g-w.png</file>  
+    <file>resources/clear.png</file>  
+    <file>resources/backspace.png</file>  
   </qresource>
 </RCC>
