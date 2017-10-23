@@ -16,6 +16,12 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-22 08:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r464)
+  * hbqtwidgets/editor.prg
+    ! Fixed: Long-standing bug in HbIDE where CTRL+L was misbehaving 
+      when some text remains selected prior to calling it. Bug reported 
+      by Toni Martins with exact steps to reproduce it, thanks Toni.
+
 2017-10-18 19:14 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r463)
   * hbide/editor.prg
     % Minor fix.

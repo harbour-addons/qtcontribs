@@ -660,6 +660,7 @@ METHOD HbQtEditor:execKeyEvent( nMode, nEvent, p, p1, p2 )
          IF lCtrl
             IF ! Empty( ::aLastEditingPosition )
                IF ! ::aLastEditingPosition[ 3 ]:isNull()
+                  ::clearSelection()
                   ::qEdit:horizontalScrollBar():setValue( ::aLastEditingPosition[ 1 ] )
                   ::qEdit:verticalScrollBar():setValue( ::aLastEditingPosition[ 2 ] )
                   ::qEdit:setTextCursor( ::aLastEditingPosition[ 3 ] )
