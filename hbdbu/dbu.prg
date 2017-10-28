@@ -68,7 +68,7 @@ REQUEST __HBEXTERN__HBCOMIO__
 REQUEST __HBEXTERN__HBCOMM__
 REQUEST __HBEXTERN__HBCT__
 REQUEST __HBEXTERN__HBNF__
-REQUEST __HBEXTERN__HBTIP__
+//REQUEST __HBEXTERN__HBTIP__
 REQUEST __HBEXTERN__HBNETIO__
 REQUEST __HBEXTERN__HBMXML__
 REQUEST __HBEXTERN__HBMEMIO__
@@ -99,6 +99,7 @@ REQUEST HB_GT_WIN
 #include "hbtrace.ch"
 #include "hbclass.ch"
 #include "common.ch"
+#include "harbour.hbx"
 
 #include "harbour.hbx"
 
