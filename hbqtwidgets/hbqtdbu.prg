@@ -74,6 +74,7 @@ REQUEST DBFNSX
 #include "hbqtgui.ch"
 #include "hbtrace.ch"
 #include "dbinfo.ch"
+#include "harbour.hbx"
 
 /*----------------------------------------------------------------------*/
 

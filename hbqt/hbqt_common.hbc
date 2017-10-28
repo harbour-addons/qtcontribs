@@ -25,7 +25,7 @@ plugins=hbmk2_qt.hb
 
 # Static Builds 
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}cflags=-O2 -static -static-libgcc -std=c++11 -Wno-c++14-compat -momit-leaf-frame-pointer
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}cflags=-O2 -static -static-libgcc -momit-leaf-frame-pointer
 
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin)&(mingw)}ldflags=-static -static-libgcc -L${HB_WITH_QT}/../plugins/platforms -L${HB_WITH_QT}/../plugins/imageformats
 

@@ -1,5 +1,5 @@
 /*
- * $Id: xbp.ch 4 2012-09-29 19:42:37Z bedipritpal $
+ * $Id$
  */
 
 #ifndef _XBP_CH
@@ -13,6 +13,8 @@
 
 #undef HB_TR_ALWAYS
 #define HB_TR_ALWAYS HB_TR_DEBUG
+
+#define HB_ISNIL( x )                             ( x == NIL )
 
 /*----------------------------------------------------------------------*/
 

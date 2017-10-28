@@ -15,16 +15,16 @@ libs=../qtcore/hbqtcore.hbc
 
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(allwin)}libs=QtNetwork4
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(os2)}libs=QtNet4
-{!HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(linux|beos|symbian)}libs=QtNetwork
+{!HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(linux|beos|symbian|bsd)}libs=QtNetwork
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&darwin}frameworks=QtNetwork
 
-{!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux)}libs=Qt5Network
+{!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|bsd)}libs=Qt5Network
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(os2)}libs=Qt5Net
 {!HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&darwin}frameworks=QtNetwork
 
 {HB_STATIC_QT&allwin}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
-{HB_STATIC_QT&linux|beos}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
+{HB_STATIC_QT&linux|beos|bsd}libs=${_HB_DYNPREF}${hb_name}${_HB_DYNSUFF}
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(allwin|linux|beos)}libs=QtNetwork
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(allwin|linux|beos|bsd)}libs=QtNetwork
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos)}libs=Qt5Network
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos|bsd)}libs=Qt5Network

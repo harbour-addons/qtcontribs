@@ -16,6 +16,59 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-28 15:38 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r465)
+  * hbide/hbide.hbp
+    % minor.
+
+  * hbdbu/dbu.prg
+  * hbide/main.prg
+    + Added: #include "harbour.hbx"
+    % Prepared to be compiled with freeBSD.
+
+  * hbqt/hbmk2_qt.hb
+    - Removed: -std=c++11 
+
+  * hbqt/hbqt_common.hbc
+    - Removed: -std=c++11 hacks.
+      With current Harbour, sources are compiled just fine.
+
+  * hbqt/qscintilla/hbqscintilla.hbc
+  * hbqt/qtbluetooth/hbqtbluetooth.hbc
+  * hbqt/qtcharts/hbqtcharts.hbc
+  * hbqt/qtcore/hbqtcore.hbc
+  * hbqt/qtdbus/hbqtdbus.hbc
+  * hbqt/qtdeclarative/hbqtdeclarative.hbc
+  * hbqt/qtdesigner/hbqtdesigner.hbc
+  * hbqt/qtgui/hbqtgui.hbc
+  * hbqt/qtlocation/hbqtlocation.hbc
+  * hbqt/qtmultimedia/hbqtmultimedia.hbc
+  * hbqt/qtmultimediawidgets/hbqtmultimediawidgets.hbc
+  * hbqt/qtnetwork/hbqtnetwork.hbc
+  * hbqt/qtopengl/hbqtopengl.hbc
+  * hbqt/qtpositioning/hbqtpositioning.hbc
+  * hbqt/qtqml/hbqtqml.hbc
+  * hbqt/qtquick/hbqtquick.hbc
+  * hbqt/qtscript/hbqtscript.hbc
+  * hbqt/qtsensors/hbqtsensors.hbc
+  * hbqt/qtsql/hbqtsql.hbc
+  * hbqt/qtsvg/hbqtsvg.hbc
+  * hbqt/qtwebkit/hbqtwebkit.hbc
+  * hbqt/qtwebsockets/hbqtwebsockets.hbc
+  * hbqt/qtxml/hbqtxml.hbc
+  * hbqt/qzxing/hbqtzxing.hbc
+    % Prepared to be compiled with freeBSD.
+
+  * hbqtwidgets/hbqtdbu.prg
+    + Added: #include "harbour.hbx"
+
+  * hbxbp/xbp.ch
+    + Added: #define HB_ISNIL( x )        ( x == NIL )
+      Pointed-out by Viktor, many thanks.
+      This eliminates XHB dependency for this library.
+
+  ; A patch provided by Mario Logo with , many thanks. 
+    
+
 2017-10-22 08:45 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r464)
   * hbqtwidgets/editor.prg
     ! Fixed: Long-standing bug in HbIDE where CTRL+L was misbehaving 

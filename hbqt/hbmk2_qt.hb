@@ -73,10 +73,8 @@ FUNCTION hbmk_plugin_qt( hbmk )
       ENDIF
       IF "5.7" $ cVer .AND. hbmk[ "cCOMP" ] == "mingw"
          hb_SetEnv( "HB_QT_MINOR_VER", "7" )
-         hb_SetEnv( "HB_USER_CFLAGS", hb_GetEnv( "HB_USER_CFLAGS" ) + " -std=c++11" )
       ELSEIF "5.8" $ cVer .AND. hbmk[ "cCOMP" ] == "mingw"
          hb_SetEnv( "HB_QT_MINOR_VER", "8" )
-         hb_SetEnv( "HB_USER_CFLAGS", hb_GetEnv( "HB_USER_CFLAGS" ) + " -std=c++11" )
       ENDIF
 
       IF ! Empty( GetEnv( "QTCONTRIBS_REBUILD" ) )

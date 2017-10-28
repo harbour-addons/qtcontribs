@@ -62,6 +62,29 @@
  */
 /*----------------------------------------------------------------------*/
 
+/* Link all Harbour Functions : needed to run external scripts */
+/* NOTE: Please only add what's actually requested by plugin developers */
+
+REQUEST __HB_EXTERN__
+
+REQUEST __HBEXTERN__HBCT__
+REQUEST __HBEXTERN__HBNF__
+REQUEST __HBEXTERN__HBNETIO__
+REQUEST __HBEXTERN__HBMXML__
+REQUEST __HBEXTERN__HBMEMIO__
+REQUEST __HBEXTERN__HBMZIP__
+REQUEST __HBEXTERN__HBSMS__
+REQUEST __HBEXTERN__HBSSL__
+REQUEST __HBEXTERN__HBTCPIO__
+REQUEST __HBEXTERN__HBTIP__
+REQUEST __HBEXTERN__HBZIPARC__
+
+REQUEST __HBEXTERN__HBQTCORE__
+REQUEST __HBEXTERN__HBQTGUI__
+REQUEST __HBEXTERN__HBXBP__
+REQUEST __HBEXTERN__HBQTWIDGETS__
+
+
 #include "hbide.ch"
 #include "requests.ch"
 #include "common.ch"
@@ -77,39 +100,21 @@
 #include "hbtoqt.ch"
 #include "hbqtstd.ch"
 
+#include "harbour.hbx"
+
 #if defined( __PLATFORM__WINDOWS ) .OR. ;
     defined( __PLATFORM__LINUX )
-    //#include "rddads.hbx"
+#if 0	
+    #include "rddads.hbx"
+#endif	
 #endif
-
-
-/* Link all Harbour Functions : needed to run external scripts */
-/* NOTE: Please only add what's actually requested by plugin developers */
-
-REQUEST __HB_EXTERN__
-
-REQUEST __HBEXTERN__HBCT__
-REQUEST __HBEXTERN__HBNF__
-//REQUEST __HBEXTERN__HBTIP__
-REQUEST __HBEXTERN__HBNETIO__
-REQUEST __HBEXTERN__HBMXML__
-REQUEST __HBEXTERN__HBMEMIO__
-REQUEST __HBEXTERN__HBMZIP__
-REQUEST __HBEXTERN__HBSMS__
-REQUEST __HBEXTERN__HBTCPIO__
-REQUEST __HBEXTERN__HBZIPARC__
-REQUEST __HBEXTERN__HBSSL__
-
-REQUEST __HBEXTERN__HBXBP__
-REQUEST __HBEXTERN__HBQTCORE__
-REQUEST __HBEXTERN__HBQTGUI__
-//REQUEST __HBEXTERN__HBQTNETWORK__
-//REQUEST __HBEXTERN__HBQTSQL__
 
 REQUEST DBFCDX
 REQUEST DBFNTX
 REQUEST DBFNSX
-//REQUEST ADS
+#if 0
+REQUEST ADS
+#endif
 
 
 FUNCTION Main( ... )
