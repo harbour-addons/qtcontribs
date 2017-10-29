@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-10-29 14:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r468)
+  * hbqtwidgets/hbqtdbu.prg
+    % Replaced: hb_osPathSeparator() with hb_ps().
+
 2017-10-29 14:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r467)
   * hbdbu/dbu.prg
   * hbide/main.prg

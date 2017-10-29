@@ -2671,16 +2671,16 @@ METHOD HbQtDBU:getPath( cFile )
             hb_DirCreate( cPath )
          ENDIF
       ELSEIF Left( cPath, 2 ) == ".."
-         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps() + cPath
       ENDIF
 
       ::cSettingsPath := cPath
       ::cSettingsFile := cName + cExt
    ELSE
       IF Empty( cPath )
-         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps()
       ELSEIF Left( cPath, 2 ) == ".."
-         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps() + cPath
       ENDIF
    ENDIF
    RETURN ( cPath + cName + cExt )
