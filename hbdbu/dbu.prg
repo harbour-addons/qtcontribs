@@ -1335,7 +1335,7 @@ METHOD DbuMGR:getPath( cFile )
             hb_DirCreate( cPath )
          ENDIF
       ELSEIF Left( cPath, 2 ) == ".."
-         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps() + cPath
       ENDIF
 
       ::cSettingsPath := cPath
@@ -1344,9 +1344,9 @@ METHOD DbuMGR:getPath( cFile )
       ::oUI:oWidget:setWindowTitle( "HbDBU [" + ::cSettingsPath + ::cSettingsFile + "]" )
    ELSE
       IF Empty( cPath )
-         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps()
       ELSEIF Left( cPath, 2 ) == ".."
-         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator() + cPath
+         cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps() + cPath
       ENDIF
 
    ENDIF

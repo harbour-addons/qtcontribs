@@ -679,7 +679,7 @@ METHOD HbIde:parseParams()
       CASE left( s, 1 ) == "-"
          // Switches, futuristic
       OTHERWISE
-         cCurPath := hb_CurDrive() + hb_osDriveSeparator() + hb_osPathSeparator() + CurDir() + hb_osPathSeparator()
+         cCurPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps()
          hb_fNameSplit( s, @cPath, @cName, @cExt )
          IF ! Empty( cExt )
             IF Empty( cPath )
