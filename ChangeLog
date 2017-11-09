@@ -16,6 +16,29 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2017-11-08 16:36 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r469)
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QMetaType_* constants.
+    - Modified: QVariant_* constants consistent with QMetaType_*.
+      Patch submitted by Luigi - thanks.
+
+  + hbqt/tests/cidades.db
+    + Added: Sqlite database demonstrated in sqllite.prg.
+  + hbqt/tests/sqllite.prg
+    + Added: Demo of using QCompleter in a QLineEdit. QCompleter 
+      consumes the data coming from SqLite database. A good opportunity
+      for you to play with HbQtSql implementation.
+
+  + hbqt/tests/completer.prg
+    + Added: Demo app to use QCompleter in a QLineEdit in a simplistic form.
+    ; QCompleter demos are provided by Ronaldo - thanks.
+
+  + hbqt/tests/completerex.prg
+    + Added: An extended version of above completer.prg. This demo gives 
+      you insight how to use QCompleter dynamically based on the contents
+      of QLineEdit. I used selecting a domain when "@" key is pressed 
+      in an edit controlfetching email address.
+
 2017-10-29 14:10 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r468)
   * hbqtwidgets/hbqtdbu.prg
     % Replaced: hb_osPathSeparator() with hb_ps().

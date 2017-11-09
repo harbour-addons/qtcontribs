@@ -2285,63 +2285,6 @@
 #define QSlider_TicksLeft                         QSlider_TicksAbove   // Draw tick marks to the left of the (vertical) slider
 #define QSlider_TicksRight                        QSlider_TicksBelow   // Draw tick marks to the right of the (vertical) slider
 
-//  This enum type defines the types of variable that a QVariant can contain.
-#define QVariant_Invalid                          0     // no type
-#define QVariant_BitArray                         13    // a QBitArray
-#define QVariant_Bitmap                           73    // a QBitmap
-#define QVariant_Bool                             1     // a bool
-#define QVariant_Brush                            66    // a QBrush
-#define QVariant_ByteArray                        12    // a QByteArray
-#define QVariant_Char                             7     // a QChar
-#define QVariant_Color                            67    // a QColor
-#define QVariant_Cursor                           74    // a QCursor
-#define QVariant_Date                             14    // a QDate
-#define QVariant_DateTime                         16    // a QDateTime
-#define QVariant_Double                           6     // a double
-#define QVariant_EasingCurve                      29    // a QEasingCurve
-#define QVariant_Font                             64    // a QFont
-#define QVariant_Hash                             28    // a QVariantHash
-#define QVariant_Icon                             69    // a QIcon
-#define QVariant_Image                            70    // a QImage
-#define QVariant_Int                              2     // an int
-#define QVariant_KeySequence                      76    // a QKeySequence
-#define QVariant_Line                             23    // a QLine
-#define QVariant_LineF                            24    // a QLineF
-#define QVariant_List                             9     // a QVariantList
-#define QVariant_Locale                           18    // a QLocale
-#define QVariant_LongLong                         4     // a qlonglong
-#define QVariant_Map                              8     // a QVariantMap
-#define QVariant_Matrix                           80    // a QMatrix(obsolete)
-#define QVariant_Transform                        81    // a QTransform
-#define QVariant_Matrix4x4                        82    // a QMatrix4x4
-#define QVariant_Palette                          68    // a QPalette
-#define QVariant_Pen                              77    // a QPen
-#define QVariant_Pixmap                           65    // a QPixmap
-#define QVariant_Point                            25    // a QPoint
-#define QVariant_PointArray                       71    // a QPointArray as the same Polygon
-#define QVariant_PointF                           26    // a QPointF
-#define QVariant_Polygon                          71    // a QPolygon
-#define QVariant_Quaternion                       86    // a QQuaternion
-#define QVariant_Rect                             19    // a QRect
-#define QVariant_RectF                            20    // a QRectF
-#define QVariant_RegExp                           27    // a QRegExp
-#define QVariant_Region                           72    // a QRegion
-#define QVariant_Size                             21    // a QSize
-#define QVariant_SizeF                            22    // a QSizeF
-#define QVariant_SizePolicy                       75    // a QSizePolicy
-#define QVariant_String                           10    // a QString
-#define QVariant_StringList                       11    // a QStringList
-#define QVariant_TextFormat                       79    // a QTextFormat
-#define QVariant_TextLength                       78    // a QTextLength
-#define QVariant_Time                             15    // a QTime
-#define QVariant_UInt                             3     // a uint
-#define QVariant_ULongLong                        5     // a qulonglong
-#define QVariant_Url                              17    // a QUrl
-#define QVariant_Vector2D                         83    // a QVector2D
-#define QVariant_Vector3D                         84    // a QVector3D
-#define QVariant_Vector4D                         85    // a QVector4D
-#define QVariant_UserType                         127   // Base value for user-defined types.
-
 // describes the icon that is shown when a balloon message is displayed.
 #define QSystemTrayIcon_NoIcon                    0  // No icon is shown.
 #define QSystemTrayIcon_Information               1  // An information icon is shown.
@@ -5692,6 +5635,152 @@
 #define QFontDatabase_Runic                                  ?
 #define QFontDatabase_Nko                                    ?
 #endif
+
+// enum QMetaType::TypeFlag
+// flags QMetaType::TypeFlags
+#define QMetaType_NeedsConstruction                          0x1   // This type has non-trivial constructors. If the flag is not set instances can be safely initialized with memset to 0.
+#define QMetaType_NeedsDestruction                           0x2   // This type has a non-trivial destructor. If the flag is not set calls to the destructor are not necessary before discarding objects.
+#define QMetaType_MovableType                                0x4   // An instance of a type having this attribute can be safely moved by memcpy.
+#define QMetaType_PointerToQObject                           0x8   // This type is a pointer to a derived of QObject This type is a Q_GADGET and it's corresponding QMetaObject can be accessed with QMetaType::metaObject Since 5.5.
+#define QMetaType_IsEnumeration                              0x10  // This type is an enumeration
+
+// enum QMetaType::Type
+#define QMetaType_UnknownType                                0     // This is an invalid type id. It is returned from QMetaType for types that are not registered
+#define QMetaType_Bool                                       1     // bool
+#define QMetaType_Int                                        2     // int
+#define QMetaType_UInt                                       3     // unsigned int
+#define QMetaType_LongLong                                   4     // LongLong
+#define QMetaType_ULongLong                                  5     // ULongLong
+#define QMetaType_Double                                     6     // double
+#define QMetaType_QChar                                      7     // QChar
+#define QMetaType_QVariantMap                                8     // QVariantMap
+#define QMetaType_QVariantList                               9     // QVariantList
+#define QMetaType_QString                                    10    // QString
+#define QMetaType_QStringList                                11    // QStringList
+#define QMetaType_QByteArray                                 12    // QByteArray
+#define QMetaType_QBitArray                                  13    // QBitArray
+#define QMetaType_QDate                                      14    // QDate
+#define QMetaType_QTime                                      15    // QTime
+#define QMetaType_QDateTime                                  16    // QDateTime
+#define QMetaType_QUrl                                       17    // QUrl
+#define QMetaType_QLocale                                    18    // QLocale
+#define QMetaType_QRect                                      19    // QRect
+#define QMetaType_QRectF                                     20    // QRectF
+#define QMetaType_QSize                                      21    // QSize
+#define QMetaType_QSizeF                                     22    // QSizeF
+#define QMetaType_QLine                                      23    // QLine
+#define QMetaType_QLineF                                     24    // QLineF
+#define QMetaType_QPoint                                     25    // QPoint
+#define QMetaType_QPointF                                    26    // QPointF
+#define QMetaType_QRegExp                                    27    // QRegExp
+#define QMetaType_QVariantHash                               28    // QVariantHash
+#define QMetaType_QEasingCurve                               29    // QEasingCurve
+#define QMetaType_QUuid                                      30    // QUuid
+#define QMetaType_VoidStar                                   31    // void *
+#define QMetaType_Long                                       32    // long
+#define QMetaType_Short                                      33    // short
+#define QMetaType_Char                                       34    // char
+#define QMetaType_ULong                                      35    // unsigned long
+#define QMetaType_UShort                                     36    // unsigned short
+#define QMetaType_UChar                                      37    // unsigned char
+#define QMetaType_Float                                      38    // float
+#define QMetaType_QObjectStar                                39    // QObject *
+#define QMetaType_SChar                                      40    // signed char
+#define QMetaType_QVariant                                   41    // QVariant
+#define QMetaType_QModelIndex                                42    // QModelIndex
+#define QMetaType_Void                                       43    // void
+#define QMetaType_QRegularExpression                         44    // QRegularExpression
+#define QMetaType_QJsonValue                                 45    // QJsonValue
+#define QMetaType_QJsonObject                                46    // QJsonObject
+#define QMetaType_QJsonArray                                 47    // QJsonArray
+#define QMetaType_QJsonDocument                              48    // QJsonDocument
+#define QMetaType_QByteArrayList                             49    // QByteArrayList
+#define QMetaType_QPersistentModelIndex                      50    // QPersistentModelIndex (since 5.5)
+#define QMetaType_QFont                                      64    // QFont
+#define QMetaType_QPixmap                                    65    // QPixmap
+#define QMetaType_QBrush                                     66    // QBrush
+#define QMetaType_QColor                                     67    // QColor
+#define QMetaType_QPalette                                   68    // QPalette
+#define QMetaType_QIcon                                      69    // QIcon
+#define QMetaType_QImage                                     70    // QImage
+#define QMetaType_QPolygon                                   71    // QPolygon
+#define QMetaType_QRegion                                    72    // QRegion
+#define QMetaType_QBitmap                                    73    // QBitmap
+#define QMetaType_QCursor                                    74    // QCursor
+#define QMetaType_QKeySequence                               75    // QKeySequence
+#define QMetaType_QPen                                       76    // QPen
+#define QMetaType_QTextLength                                77    // QTextLength
+#define QMetaType_QTextFormat                                78    // QTextFormat
+#define QMetaType_QMatrix                                    79    // QMatrix
+#define QMetaType_QTransform                                 80    // QTransform
+#define QMetaType_QMatrix4x4                                 81    // QMatrix4x4
+#define QMetaType_QVector2D                                  82    // QVector2D
+#define QMetaType_QVector3D                                  83    // QVector3D
+#define QMetaType_QVector4D                                  84    // QVector4D
+#define QMetaType_QQuaternion                                85    // QQuaternion
+#define QMetaType_QPolygonF                                  86    // QPolygonF
+#define QMetaType_QSizePolicy                                121   // QSizePolicy
+#define QMetaType_User                                       1024  // Base value for user types
+
+#define QVariant_Invalid                                     QMetaType_UnknownType
+#define QVariant_BitArray                                    QMetaType_QBitArray
+#define QVariant_Bitmap                                      QMetaType_QBitmap
+#define QVariant_Bool                                        QMetaType_Bool
+#define QVariant_Brush                                       QMetaType_QBrush
+#define QVariant_ByteArray                                   QMetaType_QByteArray
+#define QVariant_Char                                        QMetaType_QChar
+#define QVariant_Color                                       QMetaType_QColor
+#define QVariant_Cursor                                      QMetaType_QCursor
+#define QVariant_Date                                        QMetaType_QDate
+#define QVariant_DateTime                                    QMetaType_QDateTime
+#define QVariant_Double                                      QMetaType_Double
+#define QVariant_EasingCurve                                 QMetaType_QEasingCurve
+#define QVariant_Uuid                                        QMetaType_QUuid
+#define QVariant_ModelIndex                                  QMetaType_QModelIndex
+#define QVariant_PersistentModelIndex                        QMetaType_QPersistentModelIndex
+#define QVariant_Font                                        QMetaType_QFont
+#define QVariant_Hash                                        QMetaType_QVariantHash
+#define QVariant_Icon                                        QMetaType_QIcon
+#define QVariant_Image                                       QMetaType_QImage
+#define QVariant_Int                                         QMetaType_Int
+#define QVariant_KeySequence                                 QMetaType_QKeySequence
+#define QVariant_Line                                        QMetaType_QLine
+#define QVariant_LineF                                       QMetaType_QLineF
+#define QVariant_List                                        QMetaType_QVariantList
+#define QVariant_Locale                                      QMetaType_QLocale
+#define QVariant_LongLong                                    QMetaType_LongLong
+#define QVariant_Map                                         QMetaType_QVariantMap
+#define QVariant_Matrix                                      QMetaType_QMatrix
+#define QVariant_Transform                                   QMetaType_QTransform
+#define QVariant_Matrix4x4                                   QMetaType_QMatrix4x4
+#define QVariant_Palette                                     QMetaType_QPalette
+#define QVariant_Pen                                         QMetaType_QPen
+#define QVariant_Pixmap                                      QMetaType_QPixmap
+#define QVariant_Point                                       QMetaType_QPoint
+#define QVariant_PointF                                      QMetaType_QPointF
+#define QVariant_Polygon                                     QMetaType_QPolygon
+#define QVariant_PolygonF                                    QMetaType_QPolygonF
+#define QVariant_Quaternion                                  QMetaType_QQuaternion
+#define QVariant_Rect                                        QMetaType_QRect
+#define QVariant_RectF                                       QMetaType_QRectF
+#define QVariant_RegExp                                      QMetaType_QRegExp
+#define QVariant_RegularExpression                           QMetaType_QRegularExpression
+#define QVariant_Region                                      QMetaType_QRegion
+#define QVariant_Size                                        QMetaType_QSize
+#define QVariant_SizeF                                       QMetaType_QSizeF
+#define QVariant_SizePolicy                                  QMetaType_QSizePolicy
+#define QVariant_String                                      QMetaType_QString
+#define QVariant_StringList                                  QMetaType_QStringList
+#define QVariant_TextFormat                                  QMetaType_QTextFormat
+#define QVariant_TextLength                                  QMetaType_QTextLength
+#define QVariant_Time                                        QMetaType_QTime
+#define QVariant_UInt                                        QMetaType_UInt
+#define QVariant_ULongLong                                   QMetaType_ULongLong
+#define QVariant_Url                                         QMetaType_QUrl
+#define QVariant_Vector2D                                    QMetaType_QVector2D
+#define QVariant_Vector3D                                    QMetaType_QVector3D
+#define QVariant_Vector4D                                    QMetaType_QVector4D
+#define QVariant_UserType                                    QMetaType_User
 
 #endif
 
