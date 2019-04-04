@@ -441,7 +441,9 @@ METHOD HbQtScripts:newScript()
 
    ::cCurScriptName := "new..."
    ::oUI:labelSourceName:setText( ::cCurScriptName )
-   ::oHbQtEditor:setSource( cNew )
+   //::oHbQtEditor:setSource( cNew )
+   
+   HB_SYMBOL_UNUSED( cNew )
    RETURN Self
 
 

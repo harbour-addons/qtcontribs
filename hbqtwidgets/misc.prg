@@ -1407,7 +1407,7 @@ FUNCTION __hbqtV( cVrb, xValue )
 
 
 FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
-   LOCAL xTmp
+   LOCAL xTmp, xTmp1
 
    IF HB_ISHASH( hHash )
       IF hb_HHasKey( hHash, cKey )
@@ -1416,6 +1416,16 @@ FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
          FOR EACH xTmp IN hHash
             IF HB_ISHASH( xTmp )
                RETURN __hbqtHashPullValue( xTmp, cKey, xDefault )
+            ELSEIF HB_ISARRAY( xTmp )
+               FOR EACH xTmp1 IN xTmp
+                  IF HB_ISHASH( xTmp1 )
+                     IF cKey $ xTmp1
+                        RETURN xTmp1[ cKey ]
+                     ELSE 
+                        RETURN VouchPullHash( xTmp1, cKey, xDefault )
+                     ENDIF
+                  ENDIF
+               NEXT
             ENDIF
          NEXT
       ENDIF

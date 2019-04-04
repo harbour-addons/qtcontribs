@@ -149,11 +149,13 @@ METHOD HbQtKeyboardWidget:hide()
    WITH OBJECT ::oWidget
       :lower()
       :hide()  
+      ::oUI:lineEdit:setText( "" )
    ENDWITH 
    IF HB_ISOBJECT( ::oUIPhones )
       WITH OBJECT ::oUIPhones:oWidget
          :lower()
          :hide()  
+         ::oUIPhones:lineEdit:setText( "" )
       ENDWITH 
    ENDIF
    RETURN NIL 
@@ -222,6 +224,8 @@ METHOD HbQtKeyboardWidget:activate( oLineEdit, nKeyboard, nX, nY )
    ENDSWITCH
    //
    WITH OBJECT ::oLineEdit
+      :setText( "" )
+      QApplication():processEvents()
       :setText( ::oFocusedLineEdit:text() )
       :setEchoMode( ::oFocusedLineEdit:echoMode() )
    ENDWITH 
@@ -229,12 +233,10 @@ METHOD HbQtKeyboardWidget:activate( oLineEdit, nKeyboard, nX, nY )
    
    
 METHOD HbQtKeyboardWidget:receiveKey( oKeyEvent )
-   //LOCAL oEvent 
    
    IF HB_ISOBJECT( oKeyEvent ) .AND. HB_ISOBJECT( ::oFocusedLineEdit )
       QApplication():sendEvent( ::oFocusedLineEdit, oKeyEvent )
    ENDIF
-   ::oWidget:parent():setFocus( Qt_TabFocusReason )
    ::refresh() 
 
    RETURN NIL 
@@ -505,6 +507,7 @@ METHOD HbQtKeyboardButton:create( oKeyboard, oBtn, nQtKey )
    ::nQtKey := nQtKey
    
    WITH OBJECT ::oWidget := ::oBtn
+      :setFocusPolicy( Qt_NoFocus )
       :setStyleSheet( DEFAULT_STYLE_NORMAL + DEFAULT_STYLE_PRESSED )
       :connect( "clicked()", {|| ::manageKey() } )
    ENDWITH

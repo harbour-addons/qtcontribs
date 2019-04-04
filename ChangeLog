@@ -16,6 +16,43 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2019-04-04 15:19 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r471)
+  * hbqt/hbmk2_qt.hb 
+    + WR_PRG( '#include "hbqtcore.ch"' )
+	  Patch provided by Zoran, thanks.
+	
+  * hbqt/qtgui/qth/QCompleter.qth
+    + Added: more methods.
+	
+  * hbqt/qscintilla/qth/QsciScintilla.qth
+	+ Added method requested by Antonio Linares.
+	
+  + hbqtwidgets/timeout.prg 
+    + CLASS HbQtWarnTimeout
+	  A widget to display timeout in seconds from higher to zero
+	  with an option to fetch more time. 
+    + FUNCTION HbQtSessionTimeout( bBlock, nWaitPeriod )
+      Function to exploit HbQtWarnTimeout().
+	  
+  * hbqtwidgets/alert.prg
+    ! Fixed some cosmetic issues.
+	
+  * hbqtwidgets/hbqtwidgets.hbp
+    + timeout.prg
+	
+  * hbqtwidgets/keyboardn.ui
+  * hbqtwidgets/keyboard.prg
+    ! Some cosmetic changes.
+	
+  * hbqtwidgets/misc.prg
+    ! Enhancement to __hbqtHashPullValue() to honor first level arrays.
+	
+  * hbqtwidgets/parselogs.ui
+    ! Cosmetic changes.
+	
+  * hbqtwidgets/scripts.prg
+    ! Minor fixes.
+	
 2017-11-09 17:08 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r470)
   + hbqt/tests/sqllite-table.prg
     Added: yet another very useful demo exploiting SqlLite table and 

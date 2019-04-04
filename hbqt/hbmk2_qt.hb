@@ -1623,6 +1623,7 @@ METHOD THbUIC:buildHeader()
 
    WR_PRG( "/* WARNING: Automatically generated source file. DO NOT EDIT! */" )
    WR_PRG( "" )
+   WR_PRG( '#include "hbqtcore.ch"' )
    WR_PRG( '#include "hbqtgui.ch"' )
    WR_PRG( '#include "hbclass.ch"' )
    WR_PRG( '#include "error.ch"' )

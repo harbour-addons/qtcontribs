@@ -93,6 +93,9 @@ QWidget#Form {background-color: rgba(155,155,155,255);border: 1px solid black; b
          <bold>true</bold>
         </font>
        </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="styleSheet">
         <string notr="true"/>
        </property>

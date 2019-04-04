@@ -72,6 +72,7 @@ QString currentCompletion () const
 QModelIndex currentIndex () const
 int currentRow () const
 Qt::MatchFlags filterMode() const                      [*V=0x050200*]
+int maxVisibleItems() const                            [*V=0x040600*]
 QAbstractItemModel * model () const
 ModelSorting modelSorting () const
 virtual QString pathFromIndex ( const QModelIndex & index ) const
@@ -82,6 +83,7 @@ void setCompletionMode ( CompletionMode mode )
 void setCompletionRole ( int role )
 bool setCurrentRow ( int row )
 void setFilterMode(Qt::MatchFlags filterMode)          [*V=0x050200*]
+void setMaxVisibleItems(int maxItems)                  [*V=0x040600*]
 void setModel ( QAbstractItemModel * model )
 void setModelSorting ( ModelSorting sorting )
 void setPopup ( QAbstractItemView * popup )

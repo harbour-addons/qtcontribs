@@ -121,6 +121,7 @@ enum WrapVisualFlag { WrapFlagNone, WrapFlagByText, WrapFlagByBorder }
 
 <PROTOS>
 void SendScintilla (unsigned int msg, unsigned long wParam, const char * lParam ) const
+void SendScintilla (unsigned int msg, unsigned long wParam, unsigned long lParam ) const
 void SendScintilla ( unsigned int msg, long wParam ) const
 # virtual QStringList apiContext (int pos, int &context_start, int &last_word_start)
 void annotate (int line, const QString &text, int style)

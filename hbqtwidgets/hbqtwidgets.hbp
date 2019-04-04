@@ -62,6 +62,7 @@ scripts.prg
 parselogs.prg
 signature.prg
 keyboard.prg
+timeouts.prg
 
 hbqtwidgets.qrc
 

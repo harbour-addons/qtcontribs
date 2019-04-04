@@ -138,6 +138,9 @@
          </item>
          <item>
           <widget class="QToolButton" name="btnGraphics">
+           <property name="toolTip">
+            <string>Open Graph Dialog</string>
+           </property>
            <property name="text">
             <string>...</string>
            </property>
