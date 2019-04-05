@@ -55,9 +55,10 @@
 #include "hbqtstd.ch"
 #include "hbqtgui.ch"
 #include "inkey.ch"
+#include "fileio.ch"
 #include "hbtrace.ch"
 #include "common.ch"
-
+#include "error.ch"
 
 
 THREAD STATIC t_sets := {=>}
@@ -507,6 +508,16 @@ FUNCTION __hbqtPositionWindowClientXY( oWnd, nX, nY )
    RETURN NIL
 
 
+FUNCTION __hbqtWindowCenter( oParent, oChild )
+   LOCAL a_:= __hbqtGetWindowFrameWidthHeight( oParent )
+   LOCAL b_:= __hbqtGetWindowFrameWidthHeight( oChild )
+   LOCAL nX := ( a_[ 1 ] - b_[ 1 ] ) / 2
+   LOCAL nY := ( a_[ 2 ] - b_[ 2 ] ) / 2
+
+   oChild:move( nX, nY )
+   RETURN NIL
+
+
 FUNCTION __hbqtGetADialogOnTopOf( oParent, nTop, nLeft, nBottom, nRight, cTitle, oFont, lResizable )
    LOCAL oDlg, aInfo, nX, nY, nW, nH, nFlags
 
@@ -815,6 +826,9 @@ FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacit
 
    IF Empty( oSilverLight )
       oSilverLight := HbQtSilverLight():new():create( "Please Wait..." )
+   ENDIF
+   IF PCount() == 0
+      RETURN oSilverLight:isActive()
    ENDIF
    IF lActivate
       oSilverLight:activate( xContent, oColor, lAnimate, aOpacity, oWidget, nDuration, bExecute )
@@ -1410,7 +1424,7 @@ FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
    LOCAL xTmp, xTmp1
 
    IF HB_ISHASH( hHash )
-      IF hb_HHasKey( hHash, cKey )
+      IF cKey $ hHash
          RETURN hHash[ cKey ]
       ELSE
          FOR EACH xTmp IN hHash
@@ -1421,8 +1435,8 @@ FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
                   IF HB_ISHASH( xTmp1 )
                      IF cKey $ xTmp1
                         RETURN xTmp1[ cKey ]
-                     ELSE 
-                        RETURN VouchPullHash( xTmp1, cKey, xDefault )
+                     ELSE
+                        RETURN __hbqtHashPullValue( xTmp1, cKey, xDefault )
                      ENDIF
                   ENDIF
                NEXT
@@ -1431,6 +1445,235 @@ FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
       ENDIF
    ENDIF
    RETURN xDefault
+
+
+FUNCTION HbQtSetLogChannel( cLogFile, lPushAsDebugString )
+   STATIC s_lPushAsDebugString := .F.
+   STATIC s_cLogFile := ""
+   LOCAL l_lPushAsDebugString := s_lPushAsDebugString
+   LOCAL l_cLogFile := s_cLogFile
+
+   IF PCount() > 0
+      IF HB_ISLOGICAL( lPushAsDebugString )
+         s_lPushAsDebugString := lPushAsDebugString
+      ENDIF
+      IF HB_ISSTRING( cLogFile ) .AND. ! Empty( cLogFile )
+         s_cLogFile := cLogFile
+      ENDIF
+   ENDIF
+   RETURN hb_Hash( "LogFile", l_cLogFile, "AsDebugString", l_lPushAsDebugString )
+
+
+PROCEDURE HbQtLogAdd( ... )
+   LOCAL xParam, nHandle, cExe, cFileName, s
+   LOCAL hLog := HbQtSetLogChannel()
+
+   cFileName := hLog[ "LogFile" ]
+
+   s := ""
+   FOR EACH xParam IN hb_AParams()
+      SWITCH ValType( xParam )
+      CASE "M"
+      CASE "C" ; s += xParam                                 ; EXIT
+      CASE "N" ; s += hb_ntos( xParam )                      ; EXIT
+      CASE "L" ; s += iif( xParam, "TRUE", "FALSE" )         ; EXIT
+      CASE "D" ; s += DToC( xParam )                         ; EXIT
+      CASE "B" ; s += "{|| ... }"                            ; EXIT
+      CASE "A" ; s += "{ " + hb_ntos( Len( xParam ) ) + " }" ; EXIT
+      CASE "H" ; s += hb_jsonEncode( xParam, .T. )           ; EXIT
+      CASE "O" ; s += "Object:" + xParam:className()         ; EXIT
+      CASE "P" ; s += hb_ValToStr( xParam )                  ; EXIT
+      CASE "S" ; s += hb_ValToStr( xParam )                  ; EXIT
+      OTHERWISE
+         s += "Unknown:" + ValType( xParam )
+      ENDSWITCH
+      s += "   "
+   NEXT
+   IF ! Empty( s )
+      hb_FNameSplit( hb_ProgName(), , @cExe )
+      s := ".     ." + DToC( Date() ) + "   " + Time() + "   " + Str( Seconds(), 9, 3 ) + "   " + cExe + "   " + ;
+           ProcName( 1 ) + "   " + hb_ntos( ProcLine( 1 ) ) + hb_eol() + s + hb_eol()
+   ENDIF
+   IF ! Empty( s ) .AND. hLog[ "AsDebugString" ]
+#ifndef __LINUX__
+      WAPI_OutputDebugString( s )
+#endif
+   ENDIF
+   IF ! Empty( s ) .AND. ! Empty( cFileName )
+      IF ( nHandle := FOpen( cFileName, FO_WRITE + FO_DENYNONE ) ) == F_ERROR
+         nHandle := FCreate( cFileName, FC_NORMAL )
+      ENDIF
+      IF ! nHandle == F_ERROR
+         fSeek( nHandle, 0, FS_END )
+         fWrite( nHandle, s, Len( s ) )
+         fClose( nHandle )
+      ENDIF
+   ENDIF
+   RETURN
+
+// Mindaugus - hbhttpd
+//
+FUNCTION HbQtGetErrorDesc( oErr )
+   LOCAL cRet, nI, cI, aPar, nJ, xI
+
+   cRet := "============================= ERRORLOG =============================" + hb_eol() + ;
+      "Error      : " + oErr:subsystem + "/" + ErrDescCode( oErr:genCode ) + "(" + hb_ntos( oErr:genCode ) + ") " + ;
+                                                                                   hb_ntos( oErr:subcode ) + hb_eol()
+   IF ! Empty( oErr:filename );      cRet += "File       : " + oErr:filename + hb_eol()
+   ENDIF
+   IF ! Empty( oErr:description );   cRet += "Description: " + oErr:description + hb_eol()
+   ENDIF
+   IF ! Empty( oErr:operation );     cRet += "Operation  : " + oErr:operation + hb_eol()
+   ENDIF
+   IF ! Empty( oErr:osCode );        cRet += "OS error   : " + hb_ntos( oErr:osCode ) + hb_eol()
+   ENDIF
+   IF HB_ISARRAY( oErr:args )
+      cRet += "Arguments  : " + hb_eol()
+      AEval( oErr:args, {| X, Y | cRet += Str( Y, 3 ) + "        : " + hb_CStr( X ) + hb_eol() } )
+   ENDIF
+   cRet += hb_eol()
+
+   cRet += "Stack      : " + hb_eol()
+   nI := 2
+#if 0
+   DO WHILE ! Empty( ProcName( ++nI ) )
+      cRet += "  " + ProcName( nI ) + "(" + hb_ntos( ProcLine( nI ) ) + ")" + hb_eol()
+   ENDDO
+#else
+   DO WHILE ! Empty( ProcName( ++nI ) )
+      cI := "  " + ProcName( nI ) + "(" + hb_ntos( ProcLine( nI ) ) + ")"
+      cI := PadR( cI, Max( 32, Len( cI ) + 1 ) )
+      cI += "("
+      aPar := __dbgVMParLList( nI )
+      FOR nJ := 1 TO Len( aPar )
+         cI += cvt2str( aPar[ nJ ] )
+         IF nJ < Len( aPar )
+            cI += ", "
+         ENDIF
+      NEXT
+      cI += ")"
+      nJ := Len( aPar )
+      DO WHILE ! HB_ISSYMBOL( xI := __dbgVMVarLGet( nI, ++nJ ) )
+         cI += ", " + cvt2str( xI )
+      ENDDO
+      xI := NIL
+      cRet += cI + hb_eol()
+   ENDDO
+#endif
+   cRet += hb_eol()
+
+   cRet += "Executable : " + hb_ProgName() + hb_eol()
+   cRet += "Versions   : " + hb_eol()
+   cRet += "  OS       : " + OS() + hb_eol()
+   cRet += "  Harbour  : " + Version() + ", " + hb_BuildDate() + hb_eol()
+   cRet += hb_eol()
+
+   IF oErr:genCode != EG_MEM
+      cRet += "DB Areas   : " + hb_eol()
+      cRet += "  Current  : " + hb_ntos( Select() ) + "  " + Alias() + hb_eol()
+
+      BEGIN SEQUENCE WITH {| o | Break( o ) }
+         IF Used()
+            cRet += "  Filter   : " + dbFilter() + hb_eol()
+            cRet += "  Relation : " + dbRelation() + hb_eol()
+            cRet += "  IndexExp : " + ordKey( ordSetFocus() ) + hb_eol()
+            cRet += hb_eol()
+            BEGIN SEQUENCE WITH {| o | Break( o ) }
+               FOR nI := 1 TO FCount()
+                  cRet += Str( nI, 6 ) + " " + PadR( FieldName( nI ), 14 ) + ": " + hb_ValToExp( FieldGet( nI ) ) + hb_eol()
+               NEXT
+            RECOVER
+               cRet += "!!! Error reading database fields !!!" + hb_eol()
+            END SEQUENCE
+            cRet += hb_eol()
+         ENDIF
+      RECOVER
+         cRet += "!!! Error accessing current workarea !!!" + hb_eol()
+      END SEQUENCE
+
+      FOR nI := 1 TO 250
+         BEGIN SEQUENCE WITH {| o | Break( o ) }
+            IF Used()
+               dbSelectArea( nI )
+               cRet += Str( nI, 3 ) + " " + rddName() + " " + PadR( Alias(), 15 ) + ;
+                  Str( RecNo() ) + "/" + Str( LastRec() ) + ;
+                  iif( Empty( ordSetFocus() ), "", " Index " + ordSetFocus() + "(" + hb_ntos( ordNumber() ) + ")" ) + hb_eol()
+               dbCloseArea()
+            ENDIF
+         RECOVER
+            cRet += "!!! Error accessing workarea number: " + Str( nI, 4 ) + "!!!" + hb_eol()
+         END SEQUENCE
+      NEXT
+      cRet += hb_eol()
+   ENDIF
+   RETURN cRet
+
+
+STATIC FUNCTION ErrDescCode( nCode )
+   LOCAL cI := NIL
+
+   IF nCode > 0 .AND. nCode <= 41
+      cI := { ;
+         "ARG"     , "BOUND"    , "STROVERFLOW", "NUMOVERFLOW", "ZERODIV" , "NUMERR"     , "SYNTAX"  , "COMPLEXITY" , ; //  1,  2,  3,  4,  5,  6,  7,  8
+         NIL       , NIL        , "MEM"        , "NOFUNC"     , "NOMETHOD", "NOVAR"      , "NOALIAS" , "NOVARMETHOD", ; //  9, 10, 11, 12, 13, 14, 15, 16
+         "BADALIAS", "DUPALIAS" , NIL          , "CREATE"     , "OPEN"    , "CLOSE"      , "READ"    , "WRITE"      , ; // 17, 18, 19, 20, 21, 22, 23, 24
+         "PRINT"   , NIL        , NIL          , NIL          , NIL       , "UNSUPPORTED", "LIMIT"   , "CORRUPTION" , ; // 25, 26 - 29, 30, 31, 32
+         "DATATYPE", "DATAWIDTH", "NOTABLE"    , "NOORDER"    , "SHARED"  , "UNLOCKED"   , "READONLY", "APPENDLOCK" , ; // 33, 34, 35, 36, 37, 38, 39, 40
+         "LOCK"    }[ nCode ]                                                                                           // 41
+   ENDIF
+   RETURN iif( cI == NIL, "", "EG_" + cI )
+
+
+STATIC FUNCTION cvt2str( xI, lLong )
+   LOCAL cValtype, cI, xJ
+
+   cValtype := ValType( xI )
+   lLong := ! Empty( lLong )
+   IF cValtype == "U"
+      RETURN iif( lLong, "[U]:NIL", "NIL" )
+   ELSEIF cValtype == "N"
+      RETURN iif( lLong, "[N]:" + Str( xI ), hb_ntos( xI ) )
+   ELSEIF cValtype $ "CM"
+      IF Len( xI ) <= 260
+         RETURN iif( lLong, "[" + cValtype + hb_ntos( Len( xI ) ) + "]:", "" ) + '"' + xI + '"'
+      ELSE
+         RETURN iif( lLong, "[" + cValtype + hb_ntos( Len( xI ) ) + "]:", "" ) + '"' + Left( xI, 100 ) + '"...'
+      ENDIF
+   ELSEIF cValtype == "A"
+      RETURN "[A" + hb_ntos( Len( xI ) ) + "]"
+   ELSEIF cValtype == "H"
+      RETURN "[H" + hb_ntos( Len( xI ) ) + "]"
+   ELSEIF cValtype == "O"
+      cI := ""
+      IF __objHasMsg( xI, "ID" )
+         xJ := xI:ID
+         IF ! HB_ISOBJECT( xJ )
+            cI += ",ID=" + cvt2str( xJ )
+         ENDIF
+      ENDIF
+      IF __objHasMsg( xI, "nID" )
+         xJ := xI:nID
+         IF ! HB_ISOBJECT( xJ )
+            cI += ",NID=" + cvt2str( xJ )
+         ENDIF
+      ENDIF
+      IF __objHasMsg( xI, "xValue" )
+         xJ := xI:xValue
+         IF ! HB_ISOBJECT( xJ )
+            cI += ",XVALUE=" + cvt2str( xJ )
+         ENDIF
+      ENDIF
+      RETURN "[O:" + xI:ClassName() + cI + "]"
+   ELSEIF cValtype == "D"
+      RETURN iif( lLong, "[D]:", "" ) + DToC( xI )
+   ELSEIF cValtype == "L"
+      RETURN iif( lLong, "[L]:", "" ) + iif( xI, ".T.", ".F." )
+   ELSEIF cValtype == "P"
+      RETURN iif( lLong, "[P]:", "" ) + "0p" + hb_NumToHex( xI )
+   ELSE
+      RETURN "[" + cValtype + "]" // BS,etc
+   ENDIF
+   RETURN NIL
 
 //--------------------------------------------------------------------//
 //           This Section Must be the Last in this Source
