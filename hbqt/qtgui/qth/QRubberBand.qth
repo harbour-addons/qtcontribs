@@ -1,0 +1,64 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+QObject     = Yes
+Version     = 0x040800
+</CLASS>
+
+
+<CODE>
+#include <QtGui/QRubberBand>
+
+
+/*
+ * QRubberBand(Shape s, QWidget * p = 0)
+ * ~QRubberBand()
+ */
+HB_FUNC( QT_QRUBBERBAND )
+{
+   if( hb_pcount() == 2 && HB_ISNUM( 1 ) && hbqt_par_isDerivedFrom( 2, "QWidget" ) )
+   {
+      __HB_RETPTRGC__( new QRubberBand( ( QRubberBand::Shape ) hb_parni( 1 ), hbqt_par_QWidget( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && HB_ISNUM( 1 ) )
+   {
+      __HB_RETPTRGC__( new QRubberBand( ( QRubberBand::Shape ) hb_parni( 1 ) ) );
+   }
+   else
+   {
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum Shape { Line, Rectangle }
+</ENUMS>
+
+<PROTOS>
+void move(int x, int y)
+void move(const QPoint & p)
+void resize(int width, int height)
+void resize(const QSize & size)
+void setGeometry(const QRect & rect)
+void setGeometry(int x, int y, int width, int height)
+Shape shape() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

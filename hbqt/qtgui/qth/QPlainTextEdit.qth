@@ -67,6 +67,7 @@ int blockCount () const
 bool canPaste () const
 bool centerOnScroll () const
 QMenu * createStandardContextMenu ()
+QMenu * createStandardContextMenu(const QPoint &position)   [*V=0x050500*]
 QTextCharFormat currentCharFormat () const
 QTextCursor cursorForPosition ( const QPoint & pos ) const
 QRect cursorRect ( const QTextCursor & cursor ) const
@@ -77,6 +78,7 @@ QString documentTitle () const
 void ensureCursorVisible ()
 QList<QTextEdit::ExtraSelection> extraSelections () const
 bool find ( const QString & exp, QTextDocument::FindFlags options = 0 )
+bool find ( const QRegExp &exp, QTextDocument::FindFlags options = 0 ) [*V=0x050300*]
 bool isReadOnly () const
 bool isUndoRedoEnabled () const
 LineWrapMode lineWrapMode () const
@@ -85,6 +87,7 @@ int maximumBlockCount () const
 void mergeCurrentCharFormat ( const QTextCharFormat & modifier )
 void moveCursor ( QTextCursor::MoveOperation operation, QTextCursor::MoveMode mode = QTextCursor::MoveAnchor )
 bool overwriteMode () const
+QString placeholderText() const                     [*V=0x050300*]
 void print ( QPrinter * printer ) const             [*F=#ifndef HB_BUILD_IOS*]
 void setBackgroundVisible ( bool visible )
 void setCenterOnScroll ( bool enabled )
@@ -96,21 +99,24 @@ void setExtraSelections ( const QList<QTextEdit::ExtraSelection> & selections )
 void setLineWrapMode ( LineWrapMode mode )
 void setMaximumBlockCount ( int maximum )
 void setOverwriteMode ( bool overwrite )
+void setPlaceholderText ( const QString &placeholderText)   [*V=0x050300*]
 void setReadOnly ( bool ro )
 void setTabChangesFocus ( bool b )
+void setTabStopDistance(qreal distance)                     [*V=0x051000*]
 void setTabStopWidth ( int width )
 void setTextCursor ( const QTextCursor & cursor )
 void setTextInteractionFlags ( Qt::TextInteractionFlags flags )
 void setUndoRedoEnabled ( bool enable )
 void setWordWrapMode ( QTextOption::WrapMode policy )
 bool tabChangesFocus () const
+qreal tabStopDistance() const                               [*V=0x051000*]
 int tabStopWidth () const
 QTextCursor textCursor () const
 Qt::TextInteractionFlags textInteractionFlags () const
 QString toPlainText () const
 QTextOption::WrapMode wordWrapMode () const
 
-QString   anchorAt ( const QPoint & pos ) const              [*V=0x040700*]
+QString   anchorAt ( const QPoint & pos ) const             [*V=0x040700*]
 </PROTOS>
 
 <SLOTS>

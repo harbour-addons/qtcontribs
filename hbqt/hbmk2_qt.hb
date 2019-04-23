@@ -1254,6 +1254,9 @@ METHOD THbUIC:pullTranslate( cLine )
          cLine      := hb_StrFormat( "%s QApplication().translate(%s))", aResult[ 2 ], ::concatArgs( aArgs ) )
       ENDIF
    ENDIF
+   IF " nullptr" $ cLine
+      cLine := StrTran( cLine, "nullptr", "0" )
+   ENDIF
    RETURN cLine
 
 /*

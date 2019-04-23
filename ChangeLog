@@ -16,6 +16,67 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2019-04-23 00:05 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r473)
+  * hbqt/hbmk2_qt.hb
+    ! Fix where "nullptr" variable declaration is missing in 
+      latest Qt releases.
+      
+  * hbqt/qtcore/hbqt_init.cpp
+    + static void hbqt_SlotsExecQRectQPointFQPointF( PHB_ITEM * codeBlock, 
+                                   void ** arguments, QStringList pList )
+      Needed for signals in QRubberBand class.
+      
+  * hbqt/qtgui/hbqtgui.ch
+    + Added few more contsnats for QRubberBand class.
+    
+  * hbqt/qtgui/qth/QPlainTextEdit.qth
+    + Added few new methods introduced in different Qt versions.
+    
+  + hbqt/qtgui/qth/QRubberBand.qth
+    + Implemented QRubberBand class.
+    
+  * hbqt/qtgui/qth/filelist.hbm
+    + Added: QRubberband.qth
+    
+  * hbqtwidgets/hbqtbrowse.prg
+    + Added: Actions icons in vertical toolbar of browser window for 
+      ::refreshCurrent() and ::refreshAll() methods.
+      
+  + hbqtwidgets/httpclient.prg
+    + Implemented a general purpose, easy to use, addressing REST Api
+      protocol, class HbQtHttpClient() on top of TipClientHttp().
+      This source can be included as stand alone in any other 
+      project. If matured enough I will also commit HbQtHttpServer()
+      based on Mindaugus's contrib/hbhttpd with some added and 
+      extremely required features.
+    
+  + hbqtwidgets/imageeditor.prg
+    + Implemented: HbQtImageEditor( oParent ) class which can be 
+      embedded into any container with/without any layout. This 
+      class exposes rotation, crop, etc features to manage images.
+      
+  * hbqtwidgets/silverlight.prg
+    + Added ::lActive property to know the state of 
+      function HbQtActivateSilverLight().
+      
+  * hbqtwidgets/hbqtwidgets.hbp
+    + Added imageeditor.prg.
+    
+  + hbqtwidgets/resources/crop.png
+  + hbqtwidgets/resources/delete-1.png
+  + hbqtwidgets/resources/exit-48.png
+  + hbqtwidgets/resources/refresh-3.png
+  + hbqtwidgets/resources/rotate-left.png
+  + hbqtwidgets/resources/select-2.png
+  + hbqtwidgets/resources/settings.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added few more images needed for HbQtImageEdit implementation.
+    
+  ; All above components, including the previous commit, has been 
+    developed for couple of real-time, in-production applications and 
+    which are running superbly in heavy load environments. So believe in 
+    HbQt and take use of it.    
+
 2019-04-05 14:31 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r472)
   * hbqtwidgets/misc.prg
     ! Fixed. A copy/paste error.

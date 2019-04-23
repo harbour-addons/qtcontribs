@@ -705,6 +705,8 @@ PROTECTED:
    //
    DATA   oActCopySel
    DATA   oActCellMemo
+   DATA   oActRefreshAll
+   DATA   oActRefreshCurrent
    //
    DATA   oActAddColumn
    DATA   oActDelColumn
@@ -875,6 +877,8 @@ METHOD HbQtBrowse:destroy()
    ::oActStop                  := NIL
    ::oActCopySel               := NIL
    ::oActCellMemo              := NIL
+   ::oActRefreshAll            := NIL
+   ::oActRefreshCurrent        := NIL
    ::oActAddColumn             := NIL
    ::oActDelColumn             := NIL
    ::oAddColumnsButton         := NIL
@@ -3923,7 +3927,7 @@ METHOD HbQtBrowse:buildToolbar()
 
    WITH OBJECT ::oToolbar := QToolBar( ::oWidget )
       :setOrientation( Qt_Horizontal )
-      :setIconSize( QSize( 12,12 ) )
+      :setIconSize( QSize( __hbqtPixelsByDPI( 12 ), __hbqtPixelsByDPI( 12 ) ) )
       :setMovable( .F. )
       :setFloatable( .F. )
       :setFocusPolicy( Qt_NoFocus )
@@ -3957,11 +3961,14 @@ METHOD HbQtBrowse:buildToolbar()
 
    WITH OBJECT ::oToolbarLeft := QToolBar( ::oWidget )
       :setOrientation( Qt_Vertical )
-      :setIconSize( QSize( 12,12 ) )
+      :setIconSize( QSize( __hbqtPixelsByDPI( 12 ), __hbqtPixelsByDPI( 12 ) ) )
       :setMovable( .F. )
       :setFloatable( .F. )
       :setFocusPolicy( Qt_NoFocus )
       //
+      :addAction( ::oActRefreshAll )
+      :addAction( ::oActRefreshCurrent )
+      :addSeparator()
       :addAction( ::oActPanHome )
       :addAction( ::oActLeft )
       :addAction( ::oActRight )
@@ -4208,6 +4215,20 @@ METHOD HbQtBrowse:buildActions()
       :setIcon( QIcon( __hbqtImage( "memo" ) ) )
       :setTooltip( "Show Cell Contents as Memo" )
       :connect( "triggered()", {|| ::showCellContents() } )
+   ENDWITH
+
+   WITH OBJECT ::oActRefreshAll := QAction( ::oWidget )
+      :setText( "Refresh All Data Rows" )
+      :setIcon( QIcon( __hbqtImage( "refresh" ) ) )
+      :setTooltip( "Refresh All Data Rows" )
+      :connect( "triggered()", {|| ::refreshAll() } )
+   ENDWITH
+
+   WITH OBJECT ::oActRefreshCurrent := QAction( ::oWidget )
+      :setText( "Refresh Highlighted Data Row" )
+      :setIcon( QIcon( __hbqtImage( "view_refresh" ) ) )
+      :setTooltip( "Refresh Highlighted Data Row" )
+      :connect( "triggered()", {|| ::refreshCurrent() } )
    ENDWITH
    RETURN Self
 

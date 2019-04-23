@@ -89,6 +89,7 @@ CLASS HbQtSilverLight
    METHOD setAnimationOpacity( aOpacity )
    METHOD setParent( oParent )                    INLINE iif( HB_ISOBJECT( oParent ), ::oParent := oParent, NIL )
    ACCESS widget()                                INLINE ::oWidget
+   ACCESS isActive()                              INLINE ::lActive
 
    PROTECTED:
 
@@ -109,10 +110,11 @@ CLASS HbQtSilverLight
    DATA   nIndex                                  INIT 127
    DATA   nDirection                              INIT 1
    DATA   nDuration                               INIT -1
-   DATA   bExecute 
-   
+   DATA   bExecute
+
    DATA   oFocusWidget
-   
+   DATA   lActive                                 INIT .F.
+
    ENDCLASS
 
 
@@ -178,7 +180,7 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
       :setInterval( 1000 )
       :connect( "timeout()", {|| ::deactivate() } )
    ENDWITH
-   
+
    ::setContent( ::xContent )
    ::setAnimation( ::lAnimate )
    ::setAnimationOpacity( ::aOpacity )
@@ -190,9 +192,9 @@ METHOD HbQtSilverLight:create( xContent, oBackground, lAnimate, aOpacity, oParen
 METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oParent, nDuration, bExecute )
 
    // hide it if already running
-   ::oFocusWidget := NIL 
+   ::oFocusWidget := NIL
    ::deactivate()
-   
+
    DEFAULT xContent    TO ::xContent
    DEFAULT oBackground TO ::oBackground
    DEFAULT lAnimate    TO ::lAnimate
@@ -200,10 +202,10 @@ METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oPar
    DEFAULT oParent     TO ::oParent
    DEFAULT nDuration   TO ::nDuration
    DEFAULT bExecute    TO ::bExecute
-   
+
    ::nDuration := nDuration
    ::bExecute := bExecute
-   
+
    WITH OBJECT ::oWidget
       ::setContent( xContent )
       ::setAnimation( lAnimate )
@@ -225,7 +227,7 @@ METHOD HbQtSilverLight:activate( xContent, oBackground, lAnimate, aOpacity, oPar
          ENDWITH
       ENDIF
    ENDWITH
-   
+   ::lActive := .T.
    ::oFocusWidget := oParent:focusWidget()
    QApplication():processEvents()
 
@@ -249,12 +251,13 @@ METHOD HbQtSilverLight:deactivate()
    ENDIF
    IF ::oTimerDuration:isActive()
       ::oTimerDuration:stop()
-   ENDIF 
+   ENDIF
    IF HB_ISBLOCK( ::bExecute )
       Eval( ::bExecute )
-      ::bExecute := NIL 
+      ::bExecute := NIL
    ENDIF
    ::nDuration := -1
+   ::lActive := .F.
    RETURN Self
 
 

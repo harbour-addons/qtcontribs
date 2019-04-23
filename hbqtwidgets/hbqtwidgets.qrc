@@ -252,7 +252,7 @@
     <file>resources/arrow-bottom-left.png</file>
     <file>resources/arrow-bottom-right.png</file>
     <file>resources/arrow-contract.png</file>
-    <file>resources/arrow-down.png</file> 
+    <file>resources/arrow-down.png</file>
     <file>resources/arrow-expand.png</file>
     <file>resources/arrow-lft.png</file>
     <file>resources/resize.png</file>
@@ -394,26 +394,33 @@
     <file>resources/cancel.png</file>
     <file>resources/refresh.png</file>
     <file>resources/refresh-2.png</file>
+    <file>resources/refresh-3.png</file>
     <file>resources/select-3.png</file>
     <file>resources/camera.png</file>
-    <file>resources/redo-1.png</file> 
+    <file>resources/redo-1.png</file>
     <file>resources/round-green.png</file>
     <file>resources/round-red.png</file>
     <file>resources/round-yellow.png</file>
     <file>resources/round-blue.png</file>
     <file>resources/round-gray.png</file>
     <file>resources/click.wav</file>
-    <file>resources/enter.png</file> 
-    <file>resources/s-yes.png</file> 
-    <file>resources/s-delete.png</file> 
-    <file>resources/s-left.png</file> 
-    <file>resources/s-right.png</file> 
-    <file>resources/s-up.png</file> 
-    <file>resources/s-down.png</file> 
-    <file>resources/s-plus.png</file> 
-    <file>resources/enter-g-w.png</file> 
-    <file>resources/back-g-w.png</file>  
-    <file>resources/clear.png</file>  
-    <file>resources/backspace.png</file>  
+    <file>resources/enter.png</file>
+    <file>resources/s-yes.png</file>
+    <file>resources/s-delete.png</file>
+    <file>resources/s-left.png</file>
+    <file>resources/s-right.png</file>
+    <file>resources/s-up.png</file>
+    <file>resources/s-down.png</file>
+    <file>resources/s-plus.png</file>
+    <file>resources/enter-g-w.png</file>
+    <file>resources/back-g-w.png</file>
+    <file>resources/clear.png</file>
+    <file>resources/backspace.png</file>
+    <file>resources/rotate-left.png</file>
+    <file>resources/crop.png</file>
+    <file>resources/original.png</file>
+    <file>resources/exit-48.png</file>
+    <file>resources/settings.png</file>
+    <file>resources/to-excel.png</file>
   </qresource>
 </RCC>

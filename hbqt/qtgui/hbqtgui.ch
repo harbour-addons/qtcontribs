@@ -5782,5 +5782,8 @@
 #define QVariant_Vector4D                                    QMetaType_QVector4D
 #define QVariant_UserType                                    QMetaType_User
 
+#define QRubberBand_Line                                     0 // A QRubberBand can represent a vertical or horizontal line. Geometry is still given in rect() and the line will fill the given geometry on most styles.
+#define QRubberBand_Rectangle                                1 // A QRubberBand can represent a rectangle. Some styles will interpret this as a filled (often semi-transparent) rectangle, or a rectangular outline.
+
 #endif
 

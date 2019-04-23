@@ -201,6 +201,7 @@ QRadioButton.qth
 QRegExpValidator.qth
 QRegion.qth
 QResizeEvent.qth
+QRubberBand.qth
 QScrollArea.qth
 QScrollBar.qth
 QScrollEvent.qth

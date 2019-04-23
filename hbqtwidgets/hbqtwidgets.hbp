@@ -23,6 +23,7 @@
 
 hbqt.hbc
 hbct.hbc
+hbmxml.hbc
 
 -instfile=inc:hbtoqt.ch
 -instfile=inc:hbqtstd.ch
@@ -63,6 +64,8 @@ parselogs.prg
 signature.prg
 keyboard.prg
 timeouts.prg
+httpclient.prg
+imageeditor.prg
 
 hbqtwidgets.qrc
 

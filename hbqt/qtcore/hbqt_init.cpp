@@ -517,6 +517,26 @@ static void hbqt_SlotsExecQRectInt( PHB_ITEM * codeBlock, void ** arguments, QSt
    }
 }
 
+static void hbqt_SlotsExecQRectQPointFQPointF( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
+{
+   Q_UNUSED( pList );
+   PHB_ITEM p0 = hbqt_bindGetHbObject( NULL, new QRect( ( *reinterpret_cast< QRect( * ) >( arguments[ 1 ] ) ) ), "HB_QRECT", hbqt_del_QRect, HBQT_BIT_OWNER );
+   if( p0 )
+   {
+      PHB_ITEM p1 = hbqt_bindGetHbObject( NULL, new QPointF( ( *reinterpret_cast< QPointF( * ) >( arguments[ 2 ] ) ) ), "HB_QPOINTF", hbqt_del_QPointF, HBQT_BIT_OWNER );
+      PHB_ITEM p2 = hbqt_bindGetHbObject( NULL, new QPointF( ( *reinterpret_cast< QPointF( * ) >( arguments[ 3 ] ) ) ), "HB_QPOINTF", hbqt_del_QPointF, HBQT_BIT_OWNER );
+      hb_vmPushEvalSym();
+      hb_vmPush( codeBlock );
+      hb_vmPush( p0 );
+      hb_vmPush( p1 );
+      hb_vmPush( p2 );
+      hb_vmSend( 3 );
+      hb_itemRelease( p2 );
+      hb_itemRelease( p1 );
+      hb_itemRelease( p0 );
+   }
+}
+
 static void hbqt_SlotsExecQRect( PHB_ITEM * codeBlock, void ** arguments, QStringList pList )
 {
    Q_UNUSED( pList );
@@ -729,6 +749,7 @@ static void hbqt_registerCallbacks( void )
    hbqt_slots_register_callback( "QPointF"                 , hbqt_SlotsExecQPointF          );
    hbqt_slots_register_callback( "QPointF$bool"            , hbqt_SlotsExecQPointFBool      );
    hbqt_slots_register_callback( "QRect$int"               , hbqt_SlotsExecQRectInt         );
+   hbqt_slots_register_callback( "QRect$QPointF$QPointF"   , hbqt_SlotsExecQRectQPointFQPointF );
    hbqt_slots_register_callback( "QRect"                   , hbqt_SlotsExecQRect            );
    hbqt_slots_register_callback( "QRectF"                  , hbqt_SlotsExecQRectF           );
    hbqt_slots_register_callback( "QSizeF"                  , hbqt_SlotsExecQSizeF           );
