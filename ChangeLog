@@ -16,6 +16,11 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2019-04-25 08:40 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r474)
+  + hbqtwidgets/resources/original.png
+  + hbqtwidgets/resources/to-excel.png
+    + Added missing images. Thanks Zoran for pointing.
+
 2019-04-23 00:05 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r473)
   * hbqt/hbmk2_qt.hb
     ! Fix where "nullptr" variable declaration is missing in 
