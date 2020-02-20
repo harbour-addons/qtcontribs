@@ -79,9 +79,9 @@
 #if QT_VERSION > 0x050500
    Q_IMPORT_PLUGIN(QJpegPlugin)
    Q_IMPORT_PLUGIN(QGifPlugin)
-#endif
 #if QT_VERSION < 0x050900
    Q_IMPORT_PLUGIN(DSServicePlugin)
+#endif
 #endif
 #endif
 
