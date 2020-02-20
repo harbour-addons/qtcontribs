@@ -16,6 +16,10 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2020-02-20 19:22 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r476)
+  * hbqtwidgets/hbqtwidgets.hbp
+    ! Fixed - unwanted additions.
+
 2020-02-20 19:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r475)
   * hbdbu/dbu.prg
   * hbide/main.prg

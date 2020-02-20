@@ -66,8 +66,6 @@ keyboard.prg
 timeouts.prg
 httpclient.prg
 imageeditor.prg
-netioclient.prg
-awsservices.prg
 
 hbqtwidgets.qrc
 
