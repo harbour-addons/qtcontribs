@@ -10,5 +10,6 @@
 
     <file>resources/qml/WebView.qml</file>
     <file>resources/qml/BarcodeReader.qml</file>
+    <file>resources/qml/PhotoCapture.qml</file>
   </qresource>
 </RCC>

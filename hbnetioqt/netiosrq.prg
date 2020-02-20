@@ -1,4 +1,4 @@
-/*
+         /*
  * $Id$
  */
 
@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Harbour NETIO server management QT client
  *
- * Copyright 2011 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2011-2019 Pritpal Bedi <bedipritpal@hotmail.com>
  * Copyright 2009-2011 Viktor Szakats (harbour syenar.net)
  * www - http://harbour-project.org
  *
@@ -37,6 +37,7 @@
 #define DAT_BYTESIN                 8
 #define DAT_BYTESOUT                9
 #define DAT_OPENFILES               10
+#define DAT_CARGO                   11
 
 #include "fileio.ch"
 #include "hbclass.ch"
@@ -48,10 +49,10 @@
 
 #define RGB( r, g, b )   GraMakeRGBColor( { r, g, b } )
 
-/*----------------------------------------------------------------------*/
 
 #define _NETIOMGM_IPV4_DEF  "127.0.0.1"
 #define _NETIOMGM_PORT_DEF  2940
+
 
 PROCEDURE Main( ... )
    LOCAL cParam
@@ -88,10 +89,8 @@ PROCEDURE Main( ... )
    NEXT
 
    NetIOMgmtClient():new():create( cIP, nPort, cPassword )
-
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 PROCEDURE hbnetiocon_IPPortSplit( cAddr, /* @ */ cIP, /* @ */ nPort )
    LOCAL tmp
@@ -105,10 +104,8 @@ PROCEDURE hbnetiocon_IPPortSplit( cAddr, /* @ */ cIP, /* @ */ nPort )
          nPort := NIL
       ENDIF
    ENDIF
-
    RETURN
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION MyClientInfo()
    LOCAL hInfo := { => }
@@ -149,18 +146,21 @@ CLASS NetIOMgmtClient
    DATA   lQuit                                   INIT .F.
    DATA   nCurRec                                 INIT 1
    DATA   aIPs                                    INIT {}
-   DATA   nRefreshInterval                        INIT 3000
+   DATA   nRefreshInterval                        INIT 5 * 1000                     // 10 seconds
+   DATA   nIdleTimeOut                            INIT 5 * 60                       // Seconds
+   DATA   xCargo
+   DATA   hData                                   INIT { => }
    DATA   aData                                   INIT { { NIL, ;                   // hSock
                                                            0  , ;                   // nSerial
-                                                           .F., ;                   // lActive
-                                                           "               ", ;     // cIP
+                                                           "N", ;                   // cActive
+                                                           "-111                 ", ;     // cIP
                                                            0  , ;                   // nPort
-                                                           "                  ", ;  // time-in
-                                                           "                  ", ;  // time-out
+                                                           "                   ", ;  // time-in
+                                                           "                   ", ;  // time-out
                                                            0  , ;                   // bytes-in
                                                            0  , ;                   // bytes-out
-                                                           NIL, ;                   // conn socket
-                                                           0  } }                   // files opened
+                                                           0, ;                     // files opened,
+                                                           "   "  } }               //  cargo
 
    METHOD new()
    METHOD create( cIP, nPort, cPassword )
@@ -191,12 +191,10 @@ CLASS NetIOMgmtClient
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:new()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:create( cIP, nPort, cPassword )
    LOCAL nEvent, mp1, mp2, oXbp
@@ -205,39 +203,42 @@ METHOD NetIOMgmtClient:create( cIP, nPort, cPassword )
    cPassword := NIL
 
    IF Empty( ::pConnection )
-      MsgBox( "Cannot connect to server." )
+      MsgBox( "Cannot connect to server!" )
    ELSE
       netio_funcexec( ::pConnection, "hbnetiomgm_setclientinfo", MyClientInfo() )
       netio_OpenItemStream( ::pConnection, "hbnetiomgm_regnotif", .T. )
 
       QResource():registerResource_1( hbqtres_netiosrq(), ":/resource" )
 
-      ::pMtx            := hb_mutexCreate()
-      ::cTitle          := "NetIO Server [" + cIP + ":" + ;
-                                            hb_ntos( int( nPort ) ) + "]"
+      ::pMtx := hb_mutexCreate()
+      ::cTitle := "NetIO Server [" + cIP + ":" + hb_ntos( int( nPort ) ) + "]"
 
-      ::oDlg            := XbpDialog():new( , , { 20,20 }, { 870,300 } )
-      ::oDlg:icon       := ":/harbour.png"
-      ::oDlg:title      := ::cTitle
-      ::oDlg:taskList   := .T.
-      ::oDlg:close      := {|| ::confirmExit() }
-      ::oDlg:create()
-      ::oDlg:drawingArea:setFontCompoundName( "10.Ariel" )
+      WITH OBJECT ::oDlg := XbpDialog():new( , , { 5,5 }, { 870,300 } )
+         :icon       := ":/harbour.png"
+         :title      := ::cTitle
+         :taskList   := .T.
+         :close      := {|| ::confirmExit() }
+         :create()
+         :drawingArea:setFontCompoundName( "10.Ariel" )
+      ENDWITH
 
       ::buildToolBar()
 
-      ::qLayout := QGridLayout()
-      ::qLayout:setContentsMargins( 0,0,0,0 )
-      ::qLayout:setHorizontalSpacing( 0 )
-      ::qLayout:setVerticalSpacing( 0 )
-      //
+      WITH OBJECT ::qLayout := QGridLayout()
+         :setContentsMargins( 0,0,0,0 )
+         :setHorizontalSpacing( 0 )
+         :setVerticalSpacing( 0 )
+      ENDWITH
+
       ::oDlg:drawingArea:setLayout( ::qLayout )
 
       ::buildBrowser()
 
-      ::oDlg:oWidget:connect( QEvent_WindowStateChange, {|e| ::execEvent( "QEvent_WindowStateChange", e ) } )
-      ::oDlg:oWidget:connect( QEvent_Hide             , {|e| ::execEvent( "QEvent_Hide"             , e ) } )
-      //
+      WITH OBJECT ::oDlg
+         :oWidget:connect( QEvent_WindowStateChange, {|e| ::execEvent( "QEvent_WindowStateChange", e ) } )
+         :oWidget:connect( QEvent_Hide             , {|e| ::execEvent( "QEvent_Hide"             , e ) } )
+      ENDWITH
+
       ::buildSystemTray()
 
       SetAppWindow( ::oDlg )
@@ -254,10 +255,8 @@ METHOD NetIOMgmtClient:create( cIP, nPort, cPassword )
 
       ::oDlg:destroy()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:execEvent( cEvent, p )
    LOCAL qEvent, oMenu, txt_, s, cTmp, qItem, n
@@ -393,7 +392,6 @@ METHOD NetIOMgmtClient:execEvent( cEvent, p )
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:manageIPs()
    LOCAL oUI, a_, qItem
@@ -414,10 +412,8 @@ METHOD NetIOMgmtClient:manageIPs()
    NEXT
 
    oUI:exec()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:showDlgBySystemTrayIconCommand()
 
@@ -436,7 +432,6 @@ METHOD NetIOMgmtClient:showDlgBySystemTrayIconCommand()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:buildBrowser()
    LOCAL s
@@ -468,14 +463,15 @@ METHOD NetIOMgmtClient:buildBrowser()
 
    ::oBrw:oWidget:show()
 
-   ::qTimerRefresh := QTimer()
-   ::qTimerRefresh:setInterval( ::nRefreshInterval )
-   ::qTimerRefresh:connect( "timeout()", {|| ::execEvent( "qTimerRefresh_timeOut" ) } )
-   ::qTimerRefresh:start()
+   WITH OBJECT ::qTimerRefresh := QTimer()
+      :setInterval( ::nRefreshInterval )
+      :connect( "timeout()", {|| ::execEvent( "qTimerRefresh_timeOut" ) } )
+      :start()
+   ENDWITH
+   ::execEvent( "qTimerRefresh_timeOut" )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:terminate()
 
@@ -491,10 +487,8 @@ METHOD NetIOMgmtClient:terminate()
       ENDIF
       ::lProcessing := .f.
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:refresh()
    LOCAL qRect
@@ -507,7 +501,6 @@ METHOD NetIOMgmtClient:refresh()
    ::oDlg:oWidget:setGeometry( qRect )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:skipBlock( nHowMany )
    LOCAL nRecs, nCurPos, nSkipped
@@ -532,24 +525,20 @@ METHOD NetIOMgmtClient:skipBlock( nHowMany )
          ::nCurRec += nHowMany
       ENDIF
    ENDIF
-
    RETURN nSkipped
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:goTop()
    ::nCurRec := 1
    ::refresh()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:goBottom()
    ::nCurRec := len( ::aData )
    ::refresh()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:goto( nRec )
    IF nRec > 0 .AND. nRec <= len( ::aData )
@@ -558,17 +547,194 @@ METHOD NetIOMgmtClient:goto( nRec )
    ENDIF
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:lastRec()
    RETURN len( ::aData )
 
-/*----------------------------------------------------------------------*/
 
 METHOD NetIOMgmtClient:recNo()
    RETURN ::nCurRec
 
-/*----------------------------------------------------------------------*/
+
+METHOD NetIOMgmtClient:buildToolBar()
+   LOCAL oTBar := XbpToolBar():new( ::oDlg )
+
+   WITH OBJECT oTBar
+      :imageWidth  := 40
+      :imageHeight := 40
+      :create( , , { 0, ::oDlg:currentSize()[ 2 ]-60 }, { ::oDlg:currentSize()[ 1 ], 60 } )
+      :oWidget:setAllowedAreas( Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea )
+      :oWidget:setFocusPolicy( Qt_NoFocus )
+
+      :buttonClick := {|oButton| ::execEvent( "tool_button_clicked", oButton:key ) }
+
+      :addItem( "Exit"     , ":/exit.png"     , , , , , "Exit"      )
+      :addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
+      :addItem( "Terminate", ":/terminate.png", , , , , "Terminate" )
+      :addItem( "ManageIPs", ":/refresh.png"  , , , , , "IPs"       )
+      :addItem( "About"    , ":/about.png"    , , , , , "About"     )
+      :addItem( "Help"     , ":/help.png"     , , , , , "Help"      )
+   ENDWITH
+   RETURN NIL
+
+
+METHOD NetIOMgmtClient:confirmExit()
+
+   IF ConfirmBox( , "Do you want to exit the management client?", " Please confirm", XBPMB_YESNO, XBPMB_CRITICAL ) == XBPMB_RET_YES
+      PostAppEvent( xbeP_Quit, , , ::oDlg )
+   ENDIF
+   RETURN NIL
+
+
+METHOD NetIOMgmtClient:buildSystemTray()
+
+   IF empty( ::oSys )
+      ::oSys := QSystemTrayIcon( ::oDlg:oWidget )
+      IF ( ::lSystemTrayAvailable := ::oSys:isSystemTrayAvailable() )
+         ::oSys:setIcon( QIcon( ":/harbour.png" ) )
+         ::oSys:connect( "activated(QSystemTrayIcon::ActivationReason)", {|p| ::execEvent( "qSystemTrayIcon_activated", p ) } )
+
+         ::oSysMenu := QMenu()
+         ::qAct1 := ::oSysMenu:addAction( QIcon( ":/fullscreen.png" ), "&Show" )
+         ::oSysMenu:addSeparator()
+         ::qAct2 := ::oSysMenu:addAction( QIcon( ":/exit.png" ), "&Exit" )
+
+         ::qAct1:connect( "triggered(bool)", {|| ::execEvent( "qSystemTrayIcon_show"  ) } )
+         ::qAct2:connect( "triggered(bool)", {|| ::execEvent( "qSystemTrayIcon_close" ) } )
+
+         ::oSys:setContextMenu( ::oSysMenu )
+         ::oSys:hide()
+         ::oSys:setToolTip( "Connected to Harbour NetIO Server: " + ::oDlg:title )
+      ENDIF
+   ENDIF
+   RETURN NIL
+
+
+METHOD NetIOMgmtClient:cmdConnStop( cIPPort )
+
+   IF Empty( ::pConnection )
+      MsgBox( "Not Connected" )
+   ELSE
+      netio_funcexec( ::pConnection, "hbnetiomgm_stop", cIPPort )
+   ENDIF
+   RETURN NIL
+
+
+METHOD NetIOMgmtClient:cmdConnInfo( lManagement )
+   LOCAL aArray, hConn, aData, d_, cIpPort, hD, n
+
+   IF Empty( ::pConnection )
+      MsgBox( "Not Connected" )
+   ELSE
+      IF ::lProcessing
+         RETURN NIL
+      ENDIF
+
+      ::lProcessing := .t.
+
+      aArray := netio_funcexec( ::pConnection, iif( lManagement, "hbnetiomgm_adminfo", "hbnetiomgm_conninfo" ) )
+      IF ! empty( aArray )
+         aData := {}
+         FOR EACH hConn IN aArray
+            d_:= Array( 11 )
+            //
+            d_[ DAT_CONNSOCKET ] := NIL
+            d_[ DAT_SERIAL     ] := hConn[ "nThreadID"      ]
+            d_[ DAT_ACTIVATED  ] := hConn[ "cStatus"        ]
+            d_[ DAT_IP         ] := hConn[ "cAddressPeer"   ]
+            d_[ DAT_PORT       ] := 0
+            d_[ DAT_TIMEIN     ] := hb_TToC( hConn[ "tStart" ], "YYYY-MM-DD", "HH:MM:SS" )
+            d_[ DAT_TIMEOUT    ] := space( 19 )
+            d_[ DAT_BYTESIN    ] := hConn[ "nBytesReceived" ]
+            d_[ DAT_BYTESOUT   ] := hConn[ "nBytesSent"     ]
+            d_[ DAT_OPENFILES  ] := hConn[ "nFilesCount"    ]
+            d_[ DAT_CARGO      ] := ValType( hConn[ "xCargo"         ] )
+            //
+            AAdd( aData, d_ )
+
+            IF ! hb_HHasKey( ::hData, hConn[ "cAddressPeer" ] )
+               ::hData[ hConn[ "cAddressPeer" ] ] := { Seconds(), hConn[ "nBytesReceived" ], hConn[ "nBytesSent" ] }
+            ENDIF
+         NEXT
+         ::aData := aData
+      ELSE
+         ::aData := { { NIL, 0, "N", pad( "-111", 21 ), 0, space( 19 ), space( 19 ), 0, 0, 0, "  " } }
+      ENDIF
+      ::lProcessing := .f.
+      ::refresh()
+
+      // Add what is missing
+      //
+      FOR EACH d_ IN ::aData
+         cIpPort := d_[ DAT_IP ]
+         IF "-111" $ cIpPort
+            IF ! hb_HHasKey( ::hData, cIpPort )
+               ::hData[ cIpPort ] := { Seconds(), d_[ DAT_BYTESIN ], d_[ DAT_BYTESOUT ] }
+            ENDIF
+         ENDIF
+      NEXT
+
+      hD := {=>}
+      FOR EACH d_ IN ::hData
+         cIpPort := d_:__enumKey()
+         IF AScan( ::aData, {|e_|  e_[ DAT_IP ] == cIpPort } ) > 0
+            hD[ cIpPort ] := d_
+         ENDIF
+      NEXT
+      ::hData := hD
+
+      FOR EACH d_ IN ::hData
+         cIpPort := d_:__enumKey()
+         n := AScan( ::aData, {|e_| e_[ DAT_IP ] == cIpPort } )
+         IF ::aData[ n, DAT_BYTESIN ] > d_[ 2 ] .OR. ::aData[ n, DAT_BYTESOUT ] > d_[ 3 ]
+            // bytes are moved - alive
+            ::hData[ cIpPort ] := { Seconds(), ::aData[ n, DAT_BYTESIN ], ::aData[ n, DAT_BYTESOUT ] }
+         ELSE
+            IF Abs( Seconds() - ::hData[ cIpPort ][ 1 ] ) > ::nIdleTimeOut
+               // idle threashold is hit - close this connection
+               ::cmdConnStop( cIpPort )
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
+   RETURN NIL
+
+
+STATIC FUNCTION AppSys()
+   RETURN NIL
+
+
+PROCEDURE HB_Logo()
+
+   MsgBox( "Harbour NETIO Server Management Console " + StrTran( Version(), "Harbour " ) + hb_eol() +;
+           "Copyright (c) 2009-2014, Pritpal Bedi, Viktor Szakats" + hb_eol() + ;
+           "http://harbour-project.org/" + hb_eol() +;
+           hb_eol() )
+   RETURN
+
+
+STATIC PROCEDURE HB_Usage()
+   LOCAL aMsg := {}
+   LOCAL cMsg
+
+   AAdd( aMsg,               "Syntax:"                                                                                 )
+   AAdd( aMsg,                                                                                                         )
+   AAdd( aMsg,               "  netiocui [options]"                                                                    )
+   AAdd( aMsg,                                                                                                         )
+   AAdd( aMsg,               "Options:"                                                                                )
+   AAdd( aMsg,                                                                                                         )
+   AAdd( aMsg,               "  -addr=<ip[:port]>  connect to netio server on IPv4 address <ip:port>"                  )
+   AAdd( aMsg, hb_StrFormat( "                     Default: %1$s:%2$d", _NETIOMGM_IPV4_DEF, _NETIOMGM_PORT_DEF )       )
+   AAdd( aMsg,               "  -pass=<passwd>     connect to netio server with password"                              )
+   AAdd( aMsg,                                                                                                         )
+   AAdd( aMsg,               "  --version          display version header only"                                        )
+   AAdd( aMsg,               "  -help|--help       this help"                                                          )
+
+   cMsg := ""
+   aeval( aMsg, {|e| cMsg += iif( Empty( e ), "", e ) + chr( 10 ) } )
+   MsgBox( cMsg )
+   RETURN
+
 
 METHOD NetIOMgmtClient:buildColumns()
    LOCAL aPP, oXbpColumn
@@ -603,10 +769,10 @@ METHOD NetIOMgmtClient:buildColumns()
    aadd( aPP, { XBP_PP_COL_DA_HILITE_FGCLR , GRA_CLR_WHITE     } )
    aadd( aPP, { XBP_PP_COL_DA_HILITE_BGCLR , GRA_CLR_DARKGRAY  } )
    aadd( aPP, { XBP_PP_COL_DA_ROWHEIGHT    , 20                } )
-   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 45                } )
+   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 80                } )
    //
    oXbpColumn          := XbpColumn():new()
-   oXbpColumn:dataLink := {|| iif( ::aData[ ::recNo(), DAT_ACTIVATED ], " ", "X" ) }
+   oXbpColumn:dataLink := {|v| v := ::aData[ ::recNo(), DAT_ACTIVATED ], iif( HB_ISLOGICAL( v ), iif( v, "T", "N" ), v ) }
    oXbpColumn:create( , , , , aPP )
    ::oBrw:addColumn( oXbpColumn )
 
@@ -620,7 +786,7 @@ METHOD NetIOMgmtClient:buildColumns()
    aadd( aPP, { XBP_PP_COL_DA_HILITE_FGCLR , GRA_CLR_WHITE     } )
    aadd( aPP, { XBP_PP_COL_DA_HILITE_BGCLR , GRA_CLR_DARKGRAY  } )
    aadd( aPP, { XBP_PP_COL_DA_ROWHEIGHT    , 20                } )
-   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 200               } )
+   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 180               } )
    //
    oXbpColumn          := XbpColumn():new()
    oXbpColumn:dataLink := {|| ::aData[ ::recNo(), DAT_IP ] }
@@ -644,6 +810,7 @@ METHOD NetIOMgmtClient:buildColumns()
    oXbpColumn:create( , , , , aPP )
    ::oBrw:addColumn( oXbpColumn )
 
+#if 0
    aPP := {}
    aadd( aPP, { XBP_PP_COL_HA_CAPTION      , "DateTime OUT"    } )
    aadd( aPP, { XBP_PP_COL_HA_FGCLR        , nClrHFg           } )
@@ -660,6 +827,7 @@ METHOD NetIOMgmtClient:buildColumns()
    oXbpColumn:dataLink := {|| ::aData[ ::recNo(), DAT_TIMEOUT ] }
    oXbpColumn:create( , , , , aPP )
    ::oBrw:addColumn( oXbpColumn )
+#endif
 
    aPP := {}
    aadd( aPP, { XBP_PP_COL_HA_CAPTION      , "BytesIN"         } )
@@ -705,169 +873,30 @@ METHOD NetIOMgmtClient:buildColumns()
    aadd( aPP, { XBP_PP_COL_DA_HILITE_FGCLR , GRA_CLR_WHITE     } )
    aadd( aPP, { XBP_PP_COL_DA_HILITE_BGCLR , GRA_CLR_DARKGRAY  } )
    aadd( aPP, { XBP_PP_COL_DA_ROWHEIGHT    , 20                } )
-   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 60                } )
+   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 100               } )
    //
    oXbpColumn            := XbpColumn():new()
    oXbpColumn:dataLink   := {|| ::aData[ ::recNo(), DAT_OPENFILES ] }
    oXbpColumn:create( , , , , aPP )
    ::oBrw:addColumn( oXbpColumn )
 
+   aPP := {}
+   aadd( aPP, { XBP_PP_COL_HA_CAPTION      , "Cargo"           } )
+   aadd( aPP, { XBP_PP_COL_HA_FGCLR        , nClrHFg           } )
+   aadd( aPP, { XBP_PP_COL_HA_BGCLR        , nClrHBg           } )
+   aadd( aPP, { XBP_PP_COL_HA_HEIGHT       , 20                } )
+   aadd( aPP, { XBP_PP_COL_DA_FGCLR        , GRA_CLR_BLACK     } )
+   aadd( aPP, { XBP_PP_COL_DA_BGCLR        , nClrBG            } )
+   aadd( aPP, { XBP_PP_COL_DA_HILITE_FGCLR , GRA_CLR_WHITE     } )
+   aadd( aPP, { XBP_PP_COL_DA_HILITE_BGCLR , GRA_CLR_DARKGRAY  } )
+   aadd( aPP, { XBP_PP_COL_DA_ROWHEIGHT    , 20                } )
+   aadd( aPP, { XBP_PP_COL_DA_ROWWIDTH     , 100               } )
+   //
+   oXbpColumn            := XbpColumn():new()
+   oXbpColumn:dataLink   := {|| ::aData[ ::recNo(), DAT_CARGO ] }
+   oXbpColumn:create( , , , , aPP )
+   ::oBrw:addColumn( oXbpColumn )
+
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
-METHOD NetIOMgmtClient:buildToolBar()
-   LOCAL oTBar
-
-   oTBar := XbpToolBar():new( ::oDlg )
-   oTBar:imageWidth  := 40
-   oTBar:imageHeight := 40
-   oTBar:create( , , { 0, ::oDlg:currentSize()[ 2 ]-60 }, { ::oDlg:currentSize()[ 1 ], 60 } )
-   oTBar:oWidget:setAllowedAreas( Qt_LeftToolBarArea + Qt_RightToolBarArea + Qt_TopToolBarArea + Qt_BottomToolBarArea )
-   oTBar:oWidget:setFocusPolicy( Qt_NoFocus )
-
-   oTBar:buttonClick := {|oButton| ::execEvent( "tool_button_clicked", oButton:key ) }
-
-   oTBar:addItem( "Exit"     , ":/exit.png"     , , , , , "Exit"      )
-   oTBar:addItem( , , , , , XBPTOOLBAR_BUTTON_SEPARATOR )
-   oTBar:addItem( "Terminate", ":/terminate.png", , , , , "Terminate" )
-   oTBar:addItem( "ManageIPs", ":/refresh.png"  , , , , , "IPs"       )
-   oTBar:addItem( "About"    , ":/about.png"    , , , , , "About"     )
-   oTBar:addItem( "Help"     , ":/help.png"     , , , , , "Help"      )
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD NetIOMgmtClient:confirmExit()
-
-   IF ConfirmBox( , "Do you want to exit the management client?", " Please confirm", XBPMB_YESNO, XBPMB_CRITICAL ) == XBPMB_RET_YES
-      PostAppEvent( xbeP_Quit, , , ::oDlg )
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD NetIOMgmtClient:buildSystemTray()
-
-   IF empty( ::oSys )
-      ::oSys := QSystemTrayIcon( ::oDlg:oWidget )
-      IF ( ::lSystemTrayAvailable := ::oSys:isSystemTrayAvailable() )
-         ::oSys:setIcon( QIcon( ":/harbour.png" ) )
-         ::oSys:connect( "activated(QSystemTrayIcon::ActivationReason)", {|p| ::execEvent( "qSystemTrayIcon_activated", p ) } )
-
-         ::oSysMenu := QMenu()
-         ::qAct1 := ::oSysMenu:addAction( QIcon( ":/fullscreen.png" ), "&Show" )
-         ::oSysMenu:addSeparator()
-         ::qAct2 := ::oSysMenu:addAction( QIcon( ":/exit.png" ), "&Exit" )
-
-         ::qAct1:connect( "triggered(bool)", {|| ::execEvent( "qSystemTrayIcon_show"  ) } )
-         ::qAct2:connect( "triggered(bool)", {|| ::execEvent( "qSystemTrayIcon_close" ) } )
-
-         ::oSys:setContextMenu( ::oSysMenu )
-         ::oSys:hide()
-         ::oSys:setToolTip( "Connected to Harbour NetIO Server: " + ::oDlg:title )
-      ENDIF
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD NetIOMgmtClient:cmdConnStop( cIPPort )
-
-   IF Empty( ::pConnection )
-      MsgBox( "Not Connected" )
-   ELSE
-      netio_funcexec( ::pConnection, "hbnetiomgm_stop", cIPPort )
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-METHOD NetIOMgmtClient:cmdConnInfo( lManagement )
-   LOCAL aArray
-   LOCAL hConn
-   LOCAL aData
-   LOCAL d_
-
-   IF Empty( ::pConnection )
-      MsgBox( "Not Connected" )
-   ELSE
-      IF ::lProcessing
-         RETURN NIL
-      ENDIF
-
-      ::lProcessing := .t.
-
-      aArray := netio_funcexec( ::pConnection, iif( lManagement, "hbnetiomgm_adminfo", "hbnetiomgm_conninfo" ) )
-      IF ! empty( aArray )
-         aData := {}
-         FOR EACH hConn IN aArray
-            d_:= array( 10 )
-            d_[ DAT_CONNSOCKET ] := NIL
-            d_[ DAT_SERIAL     ] := hConn[ "nThreadID"      ]
-            d_[ DAT_ACTIVATED  ] := .t.
-            d_[ DAT_IP         ] := hConn[ "cAddressPeer"   ]
-            d_[ DAT_PORT       ] := 0
-            d_[ DAT_TIMEIN     ] := hb_TToC( hConn[ "tStart" ], "YYYY.MM.DD", "HH:MM:SS" )
-            d_[ DAT_TIMEOUT    ] := space( 19 )
-            d_[ DAT_BYTESIN    ] := hConn[ "nBytesReceived" ]
-            d_[ DAT_BYTESOUT   ] := hConn[ "nBytesSent"     ]
-            d_[ DAT_OPENFILES  ] := hConn[ "nFilesCount"    ]
-            aadd( aData, d_ )
-         NEXT
-         ::aData := aData
-      ELSE
-         ::aData := { { NIL, 0, .F., space( 17 ), 0, space( 19 ), space( 19 ), 0, 0, NIL, 0 } }
-      ENDIF
-      ::lProcessing := .f.
-      ::refresh()
-   ENDIF
-
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-STATIC FUNCTION AppSys()
-   RETURN NIL
-
-/*----------------------------------------------------------------------*/
-
-PROCEDURE HB_Logo()
-
-   MsgBox( "Harbour NETIO Server Management Console " + StrTran( Version(), "Harbour " ) + hb_eol() +;
-           "Copyright (c) 2009-2014, Pritpal Bedi, Viktor Szakats" + hb_eol() + ;
-           "http://harbour-project.org/" + hb_eol() +;
-           hb_eol() )
-
-   RETURN
-
-/*----------------------------------------------------------------------*/
-
-STATIC PROCEDURE HB_Usage()
-   LOCAL aMsg := {}
-   LOCAL cMsg
-
-   AAdd( aMsg,               "Syntax:"                                                                                 )
-   AAdd( aMsg,                                                                                                         )
-   AAdd( aMsg,               "  netiocui [options]"                                                                    )
-   AAdd( aMsg,                                                                                                         )
-   AAdd( aMsg,               "Options:"                                                                                )
-   AAdd( aMsg,                                                                                                         )
-   AAdd( aMsg,               "  -addr=<ip[:port]>  connect to netio server on IPv4 address <ip:port>"                  )
-   AAdd( aMsg, hb_StrFormat( "                     Default: %1$s:%2$d", _NETIOMGM_IPV4_DEF, _NETIOMGM_PORT_DEF )       )
-   AAdd( aMsg,               "  -pass=<passwd>     connect to netio server with password"                              )
-   AAdd( aMsg,                                                                                                         )
-   AAdd( aMsg,               "  --version          display version header only"                                        )
-   AAdd( aMsg,               "  -help|--help       this help"                                                          )
-
-   cMsg := ""
-   aeval( aMsg, {|e| cMsg += iif( Empty( e ), "", e ) + chr( 10 ) } )
-   MsgBox( cMsg )
-
-   RETURN
-
-/*----------------------------------------------------------------------*/

@@ -4352,6 +4352,8 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
             oPrinter := QPrinter( oList:at( i ) )
          ENDIF
       NEXT
+   ELSEIF HB_ISOBJECT( cPrinter )
+      oPrinter := cPrinter
    ENDIF
 
 #if 0    /* Not known yet, application crashed IF QPrintDialog is opened and returned printer is used */
@@ -4373,7 +4375,7 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
    IF Empty( oPrinter )
       oPrinter := QPrinter()
       oPrinter:setOutputFormat( QPrinter_PdfFormat )     /* Until issue WITH QPrintDialog() is resolved, Printing will CREATE a .PDF file on disk */
-      oPrinter:setPageOrientation( QPrinter_Portrait )
+      oPrinter:setPageOrientation( QPrinter_Landscape )
 #ifndef __HB_QT_MAJOR_VER_4__
       oPrinter:setPageSize( QPageSize( QPrinter_A4 ) )
 #endif
@@ -4386,24 +4388,22 @@ METHOD HbQtBrowse:print( cPrinter, lOpenPrintDialog )
       oDlg:setParent( QWidget() )
    ENDIF
 #endif
-
    RETURN Self
 
 
 METHOD HbQtBrowse:printPreview( oPrinter )
-   LOCAL oDlg
 
    ::oPenBlack := QPen( Qt_black, 1, Qt_SolidLine, Qt_SquareCap, Qt_BevelJoin )
 
-   oDlg := QPrintPreviewDialog( oPrinter )
-   oDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+   WITH OBJECT QPrintPreviewDialog( oPrinter )
+      :connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
 
-   oDlg:setWindowTitle( "TBrowse Printed" )
-   oDlg:move( 20, 20 )
-   oDlg:resize( 400, 600 )
-   oDlg:exec()
-// oDlg:setParent( QWidget() )
-
+      :setWindowTitle( "TBrowse Printed" )
+      :move( 20, 20 )
+      :resize( 400, 600 )
+      //
+      :exec()
+   ENDWITH
    RETURN NIL
 
 

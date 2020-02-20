@@ -66,7 +66,22 @@
 
 static bool bAllowResizing = true;
 static bool bAllowMovement = true;
+static bool bCanMoveItems = false;
 
+
+bool __hbqGraphicsCanMoveItems()
+{
+   return bCanMoveItems;
+}
+HB_FUNC( __HBQGRAPHICS_CANMOVEITEMS )
+{
+   bool bOldSetting = bCanMoveItems;
+   if( hb_pcount() == 1 && HB_ISLOG( 1 ) )
+   {
+      bCanMoveItems = hb_parl( 1 );
+   }
+   hb_retl( bOldSetting );
+}
 
 bool __hbqGraphicsAllowResizeInPlace()
 {
@@ -855,6 +870,7 @@ void HBQGraphicsScene::drawMagnets( HBQGraphicsItem * item )
       }
    }
 }
+
 /*----------------------------------------------------------------------*/
 
 #endif

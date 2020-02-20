@@ -108,7 +108,8 @@ METHOD HbQtQmlBridge:create( oParent )
    WITH OBJECT ::oWidget := QQuickWidget( ::oParent )
       :setResizeMode( QQuickWidget_SizeRootObjectToView )
       :setFocusPolicy( Qt_NoFocus )
-      :connect( "sceneGraphError(QQuickWindow::SceneGraphError,QString)", {|nError,cDesc| __hbqtLog( hb_ntos( nError ) + ":" + cDesc ) } )
+      //:connect( "sceneGraphError(QQuickWindow::SceneGraphError,QString)", {|nError,cDesc| __hbqtLog( hb_ntos( nError ) + ":" + cDesc ) } )
+      :connect( "sceneGraphError(QQuickWindow::SceneGraphError,QString)", {|nError,cDesc| HB_SYMBOL_UNUSED( nError+cDesc ) } )
       :connect( "statusChanged(QQuickWidget::Status)"                   , {|nStatus     | __logErrors( ::oWidget, nStatus ) } )
    ENDWITH
 
@@ -127,9 +128,9 @@ STATIC FUNCTION __logErrors( oQWidget, nStatus )
    FOR i := 0 TO oErrors:count() - 1
       s += "         " + oErrors:at( i ):description() + chr( 10 )
    NEXT
-   __hbqtLog( s )
+   //__hbqtLog( s )
 
-   RETURN NIL
+   RETURN s //NIL
 
 
 METHOD HbQtQmlBridge:setQml( cQml )

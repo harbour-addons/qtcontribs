@@ -155,7 +155,7 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
          :setFocusPolicy( Qt_StrongFocus )
          :setFont( QFont( "Courier", iif( __hbqtIsMobile(), __hbqtPixelsByDPI( 12 ), 10 ) ) )
          :setStyleSheet( "" )
-         :setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) + "border-radius: 5px;" )
+         :setStyleSheet( __hbqtCSSFromColorString( cColorHigh ) + "border-radius: 5px; padding: 10px; font-size: 15px;" )
          :connect( "clicked()", BuildButtonBlock( @nResult, cBtn:__enumIndex(), oDlg ) )
          :connect( QEvent_KeyPress, {|oKeyEvent| Navigate( oKeyEvent, aOptions, aButtons, oFocus ) } )
       ENDWITH
@@ -438,23 +438,23 @@ FUNCTION HbQtMsgbox( cMsg, cTitle, cnBGround, nTimeout, nX, nY )
       ENDIF
       IF HB_ISNUMERIC( nX ) .AND. HB_ISNUMERIC( nY )
          :move( nX, nY )
-      ELSE 
+      ELSE
          :adjustSize()
          :move( ( :parent:width() - :width() ) / 2, ( :parent:height() - :height() ) / 2 )
       ENDIF
       :connect( QEvent_MouseButtonPress, {|| oMB:done( 0 ) } )
-   ENDWITH 
+   ENDWITH
    IF HB_ISNUMERIC( nTimeout ) .AND. nTimeout > 0
       WITH OBJECT oTimer := QTimer()
          :setInterval( nTimeout * 1000 )
          :setSingleShot( .T. )
          :connect( "timeout()", {|| oMB:done( 0 ) } )
-      ENDWITH 
+      ENDWITH
       oTimer:start()
    ENDIF
    oMB:exec()
    oMB:setParent( QWidget() )
-   
+
    RETURN NIL
 
 

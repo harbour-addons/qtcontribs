@@ -50,6 +50,9 @@
        </item>
        <item>
         <widget class="QStackedWidget" name="stackChat">
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
          <widget class="QWidget" name="pageChatTopics">
           <layout class="QVBoxLayout" name="verticalLayout_19">
            <property name="leftMargin">

@@ -56,6 +56,7 @@
 
 
 STATIC s_barcodeReader
+STATIC s_photoCapture
 
 
 INIT PROCEDURE __initHbQtQmlResources()
@@ -81,6 +82,22 @@ FUNCTION __hbqtActivateBarcodeReader( bBlock )
       __hbqtRegisterForOrientationChange( {|| s_barcodeReader:geometryChanged() } )
    ENDIF
    s_barcodeReader:show()
+   __hbqtAppRefresh()
+
+   RETURN NIL
+
+
+FUNCTION __hbqtActivatePhotoCapture( bBlock )
+
+   IF ! HB_ISOBJECT( s_photoCapture )
+      WITH OBJECT s_photoCapture := HbQtPhotoCapture():new():create( __hbqtAppWidget() )
+         IF HB_ISBLOCK( bBlock )
+            :photoCapturedBlock := bBlock
+         ENDIF
+      ENDWITH
+      __hbqtRegisterForOrientationChange( {|| s_photoCapture:geometryChanged() } )
+   ENDIF
+   s_photoCapture:show()
    __hbqtAppRefresh()
 
    RETURN NIL

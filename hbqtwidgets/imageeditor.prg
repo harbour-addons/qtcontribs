@@ -90,7 +90,6 @@ CREATE CLASS HbQtImageEditor
    METHOD connect()
    METHOD destroy()
 
-   METHOD fitInParent()
    METHOD setOriginalPixmap( oPixmap )
    METHOD setPixmap( oPixmap )
    METHOD zoom( nMode )
@@ -119,7 +118,8 @@ METHOD HbQtImageEditor:create( oParent )
    ::buildWidget()
    ::oUI := Self
 
-   ::fitInParent()
+   HbQtLayInParent( ::oWidget, ::oParent )
+
    ::connect()
 
    RETURN Self
@@ -198,29 +198,6 @@ METHOD HbQtImageEditor:connect()
       :oGraphicsView  :connect( "rubberBandChanged(QRect,QPointF,QPointF)", {|oRect, oP1, oP2| ::manageCropping( oRect, oP1, oP2 ) } )
    ENDWITH
    RETURN NIL
-
-
-METHOD HbQtImageEditor:fitInParent()
-   LOCAL oLayout
-
-   IF HB_ISOBJECT( ::oParent )
-      IF Empty( oLayout := ::oParent:layout() )
-         oLayout := QHBoxLayout()
-         ::oParent:setLayout( oLayout )
-         oLayout:addWidget( ::oWidget )
-      ELSE
-         SWITCH __objGetClsName( oLayout )
-         CASE "QVBOXLAYOUT"
-         CASE "QHBOXLAYOUT"
-            oLayout:addWidget( ::oWidget )
-            EXIT
-         CASE "QGRIDLAYOUT"
-            oLayout:addWidget( ::oWidget, 0, 0, 1, 1 )
-            EXIT
-         ENDSWITCH
-      ENDIF
-   ENDIF
-   RETURN Self
 
 
 METHOD HbQtImageEditor:destroy()

@@ -830,6 +830,9 @@ FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacit
    IF PCount() == 0
       RETURN oSilverLight:isActive()
    ENDIF
+   IF oSilverLight:isActive()
+      oSilverLight:deactivate()
+   ENDIF
    IF lActivate
       oSilverLight:activate( xContent, oColor, lAnimate, aOpacity, oWidget, nDuration, bExecute )
    ELSE
@@ -1421,22 +1424,22 @@ FUNCTION __hbqtV( cVrb, xValue )
 
 
 FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
-   LOCAL xTmp, xTmp1
+   LOCAL xTmp, xTmp1, xRet
 
    IF HB_ISHASH( hHash )
-      IF cKey $ hHash
+      IF hb_HHasKey( hHash, cKey )
          RETURN hHash[ cKey ]
       ELSE
          FOR EACH xTmp IN hHash
             IF HB_ISHASH( xTmp )
-               RETURN __hbqtHashPullValue( xTmp, cKey, xDefault )
+               IF ! ( xRet := __hbqtHashPullValue( xTmp, cKey ) ) == NIL
+                  RETURN xRet
+               ENDIF
             ELSEIF HB_ISARRAY( xTmp )
                FOR EACH xTmp1 IN xTmp
                   IF HB_ISHASH( xTmp1 )
-                     IF cKey $ xTmp1
-                        RETURN xTmp1[ cKey ]
-                     ELSE
-                        RETURN __hbqtHashPullValue( xTmp1, cKey, xDefault )
+                     IF ! ( xRet := __hbqtHashPullValue( xTmp1, cKey ) ) == NIL
+                        RETURN xRet
                      ENDIF
                   ENDIF
                NEXT
@@ -1496,7 +1499,9 @@ PROCEDURE HbQtLogAdd( ... )
    ENDIF
    IF ! Empty( s ) .AND. hLog[ "AsDebugString" ]
 #ifndef __LINUX__
+#ifndef __ANDROID__
       WAPI_OutputDebugString( s )
+#endif
 #endif
    ENDIF
    IF ! Empty( s ) .AND. ! Empty( cFileName )
@@ -1672,6 +1677,29 @@ STATIC FUNCTION cvt2str( xI, lLong )
       RETURN iif( lLong, "[P]:", "" ) + "0p" + hb_NumToHex( xI )
    ELSE
       RETURN "[" + cValtype + "]" // BS,etc
+   ENDIF
+   RETURN NIL
+
+
+FUNCTION HbQtLayInParent( oWidget, oParent )
+   LOCAL oLayout
+
+   IF HB_ISOBJECT( oParent )
+      IF Empty( oLayout := oParent:layout() )
+         oLayout := QHBoxLayout()
+         oParent:setLayout( oLayout )
+         oLayout:addWidget( oWidget )
+      ELSE
+         SWITCH __objGetClsName( oLayout )
+         CASE "QVBOXLAYOUT"
+         CASE "QHBOXLAYOUT"
+            oLayout:addWidget( oWidget )
+            EXIT
+         CASE "QGRIDLAYOUT"
+            oLayout:addWidget( oWidget, 0, 0, 1, 1 )
+            EXIT
+         ENDSWITCH
+      ENDIF
    ENDIF
    RETURN NIL
 

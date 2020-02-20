@@ -16,6 +16,162 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2020-02-20 19:00 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r475)
+  * hbdbu/dbu.prg
+  * hbide/main.prg
+    - Commented out: REQUEST __HBEXTERN__HBQTWIDGETS__
+      A bunch of QtQuick/Qml baggage is unnecessary.
+    
+  * hbqt/hbmk2_qt.hb
+    + Added: QStackedWidget as a base widget for .ui forms.
+      Until now we had QDialog, QWidget, QMainWindow as base widgets.
+      
+  * hbqt/hbqt_common.hbc
+  * hbqt/qtcore/hbqt_pointer.cpp
+  * hbqt/qtcore/hbqtcore.hbc
+    + Enhancement: to build Qt 5.5.x version statically.
+    
+  * hbqt/qtgui/hbqt_errorsys.prg
+    % Fixed: to display the error message box always.
+      In situations of recursive error it was killing the system.
+      
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.h
+    + Added: bool __hbqGraphicsCanMoveItems();
+  * hbqt/qtgui/hbqt_hbqgraphicsitem.cpp
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.cpp
+    + Implemented to lock the graphics item permanantly.
+    
+  * hbqt/qtgui/hbqtgui.hbc
+    + added: windowsprintersupport static librray for Qt 5.x.x static.
+    
+  * hbqt/qtgui/qth/QGraphicsScene.qth
+    + added: many methods which were not included initially.
+    
+  * hbqt/qtgui/qth/QPrintPreviewWidget.qth
+    + added: missing constructor 
+         else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QPRINTER" ) )
+
+  * hbqt/qtqml/hbqt_init.cpp
+    + aaded: Qml specific plugins for sttaic builds.
+    
+  * hbqt/qtqml/hbqtqml.hbc
+  * hbqt/qtquick/hbqtquick.hbc
+    + Heavy changes for Qt 5.5 and otherwise static builds.
+    
+  * hbqtqmlparts/hbqtqmlparts.hbp
+    + photocapture.prg
+  * hbqtqmlparts/hbqtqmlparts.hbx
+    % Regenerated.
+  * hbqtqmlparts/hbqtqmlparts.qrc
+    + added: <file>resources/qml/PhotoCapture.qml</file>
+  * hbqtqmlparts/misc.prg
+    + added: FUNCTION __hbqtActivatePhotoCapture( bBlock )
+  * hbqtqmlparts/qmlbridge.prg
+  * hbqtqmlparts/resources/qml/BarcodeReader.qml
+    % Cleanup.
+
+  * hbqtwidgets/alert.prg
+    % Visual enhancement.
+    
+  * hbqtwidgets/hbqtbrowse.prg
+    % Enhancements to browse printing.
+    
+  * hbqtwidgets/imageeditor.prg
+    % Replaced: :fitInParent() => HbQtLayoutInParent()
+    
+  * hbqtwidgets/messages.prg
+  * hbqtwidgets/messages.ui
+    % Changed: <Back> icon.
+    
+  * hbqtwidgets/misc.prg
+    % Minor.
+    + Added: FUNCTION HbQtLayInParent( oWidget, oParent )
+    
+  * hbqtwidgets/previewer.prg
+    % Enhanced: PrintPreview widget implementation.
+    
+  * hbqtwidgets/properties.prg
+    + Added: a couple of methods and other enhancements.
+
+  + hbqtwidgets/resources/admin-1.png
+  + hbqtwidgets/resources/cart-1.png
+  + hbqtwidgets/resources/cart-2.png
+  + hbqtwidgets/resources/cart-3.png
+  + hbqtwidgets/resources/cart-4.png
+  + hbqtwidgets/resources/cart-5.png
+  + hbqtwidgets/resources/chat-1.png
+  + hbqtwidgets/resources/clean.png
+  + hbqtwidgets/resources/credit-card-1.png
+  + hbqtwidgets/resources/customer-service.png
+  + hbqtwidgets/resources/data-1.png
+  + hbqtwidgets/resources/edit.png
+  + hbqtwidgets/resources/exit-1.png
+  + hbqtwidgets/resources/female.png
+  + hbqtwidgets/resources/home.png
+  + hbqtwidgets/resources/info-2.png
+  + hbqtwidgets/resources/info-3.png
+  + hbqtwidgets/resources/info-4.png
+  + hbqtwidgets/resources/info-5.png
+  + hbqtwidgets/resources/info-6.png
+  + hbqtwidgets/resources/info-7.png
+  + hbqtwidgets/resources/layers-1.png
+  + hbqtwidgets/resources/mail-01.png
+  + hbqtwidgets/resources/male.png
+  + hbqtwidgets/resources/mover-1.png
+  + hbqtwidgets/resources/mover-2.png
+  + hbqtwidgets/resources/next-1.png
+  + hbqtwidgets/resources/pdf-document.png
+  + hbqtwidgets/resources/pdf.png
+  + hbqtwidgets/resources/previous-1.png
+  + hbqtwidgets/resources/properties-1.png
+  + hbqtwidgets/resources/scanner-1.png
+  + hbqtwidgets/resources/visuals-1.png
+  + hbqtwidgets/resources/visuals-2.png
+  + hbqtwidgets/resources/visuals-3.png
+  + hbqtwidgets/resources/vzl-arrow-bottom.png
+  + hbqtwidgets/resources/vzl-arrow-down.png
+  + hbqtwidgets/resources/vzl-arrow-left.png
+  + hbqtwidgets/resources/vzl-arrow-leftmost.png
+  + hbqtwidgets/resources/vzl-arrow-right.png
+  + hbqtwidgets/resources/vzl-arrow-rightmost.png
+  + hbqtwidgets/resources/vzl-arrow-top.png
+  + hbqtwidgets/resources/vzl-arrow-up.png
+  + hbqtwidgets/resources/vzl-csv.png
+  + hbqtwidgets/resources/vzl-dataset.png
+  + hbqtwidgets/resources/vzl-del-state.png
+  + hbqtwidgets/resources/vzl-edit.png
+  + hbqtwidgets/resources/vzl-excel.png
+  + hbqtwidgets/resources/vzl-layer-leaf.png
+  + hbqtwidgets/resources/vzl-markers.png
+  + hbqtwidgets/resources/vzl-navigator.png
+  + hbqtwidgets/resources/vzl-properties.png
+  + hbqtwidgets/resources/vzl-refresh.png
+  + hbqtwidgets/resources/vzl-row-to-visual.png
+  + hbqtwidgets/resources/vzl-select.png
+  + hbqtwidgets/resources/vzl-sort-az.png
+  + hbqtwidgets/resources/vzl-sort-za.png
+  + hbqtwidgets/resources/vzl-states.png
+  + hbqtwidgets/resources/vzl-table-view.png
+  + hbqtwidgets/resources/vzl-visuals.png
+  + hbqtwidgets/resources/vzl-zoom-in.png
+  + hbqtwidgets/resources/vzl-zoom-out.png
+  + hbqtwidgets/resources/vzl-zoom-pixel.png
+  + hbqtwidgets/resources/vzl-zoom-whole.png
+    
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: many more icons.
+    
+  * hbqtwidgets/toolbarex.prg
+    % Minor.
+    
+  * hbqtwidgets/visualizer.ui
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+    + Many enhancements.
+    
+  * qtcontribs.hbp
+    - Commented out hbqtwebkit - not available for static builds - any version.
+
 2019-04-25 08:40 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r474)
   + hbqtwidgets/resources/original.png
   + hbqtwidgets/resources/to-excel.png

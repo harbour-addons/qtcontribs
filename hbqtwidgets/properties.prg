@@ -82,13 +82,14 @@ CLASS HbQtPropertiesManager
    METHOD init( oParent )
    METHOD create( oParent )
    METHOD destroy()                               VIRTUAL
+   METHOD refreshPropertySheet( cSheet )
 
    METHOD setEnabled( cSheet, lEnabled )
    METHOD propertySheet( cSheet )
    METHOD addPropertySheet( cSheet, oHbQtPropertySheet )
    METHOD setCurrentPropertySheet( cSheet )
    METHOD setPropertySheetProperty( cSheet, cProperty, xValue )
-   METHOD setPropertySheetProperties( cSheet, hProperties, lHideRest )
+   METHOD setPropertySheetProperties( cSheet, hProperties, lHideRest, lEditable )
    METHOD getPropertySheetProperties( cSheet )
 
    ENDCLASS
@@ -165,6 +166,13 @@ METHOD HbQtPropertiesManager:addPropertySheet( cSheet, oHbQtPropertySheet )
    RETURN oHbQtPropertySheet
 
 
+METHOD HbQtPropertiesManager:refreshPropertySheet( cSheet )
+   IF hb_HHasKey( ::hSheets, cSheet )
+      RETURN ::hSheets[ cSheet ]:refresh()
+   ENDIF
+   RETURN Self
+
+
 METHOD HbQtPropertiesManager:setEnabled( cSheet, lEnabled )
    IF hb_HHasKey( ::hSheets, cSheet )
       RETURN ::hSheets[ cSheet ]:setEnabled( lEnabled )
@@ -197,9 +205,9 @@ METHOD HbQtPropertiesManager:setPropertySheetProperty( cSheet, cProperty, xValue
    RETURN Self
 
 
-METHOD HbQtPropertiesManager:setPropertySheetProperties( cSheet, hProperties, lHideRest )
+METHOD HbQtPropertiesManager:setPropertySheetProperties( cSheet, hProperties, lHideRest, lEditable )
    IF hb_HHasKey( ::hSheets, cSheet )
-      ::hSheets[ cSheet ]:setProperties( hProperties, lHideRest )
+      ::hSheets[ cSheet ]:setProperties( hProperties, lHideRest, lEditable )
    ENDIF
    RETURN Self
 
@@ -225,12 +233,13 @@ CLASS HbQtPropertySheet
    METHOD init( cSheet )
    METHOD create( cSheet )
    METHOD destroy()                               VIRTUAL
+   METHOD refresh()
 
    ACCESS name()                                  INLINE ::cSheet
 
    METHOD addProperty( cProperty, cLabel, cParent, nType, xValue, xValues )
    METHOD setProperty( cProperty, xValue )
-   METHOD setProperties( hProperties, lHideRest )
+   METHOD setProperties( hProperties, lHideRest, lEditable )
    METHOD getProperties()
    METHOD setEnabled( lEnabled )
 
@@ -300,6 +309,17 @@ METHOD HbQtPropertySheet:addProperty( cProperty, cLabel, cParent, nType, xValue,
    RETURN Self
 
 
+METHOD HbQtPropertySheet:refresh()
+   LOCAL oHbQtProperty
+
+   IF HB_ISHASH( ::hProperties )
+      FOR EACH oHbQtProperty IN ::hProperties
+         oHbQtProperty:refresh()
+      NEXT
+   ENDIF
+   RETURN Self
+
+
 METHOD HbQtPropertySheet:getProperties()
    LOCAL oHbQtProperty
    LOCAL hProperties := {=>}
@@ -315,7 +335,7 @@ METHOD HbQtPropertySheet:getProperties()
    RETURN hProperties
 
 
-METHOD HbQtPropertySheet:setProperties( hProperties, lHideRest )
+METHOD HbQtPropertySheet:setProperties( hProperties, lHideRest, lEditable )
    LOCAL oHbQtProperty, cProperty, xValue
 
    DEFAULT lHideRest TO .F.
@@ -344,6 +364,16 @@ METHOD HbQtPropertySheet:setProperties( hProperties, lHideRest )
             ENDIF
             IF hb_HHasKey( xValue, "Label" ) .AND. HB_ISSTRING( xValue[ "Label" ] )
                ::hProperties[ cProperty ]:setLabel( xValue[ "Label" ] )
+            ENDIF
+            IF HB_ISLOGICAL( lEditable ) .AND. ! lEditable
+               ::hProperties[ cProperty ]:setReadonly( .T. )
+            ELSE
+               IF hb_HHasKey( xValue, "ReadOnly" ) .AND. HB_ISLOGICAL( xValue[ "ReadOnly" ] )
+                  ::hProperties[ cProperty ]:setReadonly( xValue[ "ReadOnly" ] )
+               ENDIF
+               IF hb_HHasKey( xValue, "Editable" ) .AND. HB_ISLOGICAL( xValue[ "Editable" ] )
+                  ::hProperties[ cProperty ]:setReadonly( xValue[ "ReadOnly" ] )
+               ENDIF
             ENDIF
          ENDIF
       ELSE
@@ -401,23 +431,26 @@ CLASS HbQtProperty
    DATA   cParent                                 INIT ""
    DATA   nType                                   INIT 0
    DATA   cValueType                              INIT ""
+   DATA   lEditable                               INIT .T.
    DATA   xOrigValue
    DATA   xOrigValues
    DATA   xValue
    DATA   xValues
    DATA   lBlockNotifier                         INIT .F.
 
-   METHOD init( cProperty, cLabel, cParent, nType, xValue, xValues )
-   METHOD create( cProperty, cLabel, cParent, nType, xValue, xValues )
+   METHOD init( cProperty, cLabel, cParent, nType, xValue, xValues, lEditable )
+   METHOD create( cProperty, cLabel, cParent, nType, xValue, xValues, lEditable )
    METHOD destroy()                               VIRTUAL
    METHOD propertyWidget()
 
+   METHOD refresh()
    ACCESS name()                                  INLINE ::cProperty
    ACCESS value()                                 INLINE ::xValue
    METHOD setValue( xValue )
    METHOD setProperty( xValue )
    METHOD setOptions( aOptions )
    METHOD setLabel( cLabel )
+   METHOD setReadOnly( lReadOnly )
 
    DATA   bValueChanged
    METHOD propertyChangedBlock( bBlock )          SETGET
@@ -425,6 +458,7 @@ CLASS HbQtProperty
    METHOD editTriggered()
    METHOD manageEvent( oKeyEvent, oWidget )
    METHOD execColorDialog()
+   METHOD execColorNameSliding( oProperty )
    METHOD execFontDialog()
    METHOD execFontNameSliding( oProperty )
    METHOD execFontSizeSliding( oProperty )
@@ -433,7 +467,7 @@ CLASS HbQtProperty
    ENDCLASS
 
 
-METHOD HbQtProperty:init( cProperty, cLabel, cParent, nType, xValue, xValues )
+METHOD HbQtProperty:init( cProperty, cLabel, cParent, nType, xValue, xValues, lEditable )
 
    DEFAULT cProperty TO ::cProperty
    DEFAULT cLabel    TO ::cLabel
@@ -441,6 +475,7 @@ METHOD HbQtProperty:init( cProperty, cLabel, cParent, nType, xValue, xValues )
    DEFAULT nType     TO ::nType
    DEFAULT xValue    TO ::xValue
    DEFAULT xValues   TO ::xValues
+   DEFAULT lEditable TO ::lEditable
 
    ::cProperty := cProperty
    ::cLabel    := cLabel
@@ -448,11 +483,12 @@ METHOD HbQtProperty:init( cProperty, cLabel, cParent, nType, xValue, xValues )
    ::nType     := nType
    ::xValue    := xValue
    ::xValues   := xValues
+   ::lEditable := lEditable
 
    RETURN Self
 
 
-METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues )
+METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues, lEditable )
    LOCAL oLay
 
    DEFAULT cProperty TO ::cProperty
@@ -461,6 +497,7 @@ METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues )
    DEFAULT nType     TO ::nType
    DEFAULT xValue    TO ::xValue
    DEFAULT xValues   TO ::xValues
+   DEFAULT lEditable TO ::lEditable
 
    ::cProperty := cProperty
    ::cLabel    := cLabel
@@ -468,6 +505,7 @@ METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues )
    ::nType     := nType
    ::xValue    := xValue
    ::xValues   := xValues
+   ::lEditable := lEditable
 
    ::xOrigValue  := ::xValue
    ::xOrigValues := iif( HB_ISARRAY( ::xValues ), AClone( ::xValues ), ::xValues )
@@ -482,9 +520,11 @@ METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues )
    ENDWITH
    WITH OBJECT ::oValueLabel := QLabel( __xtos( ::xValue ) )
       :setStyleSheet( "border-left: 1px solid black; font-size: " + __hbqtCssPX( 16 ) + "font-weight: bold;" )
-      :connect( QEvent_MouseButtonPress, {|oEvent| iif( oEvent:button() == Qt_LeftButton, ::editTriggered(), NIL ) } )
+      :connect( QEvent_MouseButtonPress, {|oEvent| iif( ! ::lEditable, NIL, ;
+                                         iif( oEvent:button() == Qt_LeftButton, ::editTriggered(), NIL ) ) } )
    ENDWITH
    WITH OBJECT ::oPropertyWidget := ::propertyWidget()
+      //
    ENDWITH
    WITH OBJECT ::oStack := QStackedWidget()
       :addWidget( ::oValueLabel )
@@ -493,6 +533,14 @@ METHOD HbQtProperty:create( cProperty, cLabel, cParent, nType, xValue, xValues )
    ENDWITH
 
    HB_SYMBOL_UNUSED( oLay )
+   RETURN Self
+
+
+METHOD HbQtProperty:refresh()
+   WITH OBJECT ::oStack
+      :setCurrentIndex( 0 )
+   ENDWITH
+   ::lEditable := .F.
    RETURN Self
 
 
@@ -566,8 +614,9 @@ METHOD HbQtProperty:propertyWidget()
       EXIT
    CASE __HBQT_PRP_COLOR__
       WITH OBJECT oWidget := QLabel( ::xValue )
-         :connect( QEvent_Show         , {|| ::execColorDialog(), ::oStack:setCurrentIndex( 0 ) } )
-         :connect( QEvent_FocusOut     , {|| ::oStack:setCurrentIndex( 0 ) } )
+      //   :connect( QEvent_Show         , {|| ::execColorDialog(), ::oStack:setCurrentIndex( 0 ) } )
+         :connect( QEvent_Show         , {|| ::oPropertyWidget:setText( ::oValueLabel:text() ), ::execColorNameSliding( Self ) } )
+         :connect( QEvent_FocusOut     , {|| ::oStack:setCurrentIndex( 0 ), ::oStack:setFocus() } )
       ENDWITH
       EXIT
    CASE __HBQT_PRP_TEXTURE__
@@ -629,6 +678,7 @@ METHOD HbQtProperty:valueChanged( xValue )
       EXIT
    CASE __HBQT_PRP_COLOR__
       zValue := xValue
+      //::oPropertyWidget:hidePopup()
       EXIT
    CASE __HBQT_PRP_BRUSHSTYLE__
    CASE __HBQT_PRP_FONTSIZE__
@@ -669,6 +719,11 @@ METHOD HbQtProperty:setLabel( cLabel )
    RETURN Self
 
 
+METHOD HbQtProperty:setReadonly( lReadOnly )
+   ::lEditable := ! lReadOnly
+   RETURN Self
+
+
 METHOD HbQtProperty:setOptions( aOptions )
    LOCAL xTmp
 
@@ -681,35 +736,6 @@ METHOD HbQtProperty:setOptions( aOptions )
          NEXT
          :setCurrentIndex( AScan( aOptions, {|e| e == __xtos( ::xValue ) } ) - 1 )
       ENDWITH
-   ENDIF
-   RETURN Self
-
-
-METHOD HbQtProperty:execColorDialog()
-   LOCAL cColor, oColorDlg
-
-   WITH OBJECT oColorDlg := QColorDialog( QColor( ::xValue ) )
-      :connect( "colorSelected(QColor)", {|oColor| cColor := oColor:name() } )
-      :exec()
-   ENDWITH
-   __hbqt_delete( oColorDlg )
-   IF ! Empty( cColor )
-      ::oValueLabel:setStyleSheet( "background-color: " + cColor + ";" )
-      ::valueChanged( cColor )
-   ENDIF
-   RETURN .F.
-
-
-METHOD HbQtProperty:execFontDialog()
-   LOCAL cFont, oDlg
-
-   WITH OBJECT oDlg := QFontDialog( QColor( ::xValue ), ::oWidget )
-      :exec()
-      cFont := oDlg:selectedFont()
-   ENDWITH
-   __hbqt_delete( oDlg )
-   IF ! Empty( cFont )
-      ::valueChanged( cFont )
    ENDIF
    RETURN Self
 
@@ -729,6 +755,92 @@ METHOD HbQtProperty:propertyChangedBlock( bBlock )
       ::bValueChanged := bBlock
    ENDIF
    RETURN bOldBlock
+
+
+METHOD HbQtProperty:execFontDialog()
+   LOCAL cFont, oDlg
+
+   WITH OBJECT oDlg := QFontDialog( QColor( ::xValue ), ::oWidget )
+      :exec()
+      cFont := oDlg:selectedFont()
+   ENDWITH
+   __hbqt_delete( oDlg )
+   IF ! Empty( cFont )
+      ::valueChanged( cFont )
+   ENDIF
+   RETURN Self
+
+
+METHOD HbQtProperty:execColorDialog()
+   LOCAL cColor, oColorDlg
+
+   WITH OBJECT oColorDlg := QColorDialog( QColor( ::xValue ) )
+      :connect( "colorSelected(QColor)", {|oColor| cColor := oColor:name() } )
+      :exec()
+   ENDWITH
+   __hbqt_delete( oColorDlg )
+   IF ! Empty( cColor )
+      ::oValueLabel:setStyleSheet( "background-color: " + cColor + ";" )
+      ::valueChanged( cColor )
+   ENDIF
+   RETURN .F.
+
+
+METHOD HbQtProperty:execColorNameSliding( oProperty )
+   STATIC oColorNameSliding
+   LOCAL cColor, aClr, hState, oPixmap, oState
+
+   IF Empty( oColorNameSliding )
+      HbQtActivateSilverLight( .T., "Pulling Color Info" )
+      WITH OBJECT oColorNameSliding := HbQtSlidingList():new()
+         :setSlidingDirection( __HBQTSLIDINGLIST_DIRECTION_RIGHTTOLEFT__ )
+         :setDuration( 70 )
+         :setFocusOut( .F. )
+         :setWidth( 150 )
+         :setHeaderText( "Available Colors" )
+         :hidingBlock( {|| oProperty:oStack:setCurrentIndex( 0 ), oProperty:oStack:setFocus() } )
+         :create()
+      ENDWITH
+      aClr := {}
+      AAdd( aClr, "#ffffff" )
+      AAdd( aClr, "#000000" )
+      AAdd( aClr, "#7f7f7f" )
+      AAdd( aClr, "#c3c3c3" )
+      AAdd( aClr, "#880014" )
+      AAdd( aClr, "#b97957" )
+      AAdd( aClr, "#ed1c23" )
+      AAdd( aClr, "#ffaec9" )
+      AAdd( aClr, "#ff7d27" )
+      AAdd( aClr, "#ffc90e" )
+      AAdd( aClr, "#fff200" )
+      AAdd( aClr, "#efe5b0" )
+      AAdd( aClr, "#22b14d" )
+      AAdd( aClr, "#b4e61d" )
+      AAdd( aClr, "#00a2e8" )
+      AAdd( aClr, "#99d8ea" )
+      AAdd( aClr, "#3f48cc" )
+      AAdd( aClr, "#7092be" )
+      AAdd( aClr, "#a249a4" )
+      AAdd( aClr, "#c8bfe7" )
+
+      FOR EACH cColor IN aClr
+         hState := {=>}
+         //
+         hState[ "BorderStyle" ] := Qt_SolidLine
+         hState[ "Style" ] := Qt_SolidPattern
+         hState[ "Color" ] := cColor
+         hState[ "Area" ] := __STATE_AREA_OVERALL__
+         //
+         oState := HbQtVisualItemState():new( hState )
+         oPixmap := oState:pixmap( __hbqtPixelsByDPI( 64 ), __hbqtPixelsByDPI( 64 ) )
+         //
+         oColorNameSliding:addItem( cColor, { cColor, oPixmap }, NIL )
+      NEXT
+      HbQtActivateSilverLight( .F. )
+   ENDIF
+   oColorNameSliding:activatedBlock( {|cName| oProperty:valueChanged( cName ) } )
+   oColorNameSliding:show()
+   RETURN Self
 
 
 METHOD HbQtProperty:execFontNameSliding( oProperty )

@@ -1710,6 +1710,9 @@ METHOD THbUIC:buildMethod( cName, nStartLine, nEndLine, cParent )
       CASE "QMainWindow"
          WR_PRG( "   ::oWidget := QMainWindow( oParent )" )
          EXIT
+      CASE "QStackedWidget"
+         WR_PRG( "   ::oWidget := QStackedWidget( oParent )" )
+         EXIT
       ENDSWITCH
       WR_PRG( hb_StrFormat( "   ::%s:= ::oWidget", ::cFormName ) )
       WR_PRG( "" )

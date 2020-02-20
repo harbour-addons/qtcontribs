@@ -59,7 +59,6 @@ Rectangle {
 
         imageCapture {
             onImageCaptured: {
-                //cameraImage.source = preview;
                 cameraUI.imageCaptured( preview );
             }
         }

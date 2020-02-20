@@ -106,9 +106,10 @@ CLASS HbQtPrintPreview
    DATA   oToolbar
    DATA   oPreviewer
    DATA   oPrinter
+   DATA   oPrintDlg
 
-   METHOD init( oParent )
-   METHOD create( oParent )
+   METHOD init( oParent, oPrinter )
+   METHOD create( oParent, oPrinter )
 
    METHOD buildToolbar( oLayout )
    METHOD manageToolbarClicks( cButton )
@@ -129,20 +130,25 @@ CLASS HbQtPrintPreview
    METHOD setOptions( xOption, xValue )
 
    ACCESS toolbar()                               INLINE ::oToolbar
+
    ENDCLASS
 
 
-METHOD HbQtPrintPreview:init( oParent )
+METHOD HbQtPrintPreview:init( oParent, oPrinter )
    DEFAULT oParent  TO ::oParent
+   DEFAULT oPrinter  TO ::oPrinter
    ::oParent := oParent
+   ::oPrinter := oPrinter
    RETURN Self
 
 
-METHOD HbQtPrintPreview:create( oParent )
+METHOD HbQtPrintPreview:create( oParent, oPrinter )
    LOCAL oVLay, oHLay
 
    DEFAULT oParent  TO ::oParent
+   DEFAULT oPrinter  TO ::oPrinter
    ::oParent := oParent
+   ::oPrinter := oPrinter
 
    ::oWidget := QWidget()
    WITH OBJECT oVLay := QVBoxLayout()
@@ -157,7 +163,7 @@ METHOD HbQtPrintPreview:create( oParent )
    ENDWITH
    oVLay:addLayout( oHLay )
 
-   ::oPreviewer := QPrintPreviewWidget()
+   ::oPreviewer := QPrintPreviewWidget( ::oPrinter )
    oVLay:addWidget( ::oPreviewer )
 
    ::buildToolbar( oHLay )

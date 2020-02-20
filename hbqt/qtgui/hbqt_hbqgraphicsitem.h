@@ -150,7 +150,7 @@
 
 bool __hbqGraphicsAllowResizeInPlace();
 bool __hbqGraphicsAllowMovement();
-
+bool __hbqGraphicsCanMoveItems();
 
 class HBQGraphicsItem : public QGraphicsItem
 {

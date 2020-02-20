@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>677</width>
-    <height>601</height>
+    <width>679</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -244,7 +244,7 @@
               </size>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>4</number>
              </property>
              <property name="tabSpacing">
               <number>6</number>
@@ -254,13 +254,13 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>240</height>
+                <width>217</width>
+                <height>222</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-maps.png</normaloff>:/hbqt/resources/vz-maps.png</iconset>
+                <normaloff>:/hbqt/resources/vzl-visuals.png</normaloff>:/hbqt/resources/vzl-visuals.png</iconset>
               </attribute>
               <attribute name="label">
                <string>Visuals</string>
@@ -324,13 +324,13 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>240</height>
+                <width>217</width>
+                <height>222</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-items.png</normaloff>:/hbqt/resources/vz-items.png</iconset>
+                <normaloff>:/hbqt/resources/vzl-markers.png</normaloff>:/hbqt/resources/vzl-markers.png</iconset>
               </attribute>
               <attribute name="label">
                <string>Items</string>
@@ -477,13 +477,13 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>240</height>
+                <width>217</width>
+                <height>222</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-states.png</normaloff>:/hbqt/resources/vz-states.png</iconset>
+                <normaloff>:/hbqt/resources/vzl-states.png</normaloff>:/hbqt/resources/vzl-states.png</iconset>
               </attribute>
               <attribute name="label">
                <string>States</string>
@@ -552,13 +552,13 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>240</height>
+                <width>217</width>
+                <height>222</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-navigate.png</normaloff>:/hbqt/resources/vz-navigate.png</iconset>
+                <normaloff>:/hbqt/resources/vzl-navigator.png</normaloff>:/hbqt/resources/vzl-navigator.png</iconset>
               </attribute>
               <attribute name="label">
                <string>Navigator</string>
@@ -619,8 +619,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>240</height>
+                <width>217</width>
+                <height>222</height>
                </rect>
               </property>
               <attribute name="icon">
@@ -685,7 +685,10 @@
               </layout>
              </widget>
             </widget>
-            <widget class="QStackedWidget" name="stackedWidget">
+            <widget class="QStackedWidget" name="stackGraphics">
+             <property name="currentIndex">
+              <number>2</number>
+             </property>
              <widget class="QWidget" name="pageGraphicsView">
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <property name="spacing">
@@ -731,23 +734,110 @@
                </property>
               </layout>
              </widget>
+             <widget class="QWidget" name="pageMarkerInfo">
+              <property name="styleSheet">
+               <string notr="true">border: 1px solid gray;</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_17">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_9">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>5</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QToolButton" name="toolBackMarkersDoc">
+                   <property name="text">
+                    <string>...</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="hbqtwidgets.qrc">
+                     <normaloff>:/hbqt/resources/brw-left.png</normaloff>:/hbqt/resources/brw-left.png</iconset>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>36</width>
+                     <height>36</height>
+                    </size>
+                   </property>
+                   <property name="autoRaise">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>40</width>
+                     <height>20</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QTextEdit" name="textMarkersDoc">
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAlwaysOff</enum>
+                 </property>
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                 <property name="textInteractionFlags">
+                  <set>Qt::TextBrowserInteraction</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
             <widget class="QToolBox" name="toolBoxRight">
              <property name="currentIndex">
-              <number>5</number>
+              <number>2</number>
              </property>
              <widget class="QWidget" name="pageLayers">
               <property name="geometry">
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>210</height>
+                <width>217</width>
+                <height>192</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-layers.png</normaloff>:/hbqt/resources/vz-layers.png</iconset>
+                <normaloff>:/hbqt/resources/layers-1.png</normaloff>:/hbqt/resources/layers-1.png</iconset>
               </attribute>
               <attribute name="label">
                <string>Layers</string>
@@ -817,13 +907,13 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>210</height>
+                <width>217</width>
+                <height>192</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-data.png</normaloff>:/hbqt/resources/vz-data.png</iconset>
+                <normaloff>:/hbqt/resources/vzl-dataset.png</normaloff>:/hbqt/resources/vzl-dataset.png</iconset>
               </attribute>
               <attribute name="label">
                <string>Data</string>
@@ -934,13 +1024,13 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>210</height>
+                <width>217</width>
+                <height>192</height>
                </rect>
               </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
-                <normaloff>:/hbqt/resources/vz-properties.png</normaloff>:/hbqt/resources/vz-properties.png</iconset>
+                <normaloff>:/hbqt/resources/vzl-properties.png</normaloff>:/hbqt/resources/vzl-properties.png</iconset>
               </attribute>
               <attribute name="label">
                <string>Properties</string>
@@ -968,7 +1058,7 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>199</width>
+                <width>200</width>
                 <height>423</height>
                </rect>
               </property>
@@ -1551,8 +1641,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>216</width>
-                <height>210</height>
+                <width>215</width>
+                <height>202</height>
                </rect>
               </property>
               <attribute name="icon">
@@ -1815,6 +1905,14 @@
               </layout>
              </widget>
              <widget class="QWidget" name="pageChangeLayer">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>217</width>
+                <height>192</height>
+               </rect>
+              </property>
               <attribute name="icon">
                <iconset resource="hbqtwidgets.qrc">
                 <normaloff>:/hbqt/resources/vz-layerchange.png</normaloff>:/hbqt/resources/vz-layerchange.png</iconset>
@@ -1885,6 +1983,9 @@
        <item>
         <layout class="QHBoxLayout" name="hLayoutItemEdit"/>
        </item>
+       <item>
+        <layout class="QHBoxLayout" name="hLayBrwNavigation"/>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="pagePrintPreview">
@@ -1906,6 +2007,7 @@
        </property>
       </layout>
      </widget>
+     <widget class="QWidget" name="pageDocument"/>
     </widget>
    </item>
   </layout>

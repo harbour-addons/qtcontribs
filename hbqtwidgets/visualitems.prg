@@ -82,6 +82,8 @@
 
 #define __graphicsScene_block__                   2001
 
+#define __ROOT_LAYER__                            "...ALL..."
+
 //--------------------------------------------------------------------//
 //                            CLASS HbQtVisual
 //--------------------------------------------------------------------//
@@ -116,6 +118,8 @@ CLASS HbQtVisual
 
    METHOD init( oVisualizer )
    METHOD create( oVisualizer )
+   METHOD destroy()
+   METHOD clear()
 
    ACCESS loaded()                                INLINE ::lLoaded
 
@@ -146,7 +150,7 @@ CLASS HbQtVisual
    METHOD zValue( cLayer )
 
    ACCESS filter()                                INLINE ::hFilter
-   METHOD isFiltered( cLayer )                    INLINE iif( Empty( cLayer ), hb_HHasKey( ::hFilter, "...ROOT..." ), hb_HHasKey( ::hFilter, cLayer ) )
+   METHOD isFiltered( cLayer )                    INLINE iif( Empty( cLayer ), hb_HHasKey( ::hFilter, __ROOT_LAYER__ ), hb_HHasKey( ::hFilter, cLayer ) )
    METHOD setFilter( cLayer, lAdd )
 
    METHOD marker( cMarker )
@@ -175,6 +179,66 @@ METHOD HbQtVisual:create( oVisualizer )
    DEFAULT oVisualizer TO ::oVisualizer
    ::oVisualizer := oVisualizer
    RETURN Self
+
+
+METHOD HbQtVisual:clear()
+   LOCAL oItem
+   LOCAL hItems := hb_HClone( ::hItems )
+
+   FOR EACH oItem IN hItems
+      ::oVisualizer:objectDeleted( oItem, .T. )
+      QApplication():processEvents( 0 )
+   NEXT
+   ::oScene:removeItem( ::oBGItem )
+   ::oBGItem := NIL
+
+   ::lLoaded         := .F.
+   ::hVisual         := __hbqtStandardHash()
+   ::hList           := __hbqtStandardHash()
+   ::hMarkers        := __hbqtStandardHash()
+   ::hItems          := __hbqtStandardHash()
+   ::hData           := __hbqtStandardHash()
+   ::aObjects        := {}
+   ::nVPos           := 0
+   ::nHPos           := 0
+   ::lEditingMode    := .F.
+   ::lEdited         := .F.
+   ::hNamesID        := __hbqtStandardHash()
+   ::lLoaded         := .F.
+   ::hScaledPixmap   := __hbqtStandardHash()
+   ::aLayers         := {}
+   ::hFilter         := __hbqtStandardHash()
+
+   RETURN NIL
+
+
+METHOD HbQtVisual:destroy()
+
+   ::cRefID          := ""
+   ::nVersion        := 1
+   ::cTitle          := ""
+   ::hVisual         := __hbqtStandardHash()
+   ::hList           := __hbqtStandardHash()
+   ::hMarkers        := __hbqtStandardHash()
+   ::hItems          := __hbqtStandardHash()
+   ::hData           := __hbqtStandardHash()
+   ::aObjects        := {}
+   ::oPixmap         := NIL
+   ::oIcon           := NIL
+   ::oTransform      := NIL
+   ::nVPos           := 0
+   ::nHPos           := 0
+   ::oBGItem         := NIL
+   ::lEditingMode    := .F.
+   ::lEdited         := .F.
+   ::hNamesID        := __hbqtStandardHash()
+   ::lLoaded         := .F.
+   ::hScaledPixmap   := __hbqtStandardHash()
+   ::aLayers         := {}
+   ::hFilter         := __hbqtStandardHash()
+
+   ::oScene:clear()
+   RETURN NIL
 
 
 METHOD HbQtVisual:setFilter( cLayer, lAdd )
@@ -217,6 +281,7 @@ METHOD HbQtVisual:list( hList )
 
 METHOD HbQtVisual:visual( hVisual )
    LOCAL oldVisual := hb_HClone( ::hVisual )
+
    IF HB_ISHASH( hVisual )
       ::hVisual := hVisual
       IF hb_HHasKey( hVisual, "Markers" )
@@ -564,6 +629,7 @@ CLASS HbQtVisualItem
    METHOD removeChild( cChild )
    ACCESS children()                              INLINE ::hChildren
    ACCESS childCount()                            INLINE ::nChildren
+   METHOD displayInfo()
 
    DATA   lAsParent                               INIT .F.
    METHOD setAsParent( lSet )
@@ -619,6 +685,7 @@ CLASS HbQtVisualItem
    DATA   nStartAngle                             INIT 30
    DATA   nSpanAngle                              INIT 120
    DATA   xData
+   DATA   cDocBuffer
 
    DATA   nBorderWidth                            INIT 0
    DATA   nLineType                               INIT HBQT_GRAPHICSITEM_LINE_HORIZONTAL
@@ -631,8 +698,8 @@ CLASS HbQtVisualItem
 
    DATA   oDraw
 
-   METHOD init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
-   METHOD create( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
+   METHOD init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo, lAddedRecently )
+   METHOD create( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo, lAddedRecently )
    METHOD update()
    METHOD destroy()
    ACCESS name()                                  INLINE ::cName
@@ -651,6 +718,12 @@ CLASS HbQtVisualItem
    DATA   oHbQtVisual
    METHOD setVisual( oHbQtVisual )
    ACCESS visual()                                INLINE ::oHbQtVisual
+
+   DATA   oVisualizer
+   METHOD setVisualizer( oVisualizer )            INLINE iif( HB_ISOBJECT( oVisualizer ), ::oVisualizer := oVisualizer, NIL )
+   ACCESS visualizer()                            INLINE ::oVisualizer
+   ACCESS scene()                                 INLINE ::oWidget:scene()
+
    DATA   oDataRequestTimer
    METHOD setDataRequest( nDuration )
    METHOD requestData()
@@ -718,6 +791,7 @@ CLASS HbQtVisualItem
    METHOD drawSelection( oPainter, oRect )
 
    DATA   bAction
+   DATA   lActionBlock                            INIT .F.
    METHOD actionsBlock( bBlock )                  SETGET
 
    METHOD getProperties()
@@ -734,10 +808,13 @@ CLASS HbQtVisualItem
    METHOD hide()                                  INLINE ::oWidget:hide()
 
    ERROR  HANDLER OnError( ... )
+
+   DATA   lAddedRecently                          INIT   .T.
+
    ENDCLASS
 
 
-METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
+METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo, lAddedRecently )
 
    HB_TRACE( HB_TR_DEBUG, "HbQtVisualItem:new" )
 
@@ -747,6 +824,7 @@ METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCar
    DEFAULT aGeometry TO ::aGeometry
    DEFAULT nWidth    TO ::nWidth
    DEFAULT nHeight   TO ::nHeight
+   DEFAULT lAddedRecently TO ::lAddedRecently
 
    ::cType     := cType
    ::cName     := cName
@@ -755,12 +833,13 @@ METHOD HbQtVisualItem:init( cType, cName, aPos, aGeometry, nWidth, nHeight, hCar
    ::nWidth    := nWidth
    ::nHeight   := nHeight
    ::hCargo    := hCargo
+   ::lAddedRecently := lAddedRecently
 
    ::oDraw := HbQtVisualItemDraw():new()
    RETURN Self
 
 
-METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo )
+METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hCargo, lAddedRecently )
 
    HB_TRACE( HB_TR_DEBUG, "HbQtVisualItem:new" )
 
@@ -771,6 +850,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hC
    DEFAULT nWidth    TO ::nWidth
    DEFAULT nHeight   TO ::nHeight
    DEFAULT hCargo    TO ::hCargo
+   DEFAULT lAddedRecently TO ::lAddedRecently
 
    ::cType     := cType
    ::cName     := cName
@@ -779,6 +859,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hC
    ::nWidth    := nWidth
    ::nHeight   := nHeight
    ::hCargo    := hCargo
+   ::lAddedRecently := lAddedRecently
 
    IF HB_ISHASH( ::hCargo ) .AND. hb_HHasKey( ::hCargo, "Marker" )
       ::cMarker := ::hCargo[ "Marker" ]
@@ -868,6 +949,7 @@ METHOD HbQtVisualItem:create( cType, cName, aPos, aGeometry, nWidth, nHeight, hC
    ENDIF
 
    ::oWidget:setCacheMode( QGraphicsItem_DeviceCoordinateCache )
+
    RETURN Self
 
 
@@ -931,6 +1013,49 @@ METHOD HbQtVisualItem:setAsParent( lSet )
    RETURN Self
 
 
+METHOD HbQtVisualItem:displayInfo()
+   LOCAL oImage, oCursor, h_:= {}
+
+   IF Empty( ::cDocBuffer )
+      ::cDocBuffer := __hbqtHashPullValue( ::hCargo, "Document", "" )
+      ::cDocBuffer := iif( Empty( ::cDocBuffer ), ".", ::cDocBuffer )
+   ENDIF
+   IF ! ::cDocBuffer == "."
+      WITH OBJECT ::visualizer()
+         :oUI:textMarkersDoc:clear()
+         //
+         //::cDocBuffer := hb_MemoRead( "c:\temp\visual.pdf" )
+
+         IF "html>" $ Lower( Left( ::cDocBuffer, 100 ) )    // ok
+            :oUI:textMarkersDoc:setHtml( ::cDocBuffer )
+
+         ELSEIF "pdf" $ Lower( Left( ::cDocBuffer, 100 ) )  // fails
+            AAdd( h_, '<html>'                                                                    )
+            AAdd( h_,   '<head>'                                                                  )
+            AAdd( h_,     '<title>Capture and Upload Image</title>'                               )
+            AAdd( h_,   '</head>'                                                                 )
+            AAdd( h_,   '<body>'                                                                  )
+            AAdd( h_,   '<p> Click me to open <a href="data:text/pdf;base64,' + hb_base64Encode( ::cDocBuffer ) + '" help!</a></p>' )
+            AAdd( h_,   '</body>'                                                                 )
+            AAdd( h_, '</html>'          )
+            ::cDocBuffer := ""
+            AEval( h_, {|e|  ::cDocBuffer += e + Chr( 10 ) + Chr( 13 ) } )
+            :oUI:textMarkersDoc:setHtml( ::cDocBuffer )
+         ELSE
+            oImage := QImage():fromData( ::cDocBuffer, 5000000 )
+            IF ! oImage:isNull()                   // ok
+               oCursor := :oUI:textMarkersDoc:cursorForPosition( QPoint( 0,0 ) )
+               oCursor:insertImage( oImage )
+            ELSE                                   // ok
+               :oUI:textMarkersDoc:setPlainText( ::cDocBuffer )
+            ENDIF
+         ENDIF
+         :oUI:stackGraphics:setCurrentIndex( 2 )
+      ENDWITH
+   ENDIF
+   RETURN NIL
+
+
 METHOD HbQtVisualItem:setLayer( cLayer )
    IF HB_ISSTRING( cLayer )
       ::cLayer := Trim( cLayer )
@@ -965,22 +1090,26 @@ METHOD HbQtVisualItem:setDataRequest( nDuration )
 
 METHOD HbQtVisualItem:requestData()
    LOCAL hItem, oRect
+   LOCAL cUniqueID :=__hbqtHashPullValue( ::hData[ "FLD_1" ], "Value", "00000000" )
 
-   IF HB_ISBLOCK( ::actionsBlock() )
+   IF ::lActionBlock .AND. ( ! cUniqueID == "00000000" ) .AND. ::scene():isActive()
       oRect := ::geometry()
 
       hItem := __hbqtStandardHash()
-
+      //
       hItem[ "RefID"    ] := ::oHbQtVisual:refID()
       hItem[ "Identity" ] := ::hCargo[ "Marker" ]
+      hItem[ "UniqueID" ] := cUniqueID
       hItem[ "Name"     ] := ::name()
       hItem[ "X"        ] := oRect:x()
       hItem[ "Y"        ] := oRect:y()
       hItem[ "Width"    ] := oRect:width()
       hItem[ "Height"   ] := oRect:height()
       hItem[ "State"    ] := iif( Empty( ::state() ), NIL, ::state():type() )
+      hItem[ "VWidth"   ] := ::scene():width()
+      hItem[ "VHeight"  ] := ::scene():height()
 
-      Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_REQUESTDATA, hItem )   // response channel is separate
+      Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_REQUESTDATA, hItem )
    ENDIF
    RETURN Self
 
@@ -990,6 +1119,7 @@ METHOD HbQtVisualItem:actionsBlock( bBlock )
    IF HB_ISBLOCK( bBlock )
       ::bAction := bBlock
    ENDIF
+   ::lActionBlock := HB_ISBLOCK( ::bAction )
    RETURN bOldBlock
 
 
@@ -1009,9 +1139,13 @@ METHOD HbQtVisualItem:execEvent( cEvent, p, p1, p2 )
             Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_SELECTED )
          ENDIF
          EXIT
-      CASE 22103                                  // geometry changed
-         IF HB_ISBLOCK( ::actionsBlock() )
-            Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_GEOMETRYCHANGED )
+      CASE 22103                                  // geometry changed - moved or resized
+         IF ! ::isLocked()
+            IF __hbqGraphics_CanMoveItems()
+               IF HB_ISBLOCK( ::actionsBlock() )
+                  Eval( ::actionsBlock(), Self, HBQT_GRAPHICSITEM_GEOMETRYCHANGED )
+               ENDIF
+            ENDIF
          ENDIF
          EXIT
       CASE 22104
@@ -1068,6 +1202,17 @@ METHOD HbQtVisualItem:update()
 
 
 METHOD HbQtVisualItem:getDataEx()
+   LOCAL hDef
+
+   IF HB_ISHASH( ::hData )
+      FOR EACH hDef IN ::hData
+         IF HB_ISHASH( hDef )
+            IF ! hDef[ "Label" ] == "UniqueID"
+               hDef[ "ReadOnly" ] := ::lLocked
+            ENDIF
+         ENDIF
+      NEXT
+   ENDIF
    RETURN ::hData
 
 
@@ -2585,12 +2730,14 @@ METHOD HbQtVisualItemDraw:barcode( oPainter, oRectF, oLineColor, oBGColor, cText
 
 METHOD HbQtVisualItemDraw:image( oPainter, oRectF, oPixmap )
 #if 1
-   IF oPixmap:isNull()
-      oPainter:drawRect( oRectF )
-   ELSE
-      //oPainter:drawPixmap( oRectF, oPixmap:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ), oRectF )
-      oPainter:drawPixmap( oRectF, oPixmap, oRectF )
-      //oPainter:drawPixmap( oRectF, oPixmap, QRectF( 0.0, 0.0, oPixmap:width(), oPixmap:height() ) )
+   IF ! Empty( oPixmap )
+      IF oPixmap:isNull()
+         oPainter:drawRect( oRectF )
+      ELSE
+         //oPainter:drawPixmap( oRectF, oPixmap:scaled( oRectF:width(), oRectF:height(), Qt_KeepAspectRatio ), oRectF )
+         oPainter:drawPixmap( oRectF, oPixmap, oRectF )
+         //oPainter:drawPixmap( oRectF, oPixmap, QRectF( 0.0, 0.0, oPixmap:width(), oPixmap:height() ) )
+      ENDIF
    ENDIF
 #else
    LOCAL image, rc, img, point, pen, cx, cy, cw, ch
@@ -2753,3 +2900,4 @@ METHOD HbQtVisualItemGroup:clear()
    RETURN Self
 
 //--------------------------------------------------------------------//
+

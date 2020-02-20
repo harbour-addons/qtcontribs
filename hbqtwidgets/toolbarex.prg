@@ -81,7 +81,9 @@ CLASS HbQtScrollableToolbar
    DATA   oPos
 
    DATA   aToolButtons                            INIT   {}
-   DATA   hButtons                                INIT __hbqtStandardHash()
+   DATA   hButtons                                INIT   __hbqtStandardHash()
+
+   ACCESS widget()                                INLINE ::oWidget
 
    DATA   nOrientation                            INIT   Qt_Horizontal                   // before :create()
    ACCESS orientation()                           INLINE ::nOrientation
@@ -124,6 +126,7 @@ CLASS HbQtScrollableToolbar
    METHOD create( oParent )
    METHOD configure()
    METHOD destroy()                               VIRTUAL
+   METHOD enable( lEnable )                       INLINE iif( HB_ISLOGICAL( lEnable ), ::oWidget:setEnabled( lEnable ), NIL )
 
    METHOD adjustSize()
    METHOD manageToolbar()
@@ -273,26 +276,24 @@ METHOD HbQtScrollableToolbar:setState( cName, nState )
    LOCAL oldState, oToolButton
 
    IF ! Empty( oToolButton := ::findButton( cName ) )
-      SWITCH nState
-      CASE 1                                      // __HBQT_TBBUTTON_STATE_TOGGLE__
-         IF oToolButton:isCheckable()
-            oldState := oToolButton:isChecked()
+      oldState := iif( oToolButton:isCheckable(), oToolButton:isChecked(), .F. )
+      IF HB_ISNUMERIC( nState ) .AND. oToolButton:isCheckable()
+         SWITCH nState
+         CASE 1                                      // __HBQT_TBBUTTON_STATE_TOGGLE__
             oToolButton:toggle()
-         ENDIF
-         EXIT
-      CASE 2                                      // __HBQT_TBBUTTON_STATE_UNCHECKED__
-         IF ( oldState := oToolButton:isChecked() )
-            oToolButton:toggle()
-         ENDIF
-         EXIT
-      CASE 3                                      // __HBQT_TBBUTTON_STATE_CHECKED__
-         IF oToolButton:isCheckable()
-            IF ! ( oldState := oToolButton:isChecked() )
+            EXIT
+         CASE 2                                      // __HBQT_TBBUTTON_STATE_UNCHECKED__
+            IF oldState
                oToolButton:toggle()
             ENDIF
-         ENDIF
-         EXIT
-      ENDSWITCH
+            EXIT
+         CASE 3                                      // __HBQT_TBBUTTON_STATE_CHECKED__
+            IF ! oldState
+               oToolButton:toggle()
+            ENDIF
+            EXIT
+         ENDSWITCH
+      ENDIF
    ENDIF
    RETURN oldState
 

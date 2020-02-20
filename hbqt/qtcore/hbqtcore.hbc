@@ -28,7 +28,8 @@ libs=../hbqt_common.hbc
 
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='4')&(allwin|linux|beos|bsd)}libs=QtCore
 
-{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(allwin|linux|darwin|beos|bsd)}libs=Qt5DBus Qt5Core
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER<'6')&(allwin|linux|darwin|beos|bsd)}libs=Qt5Core
+{HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER>'5')&(allwin|linux|darwin|beos|bsd)}libs=Qt5DBus Qt5Core
 
 {HB_STATIC_QT&(HB_QT_MAJOR_VER='5')&(HB_QT_MINOR_VER<'8')&(allwin|linux|darwin|beos|bsd)}libs=Qt5PlatformSupport
 

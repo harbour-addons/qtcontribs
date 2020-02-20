@@ -128,13 +128,25 @@ void setSceneRect ( qreal x, qreal y, qreal w, qreal h )
 void setSelectionArea ( const QPainterPath & path )
 void setSelectionArea ( const QPainterPath & path, Qt::ItemSelectionMode mode )
 void setSortCacheEnabled ( bool enabled )
-void setStickyFocus ( bool enabled )
 void setStyle ( QStyle * style )
-bool stickyFocus () const
 QStyle * style () const
 void update ( qreal x, qreal y, qreal w, qreal h )
 QList<QGraphicsView *> views () const
 qreal width () const
+
+bool isActive() const                          [*V=0x040600*]
+bool stickyFocus() const                       [*V=0x040600*]
+void setStickyFocus(bool enabled)              [*V=0x040600*]
+QGraphicsItem * activePanel() const            [*V=0x040600*]
+QGraphicsItem * itemAt(const QPointF &position, const QTransform &deviceTransform) const   [*V=0x040600*]
+QGraphicsItem * itemAt(qreal x, qreal y, const QTransform &deviceTransform) const          [*V=0x040600*]
+bool sendEvent(QGraphicsItem *item, QEvent *event)   [*V=0x040600*]
+void setActivePanel(QGraphicsItem *item)             [*V=0x040600*]
+void setSelectionArea(const QPainterPath &path, const QTransform &deviceTransform)         [*V=0x040600*]
+void setSelectionArea(const QPainterPath &path, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape, const QTransform &deviceTransform = QTransform())  [*V=0x040600*]
+
+void setSelectionArea(const QPainterPath &path, Qt::ItemSelectionOperation selectionOperation, Qt::ItemSelectionMode mode = Qt::IntersectsItemShape, const QTransform &deviceTransform = QTransform())  [*V=0x050500*]
+
 </PROTOS>
 
 <SLOTS>

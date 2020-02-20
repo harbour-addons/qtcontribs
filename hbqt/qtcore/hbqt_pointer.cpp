@@ -72,29 +72,16 @@
 #ifdef HB_QT_STATIC
 #define QT_STATICPLUGIN
 #include <QtCore/qplugin.h>
-Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
-Q_IMPORT_PLUGIN(QICOPlugin)
-Q_IMPORT_PLUGIN(QJpegPlugin)
-Q_IMPORT_PLUGIN(QTiffPlugin)
-Q_IMPORT_PLUGIN(QGifPlugin)
+   Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+   Q_IMPORT_PLUGIN(QICOPlugin)
+   Q_IMPORT_PLUGIN(QTiffPlugin)
+   Q_IMPORT_PLUGIN(QWindowsPrinterSupportPlugin)
+#if QT_VERSION > 0x050500
+   Q_IMPORT_PLUGIN(QJpegPlugin)
+   Q_IMPORT_PLUGIN(QGifPlugin)
+#endif
 #if QT_VERSION < 0x050900
    Q_IMPORT_PLUGIN(DSServicePlugin)
-#ifdef HBQT_WITH_QML_SUPPORT
-   Q_IMPORT_PLUGIN(QtQuickLayoutsPlugin)
-   Q_IMPORT_PLUGIN(QtQuickControls1Plugin)
-   Q_IMPORT_PLUGIN(QtQuickControls2Plugin)
-   Q_IMPORT_PLUGIN(QtQuick2Plugin)
-   Q_IMPORT_PLUGIN(QtQuick2DialogsPrivatePlugin)
-   Q_IMPORT_PLUGIN(QtQuick2DialogsPlugin)
-   Q_IMPORT_PLUGIN(QtQuick2WindowPlugin)
-   Q_IMPORT_PLUGIN(QtQuick2PrivateWidgetsPlugin)
-   Q_IMPORT_PLUGIN(QtQuick2ParticlesPlugin)
-   Q_IMPORT_PLUGIN(QmlFolderListModelPlugin)
-   Q_IMPORT_PLUGIN(QmlSettingsPlugin)
-   Q_IMPORT_PLUGIN(QtQmlModelsPlugin)
-   Q_IMPORT_PLUGIN(QmlXmlListModelPlugin)
-   Q_IMPORT_PLUGIN(QQmlLocalStoragePlugin)
-#endif
 #endif
 #endif
 

@@ -153,10 +153,8 @@ STATIC FUNCTION DefError( oError )
 
    n := 1
    DO WHILE ! Empty( ProcName( ++n ) )
-
       cMsg += hb_eol()
-      cMsg += "Called from " + ProcName( n ) + ;
-                 "(" + hb_NToS( ProcLine( n ) ) + ")"
+      cMsg += "Called from " + ProcName( n ) + "(" + hb_NToS( ProcLine( n ) ) + ")"
    ENDDO
 
    nChoice := hbqt_messageBox( cMsg, NIL, "HBQT Runtime Error", QMessageBox_Critical, oError )
@@ -164,15 +162,17 @@ STATIC FUNCTION DefError( oError )
       // this make the difference; break means returns oError object to the recover procedure (CLIPPER)
       // BREAK( oError )
    ELSEIF nChoice == QMessageBox_Retry
-      RETURN .T.
+      // RETURN .T.
    ELSEIF nChoice == QMessageBox_Ignore
-      RETURN .F.
+      // RETURN .F.
    ENDIF
 
    IF hbqt_IsActiveApplication()
-      QApplication():closeAllWindows()
-      QApplication():exit( 1 )
-   END IF
+      WITH OBJECT QApplication()
+         //:closeAllWindows()
+         :exit( 0 )
+      ENDWITH
+   ENDIF
 
    ErrorLevel( 1 )
    QUIT

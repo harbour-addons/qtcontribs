@@ -5,8 +5,10 @@
 -mt
 
 -w3 -es2 -l
+-inc
 
--o../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
+#-o../../lib/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
+-o${hb_targetname}
 -workdir=${hb_work}/${hb_plat}/${hb_comp}${hb_build}/${hb_targetname}
 
 -icon={allwin}harb_win.ico
@@ -14,6 +16,7 @@
 
 hbxbp.hbc
 hbnetio.hbc
+hbqtmultimedia.hbc
 
 netiosrq.prg
 netiosrq.qrc
