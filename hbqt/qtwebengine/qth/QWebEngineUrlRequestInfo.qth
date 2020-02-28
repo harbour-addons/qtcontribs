@@ -1,0 +1,57 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QUrl>
+#include <QtCore/QByteArray>
+#include <QtWebEngineCore/QWebEngineUrlRequestInfo>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QWEBENGINEURLREQUESTINFO )
+{
+   //__HB_RETPTRGC__( new QWebEngineUrlRequestInfo() );
+   HB_FUNC_EXEC( HB_QWEBENGINEURLREQUESTINFO );
+}
+</CODE>
+
+<ENUMS>
+enum  NavigationType { NavigationTypeLink, NavigationTypeTyped, NavigationTypeFormSubmitted, NavigationTypeBackForward, NavigationTypeReload, …, NavigationTypeOther }
+enum  ResourceType { ResourceTypeMainFrame, ResourceTypeSubFrame, ResourceTypeStylesheet, ResourceTypeScript, ResourceTypeImage, …, ResourceTypeUnknown }
+</ENUMS>
+
+<PROTOS>
+void  block(bool shouldBlock)
+QUrl  firstPartyUrl() const
+//QUrl  initiator() const
+QWebEngineUrlRequestInfo::NavigationType  navigationType() const
+void  redirect(const QUrl &url)
+QByteArray  requestMethod() const
+QUrl  requestUrl() const
+QWebEngineUrlRequestInfo::ResourceType resourceType() const
+void  setHttpHeader(const QByteArray &name, const QByteArray &value)
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,14 @@
+#
+# $Id$
+#
+
+{android|__ios__}-stop='QtWebEngine is not available for Android/ios...'
+
+../hbqt_common.hbm
+
+hbqtwebengine.hbm
+
+-instfile=inc:hbqtwebengine.ch
+-instfile=inc:hbqtwebengine.hbx
+
+hbqtwebengines.hbp

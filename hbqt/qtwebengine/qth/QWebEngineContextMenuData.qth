@@ -1,0 +1,68 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineContextMenuData>
+
+
+/*
+ * QWebEngineContextMenuData(const QWebEngineContextMenuData &other)
+ * QWebEngineContextMenuData()
+ * ~QWebEngineContextMenuData()
+ */
+HB_FUNC( QT_QWEBENGINECONTEXTMENUDATA )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWEBENGINECONTEXTMENUDATA" ) )
+   {
+      __HB_RETPTRGC__( new QWebEngineContextMenuData( *hbqt_par_QWebEngineContextMenuData( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QWebEngineContextMenuData() );
+   }      
+}
+</CODE>
+
+<ENUMS>
+enum  EditFlag { CanUndo, CanRedo, CanCut, CanCopy, CanPaste, CanEditRichly }
+//flags EditFlags
+enum  MediaFlag { MediaInError, MediaPaused, MediaMuted, MediaLoop, MediaCanSave, MediaCanRotate }
+//flags MediaFlags
+enum  MediaType { MediaTypeNone, MediaTypeImage, MediaTypeVideo, MediaTypeAudio, MediaTypeCanvas, MediaTypePlugin }
+</ENUMS>
+
+<PROTOS>
+//QWebEngineContextMenuData::EditFlags   editFlags() const
+bool  isContentEditable() const
+bool  isValid() const
+QString  linkText() const
+QUrl  linkUrl() const
+//QWebEngineContextMenuData::MediaFlags  mediaFlags() const
+QWebEngineContextMenuData::MediaType   mediaType() const
+QUrl  mediaUrl() const
+QString  misspelledWord() const
+QPoint   position() const
+QString  selectedText() const
+QStringList spellCheckerSuggestions() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

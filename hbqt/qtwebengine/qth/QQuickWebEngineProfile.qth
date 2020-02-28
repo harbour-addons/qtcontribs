@@ -1,0 +1,80 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngine/QQuickWebEngineProfile>
+
+
+/* QQuickWebEngineProfile(QObject *parent = Q_NULLPTR)
+ *
+ */
+HB_FUNC( QT_QQUICKWEBENGINEPROFILE )
+{
+   __HB_RETPTRGC__( new QQuickWebEngineProfile() );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QString  cachePath() const
+void  clearHttpCache()
+QWebEngineCookieStore * cookieStore() const
+QString  httpAcceptLanguage() const
+int   httpCacheMaximumSize() const
+HttpCacheType  httpCacheType() const
+QString  httpUserAgent() const
+//void  installUrlSchemeHandler(const QByteArray &scheme, QWebEngineUrlSchemeHandler *handler)
+bool  isOffTheRecord() const
+PersistentCookiesPolicy persistentCookiesPolicy() const
+QString  persistentStoragePath() const
+void  removeAllUrlSchemeHandlers()
+void  removeUrlScheme(const QByteArray &scheme)
+void  removeUrlSchemeHandler(QWebEngineUrlSchemeHandler *handler)
+void  setCachePath(const QString &path)
+void  setHttpAcceptLanguage(const QString &httpAcceptLanguage)
+void  setHttpCacheMaximumSize(int maxSize)
+void  setHttpCacheType(QQuickWebEngineProfile::HttpCacheType)
+void  setHttpUserAgent(const QString &userAgent)
+void  setOffTheRecord(bool offTheRecord)
+void  setPersistentCookiesPolicy(QQuickWebEngineProfile::PersistentCookiesPolicy)
+void  setPersistentStoragePath(const QString &path)
+void  setRequestInterceptor(QWebEngineUrlRequestInterceptor *interceptor)
+void  setStorageName(const QString &name)
+QString  storageName() const
+//const QWebEngineUrlSchemeHandler *  urlSchemeHandler(const QByteArray &scheme) const
+QQuickWebEngineProfile *   defaultProfile()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void  cachePathChanged()
+void  downloadFinished(QQuickWebEngineDownloadItem *download)
+void  downloadRequested(QQuickWebEngineDownloadItem *download)
+void  httpAcceptLanguageChanged()
+void  httpCacheMaximumSizeChanged()
+void  httpCacheTypeChanged()
+void  httpUserAgentChanged()
+void  offTheRecordChanged()
+void  persistentCookiesPolicyChanged()
+void  persistentStoragePathChanged()
+void  storageNameChanged()
+</SIGNALS>

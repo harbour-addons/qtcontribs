@@ -1,0 +1,84 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineView>
+#include <QtGui/QIcon>
+
+/*
+ * QWebEngineView(QWidget *parent = Q_NULLPTR)
+ * virtual ~QWebEngineView()
+ */
+HB_FUNC( QT_QWEBENGINEVIEW )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWIDGET" ) )
+   {
+      __HB_RETPTRGC__( new QWebEngineView( hbqt_par_QWidget( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QWebEngineView() );
+   }
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void  findText(const QString &subString, QWebEnginePage::FindFlags options = QWebEnginePage::FindFlags())
+//void  findText(const QString &subString, QWebEnginePage::FindFlags options, FunctorOrLambda resultCallback)
+bool  hasSelection() const
+QWebEngineHistory *  history() const
+QIcon icon() const
+QUrl  iconUrl() const
+void  load(const QUrl &url)
+QWebEnginePage *  page() const
+QAction *   pageAction(QWebEnginePage::WebAction action) const
+QString  selectedText() const
+void  setContent(const QByteArray &data, const QString &mimeType = QString(), const QUrl &baseUrl = QUrl())
+void  setHtml(const QString &html, const QUrl &baseUrl = QUrl())
+void  setPage(QWebEnginePage *page)
+void  setUrl(const QUrl &url)
+void  setZoomFactor(qreal factor)
+QWebEngineSettings * settings() const
+QString  title() const
+void  triggerPageAction(QWebEnginePage::WebAction action, bool checked = false)
+QUrl  url() const
+qreal zoomFactor() const
+virtual QSize  sizeHint() const
+</PROTOS>
+
+<SLOTS>
+void  back()
+void  forward()
+void  reload()
+void  stop()
+</SLOTS>
+
+<SIGNALS>
+void  iconChanged(const QIcon &icon)
+void  iconUrlChanged(const QUrl &url)
+void  loadFinished(bool ok)
+void  loadProgress(int progress)
+void  loadStarted()
+void  renderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus terminationStatus, int exitCode)
+void  selectionChanged()
+void  titleChanged(const QString &title)
+void  urlChanged(const QUrl &url)
+</SIGNALS>

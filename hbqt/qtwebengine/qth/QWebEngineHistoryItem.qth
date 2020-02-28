@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QWidget
+</CLASS>
+
+
+<CODE>
+//#include <QtWidgets/QDial>
+#include <QtWebEngineWidgets/QWebEngineHistoryItem>
+
+
+/*
+ * QWebEngineHistoryItem(const QWebEngineHistoryItem &other)
+ * ~QWebEngineHistoryItem()
+ */
+HB_FUNC( QT_QWEBENGINEHISTORYITEM )
+{
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QWEBENGINEHISTORYITEM" ) )
+   {
+      __HB_RETPTRGC__( new QWebEngineHistoryItem( *hbqt_par_QWebEngineHistoryItem( 1 ) ) );
+   }
+   else 
+   {   
+      hb_errRT_BASE( EG_ARG, 9999, NULL, HB_ERR_FUNCNAME, HB_ERR_ARGS_BASEPARAMS );
+   }  
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+QUrl  iconUrl() const
+bool  isValid() const
+QDateTime   lastVisited() const
+QUrl  originalUrl() const
+void  swap(QWebEngineHistoryItem &other)
+QString  title() const
+QUrl  url() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

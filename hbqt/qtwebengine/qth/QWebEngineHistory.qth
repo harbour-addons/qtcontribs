@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit    = 
+Destructor = no
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineHistory>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QWEBENGINEHISTORY )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINEHISTORY );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void  back()
+QWebEngineHistoryItem   backItem() const
+QList<QWebEngineHistoryItem>  backItems(int maxItems) const
+bool  canGoBack() const
+bool  canGoForward() const
+void  clear()
+int   count() const
+QWebEngineHistoryItem   currentItem() const
+int   currentItemIndex() const
+void  forward()
+QWebEngineHistoryItem   forwardItem() const
+QList<QWebEngineHistoryItem>  forwardItems(int maxItems) const
+void  goToItem(const QWebEngineHistoryItem &item)
+QWebEngineHistoryItem   itemAt(int i) const
+QList<QWebEngineHistoryItem>  items() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

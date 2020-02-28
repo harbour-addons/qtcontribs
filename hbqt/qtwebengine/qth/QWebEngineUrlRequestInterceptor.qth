@@ -1,0 +1,45 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineCore/QWebEngineUrlRequestInterceptor>
+
+
+/*
+ * QWebEngineUrlRequestInterceptor(QObject *p = Q_NULLPTR)
+ */
+HB_FUNC( QT_QWEBENGINEURLREQUESTINTERCEPTOR )
+{
+   //__HB_RETPTRGC__( new QWebEngineUrlRequestInterceptor() );
+   HB_FUNC_EXEC( HB_QWEBENGINEURLREQUESTINTERCEPTOR );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual void   interceptRequest(QWebEngineUrlRequestInfo &info) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

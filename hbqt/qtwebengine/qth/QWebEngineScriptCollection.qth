@@ -1,0 +1,53 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = 
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineScriptCollection>
+
+
+/*
+ * ~QWebEngineScriptCollection()
+ */
+HB_FUNC( QT_QWEBENGINESCRIPTCOLLECTION )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINESCRIPTCOLLECTION );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void  clear()
+bool  contains(const QWebEngineScript &value) const
+int   count() const
+QWebEngineScript  findScript(const QString &name) const
+QList<QWebEngineScript> findScripts(const QString &name) const
+void  insert(const QWebEngineScript &s)
+void  insert(const QList<QWebEngineScript> &list)
+bool  isEmpty() const
+bool  remove(const QWebEngineScript &script)
+int   size() const
+QList<QWebEngineScript> toList() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

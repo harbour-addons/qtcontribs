@@ -1,0 +1,44 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineCore/QWebEngineUrlSchemeHandler>
+
+
+/*
+ * QWebEngineUrlSchemeHandler(QObject *parent = Q_NULLPTR)
+ * ~QWebEngineUrlSchemeHandler()
+ */
+HB_FUNC( QT_QWEBENGINEURLSCHEMEHANDLER )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINEURLSCHEMEHANDLER );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+virtual void   requestStarted(QWebEngineUrlRequestJob *request) = 0
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

@@ -1,0 +1,50 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QUrl>
+#include <QtWebEngineCore/QWebEngineCookieStore>
+
+/*
+ *virtual ~QWebEngineCookieStore()
+ */
+HB_FUNC( QT_QWEBENGINECOOKIESTORE )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINECOOKIESTORE );
+}
+</CODE>
+
+<ENUMS>
+</ENUMS>
+
+<PROTOS>
+void  deleteAllCookies()
+void  deleteCookie(const QNetworkCookie &cookie, const QUrl &origin = QUrl())
+void  deleteSessionCookies()
+void  loadAllCookies()
+void  setCookie(const QNetworkCookie &cookie, const QUrl &origin = QUrl())
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void  cookieAdded(const QNetworkCookie &cookie)
+void  cookieRemoved(const QNetworkCookie &cookie)
+</SIGNALS>

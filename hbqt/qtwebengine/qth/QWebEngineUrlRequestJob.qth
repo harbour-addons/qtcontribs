@@ -1,0 +1,49 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     =
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineCore/QWebEngineUrlRequestJob>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QWEBENGINEURLREQUESTJOB )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINEURLREQUESTJOB );
+}
+</CODE>
+
+<ENUMS>
+enum  Error { NoError, UrlNotFound, UrlInvalid, RequestAborted, RequestDenied, RequestFailed }
+</ENUMS>
+
+<PROTOS>
+void  fail(QWebEngineUrlRequestJob::Error r)
+void  redirect(const QUrl &url)
+void  reply(const QByteArray &contentType, QIODevice *device)
+QByteArray  requestMethod() const
+QUrl  requestUrl() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

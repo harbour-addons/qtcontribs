@@ -1,0 +1,90 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineProfile>
+
+
+/*
+ * QWebEngineProfile(QObject *parent = Q_NULLPTR)
+ * QWebEngineProfile(const QString &storageName, QObject *parent = Q_NULLPTR)
+ */
+HB_FUNC( QT_QWEBENGINEPROFILE )
+{
+   //HB_FUNC_EXEC( HB_QWEBENGINEPROFILE );
+   if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QWebEngineProfile( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QWebEngineProfile() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum  HttpCacheType { MemoryHttpCache, DiskHttpCache, NoCache }
+enum  PersistentCookiesPolicy { NoPersistentCookies, AllowPersistentCookies, ForcePersistentCookies }
+</ENUMS>
+
+<PROTOS>
+QString  cachePath() const
+void  clearAllVisitedLinks()
+void  clearHttpCache()
+void  clearVisitedLinks(const QList<QUrl> &urls)
+QWebEngineCookieStore * cookieStore()
+QString  httpAcceptLanguage() const
+int   httpCacheMaximumSize() const
+HttpCacheType  httpCacheType() const
+QString  httpUserAgent() const
+//void  installUrlSchemeHandler(const QByteArray &scheme, QWebEngineUrlSchemeHandler *handler)
+bool  isOffTheRecord() const
+bool  isSpellCheckEnabled() const
+PersistentCookiesPolicy persistentCookiesPolicy() const
+QString  persistentStoragePath() const
+void  removeAllUrlSchemeHandlers()
+void  removeUrlScheme(const QByteArray &scheme)
+//void  removeUrlSchemeHandler(QWebEngineUrlSchemeHandler *handler)
+QWebEngineScriptCollection *  scripts() const
+void  setCachePath(const QString &path)
+void  setHttpAcceptLanguage(const QString &httpAcceptLanguage)
+void  setHttpCacheMaximumSize(int maxSize)
+void  setHttpCacheType(QWebEngineProfile::HttpCacheType httpCacheType)
+void  setHttpUserAgent(const QString &userAgent)
+void  setPersistentCookiesPolicy(QWebEngineProfile::PersistentCookiesPolicy newPersistentCookiesPolicy)
+void  setPersistentStoragePath(const QString &path)
+void  setRequestInterceptor(QWebEngineUrlRequestInterceptor *interceptor)
+void  setSpellCheckEnabled(bool enable)
+void  setSpellCheckLanguages(const QStringList &languages)
+QWebEngineSettings * settings() const
+QStringList spellCheckLanguages() const
+QString  storageName() const
+//const QWebEngineUrlSchemeHandler *  urlSchemeHandler(const QByteArray &scheme) const
+bool  visitedLinksContainsUrl(const QUrl &url) const
+
+QWebEngineProfile *  defaultProfile()
+
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+void  downloadRequested(QWebEngineDownloadItem *download)
+</SIGNALS>

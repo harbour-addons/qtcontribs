@@ -1710,9 +1710,6 @@ METHOD THbUIC:buildMethod( cName, nStartLine, nEndLine, cParent )
       CASE "QMainWindow"
          WR_PRG( "   ::oWidget := QMainWindow( oParent )" )
          EXIT
-      CASE "QStackedWidget"
-         WR_PRG( "   ::oWidget := QStackedWidget( oParent )" )
-         EXIT
       ENDSWITCH
       WR_PRG( hb_StrFormat( "   ::%s:= ::oWidget", ::cFormName ) )
       WR_PRG( "" )
@@ -4265,7 +4262,8 @@ STATIC FUNCTION IsQt5Widget( cWidget )
          "QWidgetAction"                        => NIL , ;
          "QWidgetItem"                          => NIL , ;
          "QWizard"                              => NIL , ;
-         "QWizardPage"                          => NIL   }
+         "QWizardPage"                          => NIL , ;
+         "Q"                                    => NIL   }
 
    RETURN cWidget $ s_b_
 
@@ -4817,6 +4815,14 @@ STATIC FUNCTION qth_is_QObject( cWidget )
       "QPieModelMapper"                         => NIL , ;
       "QXYModelMapper"                          => NIL , ;
       "QBoxPlotModelMapper"                     => NIL , ;
+      "QWebEngineCookieStore"                   => NIL , ;
+      "QWebEngineUrlRequestInterceptor"         => NIL , ;
+      "QWebEngineUrlRequestJob"                 => NIL , ;
+      "QWebEngineUrlSchemeHandler"              => NIL , ;
+      "QWebEngineDownloadItem"                  => NIL , ;
+      "QWebEnginePage"                          => NIL , ;
+      "QWebEngineProfile"                       => NIL , ;
+      "QWebEngineView"                          => NIL , ;
       "x                      "                 => NIL   }
 
    IF lower( left( cWidget, 3 ) ) == "hbq"

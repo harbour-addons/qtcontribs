@@ -1,0 +1,59 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = 
+Destructor  = no
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineSettings>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QWEBENGINESETTINGS )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINESETTINGS );
+}
+</CODE>
+
+<ENUMS>
+enum  FontFamily { StandardFont, FixedFont, SerifFont, SansSerifFont, ..., PictographFont }
+enum  FontSize { MinimumFontSize, MinimumLogicalFontSize, DefaultFontSize, DefaultFixedFontSize }
+enum  WebAttribute { AutoLoadImages, JavascriptEnabled, JavascriptCanOpenWindows, JavascriptCanAccessClipboard, ..., AllowGeolocationOnInsecureOrigins }
+</ENUMS>
+
+<PROTOS>
+QString  defaultTextEncoding() const
+QString  fontFamily(FontFamily which) const
+int   fontSize(FontSize type) const
+void  resetAttribute(WebAttribute attribute)
+void  resetFontFamily(FontFamily which)
+void  resetFontSize(FontSize type)
+void  setAttribute(WebAttribute attribute, bool on)
+void  setDefaultTextEncoding(const QString &encoding)
+void  setFontFamily(FontFamily which, const QString &family)
+void  setFontSize(FontSize type, int size)
+bool  testAttribute(WebAttribute attribute) const
+
+QWebEngineSettings * defaultSettings()
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

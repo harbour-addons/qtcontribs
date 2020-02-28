@@ -1,0 +1,47 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = 
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineCertificateError>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QWEBENGINECERTIFICATEERROR )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINECERTIFICATEERROR );
+}
+</CODE>
+
+<ENUMS>
+enum  Error { SslPinnedKeyNotInCertificateChain, CertificateCommonNameInvalid, CertificateDateInvalid, CertificateAuthorityInvalid, ..., CertificateTransparencyRequired }
+</ENUMS>
+
+<PROTOS>
+Error error() const
+QString  errorDescription() const
+bool  isOverridable() const
+QUrl  url() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

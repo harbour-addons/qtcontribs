@@ -1,0 +1,142 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2019-2020 Pritpal Bedi <bedipritpal/hotmail/com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit  = QObject
+</CLASS>
+
+<CODE>
+#include "hbqtgui.h"
+
+#include <QtWebEngineWidgets/QWebEnginePage>
+#include <QtWebEngineWidgets/QWebEngineContextMenuData>
+#include <QtCore/QVariant>
+#include <QtGui/QIcon>
+
+
+/*
+ * QWebEnginePage(QWebEngineProfile *profile, QObject *parent = Q_NULLPTR)
+ * QWebEnginePage(QObject *parent = Q_NULLPTR)
+ * virtual ~QWebEnginePage()
+ */
+HB_FUNC( QT_QWEBENGINEPAGE )
+{
+   if( hb_pcount() == 2 && hbqt_par_isDerivedFrom( 1, "QWEBENGINEPROFILE" ) && hbqt_par_isDerivedFrom( 2, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QWebEnginePage( hbqt_par_QWebEngineProfile( 1 ), hbqt_par_QObject( 2 ) ) );
+   }
+   else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
+   {
+      __HB_RETPTRGC__( new QWebEnginePage( hbqt_par_QObject( 1 ) ) );
+   }
+   else
+   {
+      __HB_RETPTRGC__( new QWebEnginePage() );
+   }
+}
+</CODE>
+
+<ENUMS>
+enum Feature { Notifications, Geolocation, MediaAudioCapture, MediaVideoCapture, MediaAudioVideoCapture, MouseLock, DesktopVideoCapture, DesktopAudioVideoCapture }
+enum FileSelectionMode { FileSelectOpen, FileSelectOpenMultiple }
+enum FindFlag { FindBackward, FindCaseSensitively }
+flags FindFlags
+enum JavaScriptConsoleMessageLevel { InfoMessageLevel, WarningMessageLevel, ErrorMessageLevel }
+enum NavigationType { NavigationTypeLinkClicked, NavigationTypeTyped, NavigationTypeFormSubmitted, NavigationTypeBackForward, NavigationTypeReload, NavigationTypeOther }
+enum PermissionPolicy { PermissionUnknown, PermissionGrantedByUser, PermissionDeniedByUser }
+enum RenderProcessTerminationStatus { NormalTerminationStatus, AbnormalTerminationStatus, CrashedTerminationStatus, KilledTerminationStatus }
+enum WebAction { NoWebAction, Back, Forward, Stop, ..., InsertUnorderedList }
+enum WebWindowType { WebBrowserWindow, WebBrowserTab, WebDialog, WebBrowserBackgroundTab }
+</ENUMS>
+
+<PROTOS>
+QAction * action(QWebEnginePage::WebAction action) const
+QColor backgroundColor() const
+QSizeF contentsSize() const
+const QWebEngineContextMenuData &   contextMenuData() const
+QMenu * createStandardContextMenu()
+//QWebEnginePage * devToolsPage() const
+//void download(const QUrl &url, const QString &filename = QString())
+void findText(const QString &subString, QWebEnginePage::FindFlags options = ..., const QWebEngineCallback<bool> &resultCallback = ...)
+bool hasSelection() const
+QWebEngineHistory * history() const
+QIcon icon() const
+QUrl iconUrl() const
+//QWebEnginePage * inspectedPage() const
+bool isAudioMuted() const
+void load(const QUrl &url)
+void load(const QWebEngineHttpRequest &request)
+void print(QPrinter *printer, const QWebEngineCallback<bool> &resultCallback)
+//void printToPdf(const QString &filePath, const QPageLayout &pageLayout = QPageLayout(QPageSize(QPageSize::A4), QPageLayout::Portrait, QMarginsF()))
+void printToPdf(const QString &filePath, const QPageLayout &pageLayout = QPageLayout())
+//void printToPdf(const QWebEngineCallback<const QByteArray &> &resultCallback, const QPageLayout &pageLayout = QPageLayout(QPageSize(QPageSize::A4), QPageLayout::Portrait, QMarginsF()))
+QWebEngineProfile * profile() const
+bool recentlyAudible() const
+void replaceMisspelledWord(const QString &replacement)
+QUrl requestedUrl() const
+void runJavaScript(const QString &scriptSource)
+void runJavaScript(const QString &scriptSource, quint32 worldId)
+void runJavaScript(const QString &scriptSource, const QWebEngineCallback<const QVariant &> &resultCallback)
+void runJavaScript(const QString &scriptSource, quint32 worldId, const QWebEngineCallback<const QVariant &> &resultCallback)
+void save(const QString &filePath, QWebEngineDownloadItem::SavePageFormat format = QWebEngineDownloadItem::MimeHtmlSaveFormat) const
+//QWebEngineScriptCollection & scripts()
+QPointF scrollPosition() const
+QString selectedText() const
+void setAudioMuted(bool muted)
+void setBackgroundColor(const QColor &color)
+void setContent(const QByteArray &data, const QString &mimeType = QString(), const QUrl &baseUrl = QUrl())
+//void setDevToolsPage(QWebEnginePage *devToolsPage)
+void setFeaturePermission(const QUrl &securityOrigin, QWebEnginePage::Feature feature, QWebEnginePage::PermissionPolicy policy)
+void setHtml(const QString &html, const QUrl &baseUrl = QUrl())
+//void setInspectedPage(QWebEnginePage *page)
+void setUrl(const QUrl &url)
+//void setUrlRequestInterceptor(QWebEngineUrlRequestInterceptor *interceptor)
+void setView(QWidget *view)
+//void setWebChannel(QWebChannel *channel, uint worldId)
+//void setWebChannel(QWebChannel *channel)
+void setZoomFactor(qreal factor)
+QWebEngineSettings * settings() const
+QString title() const
+void toHtml(const QWebEngineCallback<const QString &> &resultCallback) const
+void toPlainText(const QWebEngineCallback<const QString &> &resultCallback) const
+virtual void triggerAction(QWebEnginePage::WebAction action, bool checked = ...)
+QUrl url() const
+QWidget * view() const
+//QWebChannel * webChannel() const
+qreal zoomFactor() const
+</PROTOS>
+
+<SIGNALS>
+void audioMutedChanged(bool muted)
+void authenticationRequired(const QUrl &requestUrl, QAuthenticator *authenticator)
+void contentsSizeChanged(const QSizeF &size)
+void featurePermissionRequestCanceled(const QUrl &securityOrigin, QWebEnginePage::Feature feature)
+void featurePermissionRequested(const QUrl &securityOrigin, QWebEnginePage::Feature feature)
+void fullScreenRequested(QWebEngineFullScreenRequest fullScreenRequest)
+void geometryChangeRequested(const QRect &geom)
+void iconChanged(const QIcon &icon)
+void iconUrlChanged(const QUrl &url)
+void linkHovered(const QString &url)
+void loadFinished(bool ok)
+void loadProgress(int progress)
+void loadStarted()
+void proxyAuthenticationRequired(const QUrl &requestUrl, QAuthenticator *authenticator, const QString &proxyHost)
+void recentlyAudibleChanged(bool recentlyAudible)
+void renderProcessTerminated(QWebEnginePage::RenderProcessTerminationStatus terminationStatus, int exitCode)
+void scrollPositionChanged(const QPointF &position)
+void selectionChanged()
+void titleChanged(const QString &title)
+void urlChanged(const QUrl &url)
+void windowCloseRequested()
+</SIGNALS>
+

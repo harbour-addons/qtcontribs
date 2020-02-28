@@ -16,6 +16,55 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2020-02-28 13:37 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r479)
+  * hbqt/qtgui/hbqt_version.ch
+    % Updated for r479
+    
+  * hbqt/hbmk2_qt.hb
+    % Updated to include QObject derived classes of QtWebEngine.
+    
+  + hbqt/qtwebengine
+  + hbqt/qtwebengine/doc
+  + hbqt/qtwebengine/doc/en
+  + hbqt/qtwebengine/hbqt_init.cpp
+  + hbqt/qtwebengine/hbqtwebengine.ch
+  + hbqt/qtwebengine/hbqtwebengine.hbc
+  + hbqt/qtwebengine/hbqtwebengine.hbm
+  + hbqt/qtwebengine/hbqtwebengine.hbp
+  + hbqt/qtwebengine/hbqtwebengine.hbx
+  + hbqt/qtwebengine/hbqtwebengines.hbp
+  + hbqt/qtwebengine/qth
+  + hbqt/qtwebengine/qth/filelist.hbm
+  + hbqt/qtwebengine/qth/QQuickWebEngineProfile.qth
+  + hbqt/qtwebengine/qth/QWebEngineCertificateError.qth
+  + hbqt/qtwebengine/qth/QWebEngineContextMenuData.qth
+  + hbqt/qtwebengine/qth/QWebEngineCookieStore.qth
+  + hbqt/qtwebengine/qth/QWebEngineDownloadItem.qth
+  + hbqt/qtwebengine/qth/QWebEngineFullScreenRequest.qth
+  + hbqt/qtwebengine/qth/QWebEngineHistory.qth
+  + hbqt/qtwebengine/qth/QWebEngineHistoryItem.qth
+  + hbqt/qtwebengine/qth/QWebEnginePage.qth
+  + hbqt/qtwebengine/qth/QWebEngineProfile.qth
+  + hbqt/qtwebengine/qth/QWebEngineScript.qth
+  + hbqt/qtwebengine/qth/QWebEngineScriptCollection.qth
+  + hbqt/qtwebengine/qth/QWebEngineSettings.qth
+  + hbqt/qtwebengine/qth/QWebEngineUrlRequestInfo.qth
+  + hbqt/qtwebengine/qth/QWebEngineUrlRequestInterceptor.qth
+  + hbqt/qtwebengine/qth/QWebEngineUrlRequestJob.qth
+  + hbqt/qtwebengine/qth/QWebEngineUrlSchemeHandler.qth
+  + hbqt/qtwebengine/qth/QWebEngineView.qth
+  + hbqtwidgets/tests/loganalyzer
+    + Added: Module QtWebEngine since Qt 5.5 onwards.
+      A replacement to QtWebkit module which is now depricated.
+      
+  ; NOTE: this module is tested to be compilable on Linux 
+          Ubuntu 64 bits in shared mode. It is not possible to 
+          compile and link it in static mode. You will need 
+          Qt 5.8 or higher for this purpose. This lib is not 
+          included in qtcoontribs57.hbp. You may need to 
+          call it manually staying in harbour/addons as:
+             hbmk2 hbqt/qtwebengine/hbqtwebengine.hbp
+                 
 2020-02-20 20:04 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r478)
   * hbqt/qtcore/hbqt_pointer.cpp
     ! Fixed: cut/update issue. Seems I am ageing.

@@ -1,0 +1,58 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = 
+</CLASS>
+
+
+<CODE>
+#include <QtWebEngineWidgets/QWebEngineScript>
+
+
+/*
+ * QWebEngineScript()
+ * QWebEngineScript(const QWebEngineScript &other)
+ * ~QWebEngineScript()
+ */
+HB_FUNC( QT_QWEBENGINESCRIPT )
+{
+   __HB_RETPTRGC__( new QWebEngineScript() );
+}
+</CODE>
+
+<ENUMS>
+enum  InjectionPoint { DocumentCreation, DocumentReady, Deferred }
+enum  ScriptWorldId { MainWorld, ApplicationWorld, UserWorld }
+</ENUMS>
+
+<PROTOS>
+InjectionPoint injectionPoint() const
+bool  isNull() const
+QString  name() const
+bool  runsOnSubFrames() const
+void  setInjectionPoint(InjectionPoint p)
+void  setName(const QString &scriptName)
+void  setRunsOnSubFrames(bool on)
+void  setSourceCode(const QString &scriptSource)
+void  setWorldId(quint32 id)
+QString  sourceCode() const
+void  swap(QWebEngineScript &other)
+quint32  worldId() const
+</PROTOS>
+
+<SLOTS>
+</SLOTS>
+
+<SIGNALS>
+</SIGNALS>

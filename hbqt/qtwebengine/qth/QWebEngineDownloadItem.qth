@@ -1,0 +1,66 @@
+/*
+ * $Id$
+ */
+
+/*
+ * Harbour Qt wrapper generator control file
+ *
+ * Copyright 2020 Pritpal Bedi <bedipritpal@hotmail.com>
+ * www - http://www.harbour-project.org
+ *
+ * See COPYING for licensing terms.
+ */
+
+<CLASS>
+Inherit     = QObject
+</CLASS>
+
+
+<CODE>
+#include <QtCore/QUrl>
+#include <QtWebEngineWidgets/QWebEngineDownloadItem>
+
+
+/*
+ *
+ */
+HB_FUNC( QT_QWEBENGINEDOWNLOADITEM )
+{
+   HB_FUNC_EXEC( HB_QWEBENGINEDOWNLOADITEM );
+}
+</CODE>
+
+<ENUMS>
+enum  DownloadInterruptReason { NoReason, FileFailed, FileAccessDenied, FileNoSpace, ..., UserCanceled }
+enum  DownloadState { DownloadRequested, DownloadInProgress, DownloadCompleted, DownloadCancelled, DownloadInterrupted }
+enum  DownloadType { Attachment, DownloadAttribute, UserRequested, SavePage }
+enum  SavePageFormat { UnknownSaveFormat, SingleHtmlSaveFormat, CompleteHtmlSaveFormat, MimeHtmlSaveFormat }
+</ENUMS>
+
+<PROTOS>
+quint32  id() const
+DownloadInterruptReason interruptReason() const
+QString  interruptReasonString() const
+bool  isFinished() const
+QString  mimeType() const
+QString  path() const
+qint64   receivedBytes() const
+SavePageFormat savePageFormat() const
+void  setPath(QString path)
+void  setSavePageFormat(SavePageFormat format)
+DownloadState  state() const
+qint64   totalBytes() const
+DownloadType   type() const
+QUrl  url() const
+</PROTOS>
+
+<SLOTS>
+void  accept()
+void  cancel()
+</SLOTS>
+
+<SIGNALS>
+void  downloadProgress(qint64 bytesReceived, qint64 bytesTotal)
+void  finished()
+void  stateChanged(QWebEngineDownloadItem::DownloadState state)
+</SIGNALS>
