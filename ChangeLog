@@ -16,7 +16,13 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
-2020-04-03 08:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r479)
+2023-05-01 07:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r481)
+  % Corrected error in previous entry - r479=>r480.
+
+  * hbqt/qtgui/hbqt_version.ch
+    % Updated for r481
+
+2020-04-03 08:53 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r480)
   + Added: qmlparts/resources/qml/PhotoCapture.qml
     ! Miss from previous commit. Reported by Luigi - thanks.
 
