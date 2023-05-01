@@ -102,7 +102,7 @@ CLASS IdeShortcuts INHERIT IdeObject
 
    DATA   qHiliter
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -233,7 +233,7 @@ CLASS IdeShortcuts INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeShortcuts:new( oIde )
+METHOD IdeShortcuts:init( oIde )
 
    ::oIde := oIde
 

@@ -110,7 +110,7 @@ CLASS IdeToolsManager INHERIT IdeObject
    ACCESS aTools                                  INLINE ::oINI:aTools
    ACCESS aUserToolBars                           INLINE ::oINI:aUserToolbars
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -142,7 +142,7 @@ CLASS IdeToolsManager INHERIT IdeObject
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeToolsManager:new( oIde )
+METHOD IdeToolsManager:init( oIde )
 
    ::oIde := oIde
 

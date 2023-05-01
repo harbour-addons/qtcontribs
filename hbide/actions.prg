@@ -108,7 +108,7 @@ CLASS IdeActions INHERIT IdeObject
    DATA   aToolButtons                            INIT {}
    DATA   oToolsLayout                            INIT {}
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
 
@@ -138,7 +138,7 @@ CLASS IdeActions INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeActions:new( oIde )
+METHOD IdeActions:init( oIde )
 
    hb_hCaseMatch( ::hActions, .f. )
    ::oIde := oIde

@@ -66,7 +66,7 @@
 #define HBQT_GRAPHICSVIEW_ZOOM_ROTATE_R           7
 
 
-CREATE CLASS HbQtImageEditor
+CLASS HbQtImageEditor
 
    DATA   oUI
    DATA   oWidget

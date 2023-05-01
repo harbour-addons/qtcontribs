@@ -97,7 +97,7 @@ CLASS IdeHome INHERIT IdeObject
    DATA   qCurBrowser
    DATA   qPrnDlg
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD refresh()
@@ -118,7 +118,7 @@ CLASS IdeHome INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeHome:new( oIde )
+METHOD IdeHome:init( oIde )
    ::oIde := oIde
    RETURN Self
 

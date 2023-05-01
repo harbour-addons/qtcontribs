@@ -194,7 +194,7 @@ CLASS IdeConsole INHERIT IdeObject
    DATA   nOffX
    DATA   nOffY
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD show()
    METHOD resizeByRowCols( nRows, nCols )
@@ -202,7 +202,7 @@ CLASS IdeConsole INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeConsole:new( oIde )
+METHOD IdeConsole:init( oIde )
 
    DEFAULT oIde    TO ::oIde
    ::oIde    := oIde
@@ -338,7 +338,7 @@ CLASS hbCUIEditor
    DATA aFields                                   INIT {}
    DATA nLastKey                                  INIT 0
 
-   METHOD new( cSource, cScreen )
+   METHOD init( cSource, cScreen )
    METHOD create( cSource, cScreen )
    METHOD destroy()
 
@@ -410,7 +410,7 @@ CLASS hbCUIEditor
    ENDCLASS
 
 
-METHOD hbCUIEditor:new( cSource, cScreen )
+METHOD hbCUIEditor:init( cSource, cScreen )
 
    DEFAULT cSource TO ::cSource
    DEFAULT cScreen TO ::cScreen

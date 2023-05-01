@@ -73,7 +73,7 @@ CLASS IdeSourcesManager INHERIT IdeObject
 
    DATA   oFileWatcher
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD loadSources()
@@ -94,7 +94,7 @@ CLASS IdeSourcesManager INHERIT IdeObject
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeSourcesManager:new( oIde )
+METHOD IdeSourcesManager:init( oIde )
 
    ::oIde := oIde
 

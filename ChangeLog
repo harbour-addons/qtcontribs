@@ -16,6 +16,93 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2023-05-01 08:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r482)
+  * hbqt/qtgui/hbqt_version.ch
+    % Updated for r482
+  
+  * hbqt/hbmk2_qt.hb 
+    ! Fixed an unexpected bug in certain situations.
+    + Added - QStackedWidget
+              QScrollArea
+              QDockWidget
+              QFrame
+              QGroupBox
+              QMdiArea
+              QTabWidget
+              QToolBox
+              QWizard
+              QWizardPage
+                as a base widget for .ui forms.
+	
+  * hbqt/gtgui/QGraphicsScene.qth
+  * hbqt/gtgui/QGraphicsView.qth
+  * hbqt/gtgui/QPainter.qth
+  * hbqt/gtgui/QTransform.qth
+    + Added: #include <QtGui/QPainterPath>
+        Required for Qt 5.15. Pointed out by Claudia Neumann, thanks.
+		
+  * hbide/actions.prg
+  * hbide/changelog.prg
+  * hbide/console.prg
+  * hbide/dbumgr.prg
+  * hbide/dict.prg
+  * hbide/docks.prg
+  * hbide/docwriter.prg
+  * hbide/edit.prg
+  * hbide/editor.prg
+  * hbide/environ.prg
+  * hbide/findreplace.prg
+  * hbide/format.prg
+  * hbide/functions.prg
+  * hbide/harbourhelp.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/home.prg
+  * hbide/main.prg
+  * hbide/object.prg
+  * hbide/parts.prg
+  * hbide/projectwizard.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+  * hbide/skeletons.prg
+  * hbide/sources.prg
+  * hbide/themes.prg
+  * hbide/tools.prg
+  * hbide/uisrcmanager.prg
+  * hbide/wizard.prg
+    ! Fixed: :init() as class constructor and :new() as instance constructor
+        aligned with class(y) compatible changes in entire classes in Harbour
+        core committed by Przemek, thanks.
+		
+  * hbqtwidgets/calculator.prg
+  * hbqtwidgets/dbucreate.prg
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+  * hbqtwidgets/imageeditor.prg
+  * hbqtwidgets/hbqtcolumn.prg
+  * hbqtwidgets/hbqtbrowse.prg
+    ! Fixed: :init() as class constructor and :new() as instance constructor
+        aligned with class(y) compatible changes in entire classes in Harbour
+        core committed by Przemek, thank you.
+
+  * hbqtwidgets/hbqtbrowse.prg
+    + ACCESS headerView()    INLINE ::oHeaderView
+        Now you can set multiple attributes for browser header. For example,
+        it is now possible to set colors for browse headers like
+          oBrw:headerView():setStyleSheet( "QHeaderView::section{ 
+            background-color: #D2F5F0; color: black; border: 1px solid transparent;}" )
+
+    + Added: capability to make multirow spanned headers. It is enough to span 
+        a column header by separating the header string with chr( 10 ) like this
+          oColumn := HbQtColumnNew( "Can" + chr( 10 ) + "Edit?", {|| ( cAlias )->canEdit } )
+        The header will be displayed in two rows. Rows are automatically 
+        calculated based on number of chr( 10 ) row separator.	Each column can have 
+        variable number of rows.		
+	
+  + hbqtwidgets/resources/testing-1.png
+  * hbqtwidgets/hbqtwidgets.qrc
+    + Added: a new image.		
+	
 2023-05-01 07:51 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r481)
   % Corrected error in previous entry - r479=>r480.
 

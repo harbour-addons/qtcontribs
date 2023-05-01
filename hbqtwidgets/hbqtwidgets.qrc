@@ -486,5 +486,6 @@
     <file>resources/scanner-1.png</file>
     <file>resources/mail-01.png</file>
     <file>resources/pdf.png</file>
+    <file>resources/testing-1.png</file>
   </qresource>
 </RCC>

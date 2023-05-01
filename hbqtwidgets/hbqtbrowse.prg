@@ -210,7 +210,7 @@ FUNCTION HbQtBrowseDB( nTop, nLeft, nBottom, nRight, hConfig )
    DEFAULT hConfig TO {=>}
    hb_HCaseMatch( hConfig, .F. )
 
-   WITH OBJECT oLayout := QHBoxLayout( oWnd )
+   WITH OBJECT oLayout := QHBoxLayout( oWnd ) 
       :setContentsMargins( 0,0,0,0 )
       :setSpacing( 0 )
    ENDWITH
@@ -353,7 +353,7 @@ CLASS HbQtBrowse INHERIT TBrowse
    METHOD destroy()
 
    /* Overloaded Methods */
-   METHOD new( nTop, nLeft, nBottom, nRight, oParent, oFont )
+   METHOD init( nTop, nLeft, nBottom, nRight, oParent, oFont )
    METHOD doConfigure()
    METHOD refreshWindow()
    METHOD rowCount()
@@ -382,6 +382,8 @@ CLASS HbQtBrowse INHERIT TBrowse
    ACCESS rightVisible()                          INLINE ::oHeaderView:visualIndexAt( ::oViewport:width()-2 ) + 1
    ACCESS leftVisible()                           INLINE ::oHeaderView:visualIndexAt( 1 ) + 1
 
+   ACCESS headerView()                            INLINE ::oHeaderView
+   
    ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze
 
@@ -939,9 +941,9 @@ METHOD HbQtBrowse:terminate()
    RETURN NIL
 
 
-METHOD HbQtBrowse:new( nTop, nLeft, nBottom, nRight, oParent, oFont )
+METHOD HbQtBrowse:init( nTop, nLeft, nBottom, nRight, oParent, oFont )
 
-   ::TBrowse:new( nTop, nLeft, nBottom, nRight )
+   ::TBrowse:init( nTop, nLeft, nBottom, nRight )
 
    hb_default( @oFont, HbQtSet( _QSET_GETSFONT ) )
 
@@ -1023,7 +1025,7 @@ METHOD HbQtBrowse:create()
    ENDWITH
 
    /*  Horizontal Header Fine Tuning */
-   WITH OBJECT ::oHeaderView := ::oTableView:horizontalHeader()
+   WITH OBJECT ::oHeaderView := ::oTableView:horizontalHeader()  
       :setHighlightSections( .F. )
       // :setMovable( .T. )                /* Needs more time TO investigae Qt behvior - first efforts have been futile */
    ENDWITH
@@ -1158,7 +1160,7 @@ METHOD HbQtBrowse:refreshWindow()
 
 
 METHOD HbQtBrowse:doConfigure()     /* Overloaded */
-   LOCAL oCol, oSz
+   LOCAL oCol, oSz, nHdrRows, nHdrLen
    LOCAL i, xVal, oFontMetrics, n, nLeftWidth, nwVal, nwHead
    LOCAL nMaxCellH, lShowFooter, oAct, cMenu
    LOCAL nPadding, nColumnWidth
@@ -1213,35 +1215,40 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
    oSz := oFontMetrics:size( Qt_TextSingleLine, __LETTER__ )
    nPadding := 8
 
-   IF .T.
-      ::nCellHeight := oSZ:height() + 3
-
-      nMaxCellH := ::nCellHeight + 5
-      ::oHeaderView:setMaximumHeight( nMaxCellH )
-      ::oHeaderView:setMinimumHeight( nMaxCellH )
-
-      ::oLeftHeaderView:setMaximumHeight( nMaxCellH )
-      ::oLeftHeaderView:setMinimumHeight( nMaxCellH )
-
-      ::oRightHeaderView:setMaximumHeight( nMaxCellH )
-      ::oRightHeaderView:setMinimumHeight( nMaxCellH )
-
-      ::oFooterView     :setMaximumHeight( nMaxCellH )
-      ::oLeftFooterView :setMaximumHeight( nMaxCellH )
-      ::oRightFooterView:setMaximumHeight( nMaxCellH )
-   ENDIF
-
+   nHdrRows := 1
    FOR i := 1 TO Len( ::columns )
       xVal := Transform( Eval( ::columns[ i ]:block ), ::columns[ i ]:picture )
       nwVal := oSZ:width() * Len( xVal )
-      nwHead := oSZ:width() * Len( ::columns[ i ]:heading() )
+      nHdrLen := __calcHdrColumnRows( ::columns[ i ]:heading(), @nHdrRows )
+      nwHead := oSZ:width() * nHdrLen
 
-      //::columns[ i ]:nColWidth := Max( nwVal + nPadding, nwHead )
       ::columns[ i ]:nColWidth := Max( nwVal, nwHead ) + nPadding
 
       ::oHeaderView:resizeSection( i-1, ::columns[ i ]:nColWidth )
       ::oFooterView:resizeSection( i-1, ::columns[ i ]:nColWidth )
    NEXT
+
+   IF .T.
+      ::nCellHeight := oSZ:height() + 3
+      nMaxCellH := oSZ:height()
+      
+      WITH OBJECT ::oHeaderView
+         :setMaximumHeight( nMaxCellH * nHdrRows + 5 )
+         :setMinimumHeight( nMaxCellH * nHdrRows + 5 )
+      ENDWITH
+      WITH OBJECT ::oLeftHeaderView
+         :setMaximumHeight( nMaxCellH * nHdrRows + 5 )
+         :setMinimumHeight( nMaxCellH * nHdrRows + 5 )
+      ENDWITH
+      WITH OBJECT ::oRightHeaderView
+         :setMaximumHeight( nMaxCellH * nHdrRows + 5 )
+         :setMinimumHeight( nMaxCellH * nHdrRows + 5 )
+      ENDWITH
+      //
+      ::oFooterView     :setMaximumHeight( nMaxCellH + 5 )
+      ::oLeftFooterView :setMaximumHeight( nMaxCellH + 5 )
+      ::oRightFooterView:setMaximumHeight( nMaxCellH + 5 )
+   ENDIF
 
    nLeftWidth := 0
    FOR n := 1 TO ::nLeftFrozen
@@ -1350,6 +1357,17 @@ METHOD HbQtBrowse:doConfigure()     /* Overloaded */
       ::verticalScrollbar( ::lVScroll )
    ENDIF
    RETURN Self
+
+
+STATIC FUNCTION __calcHdrColumnRows( cHeader, /*@*/ nHdrRows )
+   LOCAL cHdrRow, nHdrLen
+
+   nHdrLen := 0
+   FOR EACH cHdrRow IN hb_ATokens( cHeader, Chr( 10 ) )
+      nHdrLen := Max( nHdrLen, Len( cHdrRow ) )
+      nHdrRows := Max( nHdrRows, cHdrRow:__enumIndex() )
+   NEXT
+   RETURN nHdrLen
 
 
 METHOD HbQtBrowse:stabilize()

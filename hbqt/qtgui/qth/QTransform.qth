@@ -21,6 +21,8 @@ Destructor  =
 
 <CODE>
 #include <QtGui/QTransform>
+#include <QtGui/QPainterPath>
+#include <QtGui/QTransform>
 
 
 /* QTransform ()

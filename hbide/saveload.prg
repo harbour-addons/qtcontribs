@@ -305,7 +305,7 @@ CLASS IdeINI INHERIT IdeObject
    DATA   nToolWindowColumns                      INIT 17
    DATA   lExtBuildLaunch                         INIT .F.
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD load( cHbideIni )
@@ -326,7 +326,7 @@ CLASS IdeINI INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeINI:new( oIde )
+METHOD IdeINI:init( oIde )
    ::oIde := oIde
    RETURN Self
 
@@ -1292,7 +1292,7 @@ CLASS IdeSetup INHERIT IdeObject
    DATA   aHilighters                             INIT {}
    DATA   aTBSize                                 INIT { "8","9","10","11","12","13","14","15","16","17","18","19","20" }
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -1321,7 +1321,7 @@ CLASS IdeSetup INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeSetup:new( oIde )
+METHOD IdeSetup:init( oIde )
    ::oIde := oIde
    RETURN Self
 

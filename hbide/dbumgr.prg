@@ -91,7 +91,7 @@ CREATE CLASS ideDbuMGR INHERIT IdeObject
    DATA   cSettingsFile                           INIT "settings.dbu"
    DATA   cDefaultRDD                             INIT "DBFCDX"
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
    METHOD saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
@@ -106,7 +106,7 @@ CREATE CLASS ideDbuMGR INHERIT IdeObject
    ENDCLASS
 
 
-METHOD ideDbuMGR:new( oIde )
+METHOD ideDbuMGR:init( oIde )
 
    ::oIde := oIde
 

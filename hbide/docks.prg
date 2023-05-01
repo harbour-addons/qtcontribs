@@ -136,7 +136,7 @@ CLASS IdeDocks INHERIT IdeObject
    DATA   qAct2
    DATA   cOldView                                INIT   ""
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD execEvent( nEvent, p, p1 )
@@ -197,7 +197,7 @@ CLASS IdeDocks INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeDocks:new( oIde )
+METHOD IdeDocks:init( oIde )
    ::oIde := oIde
    RETURN Self
 

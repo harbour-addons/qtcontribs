@@ -88,11 +88,11 @@ CLASS UISrcData
    DATA   cName                                   INIT ""
    DATA   hSource                                 INIT {=>}
 
-   METHOD new( qObj, cObj )
+   METHOD init( qObj, cObj )
    ENDCLASS
 
 
-METHOD UISrcData:new( qObj, cObj )
+METHOD UISrcData:init( qObj, cObj )
 
    hb_hCaseMatch( ::hSource, .f. )
 
@@ -145,7 +145,7 @@ CLASS IdeUISrcManager INHERIT IdeObject
    DATA   cCurAction                              INIT ""
    DATA   cClsPrefix                              INIT "uie_"
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD show()
    METHOD destroy()
@@ -174,7 +174,7 @@ CLASS IdeUISrcManager INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeUISrcManager:new( oIde )
+METHOD IdeUISrcManager:init( oIde )
    ::oIde := oIde
 
    hb_hKeepOrder( ::hObjects, .t. )
@@ -917,7 +917,7 @@ METHOD IdeUISrcManager:buildClassSkeleton( cCls, cUiName )
    aadd( aSrc, '   VAR    oParent' )
    aadd( aSrc, '' )
    aadd( aSrc, '   /* <METHODSCOMMON> . Do not edit lines in this section! */' )
-   aadd( aSrc, '   METHOD new( oParent )' )
+   aadd( aSrc, '   METHOD init( oParent )' )
    aadd( aSrc, '   METHOD create( oParent )' )
    aadd( aSrc, '   METHOD destroy()' )
    aadd( aSrc, '   METHOD connects()' )

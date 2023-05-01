@@ -72,7 +72,7 @@ CLASS IdeFormat INHERIT IdeObject
    DATA   qLayout
    DATA   qHiliter
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -82,7 +82,7 @@ CLASS IdeFormat INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeFormat:new( oIde )
+METHOD IdeFormat:init( oIde )
 
    ::oIde := oIde
 

@@ -349,7 +349,7 @@ CLASS HbIde
    DATA   oDebugWorkAreas
 
 
-   METHOD new( aParams )
+   METHOD init( aParams )
    METHOD create( aParams )
    METHOD destroy()
 
@@ -392,7 +392,7 @@ METHOD HbIde:destroy()
    RETURN self
 
 
-METHOD HbIde:new( aParams )
+METHOD HbIde:init( aParams )
 
    hb_HCaseMatch( ::hHeaderFiles, .F. )
 

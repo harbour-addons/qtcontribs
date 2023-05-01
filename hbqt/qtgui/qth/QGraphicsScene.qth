@@ -21,6 +21,7 @@ New         =
 <CODE>
 #include <QtGui/QGraphicsScene>
 #include <QtGui/QPalette>
+#include <QtGui/QPainterPath>
 
 /*
  * QGraphicsScene ( QObject * parent = 0 )

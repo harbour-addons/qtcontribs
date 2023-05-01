@@ -80,7 +80,7 @@ CLASS IdeWizard INHERIT IdeObject
 
    DATA   aPages                                  INIT {}
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD execEvent( nEvent, p )
@@ -90,7 +90,7 @@ CLASS IdeWizard INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeWizard:new( oIde )
+METHOD IdeWizard:init( oIde )
 
    ::oIde := oIde
 

@@ -107,7 +107,7 @@ CLASS IdeThemes INHERIT IdeObject
    VAR    oStrList
    VAR    oStrModel
 
-   METHOD new( oIde, cThemesFile )
+   METHOD init( oIde, cThemesFile )
    METHOD create( oIde, cThemesFile )
    METHOD destroy()
    METHOD setWrkTheme( cTheme )
@@ -143,7 +143,7 @@ CLASS IdeThemes INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeThemes:new( oIde, cThemesFile )
+METHOD IdeThemes:init( oIde, cThemesFile )
 
    ::oIde  := oIde
    ::cThemesFile := cThemesFile

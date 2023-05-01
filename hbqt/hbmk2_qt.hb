@@ -1241,6 +1241,7 @@ METHOD THbUIC:pullTranslate( cLine )
    IF hb_regexHas( reg, cLine )
       aResult    := hb_regex( reg, cLine )
       aArgs      := args2array( aResult[ 3 ] )
+      ASize( aArgs, 3 )
       aArgs[ 2 ] := ::ParseString( aArgs[ 2 ] )
       aArgs[ 3 ] := '""'
       cLine      := hb_StrFormat( "%s QApplication().translate(%s))", aResult[ 2 ], ::concatArgs( aArgs ) )
@@ -1709,6 +1710,36 @@ METHOD THbUIC:buildMethod( cName, nStartLine, nEndLine, cParent )
          EXIT
       CASE "QMainWindow"
          WR_PRG( "   ::oWidget := QMainWindow( oParent )" )
+         EXIT
+      CASE "QStackedWidget"
+         WR_PRG( "   ::oWidget := QStackedWidget( oParent )" )
+         EXIT
+      CASE "QScrollArea"
+         WR_PRG( "   ::oWidget := QScrollArea( oParent )" )
+         EXIT
+      CASE "QDockWidget"
+         WR_PRG( "   ::oWidget := QDockWidget( oParent )" )
+         EXIT
+      CASE "QFrame"
+         WR_PRG( "   ::oWidget := QFrame( oParent )" )
+         EXIT
+      CASE "QGroupBox"
+         WR_PRG( "   ::oWidget := QGroupBox( oParent )" )
+         EXIT
+      CASE "QMdiArea"
+         WR_PRG( "   ::oWidget := QMdiArea( oParent )" )
+         EXIT
+      CASE "QTabWidget"
+         WR_PRG( "   ::oWidget := QTabWidget( oParent )" )
+         EXIT
+      CASE "QToolBox"
+         WR_PRG( "   ::oWidget := QToolBox( oParent )" )
+         EXIT
+      CASE "QWizard"
+         WR_PRG( "   ::oWidget := QWizard( oParent )" )
+         EXIT
+      CASE "QWizardPage"
+         WR_PRG( "   ::oWidget := QWizardPage( oParent )" )
          EXIT
       ENDSWITCH
       WR_PRG( hb_StrFormat( "   ::%s:= ::oWidget", ::cFormName ) )

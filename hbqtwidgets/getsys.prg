@@ -82,7 +82,7 @@
 
 CLASS HbQtGet INHERIT GET
 
-   METHOD new( oControl )
+   METHOD init( oControl )
    METHOD create( oControl )
    METHOD destroy()
 
@@ -233,7 +233,7 @@ CLASS HbQtGet INHERIT GET
    ENDCLASS
 
 
-METHOD HbQtGet:new( oControl )
+METHOD HbQtGet:init( oControl )
 
    IF HB_ISOBJECT( oControl )
       ::oControl := oControl

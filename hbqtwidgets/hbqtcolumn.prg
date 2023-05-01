@@ -68,7 +68,7 @@ FUNCTION HbQtColumnNew( cHeading, bBlock )
    RETURN HbQtColumn():new( cHeading, bBlock )
 
 
-CREATE CLASS HbQtColumn INHERIT TBColumn
+CLASS HbQtColumn INHERIT TBColumn
 
    METHOD init( cHeading, bBlock )
 

@@ -84,7 +84,7 @@
 
 CLASS IdeUpDown INHERIT IdeObject
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show( oEdit )
@@ -94,7 +94,7 @@ CLASS IdeUpDown INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeUpDown:new( oIde )
+METHOD IdeUpDown:init( oIde )
 
    ::oIde := oIde
 
@@ -225,7 +225,7 @@ CLASS IdeSearchReplace INHERIT IdeObject
    DATA   nCurDirection                           INIT 0
    DATA   cFind                                   INIT ""
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD beginFind()
@@ -236,7 +236,7 @@ CLASS IdeSearchReplace INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeSearchReplace:new( oIde )
+METHOD IdeSearchReplace:init( oIde )
 
    ::oIde := oIde
 
@@ -416,7 +416,7 @@ CLASS IdeFindReplace INHERIT IdeObject
    DATA   qReplaceEdit
    DATA   cText
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -431,7 +431,7 @@ CLASS IdeFindReplace INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeFindReplace:new( oIde )
+METHOD IdeFindReplace:init( oIde )
    ::oIde := oIde
    RETURN Self
 
@@ -734,7 +734,7 @@ CLASS IdeFindInFiles INHERIT IdeObject
 
    DATA   qEditFind
 
-   METHOD new( oIde, lShowOnCreate )
+   METHOD init( oIde, lShowOnCreate )
    METHOD create( oIde, lShowOnCreate )
    METHOD destroy()
    METHOD show()
@@ -753,7 +753,7 @@ CLASS IdeFindInFiles INHERIT IdeObject
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeFindInFiles:new( oIde, lShowOnCreate )
+METHOD IdeFindInFiles:init( oIde, lShowOnCreate )
 
    ::oIde          := oIde
    ::lShowOnCreate := lShowOnCreate
@@ -1565,7 +1565,7 @@ CLASS IdeFunctionsMap INHERIT IdeObject
 
    DATA   hInfo
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()                               VIRTUAL
    METHOD show()
@@ -1585,7 +1585,7 @@ CLASS IdeFunctionsMap INHERIT IdeObject
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeFunctionsMap:new( oIde )
+METHOD IdeFunctionsMap:init( oIde )
 
    ::oIde := oIde
 

@@ -85,7 +85,7 @@ CLASS IdeChangeLog INHERIT IdeObject
    DATA   qEdit
    DATA   oTheme
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -99,7 +99,7 @@ CLASS IdeChangeLog INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeChangeLog:new( oIde )
+METHOD IdeChangeLog:init( oIde )
    ::oIde := oIde
    RETURN Self
 

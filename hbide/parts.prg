@@ -82,7 +82,7 @@ CLASS IdeParts INHERIT IdeObject
 
    DATA   oSettings
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()                               VIRTUAL
 
@@ -97,7 +97,7 @@ CLASS IdeParts INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeParts:new( oIde )
+METHOD IdeParts:init( oIde )
 
    DEFAULT oIde TO ::oIde
    ::oIde := oIde

@@ -210,7 +210,6 @@ CLASS IdeEditsManager INHERIT IdeObject
 
 METHOD IdeEditsManager:init( oIde )
 
-
    ::oIde := oIde
 
    hb_hCaseMatch( ::hEditingWords, .F. )

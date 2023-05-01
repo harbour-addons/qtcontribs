@@ -134,7 +134,7 @@ CLASS IdeEdit
    DATA   oCompleter
    DATA   nTabSpaces                              INIT 3
 
-   METHOD new()
+   METHOD init()
    METHOD create()
    METHOD destroy()
 
@@ -300,7 +300,7 @@ CLASS IdeEdit
    ENDCLASS
 
 
-METHOD IdeEdit:new()
+METHOD IdeEdit:init()
    ::hLogicals := __hbqtStandardHash()
    ::hLogicals := { "t" => NIL, "f" => NIL, "or" => NIL, "and" => NIL, "not" => NIL }
    RETURN Self

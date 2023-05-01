@@ -158,7 +158,7 @@ CLASS IdeDocWriter INHERIT IdeObject
    DATA   nTagsIndex                              INIT 0
    DATA   cSourceFile                             INIT ""
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -185,7 +185,7 @@ CLASS IdeDocWriter INHERIT IdeObject
 
 /*----------------------------------------------------------------------*/
 
-METHOD IdeDocWriter:new( oIde )
+METHOD IdeDocWriter:init( oIde )
 
    ::oIde := oIde
 

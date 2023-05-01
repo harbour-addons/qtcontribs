@@ -1,5 +1,5 @@
 /*
- * $Id: hbqtgetlist.prg 175 2013-02-23 03:27:00Z bedipritpal $
+ * $Id$
  */
 
 /*
@@ -399,7 +399,7 @@ FUNCTION HbQtReadGets( GetList, SayList, oParent, oFont, nLineSpacing, cTitle, x
 //                        CLASS HbQtGetList()
 /*----------------------------------------------------------------------*/
 
-CREATE CLASS HbQtGetList INHERIT HbGetList
+CLASS HbQtGetList INHERIT HbGetList
 
    METHOD init( aGetList )
    METHOD goNext( oGet )
@@ -432,7 +432,7 @@ CREATE CLASS HbQtGetList INHERIT HbGetList
 
 METHOD HbQtGetList:init( aGetList )
 
-   ::HbGetList:new( aGetList )
+   ::HbGetList:init( aGetList )
 #if 0
    IF Empty( ::oFocusFrame )
       ::oFocusFrame := QFocusFrame()

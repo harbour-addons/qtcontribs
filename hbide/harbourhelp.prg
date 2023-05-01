@@ -135,12 +135,16 @@ CLASS IdeDocFunction
 
    DATA   lOk                                     INIT .f.
 
-   METHOD new()                                   INLINE Self
+   METHOD init()
    METHOD destroy()
 
    ENDCLASS
 
 
+METHOD IdeDocFunction:init()
+   RETURN Self 
+   
+   
 METHOD IdeDocFunction:destroy()
 
    ::cName             := NIL
@@ -193,7 +197,7 @@ CLASS IdeHarbourHelp INHERIT IdeObject
    DATA   lLoadedProto                            INIT .f.
    DATA   aFuncDefs                               INIT {}
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD show()
    METHOD destroy()
@@ -229,7 +233,7 @@ CLASS IdeHarbourHelp INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeHarbourHelp:new( oIde )
+METHOD IdeHarbourHelp:init( oIde )
 
    ::oIde := oIde
 

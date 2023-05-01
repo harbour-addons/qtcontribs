@@ -102,7 +102,7 @@
 #define SPCPULL( s )                              ( s )  // StrTran( s, "^", " " )
 
 
-CREATE CLASS IdeProjectWizard INHERIT IdeObject
+CLASS IdeProjectWizard INHERIT IdeObject
 
    DATA    oProject
    DATA    lEdited                                INIT .f.
@@ -110,7 +110,7 @@ CREATE CLASS IdeProjectWizard INHERIT IdeObject
    DATA    aItmSrc                                INIT {}
    DATA    cProjPath
 
-   METHOD  new( oIde )
+   METHOD  init( oIde )
    METHOD  create( oIde )
    METHOD  destroy()
    METHOD  show()
@@ -128,7 +128,7 @@ CREATE CLASS IdeProjectWizard INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeProjectWizard:new( oIde )
+METHOD IdeProjectWizard:init( oIde )
 
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
@@ -806,7 +806,7 @@ CREATE CLASS IdeExProject
    DATA   aSrcUIs
    DATA   aSrcOthers
 
-   METHOD new( cPathHbp )
+   METHOD init( cPathHbp )
    METHOD create( cPathHbp )
    METHOD defaults()
    METHOD setTmpltPath( cPathHbp )              INLINE ::cPathHbp := cPathHbp
@@ -829,7 +829,7 @@ CREATE CLASS IdeExProject
    ENDCLASS
 
 
-METHOD IdeExProject:new( cPathHbp )
+METHOD IdeExProject:init( cPathHbp )
 
    hb_default( cPathHbp, ::cPathHbp )
 

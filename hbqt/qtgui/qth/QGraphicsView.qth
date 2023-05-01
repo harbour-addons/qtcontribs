@@ -20,6 +20,7 @@ New         =
 
 <CODE>
 #include <QtGui/QGraphicsView>
+#include <QtGui/QPainterPath>
 
 
 /*

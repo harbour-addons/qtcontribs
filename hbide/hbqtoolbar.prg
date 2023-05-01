@@ -87,7 +87,7 @@ CLASS HbqToolbar
    DATA   qPix
    DATA   qByte
 
-   METHOD new( cName, oParent )
+   METHOD init( cName, oParent )
    METHOD create( cName, oParent )
    METHOD destroy()
    METHOD execEvent( cEvent, p, p1 )
@@ -105,7 +105,7 @@ CLASS HbqToolbar
    ENDCLASS
 
 
-METHOD HbqToolbar:new( cName, oParent )
+METHOD HbqToolbar:init( cName, oParent )
 
    ::cName   := cName
    ::oParent := oParent

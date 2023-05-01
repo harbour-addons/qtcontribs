@@ -83,7 +83,7 @@ CLASS IdeSkeletons INHERIT IdeObject
    DATA   aItems                                  INIT {}
    DATA   aMetas                                  INIT { { "", NIL } }
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD show()
@@ -106,7 +106,7 @@ CLASS IdeSkeletons INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeSkeletons:new( oIde )
+METHOD IdeSkeletons:init( oIde )
 
    ::oIde := oIde
 

@@ -114,12 +114,12 @@ FUNCTION HbQtCalculate( oParent )
    RETURN NIL
 
 
-CREATE CLASS HbQtCalculator
+CLASS HbQtCalculator
 
    /* PUBLISHED */
    DATA   oWidget
 
-   METHOD new( oParent, bClipboard )
+   METHOD init( oParent, bClipboard )
    METHOD Create()
 
    METHOD __getData( nLPrecision )
@@ -193,7 +193,7 @@ CREATE CLASS HbQtCalculator
    ENDCLASS
 
 
-METHOD new( oParent, bClipboard ) Class HbQtCalculator
+METHOD HbQtCalculator:init( oParent, bClipboard )
 
    hb_Default( bClipboard, .F. )
 

@@ -102,7 +102,7 @@ CLASS IdeSelectSource
    DATA   cM                                      INIT ""
    DATA   cW                                      INIT ""
 
-   METHOD new()
+   METHOD init()
    METHOD create()
    METHOD buildUI()
    METHOD loadSources( cPathFile )
@@ -114,7 +114,7 @@ CLASS IdeSelectSource
    ENDCLASS
 
 
-METHOD IdeSelectSource:new()
+METHOD IdeSelectSource:init()
    RETURN Self
 
 
@@ -334,12 +334,12 @@ CLASS IdeSource
    DATA  ext
    DATA  projPath
 
-   METHOD new( cSource )
+   METHOD init( cSource )
 
    ENDCLASS
 
 
-METHOD IdeSource:new( cSource )
+METHOD IdeSource:init( cSource )
    LOCAL cFilt, cPathFile, cPath, cFile, cExt
 
    cSource := hbide_pathToOSPath( cSource )
@@ -388,12 +388,12 @@ CLASS IdeProject
    DATA   lPathAbs                                INIT .F.  // Lets try relative paths first . xhp and hbp will be relative anyway
    DATA   projPath                                INIT ""
 
-   METHOD new( oIDE, aProps )
+   METHOD init( oIDE, aProps )
 
    ENDCLASS
 
 
-METHOD IdeProject:new( oIDE, aProps )
+METHOD IdeProject:init( oIDE, aProps )
    LOCAL b_, a_, oSource, cSource,  aDir, cPath, cExt
 
    IF HB_ISARRAY( aProps ) .AND. !empty( aProps )
@@ -473,7 +473,7 @@ CLASS IdeProjManager INHERIT IdeObject
    DATA   oHiliter
    DATA   nProgValue                              INIT 0
 
-   METHOD new( oIDE )
+   METHOD init( oIDE )
    METHOD create( oIDE )
    METHOD destroy()
 
@@ -530,7 +530,7 @@ CLASS IdeProjManager INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeProjManager:new( oIDE )
+METHOD IdeProjManager:init( oIDE )
    ::oIDE := oIDE
    RETURN Self
 

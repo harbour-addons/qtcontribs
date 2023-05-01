@@ -142,7 +142,7 @@ CLASS IdeDictionary INHERIT IdeObject
    DATA   aTxtRGB                                 INIT {}
    DATA   aBgRGB                                  INIT {}
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()                               VIRTUAL
    METHOD load( cDict )
@@ -156,7 +156,7 @@ CLASS IdeDictionary INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeDictionary:new( oIde )
+METHOD IdeDictionary:init( oIde )
 
    ::oIde := oIde
    hb_HCaseMatch( ::hItems, .F. )

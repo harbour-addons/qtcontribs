@@ -79,7 +79,7 @@ CLASS HbQtCreateTable
    DATA   oBrwStruct, oBrwIndex
    DATA   oBtnOK, oBtnCN
 
-   METHOD new( oDbu )
+   METHOD init( oDbu )
    METHOD create()
    METHOD createIndexesBrowser( oBrowse, aData )
    METHOD createStructBrowser( oBrowse, aData )
@@ -91,7 +91,7 @@ CLASS HbQtCreateTable
    ENDCLASS
 
 
-METHOD HbQtCreateTable:new( oDbu )
+METHOD HbQtCreateTable:init( oDbu )
 
    ::oDbu := oDbu
 

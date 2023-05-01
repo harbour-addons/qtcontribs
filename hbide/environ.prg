@@ -81,7 +81,7 @@ CLASS IdeEnvironments INHERIT IdeObject
    DATA   aCommons                                INIT {}
    DATA   oUI_1
 
-   METHOD new( oIDE )
+   METHOD init( oIDE )
    METHOD create( oIDE )
    METHOD destroy()
    METHOD parse( cEnvFile )
@@ -97,7 +97,7 @@ CLASS IdeEnvironments INHERIT IdeObject
 
 /*------------------------------------------------------------------------*/
 
-METHOD IdeEnvironments:new( oIde )
+METHOD IdeEnvironments:init( oIde )
    ::oIde := oIde
    RETURN Self
 

@@ -99,7 +99,7 @@ CLASS IdeFunctions INHERIT IdeObject
    DATA   nPSr                                    INIT 50
    DATA   aProjList                               INIT {}
 
-   METHOD new( oIde )
+   METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()
    METHOD clear( lHdrAlso )
@@ -123,7 +123,7 @@ CLASS IdeFunctions INHERIT IdeObject
    ENDCLASS
 
 
-METHOD IdeFunctions:new( oIde )
+METHOD IdeFunctions:init( oIde )
    ::oIde := oIde
    RETURN Self
 
