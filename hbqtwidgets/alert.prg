@@ -1,12 +1,12 @@
 /*
- * $Id: hbqtalert.prg 169 2013-02-13 03:16:29Z bedipritpal $
+ * $Id$
  */
 
 /*
  * Harbour Project source code:
  *
  *
- * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify

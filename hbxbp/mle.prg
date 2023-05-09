@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               19Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpMLE INHERIT XbpWindow, DataRef
 
@@ -120,35 +115,28 @@ CLASS XbpMLE INHERIT XbpWindow, DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::oWidget := QPlainTextEdit( ::pParent )
-
-   IF !( ::editable )
+   IF ! ::editable
       ::oWidget:setReadOnly( .t. )
    ELSE
       ::oWidget:setReadOnly( .f. )
    ENDIF
-
-   IF !( ::wordWrap )
+   IF ! ::wordWrap 
       ::oWidget:setLineWrapMode( 0 )
    ELSE
       ::oWidget:setLineWrapMode( 1 )
    ENDIF
 
-   #if 0
+#if 0
    IF ::tabStop
       ::style += WS_TABSTOP
    ENDIF
@@ -167,13 +155,12 @@ METHOD XbpMLE:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ELSE
       ::style += ES_AUTOVSCROLL
    ENDIF
-   #endif
+#endif
 
    ::setPosAndSize()
    IF ::visible
       ::show()
    ENDIF
-
    IF HB_ISBLOCK( ::datalink )
       eval( ::datalink )
    ENDIF
@@ -183,25 +170,19 @@ METHOD XbpMLE:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::postCreate()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:execSlot( cSlot, p )
-
    HB_SYMBOL_UNUSED( cSlot )
    HB_SYMBOL_UNUSED( p )
-
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:clear()
    LOCAL nChars := len( ::oWidget:toPlainText() )
 
    ::oWidget:clear()
-
    RETURN nChars
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:copyMarked()
    LOCAL qCursor, cText
@@ -210,10 +191,8 @@ METHOD XbpMLE:copyMarked()
    cText   := qCursor:selectedText()
 
    ::oWidget:copy()
-
    RETURN len( cText )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:cutMarked()
    LOCAL qCursor, cText
@@ -222,10 +201,8 @@ METHOD XbpMLE:cutMarked()
    cText   := qCursor:selectedText()
 
    ::oWidget:cut()
-
    RETURN len( cText )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:deleteMarked()
    LOCAL qCursor, cText
@@ -237,7 +214,6 @@ METHOD XbpMLE:deleteMarked()
 
    RETURN len( cText )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:delete( nPos, nChars )
    LOCAL qCursor, cText
@@ -252,7 +228,6 @@ METHOD XbpMLE:delete( nPos, nChars )
 
    RETURN len( cText )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:pasteMarked()
    LOCAL cText2
@@ -262,12 +237,10 @@ METHOD XbpMLE:pasteMarked()
 
    RETURN len( cText2 ) - len( cText1 )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:queryFirstChar()
    RETURN 0  /* Cannot be calculated until it is subclassed */
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:queryMarked()
    LOCAL qCursor, a_
@@ -278,18 +251,13 @@ METHOD XbpMLE:queryMarked()
    ELSE
       a_:= { 0,0 }
    ENDIF
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:setFirstChar( nBufferPos )
-
    HB_SYMBOL_UNUSED( nBufferPos )
-
    RETURN .f. /* Cannot be achieved unless it is subclassed*/
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:setMarked( aStartEnd )
    LOCAL qCursor, cText
@@ -304,10 +272,8 @@ METHOD XbpMLE:setMarked( aStartEnd )
          RETURN .t.
       ENDIF
    ENDIF
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:insert( nPos, cString )
    LOCAL qCursor
@@ -321,10 +287,8 @@ METHOD XbpMLE:insert( nPos, cString )
       ::oWidget:setTextCursor( qCursor )
       RETURN .t.
    ENDIF
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:charFromLine( nLine )
    LOCAL qCursor, nPos
@@ -338,10 +302,8 @@ METHOD XbpMLE:charFromLine( nLine )
       qCursor:movePosition( QTextCursor_StartOfLine )
       nPos := qCursor:position()
    ENDIF
-
    RETURN nPos
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:lineFromChar( nPos )
    LOCAL qCursor, nLine
@@ -353,15 +315,12 @@ METHOD XbpMLE:lineFromChar( nPos )
    ELSE
       nLine := qCursor:blockNumber()
    ENDIF
-
    RETURN nLine
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:pos()
    RETURN ::oWidget:textCursor():position()
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:hScroll( ... )
    LOCAL a_:= hb_aParams()
@@ -372,7 +331,6 @@ METHOD XbpMLE:hScroll( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:vScroll( ... )
    LOCAL a_:= hb_aParams()
@@ -383,7 +341,6 @@ METHOD XbpMLE:vScroll( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:undo( ... )
    LOCAL a_:= hb_aParams()
@@ -394,21 +351,18 @@ METHOD XbpMLE:undo( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:setWrap( lWrap )
    ::xDummy := ::oWidget:lineWrapMode()
    ::oWidget:setLineWrapMode( iif( lWrap, 1, 0 ) )
    RETURN ::xDummy == 1
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:setEditable( lYes )
    ::xDummy := ::oWidget:readOnly()
    ::oWidget:setReadOnly( !lYes )
    RETURN ! ::xDummy
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:handleEvent( nEvent, mp1, mp2 )
 
@@ -418,40 +372,34 @@ METHOD XbpMLE:handleEvent( nEvent, mp1, mp2 )
 
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:destroy()
-
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMLE:setStyle()
    LOCAL s, txt_:={}
 
-   aadd( txt_, ' ' )
-   aadd( txt_, ' QTextEdit {                                               ' )
-   aadd( txt_, '   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, ' )
-   aadd( txt_, '                      stop:0 white, stop:1 darkgray);  ' )
-   aadd( txt_, ' }                                                         ' )
-   #if 0
-   aadd( txt_, 'If the background-image is to be fixed with the viewport:  ' )
-   aadd( txt_, '                                                           ' )
-   aadd( txt_, ' QTextEdit {                                               ' )
-   aadd( txt_, '     background-color: yellow;                             ' )
-   aadd( txt_, '     background-image: url(new.png);                       ' )
-   aadd( txt_, '     background-attachment: fixed;                         ' )
-   aadd( txt_, ' }                                                         ' )
-   #endif
-   aadd( txt_, ' ' )
+   AAdd( txt_, " " )
+   AAdd( txt_, " QTextEdit {                                                 " )
+   AAdd( txt_, "   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, " )
+   AAdd( txt_, "                      stop:0 white, stop:1 darkgray);        " )
+   AAdd( txt_, " }                                                           " )
+#if 0
+   AAdd( txt_, "If the background-image is to be fixed with the viewport:    " )
+   AAdd( txt_, "                                                             " )
+   AAdd( txt_, " QTextEdit {                                                 " )
+   AAdd( txt_, "     background-color: yellow;                               " )
+   AAdd( txt_, "     background-image: url(new.png);                         " )
+   AAdd( txt_, "     background-attachment: fixed;                           " )
+   AAdd( txt_, " }                                                           " )
+#endif
+   AAdd( txt_, " " )
 
    s := ""
    aeval( txt_, {|e| s += e + chr( 13 )+chr( 10 ) } )
-
    ::oWidget:setStyleSheet( s )
-
+   //
    RETURN self
 
-/*----------------------------------------------------------------------*/

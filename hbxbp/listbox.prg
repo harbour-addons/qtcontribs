@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Wvg*Classes
  *
- * Copyright 2008-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2008-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               26Nov2008
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpListBox  INHERIT  XbpWindow, DataRef
 
@@ -143,26 +138,19 @@ CLASS XbpListBox  INHERIT  XbpWindow, DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
-   #if 0
+#if 0
    IF ::multiColumn
       ::style += LBS_MULTICOLUMN
    ENDIF
-   #endif
-
+#endif
    ::oWidget  := QListWidget( ::pParent )
    ::oWidget:setMouseTracking( .t. )
    IF ::markMode == XBPLISTBOX_MM_MULTIPLE
@@ -186,50 +174,47 @@ METHOD XbpListBox:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::postCreate()
 
    ::sl_editBuffer := {}
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:connect()
-
-   ::oWidget:connect( "currentRowChanged(int)"                               , {|p,p1| ::execSlot( "currentRowChanged(int)"                               , p, p1 ) } )
-   ::oWidget:connect( "itemClicked(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemClicked(QListWidgetItem*)"                        , p, p1 ) } )
-   ::oWidget:connect( "itemDoubleClicked(QListWidgetItem*)"                  , {|p,p1| ::execSlot( "itemDoubleClicked(QListWidgetItem*)"                  , p, p1 ) } )
-   ::oWidget:connect( "itemEntered(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemEntered(QListWidgetItem*)"                        , p, p1 ) } )
-   ::oWidget:connect( "customContextMenuRequested(QPoint)"                   , {|p1  | ::execSlot( "customContextMenuRequested(QPoint)"                   , p1    ) } )
+   WITH OBJECT ::oWidget
+      :connect( "currentRowChanged(int)"                               , {|p,p1| ::execSlot( "currentRowChanged(int)"                               , p, p1 ) } )
+      :connect( "itemClicked(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemClicked(QListWidgetItem*)"                        , p, p1 ) } )
+      :connect( "itemDoubleClicked(QListWidgetItem*)"                  , {|p,p1| ::execSlot( "itemDoubleClicked(QListWidgetItem*)"                  , p, p1 ) } )
+      :connect( "itemEntered(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemEntered(QListWidgetItem*)"                        , p, p1 ) } )
+      :connect( "customContextMenuRequested(QPoint)"                   , {|p1  | ::execSlot( "customContextMenuRequested(QPoint)"                   , p1    ) } )
 /*
-   ::oWidget:connect( "currentItemChanged(QListWidgetItem*,QListWidgetItem*)", {|p,p1| ::execSlot( "currentItemChanged(QListWidgetItem*,QListWidgetItem*)", p, p1 ) } )
-   ::oWidget:connect( "currentTextChanged(QString)"                          , {|p,p1| ::execSlot( "currentTextChanged(QString)"                          , p, p1 ) } )
-   ::oWidget:connect( "itemActivated(QListWidgetItem*)"                      , {|p,p1| ::execSlot( "itemActivated(QListWidgetItem*)"                      , p, p1 ) } )
-   ::oWidget:connect( "itemChanged(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemChanged(QListWidgetItem*)"                        , p, p1 ) } )
-   ::oWidget:connect( "itemPressed(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemPressed(QListWidgetItem*)"                        , p, p1 ) } )
-   ::oWidget:connect( "itemSelectionChanged()"                               , {|p,p1| ::execSlot( "itemSelectionChanged()"                               , p, p1 ) } )
+      :connect( "currentItemChanged(QListWidgetItem*,QListWidgetItem*)", {|p,p1| ::execSlot( "currentItemChanged(QListWidgetItem*,QListWidgetItem*)", p, p1 ) } )
+      :connect( "currentTextChanged(QString)"                          , {|p,p1| ::execSlot( "currentTextChanged(QString)"                          , p, p1 ) } )
+      :connect( "itemActivated(QListWidgetItem*)"                      , {|p,p1| ::execSlot( "itemActivated(QListWidgetItem*)"                      , p, p1 ) } )
+      :connect( "itemChanged(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemChanged(QListWidgetItem*)"                        , p, p1 ) } )
+      :connect( "itemPressed(QListWidgetItem*)"                        , {|p,p1| ::execSlot( "itemPressed(QListWidgetItem*)"                        , p, p1 ) } )
+      :connect( "itemSelectionChanged()"                               , {|p,p1| ::execSlot( "itemSelectionChanged()"                               , p, p1 ) } )
 */
+   ENDWITH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:disConnect()
-
-   ::oWidget:disConnect( "currentRowChanged(int)"                                )
-   ::oWidget:disConnect( "itemClicked(QListWidgetItem*)"                         )
-   ::oWidget:disConnect( "itemDoubleClicked(QListWidgetItem*)"                   )
-   ::oWidget:disConnect( "itemEntered(QListWidgetItem*)"                         )
-   ::oWidget:disconnect( "customContextMenuRequested(QPoint)"                    )
-
-/*
-   ::oWidget:disConnect( "currentItemChanged(QListWidgetItem*,QListWidgetItem*)" )
-   ::oWidget:disConnect( "currentTextChanged(QString)"                           )
-   ::oWidget:disConnect( "itemActivated(QListWidgetItem*)"                       )
-   ::oWidget:disConnect( "itemChanged(QListWidgetItem*)"                         )
-   ::oWidget:disConnect( "itemPressed(QListWidgetItem*)"                         )
-   ::oWidget:disConnect( "itemSelectionChanged()"                                )
-*/
-
+   WITH OBJECT ::oWidget
+      :disConnect( "currentRowChanged(int)"                                )
+      :disConnect( "itemClicked(QListWidgetItem*)"                         )
+      :disConnect( "itemDoubleClicked(QListWidgetItem*)"                   )
+      :disConnect( "itemEntered(QListWidgetItem*)"                         )
+      :disconnect( "customContextMenuRequested(QPoint)"                    )
+#if 0 
+      :disConnect( "currentItemChanged(QListWidgetItem*,QListWidgetItem*)" )
+      :disConnect( "currentTextChanged(QString)"                           )
+      :disConnect( "itemActivated(QListWidgetItem*)"                       )
+      :disConnect( "itemChanged(QListWidgetItem*)"                         )
+      :disConnect( "itemPressed(QListWidgetItem*)"                         )
+      :disConnect( "itemSelectionChanged()"                                )
+#endif
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:toggleSelected( nIndex )
    LOCAL n
@@ -243,16 +228,12 @@ METHOD XbpListBox:toggleSelected( nIndex )
    ELSE
       ::sl_editBuffer := nIndex
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:getItemIndex( pItm )
-
    RETURN ascan( ::aItems, {|o| hbqt_IsEqual( o, pItm ) } )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:execSlot( cSlot, p )
    LOCAL qPos, qItm, nIndex, n, qPt
@@ -293,7 +274,7 @@ METHOD XbpListBox:execSlot( cSlot, p )
    CASE "itemEntered(QListWidgetItem*)"
       ::oWidget:setToolTip( qItm:text() )
       EXIT
-   #if 0
+#if 0
    CASE "currentItemChanged(QListWidgetItem*,QListWidgetItem*)"
       EXIT
    CASE "currentTextChanged(QString)"
@@ -306,47 +287,38 @@ METHOD XbpListBox:execSlot( cSlot, p )
       EXIT
    CASE "itemSelectionChanged()"
       EXIT
-   #endif
+#endif
    ENDSWITCH
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
+   //
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:destroy()
-
    ::clear( .f. )
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:clear( lConnect )
    LOCAL qItm
 
    DEFAULT lConnect TO .t.
-
-   #if 0
+#if 0
    ::disConnect()
-   #endif
-
+#endif
    FOR EACH qItm IN ::aItems
       qItm := NIL
    NEXT
@@ -356,14 +328,13 @@ METHOD XbpListBox:clear( lConnect )
          ::oWidget:clear()
       ENDIF
    ENDIF
-   #if 0
+#if 0
    IF lConnect
       ::connect()
    ENDIF
-   #endif
+#endif
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:addItem( cItem )
    LOCAL qItm := QListWidgetItem()
@@ -374,28 +345,21 @@ METHOD XbpListBox:addItem( cItem )
 
    RETURN len( ::aItems )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:delItem( nIndex )
-
    IF HB_ISNUMERIC( nIndex ) .AND. nIndex > 0 .AND. nIndex <= len( ::aItems )
       ::aItems[ nIndex ] := NIL
       hb_adel( ::aItems, nIndex, .t. )
    ENDIF
-
    RETURN len( ::aItems )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:getItem( nIndex )
-
    IF HB_ISNUMERIC( nIndex ) .AND. nIndex > 0 .AND. nIndex <= len( ::aItems )
       RETURN ::aItems[ nIndex ]:text()
    ENDIF
-
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:insItem( nIndex, cItem )
    LOCAL qItm := QListWidgetItem()
@@ -409,10 +373,8 @@ METHOD XbpListBox:insItem( nIndex, cItem )
       ::oWidget:insertItem( len( ::aItems ) - 1, qItm )
       aadd( ::aItems, qItm )
    ENDIF
-
    RETURN len( ::aItems )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:setItem( nIndex, cItem )
    LOCAL cText := ""
@@ -421,10 +383,8 @@ METHOD XbpListBox:setItem( nIndex, cItem )
       cText := ::aItems[ nIndex ]:text()
       ::aItems[ nIndex ]:setText( cItem )
    ENDIF
-
    RETURN cText
 
-/*----------------------------------------------------------------------*/
 /* Harbour Extention - Xbase++ does not have such implementation FOR list boxes */
 METHOD XbpListBox:setIcon( nIndex, oIcon )
    IF HB_ISNUMERIC( nIndex ) .AND. nIndex > 0 .AND. nIndex <= len( ::aItems ) .AND. HB_ISOBJECT( oIcon )
@@ -433,7 +393,6 @@ METHOD XbpListBox:setIcon( nIndex, oIcon )
    ENDIF
    RETURN .F.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:setVisible( cItem )
    LOCAL nIndex
@@ -441,20 +400,16 @@ METHOD XbpListBox:setVisible( cItem )
    IF ( nIndex := ascan( ::aItems, {|o| o:text() == cItem } ) ) > 0
       ::oWidget:scrollToItem( ::aItems[ nIndex ] )
    ENDIF
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD XbpListBox:setItemColorFG( nIndex, aRGB )
-
    IF HB_ISNUMERIC( nIndex ) .AND. nIndex > 0 .AND. nIndex <= len( ::aItems )
       IF ::nOldIndex > 0  .AND. ::nOldIndex <= len( ::aItems )
          ::aItems[ ::nOldIndex ]:setForeGround( QBrush( QColor( 0,0,0 ) ) )
       ENDIF
       ::aItems[ nIndex ]:setForeGround( QBrush( QColor( aRGB[ 1 ], aRGB[ 2 ], aRGB[ 3 ] ) ) )
       ::nOldIndex := nIndex
-
    ELSEIF HB_ISSTRING( nIndex )
       IF ( nIndex := ascan( ::aItems, {|o| o:text() == nIndex } ) ) > 0
          IF ::nOldIndex > 0  .AND. ::nOldIndex <= len( ::aItems )
@@ -466,7 +421,6 @@ METHOD XbpListBox:setItemColorFG( nIndex, aRGB )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:itemMarked( ... )
    LOCAL a_:= hb_aParams()
@@ -477,7 +431,6 @@ METHOD XbpListBox:itemMarked( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:itemSelected( ... )
    LOCAL a_:= hb_aParams()
@@ -488,7 +441,6 @@ METHOD XbpListBox:itemSelected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:drawItem( ... )
    LOCAL a_:= hb_aParams()
@@ -499,7 +451,6 @@ METHOD XbpListBox:drawItem( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:measureItem( ... )
    LOCAL a_:= hb_aParams()
@@ -510,7 +461,6 @@ METHOD XbpListBox:measureItem( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:hScroll( ... )
    LOCAL a_:= hb_aParams()
@@ -521,7 +471,6 @@ METHOD XbpListBox:hScroll( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:vScroll( ... )
    LOCAL a_:= hb_aParams()
@@ -532,49 +481,46 @@ METHOD XbpListBox:vScroll( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpListBox:setStyle()
    LOCAL s, txt_:={}
 
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView {                                                                                 ' )
-   aadd( txt_, '     alternate-background-color: yellow;                                                     ' )
-   aadd( txt_, ' }                                                                                           ' )
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView {                                                                                 ' )
-   aadd( txt_, '     show-decoration-selected: 1; /* make the selection span the entire width of the view */ ' )
-   aadd( txt_, ' }                                                                                           ' )
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView::item:alternate {                                                                 ' )
-   aadd( txt_, '     background: #EEEEEE;                                                                    ' )
-   aadd( txt_, ' }                                                                                           ' )
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView::item:selected {                                                                  ' )
-   aadd( txt_, '     border: 1px solid #6a6ea9;                                                              ' )
-   aadd( txt_, ' }                                                                                           ' )
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView::item:selected:!active {                                                          ' )
-   aadd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,                                 ' )
-   aadd( txt_, '                                 stop: 0 #ABAFE5, stop: 1 #8588B2);                          ' )
-   aadd( txt_, ' }                                                                                           ' )
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView::item:selected:active {                                                           ' )
-   aadd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,                                 ' )
-   aadd( txt_, '                                 stop: 0 #6a6ea9, stop: 1 #888dd9);                          ' )
-   aadd( txt_, ' }                                                                                           ' )
-   aadd( txt_, '                                                                                             ' )
-   aadd( txt_, ' QListView::item:hover {                                                                     ' )
-   aadd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,                                 ' )
-   aadd( txt_, '                                 stop: 0 #FAFBFE, stop: 1 #DCDEF1);                          ' )
-   aadd( txt_, '}                                                                                            ' )
-   aadd( txt_, '                                                                                             ' )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView {                                                                                 " )
+   AAdd( txt_, "     alternate-background-color: yellow;                                                     " )
+   AAdd( txt_, " }                                                                                           " )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView {                                                                                 " )
+   AAdd( txt_, "     show-decoration-selected: 1; /* make the selection span the entire width of the view */ " )
+   AAdd( txt_, " }                                                                                           " )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView::item:alternate {                                                                 " )
+   AAdd( txt_, "     background: #EEEEEE;                                                                    " )
+   AAdd( txt_, " }                                                                                           " )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView::item:selected {                                                                  " )
+   AAdd( txt_, "     border: 1px solid #6a6ea9;                                                              " )
+   AAdd( txt_, " }                                                                                           " )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView::item:selected:!active {                                                          " )
+   AAdd( txt_, "     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,                                 " )
+   AAdd( txt_, "                                 stop: 0 #ABAFE5, stop: 1 #8588B2);                          " )
+   AAdd( txt_, " }                                                                                           " )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView::item:selected:active {                                                           " )
+   AAdd( txt_, "     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,                                 " )
+   AAdd( txt_, "                                 stop: 0 #6a6ea9, stop: 1 #888dd9);                          " )
+   AAdd( txt_, " }                                                                                           " )
+   AAdd( txt_, "                                                                                             " )
+   AAdd( txt_, " QListView::item:hover {                                                                     " )
+   AAdd( txt_, "     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,                                 " )
+   AAdd( txt_, "                                 stop: 0 #FAFBFE, stop: 1 #DCDEF1);                          " )
+   AAdd( txt_, "}                                                                                            " )
+   AAdd( txt_, "                                                                                             " )
 
    s := ""
    aeval( txt_, {|e| s += e + chr( 13 )+chr( 10 ) } )
-
    ::oWidget:setStyleSheet( s )
-
+   //
    RETURN self
 
-/*----------------------------------------------------------------------*/

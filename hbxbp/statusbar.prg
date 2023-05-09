@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              14Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpStatusBar  INHERIT  XbpWindow
 
@@ -98,15 +93,12 @@ CLASS XbpStatusBar  INHERIT  XbpWindow
    METHOD   numItems()                            INLINE Len( ::aItems )
 
    ENDCLASS
-/*----------------------------------------------------------------------*/
+
 
 METHOD XbpStatusBar:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    LOCAL oPar
@@ -136,43 +128,30 @@ METHOD XbpStatusBar:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible 
    ::postCreate()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:execSlot( cSlot, p )
-
    HB_SYMBOL_UNUSED( cSlot )
    HB_SYMBOL_UNUSED( p )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:destroy()
-
    ::aItems := {}
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:addItem( cCaption, xImage, cDLL, nStyle, cKey, nMode )
    LOCAL oPanel, lSuccess := .t.
@@ -196,11 +175,9 @@ METHOD XbpStatusBar:addItem( cCaption, xImage, cDLL, nStyle, cKey, nMode )
       aadd( ::aItems, oPanel )
    ELSE
       RETURN nil
-   endif
-
+   ENDIF 
    RETURN oPanel
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:delItem( nItemORcKey )
    LOCAL nIndex := 0
@@ -210,43 +187,32 @@ METHOD XbpStatusBar:delItem( nItemORcKey )
    ELSEIF HB_ISNUMERIC( nItemORcKey )
       nIndex := nItemORcKey
    ENDIF
-
    IF nIndex > 0
       /* Delete panel by window */
       adel( ::aItems, nIndex )
       asize( ::aItems, len( ::aItems ) - 1 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:getItem( nItemORcKey )
    LOCAL nIndex := 0, oPanel
 
    IF HB_ISSTRING( nItemORcKey  )
       nIndex := ascan( ::aItems, {|o| o:key == nItemORcKey } )
-
    ELSEIF HB_ISNUMERIC(  nItemORcKey  )
       nIndex := nItemORcKey
-
    ENDIF
-
    IF nIndex > 0
       oPanel := ::aItems[ nIndex ]
    ENDIF
-
    RETURN oPanel
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:clear()
-
    ::aItems := {}
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:panelClick( ... )
    LOCAL a_:= hb_aParams()
@@ -257,7 +223,6 @@ METHOD XbpStatusBar:panelClick( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBar:panelDblClick( ... )
    LOCAL a_:= hb_aParams()
@@ -269,13 +234,7 @@ METHOD XbpStatusBar:panelDblClick( ... )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*
- *                      XbpToolbarButton() Class
- */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
+//                      XbpToolbarButton() Class
 /*----------------------------------------------------------------------*/
 
 CLASS XbpStatusBarPanel
@@ -303,10 +262,9 @@ CLASS XbpStatusBarPanel
    METHOD   caption( cCaption )                   SETGET
 
    ENDCLASS
-/*----------------------------------------------------------------------*/
+
 
 METHOD XbpStatusBarPanel:init( cCaption, nStyle, cKey )
-
    DEFAULT cCaption       TO ::sl_caption
    DEFAULT nStyle         TO ::style
    DEFAULT cKey           TO ::key
@@ -314,13 +272,10 @@ METHOD XbpStatusBarPanel:init( cCaption, nStyle, cKey )
    ::sl_caption     := cCaption
    ::style          := nStyle
    ::key            := cKey
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBarPanel:create( cCaption, nStyle, cKey )
-
    DEFAULT cCaption       TO ::sl_caption
    DEFAULT nStyle         TO ::style
    DEFAULT cKey           TO ::key
@@ -328,31 +283,22 @@ METHOD XbpStatusBarPanel:create( cCaption, nStyle, cKey )
    ::sl_caption     := cCaption
    ::style          := nStyle
    ::key            := cKey
-
    // take care of nStyle - later - label right now
    ::oWidget := QLabel()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatusBarPanel:caption( cCaption )
-
    IF cCaption == NIL
       RETURN ::sl_caption
-
    ELSE
       DEFAULT cCaption TO ::sl_caption
-
       ::sl_caption := cCaption
-
       IF ::oWidget != NIL
          ::oWidget:setText( cCaption )
       ELSE
          ::oParent:oWidget:showMessage( cCaption )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/

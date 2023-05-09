@@ -1,9 +1,9 @@
-/*
+                  /*
  * $Id$
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -83,129 +83,108 @@ CLASS IdeFormat INHERIT IdeObject
 
 
 METHOD IdeFormat:init( oIde )
-
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeFormat:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeFormat:destroy()
-
    IF !empty( ::oUI )
-      ::oUI:btnEditCmnds:disconnect( "clicked()"         )
-      ::oUI:btnStart    :disconnect( "clicked()"         )
-      ::oUI:btnCancel   :disconnect( "clicked()"         )
-      ::oUI:btnUpdSrc   :disconnect( "clicked()"         )
-      ::oUI:checkSelOnly:disconnect( "stateChanged(int)" )
-
-      ::qEdit    := NIL
-      ::qHiliter := NIL
-      ::oFormat  := NIL
-
-      ::oUI:destroy()
+      WITH OBJECT ::oUI
+         :btnEditCmnds:disconnect( "clicked()"         )
+         :btnStart    :disconnect( "clicked()"         )
+         :btnCancel   :disconnect( "clicked()"         )
+         :btnUpdSrc   :disconnect( "clicked()"         )
+         :checkSelOnly:disconnect( "stateChanged(int)" )
+         //
+         ::qEdit    := NIL
+         ::qHiliter := NIL
+         ::oFormat  := NIL
+         :destroy()
+      ENDWITH
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeFormat:show()
-
    IF empty( ::oUI )
-      ::oUI := hbide_getUI( "format" )
-      ::oFormatDock:oWidget:setWidget( ::oUI:oWidget )
-
-      ::oUI:btnEditCmnds:connect( "clicked()"             , {| | ::execEvent( "buttonEditCmds_clicked"  ) } )
-      ::oUI:btnStart    :connect( "clicked()"             , {| | ::execEvent( "buttonStart_clicked"     ) } )
-      ::oUI:btnCancel   :connect( "clicked()"             , {| | ::execEvent( "buttonCancel_clicked"    ) } )
-      ::oUI:btnUpdSrc   :connect( "clicked()"             , {| | ::execEvent( "buttonUpdSrc_clicked"    ) } )
-      ::oUI:checkSelOnly:connect( "stateChanged(int)"     , {|i| ::execEvent( "checkSelOnly_changed", i ) } )
-
-      ::qEdit   := ::oUI:plainFormatter
-
-      ::qEdit:setLineWrapMode( QTextEdit_NoWrap )
-      ::qEdit:setFont( ::oIde:oFont:oWidget )
-      ::qEdit:ensureCursorVisible()
-      ::qEdit:setReadOnly( .t. )
-      ::qEdit:setTextInteractionFlags( Qt_TextSelectableByMouse + Qt_TextSelectableByKeyboard )
+      WITH OBJECT ::oUI := hbide_getUI( "format" )
+         ::oFormatDock:oWidget:setWidget( :oWidget )
+         //
+         :btnEditCmnds:connect( "clicked()"             , {| | ::execEvent( "buttonEditCmds_clicked"  ) } )
+         :btnStart    :connect( "clicked()"             , {| | ::execEvent( "buttonStart_clicked"     ) } )
+         :btnCancel   :connect( "clicked()"             , {| | ::execEvent( "buttonCancel_clicked"    ) } )
+         :btnUpdSrc   :connect( "clicked()"             , {| | ::execEvent( "buttonUpdSrc_clicked"    ) } )
+         :checkSelOnly:connect( "stateChanged(int)"     , {|i| ::execEvent( "checkSelOnly_changed", i ) } )
+      ENDWITH 
+      WITH OBJECT ::qEdit := ::oUI:plainFormatter
+         :setLineWrapMode( QTextEdit_NoWrap )
+         :setFont( ::oIde:oFont:oWidget )
+         :ensureCursorVisible()
+         :setReadOnly( .t. )
+         :setTextInteractionFlags( Qt_TextSelectableByMouse + Qt_TextSelectableByKeyboard )
+      ENDWITH 
       ::qHiliter := ::oTH:SetSyntaxHilighting( ::qEdit, "Pritpal's Favourite" )
-
+      //
       ::oFormat := HbFormatCode():new()
    ENDIF
-
-   ::lSelOnly := .f.
-   ::oUI:checkSelOnly:setChecked( .f. )
-   ::qEdit:clear()
-
+   IF .T.
+      ::lSelOnly := .F.
+      ::oUI:checkSelOnly:setChecked( .f. )
+      ::qEdit:clear()
+   ENDIF
    RETURN Self
 
 
 METHOD IdeFormat:execEvent( cEvent, p )
-
    HB_SYMBOL_UNUSED( p )
-
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH cEvent
-
    CASE "checkSelOnly_changed"
       ::lSelOnly := p > 0
       EXIT
-
    CASE "buttonStart_clicked"
       ::format( 1 )
       EXIT
-
    CASE "buttonUpdSrc_clicked"
       ::format( 2 )
       EXIT
-
    CASE "buttonCancel_clicked"
       ::oFormatDock:hide()
       EXIT
-
    CASE "buttonEditCmds_clicked"
       EXIT
-
    ENDSWITCH
-
    RETURN NIL
 
 
 METHOD IdeFormat:format( nMode )
    LOCAL oEdit, aText, cBuffer
-
    HB_SYMBOL_UNUSED( nMode )
-
    IF !empty( oEdit := ::oEM:getEditObjectCurrent() )
       IF ::lSelOnly
          cBuffer := oEdit:getSelectedText()
       ELSE
          cBuffer := oEdit:qEdit:toPlainText()
       ENDIF
-
       aText := hb_aTokens( strtran( cBuffer, chr( 13 ) ), chr( 10 ) )
-
-      #ifdef __PRITPAL__
+#ifdef __PRITPAL__
       IF nMode == 1
          FormatCode( aText, 3 )
       ELSE
          ::oFormat:reFormat( aText )
       ENDIF
-      #else
+#else
       ::oFormat:reFormat( aText )
-      #endif
-
+#endif
       ::qEdit:setPlainText( hbide_arrayToMemo( aText ) )
    ENDIF
-
    RETURN Self
+

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              02Jul2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,24 +67,22 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
-#define evBeforeNavigate     100
-#define evNavigateComplete   101
-#define evStatusTextChange   102
-#define evDownloadComplete   104
-#define evCommandStateChange 105
-#define evDownloadBegin      106
-#define evProgressChange     108
-#define evTitleChange        113
+#define evBeforeNavigate                          100
+#define evNavigateComplete                        101
+#define evStatusTextChange                        102
+#define evDownloadComplete                        104
+#define evCommandStateChange                      105
+#define evDownloadBegin                           106
+#define evProgressChange                          108
+#define evTitleChange                             113
+                                                  
+#define evPropertyChange                          112
+#define evBeforeNavigate2                         250
+#define evNavigateComplete2                       252
+#define evDocumentComplete                        259
+#define evNavigateError                           271
 
-#define evPropertyChange     112
-#define evBeforeNavigate2    250
-#define evNavigateComplete2  252
-#define evDocumentComplete   259
-#define evNavigateError      271
-
-/*----------------------------------------------------------------------*/
 
 CLASS XbpHTMLViewer INHERIT XbpWindow
 
@@ -140,21 +134,17 @@ CLASS XbpHTMLViewer INHERIT XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpHTMLViewer:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpHTMLViewer:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
-   #if 0  /* Discontinued till QWebKit is integrated separately - Pritpal */
+#if 0  /* Discontinued till QWebKit is integrated separately - Pritpal */
    ::oWidget := QWebView( ::pParent )
 
    ::oWidget:connect( "iconChanged()"            , {|p| ::execSlot( "iconChanged()"            , p ) } )
@@ -166,21 +156,18 @@ METHOD XbpHTMLViewer:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible
    ::oWidget:connect( "urlChanged(QUrl)"         , {|p| ::execSlot( "urlChanged(QUrl)"         , p ) } )
    ::oWidget:connect( "selectionChanged()"       , {|p| ::execSlot( "selectionChanged()"       , p ) } )
    ::oWidget:connect( "statusBarMessage(QString)", {|p| ::execSlot( "statusBarMessage(QString)", p ) } )
-   #if 0
+#if 0
    ::mapEvent( evNavigateComplete, {| cURL | ::xNavigateComplete( cURL ) } )
-   #endif
-
+#endif
    ::setPosAndSize()
    IF ::visible
       ::show()
    ENDIF
    ::oParent:addChild( SELF )
-
-   #endif
+#endif
    ::postCreate()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpHTMLViewer:destroy()
 
@@ -197,10 +184,9 @@ METHOD XbpHTMLViewer:destroy()
    ::sl_documentComplete     := NIL
 
    ::xbpWindow:destroy()
+   //
+   RETURN NIL 
 
-   RETURN nil
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpHTMLViewer:execSlot( cSlot, p )
 
@@ -226,32 +212,25 @@ METHOD XbpHTMLViewer:execSlot( cSlot, p )
    CASE cSlot == "urlChanged(QUrl)"
    CASE cSlot == "selectionChanged()"
       ::cSelectedText := ::oWidget:selectedText()
-HB_TRACE( HB_TR_DEBUG, ::cSelectedText )
    CASE cSlot == "statusBarMessage(QString)"
       IF HB_ISBLOCK( ::sl_statusTextChange )
          eval( ::sl_statusTextChange, p, NIL, Self )
       ENDIF
    ENDCASE
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpHTMLViewer:navigate( cURL )
-
    IF empty( ::oURL )
       ::oURL := QUrl()
    ENDIF
-
    ::oURL:setURL( cURL )
-
    ::oWidget:setURL( ::oURL )
+   //
+   RETURN .T. 
 
-   RETURN .t.
 
-/*----------------------------------------------------------------------*/
 #if 0                                        /* Some reference material */
-
 // QWebView
 "iconChanged()"
 "linkClicked(QUrl)"
@@ -286,6 +265,5 @@ METHOD XbpHTMLViewer:navigate( cURL )
 "toolBarVisibilityChangeRequested(bool)"
 "unsupportedContent(QNetworkReply)"
 "windowCloseRequested()"
-
 #endif
-/*----------------------------------------------------------------------*/
+

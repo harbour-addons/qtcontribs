@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2011-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2011-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -203,18 +203,14 @@ CLASS IdeConsole INHERIT IdeObject
 
 
 METHOD IdeConsole:init( oIde )
-
    DEFAULT oIde    TO ::oIde
    ::oIde    := oIde
-
    RETURN Self
 
 
 METHOD IdeConsole:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN self
 
 
@@ -264,7 +260,6 @@ METHOD IdeConsole:show()
 
       ::oCuiEdDock:oWidget:hide()
    ENDIF
-
    RETURN Self
 
 
@@ -275,13 +270,9 @@ METHOD IdeConsole:resizeByRowCols( nRows, nCols )
    ::oCuiEdDock:oWidget:resize( nW, nH )
 
    ::oMdi:resize( nW, nH )
-
    RETURN Self
 
-
-
 #define N_TRIM( n )                               ltrim( str( n, 10, 0 ) )
-
 
 CLASS hbCUIEditor
 
@@ -411,18 +402,15 @@ CLASS hbCUIEditor
 
 
 METHOD hbCUIEditor:init( cSource, cScreen )
-
    DEFAULT cSource TO ::cSource
    DEFAULT cScreen TO ::cScreen
 
    ::cSource := cSource
    ::cScreen := cScreen
-
    RETURN Self
 
 
 METHOD hbCUIEditor:create( cSource, cScreen )
-
    DEFAULT cSource TO ::cSource
    DEFAULT cScreen TO ::cScreen
 
@@ -432,7 +420,6 @@ METHOD hbCUIEditor:create( cSource, cScreen )
    ::scrLoad( .f. )
    ::scrConfig()
    ::operate()
-
    RETURN SELF
 
 
@@ -483,7 +470,6 @@ METHOD hbCUIEditor:scrLoad( lAsk )
          ENDIF
       ENDIF
    ENDIF
-
    IF ! empty( cBuffer)
       ::obj_:= {}
       ::scrBuildFromBuffer( cBuffer, ::cScreen )
@@ -491,9 +477,7 @@ METHOD hbCUIEditor:scrLoad( lAsk )
       ::lEdited := .f.
       ::aUndo := {}
    ENDIF
-
    ::cScreen := iif( empty( ::cScreen ), "", ::cScreen )
-
    RETURN Self
 
 
@@ -713,7 +697,6 @@ METHOD hbCUIEditor:scrBuildFromBuffer( cBuffer, cScreen )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN Self
 
 
@@ -825,7 +808,6 @@ METHOD hbCUIEditor:scrSave( lAsk )
    IF !empty( prg_ )
       ::scrUpdateSource( prg_ )
    ENDIF
-
    RETURN Self
 
 
@@ -845,11 +827,9 @@ METHOD hbCUIEditor:scrBuildFunction( prg_ )
 
 METHOD hbCUIEditor:scrBuildSource( prg_, nIndent )
    LOCAL cP, s := ""
-
    cP := space( nIndent )
    aeval( prg_, {|e| s += cP + e + hb_eol() } )
    s := substr( s, 1, Len( s ) - len( hb_eol() ) )
-
    RETURN s
 
 
@@ -873,21 +853,16 @@ METHOD hbCUIEditor:scrUpdateSource( prg_ )
 
          s := ::scrBuildSource( prg_, nIndent )
          s := substr( cBuffer, 1, nStart - nIndent - 1 ) + s + substr( cBuffer, nEnd )
-
       ELSE
          s := ::scrBuildFunction( prg_ )
          s := cBuffer + hb_eol() + s
-
       ENDIF
-
    ELSE
       s := ::scrBuildFunction( prg_)
-
    ENDIF
 
    hb_memowrit( ::cSource, s )
    ::lEdited := .f.
-
    RETURN Self
 
 
@@ -947,7 +922,6 @@ METHOD hbCUIEditor:scrConfig()
    ::aTextBlock     := {}
    ::aFields        := {}
    ::nLastKey       := 0
-
    RETURN Self
 
 
@@ -976,26 +950,21 @@ METHOD hbCUIEditor:scrReConfig()
    ::nColPrev       := ::nLeft
    ::nColsMax       := 400
    ::nRowsMax       := 200
-
    RETURN NIL
 
 
 METHOD hbCUIEditor:scrUpdateUndo()
-
    aadd( ::aUndo, aclone( ::obj_ ) )
-
    RETURN Self
 
 
 METHOD hbCUIEditor:scrUndo()
    LOCAL nLast
-
    IF ! empty( nLast := Len( ::aUndo ) )
       ::obj_:= aclone( ::aUndo[ nLast ] )
       hb_adel( ::aUndo, nLast, .t. )
       ::xRefresh := OBJ_REFRESH_ALL
    ENDIF
-
    RETURN Self
 
 
@@ -1063,7 +1032,6 @@ METHOD hbCUIEditor:operate()
          ::scrOrdGets()
       CASE ::nLastKey == K_ALT_Z
          ::scrUndo()
-
       CASE ::nLastKey == K_RIGHT
          ::scrMovRgt()
       CASE ::nLastKey == K_LEFT
@@ -1109,11 +1077,9 @@ METHOD hbCUIEditor:operate()
             ::scrMovDn()
          NEXT
          ::xRefresh := OBJ_REFRESH_ALL
-
       CASE ::nLastKey == K_INS
          readInsert( !readInsert() )
          setcursor( iif( readInsert(), 2, 1 ) )
-
       CASE ::nLastKey == K_ENTER
          IF ::nMode == OBJ_MODE_SELECT .AND. ::nObjSelected > 0
             ::nMode         := OBJ_MODE_IDLE
@@ -1121,10 +1087,8 @@ METHOD hbCUIEditor:operate()
             ::nObjSelected  := 0
             ::scrMsg()
          ENDIF
-
       CASE VouchInRange( ::nLastKey, K_SPACE, 254 ) .AND. ::nMode != OBJ_MODE_SELECT
          ::scrAddTxt( 1 )
-
       CASE ::nLastKey == K_F1                           //  Help
          help()
       CASE ::nLastKey == K_F7                           //  Copy
@@ -1135,7 +1099,6 @@ METHOD hbCUIEditor:operate()
          ::scrAddBox()
       CASE ::nLastKey == K_F10                          //  Fields
          ::scrAddFld()
-
       CASE ::nLastKey == K_DEL
          IF ::nMode == OBJ_MODE_SELECT .AND. ::nObjSelected > 0
             ::scrObjDel( ::nObjSelected )
@@ -1167,28 +1130,23 @@ METHOD hbCUIEditor:operate()
                ENDIF
             ENDIF
          ENDIF
-
       CASE ::nLastKey == K_ALT_N
          ::scrAddLine()
          ::lEdited := .t.
-
       CASE ::nLastKey == K_ALT_O
          ::scrDelLine()
          ::lEdited := .t.
-
       CASE ::nLastKey == K_CTRL_F6    //  Selection of Block
          ::scrTextBlock()
       CASE ::nLastKey == K_CTRL_F7    //  Move, Copy
          ::scrTextMove( 1 )
       CASE ::nLastKey == K_CTRL_F8    //  Move, Cut AND Paste
          ::scrTextMove( 0 )
-
       CASE ::nLastKey == HB_K_RESIZE
          ::scrReConfig()
          ::scrDisplay()
          ::scrMove()
          ::scrStatus()
-
       ENDCASE
 
       IF ::nMode == OBJ_MODE_SELECT
@@ -1203,16 +1161,13 @@ METHOD hbCUIEditor:operate()
       IF nObj > 0 .and. ::nLastKey == K_F4
          ::scrGetProperty( nObj )
       ENDIF
-
       IF nObj > 0 .AND. ::nMode != OBJ_MODE_SELECT
          ::xRefresh   := iif( ::xRefresh == OBJ_REFRESH_NIL, OBJ_REFRESH_LINE, ::xRefresh )
          ::nObjHilite := nObj
          ::scrOnFirstCol( nObj, { OBJ_O_FIELD, OBJ_O_EXP } )
-
       ELSEIF ! empty( ::nObjHilite )
          ::xRefresh    := iif( ::xRefresh == OBJ_REFRESH_NIL, OBJ_REFRESH_LINE, ::xRefresh )
          ::nObjHilite := 0
-
       ENDIF
 
       IF nObj > 0 .AND. ::nLastKey == K_F5
@@ -1235,7 +1190,6 @@ METHOD hbCUIEditor:operate()
          ::scrOnFirstCol( nObj, { OBJ_O_BOX } )
          ::scrMsg( "BOX is selected: Arrow-keys to move, ENTER to finished, DEL to delete" )
          ::lEdited := .t.
-
       ELSEIF nObj > 0 .AND. ::nLastKey == K_F6 .AND. ! ::objIsBox( nObj )
          ::scrUpdateUndo()
 
@@ -1244,10 +1198,9 @@ METHOD hbCUIEditor:operate()
          ::scrOnFirstCol( nObj, { OBJ_O_TEXT } )
          ::scrMsg( iif( ::objIsTxt( nObj ), "TEXT", "FIELD" ) + " is selected: Arrow-keys to move, ENTER to finished, DEL to delete" )
          ::lEdited := .t.
-
       ENDIF
 
-      IF     ::xRefresh == OBJ_REFRESH_ALL
+      IF ::xRefresh == OBJ_REFRESH_ALL
          ::scrMove()
       ELSEIF ::xRefresh == OBJ_REFRESH_LINE
          IF ::scrIsBoxIn()
@@ -1263,14 +1216,11 @@ METHOD hbCUIEditor:operate()
          //grfRest()
       ENDIF
    ENDDO
-
    ::scrOrdObj()
-
    RETURN Self
 
 
 METHOD hbCUIEditor:scrDisplay()
-
    dispbegin()
    setcursor( 0 )
    setColor( ::cClrOverall )
@@ -1283,7 +1233,6 @@ METHOD hbCUIEditor:scrDisplay()
    setcolor( ::cClrWindow )
    setCursor( 2 )
    dispend()
-
    RETURN Self
 
 
@@ -1358,16 +1307,14 @@ METHOD hbCUIEditor:scrMove()
 
             @ nRow, nCol SAY cText COLOR cColor
          ENDIF
-
       ELSEIF ( ::obj_[ i, OBJ_ROW ] + ::nRowDis > ::nBottom )
-
+         //
       ENDIF
    NEXT
 
    ::ScrDispSelected()
    dispEnd()
    setcursor( crs )
-
    RETURN Self
 
 
@@ -1410,7 +1357,6 @@ METHOD hbCUIEditor:scrMoveLine()
                                            'W+/W' ) )
                @ nRow, nCol SAY cText COLOR cColor
             ENDIF
-
             IF ::objIsTxt( i )
                cText  := ::obj_[ i, OBJ_EQN ]
                cColor := iif( ::nObjSelected == i, ::cClrSelect,;
@@ -1420,15 +1366,11 @@ METHOD hbCUIEditor:scrMoveLine()
             ENDIF
          ENDIF
       NEXT
-
       ::scrDispSelected()
-
       dispEnd()
    ELSE
       ::scrMove()
-
    ENDIF
-
    setCursor( crs )
    RETURN NIL
 
@@ -1456,7 +1398,6 @@ METHOD hbCUIEditor:scrDispSelected()
 
 METHOD hbCUIEditor:scrDispGhost( gst_ )
    LOCAL i,j,nRow,nCol
-
    DispBegin()
    FOR i := gst_[ 1 ] TO gst_[ 3 ]
       IF ( nRow := i + ::nRowDis ) <= ::nBottom
@@ -1468,7 +1409,6 @@ METHOD hbCUIEditor:scrDispGhost( gst_ )
       ENDIF
    NEXT
    DispEnd()
-
    RETURN NIL
 
 
@@ -1523,7 +1463,6 @@ METHOD hbCUIEditor:scrStatus()
    ::nColPrev := ::nColCur
 
    dispend()
-
    RETURN Self
 
 
@@ -1558,18 +1497,15 @@ METHOD hbCUIEditor:scrMouse()
          lAnchored  := .t.
          ::nLastKey := K_F6
       ENDIF
-
    ELSEIF nEvent == K_MMLEFTDOWN .AND. lAnchored
-
+      //
    ELSEIF nEvent == K_LBUTTONUP  .AND. lAnchored
       SetCursor( nCursor )
       lAnchored := .f.
       __keyboard( chr( K_ENTER ) )
-
    ELSEIF nEvent == K_LBUTTONUP
-
+      //
    ENDIF
-
    RETURN .t.
 
 
@@ -1581,13 +1517,11 @@ METHOD hbCUIEditor:scrToMouse( nmRow, nmCol )
       ::nRowCur += nRowOff
       ::nRowRep += nRowOff
    ENDIF
-
    nColOff := nmCol - ::nColCur
    IF nColOff != 0
       ::nColCur += nColOff
       ::nColRep += nColOff
    ENDIF
-
    RETURN NIL
 
 
@@ -1641,9 +1575,7 @@ METHOD hbCUIEditor:scrOrdGets()
          aadd( d_, t_[ n ] )
       NEXT
    ENDIF
-
    ::obj_:= d_
-
    RETURN Self
 
 
@@ -1678,9 +1610,7 @@ METHOD hbCUIEditor:scrOrdObj()
          aadd( d_, a_ )
       ENDIF
    NEXT
-
    ::obj_:= d_
-
    RETURN Self
 
 
@@ -1727,7 +1657,6 @@ METHOD hbCUIEditor:scrMovLft()
 
 METHOD hbCUIEditor:scrMovUp()
    LOCAL lMoved := .t.
-
    ::nRowCur--
    IF ::nRowCur < ::nTop
       ::nRowCur := ::nTop
@@ -1783,7 +1712,6 @@ METHOD hbCUIEditor:objIsFld( nObj )
 
 METHOD hbCUIEditor:scrIsTxt()
    LOCAL e_
-
    FOR EACH e_ IN ::obj_
       IF e_[ OBJ_TYPE ] == OBJ_O_TEXT
          IF ::nRowRep == e_[ OBJ_ROW ] .AND. ( ::nColRep >= e_[ OBJ_COL ] .AND. ::nColRep <= e_[ OBJ_TO_COL ] )
@@ -1791,7 +1719,6 @@ METHOD hbCUIEditor:scrIsTxt()
          ENDIF
       ENDIF
    NEXT
-
    RETURN .f.
 
 
@@ -1821,7 +1748,6 @@ METHOD hbCUIEditor:scrChkObj()
          RETURN a_[ 1 ]
       ENDIF
    ENDIF
-
    RETURN 0
 
 
@@ -1858,19 +1784,16 @@ METHOD hbCUIEditor:scrRepCol()
       ::nRight               := min( maxcol(), ::nLeft + nCol - 1 )
       ::xRefresh             := OBJ_REFRESH_ALL
    ENDIF
-
    RETURN NIL
 
 
 METHOD hbCUIEditor:scrAddLine()
-
    ::scrUpdateUndo()
 
    aeval( ::obj_, {|e_,i| iif( e_[ OBJ_ROW ] >= ::nRowRep, ::obj_[ i, OBJ_TO_ROW ]++, NIL ) } )
    aeval( ::obj_, {|e_,i| iif( e_[ OBJ_ROW ] >= ::nRowRep, ::obj_[ i, OBJ_ROW    ]++, NIL ) } )
 
    ::xRefresh := OBJ_REFRESH_ALL
-
    RETURN NIL
 
 
@@ -1902,7 +1825,6 @@ METHOD hbCUIEditor:scrDelLine()
    ENDIF
 
    ::xRefresh := OBJ_REFRESH_ALL
-
    RETURN NIL
 
 
@@ -1958,13 +1880,11 @@ METHOD hbCUIEditor:scrObjPas()       //  Paste Copied OBJECT
 
 
 METHOD hbCUIEditor:scrObjDel( nObj )
-
    ::scrUpdateUndo()
 
    VouchAShrink( ::obj_, nObj )
    ::nObjSelected := 0
    ::xRefresh     := OBJ_REFRESH_LINE
-
    RETURN Self
 
 
@@ -1986,7 +1906,6 @@ METHOD hbCUIEditor:scrOnLastCol( nObj )
       ::nRowPrev := ::nRowCur
       ::nColPrev := ::nColCur
    ENDIF
-
    RETURN NIL
 
 
@@ -2041,7 +1960,6 @@ METHOD hbCUIEditor:scrOnFirstCol( nObj, type_ )
         ENDIF
       ENDIF
    ENDIF
-
    RETURN NIL
 
 
@@ -2145,7 +2063,6 @@ METHOD hbCUIEditor:scrTextBlock()
       ::scrStatus()
    ENDDO
    ::scrMsg()
-
    RETURN NIL
 
 
@@ -2200,7 +2117,6 @@ METHOD hbCUIEditor:scrTextMove( nMode )
       ::scrMsg()
    ENDIF
    setCursor(crs)
-
    RETURN Self
 
 
@@ -2380,9 +2296,7 @@ METHOD hbCUIEditor:scrTextPost( gst_, nMode )
    ENDIF
 
    aeval( ins_, {|e_| aadd( ::obj_, e_ ) } )
-
    ::aTextBlock := {}
-
    RETURN Self
 
 
@@ -2470,7 +2384,6 @@ METHOD hbCUIEditor:scrTextDel()
 
    aeval( ins_,{|e_| aadd( ::obj_,e_ ) } )
    ::aTextBlock := {}
-
    RETURN Self
 
 
@@ -2503,7 +2416,7 @@ METHOD hbCUIEditor:scrAddTxt( nMode )
 
    nTxt := ascan( txt_,{|e_| VouchInRange( nRepCol, e_[ OBJ_COL ], e_[ OBJ_TO_COL ] ) } )
 
-   IF     nMode == 1
+   IF nMode == 1
       txt_[ nTxt, OBJ_EQN ] := substr( txt_[ nTxt, OBJ_EQN ], 1, ::nColRep - txt_[ nTxt, OBJ_COL] ) + ;
                                  chr( nKey ) + ;
            substr( txt_[ nTxt, OBJ_EQN ], ::nColRep - txt_[ nTxt, OBJ_COL ] + iif( ReadInsert(), 1, 2 ) )
@@ -2557,11 +2470,11 @@ METHOD hbCUIEditor:scrAddTxt( nMode )
             EXIT
          ENDIF
       ENDDO
-      #if 0
+#if 0
       IF empty( txt_ )
          aadd( txt_, ::scrObjBlank() )
       ENDIF
-      #endif
+#endif
       //  CLUB DIFFERENT TEXT OBJECTS IF THESE ARE ADJACENT
       asort( txt_ , , , {|e_,f_| e_[ OBJ_COL ] < f_[ OBJ_COL ] } )
 
@@ -2603,12 +2516,9 @@ METHOD hbCUIEditor:scrAddTxt( nMode )
    IF nMode == 1
       keyboard( chr( K_RIGHT ) )
    ENDIF
-
    ::xRefresh := OBJ_REFRESH_LINE
    ::lEdited := .t.
-
    ::scrOrdObj()
-
    RETURN NIL
 
 
@@ -2635,7 +2545,6 @@ METHOD hbCUIEditor:scrInkey( key_ )
          EXIT
       ENDIF
    ENDDO
-
    RETURN nKey
 
 
@@ -2659,7 +2568,6 @@ METHOD hbCUIEditor:scrObjBlank()
    o_[ OBJ_SEC_ROW    ] := 0
    o_[ OBJ_OBJ_UNIQUE ] := 0
    o_[ OBJ_MDL_F_TYPE ] := 0
-
    RETURN o_
 
 
@@ -2688,7 +2596,6 @@ METHOD hbCUIEditor:scrVrbBlank( nType )
       aadd( v_, space( nW ) )
       EXIT
    ENDSWITCH
-
    RETURN v_
 
 
@@ -2717,7 +2624,6 @@ METHOD hbCUIEditor:scrObj2Vv( o_ )
       aadd( v_, pad( o_[ OBJ_COLOR   ], nW ) )
       EXIT
    ENDSWITCH
-
    RETURN v_
 
 
@@ -2745,14 +2651,11 @@ METHOD hbCUIEditor:scrVrbHeaders( nType )
       aadd( h_, ' Color     ' )
       EXIT
    ENDSWITCH
-
    RETURN h_
 
 
 METHOD hbCUIEditor:scrVv2Obj( v_, o_ )
-
    SWITCH o_[ OBJ_TYPE ]
-
    CASE OBJ_O_FIELD
       o_[ OBJ_ID      ] := trim( v_[ 1 ] )
       o_[ OBJ_F_TYPE  ] :=       v_[ 2 ]
@@ -2773,7 +2676,6 @@ METHOD hbCUIEditor:scrVv2Obj( v_, o_ )
       o_[ OBJ_COLOR   ] := trim( v_[ 2 ] )
       EXIT
    ENDSWITCH
-
    RETURN Self
 
 
@@ -2837,7 +2739,6 @@ METHOD hbCUIEditor:scrAddBox( nObj )
    ::scrMsg()
    ::xRefresh := OBJ_REFRESH_ALL
    ::lEdited := .t.
-
    RETURN NIL
 
 
@@ -2899,7 +2800,6 @@ METHOD hbCUIEditor:scrAddFld( nObj )
    IF nObj > 0
       ::scrOrdObj()
    ENDIF
-
    RETURN Self
 
 
@@ -2926,7 +2826,6 @@ METHOD hbCUIEditor:scrGetProperty( nObj )
 
       ::scrVv2Obj( v_[ 1 ], o_ )
       EXIT
-
    CASE OBJ_O_TEXT
       ::scrUpdateUndo()
 
@@ -2940,15 +2839,11 @@ METHOD hbCUIEditor:scrGetProperty( nObj )
 
       ::scrVv2Obj( v_[ 1 ], o_ )
       EXIT
-
    CASE OBJ_O_FIELD
       ::scrAddFld( nObj )
       EXIT
-
    ENDSWITCH
-
    ::lEdited := .t.
-
    RETURN SELF
 
 
@@ -3015,7 +2910,6 @@ METHOD hbCUIEditor:scrPreview()
    SetMode( nRows + 1, nCols + 1 )
    VouchWndRest( aScr )
    vstk_pop()
-
    RETURN Self
 
 
@@ -3031,7 +2925,6 @@ STATIC FUNCTION VouchGetPic( cType, cPic, nLen, nDec )
          cP := substr( cPic, 2, Len( cPic ) - 2 )
       ENDIF
    ENDIF
-
    RETURN cP
 
 
@@ -3049,7 +2942,6 @@ STATIC FUNCTION VouchVrbBlank( o_ )
    CASE "L"
       RETURN .f.
    ENDSWITCH
-
    RETURN ""
 
 
@@ -3068,7 +2960,6 @@ STATIC FUNCTION VouchGetColor( cType, cColor )
          RETURN "N/W,GR+/BG"
       ENDIF
    ENDIF
-
    RETURN "W/B"
 
 /*----------------------------------------------------------------------*/
@@ -3133,11 +3024,8 @@ FUNCTION VouchWndSave( t, l, b, r )
            l TO 0, ;
            b TO maxrow(), ;
            r TO maxcol()
-
    wnd_:= { t, l, b, r, saveScreen( t,l,b,r ) }
-
    mSetCursor( crs )
-
    RETURN wnd_
 
 
@@ -3151,7 +3039,6 @@ FUNCTION VouchWndRest( wnd_ )
       mSetCursor( crs )
    END
    errorblock( bError )
-
    RETURN NIL
 
 
@@ -3175,7 +3062,6 @@ FUNCTION VouchGetArray( h_,vv_, sel_, nTop, nLft, nBtm, nRgt, title, bWhen_, bVa
    aeval( vv_, {|e| cTyp := valtype( e ), nLenVrb := max( ;
                      iif( cTyp == 'C', Len( e ), ;
                          iif( cTyp == 'N', 15, iif( cTyp == 'D', 8, 3 ) ) ), nLenVrb ) } )
-
    IF bWhen_ == NIL
       bWhen_:= afill( array( Len( vv_) ), {|| .t. } )
       FOR i := 1 TO Len( vv_ )
@@ -3185,7 +3071,6 @@ FUNCTION VouchGetArray( h_,vv_, sel_, nTop, nLft, nBtm, nRgt, title, bWhen_, bVa
          ENDIF
       NEXT
    ENDIF
-
    IF bValid_ == NIL
       bValid_:= afill( array( Len( vv_ ) ), {|| .t. } )
    ENDIF
@@ -3290,7 +3175,6 @@ FUNCTION VouchGetArray( h_,vv_, sel_, nTop, nLft, nBtm, nRgt, title, bWhen_, bVa
 
    vstk_pop()
    VouchWndRest(scr)
-
    RETURN{ vv_, nSel }
 
 
@@ -3329,7 +3213,6 @@ FUNCTION VouchFunc1( mode, nElem, nRow, nKey, cgo_ )
          RETURN AC_ABORT
       ENDCASE
    ENDCASE
-
    RETURN ret
 
 
@@ -3390,7 +3273,6 @@ STATIC FUNCTION VouchGetChoice( vrb, row, col, e_col, whn, vld, pic )
    setcursor( crs )
    SetColor( clr )
    VouchWndRest( scr )
-
    RETURN vrb
 
 
@@ -3515,17 +3397,14 @@ FUNCTION VouchMenuM( id,nInit,msg )
       aadd( mnu_, { "Numeric"  , "N" } )
       aadd( mnu_, { "Date"     , "D" } )
       aadd( mnu_, { "Logical"  , "L" } )
-
    CASE id == "MN_BOX"
       aadd( mnu_, { "B_SINGLE"        , B_SINGLE        } )
       aadd( mnu_, { "B_DOUBLE"        , B_DOUBLE        } )
       aadd( mnu_, { "B_SINGLE_DOUBLE" , B_SINGLE_DOUBLE } )
       aadd( mnu_, { "B_DOUBLE_SINGLE" , B_DOUBLE_SINGLE } )
-
    CASE id == "MN_FILL"
       aadd( mnu_, { "Clear" , "CLEAR"  } )
       aadd( mnu_, { "Filled", "FILLED" } )
-
    ENDCASE
 
    aeval( mnu_,{|e_| aadd( m_,e_[ 1 ] ) } )
@@ -3536,7 +3415,6 @@ FUNCTION VouchMenuM( id,nInit,msg )
    n := max( 1,n )
 
    getActive():varPut( mnu_[n,2] )
-
    RETURN .f.   //  Note, because the FUNCTION is used IN when clause
 
 
@@ -3654,7 +3532,7 @@ FUNCTION VouchMsgBox(r1, c1, r2, c2, width, depth, msg_, msgClr, ;
    ENDIF
 
    nMsg := Len( msg_ )
-//   nOff := iif( nMsg == 1, 0,  1 )
+   // nOff := iif( nMsg == 1, 0,  1 )
 
    boxDeep  := iif( Len( msg_ )=0,0,len( msg_ )+1 ) + iif( len( ch_  )=0,0,len( ch_  )+1 )
    tBoxDeep := boxDeep
@@ -3817,10 +3695,8 @@ FUNCTION VouchMsgBox(r1, c1, r2, c2, width, depth, msg_, msgClr, ;
 
    setcursor( oldCur )
    devpos( oldR,oldC )
-
    vstk_pop()
    setcolor( oldClr )
-
    RETURN iif( lSlctns, nSlctns_, sel )
 
 
@@ -3931,7 +3807,6 @@ FUNCTION VouchFunc2( nMode, nElem, nRel, nKey, cgo_ )
    OTHERWISE
       RETURN AC_GOTO
    ENDCASE
-
    RETURN AC_CONT
 
 
@@ -3974,7 +3849,6 @@ STATIC FUNCTION sha_attr( t, l, b, r, new_attr )
    FOR i = 1 TO Len( old_scr_area ) STEP 2
       new_scr_area := new_scr_area + substr( old_scr_area, i, 1 ) + chr( new_attr )
    NEXT
-
    restscreen( t, l, b, r, new_scr_area )
    RETURN NIL
 
@@ -4025,12 +3899,11 @@ FUNCTION VouchGetSome( msg, vrb, pass, pic, set_, wh, vl, nLastKey )
 
    @ t+2, l+3 SAY msg GET vrb PICTURE pic  WHEN eval(wh) VALID eval(vl)
    setCursor(1)
-   read
+   READ
 
    VouchWndRest( screen )
    vstk_pop()
    SetColor( clr )
-
    RETURN vrb
 
 
@@ -4088,7 +3961,6 @@ FUNCTION help( cToken )
    ENDIF
    VouchWndRest( aScr )
    Vstk_pop()
-
    RETURN NIL
 
 
@@ -4100,7 +3972,6 @@ FUNCTION SetHelpStr( cStr )
    IF HB_ISSTRING( cStr )
       s_str := cStr
    ENDIF
-
    RETURN o_str
 
 
@@ -4305,9 +4176,7 @@ STATIC FUNCTION DispHelp( cToken )
 
       /* HB_SCREEN_ENDS <About> */
       EXIT
-
    ENDSWITCH
-
    RETURN NIL
 
 #if 0
@@ -4354,7 +4223,6 @@ FUNCTION VouchAChoice( nTop, nLft, nBtm, nRgt, acItems, xSelect, cUserFunc, nPos
    oChoice:Destroy()
 
    SetCursor( crs )
-
    RETURN nChoice
 
 
@@ -4508,7 +4376,6 @@ METHOD AChoiceNew:init( nTop, nLft, nBtm, nRgt, acItems, xSelect, ;
    ELSE
       afill( ::alSelect, ::xSelect )
    ENDIF
-
    RETURN SELF
 
 
@@ -4555,12 +4422,10 @@ METHOD AChoiceNew:Exe()
       IF ( ::nAtTop + ::nNumRows - 1 ) > ::nItems
          ::nAtTop := max( 1, ::nItems - ::nNumrows + 1 )
       ENDIF
-
       ::DispPageNew()
    ENDIF
 
    DO WHILE ( !::lFinished )
-
       IF ::nMode != AC_GOTO .AND. ::nMode != AC_NOITEM
          ::nKey  := inkey( , INKEY_ALL + HB_INKEY_GTEVENT )
          ::nMode := AC_IDLE
@@ -4578,81 +4443,60 @@ METHOD AChoiceNew:Exe()
       DO CASE
       CASE ( ::bAction := SetKey( ::nKey ) ) != NIL
          eval( ::bAction, ProcName( 1 ), ProcLine( 1 ), '' )
-
       CASE ::nKey == K_MOUSEMOVE
          ::nPos := ::DispAtNew()
-
       CASE ::nKey == K_MWFORWARD
          ::Up()
-
       CASE ::nKey == K_MWBACKWARD
          ::Down()
-
       CASE ::nKey == K_LDBLCLK
          ::nPos := ::DispAtNew()
          ::nMode  := AC_SELECT
-
       CASE ::nKey == K_LBUTTONDOWN
          IF ::mrc_[ 3 ] >= ::nTop  .AND. ::mrc_[ 3 ] <= ::nBottom .AND. ;
             ::mrc_[ 4 ] >= ::nLeft .AND. ::mrc_[ 4 ] <= ::nRight
             keyboard( chr( K_ENTER ) )
          ENDIF
-
       CASE ( ( ::nKey == K_ESC ) .OR. ( ::nMode == AC_NOITEM ) ) .AND. ( !::lUserFunc )
          ::nMode     := AC_ABORT
          ::nPos      := 0
          ::lFinished := .T.
-
       CASE ::nKey == K_UP
          ::Up()
-
       CASE ::nKey == K_DOWN
          ::Down()
-
       CASE ::nKey == K_PGUP
          ::PageUp()
-
       CASE ::nKey == K_PGDN
          ::PageDown()
-
       CASE ::nKey == K_HOME
          ::Top()
-
       CASE ::nKey == K_END
          ::Bottom()
-
       CASE ( ::nKey == K_CTRL_HOME .OR. ::nKey == K_CTRL_PGUP )
          ::GoTop()
-
       CASE ( ::nKey == K_CTRL_END .OR. ::nKey == K_CTRL_PGDN )
          ::GoBottom()
-
       CASE ( ::nKey == K_ENTER ) .AND. ( !::lUserFunc )
          ::nMode     := AC_SELECT
          ::lFinished := .T.
-
       CASE ( ::nKey == K_RIGHT ) .AND. ( !::lUserFunc )
          ::nPos      := 0
          ::lFinished := .T.
-
       CASE ( ::nKey == K_LEFT ) .AND. ( !::lUserFunc )
          ::nPos      := 0
          ::lFinished := .T.
-
       CASE INRANGE( 32, ::nKey, 255 ) .AND. ( ( !::lUserFunc ) .OR. ( ::nMode == AC_GOTO ) )
          ::GoTo()
          ::nMode := AC_IDLE
-
       CASE ::nMode == AC_GOTO
          ::nMode := AC_IDLE
-
       OTHERWISE
          IF ::nKey == 0
             ::nMode := AC_IDLE
          ELSE
             ::nMode := AC_EXCEPT
          ENDIF
-
       ENDCASE
 
       IF ::lUserFunc
@@ -4662,19 +4506,15 @@ METHOD AChoiceNew:Exe()
          CASE ::nUserFunc == AC_ABORT
             ::lFinished := .T.
             ::nPos      := 0
-
          CASE ::nUserFunc == AC_SELECT
             ::lFinished := .T.
-
          CASE ::nUserFunc == AC_CONT
-
+            //
          CASE ::nUserFunc == AC_GOTO
             ::nMode := AC_GOTO
-
          ENDCASE
       ENDIF
    ENDDO
-
    RETURN SELF
 
 
@@ -4685,45 +4525,34 @@ METHOD AChoiceNew:DispPageNew()
    LOCAL nRowPos, nPos
 
    DispBegin()
-
    FOR nCntr := 1 TO ::nNumRows
       nRowPos := ::nTop   + nCntr - 1
       nPos    := ::nAtTop + nCntr - 1
-
       IF INRANGE( 1, nPos, ::nItems )
          ::DispLineNew( nPos, nRowPos, nPos == ::nPos )
       ELSE
          DispOutAt( nRowPos, ::nLeft, space( Len( ::acCopy[ 1 ] ) ), ::cLoClr, ::oWin )
       ENDIF
    NEXT
-
    DispEnd()
-
    SetPos( nRow,nCol )
-
    RETURN SELF
 
 
 METHOD AChoiceNew:DispLineNew( nPos, nRow, lHiLite )
-
    DispOutAt( nRow, ::nLeft, ::acCopy[ nPos ],;
                 iif( ::alSelect[ nPos ], ;
                   iif( lHiLite, ::cHiClr, ::cLoClr ), ::cUnClr ), ::oWin )
-
    RETURN SELF
 
 
 METHOD AChoiceNew:DeHilite()
-
    ::DispLineNew( ::nPos, ::nTop + ( ::nPos - ::nAtTop ), .F. )
-
    RETURN SELF
 
 
 METHOD AChoiceNew:HiLite()
-
    ::DispLineNew( ::nPos, ::nTop + ( ::nPos - ::nAtTop ), .T. )
-
    RETURN SELF
 
 
@@ -4767,7 +4596,6 @@ METHOD AChoiceNew:Up()
          Dispend()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -4792,7 +4620,6 @@ METHOD AChoiceNew:Down()
          ::HiLite()
       ELSE
          Dispbegin()
-
          ::DeHilite()
 
          nScroll := min( ::nNumRows, ( ::nNewPos - ( ::nAtTop + ::nNumRows - 1 ) ) )
@@ -4804,13 +4631,10 @@ METHOD AChoiceNew:Down()
             ::DispLineNew( ::nPos, ::nTop + ( ::nPos - ::nAtTop ), .F. )
             ::nPos ++
          ENDDO
-
          ::Hilite()
-
          Dispend()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -4843,7 +4667,6 @@ METHOD AChoiceNew:PageUp()
          ::DispPageNew()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -4882,7 +4705,6 @@ METHOD AChoiceNew:PageDown()
          ::DispPageNew()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -4906,7 +4728,6 @@ METHOD AChoiceNew:Top()
          ::HiLite()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -4930,7 +4751,6 @@ METHOD AChoiceNew:Bottom()
          ::HiLite()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -4948,7 +4768,6 @@ METHOD AChoiceNew:GoTop()
       ::nAtTop := ::nPos
       ::DispPageNew()
    ENDIF
-
    RETURN SELF
 
 
@@ -4972,7 +4791,6 @@ METHOD AChoiceNew:GoBottom()
          ::DispPageNew()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -5001,7 +4819,6 @@ METHOD AChoiceNew:GoTo()
          ::DispPageNew()
       ENDIF
    ENDIF
-
    RETURN SELF
 
 
@@ -5031,7 +4848,6 @@ STATIC FUNCTION Before( cDelim, cValue )
    IF cDelim $ cValue
       cRetVal := left( cValue, at( cDelim, cValue ) - 1 )
    ENDIF
-
    RETURN cRetVal
 
 
@@ -5041,7 +4857,6 @@ STATIC FUNCTION After( cDelim, cValue )
    IF cDelim $ cValue
       cRetVal := substr( cValue, at( cDelim, cValue ) + 1 )
    ENDIF
-
    RETURN cRetVal
 
 /*----------------------------------------------------------------------*/
@@ -5057,7 +4872,6 @@ STATIC FUNCTION BuildScreen()
 
    oCUI := hbCUIEditor():new():create()
    oCUI:destroy()
-
    RETURN NIL
 
 

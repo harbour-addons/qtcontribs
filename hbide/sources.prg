@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -59,15 +57,12 @@
  *                               09Jan2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 #include "hbide.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeSourcesManager INHERIT IdeObject
 
@@ -92,51 +87,36 @@ CLASS IdeSourcesManager INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:init( oIde )
-
    ::oIde := oIde
-
    ::oFileWatcher := QFileSystemWatcher()
    ::oFileWatcher:connect( "fileChanged(QString)", {|cSource| ::requestSourceReload( cSource ) } )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:create( oIde )
-
    DEFAULT oIde TO ::oIde
-
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:requestSourceReload( cSource )
-
    IF ::oEM:isOpen( cSource )  /* Only watch which are already open */
       IF hbide_getYesNo( cSource + " has been changed by some external process!", "Want to re-load it again ?", "File Changed Notification!" )
          ::oEM:reLoad( cSource )
       ENDIF
       ::oEM:setSourceVisible( cSource ) /* Should the changed file be brrought to focus? I think no. */
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:loadSources()
    LOCAL a_
-
    IF ! empty( ::oIni:aFiles )
       FOR EACH a_ IN ::oIni:aFiles
          /*            File     nPos     nVPos    nHPos    cTheme  cView lAlert lVisible, aBookMarks */
@@ -145,16 +125,12 @@ METHOD IdeSourcesManager:loadSources()
    ELSE
       ::editSource( "default.prg" )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:saveNamedSource( cSource )
    LOCAL lSaved, oEditor, a_, cBuffer
-
    cSource := hbide_pathNormalized( cSource, .t. )
-
    FOR EACH a_ IN ::aTabs
       oEditor := a_[ TAB_OEDITOR ]
       IF HB_ISOBJECT( oEditor )
@@ -162,33 +138,25 @@ METHOD IdeSourcesManager:saveNamedSource( cSource )
             IF oEditor:lLoaded
                IF oEditor:document():isModified()
                   ::oIde:setCodePage( oEditor:cCodePage )
-
                   cBuffer := oEditor:prepareBufferToSave( oEditor:qEdit:toPlainText() )
-
                   ::oFileWatcher:removePath( cSource )
-
                   IF ( lSaved := hb_memowrit( hbide_pathToOSPath( cSource ), cBuffer ) )
                      oEditor:document():setModified( .f. )
                      oEditor:setTabImage()
                   ENDIF
-
                   ::oFileWatcher:addPath( cSource )
                ENDIF
             ENDIF
          ENDIF
       ENDIF
    NEXT
-
    RETURN lSaved
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, lAlert, lVisible, aBookMarks, cCodePage, cExtras )
    LOCAL lNew
-
    DEFAULT lAlert   TO .T.
    DEFAULT lVisible TO .T.
-
    IF ( lNew := empty( cSourceFile ) )
       cSourceFile := hbide_saveAFile( ::oDlg, "Provide source filename", /*aFltr*/, hbide_SetWrkFolderLast(), /*cDftSuffix*/ )
       IF empty( cSourceFile )
@@ -196,7 +164,6 @@ METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cV
       ENDIF
       hbide_SetWrkFolderLast( cSourceFile )
    ENDIF
-
    IF ! ( cSourceFile == "default.prg" )
       IF !Empty( cSourceFile )
          IF !( hbide_isValidText( cSourceFile ) )
@@ -217,49 +184,38 @@ METHOD IdeSourcesManager:editSource( cSourceFile, nPos, nHPos, nVPos, cTheme, cV
          ENDIF
       ENDIF
    ENDIF
-
    DEFAULT nPos  TO 0
    DEFAULT nHPos TO 0
    DEFAULT nVPos TO 0
-
    IF hb_FileExists( cSourceFile )
       ::oFileWatcher:addPath( cSourceFile )
    ENDIF
-
    ::oEM:buildEditor( cSourceFile, nPos, nHPos, nVPos, cTheme, cView, aBookMarks, cCodePage, cExtras )
    IF lVisible
       ::oEM:setSourceVisible( cSourceFile )
    ENDIF
-
    IF ! Empty( cSourceFile ) .AND. ! ( cSourceFile == "default.prg" ) .AND. ! hbide_isSourcePPO( cSourceFile )
       hbide_mnuAddFileToMRU( Self, cSourceFile, "recent_files" )
    ENDIF
-
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
-/*
- *   Save selected Tab on harddisk and return .T. if successfull!
+/*   Save selected Tab on harddisk and return .T. if successfull!
  */
 METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
    LOCAL oEditor, lNew, cBuffer, qDocument, nIndex, cSource, cFileTemp
    LOCAL cFileToSave, cPath, cFile, cExt, cNewFile, oItem
-
-   DEFAULT nTab TO ::oEM:getTabCurrent()
-   DEFAULT lAs  TO .F.
-
+   IF .T.
+      DEFAULT nTab TO ::oEM:getTabCurrent()
+      DEFAULT lAs  TO .F.
+   ENDIF
    lCancel := .F.
-
    IF ! Empty( oEditor := ::oEM:getEditorByTabPosition( nTab ) )
       nIndex  := ::qTabWidget:indexOf( oEditor:oTab:oWidget )
       cSource := oEditor:source()
-
       IF cSource == "default.prg"
          lAs := .t.
       ENDIF
-
       IF lAs .OR. Empty( cSource ) .OR. ( oEditor:lLoaded .AND. oEditor:document():isModified() )
-
          lNew := Empty( cSource ) .OR. lAs
          IF lNew
             cNewFile := ::selectSource( 'save', ;
@@ -273,10 +229,9 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
                lNew := .f.
             ENDIF
          ENDIF
-
          cFileToSave := iif( lNew, cNewFile, cSource )
          qDocument := oEditor:document()
-
+         //
          ::oIde:setCodePage( oEditor:cCodePage )
          cBuffer := oEditor:prepareBufferToSave( oEditor:oEdit:widget():toPlainText() )
          //
@@ -291,18 +246,15 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
          IF hb_FileExists( cFileToSave )
             ::oFileWatcher:addPath( cFileToSave )
          ENDIF
-
          hb_fNameSplit( cFileToSave, @cPath, @cFile, @cExt )
-
          IF lNew
             oEditor:setSource( cFileToSave )
-
             oEditor:oTab:Caption := cFile + cExt
             oEditor:updateTitleBar()
-
+            //
             ::qTabWidget:setTabText( nIndex, cFile + cExt )
             ::qTabWidget:setTabTooltip( nIndex, cFileToSave )
-
+            //
             IF empty( cSource )
                /* The file is not populated in editors tree. Inject */
                ::oEM:addSourceInTree( oEditor:source() )
@@ -313,48 +265,38 @@ METHOD IdeSourcesManager:saveSource( nTab, lCancel, lAs )
                ENDIF
             ENDIF
          ENDIF
-
          qDocument:setModified( .f. )
          ::oIde:aSources := { oEditor:source() }
          ::createTags()
          ::updateFuncList()
          ::qTabWidget:setTabIcon( nIndex, QIcon( ::resPath + "tabunmodified.png" ) )
          ::oDK:setStatusText( SB_PNL_MODIFIED, " " )
-
+         //
          cFileTemp := hbide_pathToOSPath( oEditor:cPath + oEditor:cFile + oEditor:cExt + ".tmp" )
          ferase( cFileTemp )
-
          IF left( lower( cFile ), 4 ) == "cls_"
             ::oUiS:reloadIfOpen( lower( cPath ) + lower( substr( cFile, 5 ) ) + ".ui" )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:closeSource( nTab, lCanCancel, lCanceled, lAsk )
    LOCAL lSave, n, oEditor
-
    DEFAULT nTab TO ::oEM:getTabCurrent()
    DEFAULT lAsk TO .t.
-
    IF !empty( oEditor := ::oEM:getEditorByTabPosition( nTab ) )
-
       DEFAULT lCanCancel TO .F.
       lCanceled := .F.
-
       IF !( oEditor:document():isModified() ) /* File has not changed, ignore the question to User */
          lSave := .F.
-
       ELSEIF lCanCancel
          n := hbide_getYesNoCancel( oEditor:oTab:caption, "has been modified, save this source?", 'Save?' )
          IF ( lCanceled := ( n == QMessageBox_Cancel ) )
             RETURN .F.
          ENDIF
          lSave := ( n == QMessageBox_Yes )
-
       ELSE
          IF lAsk
             lSave := hbide_getYesNo( oEditor:oTab:caption, "has been modified, save this source?", 'Save?' )
@@ -362,125 +304,91 @@ METHOD IdeSourcesManager:closeSource( nTab, lCanCancel, lCanceled, lAsk )
             lSave := .t.
          ENDIF
       ENDIF
-
       IF lSave .AND. ! ::saveSource( nTab, @lCanceled )
          IF lCanCancel
             RETURN .F.
          ENDIF
       ENDIF
-
       oEditor:destroy()
       ::oIde:updateTitleBar()
    ENDIF
-
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
-/*
- * Close all opened files.
+/* Close all opened files.
  * 02/01/2010 - 15:31:44
  */
 METHOD IdeSourcesManager:closeAllSources( lCanCancel )
    LOCAL lCanceled
    LOCAL i := 0
-
    DEFAULT lCanCancel TO .t.
-
    DO WHILE ( ++i <= Len( ::aTabs ) )
-
        IF ::closeSource( i, lCanCancel, @lCanceled )
           i --
           LOOP
        ENDIF
-
        IF lCanceled
           RETURN .F.
        ENDIF
    ENDDO
-
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
-/*
- * Close all opened files except current.
+/* Close all opened files except current.
  * 02/01/2010 - 15:47:19 - vailtom
  */
 METHOD IdeSourcesManager:closeAllOthers( nTab )
    LOCAL lCanceled
    LOCAL oEdit
    LOCAL nID
-
    DEFAULT nTab TO ::oEM:getTabCurrent()
-
    IF empty( oEdit := ::oEM:getEditorByTabPosition( nTab ) )
       RETURN .F.
    ENDIF
-
    nID  := oEdit:nID
    nTab := 0
-
  * Finally now we will close all tabs.
    DO WHILE ( ++nTab <= Len( ::aTabs ) )
-
        oEdit := ::oEM:getEditorByTabPosition( nTab )
-
        IF empty( oEdit ) .OR. oEdit:nID == nID
           LOOP
        ENDIF
-
        IF ::closeSource( nTab, .T., @lCanceled )
           nTab --
           LOOP
        ENDIF
-
        IF lCanceled
           RETURN .F.
        ENDIF
    ENDDO
-
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
-/*
- * Save all opened files...
+/* Save all opened files...
  * 01/01/2010 - 22:44:36 - vailtom
  */
 METHOD IdeSourcesManager:saveAllSources()
    LOCAL n
-
    FOR n := 1 TO Len( ::aTabs )
       ::saveSource( n )
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*
- * Save current file and exits HBIDE
+/* Save current file and exits HBIDE
  * 02/01/2010 - 18:45:06 - vailtom
  */
 METHOD IdeSourcesManager:saveAndExit()
-
    IF ::saveSource()
       ::execAction( "Exit" )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*
- * Revert current file to a previous saved file.
+/* Revert current file to a previous saved file.
  * 02/01/2010 - 19:45:34
  */
 METHOD IdeSourcesManager:revertSource( nTab )
    LOCAL oEditor
-
    DEFAULT nTab TO ::oEM:getTabCurrent()
-
    IF empty( oEditor := ::oEM:getEditorByTabPosition( nTab ) )
       RETURN .F.
    ENDIF
-
    IF !( oEditor:qDocument:isModified() )
       * File has not changed, ignore the question to User
    ELSE
@@ -490,87 +398,72 @@ METHOD IdeSourcesManager:revertSource( nTab )
          RETURN Self
       ENDIF
    ENDIF
-
    oEditor:qEdit:setPlainText( hb_memoRead( oEditor:source() ) )
    oEditor:qEdit:ensureCursorVisible()
    ::manageFocusInEditor()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:openSource()
    LOCAL aSrc, cSource
-
    IF !empty( aSrc := ::selectSource( "openmany" ) )
       FOR EACH cSource IN aSrc
          ::editSource( cSource )
       NEXT
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeSourcesManager:selectSource( cMode, cFile, cTitle, cDftPath )
    LOCAL oDlg, aFltr := {}
-
-   DEFAULT cDftPath TO ::cLastFileOpenPath
-
-   AAdd( aFltr, { "PRG Sources"    , "*.prg" } )
-   AAdd( aFltr, { "Harbour Scripts", "*.hb"  } )
-   AAdd( aFltr, { "C Sources"      , "*.c"   } )
-   AAdd( aFltr, { "CPP Sources"    , "*.cpp" } )
-   AAdd( aFltr, { "H Headers"      , "*.h"   } )
-   AAdd( aFltr, { "CH Headers"     , "*.ch"  } )
-   AAdd( aFltr, { "UI Files"       , "*.ui"  } )
-   AAdd( aFltr, { "QRC Files"      , "*.qrc" } )
-   AAdd( aFltr, { "HBC Files"      , "*.hbc" } )
-   AAdd( aFltr, { "All Files"      , "*.*"   } )
-
-   oDlg := XbpFileDialog():new():create( ::oDlg, , { 10,10 } )
-
-   IF cMode == "open"
-      oDlg:title       := "Select a Source File"
-      oDlg:center      := .t.
-      oDlg:fileFilters := aFltr
-
-      cFile := oDlg:open( cDftPath, , .f. )
-      IF !empty( cFile )
-         ::oIde:cLastFileOpenPath := cFile
-      ENDIF
-
-   ELSEIF cMode == "openmany"
-      oDlg:title       := "Select Source(s)"
-      oDlg:center      := .t.
-      oDlg:defExtension:= 'prg'
-      oDlg:fileFilters := aFltr
-
-      cFile := oDlg:open( cDftPath, , .t. )
-      IF !empty( cFile ) .AND. !empty( cFile[ 1 ] )
-         ::oIde:cLastFileOpenPath := cFile[ 1 ]
-      ENDIF
-
-   ELSEIF cMode == "save"
-      oDlg:title       := iif( !HB_ISSTRING( cTitle ), "Save as...", cTitle )
-      oDlg:center      := .t.
-      oDlg:defExtension:= 'prg'
-      oDlg:fileFilters := aFltr
-      cFile := oDlg:saveAs( cFile )
-
-   ELSE
-      oDlg:title       := "Save this Database"
-      oDlg:fileFilters := { { "Database Files", "*.dbf" } }
-      oDlg:quit        := {|| MsgBox( "Quitting the Dialog" ), 1 }
-      cFile := oDlg:saveAs( "myfile.dbf" )
-      IF !empty( cFile )
-         HB_TRACE( HB_TR_DEBUG, cFile )
-      ENDIF
-
+   IF .T.
+      DEFAULT cDftPath TO ::cLastFileOpenPath
+      //   
+      AAdd( aFltr, { "PRG Sources"    , "*.prg" } )
+      AAdd( aFltr, { "Harbour Scripts", "*.hb"  } )
+      AAdd( aFltr, { "C Sources"      , "*.c"   } )
+      AAdd( aFltr, { "CPP Sources"    , "*.cpp" } )
+      AAdd( aFltr, { "H Headers"      , "*.h"   } )
+      AAdd( aFltr, { "CH Headers"     , "*.ch"  } )
+      AAdd( aFltr, { "UI Files"       , "*.ui"  } )
+      AAdd( aFltr, { "QRC Files"      , "*.qrc" } )
+      AAdd( aFltr, { "HBC Files"      , "*.hbc" } )
+      AAdd( aFltr, { "All Files"      , "*.*"   } )
    ENDIF
-
+   WITH OBJECT oDlg := XbpFileDialog():new():create( ::oDlg, , { 10,10 } )
+      IF cMode == "open"
+         :title       := "Select a Source File"
+         :center      := .t.
+         :fileFilters := aFltr
+         cFile := :open( cDftPath, NIL, .f. )
+         IF !empty( cFile )
+            ::oIde:cLastFileOpenPath := cFile
+         ENDIF
+      ELSEIF cMode == "openmany"
+         :title       := "Select Source(s)"
+         :center      := .t.
+         :defExtension:= 'prg'
+         :fileFilters := aFltr
+         cFile := :open( cDftPath, , .t. )
+         IF !empty( cFile ) .AND. !empty( cFile[ 1 ] )
+            ::oIde:cLastFileOpenPath := cFile[ 1 ]
+         ENDIF
+      ELSEIF cMode == "save"
+         :title       := iif( !HB_ISSTRING( cTitle ), "Save as...", cTitle )
+         :center      := .t.
+         :defExtension:= 'prg'
+         :fileFilters := aFltr
+         cFile := oDlg:saveAs( cFile )
+      ELSE
+         :title       := "Save this Database"
+         :fileFilters := { { "Database Files", "*.dbf" } }
+         :quit        := {|| MsgBox( "Quitting the Dialog" ), 1 }
+         cFile := oDlg:saveAs( "myfile.dbf" )
+         IF !empty( cFile )
+            HB_TRACE( HB_TR_DEBUG, cFile )
+         ENDIF
+      ENDIF
+   ENDWITH 
    oDlg:destroy()
-
    RETURN cFile
 
-/*----------------------------------------------------------------------*/

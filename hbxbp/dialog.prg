@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -121,14 +121,12 @@ CLASS XbpDialog FROM XbpWindow
 
 
 METHOD XbpDialog:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    DEFAULT oParent TO AppDeskTop()
 
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::resizeMode  := 0
    ::mouseMode   := 0
-
    ::drawingArea := XbpDrawingArea():new( self, , {0,0}, ::aSize, , .F. )
 
    RETURN Self
@@ -171,13 +169,10 @@ METHOD XbpDialog:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    IF ::border == XBPDLG_NO_BORDER
       nFlags := hb_bitOr( nFlags, Qt_FramelessWindowHint )
-
    ELSE
       nFlags := hb_bitOr( nFlags, Qt_CustomizeWindowHint )
-
       IF ::titleBar
          nFlags := hb_bitOr( nFlags, Qt_WindowTitleHint )
-
          IF ::sysMenu
             nFlags := hb_bitOr( nFlags, Qt_WindowCloseButtonHint )
             nFlags := hb_bitOr( nFlags, Qt_WindowSystemMenuHint )
@@ -219,7 +214,6 @@ METHOD XbpDialog:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
       ::oWidget:setMaximumHeight( ::oWidget:height() )
    ENDIF
 
-
    ::nFlags := nFlags
    IF __objGetClsName( ::oParent ) == "XBPDRAWINGAREA"
       ::setParent( ::oParent )
@@ -250,12 +244,10 @@ METHOD XbpDialog:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    IF empty( SetAppWindow() )
       SetAppWindow( Self )
    ENDIF
-
    RETURN Self
 
 
 METHOD XbpDialog:destroy()
-
    IF ! empty( ::oMdi )
       ::oMdi:hide()
    ENDIF
@@ -278,58 +270,46 @@ METHOD XbpDialog:destroy()
       ::oMdi:close()
       ::oMdi := NIL
    ENDIF
-
    RETURN NIL
 
 
 METHOD XbpDialog:execEvent( nEvent, pEvent )
 
    SWITCH nEvent
-
    CASE QEvent_WindowActivate
       SetAppEvent( xbeP_SetDisplayFocus, NIL, NIL, Self )
       EXIT
-
    CASE QEvent_WindowDeactivate
       SetAppEvent( xbeP_KillDisplayFocus, NIL, NIL, Self )
       EXIT
-
    CASE QEvent_Close
       pEvent:ignore()
       ::close()
       EXIT
-
    ENDSWITCH
-
    RETURN .F.
 
 
 METHOD XbpDialog:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
 
 METHOD XbpDialog:maxSize( aSize )
-
    IF HB_ISARRAY( aSize ) .AND. len( aSize ) == 2 .AND. HB_ISNUMERIC( aSize[ 1 ] ) .AND. HB_ISNUMERIC( aSize[ 2 ] )
       ::aMaxSize := aSize
       ::oWidget:setMaximumWidth( aSize[ 1 ] )
       ::oWidget:setMaximumHeight( aSize[ 2 ] )
    ENDIF
-
    RETURN ::aMaxSize
 
 
 METHOD XbpDialog:minSize( aSize )
-
    IF HB_ISARRAY( aSize ) .AND. len( aSize ) == 2 .AND. HB_ISNUMERIC( aSize[ 1 ] ) .AND. HB_ISNUMERIC( aSize[ 2 ] )
       ::aMinSize := aSize
       ::oWidget:setMinimumWidth( aSize[ 1 ] )
       ::oWidget:setMinimumHeight( aSize[ 2 ] )
    ENDIF
-
    RETURN ::aMinSize
 
 
@@ -359,7 +339,7 @@ METHOD XbpDialog:showModal()
    ::hide()
    ::oWidget:setWindowModality( XBP_DISP_MODELESS )
    ::show()
-
+   //
    RETURN ::modalResult
 
 
@@ -386,7 +366,6 @@ METHOD XbpDialog:setFrameState( nState )
       ENDIF
       oWidget:setWindowState( Qt_WindowNoState )
    ENDCASE
-
    RETURN lSuccess
 
 
@@ -398,22 +377,17 @@ METHOD XbpDialog:getFrameState()
    ELSEIF ( hb_bitAnd( nState, Qt_WindowMaximized ) == Qt_WindowMaximized )
       RETURN XBPDLG_FRAMESTAT_MAXIMIZED
    ENDIF
-
    RETURN XBPDLG_FRAMESTAT_NORMALIZED
 
 
 METHOD XbpDialog:menuBar()
-
    IF !( HB_ISOBJECT( ::oMenu ) )
       XbpMenuBar():New( self ):create()
    ENDIF
-
    RETURN ::oMenu
 
 /*----------------------------------------------------------------------*/
-/*
- *                            XbpDrawingArea
- */
+//                            XbpDrawingArea
 /*----------------------------------------------------------------------*/
 
 CLASS XbpDrawingArea  INHERIT  XbpWindow
@@ -430,19 +404,15 @@ CLASS XbpDrawingArea  INHERIT  XbpWindow
 
 
 METHOD XbpDrawingArea:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::visible := .t.
-
    RETURN Self
 
 
 METHOD XbpDrawingArea:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    HB_SYMBOL_UNUSED( lVisible )
 
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, .T. )
-
    IF ! empty( ::qtObject )
       ::oWidget := ::qtObject
    ELSE
@@ -457,6 +427,5 @@ METHOD XbpDrawingArea:create( oParent, oOwner, aPos, aSize, aPresParams, lVisibl
    ::setQtProperty()  /* Using it for one-to-one style sheet management */
 
    ::oParent:addChild( Self )
-
    RETURN Self
 

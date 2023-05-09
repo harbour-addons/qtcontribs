@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              13Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -73,7 +69,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpToolBar  INHERIT  XbpWindow
 
@@ -134,15 +129,12 @@ CLASS XbpToolBar  INHERIT  XbpWindow
    METHOD   itemToggle( nItem_cKey )
 
    ENDCLASS
-/*----------------------------------------------------------------------*/
+
 
 METHOD XbpToolbar:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    LOCAL oPar
@@ -201,7 +193,6 @@ METHOD XbpToolbar:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:destroy()
    LOCAL aItem, oBtn
@@ -210,34 +201,24 @@ METHOD XbpToolbar:destroy()
       IF aItem[ 3 ] == XBPTOOLBAR_BUTTON_DEFAULT
          oBtn := aItem[ 2 ]
          aItem := NIL
-
          oBtn:oAction:disConnect( "triggered(bool)" )
-
          oBtn:oAction := NIL
       ELSE
          aItem := NIL
       ENDIF
    NEXT
-
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:sendToolbarMessage()
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nStyle, xKey )
    LOCAL oBtn, oButton
@@ -272,21 +253,17 @@ METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nS
 
    IF nStyle == XBPTOOLBAR_BUTTON_SEPARATOR
       oBtn:oAction := ::oWidget:addSeparator()
-
    ELSE
       IF isAction
          oBtn:oAction := cCaption
-
       ELSEIF isToolButtonB
          oBtn:oAction := QWidgetAction( ::oWidget )
          oBtn:oAction:setDefaultWidget( cCaption )
-
       ELSEIF isToolButton
          oButton := QToolButton()
          oBtn:oAction := QWidgetAction( ::oWidget )
          oBtn:oAction:setDefaultWidget( oButton )
          oBtn:cargo := oButton
-
          oButton:setObjectName( cCaption[ 1 ] )
          oButton:setTooltip( cCaption[ 2 ] )
          oButton:setIcon( cCaption[ 3 ] )
@@ -297,11 +274,9 @@ METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nS
             oButton:connect( QEvent_MouseMove         , {|p| ::execSlot( "QEvent_MouseMove"   , p, oButton ), .T. } )
             oButton:connect( QEvent_Enter             , {|p| ::execSlot( "QEvent_MouseEnter"  , p, oButton ), .T. } )
          ENDIF
-
       ELSEIF isObject
          oBtn:oAction := QWidgetAction( ::oWidget )
          oBtn:oAction:setDefaultWidget( cCaption )
-
       ELSE
          /* Create an action */
          oBtn:oAction := QAction( ::oWidget )
@@ -312,26 +287,19 @@ METHOD XbpToolbar:addItem( cCaption, xImage, xDisabledImage, xHotImage, cDLL, nS
          ELSEIF HB_ISOBJECT( xImage )
             oBtn:oAction:setIcon( xImage )
          ENDIF
-
       ENDIF
-
       /* Attach codeblock to be triggered */
       IF ! isToolButton
          oBtn:oAction:connect( "triggered(bool)", {|| ::execSlot( "triggered(bool)", oBtn ) } )
       ELSE
          oButton:connect( "clicked()", {|| ::execSlot( "triggered(bool)", oBtn ) } )
       ENDIF
-
       /* Attach Action with Toolbar */
       ::oWidget:addAction( oBtn:oAction )
-
    ENDIF
-
    aadd( ::aItems, { oBtn:command, oBtn, nStyle } )
-
    RETURN oBtn
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:execSlot( cSlot, p, p1 )
    LOCAL qEvent, qRC, qMime, qDrag, qByte, qPix
@@ -339,20 +307,16 @@ METHOD XbpToolbar:execSlot( cSlot, p, p1 )
    qEvent := p
 
    SWITCH cSlot
-
    CASE "triggered(bool)"
       ::buttonClick( p )
       EXIT
-
    CASE "QEvent_MouseLeave"
       EXIT
-
    CASE "QEvent_MouseMove"
       qRC := QRect( ::qPos:x() - 5, ::qPos:y() - 5, 10, 10 ):normalized()
       IF qRC:contains( qEvent:pos() )
          qByte := QByteArray( p1:objectName() )
          qPix  := p1:icon():pixmap( 16,16 )
-
          WITH OBJECT qMime := QMimeData()
             :setData( "application/x-toolbaricon", qByte )
             :setHtml( p1:objectName() )
@@ -369,18 +333,14 @@ METHOD XbpToolbar:execSlot( cSlot, p, p1 )
          ::qPos  := NIL
       ENDIF
       EXIT
-
    CASE "QEvent_MouseRelease"
       EXIT
-
    CASE "QEvent_MousePress"
       ::qPos := qEvent:pos()
       EXIT
-
    ENDSWITCH
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:setItemChecked( nItem_cKey, lChecked )
    LOCAL oBtn, lOldState
@@ -393,10 +353,8 @@ METHOD XbpToolbar:setItemChecked( nItem_cKey, lChecked )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN lOldState
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:setItemEnabled( nItem_cKey, lEnabled )
    LOCAL oBtn, lOldState
@@ -407,10 +365,8 @@ METHOD XbpToolbar:setItemEnabled( nItem_cKey, lEnabled )
          oBtn:oAction:setEnabled( lEnabled )
       ENDIF
    ENDIF
-
    RETURN lOldState
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:itemToggle( nItem_cKey )
    LOCAL oBtn, lOldState
@@ -421,10 +377,8 @@ METHOD XbpToolbar:itemToggle( nItem_cKey )
          oBtn:oAction:setChecked( ! lOldState )
       ENDIF
    ENDIF
-
    RETURN lOldState
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:delItem( nItem_cKey )
    LOCAL a_
@@ -434,7 +388,6 @@ METHOD XbpToolbar:delItem( nItem_cKey )
          ::oWidget:removeAction( ::aItems[ nItem_cKey, 2 ]:oAction )
          hb_ADel( ::aItems, nItem_cKey, .T. )
       ENDIF
-
    ELSEIF HB_ISCHAR( nItem_cKey )
       FOR EACH a_ IN ::aItems
          IF HB_ISCHAR( a_[ 2 ]:key )
@@ -445,12 +398,9 @@ METHOD XbpToolbar:delItem( nItem_cKey )
             ENDIF
          ENDIF
       NEXT
-
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:getItem( nItem_cKey )
    LOCAL a_
@@ -459,7 +409,6 @@ METHOD XbpToolbar:getItem( nItem_cKey )
       IF Len( ::aItems ) <= nItem_cKey
          RETURN ::aItems[ nItem_cKey, 2 ]
       ENDIF
-
    ELSEIF HB_ISCHAR( nItem_cKey )
       FOR EACH a_ IN ::aItems
          IF HB_ISCHAR( a_[ 2 ]:key )
@@ -472,59 +421,40 @@ METHOD XbpToolbar:getItem( nItem_cKey )
             ENDIF
          ENDIF
       NEXT
-
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:clear()
-
    ::oWidget:clear()
    ::aItems := {}
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:customize()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:loadImageSet()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:saveToolbar()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:restToolbar()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:setPosAndSize()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:setSize()
-
    //::sendMessage( TB_AUTOSIZE, 0, 0 )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:buttonClick( ... )
    LOCAL a_:= hb_aParams()
@@ -535,7 +465,6 @@ METHOD XbpToolbar:buttonClick( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:change( ... )
    LOCAL a_:= hb_aParams()
@@ -546,7 +475,6 @@ METHOD XbpToolbar:change( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:buttonMenuClick( ... )
    LOCAL a_:= hb_aParams()
@@ -557,7 +485,6 @@ METHOD XbpToolbar:buttonMenuClick( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:buttonDropDown( ... )
    LOCAL a_:= hb_aParams()
@@ -568,33 +495,27 @@ METHOD XbpToolbar:buttonDropDown( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbar:setStyle()
    LOCAL s, txt_:={}
 
-   aadd( txt_, ' ' )
-   aadd( txt_, ' QToolBar {                                                    ' )
-   aadd( txt_, '     background: cyan;                                         ' )
-   aadd( txt_, '     spacing: 3px; /* spacing between items in the tool bar */ ' )
-   aadd( txt_, ' }                                                             ' )
-   aadd( txt_, '                                                               ' )
-   aadd( txt_, ' QToolBar::handle {                                            ' )
-   aadd( txt_, '     image: url(save.png);                                     ' )
-   aadd( txt_, ' }                                                             ' )
-   aadd( txt_, ' ' )
+   AAdd( txt_, " " )
+   AAdd( txt_, " QToolBar {                                                    " )
+   AAdd( txt_, "     background: cyan;                                         " )
+   AAdd( txt_, "     spacing: 3px; /* spacing between items in the tool bar */ " )
+   AAdd( txt_, " }                                                             " )
+   AAdd( txt_, " QToolBar::handle {                                            " )
+   AAdd( txt_, "     image: url(save.png);                                     " )
+   AAdd( txt_, " }                                                             " )
+   AAdd( txt_, " "                                                               )
 
    s := ""
    aeval( txt_, {|e| s += e + chr( 13 )+chr( 10 ) } )
-
    ::oWidget:setStyleSheet( s )
-
    RETURN self
 
 /*----------------------------------------------------------------------*/
-/*
- *       XbpToolbarButton() Class compatible with XbpToolbarButton()
- */
+//       XbpToolbarButton() Class compatible with XbpToolbarButton()
 /*----------------------------------------------------------------------*/
 
 CLASS XbpToolbarButton
@@ -625,18 +546,14 @@ CLASS XbpToolbarButton
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpToolbarButton:init( cCaption, nStyle, xKey )
+   DEFAULT cCaption TO ::caption
+   DEFAULT nStyle   TO ::style
+   DEFAULT xKey     TO ::key
 
-   DEFAULT cCaption       TO ::caption
-   DEFAULT nStyle         TO ::style
-   DEFAULT xKey           TO ::key
-
-   ::caption        := cCaption
-   ::style          := nStyle
-   ::key            := xKey
-
+   ::caption := cCaption
+   ::style   := nStyle
+   ::key     := xKey
    RETURN Self
 
-/*----------------------------------------------------------------------*/

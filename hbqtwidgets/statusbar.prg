@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,6 @@
 #include "common.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS HbQtStatusBar
 
@@ -92,7 +91,6 @@ CLASS HbQtStatusBar
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:init( oParent )
 
@@ -100,7 +98,6 @@ METHOD HbQtStatusBar:init( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:create( oParent )
 
@@ -116,7 +113,6 @@ METHOD HbQtStatusBar:create( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:addItem( cCaption, nStyle, cKey, nMode )
    LOCAL oPanel, lSuccess := .t.
@@ -140,7 +136,6 @@ METHOD HbQtStatusBar:addItem( cCaption, nStyle, cKey, nMode )
 
    RETURN oPanel
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:delItem( nItemORcKey )
    LOCAL nIndex := 0
@@ -159,7 +154,6 @@ METHOD HbQtStatusBar:delItem( nItemORcKey )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:getItem( nItemORcKey )
    LOCAL nIndex := 0, oPanel
@@ -178,7 +172,6 @@ METHOD HbQtStatusBar:getItem( nItemORcKey )
 
    RETURN oPanel
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:clear()
 
@@ -186,7 +179,6 @@ METHOD HbQtStatusBar:clear()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:panelClick( ... )
    LOCAL a_:= hb_aParams()
@@ -197,7 +189,6 @@ METHOD HbQtStatusBar:panelClick( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBar:panelDblClick( ... )
    LOCAL a_:= hb_aParams()
@@ -209,9 +200,7 @@ METHOD HbQtStatusBar:panelDblClick( ... )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*
  *                      XbpToolbarButton() Class
- */
 /*----------------------------------------------------------------------*/
 
 CLASS HbQtStatusBarPanel
@@ -238,7 +227,6 @@ CLASS HbQtStatusBarPanel
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBarPanel:init( cCaption, nStyle, cKey )
 
@@ -252,7 +240,6 @@ METHOD HbQtStatusBarPanel:init( cCaption, nStyle, cKey )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBarPanel:create( cCaption, nStyle, cKey )
 
@@ -268,7 +255,6 @@ METHOD HbQtStatusBarPanel:create( cCaption, nStyle, cKey )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtStatusBarPanel:caption( cCaption )
 
@@ -288,6 +274,4 @@ METHOD HbQtStatusBarPanel:caption( cCaption )
    ENDIF
 
    RETURN Self
-
-/*----------------------------------------------------------------------*/
 

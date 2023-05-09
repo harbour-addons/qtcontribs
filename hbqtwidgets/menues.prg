@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -154,7 +154,6 @@ PROTECTED:
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:init( oParent )
 
@@ -162,7 +161,6 @@ METHOD HbQtMenuBar:init( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:create( oParent )
 
@@ -181,7 +179,6 @@ METHOD HbQtMenuBar:create( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:delAllItems()
    LOCAL aItem
@@ -193,7 +190,6 @@ METHOD HbQtMenuBar:delAllItems()
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:delItem( aItem )
    LOCAL n, oAction
@@ -218,10 +214,8 @@ METHOD HbQtMenuBar:delItem( aItem )
 
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
-/*
- * xCaption : NIL | cPrompt | ncResource | oMenu
- */
+// xCaption : NIL | cPrompt | ncResource | oMenu
+//
 METHOD HbQtMenuBar:placeItem( xCaption, bAction, nStyle, nAttrb, nMode, nPos )
    LOCAL nItemIndex, cCaption, cIcon, oAction, aItem, cType, pOldAct, nMenuItemId, n, cKey, oKey
    LOCAL lInsert := ( nMode == QTC_MENUITEM_INSERT )
@@ -357,7 +351,6 @@ METHOD HbQtMenuBar:placeItem( xCaption, bAction, nStyle, nAttrb, nMode, nPos )
 
    RETURN nItemIndex
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:addItem( aItem )
    LOCAL xCaption, bAction, nStyle, nAttrib
@@ -378,7 +371,6 @@ METHOD HbQtMenuBar:addItem( aItem )
 
    RETURN ::placeItem( xCaption, bAction, nStyle, nAttrib, QTC_MENUITEM_ADD )
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:insItem( nItemIndex, aItem )
    LOCAL xCaption, bAction, nStyle, nAttrib
@@ -399,7 +391,6 @@ METHOD HbQtMenuBar:insItem( nItemIndex, aItem )
 
    RETURN ::placeItem( xCaption, bAction, nStyle, nAttrib, QTC_MENUITEM_INSERT, nItemIndex )
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:setItem( nItemIndex, aItem )
 
@@ -408,7 +399,6 @@ METHOD HbQtMenuBar:setItem( nItemIndex, aItem )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:checkItem( nItemIndex, lCheck )
    LOCAL lChecked
@@ -422,7 +412,6 @@ METHOD HbQtMenuBar:checkItem( nItemIndex, lCheck )
 
    RETURN iif( lCheck, lChecked, !lChecked )
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:enableItem( nItemIndex )
    LOCAL lSuccess := .f.
@@ -434,7 +423,6 @@ METHOD HbQtMenuBar:enableItem( nItemIndex )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:disableItem( nItemIndex )
    LOCAL lSuccess := .f.
@@ -446,7 +434,6 @@ METHOD HbQtMenuBar:disableItem( nItemIndex )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:getItem( nItemIndex )
    LOCAL aItem
@@ -457,7 +444,6 @@ METHOD HbQtMenuBar:getItem( nItemIndex )
 
    RETURN aItem
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:isItemChecked( nItemIndex )
    LOCAL lChecked := .f.
@@ -468,7 +454,6 @@ METHOD HbQtMenuBar:isItemChecked( nItemIndex )
 
    RETURN lChecked
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:isItemEnabled( nItemIndex )
    LOCAL lEnabled := .t.
@@ -479,7 +464,6 @@ METHOD HbQtMenuBar:isItemEnabled( nItemIndex )
 
    RETURN lEnabled
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:selectItem( nItemIndex )
 
@@ -511,7 +495,6 @@ METHOD HbQtMenuBar:execSlot( cSlot, p )
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:beginMenu( ... )
    LOCAL a_:= hb_aParams()
@@ -522,7 +505,6 @@ METHOD HbQtMenuBar:beginMenu( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:endMenu( ... )
    LOCAL a_:= hb_aParams()
@@ -533,7 +515,6 @@ METHOD HbQtMenuBar:endMenu( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:itemMarked( ... )
    LOCAL a_:= hb_aParams()
@@ -544,7 +525,6 @@ METHOD HbQtMenuBar:itemMarked( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:itemSelected( ... )
    LOCAL a_:= hb_aParams()
@@ -555,7 +535,6 @@ METHOD HbQtMenuBar:itemSelected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:drawItem( ... )
    LOCAL a_:= hb_aParams()
@@ -566,7 +545,6 @@ METHOD HbQtMenuBar:drawItem( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:measureItem( ... )
    LOCAL a_:= hb_aParams()
@@ -577,7 +555,6 @@ METHOD HbQtMenuBar:measureItem( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenuBar:onMenuKey( ... )
    LOCAL a_:= hb_aParams()
@@ -616,7 +593,6 @@ PROTECTED:
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenu:init( oParent )
 
@@ -624,7 +600,6 @@ METHOD HbQtMenu:init( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenu:create( oParent )
 
@@ -642,13 +617,11 @@ METHOD HbQtMenu:create( oParent )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenu:getTitle()
 
    RETURN ::title
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenu:setTitle( cTitle )
    LOCAL oldTitle := ::title
@@ -658,7 +631,6 @@ METHOD HbQtMenu:setTitle( cTitle )
 
    RETURN oldTitle
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenu:popUp( xPos )
 
@@ -670,11 +642,9 @@ METHOD HbQtMenu:popUp( xPos )
 
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbQtMenu:normalize( cCaption )
 
    RETURN strtran( cCaption, '~', '&' )
 
-/*----------------------------------------------------------------------*/
 

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               14Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS DataRef
 
@@ -93,13 +88,10 @@ CLASS DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD DataRef:init()
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD DataRef:getData()
    LOCAL cClass := __ObjGetClsName( self )
@@ -107,67 +99,50 @@ METHOD DataRef:getData()
    DO CASE
    CASE ::isDerivedFrom( "XBPMLE" )
       ::sl_editBuffer := ::oWidget:toPlainText()
-
    CASE ::isDerivedFrom( "XBPSLE" )
       ::sl_editBuffer := ::oWidget:text()
-
    CASE cClass $ "XBPCOMBOBOX"
       //::sl_editBuffer := ::oWidget:itemText()
-
    CASE cClass == "XBPRADIOBUTTON"
       ::sl_editBuffer := ::oWidget:isChecked()
-
    CASE cClass == "XBPSCROLLBAR"
       ::sl_editBuffer := ::oWidget:value()
-
    CASE cClass == "XBPSPINBUTTON"
       ::sl_editBuffer := ::oWidget:value()
-
    CASE cClass == "XBPLISTBOX"
-
+      //
    ENDCASE
-
    IF HB_ISBLOCK( ::dataLink )
-      eval( ::dataLink, ::sl_editBuffer )
+      Eval( ::dataLink, ::sl_editBuffer )
    ENDIF
-
    RETURN ::sl_editBuffer
 
-/*----------------------------------------------------------------------*/
 
 METHOD DataRef:setData( xValue, mp2 )
    LOCAL cClass := __ObjGetClsName( self )
 
    HB_SYMBOL_UNUSED( mp2 )
 
-//HB_TRACE( HB_TR_DEBUG, cClass +' '+ ::cargo +"..."+ iif(empty(xValue)," empty ",valtype(xValue)) )
-
    IF HB_ISBLOCK( ::dataLink )
       ::sl_editBuffer := eval( ::dataLink, xValue )
-
    ELSEIF xValue != NIL
       ::sl_editBuffer := xValue
-
    ENDIF
 
    DO CASE
    CASE cClass $ "XBPCHECKBOX,XBPRADIO"
       ::oWidget:setChecked( ::sl_editBuffer )
-
    CASE cClass == "XBP3STATE"
       ::oWidget:setCheckState( iif( ::sl_editBuffer == 1, 2, iif( ::sl_editBuffer == 2, 1, 0 ) ) )
-
    CASE cClass == "XBPLISTBOX"
       IF !empty( ::sl_editBuffer )
          //RETURN Win_LbSetCurSel( ::hWnd, ::sl_editBuffer - 1 ) >= 0
       ENDIF
       RETURN .f.
-
    CASE cClass == "XBPTREEVIEW"
       IF ::sl_editBuffer != NIL .and. ::sl_editBuffer:hItem != NIL
          //Win_TreeView_SelectItem( ::hWnd, ::sl_editBuffer:hItem )
       ENDIF
-
    CASE ::isDerivedFrom( "XBPSLE" )
       IF HB_ISSTRING( ::sl_editBuffer )
          ::oWidget:setText( ::sl_editBuffer )
@@ -176,52 +151,40 @@ METHOD DataRef:setData( xValue, mp2 )
       IF HB_ISSTRING( ::sl_editBuffer )
          ::oWidget:setPlainText( ::sl_editBuffer )
       ENDIF
-   #if 0
+#if 0
    CASE cClass $ "XBPCOMBOBOX"
       IF HB_ISSTRING( ::sl_editBuffer )
          ::oWidget:setText( ::sl_editBuffer )
       ENDIF
-   #endif
+#endif
    CASE cClass == "XBPSPINBUTTON"
       IF HB_ISNUMERIC( ::sl_editBuffer )
          ::oWidget:setValue( ::sl_editBuffer )
       ENDIF
-
    CASE cClass == "XBPSCROLLBAR"
       IF HB_ISNUMERIC( ::sl_editBuffer )
          ::oWidget:setValue( ::sl_editBuffer )
       ENDIF
-
    ENDCASE
-
    RETURN ::sl_editBuffer
 
-/*----------------------------------------------------------------------*/
 
 METHOD DataRef:undo()
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD DataRef:validate( xParam )
-
    IF PCount() == 0 .AND. HB_ISBLOCK( ::sl_validate )
-      RETURN eval( ::sl_validate, self )
+      RETURN Eval( ::sl_validate, self )
    ELSEIF HB_ISBLOCK( xParam )
       ::sl_validate := xParam
    ENDIF
+   RETURN .T. 
 
-   RETURN .t.
-
-/*----------------------------------------------------------------------*/
 
 METHOD DataRef:editBuffer( xData )
-
-   IF !( xData == NIL )
+   IF ! xData == NIL
       ::sl_editBuffer := xData
    ENDIF
-
    RETURN ::sl_editBuffer
 
-/*----------------------------------------------------------------------*/

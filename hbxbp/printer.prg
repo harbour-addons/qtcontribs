@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              08Jul2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -72,7 +68,6 @@
 #include "xbpdev.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpPrinter
 
@@ -135,12 +130,10 @@ CLASS XbpPrinter
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:init()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:create( cDeviceName, nSpoolFormat, cDeviceParams )
 
@@ -159,48 +152,43 @@ METHOD XbpPrinter:create( cDeviceName, nSpoolFormat, cDeviceParams )
 
    ::devName := ::oWidget:printerName()
    ::oPrintEngine := ::oWidget:printEngine()
-
-   #if 0
-   ::oWidget:setCreator( const QString & creator )
-   ::oWidget:setDoubleSidedPrinting( bool doubleSided )
-   ::oWidget:setFromTo( int from, int to )
-   ::oWidget:setFullPage( bool fp )
-   ::oWidget:setOutputFormat( OutputFormat format )
-   ::oWidget:setPageMargins( qreal left, qreal top, qreal right, qreal bottom, Unit unit )
-   ::oWidget:setPageOrder( PageOrder pageOrder )
-   ::oWidget:setPrintProgram( const QString & printProg )
-   ::oWidget:setPrintRange( PrintRange range )
-   ::oWidget:setPrinterSelectionOption( const QString & option )
-   ::oWidget:setWinPageSize( int pageSize )
-   #endif
-
+#if 0
+   WITH OBJECT ::oWidget
+      :setCreator( const QString & creator )
+      :setDoubleSidedPrinting( bool doubleSided )
+      :setFromTo( int from, int to )
+      :setFullPage( bool fp )
+      :setOutputFormat( OutputFormat format )
+      :setPageMargins( qreal left, qreal top, qreal right, qreal bottom, Unit unit )
+      :setPageOrder( PageOrder pageOrder )
+      :setPrintProgram( const QString & printProg )
+      :setPrintRange( PrintRange range )
+      :setPrinterSelectionOption( const QString & option )
+      :setWinPageSize( int pageSize )
+   ENDWITH
+#endif
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:getHDC()
    LOCAL hDC := NIL
    RETURN hDC
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:forms()
    LOCAL aForms := {}
    RETURN aForms
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:list()
    LOCAL aPrinterNames := {}
    RETURN aPrinterNames
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:paperBins()
    LOCAL aPaperBins := {}
    RETURN aPaperBins
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:paperSize()
    LOCAL aPaperSize := {}
@@ -208,21 +196,16 @@ METHOD XbpPrinter:paperSize()
    //::oWidget:setPaperSize( const QSizeF & paperSize, Unit unit )
    RETURN aPaperSize
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:printerStatus()
    LOCAL nStatus := ::oWidget:printerState()
    RETURN nStatus
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:resolution()
    LOCAL aResolution := {}
-
-
    RETURN aResolution
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setCollationMode( nMode )
    LOCAL nModeOld := iif( ::oWidget:collateCopies(), XBPPRN_COLLATIONMODE_ON, XBPPRN_COLLATIONMODE_OFF )
@@ -230,10 +213,8 @@ METHOD XbpPrinter:setCollationMode( nMode )
    IF HB_ISNUMERIC( nMode )
       ::oWidget:setCollateCopies( iif( nMode == XBPPRN_COLLATIONMODE_ON, .t., .f. ) )
    ENDIF
-
    RETURN nModeOld
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setColorMode( nMode )
    LOCAL nModeOld := iif( ::oWidget:colorMode() == QPrinter_Color, XBPPRN_COLORMODE_ON, XBPPRN_COLORMODE_OFF )
@@ -241,10 +222,8 @@ METHOD XbpPrinter:setColorMode( nMode )
    IF HB_ISNUMERIC( nMode )
       ::oWidget:setColorMode( iif( nMode == XBPPRN_COLORMODE_ON, QPrinter_Color, QPrinter_GrayScale ) )
    ENDIF
-
    RETURN nModeOld
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setDuplexMode( nMode )
    LOCAL nModeOld := ::oWidget:duplex()
@@ -265,26 +244,20 @@ METHOD XbpPrinter:setDuplexMode( nMode )
       ELSE
          nMode := QPrinter_DuplexNone
       ENDIF
-
       ::oWidget:setDuplex( nMode )
    ENDIF
-
    RETURN nModeOld
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setFontMode( nMode )
    LOCAL nModeOld := nMode
-
    //::oWidget:setFontEmbeddingEnabled( bool enable )
-
    RETURN nModeOld
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setFormSize( nFormID )
    LOCAL nFormIDOld := ::oWidget:paperSize()
-   #if 0
+#if 0
    LOCAL q_:={}
    LOCAL x_:={}
    LOCAL n
@@ -320,7 +293,6 @@ METHOD XbpPrinter:setFormSize( nFormID )
    aadd( q_, QPrinter_Ledger   , XBPPRN_FORM_LEDGER    )
    aadd( q_, QPrinter_Tabloid  , XBPPRN_FORM_TABLOID   )
    aadd( q_, QPrinter_Custom    )
-
 
    XBPPRN_FORM_LETTERSMALL
    XBPPRN_FORM_STATEMENT
@@ -375,28 +347,23 @@ METHOD XbpPrinter:setFormSize( nFormID )
    XBPPRN_FORM_B5_EXTRA
    XBPPRN_FORM_A3_TRANSVERSE
    XBPPRN_FORM_A3_EXTRA_TRANS
-   #endif
+#endif
 
    IF HB_ISNUMERIC( nFormID )
       ::oWidget:setPaperSize( nFormID )
    ENDIF
    //::oWidget:setPaperSize( const QSizeF & paperSize, Unit unit )
-
    RETURN nFormIDOld
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setNumCopies( nNumCopies )
-   //LOCAL nOldNumCopies := ::oWidget:numCopies()
    LOCAL nOldNumCopies := ::getEngineProperty( QPrintEngine_PPK_NumberOfCopies )
 
    IF HB_ISNUMERIC( nNumCopies )
       ::oWidget:setNumCopies( nNumCopies )
    ENDIF
-
    RETURN nOldNumCopies
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setOrientation( nOrientation )
    LOCAL nOldOrientation := iif( ::oWidget:orientation() == QPrinter_Landscape, XBPPRN_ORIENT_LANDSCAPE, XBPPRN_ORIENT_PORTRAIT )
@@ -404,58 +371,50 @@ METHOD XbpPrinter:setOrientation( nOrientation )
    IF HB_ISNUMERIC( nOrientation )
       ::oWidget:setOrientation( iif( nOrientation == XBPPRN_ORIENT_LANDSCAPE, QPrinter_Landscape, QPrinter_Portrait ) )
    ENDIF
-
    RETURN nOldOrientation
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setPaperBin( nBin )
    LOCAL q_:= { }
    LOCAL x_:= {}
    LOCAL nOldBin
 
-   aadd( q_, QPrinter_OnlyOne        )
-   aadd( q_, QPrinter_Lower          )
-   aadd( q_, QPrinter_Middle         )
-   aadd( q_, QPrinter_Manual         )
-   aadd( q_, QPrinter_Envelope       )
-   aadd( q_, QPrinter_EnvelopeManual )
-   aadd( q_, QPrinter_Auto           )
-   aadd( q_, QPrinter_Tractor        )
-   aadd( q_, QPrinter_SmallFormat    )
-   aadd( q_, QPrinter_LargeFormat    )
-   aadd( q_, QPrinter_LargeCapacity  )
-   aadd( q_, QPrinter_Cassette       )
-   aadd( q_, QPrinter_FormSource     )
-
-   //aadd( q_, QPrinter_MaxPageSource  ) // Xbase++ does not define it
-
-   aadd( x_, XBPPRN_PAPERBIN_SINGLE        )
-   aadd( x_, XBPPRN_PAPERBIN_LOWER         )
-   aadd( x_, XBPPRN_PAPERBIN_MIDDLE        )
-   aadd( x_, XBPPRN_PAPERBIN_MANUAL        )
-   aadd( x_, XBPPRN_PAPERBIN_ENVELOPE      )
-   aadd( x_, XBPPRN_PAPERBIN_ENVMANUAL     )
-   aadd( x_, XBPPRN_PAPERBIN_AUTO          )
-   aadd( x_, XBPPRN_PAPERBIN_TRACTOR       )
-   aadd( x_, XBPPRN_PAPERBIN_SMALLFORMAT   )
-   aadd( x_, XBPPRN_PAPERBIN_LARGEFORMAT   )
-   aadd( x_, XBPPRN_PAPERBIN_LARGECAPACITY )
-   aadd( x_, XBPPRN_PAPERBIN_CASETTE       )
-   aadd( x_, XBPPRN_PAPERBIN_FORMSOURCE    )
+   AAdd( q_, QPrinter_OnlyOne              )
+   AAdd( q_, QPrinter_Lower                )
+   AAdd( q_, QPrinter_Middle               )
+   AAdd( q_, QPrinter_Manual               )
+   AAdd( q_, QPrinter_Envelope             )
+   AAdd( q_, QPrinter_EnvelopeManual       )
+   AAdd( q_, QPrinter_Auto                 )
+   AAdd( q_, QPrinter_Tractor              )
+   AAdd( q_, QPrinter_SmallFormat          )
+   AAdd( q_, QPrinter_LargeFormat          )
+   AAdd( q_, QPrinter_LargeCapacity        )
+   AAdd( q_, QPrinter_Cassette             )
+   AAdd( q_, QPrinter_FormSource           )
+   //aadd( q_, QPrinter_MaxPageSource      ) // Xbase++ does not define it
+   AAdd( x_, XBPPRN_PAPERBIN_SINGLE        )
+   AAdd( x_, XBPPRN_PAPERBIN_LOWER         )
+   AAdd( x_, XBPPRN_PAPERBIN_MIDDLE        )
+   AAdd( x_, XBPPRN_PAPERBIN_MANUAL        )
+   AAdd( x_, XBPPRN_PAPERBIN_ENVELOPE      )
+   AAdd( x_, XBPPRN_PAPERBIN_ENVMANUAL     )
+   AAdd( x_, XBPPRN_PAPERBIN_AUTO          )
+   AAdd( x_, XBPPRN_PAPERBIN_TRACTOR       )
+   AAdd( x_, XBPPRN_PAPERBIN_SMALLFORMAT   )
+   AAdd( x_, XBPPRN_PAPERBIN_LARGEFORMAT   )
+   AAdd( x_, XBPPRN_PAPERBIN_LARGECAPACITY )
+   AAdd( x_, XBPPRN_PAPERBIN_CASETTE       )
+   AAdd( x_, XBPPRN_PAPERBIN_FORMSOURCE    )
 
    nOldBin := ::oWidget:paperSource()
-
    nOldBin := x_[ ascan( q_, nOldBin ) ]
-
    IF HB_ISNUMERIC( nBin )
       nBin := q_[ ascan( x_, nBin ) ]
       ::oWidget:setPaperSource( nBin )
    ENDIF
-
    RETURN nOldBin
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setPrintFile( cFileName )
    LOCAL cOldFileName := ::oWidget:outputFileName()
@@ -463,10 +422,8 @@ METHOD XbpPrinter:setPrintFile( cFileName )
    IF HB_ISSTRING( cFileName )
       ::oWidget:setOutputFileName( cFileName )
    ENDIF
-
    RETURN cOldFileName
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setResolution( anResolution )
    LOCAL aOldResolution := { ::getEngineProperty( QPrintEngine_PPK_Resolution ), ::oWidget:resolution() }
@@ -474,52 +431,41 @@ METHOD XbpPrinter:setResolution( anResolution )
    IF HB_ISNUMERIC( anResolution ) .or. HB_ISARRAY( anResolution )
       ::oWidget:setResolution( iif( HB_ISNUMERIC( anResolution ), anResolution, anResolution[ 1 ] ) )
    ENDIF
-
    RETURN aOldResolution
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:setupDialog()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:abort()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:endDoc()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:newPage()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:startPage()
    LOCAL lSuccess := .T.
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:endPage()
    LOCAL lSuccess := .T.
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:startDoc( cDocName )
-
    IF !empty( cDocName )
    //::oWidget:setDocName( const QString & name )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrinter:getEngineProperty( nProperty )
    LOCAL oVariant := ::oEngine:property( nProperty )
@@ -568,7 +514,6 @@ METHOD XbpPrinter:getEngineProperty( nProperty )
    CASE nProperty == QPrintEngine_PPK_CustomPaperSize
    CASE nProperty == QPrintEngine_PPK_PageMargins
    ENDCASE
-
+   //
    RETURN 0
 
-/*----------------------------------------------------------------------*/

@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -70,9 +70,7 @@
 
 FUNCTION hbide_startOpenWizard()
    STATIC oWz
-
    oWz := IdeWizard():new():create()
-
    RETURN NIL
 
 
@@ -91,32 +89,25 @@ CLASS IdeWizard INHERIT IdeObject
 
 
 METHOD IdeWizard:init( oIde )
-
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeWizard:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
-   ::oUI := QWizard()
-   ::oUI:setWindowTitle( "Open" )
-   ::oUI:setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
-
-   ::addIntroPage()
-   ::addDescPage()
-
-   ::oUI:show()
-
+   WITH OBJECT ::oUI := QWizard()
+      :setWindowTitle( "Open" )
+      :setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
+      ::addIntroPage()
+      ::addDescPage()
+   :show()
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeWizard:destroy()
    LOCAL a_, obj
-
    IF !empty( ::oUI )
       FOR EACH a_ IN ::aPages
          FOR EACH obj IN a_ DESCEND
@@ -125,41 +116,35 @@ METHOD IdeWizard:destroy()
       NEXT
       ::oUI := NIL
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeWizard:execEvent( nEvent, p )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( p )
-
    RETURN Self
 
 
 METHOD IdeWizard:addIntroPage()
    LOCAL page, label, layout
-
-   page := QWizardPage()
-   page:setTitle( "Introduction" )
-
-   label := QLabel( "This wizard will help you register your copy " + ;
-                                                   "of Super Product Two." )
-   label:setWordWrap( .t. )
-
-   layout := QVBoxLayout()
-   layout:addWidget( label )
-   page:setLayout( layout )
-   page:setTitle( "This is waizard" )
-   page:setSubTitle( "So the ?" )
-
+   WITH OBJECT page := QWizardPage()
+      :setTitle( "Introduction" )
+      WITH OBJECT label := QLabel( "This wizard will help you register your copy " + ;
+                                                            "of Super Product Two." )
+         :setWordWrap( .t. )
+      ENDWITH 
+      WITH OBJECT layout := QVBoxLayout()
+         :addWidget( label )
+      ENDWITH 
+      :setLayout( layout )
+      :setTitle( "This is waizard" )
+      :setSubTitle( "So the ?" )
+   ENDWITH 
    aadd( ::aPages, { PAGE_INTRO, page, layout, label } )
-
+   //
    ::oUI:setPage( Len( ::aPages ), page )
-
    RETURN Self
 
 
 METHOD IdeWizard:addDescPage()
-
    RETURN Self

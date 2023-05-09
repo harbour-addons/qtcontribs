@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2008-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2008-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               08Nov2008
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -72,7 +68,6 @@
 
 #include "xbp.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpPartHandler
 
@@ -108,20 +103,15 @@ CLASS XbpPartHandler
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:init( oParent, oOwner )
-
    ::oParent := oParent
    ::oOwner  := oOwner
    ::status  := XBP_STAT_INIT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:create( oParent, oOwner )
-
    DEFAULT oParent TO ::oParent
    DEFAULT oOwner  TO ::oOwner
 
@@ -134,45 +124,34 @@ METHOD XbpPartHandler:create( oParent, oOwner )
 
    DEFAULT ::oParent TO SetAppWindow()
    DEFAULT ::oOwner  TO ::oParent
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:configure( oParent, oOwner )
-
    DEFAULT oParent TO ::oParent
    DEFAULT oOwner  TO ::oOwner
 
    ::oParent := oParent
    ::oOwner  := oOwner
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:destroy()
-
    ::aChildren  := NIL
    ::nNameId    := NIL
    ::oParent    := NIL
    ::oOwner     := NIL
    ::nStatus    := NIL
    ::status     := XBP_STAT_FAILURE
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:handleEvent( hEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( hEvent )
    HB_SYMBOL_UNUSED( mp1 )
    HB_SYMBOL_UNUSED( mp2 )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:status( nStatus )
    LOCAL nOldStatus := ::nStatus
@@ -180,48 +159,36 @@ METHOD XbpPartHandler:status( nStatus )
    IF HB_ISNUMERIC( nStatus )
       ::nStatus := nStatus
    ENDIF
-
    RETURN nOldStatus
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:addChild( oXbp )
-
    oXbp:nNameID := oXbp:nID
    aadd( ::aChildren, oXbp )
-
    IF __objHasMsg( Self, "QLAYOUT" ) .AND. !empty( ::qLayout )
       ::qLayout:addWidget( oXbp:oWidget )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:addAsChild()
-
    IF !empty( ::oParent )
       ::oParent:addChild( Self )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:addAsOwned( oXbp )
-
    IF ! empty( oXbp )
       aadd( ::a_Owned, oXbp )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:childFromName( nNameId )
    LOCAL oXbp, oXbpC
 
    FOR EACH oXbp IN ::aChildren
-
       IF oXbp:nNameID != NIL .AND. oXbp:nNameID == nNameID
          RETURN oXbp
       ELSE
@@ -232,16 +199,12 @@ METHOD XbpPartHandler:childFromName( nNameId )
          NEXT
       ENDIF
    NEXT
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:childList()
-
    RETURN ::aChildren
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:delChild( oXbp )
    LOCAL n
@@ -251,11 +214,9 @@ METHOD XbpPartHandler:delChild( oXbp )
       oXbp:oOwner:delOwned( oXbp )
       oXbp:destroy()
       hb_adel( ::aChildren, n, .t. )
-   endif
-
+   ENDIF 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:delOwned( oXbp )
    LOCAL n
@@ -265,11 +226,9 @@ METHOD XbpPartHandler:delOwned( oXbp )
       IF empty( ::a_Owned )
          ::a_Owned := {}
       ENDIF
-   endif
-
+   ENDIF 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:setName( nNameId )
    LOCAL nOldNameId := ::nNameId
@@ -277,10 +236,8 @@ METHOD XbpPartHandler:setName( nNameId )
    IF Valtype( nNameId ) == "N"
       ::nNameID := nNameId
    ENDIF
-
    RETURN nOldNameId
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:setOwner( oOwner )
    LOCAL oOldXbp := ::oOwner
@@ -288,10 +245,8 @@ METHOD XbpPartHandler:setOwner( oOwner )
    IF valtype( oOwner ) == "O"
       ::oOwner := oOwner
    ENDIF
-
    RETURN oOldXbp
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:setParent( oParent )
    LOCAL oRect
@@ -313,16 +268,12 @@ METHOD XbpPartHandler:setParent( oParent )
       ENDIF
       ::oParent := oParent
    ENDIF
-
    RETURN oOldXbp
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:notifier()
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPartHandler:moveOwned( nOffSetX, nOffSetY )
    LOCAL oXbp, oPos
@@ -335,7 +286,5 @@ METHOD XbpPartHandler:moveOwned( nOffSetX, nOffSetY )
          ENDIF
       ENDIF
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/

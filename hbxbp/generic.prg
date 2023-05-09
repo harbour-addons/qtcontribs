@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -115,12 +115,10 @@ FUNCTION hbxbp_InitializeEventBuffer()
 
 
 FUNCTION hbxbp_ClearEventBuffer()
-
    IF !empty( t_events )
       aeval( t_events, {|e,i| HB_SYMBOL_UNUSED( e ), t_events[ i ] := NIL } )
       t_events := NIL
    ENDIF
-
    RETURN nil
 
 
@@ -132,7 +130,6 @@ FUNCTION hbxbp_SetEventLoop( oELoop )
          t_oEventLoop := oELoop
       ENDIF
    ENDIF
-
    RETURN oLoop
 
 
@@ -151,7 +148,6 @@ FUNCTION PostAppEvent( nEvent, mp1, mp2, oXbp )
    ELSE
       SetAppEvent( nEvent, mp1, mp2, oXbp )
    ENDIF
-
    RETURN .T.
 
 
@@ -166,7 +162,6 @@ FUNCTION LastAppEvent( mp1, mp2, oXbp, nThreadID )
       mp2    := s_hLastEvent[ nThreadID ] [ 3 ]
       oXbp   := s_hLastEvent[ nThreadID ] [ 4 ]
    ENDIF
-
    RETURN nEvent
 
 /*----------------------------------------------------------------------*/
@@ -182,14 +177,11 @@ FUNCTION NextAppEvent( mp1, mp2, oXbp )
       mp2    := t_events[ 1, 3 ]
       oXbp   := t_events[ 1, 4 ]
    ENDIF
-
    RETURN nEvent
 
 
 PROCEDURE SetAppEvent( nEvent, mp1, mp2, oXbp )
-
    aadd( t_events, { nEvent, mp1, mp2, iif( empty( oXbp ), t_oAppWindow, oXbp ) } )
-
    RETURN
 
 
@@ -207,10 +199,8 @@ FUNCTION AppEvent( mp1, mp2, oXbp, nTimeout )
       oXbp   := t_events[ 1, 4 ]
 
       hb_adel( t_events, 1, .t. )
-
    ELSE
       oXbp := SetAppWindow()
-
    ENDIF
 
    hb_releaseCPU()
@@ -218,7 +208,6 @@ FUNCTION AppEvent( mp1, mp2, oXbp, nTimeout )
    IF nEvent != 0
       s_hLastEvent[ hb_threadID() ] := { nEvent, mp1, mp2, oXbp }
    ENDIF
-
    RETURN nEvent
 
 /*----------------------------------------------------------------------*/
@@ -232,7 +221,6 @@ FUNCTION NextAppEvent( mp1, mp2, oXbp )
    IF n > EVENT_BUFFER
       n := 1
    ENDIF
-
    IF !empty( t_events[ n, 4 ] )
       //
       nEvent := t_events[ n, 1 ]
@@ -240,7 +228,6 @@ FUNCTION NextAppEvent( mp1, mp2, oXbp )
       mp2    := t_events[ n, 3 ]
       oXbp   := t_events[ n, 4 ]
    ENDIF
-
    RETURN nEvent
 
 /*
@@ -274,9 +261,7 @@ PROCEDURE SetAppEvent( nEvent, mp1, mp2, oXbp )
       t_events[ nEventIn, 3 ] := mp2
       t_events[ nEventIn, 4 ] := ooXbp
    ENDIF
-
    t_nEventIn := nEventIn
-
    RETURN
 
 
@@ -309,9 +294,8 @@ FUNCTION AppEvent( mp1, mp2, oXbp, nTimeout )
 
       hb_releaseCPU()
    //ENDDO
-
    s_hLastEvent[ nThreadID ] := { nEvent, mp1, mp2, oXbp }
-
+   //
    RETURN nEvent
 
 /*----------------------------------------------------------------------*/
@@ -324,7 +308,6 @@ FUNCTION SetAppWindow( oXbp )
    IF HB_ISOBJECT( oXbp )
       t_oAppWindow := oXbp
    ENDIF
-
    RETURN oldAppWindow
 
 
@@ -332,21 +315,17 @@ FUNCTION SetAppFocus( oXbp )
    LOCAL oldXbpInFocus
 
    oldXbpInFocus := t_oXbpInFocus
-
    IF HB_ISOBJECT( oXbp )
       t_oXbpInFocus := oXbp
       oXbp:setFocus()
    ENDIF
-
    RETURN oldXbpInFocus
 
 
 FUNCTION AppDesktop()
-
    IF s_oDeskTop == NIL
       s_oDeskTop := HbpAppDesktop():new():create()
    ENDIF
-
    RETURN s_oDeskTop
 
 
@@ -360,17 +339,18 @@ FUNCTION MsgBox( cMsg, cTitle )
    cMsg := strtran( cMsg, chr( 10 ), "<br />" )
 
    oMB := QMessageBox()
-   oMB:setText( /* "<b>" + */ cMsg /* + "</b>" */ )
-   oMB:setIcon( QMessageBox_Information )
-   IF HB_ISOBJECT( SetAppWindow() )
-      oMB:setParent( SetAppWindow():oWidget )
-   ENDIF
-   oMB:setWindowFlags( Qt_Dialog )
-   oMB:setWindowTitle( cTitle )
-
-   oMB:exec()
-
-   RETURN nil
+   WITH OBJECT oMB
+      :setText( /* "<b>" + */ cMsg /* + "</b>" */ )
+      :setIcon( QMessageBox_Information )
+      IF HB_ISOBJECT( SetAppWindow() )
+         :setParent( SetAppWindow():oWidget )
+      ENDIF
+      :setWindowFlags( Qt_Dialog )
+      :setWindowTitle( cTitle )
+      //
+      :exec()
+   ENDWITH 
+   RETURN NIL 
 
 
 FUNCTION hbxbp_ConvertAFactFromXBP( cMode, xValue )
@@ -443,7 +423,6 @@ FUNCTION hbxbp_ConvertAFactFromXBP( cMode, xValue )
       EXIT
 
    ENDSWITCH
-
    RETURN xValue
 
 
@@ -454,7 +433,6 @@ FUNCTION hbxbp_getNextID( cString )
    IF ! hb_hHasKey( hIDs, cString )
       hIDs[ cString ] := 0
    ENDIF
-
    RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
 
 /*
@@ -584,7 +562,7 @@ FUNCTION ConfirmBox( oOwner, cMessage, cTitle, nButtons, nStyle, nStartBtn )
       nRet := iif( hbqt_IsEqual( qClk, qHelp ), XBPMB_RET_OK, -1 )
       EXIT
    ENDSWITCH
-
+   //
    RETURN nRet
 
 
@@ -595,6 +573,5 @@ FUNCTION Xbp_getNextIdAsString( cString )
    IF ! hb_hHasKey( hIDs, cString )
       hIDs[ cString ] := 0
    ENDIF
-
    RETURN cString + "_" + hb_ntos( ++hIDs[ cString ] )
 

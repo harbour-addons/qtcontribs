@@ -1,11 +1,11 @@
                /*
- * $Id: hbqttoolbar.prg 141 2013-01-18 02:49:32Z bedipritpal $
+ * $Id$
  */
 
 /*
  * Harbour Project source code:
  *
- * Copyright 2013-2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -413,11 +413,9 @@ METHOD HbQtToolbar:buttonClick( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*
- *       HbQtToolbarButton() Class compatible with HbQtToolbarButton()
- */
-/*----------------------------------------------------------------------*/
+//--------------------------------------------------------------------//
+//    HbQtToolbarButton() Class compatible with HbQtToolbarButton()
+//--------------------------------------------------------------------//
 
 CLASS HbQtButtonToolbar
 

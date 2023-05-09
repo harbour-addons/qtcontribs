@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               21Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpStyle
 
@@ -90,19 +85,16 @@ CLASS XbpStyle
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStyle:create()
    LOCAL s := ''
 
-   #if 0
+#if 0
    IF empty( ::xbpPart )
       RETURN nil
    ENDIF
-   #endif
-
+#endif
    s += ::qtWidget + '{ '
-
    IF !empty( ::colorFG )
       s += 'color: '
       IF HB_ISNUMERIC( ::colorFG )
@@ -112,7 +104,6 @@ METHOD XbpStyle:create()
       ENDIF
       s += '; '
    ENDIF
-
    IF !empty( ::colorBG )
       s += 'background-color: '
       IF HB_ISNUMERIC( ::colorBG )
@@ -122,14 +113,11 @@ METHOD XbpStyle:create()
       ENDIF
       s += '; '
    ENDIF
-
    s += ' }'
 
    ::style := s
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION Xbp_XbpToQTName( cXbpPart )
    LOCAL aQt := {}
@@ -137,22 +125,20 @@ FUNCTION Xbp_XbpToQTName( cXbpPart )
 
    cXbpPart := upper( cXbpPart )
 
-   aadd( aQt, { 'XBPDIALOG'      , 'QMainWindow' } )
-   aadd( aQt, { 'XBPDRAWINGAREA' , 'QWidget'     } )
-   aadd( aQt, { 'XBPPUSHBUTTON'  , 'QPushButton' } )
-   aadd( aQt, { 'XBPCHECKBOX'    , 'QCheckBox'   } )
-   aadd( aQt, { 'XBPTREEVIEW'    , 'QTreeWidget' } )
-   aadd( aQt, { 'XBPTREEVIEWITEM', ' ' } )
-   aadd( aQt, { 'XBPRADIOBUTTON' , 'QRadioButton'} )
-   aadd( aQt, { 'XBPSCROLLBAR'   , 'QScrollBar'  } )
-   aadd( aQt, { 'XBPSTATUSBAR'   , 'QStatusBar'  } )
-   aadd( aQt, { 'XBPTABPAGE'     , 'QTabWidget'  } )
-   aadd( aQt, { 'XBPSTATIC'      , ' ' } )
+   AAdd( aQt, { "XBPDIALOG"      , "QMainWindow" } )
+   AAdd( aQt, { "XBPDRAWINGAREA" , "QWidget"     } )
+   AAdd( aQt, { "XBPPUSHBUTTON"  , "QPushButton" } )
+   AAdd( aQt, { "XBPCHECKBOX"    , "QCheckBox"   } )
+   AAdd( aQt, { "XBPTREEVIEW"    , "QTreeWidget" } )
+   AAdd( aQt, { "XBPTREEVIEWITEM", " "           } )
+   AAdd( aQt, { "XBPRADIOBUTTON" , "QRadioButton"} )
+   AAdd( aQt, { "XBPSCROLLBAR"   , "QScrollBar"  } )
+   AAdd( aQt, { "XBPSTATUSBAR"   , "QStatusBar"  } )
+   AAdd( aQt, { "XBPTABPAGE"     , "QTabWidget"  } )
+   AAdd( aQt, { "XBPSTATIC"      , " "           } )
 
    IF ( n := ascan( aQt, {|e_| e_[ 1 ] == cXbpPart } ) ) > 0
       cQTWidget := aQt[ n,2 ]
    ENDIF
-
    RETURN cQTWidget
 
-/*----------------------------------------------------------------------*/

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              15Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpScrollBar  INHERIT  XbpWindow, DataRef
 
@@ -100,15 +95,11 @@ CLASS XbpScrollBar  INHERIT  XbpWindow, DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -125,12 +116,10 @@ METHOD XbpScrollBar:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible 
    ENDIF
    ::oParent:AddChild( SELF )
    ::postCreate()
-
    ::setRange( ::range )
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:execSlot( cSlot, p )
    LOCAL nCommand
@@ -169,41 +158,32 @@ METHOD XbpScrollBar:execSlot( cSlot, p )
 
    ::sl_editBuffer := ::oWidget:value()
    ::scroll( { ::sl_editBuffer, nCommand } )
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
+   //
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:connect()
    ::oWidget:connect( "actionTriggered(int)", {|i| ::execSlot( "actionTriggered(int)", i ) } )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:disconnect()
    ::oWidget:disconnect( "actionTriggered(int)" )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:destroy()
-
    ::disconnect()
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:scroll( ... )
    LOCAL a_:= hb_aParams()
@@ -214,22 +194,15 @@ METHOD XbpScrollBar:scroll( ... )
    ENDIF
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:setRange( aRange )
    LOCAL aOldRange
-
    aOldRange := { ::oWidget:minimum(), ::oWidget:maximum() }
-
    ::oWidget:setRange( aRange[ 1 ], aRange[ 2 ] )
-
    RETURN aOldRange
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpScrollBar:setScrollBoxSize( nUnits )
    LOCAL nOldUnits := nUnits
-
    RETURN nOldUnits
 
-/*----------------------------------------------------------------------*/

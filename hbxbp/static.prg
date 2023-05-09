@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               29Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpStatic  INHERIT  XbpWindow
 
@@ -93,15 +88,12 @@ CLASS XbpStatic  INHERIT  XbpWindow
    METHOD   setCaption( xCaption, cDll )
 
    ENDCLASS
-/*----------------------------------------------------------------------*/
+
 
 METHOD XbpStatic:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatic:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    LOCAL lThick := hb_bitAnd( ::options, XBPSTATIC_FRAMETHICK ) == XBPSTATIC_FRAMETHICK
@@ -137,7 +129,6 @@ METHOD XbpStatic:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    // OK
    CASE ::type == XBPSTATIC_TYPE_GROUPBOX
       ::oWidget := QGroupBox( ::pParent )
-
    // OK
    CASE ::type == XBPSTATIC_TYPE_RAISEDBOX
       ::oWidget := QFrame( ::pParent )
@@ -219,24 +210,18 @@ METHOD XbpStatic:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
       IF lThick
          ::oWidget:setMidLineWidth( 1 )
       ENDIF
-
    CASE ::type == XBPSTATIC_TYPE_ICON
       ::oWidget := QLabel( ::pParent )
-
    CASE ::type == XBPSTATIC_TYPE_SYSICON
       ::oWidget := QLabel( ::pParent )
-
    CASE ::type == XBPSTATIC_TYPE_BITMAP
       //::oWidget := QFrame( ::pParent )
       ::oWidget := QLabel( ::pParent )
-
    OTHERWISE
       ::oWidget := QFrame( ::pParent )
-
    ENDCASE
 
    ::setCaption( ::caption )
-
    ::setPosAndSize()
    IF ::visible
       ::show()
@@ -245,33 +230,23 @@ METHOD XbpStatic:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::postCreate()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatic:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatic:destroy()
-
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatic:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpStatic:setCaption( xCaption, cDll )
    LOCAL oStyle, oIcon, oPixmap
@@ -285,17 +260,14 @@ METHOD XbpStatic:setCaption( xCaption, cDll )
       DO CASE
       CASE ::type == XBPSTATIC_TYPE_GROUPBOX
          ::oWidget:setTitle( ::caption )
-
       CASE ::type == XBPSTATIC_TYPE_TEXT
          ::oWidget:setText( ::caption )
-
       CASE ::type == XBPSTATIC_TYPE_BITMAP
          IF HB_ISOBJECT( ::caption )                 /* XbpBitmap() */
             IF ::options == XBPSTATIC_BITMAP_SCALED
                ::oWidget:setScaledContents( .t. )
             ENDIF
             ::oWidget:setPixmap( QPixmap():fromImage( ::caption:oWidget ) )
-
          ELSEIF HB_ISSTRING( ::caption )             /* $HARBOUR$ */
             IF ::options == XBPSTATIC_BITMAP_SCALED
                ::setCSSAttribute( "XBPSTATIC_BITMAP_SCALED"   , 'border-image: url(' + ::caption + ');' )
@@ -303,42 +275,31 @@ METHOD XbpStatic:setCaption( xCaption, cDll )
                ::setCSSAttribute( "XBPSTATIC_BITMAP_NONSCALED", 'background: url(' + ::caption + '); repeat-xy;' )
             ENDIF
          ENDIF
-
       CASE ::type == XBPSTATIC_TYPE_ICON
          ::oWidget:setPixmap( QPixmap( ::caption ):scaled( ::aSize[ 1 ], ::aSize[ 2 ] ) )
-
       CASE ::type == XBPSTATIC_TYPE_SYSICON
-         oStyle      := QApplication():style()
-
+         oStyle  := QApplication():style()
+         //
          DO CASE
          CASE ::caption == XBPSTATIC_SYSICON_ICONINFORMATION
             oIcon := oStyle:standardIcon( QStyle_SP_MessageBoxInformation )
-
          CASE ::caption == XBPSTATIC_SYSICON_ICONQUESTION
             oIcon := oStyle:standardIcon( QStyle_SP_MessageBoxQuestion )
-
          CASE ::caption == XBPSTATIC_SYSICON_ICONERROR
             oIcon := oStyle:standardIcon( QStyle_SP_MessageBoxCritical )
-
          CASE ::caption == XBPSTATIC_SYSICON_ICONWARNING
             oIcon := oStyle:standardIcon( QStyle_SP_MessageBoxWarning )
-
          OTHERWISE
             /* It is a Harbour Extension - you have 60+ icons to display
              * Check hbqtgui.ch : #define QStyle_SP_* constants
              */
             oIcon := oStyle:standardIcon( ::caption )
-
          ENDCASE
-
          /* Harbour can also implement if icon be displayed scaled or proportionate
           */
          oPixmap := oIcon:pixmap( ::aSize[ 1 ], ::aSize[ 2 ] ):scaled( ::aSize[ 1 ], ::aSize[ 2 ] )
-
          ::oWidget:setPixmap( oPixmap )
       ENDCASE
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/

@@ -1,9 +1,9 @@
-/*
+                                    /*
  * $Id$
  */
 
 /*
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -85,7 +85,6 @@ CLASS IdeThemes INHERIT IdeObject
 
    VAR    lDefault                                INIT .t.
    VAR    cThemesFile                             INIT ""
-
    VAR    aIni                                    INIT {}
    VAR    aThemes                                 INIT {}
    VAR    aControls                               INIT {}
@@ -94,14 +93,11 @@ CLASS IdeThemes INHERIT IdeObject
    VAR    aApplyAct                               INIT {}
    VAR    nCurTheme                               INIT 1
    VAR    nCurItem                                INIT 1
-
    VAR    qEdit
    VAR    oEdit
    VAR    qHiliter
    VAR    qMenuApply
-
    VAR    lCreating                               INIT .f.
-
    VAR    oSL
    VAR    cSelTheme
    VAR    oStrList
@@ -144,89 +140,82 @@ CLASS IdeThemes INHERIT IdeObject
 
 
 METHOD IdeThemes:init( oIde, cThemesFile )
-
    ::oIde  := oIde
    ::cThemesFile := cThemesFile
-
    RETURN Self
 
 
 METHOD IdeThemes:destroy()
-
    IF !empty( ::oSL )
-      ::oSL:listOptions  :disConnect( "doubleClicked(QModelIndex)" )
-      ::oSL:buttonOk     :disConnect( "clicked()" )
-      ::oSL:buttonCancel :disConnect( "clicked()" )
-      ::oSL:destroy()
+      WITH OBJECT ::oSL
+         :listOptions  :disConnect( "doubleClicked(QModelIndex)" )
+         :buttonOk     :disConnect( "clicked()" )
+         :buttonCancel :disConnect( "clicked()" )
+         :destroy()
+      ENDWITH
    ENDIF
-
    ::aIni        := NIL
    ::aThemes     := NIL
    ::aControls   := NIL
    ::aItems      := NIL
    ::aPatterns   := NIL
    ::aApplyAct   := NIL
-
    IF !empty( ::oUI )
-      ::oUI:listThemes    :disconnect( "currentRowChanged(int)" )
-      ::oUI:listItems     :disconnect( "currentRowChanged(int)" )
-      ::oUI:buttonColor   :disconnect( "clicked()"              )
-      ::oUI:buttonSave    :disconnect( "clicked()"              )
-      ::oUI:buttonSaveAs  :disconnect( "clicked()"              )
-      ::oUI:buttonCopy    :disconnect( "clicked()"              )
-      ::oUI:buttonApply   :disconnect( "clicked()"              )
-      ::oUI:buttonApplyAll:disconnect( "clicked()"              )
-      ::oUI:buttonDefault :disconnect( "clicked()"              )
-      ::oUI:checkItalic   :disconnect( "stateChanged(int)"      )
-      ::oUI:checkBold     :disconnect( "stateChanged(int)"      )
-      ::oUI:checkUnderline:disconnect( "stateChanged(int)"      )
-      ::oUI:buttonClose   :disconnect( "clicked()"              )
-
+      WITH OBJECT ::oUI
+         :listThemes    :disconnect( "currentRowChanged(int)" )
+         :listItems     :disconnect( "currentRowChanged(int)" )
+         :buttonColor   :disconnect( "clicked()"              )
+         :buttonSave    :disconnect( "clicked()"              )
+         :buttonSaveAs  :disconnect( "clicked()"              )
+         :buttonCopy    :disconnect( "clicked()"              )
+         :buttonApply   :disconnect( "clicked()"              )
+         :buttonApplyAll:disconnect( "clicked()"              )
+         :buttonDefault :disconnect( "clicked()"              )
+         :checkItalic   :disconnect( "stateChanged(int)"      )
+         :checkBold     :disconnect( "stateChanged(int)"      )
+         :checkUnderline:disconnect( "stateChanged(int)"      )
+         :buttonClose   :disconnect( "clicked()"              )
+      ENDWITH
       ::qHiliter := NIL
       ::qEdit    := NIL
-
       ::oUI:destroy()
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:create( oIde, cThemesFile )
    LOCAL s, b_
-
-   DEFAULT oIde     TO ::oIde
-   DEFAULT cThemesFile TO ::cThemesFile
-
+   IF .T.
+      DEFAULT oIde     TO ::oIde
+      DEFAULT cThemesFile TO ::cThemesFile
+   ENDIF
    ::oIde  := oIde
    ::cThemesFile := cThemesFile
-
    /* next always load default themes */
    ::aIni := hbide_loadDefaultThemes()
    ::parseINI()
-
    /* first load user defined themes */
    ::load( ::cThemesFile )
-
    /* These are the supported patterns - rest will be ignore until implemented */
-
+   //
    /* Compiler Directives */
    b_:= { "include","define","if","ifndef","ifdef","else","endif","command","xcommand","translate","xtranslate" }
    s := ""; aeval( b_, {|e| s += iif( empty( s ), "", "|" ) + "#" + e + "\b" } )
    aadd( ::aPatterns, { "PreprocessorDirectives", s, .f. } )
-
+   
    /* Harbour Keywords */
-   b_:= { 'next','function','procedure','thread','return','static','local','default', ;
-          'if','else','elseif','endif','end', ;
-          'docase','case','endcase','otherwise', ;
-          'switch','endswitch', ;
-          'do','while','exit','enddo','loop',;
-          'for','each','next','step','to','in',;
-          'with','replace','object','endwith','request',;
-          'nil','and','or','in','not','self',;
-          'class','endclass','method','data','var','destructor','inline','assign','access',;
-          'inherit','init','create','virtual','message', 'from', 'setget',;
-          'begin','sequence','try','catch','always','recover','hb_symbol_unused', ;
-          'error','handler','private','protected','public' }
+   b_:= { "next","function","procedure","thread","return","static","local","default", ;
+          "if","else","elseif","endif","end", ;
+          "docase","case","endcase","otherwise", ;
+          "switch","endswitch", ;
+          "do","while","exit","enddo","loop",;
+          "for","each","next","step","to","in",;
+          "with","replace","object","endwith","request",;
+          "nil","and","or","in","not","self",;
+          "class","endclass","method","data","var","destructor","inline","assign","access",;
+          "inherit","init","create","virtual","message", "from", "setget",;
+          "begin","sequence","try","catch","always","recover","hb_symbol_unused", ;
+          "error","handler","private","protected","public","memvar" }
    s := ""; aeval( b_, {|e| s += iif( empty( s ), "", "|" ) + "\b" + e + "\b" } )
    aadd( ::aPatterns, { "HarbourKeywords"   , s, .f. } )
 
@@ -238,28 +227,21 @@ METHOD IdeThemes:create( oIde, cThemesFile )
    s := ""; aeval( b_, {|e| s += iif( empty( s ), "", "|" ) + "\b" + e + "\b" } )
    aadd( ::aPatterns, { "CLanguageKeywords" , s                       , .t. } )
 
-   //s := "\:\=|\:|\+|\-|\\|\*|\ IN\ |\ in\ |\=|\>|\<|\^|\%|\$|\&|\@|\.or\.|\.and\.|\.OR\.|\.AND\.|\!"
    s := "\:\=|\:|\+|\-|\\|\*|\=|\>|\<|\^|\%|\$|\&|\@|\!"
    aadd( ::aPatterns, { "Operators"         , s                       , .f. } )
-
    aadd( ::aPatterns, { "NumericalConstants", "\b[0-9.]+\b"           , .f. } )
-
    aadd( ::aPatterns, { "BracketsAndBraces" , "\(|\)|\{|\}|\[|\]|\|"  , .f. } )
-
    aadd( ::aPatterns, { "FunctionsBody"     , "\b[A-Za-z0-9_]+(?=\()" , .f. } )
-
+   //
    RETURN Self
 
 
 METHOD IdeThemes:execEvent( nEvent, p )
    LOCAL oEditor, a_
-
    HB_SYMBOL_UNUSED( p )
-
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH nEvent
    CASE __listItems_currentRowChanged__
       ::nCurItem  := p+1
@@ -289,12 +271,10 @@ METHOD IdeThemes:execEvent( nEvent, p )
       ::setWrkTheme( ::aThemes[ ::nCurTheme, 1 ] )
       EXIT
    ENDSWITCH
-
    RETURN Self
 
 
 METHOD IdeThemes:setWrkTheme( cTheme )
-
    IF empty( cTheme )
       cTheme := ::selectTheme()
    ENDIF
@@ -302,29 +282,24 @@ METHOD IdeThemes:setWrkTheme( cTheme )
       ::oIde:cWrkTheme := cTheme
       ::oDK:setStatusText( SB_PNL_THEME, ::cWrkTheme )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:contains( cTheme )
-
    RETURN ascan( ::aThemes, {|a_| a_[ 1 ] == cTheme } ) > 0
 
 
 METHOD IdeThemes:load( cFile )
-
    IF HB_ISSTRING( cFile ) .AND. !empty( cFile ) .AND. hb_FileExists( cFile )
       ::aIni:= hbide_readSource( cFile )
       ::parseINI()
       ::lDefault := .f.
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:save( lAsk )
    LOCAL cFile
-
    DEFAULT lAsk TO .f.
    IF ::lDefault
       lAsk := .t.
@@ -338,41 +313,34 @@ METHOD IdeThemes:save( lAsk )
    IF !empty( cFile )
       hb_memowrit( cFile, ::buildINI() )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:getThemeAttribute( cAttr, cTheme )
    LOCAL nTheme, aAttr := {}
-
    IF !empty( cAttr )
       IF !empty( cTheme ) .and. HB_ISSTRING( cTheme ) .and. ( nTheme := ascan( ::aThemes, {|e_| e_[ 1 ] == cTheme } ) ) > 0
          aAttr := GetKeyValue( ::aThemes[ nTheme, 2 ], cAttr )
       ENDIF
    ENDIF
-
    RETURN aAttr
 
 
 METHOD IdeThemes:buildSyntaxFormat( aAttr )
    LOCAL qFormat
-
-   qFormat := QTextCharFormat()
-
-   qFormat:setFontItalic( aAttr[ THM_ATR_ITALIC ] )
-   IF aAttr[ THM_ATR_BOLD ]
-      qFormat:setFontWeight( 1000 )
-   ENDIF
-   qFormat:setFontUnderline( aAttr[ THM_ATR_ULINE ] )
-   //
-   qFormat:setForeground( QBrush( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) ) )
-
+   WITH OBJECT qFormat := QTextCharFormat()
+      :setFontItalic( aAttr[ THM_ATR_ITALIC ] )
+      IF aAttr[ THM_ATR_BOLD ]
+         :setFontWeight( 1000 )
+      ENDIF
+      :setFontUnderline( aAttr[ THM_ATR_ULINE ] )
+      :setForeground( QBrush( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) ) )
+   ENDWITH
    RETURN qFormat
 
 
 METHOD IdeThemes:setForeBackGround( qEdit, cTheme )
    LOCAL aAttr, s
-
    IF !empty( aAttr := ::getThemeAttribute( "Background", cTheme ) )
       s := 'QPlainTextEdit { background-color: rgba( ' + Attr2StrRGB( aAttr ) +", 255 ); "
       aAttr := ::getThemeAttribute( "UnrecognizedText", cTheme )
@@ -381,132 +349,107 @@ METHOD IdeThemes:setForeBackGround( qEdit, cTheme )
       s += ' padding: 0px; '
       s += ' margin:  0px; }'
       qEdit:setStyleSheet( s )
-      //qEdit:setFrameStyle( hb_bitOR( QFrame_NoFrame, QFrame_Plain ) )
-      //qEdit:setFrameStyle( QFrame_Sunken )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:setQuotesRule( qHiliter, cTheme )
    LOCAL aAttr
-
    IF !empty( aAttr := ::getThemeAttribute( "TerminatedStrings", cTheme ) )
       qHiliter:hbSetFormat( "TerminatedStrings", ::buildSyntaxFormat( aAttr ) )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:setSingleLineCommentRule( qHiliter, cTheme )
    LOCAL aAttr
-
    IF !empty( aAttr := ::getThemeAttribute( "CommentsAndRemarks", cTheme ) )
       qHiliter:hbSetSingleLineCommentFormat( ::buildSyntaxFormat( aAttr ) )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:setMultiLineCommentRule( qHiliter, cTheme )
    LOCAL aAttr
-
    IF !empty( aAttr := ::getThemeAttribute( "CommentsAndRemarks", cTheme ) )
       qHiliter:hbSetMultiLineCommentFormat( ::buildSyntaxFormat( aAttr ) )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:setSyntaxRule( qHiliter, cName, cPattern, lCaseSensitive, aAttr )
    LOCAL qRegExp := QRegExp()
-
-   qRegExp:setCaseSensitivity( iif( lCaseSensitive, Qt_CaseSensitive, Qt_CaseInsensitive ) )
-   qRegExp:setPattern( cPattern )
-
+   WITH OBJECT qRegExp
+      :setCaseSensitivity( iif( lCaseSensitive, Qt_CaseSensitive, Qt_CaseInsensitive ) )
+      :setPattern( cPattern )
+   ENDWITH
    qHiliter:hbSetRuleWithRegExp( cName, qRegExp, ::buildSyntaxFormat( aAttr ) )
-
    RETURN Self
 
 
 METHOD IdeThemes:setSyntaxFormat( qHiliter, cName, aAttr )
-
    qHiliter:hbSetFormat( cName, ::buildSyntaxFormat( aAttr ) )
-
    RETURN Self
 
 
 METHOD IdeThemes:setSyntaxHilighting( qEdit, cTheme, lNew, lSetEditor )
    LOCAL a_, aAttr, qHiliter
-
+   IF .T.
+      DEFAULT lNew       TO .F.                      /* Apply one which is already formed */
+      DEFAULT lSetEditor TO .T.
+   ENDIF
    IF empty( cTheme )
       cTheme := ::cWrkTheme
    ENDIF
    IF empty( cTheme )
       cTheme := "Bare Minimum"                    /* "Pritpal's Favourite" */
    ENDIF
-   DEFAULT lNew       TO .F.                      /* Apply one which is already formed */
-   DEFAULT lSetEditor TO .t.
-
-   HB_SYMBOL_UNUSED( lNew )
-
    ::setForeBackGround( qEdit, cTheme )
-
    qHiliter := HBQSyntaxHighlighter( qEdit:document() )
-
    FOR EACH a_ IN ::aPatterns
       IF !empty( aAttr := ::getThemeAttribute( a_[ 1 ], cTheme ) )
          ::setSyntaxRule( qHiliter, a_[ 1 ], a_[ 2 ], a_[ 3 ], aAttr )
       ENDIF
    NEXT
-
-   ::mergeUserDictionaries( qHiliter, cTheme )
-
-   ::setMultiLineCommentRule( qHiliter, cTheme )
-   ::setSingleLineCommentRule( qHiliter, cTheme )
-   ::setQuotesRule( qHiliter, cTheme )
-
+   IF .T.
+      ::mergeUserDictionaries( qHiliter, cTheme )
+      ::setMultiLineCommentRule( qHiliter, cTheme )
+      ::setSingleLineCommentRule( qHiliter, cTheme )
+      ::setQuotesRule( qHiliter, cTheme )
+   ENDIF
    IF __ObjGetClsName( qEdit ) == "HBQPLAINTEXTEDIT"
       IF !empty( aAttr := ::getThemeAttribute( "CurrentLineBackground", cTheme ) )
          qEdit:hbSetCurrentLineColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
       ENDIF
-
       IF !empty( aAttr := ::getThemeAttribute( "LineNumbersBkColor", cTheme ) )
          qEdit:hbSetLineAreaBkColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
       ENDIF
-
       IF !empty( aAttr := ::getThemeAttribute( "SelectionBackground", cTheme ) )
          qEdit:hbSetSelectionColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
       ENDIF
-
       qEdit:hbSetHighLighter( qHiliter )
-
       IF lSetEditor
          qHiliter:hbSetEditor( qEdit )
       ENDIF
    ENDIF
-
    RETURN qHiliter
 
 
 METHOD IdeThemes:changeSyntaxHilighting( qEdit, cTheme, qHiliter )
    LOCAL a_, aAttr
-
    qHiliter:hbClear()
-
    ::setForeBackGround( qEdit, cTheme )
-
    FOR EACH a_ IN ::aPatterns
       IF !empty( aAttr := ::getThemeAttribute( a_[ 1 ], cTheme ) )
          ::setSyntaxRule( qHiliter, a_[ 1 ], a_[ 2 ], a_[ 3 ], aAttr )
       ENDIF
    NEXT
-
-   ::mergeUserDictionaries( qHiliter, cTheme )
-   ::setMultiLineCommentRule( qHiliter, cTheme )
-   ::setSingleLineCommentRule( qHiliter, cTheme )
-   ::setQuotesRule( qHiliter, cTheme )
-
+   IF .T.
+      ::mergeUserDictionaries( qHiliter, cTheme )
+      ::setMultiLineCommentRule( qHiliter, cTheme )
+      ::setSingleLineCommentRule( qHiliter, cTheme )
+      ::setQuotesRule( qHiliter, cTheme )
+   ENDIF
    IF __ObjGetClsName( qEdit ) == "HBQPLAINTEXTEDIT"
       IF !empty( aAttr := ::getThemeAttribute( "CurrentLineBackground", cTheme ) )
          qEdit:hbSetCurrentLineColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
@@ -517,122 +460,112 @@ METHOD IdeThemes:changeSyntaxHilighting( qEdit, cTheme, qHiliter )
       IF !empty( aAttr := ::getThemeAttribute( "SelectionBackground", cTheme ) )
          qEdit:hbSetSelectionColor( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) )
       ENDIF
-
       qEdit:hbHighlightPage()
    ENDIF
-
    RETURN NIL
 
 
 METHOD IdeThemes:mergeUserDictionaries( qHiliter, cTheme )
    LOCAL oDict, s, aAttr, qFormat, qRegExp, cName, a_
-
    FOR EACH oDict IN ::oIde:aUserDict
       IF oDict:lActive .AND. ! empty( oDict:hItems )
          cName := "UserDictionary" + hb_ntos( oDict:__enumIndex() )
-
          s := ""
          FOR EACH a_ IN oDict:hItems
             s += "\b" + a_[ 1 ] + "\b|"
          NEXT
          s := substr( s, 1, Len( s ) - 1 )
-
-         qRegExp := QRegExp()
-         qRegExp:setCaseSensitivity( iif( oDict:lCaseSens, Qt_CaseSensitive, Qt_CaseInsensitive ) )
-         qRegExp:setPattern( s )
-
+         WITH OBJECT qRegExp := QRegExp()
+            :setCaseSensitivity( iif( oDict:lCaseSens, Qt_CaseSensitive, Qt_CaseInsensitive ) )
+            :setPattern( s )
+         ENDWITH 
          /* Must be blended WITH dictionary definition attributes */
          aAttr := ::getThemeAttribute( "UserDictionary", cTheme )  // cName after slots are implemented
-
-         qFormat := QTextCharFormat()
-         qFormat:setFontItalic( oDict:lItalic )
-         IF oDict:lBold
-            qFormat:setFontWeight( 1000 )
-         ENDIF
-         qFormat:setFontUnderline( oDict:lULine )
-
-         IF ! empty( oDict:aTxtRGB )
-            qFormat:setForeground( QBrush( QColor( oDict:aTxtRGB[ 1 ], oDict:aTxtRGB[ 2 ], oDict:aTxtRGB[ 3 ] ) ) )
-         ELSE
-            IF ! Empty( aAttr )
-               qFormat:setForeground( QBrush( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) ) )
+         //
+         WITH OBJECT qFormat := QTextCharFormat()
+            :setFontItalic( oDict:lItalic )
+            IF oDict:lBold
+               :setFontWeight( 1000 )
             ENDIF
-         ENDIF
-         IF ! empty( oDict:aBgRGB )
-            qFormat:setBackground( QBrush( QColor( oDict:aBgRGB[ 1 ], oDict:aBgRGB[ 2 ], oDict:aBgRGB[ 3 ] ) ) )
-         ENDIF
-
+            :setFontUnderline( oDict:lULine )
+            IF ! empty( oDict:aTxtRGB )
+               :setForeground( QBrush( QColor( oDict:aTxtRGB[ 1 ], oDict:aTxtRGB[ 2 ], oDict:aTxtRGB[ 3 ] ) ) )
+            ELSE
+               IF ! Empty( aAttr )
+                  :setForeground( QBrush( QColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] ) ) )
+               ENDIF
+            ENDIF
+            IF ! empty( oDict:aBgRGB )
+               :setBackground( QBrush( QColor( oDict:aBgRGB[ 1 ], oDict:aBgRGB[ 2 ], oDict:aBgRGB[ 3 ] ) ) )
+            ENDIF
+         ENDWITH 
+         //
          qHiliter:hbSetRuleWithRegExp( cName, qRegExp, qFormat )
       ENDIF
    NEXT
-
    RETURN Self
 
 
 METHOD IdeThemes:show()
-
    IF empty( ::oUI )
       ::lCreating := .t.
-
-      ::oUI := hbide_getUI( "themesex" )
-
-      ::oThemesDock:oWidget:setWidget( ::oUI:oWidget )
-
-      ::oUI:listThemes    :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listThemes_currentRowChanged__, i ) } )
-      ::oUI:listItems     :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listItems_currentRowChanged__, i )  } )
-      ::oUI:buttonColor   :connect( "clicked()"               , {| | ::updateColor() } )
-      ::oUI:buttonSave    :connect( "clicked()"               , {| | ::save( .f. )   } )
-      ::oUI:buttonSaveAs  :connect( "clicked()"               , {| | ::save( .t. )   } )
-      ::oUI:buttonCopy    :connect( "clicked()"               , {| | ::copy( .t. )   } )
-      ::oUI:buttonApply   :connect( "clicked()"               , {| | ::execEvent( __applyMenu_triggered_applyToCurrentTab__ ) } )
-      ::oUI:buttonApplyAll:connect( "clicked()"               , {| | ::execEvent( __applyMenu_triggered_applyToAllTabs__    ) } )
-      ::oUI:buttonDefault :connect( "clicked()"               , {| | ::execEvent( __applyMenu_triggered_setAsDefault__      ) } )
-      ::oUI:checkItalic   :connect( "stateChanged(int)"       , {|i| ::updateAttribute( THM_ATR_ITALIC, i ) } )
-      ::oUI:checkBold     :connect( "stateChanged(int)"       , {|i| ::updateAttribute( THM_ATR_BOLD  , i ) } )
-      ::oUI:checkUnderline:connect( "stateChanged(int)"       , {|i| ::updateAttribute( THM_ATR_ULINE , i ) } )
-      ::oUI:buttonClose   :connect( "clicked()"               , {| | ::oThemesDock:hide() } )
-
-      /* Fill Themes Dialog Values */
-      ::oUI:setWindowTitle( GetKeyValue( ::aControls, "dialogTitle" ) )
-
-      ::oUI:checkItalic    :setText( GetKeyValue( ::aControls, "checkItalic"   , "Italic"    ) )
-      ::oUI:checkBold      :setText( GetKeyValue( ::aControls, "checkBold"     , "Bold"      ) )
-      ::oUI:checkUnderline :setText( GetKeyValue( ::aControls, "checkUnderline", "Underline" ) )
-      //
-      ::oUI:buttonColor    :setText( GetKeyValue( ::aControls, "buttonColor"   , "Color"     ) )
-      ::oUI:buttonSave     :setText( GetKeyValue( ::aControls, "buttonSave"    , "Save"      ) )
-      ::oUI:buttonSaveAs   :setText( GetKeyValue( ::aControls, "buttonSaveAs"  , "SaveAs"    ) )
-      ::oUI:buttonClose    :setText( GetKeyValue( ::aControls, "buttonClose"   , "Close"     ) )
-      ::oUI:buttonCopy     :setText( GetKeyValue( ::aControls, "buttonCopy"    , "Copy"      ) )
-
-      aeval( ::aThemes, {|e_| ::oUI:listThemes:addItem( e_[ 1 ] ) } )
-      aeval( ::aItems , {|e_| ::oUI:listItems:addItem( e_[ 2 ] )  } )
-
-      ::oEdit := HbQtEditor():new()
-      ::qEdit := ::oUI:plainThemeText
-      ::oEdit:qEdit := ::qEdit
-      ::oEdit:create()
-
-      ::qEdit:setPlainText( GetSource() )
-      ::qEdit:setLineWrapMode( QTextEdit_NoWrap )
-      ::qEdit:setFont( ::oIde:oFont:oWidget )
-      ::qEdit:ensureCursorVisible()
-      ::qEdit:setFocusPolicy( Qt_NoFocus )
-
+      WITH OBJECT ::oUI := hbide_getUI( "themesex" )
+         ::oThemesDock:oWidget:setWidget( :oWidget )
+         //
+         :listThemes    :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listThemes_currentRowChanged__, i ) } )
+         :listItems     :connect( "currentRowChanged(int)"  , {|i| ::execEvent( __listItems_currentRowChanged__, i )  } )
+         :buttonColor   :connect( "clicked()"               , {| | ::updateColor() } )
+         :buttonSave    :connect( "clicked()"               , {| | ::save( .f. )   } )
+         :buttonSaveAs  :connect( "clicked()"               , {| | ::save( .t. )   } )
+         :buttonCopy    :connect( "clicked()"               , {| | ::copy( .t. )   } )
+         :buttonApply   :connect( "clicked()"               , {| | ::execEvent( __applyMenu_triggered_applyToCurrentTab__ ) } )
+         :buttonApplyAll:connect( "clicked()"               , {| | ::execEvent( __applyMenu_triggered_applyToAllTabs__    ) } )
+         :buttonDefault :connect( "clicked()"               , {| | ::execEvent( __applyMenu_triggered_setAsDefault__      ) } )
+         :checkItalic   :connect( "stateChanged(int)"       , {|i| ::updateAttribute( THM_ATR_ITALIC, i ) } )
+         :checkBold     :connect( "stateChanged(int)"       , {|i| ::updateAttribute( THM_ATR_BOLD  , i ) } )
+         :checkUnderline:connect( "stateChanged(int)"       , {|i| ::updateAttribute( THM_ATR_ULINE , i ) } )
+         :buttonClose   :connect( "clicked()"               , {| | ::oThemesDock:hide() } )
+         /* Fill Themes Dialog Values */
+         :setWindowTitle( GetKeyValue( ::aControls, "dialogTitle" ) )
+         //   
+         :checkItalic    :setText( GetKeyValue( ::aControls, "checkItalic"   , "Italic"    ) )
+         :checkBold      :setText( GetKeyValue( ::aControls, "checkBold"     , "Bold"      ) )
+         :checkUnderline :setText( GetKeyValue( ::aControls, "checkUnderline", "Underline" ) )
+         :buttonColor    :setText( GetKeyValue( ::aControls, "buttonColor"   , "Color"     ) )
+         :buttonSave     :setText( GetKeyValue( ::aControls, "buttonSave"    , "Save"      ) )
+         :buttonSaveAs   :setText( GetKeyValue( ::aControls, "buttonSaveAs"  , "SaveAs"    ) )
+         :buttonClose    :setText( GetKeyValue( ::aControls, "buttonClose"   , "Close"     ) )
+         :buttonCopy     :setText( GetKeyValue( ::aControls, "buttonCopy"    , "Copy"      ) )
+         //
+         ::qEdit := :plainThemeText
+         WITH OBJECT ::oEdit := HbQtEditor():new()
+            :qEdit := ::qEdit
+            :create()
+         ENDWITH 
+         WITH OBJECT ::qEdit
+            :setPlainText( GetSource() )
+            :setLineWrapMode( QTextEdit_NoWrap )
+            :setFont( ::oIde:oFont:oWidget )
+            :ensureCursorVisible()
+            :setFocusPolicy( Qt_NoFocus )
+         ENDWITH
+         aeval( ::aThemes, {|e_| ::oUI:listThemes:addItem( e_[ 1 ] ) } )
+         aeval( ::aItems , {|e_| ::oUI:listItems:addItem( e_[ 2 ] )  } )
+         WITH OBJECT :listThemes()
+            :setCurrentRow( 0 )
+            :setCurrentRow( 0 )
+         ENDWITH
+      ENDWITH
       ::lCreating := .f.
-
-      ::oUI:listThemes:setCurrentRow( 0 )
-      ::oUI:listItems:setCurrentRow( 0 )
-
       ::setTheme()
    ENDIF
-   ::qEdit:hbHighlightPage()
-
+   IF .T.
+      ::qEdit:hbHighlightPage()
+   ENDIF
    RETURN Self
 
 
 METHOD IdeThemes:setTheme()
-
    IF ! ::lCreating
       ::qHiliter := ::setSyntaxHilighting( ::qEdit, ::aThemes[ ::nCurTheme, 1 ], .t., .t. )
       ::setAttributes()
@@ -640,68 +573,57 @@ METHOD IdeThemes:setTheme()
       ::setAttributes()
       ::qEdit:hbHighlightPage()
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:setAttributes()
    LOCAL aAttr
-
    IF ! ::lCreating
       aAttr := ::aThemes[ ::nCurTheme, 2, ::nCurItem, 2 ]
-      //
-      ::oUI:checkItalic    :setChecked( aAttr[ THM_ATR_ITALIC ] )
-      ::oUI:checkBold      :setChecked( aAttr[ THM_ATR_BOLD   ] )
-      ::oUI:checkUnderline :setChecked( aAttr[ THM_ATR_ULINE  ] )
-      ::oUI:buttonColor    :setStyleSheet( "color: " + Attr2RGBfnRev( aAttr ) + ";" + ;
-                                                    "background-color: " + Attr2RGBfn( aAttr ) + ";" )
+      WITH OBJECT ::oUI
+         :checkItalic    :setChecked( aAttr[ THM_ATR_ITALIC ] )
+         :checkBold      :setChecked( aAttr[ THM_ATR_BOLD   ] )
+         :checkUnderline :setChecked( aAttr[ THM_ATR_ULINE  ] )
+         :buttonColor    :setStyleSheet( "color: " + Attr2RGBfnRev( aAttr ) + ";" + ;
+                                   "background-color: " + Attr2RGBfn( aAttr ) + ";" )
+      ENDWITH
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeThemes:updateLineNumbersBkColor()
    LOCAL aAttr
-
    IF ! Empty( aAttr := ::getThemeAttribute( "LineNumbersBkColor", ::aThemes[ ::nCurTheme, 1 ] ) )
       ::oEdit:setLineNumbersBkColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] )
    ENDIF
    ::setAttributes()
    ::oEdit:refresh()
-
    RETURN Self
 
 
 METHOD IdeThemes:updateCurrentLineColor()
    LOCAL aAttr
-
    IF ! Empty( aAttr := ::getThemeAttribute( "CurrentLineBackground", ::aThemes[ ::nCurTheme, 1 ] ) )
       ::oEdit:setCurrentLineColor( aAttr[ THM_ATR_R ], aAttr[ THM_ATR_G ], aAttr[ THM_ATR_B ] )
    ENDIF
    ::setAttributes()
    ::oEdit:refresh()
-
    RETURN Self
 
 
 METHOD IdeThemes:updateColor()
    LOCAL aAttr, oDlg, qColor, s, aF, aB
-
    aAttr := ::aThemes[ ::nCurTheme, 2, ::nCurItem ]
-
    qColor := QColor( aAttr[ 2, THM_ATR_R ], aAttr[ 2, THM_ATR_G ], aAttr[ 2, THM_ATR_B ] )
-
-   oDlg := QColorDialog( ::oUI:oWidget )
-   oDlg:setWindowTitle( "Select a Color" )
-   oDlg:setCurrentColor( qColor )
-   oDlg:exec()
-
+   WITH OBJECT oDlg := QColorDialog( ::oUI:oWidget )
+      :setWindowTitle( "Select a Color" )
+      :setCurrentColor( qColor )
+      :exec()
+   ENDWITH 
    qColor := oDlg:currentColor()
-
    ::aThemes[ ::nCurTheme, 2, ::nCurItem, 2, THM_ATR_R ] := qColor:red()
    ::aThemes[ ::nCurTheme, 2, ::nCurItem, 2, THM_ATR_G ] := qColor:green()
    ::aThemes[ ::nCurTheme, 2, ::nCurItem, 2, THM_ATR_B ] := qColor:blue()
-
    IF aAttr[ 1 ] $ "Background,UnrecognizedText"
       aF := GetKeyValue( ::aThemes[ ::nCurTheme, 2 ], "UnrecognizedText" )
       aB := GetKeyValue( ::aThemes[ ::nCurTheme, 2 ], "Background"       )
@@ -711,106 +633,86 @@ METHOD IdeThemes:updateColor()
       s += "background-color: rgba( " + Attr2StrRGB( aB ) + ", 255 ); }"
       //
       ::qEdit:setStyleSheet( s )
-
    ELSEIF aAttr[ 1 ] == "CommentsAndRemarks"
       ::setMultiLineCommentRule( ::qHiliter, ::aThemes[ ::nCurTheme, 1 ] )
       ::setSyntaxFormat( ::qHiliter, aAttr[ 1 ], aAttr[ 2 ] )
-
    ELSEIF aAttr[ 1 ] == "CurrentLineBackground"
       ::updateCurrentLineColor()
       RETURN Self
-
    ELSEIF aAttr[ 1 ] == "LineNumbersBkColor"
       ::updateLineNumbersBkColor()
       RETURN Self
-
    ELSE
       ::setSyntaxFormat( ::qHiliter, aAttr[ 1 ], aAttr[ 2 ] )
-
    ENDIF
-
    ::qHiliter:rehighlight()
    ::setAttributes()
    RETURN Self
 
 
 METHOD IdeThemes:updateAttribute( nAttr, iState )
-   LOCAL aAttr
-
-   aAttr := ::aThemes[ ::nCurTheme, 2, ::nCurItem ]
-
-   ::aThemes[ ::nCurTheme, 2, ::nCurItem, 2, nAttr ] := ( iState == 2 )
-
-   ::setSyntaxFormat( ::qHiliter, aAttr[ 1 ], aAttr[ 2 ] )
-   ::qHiliter:rehighlight()
-
+   LOCAL aAttr := ::aThemes[ ::nCurTheme, 2, ::nCurItem ]
+   IF .T.
+      ::aThemes[ ::nCurTheme, 2, ::nCurItem, 2, nAttr ] := ( iState == 2 )
+      ::setSyntaxFormat( ::qHiliter, aAttr[ 1 ], aAttr[ 2 ] )
+      ::qHiliter:rehighlight()
+   ENDIF
    RETURN Self
 
 
 METHOD IdeThemes:selectTheme()
    LOCAL a_, nDone
-
    IF empty( ::oSL )
-      ::oSL := hbide_getUI( "selectionlist", ::oIde:oDlg:oWidget )
-
-      ::oSL:setWindowTitle( "Available Themes" )
-      ::oSL             :connect( QEvent_Close                , {|| ::oSL:hide()               } )
-
-      ::oSL:listOptions :connect( "doubleClicked(QModelIndex)", {|p| ::selectThemeProc( 1, p ) } )
-      ::oSL:buttonOk    :connect( "clicked()"                 , {|p| ::selectThemeProc( 2, p ) } )
-      ::oSL:buttonCancel:connect( "clicked()"                 , {|p| ::selectThemeProc( 3, p ) } )
-
-      ::oStrList := QStringList()
-      ::oStrModel := QStringListModel()
-      ::oStrModel:setStringList( ::oStrList )
-
-      ::oSL:listOptions:setModel( ::oStrModel )
+      WITH OBJECT ::oSL := hbide_getUI( "selectionlist", ::oIde:oDlg:oWidget )
+         :setWindowTitle( "Available Themes" )
+         :connect( QEvent_Close                , {|| ::oSL:hide()               } )
+         :listOptions :connect( "doubleClicked(QModelIndex)", {|p| ::selectThemeProc( 1, p ) } )
+         :buttonOk    :connect( "clicked()"                 , {|p| ::selectThemeProc( 2, p ) } )
+         :buttonCancel:connect( "clicked()"                 , {|p| ::selectThemeProc( 3, p ) } )
+         //
+         ::oStrList := QStringList()
+         ::oStrModel := QStringListModel()
+         ::oStrModel:setStringList( ::oStrList )
+         :listOptions:setModel( ::oStrModel )
+      ENDWITH 
    ENDIF
-
+   //
    ::oStrList:clear()
    FOR EACH a_ IN ::aThemes
       ::oStrList:append( a_[ 1 ] )
    NEXT
    ::oStrModel:setStringList( ::oStrList )
-
-   nDone := ::oSL:exec()
-
+   IF .T. 
+      nDone := ::oSL:exec()
+   ENDIF 
    RETURN iif( nDone == 1, ::cSelTheme, "" )
 
 
 METHOD IdeThemes:selectThemeProc( nMode, p )
    LOCAL qModalIndex
-
    DO CASE
    CASE nMode == 1
       ::cSelTheme := ::aThemes[ p:row() + 1, 1 ]
       ::oSL:done( 1 )
-
    CASE nMode == 2
       qModalIndex := ::oSL:listOptions:currentIndex()
       ::cSelTheme := ::aThemes[ qModalIndex:row() + 1, 1 ]
       ::oSL:done( 1 )
-
    CASE nMode == 3
       ::oSL:done( 0 )
-
    ENDCASE
-
    RETURN Nil
 
 
 METHOD IdeThemes:copy()
    LOCAL aItems, qGo, cTheme
-
-   qGo := QInputDialog( ::oUI:oWidget )
-   qGo:setTextValue( ::aThemes[ ::nCurTheme, 1 ] )
-   qGo:setLabelText( "Name of new Theme?" )
-   qGo:setWindowTitle( "Harbour-Qt [ Get a Value ]" )
-
-   qGo:exec()
-
+   WITH OBJECT qGo := QInputDialog( ::oUI:oWidget )
+      :setTextValue( ::aThemes[ ::nCurTheme, 1 ] )
+      :setLabelText( "Name of new Theme?" )
+      :setWindowTitle( "Harbour-Qt [ Get a Value ]" )
+      :exec()
+   ENDWITH
    cTheme := qGo:textValue()
-
    IF !empty( cTheme ) .and. !( cTheme == ::aThemes[ ::nCurTheme, 1 ] )
       aItems := aclone( ::aThemes[ ::nCurTheme ] )
       aItems[ 1 ] := cTheme
@@ -818,7 +720,6 @@ METHOD IdeThemes:copy()
       ::oUI:listThemes:addItem( cTheme )
       ::oUI:listThemes:setCurrentRow( Len( ::aThemes ) - 1 )
    ENDIF
-
    RETURN Self
 
 
@@ -826,7 +727,6 @@ METHOD IdeThemes:buildINI()
    LOCAL a_, b_
    LOCAL txt_ := {}
    LOCAL cINI := ""
-
    aadd( txt_, "#  " )
    aadd( txt_, "#  Harbour IDE Editor Themes" )
    aadd( txt_, "#  Version 0.7" )
@@ -855,27 +755,22 @@ METHOD IdeThemes:buildINI()
       NEXT
    NEXT
    aadd( txt_, "   " )
-
+   //
    aeval( txt_, {|e| cINI += e + hb_eol() } )
-
    RETURN cINI
 
 
 METHOD IdeThemes:parseINI( lAppend )
    LOCAL s, n, cKey, cVal, nPart, nTheme, aVal, aV
-
    IF empty( ::aIni )
       RETURN Self
    ENDIF
-
    DEFAULT lAppend TO .t.
-
-   IF !( lAppend )
+   IF ! lAppend 
       ::aControls := {}
       ::aThemes   := {}
       ::aItems    := {}
    ENDIF
-
    FOR EACH s IN ::aIni
       IF !empty( s := alltrim( s ) ) .and. !left( s, 1 ) == "#" /* Comment */
          DO case
@@ -929,17 +824,14 @@ METHOD IdeThemes:parseINI( lAppend )
                   NEXT
                   IF ( n := ascan( ::aThemes[ nTheme, 2 ], {|e_| e_[ 1 ] == cKey } ) ) > 0
                      ::aThemes[ nTheme, 2, n, 2 ] := aV
-
                   ELSE
                      aadd( ::aThemes[ nTheme, 2 ], { cKey, aV } )
-
                   ENDIF
                ENDIF
             ENDCASE
          ENDCASE
       ENDIF
    NEXT
-
    RETURN Self
 
 
@@ -961,7 +853,6 @@ STATIC FUNCTION Attr2StrRGB( a_ )
 
 
 STATIC FUNCTION Attr2Str( a_ )
-
    RETURN padl( hb_ntos( a_[ 1 ] ), 4 ) + "," +;
           padl( hb_ntos( a_[ 2 ] ), 4 ) + "," +;
           padl( hb_ntos( a_[ 3 ] ), 4 ) + "," +;
@@ -972,22 +863,18 @@ STATIC FUNCTION Attr2Str( a_ )
 
 STATIC FUNCTION GetKeyValue( aKeys, cKey, cDef )
    LOCAL xVal, n
-
    DEFAULT cDef TO ""
-
    IF ( n := ascan( aKeys, {|e_| e_[ 1 ] == cKey } ) ) > 0
       xVal := aKeys[ n, 2 ]
    ELSE
       xVal := cDef
    ENDIF
-
    RETURN xVal
 
 
 STATIC FUNCTION GetSource()
    LOCAL s := ""
    LOCAL txt_:= {}
-
    aadd( txt_, '/* Copyright 2009-2014 Pritpal Bedi <bedipritpal@hotmail.com>              ' )
    aadd( txt_, ' *                                                                         ' )
    aadd( txt_, ' * This program is free software; you can redistribute it and/or modify    ' )
@@ -1021,11 +908,10 @@ STATIC FUNCTION GetSource()
    aadd( txt_, '   ENDIF                                                                   ' )
    aadd( txt_, '   RETURN xVal                                                             ' )
    aadd( txt_, '/*----------------------------------------------------------------------*/ ' )
-
-   aeval( txt_, {|e| s += trim( e ) + hb_eol() } )
-
+   IF .T.
+      aeval( txt_, {|e| s += trim( e ) + hb_eol() } )
+   ENDIF
    RETURN s
-
 
 /*
 STATIC FUNCTION hbide_setSyntaxAttrbs( qHiliter, cPattern, cName, nR, nG, nB, lItalic, lBold, lUnderline )
@@ -1052,8 +938,7 @@ STATIC FUNCTION hbide_setSyntaxAttrbs( qHiliter, cPattern, cName, nR, nG, nB, lI
 
 STATIC FUNCTION hbide_loadDefaultThemes()
    LOCAL aIni := {}
-
-   IF .t.
+   IF .T. 
       aadd( aIni, "[ Controls ]                                                         " )
       aadd( aIni, "                                                                     " )
       aadd( aIni, "dialogTitle                    = HbIDE - Source Syntax Highlighting  " )
@@ -1216,12 +1101,12 @@ STATIC FUNCTION hbide_loadDefaultThemes()
       aadd( aIni, "UserDictionary                 = 0,0,0          ,  No,  No,  No,     " )
       aadd( aIni, "                                                                     " )
    ENDIF
-
    RETURN aIni
 
-
-#if 0
-                                                       [Classic]      [CityLights]  [Evening]     [SandStorm]
+//-------------------------------------------------------------------//
+#if 0                  // Placeholder of Syntax
+//-------------------------------------------------------------------//
+                                                       [Classic]     [CityLights]  [Evening]     [SandStorm]
 
 Background                 = Background                255,255,255   0,0,0         0,64,128      255,255,192
 PreprocessorDirectives     = Preprocessor Directives   128,128,0     255,0,0       255,128,192   255,0,0
@@ -1240,6 +1125,7 @@ UnrecognizedText           = Unrecognized Text         0,0,0         255,255,255
 UnterminatedStrings        = Unterminated Strings      255,128,128   255,255,255   255,128,64    128,128,0
 LineNumbersBkColor         = WAPIDictionary            0,0,128       0,0,128       128,128,64    0,0,128
 UserDictionary             = UserDictionary            0,0,0         0,0,0         0,0,0         0,0,0
-
+//-------------------------------------------------------------------//
 #endif
+//-------------------------------------------------------------------//
 

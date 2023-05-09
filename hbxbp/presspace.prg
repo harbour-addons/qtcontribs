@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              08Jul2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -72,7 +68,6 @@
 #include "gra.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpPresSpace
 
@@ -156,15 +151,12 @@ CLASS XbpPresSpace
                                                               0                     }
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:init()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:create( oDevice, aPageSize, nUnits )
-
    DEFAULT nUnits TO GRA_PU_PIXEL
 
    IF HB_ISOBJECT( oDevice )
@@ -173,12 +165,10 @@ METHOD XbpPresSpace:create( oDevice, aPageSize, nUnits )
    IF HB_ISARRAY( aPageSize ) .AND. len( aPageSize ) == 2
       ::aPageSize := aPageSize
    ENDIF
-
    ::nUnits := nUnits
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:drawMode( nDrawMode )
    LOCAL nOldMode := ::nDrawMode
@@ -186,25 +176,19 @@ METHOD XbpPresSpace:drawMode( nDrawMode )
    IF HB_ISNUMERIC( nDrawMode ) .AND. nDrawMode >= GRA_DM_DRAW .AND. nDrawMode <= GRA_DM_DRAWANDRETAIN
       ::nDrawMode := nDrawMode
    ENDIF
-
    RETURN nOldMode
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:device()
    RETURN ::oDevice
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:lastError()
    LOCAL nError := 0
-
    RETURN nError
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:mapPoint( aPoint, lMapToDevice )
-
    DEFAULT  lMapToDevice TO .t.
 
    IF HB_ISARRAY( aPoint )
@@ -212,30 +196,21 @@ METHOD XbpPresSpace:mapPoint( aPoint, lMapToDevice )
          aPoint := { 0,0 }
       ENDIF
    ENDIF
-
    RETURN aPoint
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:mapColor( aRGB, lExactMatch )
    LOCAL xValue := 0
 
    HB_SYMBOL_UNUSED( aRGB )
-
    DEFAULT lExactMatch TO .f.
-
-
    RETURN xValue //<nColorIndex>|<nRGBColor>|NIL )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:maxColorIndex( lCompatible )
-
    DEFAULT lCompatible TO .t.
-
    RETURN 255
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setAttrArea( aAttributes )
    LOCAL v
@@ -248,10 +223,8 @@ METHOD XbpPresSpace:setAttrArea( aAttributes )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aOldAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setAttrLine( aAttributes )
    LOCAL v
@@ -264,10 +237,8 @@ METHOD XbpPresSpace:setAttrLine( aAttributes )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aOldAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setAttrMarker( aAttributes )
    LOCAL v
@@ -280,10 +251,8 @@ METHOD XbpPresSpace:setAttrMarker( aAttributes )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aOldAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setAttrString( aAttributes )
    LOCAL v
@@ -296,10 +265,8 @@ METHOD XbpPresSpace:setAttrString( aAttributes )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aOldAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setColor( nForeground, nBackground )
    LOCAL aOldAttr := { ::nColorFG, ::nColorBG }
@@ -310,10 +277,8 @@ METHOD XbpPresSpace:setColor( nForeground, nBackground )
    IF !empty( nBackground )
       ::nColorBG := nBackground
    ENDIF
-
    RETURN aOldAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setColorIndex( nColorIndex, aRGB )
    LOCAL a_
@@ -331,10 +296,8 @@ METHOD XbpPresSpace:setColorIndex( nColorIndex, aRGB )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN aOldAttr
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setFont( oXbpFont )
    LOCAL oOldFont := ::oXbpFont
@@ -342,10 +305,8 @@ METHOD XbpPresSpace:setFont( oXbpFont )
    IF HB_ISOBJECT( oXbpFont )
       ::oXbpFont := oXbpFont
    ENDIF
-
    RETURN oOldFont
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setGraTransform( aMatrix, nMode )
    LOCAL oOldMatrix := ::aMatrix
@@ -359,10 +320,8 @@ METHOD XbpPresSpace:setGraTransform( aMatrix, nMode )
          // Recalculate ??
       ENDIF
    ENDIF
-
    RETURN oOldMatrix
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setPageSize( aPageSize, nUnits )
    LOCAL aOldSize := ::aPageSize
@@ -373,10 +332,8 @@ METHOD XbpPresSpace:setPageSize( aPageSize, nUnits )
    IF HB_ISNUMERIC( nUnits )
       ::nUnits := nUnits
    ENDIF
-
    RETURN aOldSize
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPresSpace:setViewPort( aViewPort )
    LOCAL aOldViewPort := ::aViewPort
@@ -384,8 +341,5 @@ METHOD XbpPresSpace:setViewPort( aViewPort )
    IF HB_ISARRAY( aViewPort )
       ::aViewPort := aViewPort
    ENDIF
-
    RETURN aOldViewPort
-
-/*----------------------------------------------------------------------*/
 

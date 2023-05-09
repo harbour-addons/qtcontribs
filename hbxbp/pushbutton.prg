@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               13Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -73,7 +69,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpPushButton  INHERIT  XbpWindow
 
@@ -106,18 +101,13 @@ CLASS XbpPushButton  INHERIT  XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:INIT( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::oWidget := QPushButton( ::oParent:oWidget )
@@ -125,7 +115,6 @@ METHOD XbpPushButton:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible
    IF ::default
       ::oWidget:setDefault( .t. )
    ENDIF
-
    ::connect()
    ::setPosAndSize()
    IF ::visible
@@ -133,15 +122,12 @@ METHOD XbpPushButton:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible
    ENDIF
    ::oParent:AddChild( SELF )
    ::postCreate()
-
    ::setCaption( ::caption )
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:execSlot( cSlot, p )
-
    DO CASE
    CASE cSlot == "clicked()"
       ::activate()
@@ -155,87 +141,64 @@ METHOD XbpPushButton:execSlot( cSlot, p )
             ENDIF
          ENDIF
       ENDIF
-
    CASE cSlot == "QEvent_KeyPress"
       IF hbxbp_QKeyEventToAppEvent( p ) == xbeK_ENTER
          ::oWidget:click()
       ENDIF
-
    ENDCASE
+   RETURN NIL 
 
-   RETURN nil
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:connect()
    ::oWidget:connect( "clicked()"    , {|| ::execSlot( "clicked()" ) } )
    ::oWidget:connect( QEvent_KeyPress, {|e| ::execSlot( "QEvent_KeyPress", e ) } )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:disconnect()
    ::oWidget:disconnect( "clicked()" )
    ::oWidget:disconnect( QEvent_KeyPress )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:destroy()
-
    ::disconnect()
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:setFocus()
-
    IF !( ::oWidget:isDefault() )
       ::oWidget:setDefault( .t. )
    ENDIF
    ::oWidget:setFocus()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:setCaption( xCaption, cDll )
-
    HB_SYMBOL_UNUSED( cDll )
-
    IF HB_ISSTRING( xCaption )
       ::caption := xCaption
-
       IF hb_FileExists( xCaption )
          ::oWidget:setIcon( QIcon( xCaption ) )
       ELSE
          ::oWidget:setText( xCaption )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:activate( ... )
    LOCAL a_:= hb_aParams()
@@ -246,7 +209,6 @@ METHOD XbpPushButton:activate( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPushButton:draw( ... )
    LOCAL a_:= hb_aParams()
@@ -257,4 +219,3 @@ METHOD XbpPushButton:draw( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/

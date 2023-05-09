@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              10Jul2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -72,7 +68,6 @@
 #include "gra.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpRtf INHERIT XbpWindow
 
@@ -156,22 +151,16 @@ CLASS XbpRtf INHERIT XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::oWidget := QTextEdit( ::pParent )
-
    ::connect()
    ::setPosAndSize()
    IF ::visible
@@ -183,13 +172,11 @@ METHOD XbpRtf:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::oTextDocument   := ::oWidget:document()
    ::oTextCursor     := ::oWidget:textCursor()
    ::oTextCharFormat := ::oTextCursor:charFormat()
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:execSlot( cSlot, p )
-
    HB_SYMBOL_UNUSED( p )
 
    DO CASE
@@ -209,104 +196,81 @@ METHOD XbpRtf:execSlot( cSlot, p )
       ::oCurCursor := ::oTextCursor
       ::selChange()
    ENDCASE
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:configure()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:connect()
-
-*  ::oWidget:connect( "copyAvailable(bool)"                      , {|p| ::execSlot( "copyAvailable(bool)"    , p ) } )
-   ::oWidget:connect( "currentCharFormatChanged(QTextCharFormat)", {|p| ::execSlot( "currentCharFormatChanged(QTextCharFormat)", p ) } )
-   ::oWidget:connect( "cursorPositionChanged()"                  , {|p| ::execSlot( "cursorPositionChanged()", p ) } )
-   ::oWidget:connect( "redoAvailable(bool)"                      , {|p| ::execSlot( "redoAvailable(bool)"    , p ) } )
-   ::oWidget:connect( "undoAvailable(bool)"                      , {|p| ::execSlot( "undoAvailable(bool)"    , p ) } )
-   ::oWidget:connect( "textChanged()"                            , {|p| ::execSlot( "textChanged()"          , p ) } )
-   ::oWidget:connect( "selectionChanged()"                       , {|p| ::execSlot( "selectionChanged()"     , p ) } )
-
+   WITH OBJECT ::oWidget
+      //:connect( "copyAvailable(bool)"                      , {|p| ::execSlot( "copyAvailable(bool)"    , p ) } )
+      :connect( "currentCharFormatChanged(QTextCharFormat)", {|p| ::execSlot( "currentCharFormatChanged(QTextCharFormat)", p ) } )
+      :connect( "cursorPositionChanged()"                  , {|p| ::execSlot( "cursorPositionChanged()", p ) } )
+      :connect( "redoAvailable(bool)"                      , {|p| ::execSlot( "redoAvailable(bool)"    , p ) } )
+      :connect( "undoAvailable(bool)"                      , {|p| ::execSlot( "undoAvailable(bool)"    , p ) } )
+      :connect( "textChanged()"                            , {|p| ::execSlot( "textChanged()"          , p ) } )
+      :connect( "selectionChanged()"                       , {|p| ::execSlot( "selectionChanged()"     , p ) } )
+   ENDWITH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:disconnect()
-
    IF ! empty( ::oWidget )
-   *  ::oWidget:disconnect( "copyAvailable(bool)"                       )
-      ::oWidget:disconnect( "currentCharFormatChanged(QTextCharFormat)" )
-      ::oWidget:disconnect( "cursorPositionChanged()"                   )
-      ::oWidget:disconnect( "redoAvailable(bool)"                       )
-      ::oWidget:disconnect( "undoAvailable(bool)"                       )
-      ::oWidget:disconnect( "textChanged()"                             )
-      ::oWidget:disconnect( "selectionChanged()"                        )
+      WITH OBJECT ::oWidget
+         // :disconnect( "copyAvailable(bool)"                    )
+         :disconnect( "currentCharFormatChanged(QTextCharFormat)" )
+         :disconnect( "cursorPositionChanged()"                   )
+         :disconnect( "redoAvailable(bool)"                       )
+         :disconnect( "undoAvailable(bool)"                       )
+         :disconnect( "textChanged()"                             )
+         :disconnect( "selectionChanged()"                        )
+      ENDWITH 
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:destroy()
-
    ::disconnect()
    ::xbpWindow:destroy()
-
+   //
    ::oTextDocument   := NIL
    ::oTextCursor     := NIL
    ::oTextCharFormat := NIL
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:loadFile( cFile )
-
    IF file( cFile )
       ::oWidget:setText( memoread( cFile ) )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:saveFile( cFile )
-
    IF ( '.txt' $ lower( cFile ) )
-      memowrit( cFile, ::oWidget:toPlainText() )
+      hb_MemoWrit( cFile, ::oWidget:toPlainText() )
    ELSE
-      memowrit( cFile, ::oWidget:toHTML() )
+      hb_MemoWrit( cFile, ::oWidget:toHTML() )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:clear()
-
    ::oWidget:clear()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:copy()
-
    ::oWidget:copy()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:cut()
-
    ::oWidget:cut()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:find( cSearchString, nStart, nEnd, nOptions )
    LOCAL nPos := 0
@@ -323,48 +287,33 @@ METHOD XbpRtf:find( cSearchString, nStart, nEnd, nOptions )
    ENDIF
    RETURN nPos
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:getLineFromChar( nChar )
    LOCAL nLine := 0
-
    HB_SYMBOL_UNUSED( nChar )
-
    RETURN nLine
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:getLineStart( nLine )
    LOCAL nChar := 0
-
    HB_SYMBOL_UNUSED( nLine )
-
    RETURN nChar
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:undo()
-
    ::oWidget:undo()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:paste()
-
    ::oWidget:paste()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:print( oXbpPrinter, lOnlySelection )
-
    IF !HB_ISOBJECT( oXbpPrinter )
       oXbpPrinter := XbpPrinter():new():create()
    ENDIF
-
    IF HB_ISLOGICAL( lOnlySelection ) .and. lOnlySelection
       ::oWidget:print( oXbpPrinter:oWidget )
    ELSE
@@ -372,36 +321,26 @@ METHOD XbpRtf:print( oXbpPrinter, lOnlySelection )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:redo()
-
    ::oWidget:redo()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selTabs( nTab, nPos )
-
    HB_SYMBOL_UNUSED( nTab )
    HB_SYMBOL_UNUSED( nPos )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:span( cCharacters, bForward, bExclude )
-
    DEFAULT bForward TO .T.
 
    HB_SYMBOL_UNUSED( cCharacters )
    HB_SYMBOL_UNUSED( bForward )
    HB_SYMBOL_UNUSED( bExclude )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:change( ... )
    LOCAL aP := hb_aParams()
@@ -412,10 +351,8 @@ METHOD XbpRtf:change( ... )
       asize( aP, 2 )
       eval( ::sl_xbeRTF_Change, aP[ 1 ], aP[ 2 ], Self )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selChange( ... )
    LOCAL aP := hb_aParams()
@@ -426,10 +363,8 @@ METHOD XbpRtf:selChange( ... )
       asize( aP, 2 )
       eval( ::sl_xbeRTF_SelChange, aP[ 1 ], aP[ 2 ], Self )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selAlignment( ... )                           // XBPRTF_ALIGN_LEFT
    LOCAL xRet := XBPRTF_ALIGN_LEFT
@@ -444,7 +379,6 @@ METHOD XbpRtf:selAlignment( ... )                           // XBPRTF_ALIGN_LEFT
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selBold( ... )                                // .F.
    LOCAL xRet := .f.
@@ -459,20 +393,16 @@ METHOD XbpRtf:selBold( ... )                                // .F.
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selBullet( ... )                              // .F.
    LOCAL xRet := 0
    LOCAL aP := hb_aParams()
-
    // ::bulletIndent
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selCharOffset( ... )                          // 0
    LOCAL xRet := 0, nAlign
@@ -489,7 +419,6 @@ METHOD XbpRtf:selCharOffset( ... )                          // 0
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selColor( ... )
    LOCAL xRet := 0
@@ -509,7 +438,6 @@ METHOD XbpRtf:selColor( ... )
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 //  This is Harour Extension
 //
 METHOD XbpRtf:selFont( ... )                            // ""
@@ -525,7 +453,6 @@ METHOD XbpRtf:selFont( ... )                            // ""
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selFontName( ... )                            // ""
    LOCAL xRet := 0
@@ -541,7 +468,6 @@ METHOD XbpRtf:selFontName( ... )                            // ""
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selFontSize( ... )                            // 0
    LOCAL xRet := 0
@@ -557,29 +483,24 @@ METHOD XbpRtf:selFontSize( ... )                            // 0
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selHangingIndent( ... )                       // 0
    LOCAL xRet := 0
    LOCAL aP := hb_aParams()
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selIndent( ... )                              // 0
    LOCAL xRet := 0
    LOCAL aP := hb_aParams()
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selItalic( ... )                              // .F.
    LOCAL xRet := .f.
@@ -594,7 +515,6 @@ METHOD XbpRtf:selItalic( ... )                              // .F.
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selLength( ... )                              // 0
    LOCAL xRet := 0
@@ -605,18 +525,15 @@ METHOD XbpRtf:selLength( ... )                              // 0
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selRightIndent( ... )                         // 0
    LOCAL xRet := 0
    LOCAL aP := hb_aParams()
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selStart( ... )                               // 0
    LOCAL xRet := 0
@@ -630,12 +547,10 @@ METHOD XbpRtf:selStart( ... )                               // 0
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selStrikeThru( ... )                          // .F.
    LOCAL xRet := .f.
    LOCAL aP := hb_aParams()
-
    IF len( aP ) >= 1 .and. HB_ISLOGICAL( aP[ 1 ] )
       ::oTextCharFormat := ::oCurCursor:charFormat()
       IF ::oTextCharFormat:isValid()
@@ -645,29 +560,24 @@ METHOD XbpRtf:selStrikeThru( ... )                          // .F.
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selTabCount( ... )                            // 0
    LOCAL xRet := 0
    LOCAL aP := hb_aParams()
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selReadOnly( ... )                            // .F.
    LOCAL xRet := .f.
    LOCAL aP := hb_aParams()
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selText( ... )                                // ""
    LOCAL xRet := ""
@@ -682,7 +592,6 @@ METHOD XbpRtf:selText( ... )                                // ""
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:selUnderline( ... )                           // .F.
    LOCAL xRet := .f.
@@ -697,7 +606,6 @@ METHOD XbpRtf:selUnderline( ... )                           // .F.
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:text( ... )                                   // ""
    LOCAL xRet := ::oWidget:toPlainText()
@@ -706,12 +614,11 @@ METHOD XbpRtf:text( ... )                                   // ""
    IF len( aP ) == 1 .and. HB_ISSTRING( aP[ 1 ] )
       ::oWidget:setPlainText( aP[ 1 ] )
    ENDIF
-
    IF len( aP ) >= 1
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:textRTF( ... )                                // ""
    LOCAL xRet := ::oWidget:toHtml()
@@ -720,26 +627,18 @@ METHOD XbpRtf:textRTF( ... )                                // ""
    IF len( aP ) == 1 .and. HB_ISSTRING( aP[ 1 ] )
       ::oWidget:setHTML( aP[ 1 ] )
    ENDIF
-
    IF len( aP ) >= 1
-
+      //
    ENDIF
    RETURN xRet
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:insertText( cText )
-
    ::oWidget:insertPlainText( cText )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRtf:insertImage( cImageFilename )
-
    ::oCurCursor:insertImage( cImageFilename )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               14Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,10 +67,8 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpTabPage  INHERIT  XbpWindow
-
 
    DATA     caption                               INIT NIL /* Character string, Numeric, Object ("")                                                                           */
    DATA     clipChildren                          INIT .T. /* Determines whether Xbase Parts in the child list are clipped during graphic output.                              */
@@ -102,15 +96,11 @@ CLASS XbpTabPage  INHERIT  XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    LOCAL oPar
@@ -125,20 +115,17 @@ METHOD XbpTabPage:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    IF empty( ::oParent:oTabWidget )
       ::oParent:oTabWidget := XbpTabWidget():new( ::oParent, , ::aPos, ::aSize, , .t. ):create()
-
       IF ::type == XBPTABPAGE_TAB_BOTTOM
          ::oParent:oTabWidget:oWidget:setTabPosition( 1 )
       ENDIF
-
    ENDIF
-
    oPar := ::oParent:oTabWidget
 
-   ::oWidget := QWidget( oPar:oWidget )
-   ::oWidget:setContextMenuPolicy( Qt_CustomContextMenu )
-   ::oWidget:setObjectName( hbxbp_getNextID( "XBaseTabPage" ) )
-   ::oWidget:setFocusPolicy( Qt_NoFocus )
-
+   WITH OBJECT ::oWidget := QWidget( oPar:oWidget )
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setObjectName( hbxbp_getNextID( "XBaseTabPage" ) )
+      :setFocusPolicy( Qt_NoFocus )
+   ENDWITH 
    oPar:oWidget:addTab( ::oWidget, ::caption )
 
    ::setPosAndSize()
@@ -147,16 +134,13 @@ METHOD XbpTabPage:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ENDIF
    oPar:addChild( SELF )
    ::postCreate()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:destroy()
    LOCAL nIndex
@@ -165,13 +149,10 @@ METHOD XbpTabPage:destroy()
       adel( ::aChildren, nIndex )
       asize( ::aChildren, len( ::aChildren ) - 1 )
    ENDIF
-
    ::sl_tabActivate := NIL
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:execSlot( cSlot, p )
    LOCAL iIndex := p
@@ -185,17 +166,13 @@ METHOD XbpTabPage:execSlot( cSlot, p )
    ENDIF
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:tabActivate( ... )
    LOCAL a_:= hb_aParams()
@@ -206,7 +183,6 @@ METHOD XbpTabPage:tabActivate( ... )
    ENDIF
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:closeRequested( ... )
    LOCAL a_:= hb_aParams()
@@ -217,26 +193,18 @@ METHOD XbpTabPage:closeRequested( ... )
    ENDIF
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:minimize()
    //::hide()
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabPage:maximize()
    //::show()
    RETURN .t.
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*
- *                        Class XbpTabWidget()
- */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
+//                        Class XbpTabWidget()
 /*----------------------------------------------------------------------*/
 
 CLASS XbpTabWidget  INHERIT  XbpWindow
@@ -254,25 +222,20 @@ CLASS XbpTabWidget  INHERIT  XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
-   ::oWidget := QTabWidget( ::pParent )
-   ::oWidget:setContextMenuPolicy( Qt_CustomContextMenu )
-   ::oWidget:setObjectName( hbxbp_getNextID( "XbaseTabWidget" ) )
-   ::oWidget:setFocusPolicy( Qt_NoFocus )
-
+   WITH OBJECT ::oWidget := QTabWidget( ::pParent )
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setObjectName( hbxbp_getNextID( "XbaseTabWidget" ) )
+      :setFocusPolicy( Qt_NoFocus )
+   ENDWITH 
    ::connect()
    ::setPosAndSize()
    IF ::visible
@@ -282,39 +245,36 @@ METHOD XbpTabWidget:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible 
    ::postCreate()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:connect()
-   ::oWidget:connect( "currentChanged(int)"               , {|i| ::execSlot( "currentChanged(int)"   , i ) } )
-   ::oWidget:connect( "tabCloseRequested(int)"            , {|i| ::execSlot( "tabCloseRequested(int)", i ) } )
-   ::oWidget:connect( "customContextMenuRequested(QPoint)", {|p| ::execSlot( "customContextMenuRequested(QPoint)", p ) } )
+   WITH OBJECT ::oWidget
+      :connect( "currentChanged(int)"               , {|i| ::execSlot( "currentChanged(int)"   , i ) } )
+      :connect( "tabCloseRequested(int)"            , {|i| ::execSlot( "tabCloseRequested(int)", i ) } )
+      :connect( "customContextMenuRequested(QPoint)", {|p| ::execSlot( "customContextMenuRequested(QPoint)", p ) } )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:disconnect()
-   ::oWidget:disconnect( "currentChanged(int)"                )
-   ::oWidget:disconnect( "tabCloseRequested(int)"             )
-   ::oWidget:disconnect( "customContextMenuRequested(QPoint)" )
+   WITH OBJECT ::oWidget
+      :disconnect( "currentChanged(int)"                )
+      :disconnect( "tabCloseRequested(int)"             )
+      :disconnect( "customContextMenuRequested(QPoint)" )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:destroy()
-
    ::oParent:oTabWidget := NIL
    //::disconnect()
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTabWidget:execSlot( cSlot, p )
    LOCAL qTab, nIndex, oTab, qWidget, qPoint, iIndex
@@ -337,17 +297,12 @@ METHOD XbpTabWidget:execSlot( cSlot, p )
          DO CASE
          CASE cSlot == "customContextMenuRequested(QPoint)"
             oTab:hbContextMenu( { qPoint:x(), qPoint:y() } )
-
          CASE cSlot == "currentChanged(int)"
             oTab:tabActivate()
-
          CASE cSlot == "tabCloseRequested(int)"
             oTab:closeRequested()
-
          ENDCASE
       ENDIF
    ENDIF
-
    RETURN qPoint
 
-/*----------------------------------------------------------------------*/

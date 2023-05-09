@@ -1,9 +1,9 @@
-/*
+   /*
  * $Id$
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@
 #define __buttonSaveAs_clicked__                  2010
 #define __buttonDelete_clicked__                  2011
 #define __QEvent_KeyPress__                       2012
-#define __buttonClose_clicked__                  2013
+#define __buttonClose_clicked__                   2013
 
 
 CLASS IdeShortcuts INHERIT IdeObject
@@ -90,7 +90,6 @@ CLASS IdeShortcuts INHERIT IdeObject
    DATA   aMtdItms                                INIT {}
    DATA   aDftSCuts                               INIT {}
    DATA   aDftSCutsItms                           INIT {}
-
    DATA   cName
    DATA   cKey
    DATA   cAlt
@@ -99,7 +98,6 @@ CLASS IdeShortcuts INHERIT IdeObject
    DATA   cMenu
    DATA   cBlock
    DATA   cIcon
-
    DATA   qHiliter
 
    METHOD init( oIde )
@@ -109,18 +107,15 @@ CLASS IdeShortcuts INHERIT IdeObject
    METHOD execEvent( nEvent, p )
    METHOD buildUI()
    METHOD buildSignals()
-
    METHOD buildBlock( cString )
    METHOD evalMacro( cString )
    METHOD test( cString, lWarn )
    METHOD execKey( oEdit, nKey, lAlt, lCtrl, lShift )
    METHOD execMacroByName( cName )
    METHOD mergeMacros( a_ )
-
    METHOD loadDftSCuts()
    METHOD loadMethods()
    METHOD loadKeys()
-
    METHOD clearDftSCuts()
    METHOD populateData( nMode )
    METHOD populateDftSCuts()
@@ -133,13 +128,11 @@ CLASS IdeShortcuts INHERIT IdeObject
    METHOD array2table( nRow, a_ )
    METHOD vrbls2array( nRow )
    METHOD getMacrosList()
-
    /* Public API Methods */
    METHOD getWord( lSelect )
    METHOD getLine( nLine, lSelect )
    METHOD getText()
    METHOD execTool( ... )
-
    /* hbIDE defined Macros as API Methods */
    METHOD help( cTopic )
    METHOD exit( lWarn )
@@ -196,18 +189,15 @@ CLASS IdeShortcuts INHERIT IdeObject
    METHOD presentSkeletons()
    METHOD gotoFunction()
    METHOD execPlugin( cPlugin, ... )
-
    METHOD toggleCurrentLineHilight()
    METHOD toggleLineNumbersDisplay()
    METHOD toggleStatusBar()
-
    /* Selection Modes */
    METHOD toggleStreamSelectionMode()
    METHOD toggleColumnSelectionMode()
    METHOD toggleLineSelectionMode()
    METHOD clearSelection()
    METHOD togglePersistentSelection()
-
    /* Navigation */
    METHOD home()
    METHOD end()
@@ -222,11 +212,9 @@ CLASS IdeShortcuts INHERIT IdeObject
    METHOD pageUp()
    METHOD pageDown()
    METHOD find( cString, nPosFrom )
-
    METHOD toNextFunction()
    METHOD toPrevFunction()
    METHOD execToolsBox()
-
    METHOD nextEditor()
    METHOD previousEditor()
 
@@ -234,82 +222,63 @@ CLASS IdeShortcuts INHERIT IdeObject
 
 
 METHOD IdeShortcuts:init( oIde )
-
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeShortcuts:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    ::loadMethods()
    ::loadKeys()
    ::loadDftSCuts()
-
    RETURN Self
 
 
 METHOD IdeShortcuts:destroy()
    LOCAL a_, qItm
-
    IF !empty( ::oUI )
       ::oUI:oWidget:disconnect( QEvent_Close )
-
       ::qHiliter := NIL
-
       FOR EACH qItm IN ::aHdr
          qItm := NIL
       NEXT
       ::aHdr := {}
-
       FOR EACH qItm IN ::aMtdItms
          qItm := NIL
       NEXT
       ::aMtdItms := {}
-
       FOR EACH a_ IN ::aDftSCutsItms
          FOR EACH qItm IN a_
             qItm := NIL
          NEXT
       NEXT
       ::aDftSCutsItms := {}
-
       ::oUI:destroy()
    ENDIF
-
    ::aMethods  := NIL
    ::aKeys     := NIL
    ::aDftSCuts := NIL
-
    RETURN Self
 
 
 METHOD IdeShortcuts:show()
-
    IF empty( ::oUI )
       ::buildUI()
       ::populateData( 1 )
    ENDIF
-
    ::oIde:setPosAndSizeByIniEx( ::oUI:oWidget, ::oINI:cShortcutsDialogGeometry )
    ::oUI:show()
    ::oUI:raise()
-
    RETURN Self
 
 
 METHOD IdeShortcuts:execEvent( nEvent, p )
    LOCAL nRow, cMethod, cFile, cPath, cTemp, cExt, a_
-
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH nEvent
-
    CASE __QEvent_KeyPress__
       MsgBox( "KeyPress on LabelMacros" )
       EXIT
@@ -413,39 +382,31 @@ METHOD IdeShortcuts:execEvent( nEvent, p )
       ENDIF
       EXIT
    ENDSWITCH
-
    RETURN Self
 
 
 METHOD IdeShortcuts:array2controls( nRow )
    LOCAL cKey, nKey
-
-   ::oUI:editName:setText( ::aDftSCuts[ nRow, 1 ] )
-
-   cKey := ::aDftSCuts[ nRow, 2 ]
-   IF ( nKey := ascan( ::aKeys, {|e_| e_[ 2 ] == cKey } ) ) > 0
-      ::oUI:comboKey:setCurrentIndex( nKey - 1 )
-   ENDIF
-
-   ::oUI:checkAlt  :setChecked( ::aDftSCuts[ nRow, 3 ] == "YES" )
-   ::oUI:checkCtrl :setChecked( ::aDftSCuts[ nRow, 4 ] == "YES" )
-   ::oUI:checkShift:setChecked( ::aDftSCuts[ nRow, 5 ] == "YES" )
-
-   ::oUI:editMenu:setText( ::aDftSCuts[ nRow, 6 ] )
-
-   ::oUI:plainBlock:setPlainText( ::aDftSCuts[ nRow, 7 ] )
-
+   WITH OBJECT ::oUI
+      :editName:setText( ::aDftSCuts[ nRow, 1 ] )
+      cKey := ::aDftSCuts[ nRow, 2 ]
+      IF ( nKey := ascan( ::aKeys, {|e_| e_[ 2 ] == cKey } ) ) > 0
+         :comboKey:setCurrentIndex( nKey - 1 )
+      ENDIF
+      :checkAlt  :setChecked( ::aDftSCuts[ nRow, 3 ] == "YES" )
+      :checkCtrl :setChecked( ::aDftSCuts[ nRow, 4 ] == "YES" )
+      :checkShift:setChecked( ::aDftSCuts[ nRow, 5 ] == "YES" )
+      :editMenu:setText( ::aDftSCuts[ nRow, 6 ] )
+      :plainBlock:setPlainText( ::aDftSCuts[ nRow, 7 ] )
+   ENDWITH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeShortcuts:vrbls2array( nRow )
-
    IF nRow == NIL
       aadd( ::aDftSCuts, array( 7 ) )
       nRow := Len( ::aDftSCuts )
    ENDIF
-
    ::aDftSCuts[ nRow, 1 ] := ::cName
    ::aDftSCuts[ nRow, 2 ] := ::cKey
    ::aDftSCuts[ nRow, 3 ] := ::cAlt
@@ -454,66 +415,55 @@ METHOD IdeShortcuts:vrbls2array( nRow )
    ::aDftSCuts[ nRow, 6 ] := ::cMenu
    ::aDftSCuts[ nRow, 7 ] := ::cBlock
    //::aDftSCuts[ nRow, 8 ] := ::cIcon
-
    RETURN Self
 
 
 METHOD IdeShortcuts:vrbls2controls( nRow )
-
    ::aDftSCutsItms[ nRow, 1 ]:setIcon( QIcon( hbide_image( ::cIcon ) ) )
    ::aDftSCutsItms[ nRow, 2 ]:setText( ::cName )
    ::aDftSCutsItms[ nRow, 3 ]:setText( ::cKey )
    ::aDftSCutsItms[ nRow, 4 ]:setIcon( QIcon( hbide_image( iif( ::cAlt   == "YES", "check", "" ) ) ) )
    ::aDftSCutsItms[ nRow, 5 ]:setIcon( QIcon( hbide_image( iif( ::cCtrl  == "YES", "check", "" ) ) ) )
    ::aDftSCutsItms[ nRow, 6 ]:setIcon( QIcon( hbide_image( iif( ::cShift == "YES", "check", "" ) ) ) )
-
    RETURN Self
 
 
 METHOD IdeShortcuts:array2table( nRow, a_ )
    LOCAL q0, q1, q2, q3, q4, q5
-   LOCAL oTbl := ::oUI:tableMacros
    LOCAL n := nRow - 1
-
-   q0 := QTableWidgetItem()
-   q0:setIcon( QIcon( hbide_image( a_[ 8 ] ) ) )
-   oTbl:setItem( n, 0, q0 )
-
-   q1 := QTableWidgetItem()
-   q1:setText( a_[ 1 ] )
-   oTbl:setItem( n, 1, q1 )
-
-   q2 := QTableWidgetItem()
-   q2:setText( a_[ 2 ] )
-   oTbl:setItem( n, 2, q2 )
-
-   q3 := QTableWidgetItem()
-   q3:setIcon( QIcon( iif( a_[ 3 ] == "YES", hbide_image( "check" ), "" ) ) )
-   oTbl:setItem( n, 3, q3 )
-
-   q4 := QTableWidgetItem()
-   q4:setIcon( QIcon( iif( a_[ 4 ] == "YES", hbide_image( "check" ), "" ) ) )
-   oTbl:setItem( n, 4, q4 )
-
-   q5 := QTableWidgetItem()
-   q5:setIcon( QIcon( iif( a_[ 5 ] == "YES", hbide_image( "check" ), "" ) ) )
-   oTbl:setItem( n, 5, q5 )
-
-   oTbl:setRowHeight( n, 16 )
-
+   WITH OBJECT ::oUI:tableMacros
+      q0 := QTableWidgetItem()
+      q0:setIcon( QIcon( hbide_image( a_[ 8 ] ) ) )
+      :setItem( n, 0, q0 )
+      q1 := QTableWidgetItem()
+      q1:setText( a_[ 1 ] )
+      :setItem( n, 1, q1 )
+      q2 := QTableWidgetItem()
+      q2:setText( a_[ 2 ] )
+      :setItem( n, 2, q2 )
+      q3 := QTableWidgetItem()
+      q3:setIcon( QIcon( iif( a_[ 3 ] == "YES", hbide_image( "check" ), "" ) ) )
+      :setItem( n, 3, q3 )
+      q4 := QTableWidgetItem()
+      q4:setIcon( QIcon( iif( a_[ 4 ] == "YES", hbide_image( "check" ), "" ) ) )
+      :setItem( n, 4, q4 )
+      q5 := QTableWidgetItem()
+      q5:setIcon( QIcon( iif( a_[ 5 ] == "YES", hbide_image( "check" ), "" ) ) )
+      :setItem( n, 5, q5 )
+      //
+      :setRowHeight( n, 16 )
+   ENDWITH
    ::aDftSCutsItms[ nRow, 1 ] := q0
    ::aDftSCutsItms[ nRow, 2 ] := q1
    ::aDftSCutsItms[ nRow, 3 ] := q2
    ::aDftSCutsItms[ nRow, 4 ] := q3
    ::aDftSCutsItms[ nRow, 5 ] := q4
    ::aDftSCutsItms[ nRow, 6 ] := q5
-
    RETURN Self
 
 
 METHOD IdeShortcuts:controls2vrbls()
    LOCAL nRow := ::oUI:comboKey:currentIndex()
-
    IF nRow >= 0
       nRow++
       ::cName  := ::oUI:editName:text()
@@ -529,10 +479,9 @@ METHOD IdeShortcuts:controls2vrbls()
 
 METHOD IdeShortcuts:checkDuplicate( cKey, cAlt, cCtrl, cShift, nRow )
    LOCAL lYes, e_
-
    IF empty( nRow )
       lYes := ascan( ::aDftSCuts, {|e_| e_[ 2 ] == cKey .AND. e_[ 3 ] == cAlt .AND. ;
-                                                   e_[ 4 ] == cCtrl .AND. e_[ 5 ] == cShift } ) > 0
+                                     e_[ 4 ] == cCtrl .AND. e_[ 5 ] == cShift } ) > 0
    ELSE
       lYes := .f.
       FOR EACH e_ IN ::aDftSCuts
@@ -544,163 +493,142 @@ METHOD IdeShortcuts:checkDuplicate( cKey, cAlt, cCtrl, cShift, nRow )
          ENDIF
       NEXT
    ENDIF
-
    RETURN lYes
 
 
 METHOD IdeShortcuts:buildUI()
    LOCAL oTbl, n, qItm
    LOCAL hdr_:= { { "Img", 30 }, { "Name", 190 }, { "Key", 50 }, { "Alt", 30 }, { "Ctrl", 30 }, { "Shift", 30 } }
-
-   ::oUI := hbide_getUI( "shortcuts" )
-   ::oUI:setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
-   ::oUI:setParent( ::oDlg:oWidget )
-   ::oUI:setWindowFlags( Qt_Sheet )
-
-   ::oUI:oWidget:connect( QEvent_Close, {|| ::oIde:oINI:cShortcutsDialogGeometry := hbide_posAndSize( ::oUI:oWidget ) } )
-
-   oTbl := ::oUI:tableMacros                              /* Build Table Header */
-   oTbl:verticalHeader():hide()
-   oTbl:horizontalHeader():setStretchLastSection( .t. )
-   oTbl:setAlternatingRowColors( .t. )
-   oTbl:setColumnCount( Len( hdr_ ) )
-   oTbl:setShowGrid( .t. )
-   oTbl:setSelectionMode( QAbstractItemView_SingleSelection )
-   oTbl:setSelectionBehavior( QAbstractItemView_SelectRows )
+   WITH OBJECT ::oUI := hbide_getUI( "shortcuts" )
+      :setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
+      :setParent( ::oDlg:oWidget )
+      :setWindowFlags( Qt_Sheet )
+      :oWidget:connect( QEvent_Close, {|| ::oIde:oINI:cShortcutsDialogGeometry := hbide_posAndSize( ::oUI:oWidget ) } )
+   ENDWITH
+   WITH OBJECT oTbl := ::oUI:tableMacros()                            /* Build Table Header */
+      :verticalHeader():hide()
+      :horizontalHeader():setStretchLastSection( .t. )
+      :setAlternatingRowColors( .t. )
+      :setColumnCount( Len( hdr_ ) )
+      :setShowGrid( .t. )
+      :setSelectionMode( QAbstractItemView_SingleSelection )
+      :setSelectionBehavior( QAbstractItemView_SelectRows )
+   ENDWITH 
    FOR n := 1 TO Len( hdr_ )
-      qItm := QTableWidgetItem()
-      qItm:setText( hdr_[ n,1 ] )
+      WITH OBJECT qItm := QTableWidgetItem()
+         :setText( hdr_[ n,1 ] )
+      ENDWITH 
       oTbl:setHorizontalHeaderItem( n-1, qItm )
       oTbl:setColumnWidth( n-1, hdr_[ n,2 ] )
       aadd( ::aHdr, qItm )
    NEXT
-
-   ::oUI:listMethods:setAlternatingRowColors( .t. )       /* Public Methods List */
-
-   ::qHiliter := ::oTH:SetSyntaxHilighting( ::oUI:plainBlock, "Pritpal's Favourite" )
-
-   ::buildSignals()
-
-   /* Demonstration only */
-   ::oUI:labelMacros:setFocusPolicy( Qt_StrongFocus )
-   ::oUI:labelMacros:connect( QEvent_KeyPress, {|p| ::execEvent( __QEvent_KeyPress__, p ) } )
-
+   IF .T.
+      ::oUI:listMethods:setAlternatingRowColors( .t. )       /* Public Methods List */
+      ::qHiliter := ::oTH:SetSyntaxHilighting( ::oUI:plainBlock, "Pritpal's Favourite" )
+      ::buildSignals()
+      /* Demonstration only */
+      ::oUI:labelMacros:setFocusPolicy( Qt_StrongFocus )
+      ::oUI:labelMacros:connect( QEvent_KeyPress, {|p| ::execEvent( __QEvent_KeyPress__, p ) } )
+   ENDIF
    RETURN Self
 
 
 METHOD IdeShortcuts:buildSignals()
-
-   ::oUI:buttonNew   :connect( "clicked()"                           , {| | ::execEvent( __buttonNew_clicked__                   ) } )
-   ::oUI:buttonSet   :connect( "clicked()"                           , {| | ::execEvent( __buttonSet_clicked__                   ) } )
-   ::oUI:buttonTest  :connect( "clicked()"                           , {| | ::execEvent( __buttonTest_clicked__                  ) } )
-   ::oUI:buttonLoad  :connect( "clicked()"                           , {| | ::execEvent( __buttonLoad_clicked__                  ) } )
-   ::oUI:buttonSave  :connect( "clicked()"                           , {| | ::execEvent( __buttonSave_clicked__                  ) } )
-   ::oUI:buttonSaveAs:connect( "clicked()"                           , {| | ::execEvent( __buttonSaveAs_clicked__                ) } )
-   ::oUI:buttonDelete:connect( "clicked()"                           , {| | ::execEvent( __buttonDelete_clicked__                ) } )
-   ::oUI:btnClose    :connect( "clicked()"                           , {| | ::execEvent( __buttonClose_clicked__                 ) } )
-   ::oUI:listMethods :connect( "itemDoubleClicked(QListWidgetItem*)" , {|p| ::execEvent( __listMethods_itemDoubleClicked__   , p ) } )
-   ::oUI:listMethods :connect( "currentRowChanged(int)"              , {|p| ::execEvent( __listMethods_currentRowChanged__   , p ) } )
-   ::oUI:tableMacros :connect( "itemSelectionChanged()"              , {| | ::execEvent( __tableMacros_itemSelectionChanged__    ) } )
-   ::oUI:tableMacros :connect( "itemDoubleClicked(QTableWidgetItem*)", {|p| ::execEvent( __tableMacros_itemDoubleClicked__   , p ) } )
-
+   WITH OBJECT ::oUI
+      :buttonNew   :connect( "clicked()"                           , {| | ::execEvent( __buttonNew_clicked__                   ) } )
+      :buttonSet   :connect( "clicked()"                           , {| | ::execEvent( __buttonSet_clicked__                   ) } )
+      :buttonTest  :connect( "clicked()"                           , {| | ::execEvent( __buttonTest_clicked__                  ) } )
+      :buttonLoad  :connect( "clicked()"                           , {| | ::execEvent( __buttonLoad_clicked__                  ) } )
+      :buttonSave  :connect( "clicked()"                           , {| | ::execEvent( __buttonSave_clicked__                  ) } )
+      :buttonSaveAs:connect( "clicked()"                           , {| | ::execEvent( __buttonSaveAs_clicked__                ) } )
+      :buttonDelete:connect( "clicked()"                           , {| | ::execEvent( __buttonDelete_clicked__                ) } )
+      :btnClose    :connect( "clicked()"                           , {| | ::execEvent( __buttonClose_clicked__                 ) } )
+      :listMethods :connect( "itemDoubleClicked(QListWidgetItem*)" , {|p| ::execEvent( __listMethods_itemDoubleClicked__   , p ) } )
+      :listMethods :connect( "currentRowChanged(int)"              , {|p| ::execEvent( __listMethods_currentRowChanged__   , p ) } )
+      :tableMacros :connect( "itemSelectionChanged()"              , {| | ::execEvent( __tableMacros_itemSelectionChanged__    ) } )
+      :tableMacros :connect( "itemDoubleClicked(QTableWidgetItem*)", {|p| ::execEvent( __tableMacros_itemDoubleClicked__   , p ) } )
+   ENDWITH
    RETURN Self
 
 
 METHOD IdeShortcuts:populateData( nMode )
-
    IF nMode == 1
       ::populateMethods()
       ::populateKeys()
       ::populateDftSCuts()
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeShortcuts:clearDftSCuts()
    LOCAL a_, qItm
-   LOCAL oTbl := ::oUI:tableMacros
-
    FOR EACH a_ IN ::aDftSCutsItms
       FOR EACH qItm IN a_
          qItm := NIL
       NEXT
    NEXT
    ::aDftSCutsItms := {}
-
-   oTbl:clearContents()
-
+   ::oUI:tableMacros():clearContents()
    RETURN Self
 
 
 METHOD IdeShortcuts:populateDftSCuts()
    LOCAL a_, nRow
-   LOCAL oTbl := ::oUI:tableMacros
-   LOCAL qApp := QApplication()
-
-   oTbl:setRowCount( Len( ::aDftSCuts ) )
-
-   nRow := 0
-   FOR EACH a_ IN ::aDftSCuts
-      nRow++
-      aadd( ::aDftSCutsItms, array( 6 ) )
-      ::array2table( nRow, a_ )
-      qApp:processEvents()
-      IF ::lQuitting
-         EXIT
-      ENDIF
-   NEXT
-   oTbl:setCurrentCell( 0,0 )
-
+   WITH OBJECT ::oUI:tableMacros()
+      :setRowCount( Len( ::aDftSCuts ) )
+      nRow := 0
+      FOR EACH a_ IN ::aDftSCuts
+         nRow++
+         aadd( ::aDftSCutsItms, array( 6 ) )
+         ::array2table( nRow, a_ )
+         QApplication():processEvents()
+         IF ::lQuitting
+            EXIT
+         ENDIF
+      NEXT
+      :setCurrentCell( 0,0 )
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeShortcuts:populateMethods()
+   LOCAL qLW := ::oUI:listMethods()
    LOCAL qItem, a_
-   LOCAL qLW := ::oUI:listMethods
-
-   //qLW:setSortingEnabled( .t. )
-
    FOR EACH a_ IN ::aMethods
       IF !empty( a_[ 1 ] )
-         qItem := QListWidgetItem()
-
-         IF left( a_[ 1 ], 1 ) == " "
-            qItem:setText( alltrim( a_[ 1 ] ) )
-            qItem:setForeground( QBrush( QColor( 255,0,0 ) ) )
-            qItem:setBackground( QBrush( QColor( 255,255,200 ) ) )
-            qItem:setTextAlignment( Qt_AlignHCenter )
-         ELSE
-            qItem:setText( a_[ 1 ] )
-         ENDIF
+         WITH OBJECT qItem := QListWidgetItem()
+            IF left( a_[ 1 ], 1 ) == " "
+               :setText( alltrim( a_[ 1 ] ) )
+               :setForeground( QBrush( QColor( 255,0,0 ) ) )
+               :setBackground( QBrush( QColor( 255,255,200 ) ) )
+               :setTextAlignment( Qt_AlignHCenter )
+            ELSE
+               :setText( a_[ 1 ] )
+            ENDIF
+         ENDWITH 
          aadd( ::aMtdItms, qItem )
          qLW:addItem( qItem )
       ENDIF
    NEXT
    qLW:setCurrentRow( 0 )
-
    RETURN Self
 
 
 METHOD IdeShortcuts:populateKeys()
-   LOCAL a_
    LOCAL oCB := ::oUI:comboKey
-
+   LOCAL a_
    FOR EACH a_ IN ::aKeys
       oCB:addItem( a_[ 2 ] )
    NEXT
    oCB:setCurrentIndex( -1 )
-
    RETURN Self
 
 
 METHOD IdeShortcuts:buildBlock( cString )
    LOCAL n, cBlock, cParam
    LOCAL a_:= hbide_memoTOarray( cString )
-
    cString := ""
    aeval( a_, {|e| cString += e } )
-
    IF ( n := at( "|", cString ) ) > 0
       cString := substr( cString, n + 1 )
       IF ( n := at( "|", cString ) ) == 0
@@ -713,17 +641,14 @@ METHOD IdeShortcuts:buildBlock( cString )
       cBlock := "{|o| " + cString + " }"
    ENDIF
    cBlock := strtran( cBlock, "::", "o:" )
-
    RETURN cBlock
 
 
 METHOD IdeShortcuts:test( cString, lWarn )
    LOCAL cBlock, oErr, bBlock
-   LOCAL lOk    := .f.
    LOCAL bError := ErrorBlock( {|o| break( o ) } )
-
+   LOCAL lOk := .F.
    cBlock := ::buildBlock( cString )
-
    BEGIN SEQUENCE
       bBlock := &( cBlock )
       lOk := .t.
@@ -733,11 +658,9 @@ METHOD IdeShortcuts:test( cString, lWarn )
    RECOVER USING oErr
       MsgBox( "Wrongly defined script, try: |v| ::method( v )", oErr:description )
    END SEQUENCE
-
    ErrorBlock( bError )
    ::oUI:raise()
    ::oUI:setFocus()
-
    RETURN lOk
 
 
@@ -745,17 +668,14 @@ METHOD IdeShortcuts:evalMacro( cString )
    LOCAL bError := ErrorBlock( {|o| break( o ) } )
    LOCAL oErr, bBlock, cBlock
    LOCAL lEvaluated := .f.
-
    cBlock := ::buildBlock( cString )
    bBlock := &( cBlock )
-
    BEGIN SEQUENCE
       eval( bBlock, self )
       lEvaluated := .t.
    RECOVER USING oErr
       HB_SYMBOL_UNUSED( oErr )
    END SEQUENCE
-
    ErrorBlock( bError )
    RETURN lEvaluated
 
@@ -763,12 +683,9 @@ METHOD IdeShortcuts:evalMacro( cString )
 METHOD IdeShortcuts:execKey( oEdit, nKey, lAlt, lCtrl, lShift )
    LOCAL lExecuted := .f.
    LOCAL cKey, n
-
    IF ( n := ascan( ::aKeys, {|e_| e_[ 1 ] == nKey } ) ) > 0
       ::oEdit := oEdit
-
       cKey := ::aKeys[ n, 2 ]
-
       n := ascan( ::aDftSCuts, {|e_| e_[ 2 ] == cKey                       .AND. ;
                                      e_[ 3 ] == iif( lAlt  , "YES", "NO" ) .AND. ;
                                      e_[ 4 ] == iif( lCtrl , "YES", "NO" ) .AND. ;
@@ -784,28 +701,23 @@ METHOD IdeShortcuts:execKey( oEdit, nKey, lAlt, lCtrl, lShift )
 
 METHOD IdeShortcuts:execMacroByName( cName )
    LOCAL n, lExecuted := .f.
-
    IF ( n := ascan( ::aDftSCuts, {|e_| e_[ 1 ] == cName } ) ) > 0
       ::oEdit := ::oEM:getEditObjectCurrent()
       IF ! empty( ::aDftSCuts[ n, 7 ] )
          lExecuted := ::evalMacro( ::aDftSCuts[ n, 7 ] )
       ENDIF
    ENDIF
-
    RETURN lExecuted
 
 
 METHOD IdeShortcuts:getMacrosList()
    LOCAL aList := {}
-
    aeval( ::aDftSCuts, {|e_| aadd( aList, e_[ 1 ] ) } )
-
    RETURN aList
 
 
 METHOD IdeShortcuts:loadKeys()
    LOCAL a_
-
    aadd( ::aKeys, { Qt_Key_Escape        , "Escape          " } )
    aadd( ::aKeys, { Qt_Key_Tab           , "Tab             " } )
    aadd( ::aKeys, { Qt_Key_Backtab       , "Backtab         " } )
@@ -933,7 +845,6 @@ METHOD IdeShortcuts:loadKeys()
    aadd( ::aKeys, { Qt_Key_Bar           , "Bar             " } )
    aadd( ::aKeys, { Qt_Key_BraceRight    , "BraceRight      " } )
    aadd( ::aKeys, { Qt_Key_AsciiTilde    , "AsciiTilde      " } )
-
    FOR EACH a_ IN ::aKeys
       a_[ 2 ] := trim( a_[ 2 ] )
    NEXT
@@ -1575,16 +1486,13 @@ METHOD IdeShortcuts:loadMethods()
    aadd( ::aMethods, { 'dlgToolsAndUtils()', ;
                        'dlgToolsAndUtils()', ;
                        'Opens "Toola & Utilities" dialog.' } )
-
    RETURN Self
 
 
 METHOD IdeShortcuts:loadDftSCuts()
    LOCAL a_, b_
-
    IF .t.
       b_:= {}
-
       /*          Name                Key        Alt   Ctrl   Sh   Menu  Expr                      Icon */
       //
       aadd( b_, { "Help"            , "F1"     , "NO", "NO" , "NO" , "", '::help( "" )'          , "help"            , "", "" } )
@@ -1640,17 +1548,14 @@ METHOD IdeShortcuts:loadDftSCuts()
 
       ::aDftSCuts := b_
    ENDIF
-
    IF !empty( a_:= hbide_loadShortcuts( ::oIde ) )
       ::mergeMacros( a_ )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeShortcuts:mergeMacros( a_ )
    LOCAL c_, n
-
    FOR EACH c_ IN a_
       IF ( n := ascan( ::aDftSCuts, {|e_| e_[ 2 ] == c_[ 2 ] .AND. e_[ 3 ] == c_[ 3 ] .AND. ;
                                           e_[ 4 ] == c_[ 4 ] .AND. e_[ 5 ] == c_[ 5 ] } ) ) == 0
@@ -1660,7 +1565,6 @@ METHOD IdeShortcuts:mergeMacros( a_ )
       ENDIF
    NEXT
    RETURN Self
-
 #if 0
    CASE "Environments"
       ::oEV:fetchNew()

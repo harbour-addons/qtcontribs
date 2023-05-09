@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,14 +60,11 @@
  *                              13Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "xbp.ch"
 #include "gra.ch"
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraArc( oPS, aCenter, nRadius, aEllipse, nStartAngle, nSweepAngle, nFill )
    LOCAL lSuccess := .T.
@@ -84,7 +79,6 @@ FUNCTION GraArc( oPS, aCenter, nRadius, aEllipse, nStartAngle, nSweepAngle, nFil
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraBitBlt( oTargetPS, oSourcePS, aTargetRect, aSourceRect, nRasterOP, nCompress  )
    LOCAL lSuccess := .T.
@@ -98,7 +92,6 @@ FUNCTION GraBitBlt( oTargetPS, oSourcePS, aTargetRect, aSourceRect, nRasterOP, n
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraBox( oPS, aLeftBottom, aRightTop, nFill, nHRadius, nVRadius )
    LOCAL lSuccess := .T.
@@ -112,7 +105,6 @@ FUNCTION GraBox( oPS, aLeftBottom, aRightTop, nFill, nHRadius, nVRadius )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraCaptionStr( oPS, aStartPoint, aEndPoint, cCaption, nAlign, nTabChars  )
    LOCAL lSuccess := .T.
@@ -126,7 +118,6 @@ FUNCTION GraCaptionStr( oPS, aStartPoint, aEndPoint, cCaption, nAlign, nTabChars
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraError( oPS )
    LOCAL nErrorCode := 0
@@ -135,7 +126,6 @@ FUNCTION GraError( oPS )
 
    RETURN nErrorCode
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraFocusRect( oPS, aStartPoint, aEndPoint )
    LOCAL lSuccess := .T.
@@ -146,7 +136,6 @@ FUNCTION GraFocusRect( oPS, aStartPoint, aEndPoint )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraGetRGBIntensity( nRGBColor )
    LOCAL cRGBHex
@@ -159,7 +148,6 @@ FUNCTION GraGetRGBIntensity( nRGBColor )
             HB_HexToNum( SubStr( cRGBHex, 3, 2 ) ),;
             HB_HexToNum( SubStr( cRGBHex, 5, 2 ) ) }
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraIsRGBColor( nColor )
    LOCAL lIsRGBColor := .F.
@@ -168,7 +156,6 @@ FUNCTION GraIsRGBColor( nColor )
 
    RETURN lIsRGBColor
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraLine( oPS, aStartPoint, aEndPoint )
    LOCAL lSuccess := .T.
@@ -179,7 +166,6 @@ FUNCTION GraLine( oPS, aStartPoint, aEndPoint )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraMakeRGBColor( aRGB )
    LOCAL nRGB
@@ -193,10 +179,8 @@ FUNCTION GraMakeRGBColor( aRGB )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN nRGB
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraMarker( oPS, aPoint )
    LOCAL lSuccess := .T.
@@ -206,7 +190,6 @@ FUNCTION GraMarker( oPS, aPoint )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraPathBegin( oPS )
    LOCAL lSuccess := .T.
@@ -215,7 +198,6 @@ FUNCTION GraPathBegin( oPS )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraPathClip( oPS, lClip, nClipMode )
    LOCAL lSuccess := .T.
@@ -226,7 +208,6 @@ FUNCTION GraPathClip( oPS, lClip, nClipMode )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraPathEnd( oPS, lCloseFigure )
    LOCAL lSuccess := .T.
@@ -236,7 +217,6 @@ FUNCTION GraPathEnd( oPS, lCloseFigure )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraPathFill( oPS, nFillMode )
    LOCAL lSuccess := .T.
@@ -246,7 +226,6 @@ FUNCTION GraPathFill( oPS, nFillMode )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraPathOutline( oPS )
    LOCAL lSuccess := .T.
@@ -255,7 +234,6 @@ FUNCTION GraPathOutline( oPS )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraPos( oPS, aPoint )
    LOCAL aPenPosition := { 0, 0 }
@@ -265,7 +243,6 @@ FUNCTION GraPos( oPS, aPoint )
 
    RETURN aPenPosition
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraQueryTextBox( oPS, cString )
    LOCAL aPoints := { 0, 0 }
@@ -275,7 +252,6 @@ FUNCTION GraQueryTextBox( oPS, cString )
 
    RETURN aPoints
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraRotate( oPS, aMatrix, nAngle, aPoint , nMode )
    LOCAL lSuccess := .T.
@@ -288,7 +264,6 @@ FUNCTION GraRotate( oPS, aMatrix, nAngle, aPoint , nMode )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraScale( oPS, aMatrix, aScale, aPoint , nMode )
    LOCAL lSuccess := .T.
@@ -301,7 +276,6 @@ FUNCTION GraScale( oPS, aMatrix, aScale, aPoint , nMode )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegClose( oPS )
    LOCAL lSuccess := .T.
@@ -310,7 +284,6 @@ FUNCTION GraSegClose( oPS )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegDestroy( oPS, nSegmentID )
    LOCAL lSuccess := .T.
@@ -320,7 +293,6 @@ FUNCTION GraSegDestroy( oPS, nSegmentID )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegDraw( oPS, nSegmentID, aMatrix, nMode )
    LOCAL lSuccess := .T.
@@ -332,7 +304,6 @@ FUNCTION GraSegDraw( oPS, nSegmentID, aMatrix, nMode )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegDrawMode( oPS, nDrawMode )
    LOCAL nOldMode := 0
@@ -342,7 +313,6 @@ FUNCTION GraSegDrawMode( oPS, nDrawMode )
 
    RETURN nOldMode
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegFind( oPS, aPoint )
    LOCAL aSegmentIDs := {}
@@ -352,7 +322,6 @@ FUNCTION GraSegFind( oPS, aPoint )
 
    RETURN aSegmentIDs
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegOpen( oPS, nMode, nSegmentID )
 
@@ -362,7 +331,6 @@ FUNCTION GraSegOpen( oPS, nMode, nSegmentID )
 
    RETURN nSegmentID
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegPickResolution( oPS, aCenter, aSize )
    LOCAL lSuccess := .T.
@@ -373,7 +341,6 @@ FUNCTION GraSegPickResolution( oPS, aCenter, aSize )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSegPriority( oPS, nSegmentA, nSegmentB, nPriority )
    LOCAL lSuccess := .T.
@@ -385,7 +352,6 @@ FUNCTION GraSegPriority( oPS, nSegmentA, nSegmentB, nPriority )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSetAttrArea( oPS, aAttributes )
    LOCAL aOldAttributes := {}
@@ -395,7 +361,6 @@ FUNCTION GraSetAttrArea( oPS, aAttributes )
 
    RETURN aOldAttributes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSetAttrLine( oPS, aAttributes )
    LOCAL aOldAttributes := {}
@@ -405,7 +370,6 @@ FUNCTION GraSetAttrLine( oPS, aAttributes )
 
    RETURN aOldAttributes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSetAttrMarker( oPS, aAttributes )
    LOCAL aOldAttributes := {}
@@ -415,7 +379,6 @@ FUNCTION GraSetAttrMarker( oPS, aAttributes )
 
    RETURN aOldAttributes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSetAttrString( oPS, aAttributes )
    LOCAL aOldAttributes := {}
@@ -425,7 +388,6 @@ FUNCTION GraSetAttrString( oPS, aAttributes )
 
    RETURN aOldAttributes
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSetColor( oPS, nForeground, nBackground )
    LOCAL aOldColor := {}
@@ -436,7 +398,6 @@ FUNCTION GraSetColor( oPS, nForeground, nBackground )
 
    RETURN aOldColor
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSetFont( oPS, oXbpFont )
    LOCAL oXbpCurrentFont := NIL
@@ -446,7 +407,6 @@ FUNCTION GraSetFont( oPS, oXbpFont )
 
    RETURN oXbpCurrentFont
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSpline( oPS, aPoints, lPenPos )
    LOCAL lSuccess := .T.
@@ -457,7 +417,6 @@ FUNCTION GraSpline( oPS, aPoints, lPenPos )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraStringAt( oPS, aPoint, cString )
    LOCAL lSuccess := .T.
@@ -468,7 +427,6 @@ FUNCTION GraStringAt( oPS, aPoint, cString )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraTranslate( oPS, aMatrix, nXDiff, nYDiff, nMode )
    LOCAL lSuccess := .T.
@@ -481,14 +439,11 @@ FUNCTION GraTranslate( oPS, aMatrix, nXDiff, nYDiff, nMode )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraSaveScreen( ... )
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION GraInitMatrix( ... )
    RETURN {}
 
-/*----------------------------------------------------------------------*/

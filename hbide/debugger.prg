@@ -1,4 +1,4 @@
-/*
+         /*
  * $Id$
  */
 
@@ -75,7 +75,7 @@
 
 #define ANS_CMD                                   0
 #define ANS_BRP                                   1
-#define ANS_EXP                                  2
+#define ANS_EXP                                   2
 #define ANS_STACK                                 3
 #define ANS_LOCAL                                 4
 #define ANS_WATCH                                 5
@@ -307,67 +307,64 @@ METHOD IdeDebugger:init( oIde )
 
 
 METHOD IdeDebugger:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    hb_HCaseMatch( ::hBrowsers, .F. )
    hb_HKeepOrder( ::hBrowsers, .T. )
-
-   ::clear()
-
-   ::cBuffer  := Space( BUFFER_LEN )
-   ::aTabs    := ::oIde:aTabs
-   ::oUI      := hbqtui_debugger2()
-   ::ui_init( ::oUI )
-
-   ::oDebuggerDock:oWidget:setWidget( ::oUI:oWidget )
-
-   ::oFileWatcher := QFileSystemWatcher()
-   ::oFileWatcher:connect( "fileChanged(QString)", {|cSource| ::readResponse( cSource ) } )
    //
+   ::clear()
+   //
+   ::cBuffer := Space( BUFFER_LEN )
+   ::aTabs := ::oIde:aTabs
+   WITH OBJECT ::oUI := hbqtui_debugger2()
+      ::ui_init( ::oUI )
+      ::oDebuggerDock:oWidget:setWidget( :oWidget )
+   ENDWITH 
+   WITH OBJECT ::oFileWatcher := QFileSystemWatcher()
+      :connect( "fileChanged(QString)", {|cSource| ::readResponse( cSource ) } )
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeDebugger:clear()
-
-   ::nRequestedVarsIndex    := 0
-   ::lLoaded                := .F.
-   ::lStarted               := .F.
-   ::lTerminated            := .F.
-   ::nRowWatch              := -1
-   ::nRowAreas              := -1
-   ::lDebugging             := .F.
-   ::hRequest               := -1
-   ::hResponse              := 0
-   ::nId1                   := 0
-   ::nId2                   := -1
-   ::cAppName               := ""
-   ::cPrgName               := ""
-   ::cInspectVar            := ""
-   ::cInspectType           := ""
-   ::aBP                    := {}
-   ::aWatches               := {}
-   ::nCurrLine              := 0
-   ::nMode                  := MODE_INPUT
-   ::nAnsType               := NIL
-   ::cPrgBP                 := ""
-   ::nLineBP                := -1
-   ::aBPLoad                := {}
-   ::nBPLoad                := 0
-   ::nExitMode              := 2
-   ::nVerProto              := 0
-   ::cLastRequest           := ""
-   ::cLastResponse          := ""
-   ::lInRequest             := .F.
-   ::nOutput                := 0
-   ::lVariableInEdit        := .F.
-
-   ::hRequests              := {=>}
-   ::hResponses             := {=>}
-   //
-   hb_HKeepOrder( ::hRequests , .T. )
-   hb_HKeepOrder( ::hResponses, .T. )
+   IF .T.
+      ::nRequestedVarsIndex    := 0
+      ::lLoaded                := .F.
+      ::lStarted               := .F.
+      ::lTerminated            := .F.
+      ::nRowWatch              := -1
+      ::nRowAreas              := -1
+      ::lDebugging             := .F.
+      ::hRequest               := -1
+      ::hResponse              := 0
+      ::nId1                   := 0
+      ::nId2                   := -1
+      ::cAppName               := ""
+      ::cPrgName               := ""
+      ::cInspectVar            := ""
+      ::cInspectType           := ""
+      ::aBP                    := {}
+      ::aWatches               := {}
+      ::nCurrLine              := 0
+      ::nMode                  := MODE_INPUT
+      ::nAnsType               := NIL
+      ::cPrgBP                 := ""
+      ::nLineBP                := -1
+      ::aBPLoad                := {}
+      ::nBPLoad                := 0
+      ::nExitMode              := 2
+      ::nVerProto              := 0
+      ::cLastRequest           := ""
+      ::cLastResponse          := ""
+      ::lInRequest             := .F.
+      ::nOutput                := 0
+      ::lVariableInEdit        := .F.
+   
+      ::hRequests              := {=>}
+      hb_HKeepOrder( ::hRequests , .T. )
+      ::hResponses             := {=>}
+      hb_HKeepOrder( ::hResponses, .T. )
+   ENDIF 
    RETURN .T.
 
 
@@ -439,15 +436,16 @@ METHOD IdeDebugger:start( cExe, cCmd, qStr, cWrkDir )
    QProcess():startDetached( cCmd, qStr, cWrkDir )
    ::lInRequest := .T.
    ::waitState( WAIT_CMD_INIT )                               // duration can be controlled by user
-
    RETURN .T.
 
 
 METHOD IdeDebugger:matureShakehand()
    ::lStarted := .T.
    ::lDebugging := .T.
-   ::oPM:outputText( "Connected Successfully." )
-   ::oPM:outputText( "Debug Started." )
+   WITH OBJECT ::oPM
+      :outputText( "Connected Successfully." )
+      :outputText( "Debug Started." )
+   ENDWITH
    ::loadBreakPoints()
    ::doCommand( CMD_GO )
    RETURN NIL
@@ -455,14 +453,13 @@ METHOD IdeDebugger:matureShakehand()
 
 METHOD IdeDebugger:readResponse( cSource )
    LOCAL cText, arr, i
-
    IF cSource == ::cExe + ".d2"
       ::processEvents()
       cText := hb_MemoRead( cSource )
       cText := substr( cText, 1, At( ",!", cText ) + 1 )
       arr   := hb_ATokens( cText, "," )
       ::oPM:outputText( "...........RESPONSE[ " + hb_ntos( ::nId1 ) + "." + ::cLastRequest + "] ... " + ;
-                                                            arr[ 1 ] + "," + arr[ 2 ] + "," + ATail( arr ) )
+                                                         arr[ 1 ] + "," + arr[ 2 ] + "," + ATail( arr ) )
       IF Left( arr[ 1 ], 1 ) == "m"
          FOR i := 3 TO Len( arr ) - 2
             ::oPM:outputText( Hex2Str( arr[ i ] ) )
@@ -478,32 +475,26 @@ METHOD IdeDebugger:readResponse( cSource )
 
 METHOD IdeDebugger:sendRequest( ... )
    LOCAL i, s, arr
-
    IF ::lStarted
       arr := hb_aParams()
-
       FSeek( ::hRequest, 0, 0 )
       s := ""
       FOR i := 1 TO Len( arr )
          s += arr[ i ] + ","
       NEXT
       ::cLastRequest := arr[ 1 ]
-
       ::lInRequest := .T.
       ::nId1++
       FWrite( ::hRequest, LTrim( Str( ::nId1 ) ) + "," + s + LTrim( Str( ::nId1 ) ) + ",!" )
-
       ::hRequests[ hb_ntos( ::nId1 ) ] := { arr, ::nAnsType, .F. }
       ::oPM:outputText( "REQUEST[" + hb_ntos( ::nId1 ) + "]..." + arr[ 1 ] + "," + arr[ 2 ] )
       ::processEvents()
    ENDIF
-   //
    RETURN NIL
 
 
 METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3, cDop4, cDop5 )
    LOCAL oCursor
-
    IF ! ::lStarted
       RETURN NIL
    ENDIF
@@ -515,145 +506,144 @@ METHOD IdeDebugger:doCommand( nCmd, cDop, cDop2, cDop3, cDop4, cDop5 )
    ENDIF
 
    DEFAULT cDop TO ""
-
-   SWITCH nCmd
-   CASE CMD_GO
-      ::nAnsType := ANS_CMD
-      ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
-      oCursor := ::oIde:qCurEdit:textCursor()
-      oCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, 1 )
-      ::oIde:qCurEdit:setTextCursor( oCursor )
-      QApplication():processEvents()
-      oCursor := ::oIde:qCurEdit:textCursor()
-      oCursor:movePosition( QTextCursor_Up, QTextCursor_MoveAnchor, 1 )
-      ::oIde:qCurEdit:setTextCursor( oCursor )
-      QApplication():processEvents()
-
-      ::oPM:outputText( "Command GO Issued."   )
-      ::oPM:outputText( "Program Executing..." )
-      ::oUi:labelStatus:setText( "Program Executing..." )
-      ::sendRequest( "cmd", "go" )
-      ::waitState( WAIT_CMD_GO )
-      EXIT
-   CASE CMD_STEP
-      ::nAnsType := ANS_CMD
-      ::oPM:outputText( "Command STEP Issued." )
-      ::oPM:outputText( "Program Executing..." )
-      ::oUi:labelStatus:setText( "Program Executing..." )
-      ::sendRequest( "cmd", "step" )
-      ::waitState( WAIT_CMD_STEP )
-      EXIT
-   CASE CMD_TOCURS
-      ::nAnsType := ANS_CMD
-      ::oPM:outputText( "Command TOCURS Issued." )
-      ::oPM:outputText( "Program Executing..." )
-      ::oUi:labelStatus:setText( "Program Executing..." )
-      ::sendRequest( "cmd", "to", ::getCurrPrgName(), Ltrim( Str( ::getCurrLine() ) ) )
-      ::waitState( WAIT_CMD_TOCURS )
-      EXIT
-   CASE CMD_TRACE
-      ::nAnsType := ANS_CMD
-      ::oPM:outputText( "Command TRACE Issued."   )
-      ::oPM:outputText( "Program Executing..." )
-      ::oUi:labelStatus:setText( "Program Executing..." )
-      ::sendRequest( "cmd", "trace" )
-      ::waitState( WAIT_CMD_TRACE )
-      EXIT
-   CASE CMD_NEXTR
-      ::nAnsType := ANS_CMD
-      ::oPM:outputText( "Command NEXTR Issued."   )
-      ::oPM:outputText( "Program Executing..." )
-      ::oUi:labelStatus:setText( "Program Executing..." )
-      ::sendRequest( "cmd", "nextr" )
-      ::waitState( WAIT_CMD_NEXTR )
-      EXIT
-   CASE CMD_SETVAR
-      ::nAnsType := ANS_SETVAR
-      ::sendRequest( "set", cDop, cDop2, cDop3, cDop4, cDop5 )
-      ::waitState( WAIT_CMD_SETVAR )
-      EXIT
-   CASE CMD_EXP
-      ::nAnsType := ANS_EXP
-      ::sendRequest( "exp", cDop )
-      ::waitState( WAIT_CMD_EXP )
-      EXIT
-   CASE CMD_STACK
-      ::nAnsType := ANS_STACK
-      ::sendRequest( "view", "stack", cDop )
-      ::waitState( WAIT_CMD_STACK )
-      EXIT
-   CASE CMD_LOCAL
-      ::nAnsType := ANS_LOCAL
-      ::sendRequest( "view", "local", cDop )
-      ::waitState( WAIT_CMD_LOCAL )
-      EXIT
-   CASE CMD_PRIV
-      ::nAnsType := ANS_LOCAL
-      ::sendRequest( "view", "priv", cDop )
-      ::waitState( WAIT_CMD_PRIV )
-      EXIT
-   CASE CMD_PUBL
-      ::nAnsType := ANS_LOCAL
-      ::sendRequest( "view", "publ", cDop )
-      ::waitState( WAIT_CMD_PUBL )
-      EXIT
-   CASE CMD_STATIC
-      ::nAnsType := ANS_LOCAL
-      ::sendRequest( "view", "static", cDop )
-      ::waitState( WAIT_CMD_STATIC )
-      EXIT
-   CASE CMD_WATCH
-      ::nAnsType := ANS_WATCH
-      IF Empty( cDop2 )
-         ::sendRequest( "view", "watch", cDop )
-      ELSE
-         ::sendRequest( "watch", cDop, cDop2 )
-      ENDIF
-      ::waitState( WAIT_CMD_WATCH )
-      EXIT
-   CASE CMD_AREA
-      ::nAnsType := ANS_AREAS
-      ::sendRequest( "view", "areas" )
-      ::waitState( WAIT_CMD_AREA )
-      EXIT
-   CASE CMD_SETS
-      ::nAnsType := ANS_SETS
-      ::sendRequest( "view", "sets" )
-      ::waitState( WAIT_CMD_SETS )
-      EXIT
-   CASE CMD_REC
-      ::nAnsType := ANS_REC
-      ::sendRequest( "insp", "rec", cDop )
-      ::waitState( WAIT_CMD_REC )
-      EXIT
-   CASE CMD_OBJECT
-      ::nAnsType := ANS_OBJECT
-      ::sendRequest( "insp", "obj", cDop )
-      ::waitState( WAIT_CMD_OBJECT )
-      EXIT
-   CASE CMD_ARRAY
-      ::nAnsType := ANS_ARRAY
-      ::sendRequest( "insp", "arr", cDop, "", "" )
-      ::waitState( WAIT_CMD_ARRAY )
-      EXIT
-   CASE CMD_BRP
-      ::nAnsType := ANS_BRP
-      ::sendRequest( "brp", cDop, cDop2, cDop3 )
-      ::waitState( WAIT_CMD_BRP )
-      EXIT
-   CASE CMD_QUIT
-      ::nAnsType := ANS_QUIT
-      ::sendRequest( "cmd", "quit" )
-      ::waitState( WAIT_CMD_QUIT )
-      ::stopDebug()
-      EXIT
-   ENDSWITCH
+   WITH OBJECT ::oPM
+      SWITCH nCmd
+      CASE CMD_GO
+         ::nAnsType := ANS_CMD
+         ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
+         oCursor := ::oIde:qCurEdit:textCursor()
+         oCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, 1 )
+         ::oIde:qCurEdit:setTextCursor( oCursor )
+         QApplication():processEvents()
+         oCursor := ::oIde:qCurEdit:textCursor()
+         oCursor:movePosition( QTextCursor_Up, QTextCursor_MoveAnchor, 1 )
+         ::oIde:qCurEdit:setTextCursor( oCursor )
+         QApplication():processEvents()
+         :outputText( "Command GO Issued."   )
+         :outputText( "Program Executing..." )
+         ::oUI:labelStatus:setText( "Program Executing..." )
+         ::sendRequest( "cmd", "go" )
+         ::waitState( WAIT_CMD_GO )
+         EXIT
+      CASE CMD_STEP
+         ::nAnsType := ANS_CMD
+         :outputText( "Command STEP Issued." )
+         :outputText( "Program Executing..." )
+         ::oUI:labelStatus:setText( "Program Executing..." )
+         ::sendRequest( "cmd", "step" )
+         ::waitState( WAIT_CMD_STEP )
+         EXIT
+      CASE CMD_TOCURS
+         ::nAnsType := ANS_CMD
+         :outputText( "Command TOCURS Issued." )
+         :outputText( "Program Executing..." )
+         ::oUI:labelStatus:setText( "Program Executing..." )
+         ::sendRequest( "cmd", "to", ::getCurrPrgName(), Ltrim( Str( ::getCurrLine() ) ) )
+         ::waitState( WAIT_CMD_TOCURS )
+         EXIT
+      CASE CMD_TRACE
+         ::nAnsType := ANS_CMD
+         :outputText( "Command TRACE Issued."   )
+         :outputText( "Program Executing..." )
+         ::oUI:labelStatus:setText( "Program Executing..." )
+         ::sendRequest( "cmd", "trace" )
+         ::waitState( WAIT_CMD_TRACE )
+         EXIT
+      CASE CMD_NEXTR
+         ::nAnsType := ANS_CMD
+         :outputText( "Command NEXTR Issued."   )
+         :outputText( "Program Executing..." )
+         ::oUI:labelStatus:setText( "Program Executing..." )
+         ::sendRequest( "cmd", "nextr" )
+         ::waitState( WAIT_CMD_NEXTR )
+         EXIT
+      CASE CMD_SETVAR
+         ::nAnsType := ANS_SETVAR
+         ::sendRequest( "set", cDop, cDop2, cDop3, cDop4, cDop5 )
+         ::waitState( WAIT_CMD_SETVAR )
+         EXIT
+      CASE CMD_EXP
+         ::nAnsType := ANS_EXP
+         ::sendRequest( "exp", cDop )
+         ::waitState( WAIT_CMD_EXP )
+         EXIT
+      CASE CMD_STACK
+         ::nAnsType := ANS_STACK
+         ::sendRequest( "view", "stack", cDop )
+         ::waitState( WAIT_CMD_STACK )
+         EXIT
+      CASE CMD_LOCAL
+         ::nAnsType := ANS_LOCAL
+         ::sendRequest( "view", "local", cDop )
+         ::waitState( WAIT_CMD_LOCAL )
+         EXIT
+      CASE CMD_PRIV
+         ::nAnsType := ANS_LOCAL
+         ::sendRequest( "view", "priv", cDop )
+         ::waitState( WAIT_CMD_PRIV )
+         EXIT
+      CASE CMD_PUBL
+         ::nAnsType := ANS_LOCAL
+         ::sendRequest( "view", "publ", cDop )
+         ::waitState( WAIT_CMD_PUBL )
+         EXIT
+      CASE CMD_STATIC
+         ::nAnsType := ANS_LOCAL
+         ::sendRequest( "view", "static", cDop )
+         ::waitState( WAIT_CMD_STATIC )
+         EXIT
+      CASE CMD_WATCH
+         ::nAnsType := ANS_WATCH
+         IF Empty( cDop2 )
+            ::sendRequest( "view", "watch", cDop )
+         ELSE
+            ::sendRequest( "watch", cDop, cDop2 )
+         ENDIF
+         ::waitState( WAIT_CMD_WATCH )
+         EXIT
+      CASE CMD_AREA
+         ::nAnsType := ANS_AREAS
+         ::sendRequest( "view", "areas" )
+         ::waitState( WAIT_CMD_AREA )
+         EXIT
+      CASE CMD_SETS
+         ::nAnsType := ANS_SETS
+         ::sendRequest( "view", "sets" )
+         ::waitState( WAIT_CMD_SETS )
+         EXIT
+      CASE CMD_REC
+         ::nAnsType := ANS_REC
+         ::sendRequest( "insp", "rec", cDop )
+         ::waitState( WAIT_CMD_REC )
+         EXIT
+      CASE CMD_OBJECT
+         ::nAnsType := ANS_OBJECT
+         ::sendRequest( "insp", "obj", cDop )
+         ::waitState( WAIT_CMD_OBJECT )
+         EXIT
+      CASE CMD_ARRAY
+         ::nAnsType := ANS_ARRAY
+         ::sendRequest( "insp", "arr", cDop, "", "" )
+         ::waitState( WAIT_CMD_ARRAY )
+         EXIT
+      CASE CMD_BRP
+         ::nAnsType := ANS_BRP
+         ::sendRequest( "brp", cDop, cDop2, cDop3 )
+         ::waitState( WAIT_CMD_BRP )
+         EXIT
+      CASE CMD_QUIT
+         ::nAnsType := ANS_QUIT
+         ::sendRequest( "cmd", "quit" )
+         ::waitState( WAIT_CMD_QUIT )
+         ::stopDebug()
+         EXIT
+      ENDSWITCH
+   ENDWITH
    RETURN NIL
 
 
 METHOD IdeDebugger:getRequestType( cId )
    LOCAL cReq
-
    IF Left( cID, 1 ) == "b"
       cReq := SubStr( cId, 2 )
       IF hb_HHasKey( ::hRequests, cReq )
@@ -668,14 +658,12 @@ METHOD IdeDebugger:getRequestType( cId )
 
 METHOD IdeDebugger:populateResponse( arr )
    LOCAL n
-
    IF Empty( arr )
       RETURN NIL
    ENDIF
    IF arr[ 1 ] == "quit"
       RETURN ::stopDebug()
    ENDIF
-
    IF Left( arr[ 1 ], 1 ) == "b"
       SWITCH ::getRequestType( arr[ 1 ] )
       //
@@ -770,43 +758,34 @@ METHOD IdeDebugger:populateResponse( arr )
          ENDIF
          EXIT
       ENDSWITCH
-
    ELSEIF Left( arr[ 1 ], 1 ) == "a"
       n := Val( SubStr( arr[ 1 ], 2 ) )
-
       ::nId2 := n
       IF arr[2] == "."
          ::oPM:outputText( "-- BAD LINE --" )
       ELSE
          ::oPM:outputText( "Program Stopped..." )
          ::oUi:labelStatus:setText( "Stopped" )
-
          ::ui_load()
-
          ::cPrgName := arr[ 2 ]
          ::setCurrLine( ::nCurrLine := Val( arr[ 3 ] ), ::cPrgName )
          ::cLastMessage := "Debugger (" + arr[ 2 ] + ", line " + arr[ 3 ] + ")"
          ::oPM:outputText( ::cLastMessage )
-
          ::oUI:show()
          ::oUI:activateWindow()
          IF arr[ 4 ] == "ver"
             ::matureShakehand()
          ENDIF
       ENDIF
-
    ELSEIF Left( arr[ 1 ], 1 ) == "e"
       ::oPM:outputText( "Unrecognized Command!" )
-
    ENDIF
    ::processEvents()
-
    RETURN NIL
 
 
 METHOD IdeDebugger:loadBreakPoints()
    LOCAL i, oEditor, nBP, aBP, cSource
-
    ::aBPLoad := {}
    ::oPM:outputText( "Loading breakpoints..." )
    FOR i := 1 TO Len( ::aTabs )
@@ -826,12 +805,10 @@ METHOD IdeDebugger:loadBreakPoints()
    ENDIF
    RETURN .T.
 
-
 // Also called from the editor when a line number area is clicked.
 //
 METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
    LOCAL n
-
    IF nLine <= 0
       RETURN NIL
    ENDIF
@@ -851,7 +828,6 @@ METHOD IdeDebugger:addBreakPoint( cPrg, nLine )
 
 METHOD IdeDebugger:clearBreakPoints( cPrg )
    LOCAL n
-
    IF PCount() == 0
       cPrg := ""
    ENDIF
@@ -865,7 +841,6 @@ METHOD IdeDebugger:clearBreakPoints( cPrg )
 
 METHOD IdeDebugger:toggleBreakPoint( cAns, cLine )
    LOCAL nLine := Val( cLine ), i
-
    IF cAns == "line"
       FOR i := 1 TO Len( ::aBP )
          IF ::aBP[ i,1 ] == 0
@@ -902,20 +877,16 @@ METHOD IdeDebugger:getBP( nLine, cPrg )
 
 METHOD IdeDebugger:setCurrLine( nLine, cName )
    LOCAL qCursor
-
    IF ! ::lDebugging
       ::lDebugging := .T.
    ENDIF
    IF ! Empty( ::oIde:qCurEdit )
       ::oIde:qCurEdit:hbSetDebuggedLine( -1 )
    ENDIF
-
    ::setWindow( cName )
-
    IF ! Empty( ::oIde:qCurEdit )
       ::oIde:qCurEdit:hbSetDebuggedLine( nLine )
       qCursor := ::oIde:qCurEdit:textCursor()
-
       qCursor:movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nLine - 1 )
       ::oIde:qCurEdit:setTextCursor( qCursor )
       ::oIde:qCurEdit:centerCursor()
@@ -937,7 +908,7 @@ METHOD IdeDebugger:getCurrPrgName()
 METHOD IdeDebugger:setWindow( cPrgName )
    LOCAL qCursor, oSource, cSource, cPath, cName, cExt, cNme, cEtn
    LOCAL oProject := ::oPM:getProjectByTitle( ::cCurrentProject )
-
+   //
    cNme := Lower( hb_FNameName( cPrgName ) )
    cEtn := Lower( hb_FNameExt( cPrgName ) )
    FOR EACH oSource IN oProject:hSources
@@ -968,7 +939,6 @@ METHOD IdeDebugger:setWindow( cPrgName )
 
 METHOD IdeDebugger:stopDebug()
    ::oFileWatcher:removePath( ::cExe + ".d2" )
-
    IF ! ::isActive()
       ::hide()
       RETURN Self
@@ -980,19 +950,19 @@ METHOD IdeDebugger:stopDebug()
    ::hRequest := ::hResponse := -1
    FErase( ::cExe + ".d1" )
    FErase( ::cExe + ".d2" )
-
-   ::oUI:tableWatchExpressions:setRowCount( 0 )
-   ::oUI:tableStack           :setRowCount( 0 )
-   ::oUI:tableVarLocal        :setRowCount( 0 )
-   ::oUI:tableVarPrivate      :setRowCount( 0 )
-   ::oUI:tableVarPublic       :setRowCount( 0 )
-   ::oUI:tableVarStatic       :setRowCount( 0 )
-   ::oUI:tableOpenTables      :setRowCount( 0 )
-   ::oUI:tableCurrentRecord   :setRowCount( 0 )
-   ::oUI:tableObjectInspector :setRowCount( 0 )
-   ::oUI:tableSets            :setRowCount( 0 )
-
-   ::oUi:labelStatus:setText( "Debug Stopped and Exiting..." )
+   WITH OBJECT ::oUI
+      :tableWatchExpressions:setRowCount( 0 )
+      :tableStack           :setRowCount( 0 )
+      :tableVarLocal        :setRowCount( 0 )
+      :tableVarPrivate      :setRowCount( 0 )
+      :tableVarPublic       :setRowCount( 0 )
+      :tableVarStatic       :setRowCount( 0 )
+      :tableOpenTables      :setRowCount( 0 )
+      :tableCurrentRecord   :setRowCount( 0 )
+      :tableObjectInspector :setRowCount( 0 )
+      :tableSets            :setRowCount( 0 )
+      :labelStatus:setText( "Debug Stopped and Exiting..." )
+   ENDWITH
    ::oPM:outputText( "Debug Stopped and Exiting..." )
    ::hide()
    ::lTerminated := .T.
@@ -1013,10 +983,8 @@ METHOD IdeDebugger:exitDbg()
 
 METHOD IdeDebugger:manageObjectLevelUp()
    LOCAL n, cObject
-
    IF Len( ::cInspectTypes ) > 1
       cObject := ::cInspectVar
-
       IF Right( cObject, 1 ) == "]"
          n := RAt( "[", cObject )
       ELSE
@@ -1024,12 +992,9 @@ METHOD IdeDebugger:manageObjectLevelUp()
       ENDIF
       cObject := SubStr( cObject, 1, n-1 )
       ::cInspectTypes := SubStr( ::cInspectTypes, 1, Len( ::cInspectTypes ) - 1 )
-
       ::cInspectVar := cObject
       ::cInspectType := Right( ::cInspectTypes, 1 )
-
       ::oUI:btnSubsObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
-
       ::oUI:btnObjBack:setEnabled( Len( ::cInspectTypes ) > 1 )
       ::requestObject()
    ENDIF
@@ -1040,7 +1005,6 @@ METHOD IdeDebugger:inspectObjectEx()
    LOCAL oTable := ::oUI:tableObjectInspector
    LOCAL nIndex := oTable:currentRow()
    LOCAL oItem, cType, cObject, cOType
-
    IF nIndex >= 0
       IF ! Empty( oItem := oTable:item( nIndex, 1 ) )
          cType := oItem:text()
@@ -1073,7 +1037,6 @@ METHOD IdeDebugger:inspectObjectEx()
 
 METHOD IdeDebugger:manageTableVariablesClicked( oItem, cVariables )
    LOCAL oTable
-
    IF Empty( oItem )
       RETURN NIL
    ENDIF
@@ -1099,7 +1062,6 @@ METHOD IdeDebugger:manageTableVariablesClicked( oItem, cVariables )
 
 METHOD IdeDebugger:editVariableEx( oItem )
    LOCAL oTable, nIndex, cVar, cVal, xVal, nRow, cType, cVType, cT
-
    IF Empty( oItem )
       RETURN NIL
    ENDIF
@@ -1125,7 +1087,7 @@ METHOD IdeDebugger:editVariableEx( oItem )
    IF oTable:rowCount() == 0
       RETURN NIL
    ENDIF
-
+   //
    nRow := oItem:row()
    cType := oTable:item( nRow, 1 ):text()
    IF cType $ "C,N,D,L"
@@ -1145,7 +1107,6 @@ METHOD IdeDebugger:editVariableEx( oItem )
          oItem:setText( iif( xVal, ".T.", ".F." ) )
       ENDIF
       cVal := iif( cT == "N", LTrim( Str( xVal ) ), iif( cT == "D", DToS( xVal ), iif( cT == "L", iif( xVal, "T", "F" ), xVal ) ) )
-
       ::doCommand( CMD_SETVAR, ;
                               Str2Hex( cVar ), ;
                               Str2Hex( cVType + ":" + cType ), ;
@@ -1153,13 +1114,11 @@ METHOD IdeDebugger:editVariableEx( oItem )
                               Str2Hex( oTable:item( nRow, 3 ):text() ), ;
                               Str2Hex( cVal ) )
    ENDIF
-
    RETURN NIL
 
 
 METHOD IdeDebugger:editVariable( oItem )
    LOCAL oTable, nIndex, cVar, cVal, xVal, nRow, cType, cVType, cT, cPic, nWid, n
-
    IF Empty( oItem )
       RETURN NIL
    ENDIF
@@ -1181,7 +1140,7 @@ METHOD IdeDebugger:editVariable( oItem )
    IF oTable:rowCount() == 0
       RETURN NIL
    ENDIF
-
+   //
    nRow := oItem:row()
    cType := oTable:item( nRow, 1 ):text()
    IF cType $ "C,N,D,L"
@@ -1213,7 +1172,6 @@ METHOD IdeDebugger:editVariable( oItem )
          oItem:setText( iif( xVal, ".T.", ".F." ) )
       ENDIF
       cVal := iif( cT == "N", LTrim( Str( xVal ) ), iif( cT == "D", DToS( xVal ), iif( cT == "L", iif( xVal, "T", "F" ), xVal ) ) )
-
       ::doCommand( CMD_SETVAR, ;
                               Str2Hex( cVar ), ;
                               Str2Hex( cVType + ":" + cType ), ;
@@ -1227,10 +1185,8 @@ METHOD IdeDebugger:editVariable( oItem )
 METHOD IdeDebugger:inspectObject( lClicked )
    LOCAL index, oTable, nRow, cObjName
    LOCAL cType := ""
-
    IF lClicked
       ::oUI:btnObjBack:setEnabled( .F. )
-
       index := ::oUI:tabWidgetVariables:currentIndex()
       DO CASE
       CASE index = 0
@@ -1242,38 +1198,31 @@ METHOD IdeDebugger:inspectObject( lClicked )
       CASE index = 3
          oTable := ::oUI:tableVarStatic
       ENDCASE
-
       IF oTable:rowCount() == 0
          RETURN NIL
       ENDIF
-
       nRow := oTable:currentRow()
       IF nRow >= 0
          cType := oTable:item( nRow, 1 ):text()
       ENDIF
-      IF ! ( cType $ "O,A" )
+      IF ! cType $ "O,A"
          hbide_showWarning( "Please select a variable of type O'bject or A'rray!" )
          ::oUI:activateWindow()
          RETURN NIL
       ENDIF
-
       cObjName := oTable:item( nRow, 0 ):text()
       ::cInspectVar := cObjName
       ::cInspectType := cType
       ::cInspectTypes := cType
    ENDIF
-
    ::requestObject()
-   //
    RETURN NIL
 
 
 STATIC FUNCTION __pullRecords( arr, n, nRecs, nFields, lHex )
    LOCAL i, j, d_
    LOCAL aRecs := {}
-
    DEFAULT lHex TO .T.
-
    FOR i := 1 TO nRecs
       d_:= Array( nFields )
       FOR j := 1 TO nFields
@@ -1286,7 +1235,6 @@ STATIC FUNCTION __pullRecords( arr, n, nRecs, nFields, lHex )
 
 STATIC FUNCTION __updateTable( oTable, aRecs, nFields )
    LOCAL i, j, nRecs
-
    IF oTable:isVisible()
       nRecs := Len( aRecs )
       oTable:setRowCount( nRecs )
@@ -1304,7 +1252,6 @@ METHOD IdeDebugger:showStack( arr, n )
    LOCAL aRecs
    LOCAL nRecs := Val( arr[ n ] )
    LOCAL nFields := 3
-
    IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields, .F. ) )
       ::updateData( ::hBrowsers[ "Stack" ], aRecs )
       __updateTable( ::oUI:tableStack, aRecs, nFields )
@@ -1317,7 +1264,6 @@ METHOD IdeDebugger:showVars( arr, n, nVarType )
    LOCAL nRecs   := Val( arr[ n ] )
    LOCAL nFields := 5
    LOCAL aTbl    := { ::oUI:tableVarLocal, ::oUI:tableVarPrivate, ::oUI:tableVarPublic, ::oUI:tableVarStatic }
-
    IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
       DO CASE
       CASE nVarType = 1 ; ::updateData( ::hBrowsers[ "Locals"   ], aRecs, nFields )
@@ -1325,7 +1271,6 @@ METHOD IdeDebugger:showVars( arr, n, nVarType )
       CASE nVarType = 3 ; ::updateData( ::hBrowsers[ "Publics"  ], aRecs, nFields )
       CASE nVarType = 4 ; ::updateData( ::hBrowsers[ "Statics"  ], aRecs, nFields )
       ENDCASE
-
       __updateTable( aTbl[ nVarType ], aRecs, nFields )
    ENDIF
    RETURN NIL
@@ -1335,13 +1280,11 @@ METHOD IdeDebugger:showWatch( arr, n )
    LOCAL nWatch, cVal, d_, i
    LOCAL aRecs := {}
    LOCAL nRecs := Val( arr[ n ] )
-
    IF ::oUI:tableWatchExpressions:isVisible()
       FOR nWatch := 1 TO nRecs
          IF nWatch <= Len( ::aWatches )
             cVal := AllTrim( Hex2Str( arr[ ++n ] ) )
             AAdd( aRecs, { ::aWatches[ nWatch,2 ], cVal } )
-
             ::oUI:tableWatchExpressions:setItem( ::aWatches[ nWatch,1 ], 1, QTableWidgetItem( cVal ) )
          ENDIF
          ::processEvents()
@@ -1370,7 +1313,6 @@ METHOD IdeDebugger:showAreas( arr, n )
    LOCAL aRecs
    LOCAL nRecs   := Val( arr[ n ] )
    LOCAL nFields := Val( Hex2Str( arr[ ++n ] ) )
-
    IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
       ::updateData( ::hBrowsers[ "Areas" ], aRecs )
       __updateTable( ::oUI:tableOpenTables, aRecs, nFields )
@@ -1384,7 +1326,6 @@ METHOD IdeDebugger:showRec( arr, n )
    LOCAL nFields := 5
    LOCAL cAlias  := Trim( Hex2Str( arr[ ++n ] ) )
    LOCAL cRec    := Hex2Str( arr[ ++n ] )
-
    IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
       ::hBrowsers[ "Record" ][ "ttl" ] := "[" + cAlias + ":" + cRec + "]"
       ::setTitle( ::hBrowsers[ "Record" ] )
@@ -1401,7 +1342,6 @@ METHOD IdeDebugger:showSets( arr, n )
    LOCAL aRecs
    LOCAL nRecs   := Val( arr[ n ] )
    LOCAL nFields := 2
-
    IF ! Empty( aRecs :=__pullRecords( arr, n, nRecs, nFields ) )
       ::updateData( ::hBrowsers[ "Sets" ], aRecs )
       __updateTable( ::oUI:tableSets, aRecs, nFields )
@@ -1412,13 +1352,11 @@ METHOD IdeDebugger:showSets( arr, n )
 METHOD IdeDebugger:showObject( arr, n )
    LOCAL i, j, d_, dat_
    LOCAL nLen := Val( arr[ n ] )
-
    IF nLen == 0
       ::oUI:tableObjectInspector:setRowCount( nLen )
       ::oUI:labelObjectInspector:setText( "Object Inspector" )
       ::cInspectVar := ""
       ::cInspectType := ""
-
       ::hBrowsers[ "Objects" ][ "ttl" ] := ""
       ::setTitle( ::hBrowsers[ "Objects" ] )
       ::updateData( ::hBrowsers[ "Objects" ], { ::hBrowsers[ "Objects" ][ "bln" ] } )
@@ -1471,12 +1409,10 @@ METHOD IdeDebugger:showObject( arr, n )
 
 METHOD IdeDebugger:requestRecord( row, col )
    LOCAL item, cAlias
-
    IF ::oUi:labelStatus:text() != "Stopped"
       RETURN NIL
    ENDIF
    HB_SYMBOL_UNUSED( col )
-
    IF row == ::nRowAreas
       RETURN NIL
    ELSE
@@ -1493,7 +1429,6 @@ METHOD IdeDebugger:requestRecord( row, col )
 
 
 METHOD IdeDebugger:requestObject()
-
    IF ::cInspectType == "O"
       ::doCommand( CMD_OBJECT, ::cInspectVar )
    ELSEIF ::cInspectType == "A"
@@ -1503,7 +1438,6 @@ METHOD IdeDebugger:requestObject()
 
 
 METHOD IdeDebugger:requestVars( index )
-
    IF ::oUi:labelStatus:text() != "Stopped"
       RETURN NIL
    ENDIF
@@ -1526,63 +1460,52 @@ METHOD IdeDebugger:requestVars( index )
          ::doCommand( CMD_STATIC, "on" )
       ENDIF
    ENDCASE
-   //
    RETURN NIL
 
 
 METHOD IdeDebugger:ui_load()
    LOCAL i, oItem
-
    IF ! ::isActive()
       RETURN Self
    ENDIF
-
    ::emptyBrowsers()
-
    ::hBrowsers[ "Record" ][ "ttl" ] := ""
    ::setTitle( ::hBrowsers[ "Record" ] )
-
    ::cInspectVar  := ""
    ::cInspectType := ""
-
-   ::oUI:labelObjectInspector:setText( "Object Inspector" )
-   ::oUI:labelOpenTables:setText( "Record Inspector" )
-
-   ::oUI:tableVarLocal:setRowCount( 0 )
-   ::oUI:tableVarPrivate:setRowCount( 0 )
-   ::oUI:tableVarStatic:setRowCount( 0 )
-   ::oUI:tableVarPublic:setRowCount( 0 )
-   ::oUI:tableObjectInspector:setRowCount( 0 )
-   //
-   ::oUI:tableOpenTables:setRowCount( 0 )
-   ::oUI:tableCurrentRecord:setRowCount( 0 )
-   IF ::oUI:tableWatchExpressions:rowCount() > 0
-      FOR i := 1 TO ::oUI:tableWatchExpressions:rowCount()
-         IF ! Empty( oItem := ::oUI:tableWatchExpressions:item( i-1, 1 ) )
-            oItem:setText( "" )
-         ENDIF
-         IF ! Empty( oItem := ::oUI:tableWatchExpressions:item( i-1, 2 ) )
-            oItem:setText( "" )
-         ENDIF
-         ::processEvents()
-      NEXT
-   ENDIF
-   //
-   ::oUI:tableStack:setRowCount( 0 )
-   //
-   ::oUI:tableSets:setRowCount( 0 )
-
-   ::processEvents()
-
-   //::manageTabMain( Max( 0, ::oUI:tabWidgetMain:currentIndex() ) )
-   ::ui_loadAll()
-
-   ::nRowAreas := -1
+   WITH OBJECT ::oUI
+      :labelObjectInspector:setText( "Object Inspector" )
+      :labelOpenTables:setText( "Record Inspector" )
+      :tableVarLocal:setRowCount( 0 )
+      :tableVarPrivate:setRowCount( 0 )
+      :tableVarStatic:setRowCount( 0 )
+      :tableVarPublic:setRowCount( 0 )
+      :tableObjectInspector:setRowCount( 0 )
+      :tableOpenTables:setRowCount( 0 )
+      :tableCurrentRecord:setRowCount( 0 )
+      IF :tableWatchExpressions:rowCount() > 0
+         FOR i := 1 TO :tableWatchExpressions:rowCount()
+            IF ! Empty( oItem := :tableWatchExpressions:item( i-1, 1 ) )
+               oItem:setText( "" )
+            ENDIF
+            IF ! Empty( oItem := :tableWatchExpressions:item( i-1, 2 ) )
+               oItem:setText( "" )
+            ENDIF
+            ::processEvents()
+         NEXT
+      ENDIF
+      :tableStack:setRowCount( 0 )
+      :tableSets:setRowCount( 0 )
+   ENDWITH
+   IF .T.
+      ::processEvents()
+      ::ui_loadAll()
+      ::nRowAreas := -1
+   ENDIF 
    RETURN NIL
 
 
 METHOD IdeDebugger:ui_loadAll()
-
    IF ::isStopped()
       ::manageTabMain( 0 )
       ::manageTabMain( 1 )
@@ -1633,7 +1556,6 @@ METHOD IdeDebugger:watch_save()
    LOCAL oTable   := ::oUI:tableWatchExpressions
    LOCAL nRows    := oTable:rowCount()
    LOCAL aWatches := {}
-
    IF ::isUIBrowsers()
       IF ! Empty( ::hBrowsers[ "Watches" ][ "dat" ][1,1] )
          FOR EACH aWatch IN ::hBrowsers[ "Watches" ][ "dat" ]
@@ -1677,10 +1599,9 @@ METHOD IdeDebugger:watch_save()
 
 
 METHOD IdeDebugger:watch_rest()
-   LOCAL i, cFile, aWatches, cWatch, nSel, d_, lInit
-
-   cFile := hbide_fetchAFile( ::oDlg, "Select a Watches|BP File", { { "Watches|BP", "*.wch" } }, ;
-                                      ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
+   LOCAL i, aWatches, cWatch, nSel, d_, lInit
+   LOCAL cFile := hbide_fetchAFile( ::oDlg, "Select a Watches|BP File", { { "Watches|BP", "*.wch" } }, ;
+                                        ::oPM:getProjectPathFromTitle( ::cCurrentProject ), "wch", .F. )
    IF ! Empty( cFile ) .AND. hb_FileExists( cFile )
       d_:= hbide_readSource( cFile )
       aWatches := {}
@@ -1705,7 +1626,6 @@ METHOD IdeDebugger:watch_rest()
    IF Empty( aWatches )
       RETURN Self
    ENDIF
-
    IF ::oUI:tableWatchExpressions:isVisible()
       IF nSel != 1
          ::watch_del( .T. )
@@ -1737,7 +1657,6 @@ METHOD IdeDebugger:watch_rest()
 METHOD IdeDebugger:watch_ins( lPaste, cWatch )
    LOCAL i, oItem, nRow
    LOCAL oTable := ::oUI:tableWatchExpressions
-
    DEFAULT lPaste TO .F.
    IF lPaste
       DEFAULT cWatch TO ::oEM:getSelectedText()
@@ -1781,9 +1700,8 @@ METHOD IdeDebugger:watch_del( lAll )
    LOCAL nRow   := oTable:currentRow()
    local ri     := 0
    LOCAL nEmptyNames := 0
-
+   //
    DEFAULT lAll TO .F.
-
    IF ::oUI:tableWatchExpressions:isVisible()
       IF ! lAll .AND. nRow < 0
          RETURN NIL
@@ -1837,7 +1755,6 @@ METHOD IdeDebugger:watch_del( lAll )
             ENDIF
          ENDIF
       ENDIF
-
    ENDIF
    RETURN NIL
 
@@ -1846,7 +1763,6 @@ METHOD IdeDebugger:changeWatch( item )
    LOCAL i, xTmp
    LOCAL r := 0
    LOCAL nEmptyNames := 0
-
    IF item:column() == 0
       ::nRowWatch := item:Row()
       FOR i := 0 TO ::nRowWatch
@@ -1854,7 +1770,6 @@ METHOD IdeDebugger:changeWatch( item )
             nEmptyNames++
          ENDIF
       NEXT
-
       FOR i := 1 TO Len( ::aWatches )
          IF ::aWatches[ i, 1 ] == ::nRowWatch
             IF Empty( item:text() )
@@ -1871,7 +1786,6 @@ METHOD IdeDebugger:changeWatch( item )
             ENDIF
          ENDIF
       NEXT
-
       IF ! Empty( item:text() )
          IF r > 0
             hb_ADel( ::aWatches, r, .T. )
@@ -1888,150 +1802,131 @@ METHOD IdeDebugger:changeWatch( item )
 
 METHOD IdeDebugger:ui_init( oUI )
    LOCAL oHeaders
-
-   oUI:stackedWidget:setCurrentIndex( 0 )
-   ::buildBrowsers()
-
-   oUI:tabWidgetMain:setCurrentIndex( 0 )
-   oUI:tabWidgetVariables:setCurrentIndex( 0 )
-
-   WITH OBJECT ::btnLoadAll := QToolButton( oUI:tabWidgetMain )
-      :setIcon( QIcon( hbide_image( "go-jump" ) ) )
-      :setTooltip( "Downlaod All Info" )
-      :setAutoRaise( .T. )
-      :connect( "clicked()", {|| ::ui_LoadAll() } )
-   ENDWITH
-   oUI:tabWidgetMain:setCornerWidget( ::btnLoadAll )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Expression" )
-      :append( "Value"      )
-   ENDWITH
-   oUI:tableWatchExpressions:setHorizontalHeaderLabels( oHeaders )
-   ::fineTune( oUI:tableWatchExpressions )
-   oUI:tableWatchExpressions:setEditTriggers( QAbstractItemView_DoubleClicked )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Source" )
-      :append( "Proc"   )
-      :append( "Line"   )
-   ENDWITH
-   oUI:tableStack:setHorizontalHeaderLabels( oHeaders )
-   ::fineTune( oUI:tableStack )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Name"  )
-      :append( "Typ"   )
-      :append( "Lvl"   )
-      :append( "Pos"   )
-      :append( "Value" )
-   ENDWITH
-   oUI:tableVarLocal  :setHorizontalHeaderLabels( oHeaders )
-   oUI:tableVarPrivate:setHorizontalHeaderLabels( oHeaders )
-   oUI:tableVarPublic :setHorizontalHeaderLabels( oHeaders )
-   oUI:tableVarStatic :setHorizontalHeaderLabels( oHeaders )
-
-   ::fineTune( oUI:tableVarLocal   )
-   ::fineTune( oUI:tableVarPrivate )
-   ::fineTune( oUI:tableVarPublic  )
-   ::fineTune( oUI:tableVarStatic  )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Alias"           )
-      :append( "Area"            )
-      :append( "Rdd"             )
-      :append( "Records"         )
-      :append( "Current"         )
-      :append( "Bof"             )
-      :append( "Eof"             )
-      :append( "Found"           )
-      :append( "Del"             )
-      :append( "Ord"             )
-      :append( "OrdName"         )
-      :append( "OrdExpression"   )
-      :append( "Filter"          )
-      :append( "TablePath"       )
-      :append( "IndexPath"       )
-      :append( "AllIndexes"      )
-   ENDWITH
-   oUI:tableOpenTables:setHorizontalHeaderLabels( oHeaders )
-   oUI:tableOpenTables:setContextMenuPolicy( Qt_CustomContextMenu )
-   oUI:tableOpenTables:connect( "customContextMenuRequested(QPoint)", {|oPoint| ::manageAreasContextManu( oPoint ) } )
-   ::fineTune( oUI:tableOpenTables )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Field" )
-      :append( "Typ"   )
-      :append( "Len"   )
-      :append( "Dec"   )
-      :append( "Value" )
-   ENDWITH
-   oUI:tableCurrentRecord:setHorizontalHeaderLabels( oHeaders )
-   ::fineTune( oUI:tableCurrentRecord )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Name"  )
-      :append( "Typ"   )
-      :append( "Value" )
-   ENDWITH
-   oUI:tableObjectInspector:setHorizontalHeaderLabels( oHeaders )
-   ::fineTune( oUI:tableObjectInspector )
-
-   WITH OBJECT oHeaders := QStringList()
-      :append( "Set"   )
-      :append( "Value" )
-   ENDWITH
-   oUI:tableSets:setHorizontalHeaderLabels( oHeaders )
-   ::fineTune( oUI:tableSets )
-
-   oUI:btnStructure         :connect( "clicked()", { || ::copyStructToClipboard() } )
-   oUI:btnExpand            :connect( "clicked()", { || ::expandObject() } )
-   oUI:btnObjBack           :connect( "clicked()", { || ::manageObjectLevelUp() } )
-   oUI:btnObjBack:setEnabled( .F. )
-
-   oUI:btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ), ::waitState( 0.2 ) } )
-   oUI:btnNextR             :connect( "clicked()", { || ::doCommand( CMD_NEXTR  ), ::waitState( 0.2 ) } )
-   oUI:btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ), ::waitState( 0.2 ) } )
-   oUI:btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ), ::waitState( 0.2 ) } )
-   oUI:btnTrace             :connect( "clicked()", { || ::doCommand( CMD_TRACE  ), ::waitState( 0.2 ) } )
-   oUI:btnClipboard         :connect( "clicked()", { || ::copyOnClipboard() } )
-   oUI:btnToggleUI          :connect( "clicked()", { || ::oUI:stackedWidget:setCurrentIndex( iif( ::isUIBrowsers(), 1, 0 ) ) } )
-   oUI:btnExit              :connect( "clicked()", { || ::nExitMode := 2, ::exitDbg()         } )
-
-   oUI:btnAddWatch          :connect( "clicked()", { || ::watch_ins()       } )
-   oUI:btnPasteWatch        :connect( "clicked()", { || ::watch_ins( .T. )  } )
-   oUI:btnDeleteWatch       :connect( "clicked()", { || ::watch_del()       } )
-   oUI:btnClearWatches      :connect( "clicked()", { || ::watch_del( .T. )  } )
-   oUI:btnSaveWatches       :connect( "clicked()", { || ::watch_save()      } )
-   oUI:btnRestWatches       :connect( "clicked()", { || ::watch_rest()      } )
-
-   oUI:tableWatchExpressions:connect( "itemChanged(QTableWidgetItem*)"      , {| oItem | ::changeWatch( oItem )         } )
-   oUI:tableOpenTables      :connect( "cellActivated(int,int)"              , {| row, col | ::requestRecord( row, col ) } )
-   oUI:tabWidgetVariables   :connect( "currentChanged(int)"                 , {| nIndex | ::requestVars( nIndex )       } )
-   oUI:tabWidgetMain        :connect( "currentChanged(int)"                 , {| nIndex | ::manageTabMain( nIndex )     } )
-
-   oUI:tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
-
-   oUI                      :connect( QEvent_KeyPress        , {|oEvent| ::manageKey( oEvent:key() ) } )
-
-   // Variables Tab
-   oUI:tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Local"   ) } )
-   oUI:tableVarPrivate      :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Private" ) } )
-   oUI:tableVarPublic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Public"  ) } )
-   oUI:tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Static"  ) } )
-
-   oUI:tableVarLocal        :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
-   oUI:tableVarPrivate      :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
-   oUI:tableVarPublic       :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
-   oUI:tableVarStatic       :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
-
+   WITH OBJECT oUI
+      :stackedWidget:setCurrentIndex( 0 )
+      ::buildBrowsers()
+      :tabWidgetMain:setCurrentIndex( 0 )
+      :tabWidgetVariables:setCurrentIndex( 0 )
+      WITH OBJECT ::btnLoadAll := QToolButton( oUI:tabWidgetMain )
+         :setIcon( QIcon( hbide_image( "go-jump" ) ) )
+         :setTooltip( "Downlaod All Info" )
+         :setAutoRaise( .T. )
+         :connect( "clicked()", {|| ::ui_LoadAll() } )
+      ENDWITH
+      :tabWidgetMain:setCornerWidget( ::btnLoadAll )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Expression" )
+         :append( "Value"      )
+      ENDWITH
+      :tableWatchExpressions:setHorizontalHeaderLabels( oHeaders )
+      ::fineTune( oUI:tableWatchExpressions )
+      :tableWatchExpressions:setEditTriggers( QAbstractItemView_DoubleClicked )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Source" )
+         :append( "Proc"   )
+         :append( "Line"   )
+      ENDWITH
+      :tableStack:setHorizontalHeaderLabels( oHeaders )
+      ::fineTune( oUI:tableStack )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Name"  )
+         :append( "Typ"   )
+         :append( "Lvl"   )
+         :append( "Pos"   )
+         :append( "Value" )
+      ENDWITH
+      :tableVarLocal  :setHorizontalHeaderLabels( oHeaders )
+      :tableVarPrivate:setHorizontalHeaderLabels( oHeaders )
+      :tableVarPublic :setHorizontalHeaderLabels( oHeaders )
+      :tableVarStatic :setHorizontalHeaderLabels( oHeaders )
+      ::fineTune( oUI:tableVarLocal   )
+      ::fineTune( oUI:tableVarPrivate )
+      ::fineTune( oUI:tableVarPublic  )
+      ::fineTune( oUI:tableVarStatic  )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Alias"           )
+         :append( "Area"            )
+         :append( "Rdd"             )
+         :append( "Records"         )
+         :append( "Current"         )
+         :append( "Bof"             )
+         :append( "Eof"             )
+         :append( "Found"           )
+         :append( "Del"             )
+         :append( "Ord"             )
+         :append( "OrdName"         )
+         :append( "OrdExpression"   )
+         :append( "Filter"          )
+         :append( "TablePath"       )
+         :append( "IndexPath"       )
+         :append( "AllIndexes"      )
+      ENDWITH
+      :tableOpenTables:setHorizontalHeaderLabels( oHeaders )
+      :tableOpenTables:setContextMenuPolicy( Qt_CustomContextMenu )
+      :tableOpenTables:connect( "customContextMenuRequested(QPoint)", {|oPoint| ::manageAreasContextManu( oPoint ) } )
+      ::fineTune( oUI:tableOpenTables )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Field" )
+         :append( "Typ"   )
+         :append( "Len"   )
+         :append( "Dec"   )
+         :append( "Value" )
+      ENDWITH
+      :tableCurrentRecord:setHorizontalHeaderLabels( oHeaders )
+      ::fineTune( oUI:tableCurrentRecord )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Name"  )
+         :append( "Typ"   )
+         :append( "Value" )
+      ENDWITH
+      :tableObjectInspector:setHorizontalHeaderLabels( oHeaders )
+      ::fineTune( oUI:tableObjectInspector )
+      WITH OBJECT oHeaders := QStringList()
+         :append( "Set"   )
+         :append( "Value" )
+      ENDWITH
+      :tableSets:setHorizontalHeaderLabels( oHeaders )
+      ::fineTune( oUI:tableSets )
+      :btnStructure         :connect( "clicked()", { || ::copyStructToClipboard() } )
+      :btnExpand            :connect( "clicked()", { || ::expandObject() } )
+      :btnObjBack           :connect( "clicked()", { || ::manageObjectLevelUp() } )
+      :btnObjBack:setEnabled( .F. )
+      :btnGo                :connect( "clicked()", { || ::doCommand( CMD_GO     ), ::waitState( 0.2 ) } )
+      :btnNextR             :connect( "clicked()", { || ::doCommand( CMD_NEXTR  ), ::waitState( 0.2 ) } )
+      :btnStep              :connect( "clicked()", { || ::doCommand( CMD_STEP   ), ::waitState( 0.2 ) } )
+      :btnToCursor          :connect( "clicked()", { || ::doCommand( CMD_TOCURS ), ::waitState( 0.2 ) } )
+      :btnTrace             :connect( "clicked()", { || ::doCommand( CMD_TRACE  ), ::waitState( 0.2 ) } )
+      :btnClipboard         :connect( "clicked()", { || ::copyOnClipboard() } )
+      :btnToggleUI          :connect( "clicked()", { || ::oUI:stackedWidget:setCurrentIndex( iif( ::isUIBrowsers(), 1, 0 ) ) } )
+      :btnExit              :connect( "clicked()", { || ::nExitMode := 2, ::exitDbg()         } )
+      :btnAddWatch          :connect( "clicked()", { || ::watch_ins()       } )
+      :btnPasteWatch        :connect( "clicked()", { || ::watch_ins( .T. )  } )
+      :btnDeleteWatch       :connect( "clicked()", { || ::watch_del()       } )
+      :btnClearWatches      :connect( "clicked()", { || ::watch_del( .T. )  } )
+      :btnSaveWatches       :connect( "clicked()", { || ::watch_save()      } )
+      :btnRestWatches       :connect( "clicked()", { || ::watch_rest()      } )
+      :tableWatchExpressions:connect( "itemChanged(QTableWidgetItem*)"      , {| oItem | ::changeWatch( oItem )         } )
+      :tableOpenTables      :connect( "cellActivated(int,int)"              , {| row, col | ::requestRecord( row, col ) } )
+      :tabWidgetVariables   :connect( "currentChanged(int)"                 , {| nIndex | ::requestVars( nIndex )       } )
+      :tabWidgetMain        :connect( "currentChanged(int)"                 , {| nIndex | ::manageTabMain( nIndex )     } )
+      :tableObjectInspector :connect( "itemDoubleClicked(QTableWidgetItem*)", {|/*oItem*/| ::inspectObjectEx() } )
+      :connect( QEvent_KeyPress, {|oEvent| ::manageKey( oEvent:key() ) } )
+      // Variables Tab
+      :tableVarLocal        :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Local"   ) } )
+      :tableVarPrivate      :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Private" ) } )
+      :tableVarPublic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Public"  ) } )
+      :tableVarStatic       :connect( "itemDoubleClicked(QTableWidgetItem*)", {| oItem | ::manageTableVariablesClicked( oItem, "Static"  ) } )
+      :tableVarLocal        :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+      :tableVarPrivate      :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+      :tableVarPublic       :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+      :tableVarStatic       :connect( "itemChanged(QTableWidgetItem*)", {| oItem | iif( oItem:column() == 4, ::editVariableEx( oItem ), NIL ) } )
+   ENDWITH 
    RETURN NIL
 
 
 METHOD IdeDebugger:manageAreasContextManu( oPoint )
    LOCAL oItem, cInfo, n, cTable, cDrv, cAlias, cOrd, cRec
    LOCAL aPops := {}
-
    IF Empty( oItem := ::oUI:tableOpenTables:itemAt( oPoint ) )
       RETURN NIL
    ENDIF
@@ -2051,23 +1946,18 @@ METHOD IdeDebugger:manageAreasContextManu( oPoint )
    cAlias := StrTran( oItem:text(), "*" )
    cDrv   := ::oUI:tableOpenTables:item( oItem:Row(), 2 ):text()
    cRec   := ::oUI:tableOpenTables:item( oItem:Row(), 4 ):text()
-
    // Main,C:\harbour\tests\test.dbf,TEST,DBFCDX,0,500,2,0 0 300 504,21,1,,,,
    cTable := "Main," + cTable + "," + cAlias + "," + cDrv + "," + cOrd + "," + cRec + ","
    cTable := StrTran( cTable, " ", "" )
-
    aadd( aPops, { "Open in IdeDBU"  , {|| ::openTableInIdeDBU( cTable, .F. ) } } )
    aadd( aPops, { "" } )
    aadd( aPops, { "Open in HbDBU"   , {|| ::openTableInIdeDBU( cTable, .T. ) } } )
-
    hbide_execPopup( aPops, ::oUI:tableOpenTables:mapToGlobal( oPoint ) )
-
    RETURN oItem
 
 
 METHOD IdeDebugger:openTableInIdeDBU( cTable, lByHbDBU )
    LOCAL aRecs, aRec
-
    IF ::isUIBrowsers()
       aRecs := ::hBrowsers[ "Areas" ][ "dat" ]
       aRec  := aRecs[ ::hBrowsers[ "Areas" ][ "rec" ] ]
@@ -2105,31 +1995,27 @@ METHOD IdeDebugger:manageKey( nQtKey )
 
 METHOD IdeDebugger:fineTune( oTable )
    LOCAL i
-
-   FOR i := 1 TO oTable:columnCount()
-      oTable:horizontalHeader:setSectionResizeMode( i-1, QHeaderView_ResizeToContents )
-   NEXT
-   oTable:horizontalHeader:setHighlightSections( .F. )
-
-   oTable:setEditTriggers( QAbstractItemView_NoEditTriggers )
-   oTable:setSelectionBehavior( QAbstractItemView_SelectItems )
-   oTable:setSelectionMode( QAbstractItemView_SingleSelection )
+   WITH OBJECT oTable
+      FOR i := 1 TO :columnCount()
+         :horizontalHeader:setSectionResizeMode( i-1, QHeaderView_ResizeToContents )
+      NEXT
+      :horizontalHeader:setHighlightSections( .F. )
+      :setEditTriggers( QAbstractItemView_NoEditTriggers )
+      :setSelectionBehavior( QAbstractItemView_SelectItems )
+      :setSelectionMode( QAbstractItemView_SingleSelection )
+   ENDWITH
    RETURN Self
 
 
 METHOD IdeDebugger:expandObject( nIndent, txt_ )
    LOCAL s, cVar, cType, cTypes, cText, aRec, aRecs
-
    DEFAULT nIndent TO 0
    DEFAULT txt_    TO {}
-
    ::lExpanding := .T.
    cVar   := ::cInspectVar
    cType  := ::cInspectType
    cTypes := ::cInspectTypes
-
    ::expandObjectDetail( nIndent, @txt_, iif( ::cInspectType == "O", ::cInspectVar, "" ) )
-
    IF ! Empty( txt_ )
       IF ::isUIBrowsers
          aRecs := {}
@@ -2147,21 +2033,18 @@ METHOD IdeDebugger:expandObject( nIndent, txt_ )
          ENDIF
       ENDIF
    ENDIF
-   ::lExpanding := .F.
-
+   ::lExpanding    := .F.
    ::cInspectVar   := cVar
    ::cInspectType  := cType
    ::cInspectTypes := cTypes
    ::requestObject()
-
    RETURN NIL
 
 
 METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
    LOCAL d_, cVar, cName, dat_, cSaveVar, cSaveType, cSaveTypes
-
+   //
    nIndent++
-
    IF ::isUIBrowsers()
       dat_:= __pullBrowserData( ::hBrowsers[ "Objects" ] )
    ELSE
@@ -2171,7 +2054,6 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
       IF ! ::isActive()
          EXIT
       ENDIF
-
       AAdd( txt_, Space( nIndent * 2 ) + __formatDataEx( d_, { 10, 1, 89 } ) )
       IF Trim( d_[ 2 ] ) == "A"
          cSaveVar := ::cInspectVar
@@ -2188,15 +2070,12 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
          ::cInspectVar   := cVar
          ::cInspectType  := "A"
          ::cInspectTypes += "A"
-
          IF ! ::isUIBrowsers()
             ::oUI:tableObjectInspector:setRowCount( 0 )
             ::processEvents()
          ENDIF
-
          ::doCommand( CMD_ARRAY, cVar  )
          ::expandObjectDetail( nIndent, @txt_, cOriginVar )
-
          ::cInspectVar   := cSaveVar
          ::cInspectType  := cSaveType
          ::cInspectTypes := cSaveTypes
@@ -2211,7 +2090,6 @@ METHOD IdeDebugger:expandObjectDetail( nIndent, txt_, cOriginVar )
 
 METHOD IdeDebugger:copyStructToClipboard()
    LOCAL aStruct, i, cTmp
-
    IF ::oUI:tableCurrentRecord:isVisible()
       IF ::oUI:tableCurrentRecord:rowCount() == 0
          RETURN NIL
@@ -2227,7 +2105,6 @@ METHOD IdeDebugger:copyStructToClipboard()
          i := 0
          aeval( aStruct, {|e_| iif( Len( e_[ 1 ] ) > i, i := len( e_[ 1 ] ), NIL ) } )
          i += 2
-
          cTmp := "   LOCAL aStruct := {"
          aeval( aStruct, {|e_,n| cTmp += iif( n == 1, ' { ', space( 20 ) + '  { ' ) + ;
                                     pad( '"' + e_[ 1 ] + '"', i ) + ', "' + e_[ 2 ] + '", ' + ;
@@ -2242,9 +2119,7 @@ METHOD IdeDebugger:copyStructToClipboard()
       IF Empty( aStruct[ 1,1 ] )
          RETURN NIL
       ENDIF
-
       i := Len( aStruct[ 1, 1 ] ) + 2
-
       cTmp := "   LOCAL aStruct := {"
       aeval( aStruct, {|e_,n| cTmp += iif( n == 1, ' { ', space( 20 ) + '  { ' ) + ;
                                  pad( '"' + Trim( e_[ 1 ] ) + '"', i ) + ', "' + e_[ 2 ] + '", ' + ;
@@ -2254,19 +2129,17 @@ METHOD IdeDebugger:copyStructToClipboard()
       QApplication():clipboard():setText( cTmp )
       Alert( "Structure Copied to Clipboard!" )
    ENDIF
-
    RETURN cTmp
 
 
 METHOD IdeDebugger:copyOnClipboard()
    LOCAL aData, s
    LOCAL txt_:={}
-
+   //
    AAdd( txt_, "PROJECT: " + ::cCurrentProject + " [" + DToC( Date() ) + "  " + Time() + "]" )
    AAdd( txt_, ::cLastMessage )
    AAdd( txt_, " " )
    AAdd( txt_, " " )
-
    IF ::isUIBrowsers()
       IF ! Empty( aData :=__pullBrowserData( ::hBrowsers[ "Locals" ] ) )
          AAdd( txt_, "LOCAL VARIABLES" )
@@ -2352,11 +2225,9 @@ METHOD IdeDebugger:copyOnClipboard()
          __formatData( txt_, { "Set", "Value" }, aData, { 30, 67 } )
       ENDIF
    ENDIF
-
    s := ""
    AEval( txt_, {|e| s += e + Chr( 13 ) + Chr( 10 ) } )
    QApplication():clipboard():setText( s )
-
    ::oIde:showFragment( s, ;
               "PROJECT: " + ::cCurrentProject + " [" + DToC( Date() ) + "  " + Time() + "][" + ::cLastMessage + "]", ;
               QIcon( hbide_image( "fullscreen" ) ), ;
@@ -2366,9 +2237,9 @@ METHOD IdeDebugger:copyOnClipboard()
 
 STATIC FUNCTION __formatData( txt_, aHdrs, aData, aWidths )
    LOCAL nCols := Len( aHdrs )
-   LOCAL aRec, j, s
-
-   s := "   "
+   LOCAL aRec, j
+   LOCAL s := "   "
+   //
    FOR j := 1 TO nCols
       s += Pad( aHdrs[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
    NEXT
@@ -2388,7 +2259,7 @@ STATIC FUNCTION __formatData( txt_, aHdrs, aData, aWidths )
 STATIC FUNCTION __formatDataEx( aData, aWidths )
    LOCAL nCols := Len( aWidths )
    LOCAL j, s
-
+   //
    s := ""
    FOR j := 1 TO nCols
       s += Pad( aData[ j ], aWidths[ j ] ) + iif( j == nCols, "", C_C )
@@ -2399,7 +2270,6 @@ STATIC FUNCTION __formatDataEx( aData, aWidths )
 STATIC FUNCTION __pullBrowserData( hBrowser )
    LOCAL aData, aRec, dat_, cVal
    LOCAL nFields := Len( hBrowser[ "dat" ][ 1 ] )
-
    aData := {}
    FOR EACH dat_ IN hBrowser[ "dat" ]
       IF ! Empty( dat_[ 1 ] )
@@ -2416,7 +2286,7 @@ STATIC FUNCTION __pullBrowserData( hBrowser )
 STATIC FUNCTION __pullData( oTable )
    LOCAL aData := {}
    LOCAL nRows, nCols, nRow, nCol, oItem, aRec
-
+   //
    nRows  := oTable:rowCount()
    nCols  := oTable:columnCount()
    //
@@ -2436,7 +2306,6 @@ STATIC FUNCTION __pullData( oTable )
 
 STATIC FUNCTION Int2Hex( n )
    LOCAL n1 := Int( n/16 ), n2 := n % 16
-
    IF n > 255
       RETURN "XX"
    ENDIF
@@ -2444,11 +2313,9 @@ STATIC FUNCTION Int2Hex( n )
 
 
 STATIC FUNCTION Str2Hex( stroka )
-   LOCAL i
    LOCAL cRes := ""
-   LOCAL nLen := Len( stroka )
-
-   FOR i := 1 to nLen
+   LOCAL i
+   FOR i := 1 TO Len( stroka )
       cRes += Int2Hex( Asc( Substr( stroka, i, 1 ) ) )
    NEXT
    RETURN cRes
@@ -2458,7 +2325,6 @@ STATIC FUNCTION Hex2Str( stroka )
    LOCAL cRes := ""
    LOCAL i    := 1
    LOCAL nLen := Len( stroka )
-
    IF nLen > 0
       DO WHILE i <= nLen
          cRes += Chr( Hex2Int( Substr( stroka, i, 2 ) ) )
@@ -2469,9 +2335,8 @@ STATIC FUNCTION Hex2Str( stroka )
 
 
 STATIC FUNCTION Hex2Int( stroka )
-   LOCAL res
    LOCAL i := Asc( stroka )
-
+   LOCAL res
    IF i > 64 .AND. i < 71
       res := ( i - 55 ) * 16
    ELSEIF i > 47 .AND. i < 58
@@ -2489,9 +2354,9 @@ STATIC FUNCTION Hex2Int( stroka )
 
 
 METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
-   LOCAL oSub, oList, oWnd, i, hBrowser, cFile, hInfo, aInfo, oRect
+   LOCAL oSub, oList, i, hBrowser, cFile, hInfo, aInfo, oRect
    LOCAL oMdiArea := ::oUI:mdiBrowsers
-
+   //
    SWITCH cEvent
    CASE "showSubsCascaded"
       oSub := oMdiArea:activeSubWindow()
@@ -2509,10 +2374,11 @@ METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
       oSub := oMdiArea:activeSubWindow()
       oList := oMdiArea:subWindowList()
       FOR i := 1 TO oList:size()
-         oWnd := oList:At( i-1 )
-         oWnd:setWindowState( Qt_WindowMaximized )
-         oWnd:resize( oWnd:width() + 1, oWnd:height() + 1 )
-         oWnd:resize( oWnd:width() - 1, oWnd:height() - 1 )
+         WITH OBJECT oList:At( i-1 )
+            :setWindowState( Qt_WindowMaximized )
+            :resize( :width() + 1, :height() + 1 )
+            :resize( :width() - 1, :height() - 1 )
+         ENDWITH 
       NEXT
       oMdiArea:setActiveSubWindow( oSub )
       ::resizeSubWindows()
@@ -2577,19 +2443,18 @@ METHOD IdeDebugger:execMdiEvent( cEvent, p1 )
    CASE "subWindowActivated"
       oSub := p1
       ::cActiveBrowser := oSub:whatsThis()
-
-      ::oUI:btnSubsWatchSelText:setEnabled( oSub:whatsThis() == "Watches" )
-      ::oUI:btnSubsWatchAdd    :setEnabled( oSub:whatsThis() == "Watches" )
-      ::oUI:btnSubsWatchSave   :setEnabled( oSub:whatsThis() == "Watches" )
-      ::oUI:btnSubsWatchLoad   :setEnabled( oSub:whatsThis() == "Watches" )
-      ::oUI:btnSubsWatchDel    :setEnabled( oSub:whatsThis() == "Watches" )
-      ::oUI:btnSubsWatchClear  :setEnabled( oSub:whatsThis() == "Watches" )
-
-      ::oUI:btnSubsDbu         :setEnabled( oSub:whatsThis() == "Areas"   )
-      ::oUI:btnSubsCopyStruct  :setEnabled( oSub:whatsThis() == "Record"  )
-
-      ::oUI:btnSubsObjBack     :setEnabled( oSub:whatsThis() == "Objects" )
-      ::oUI:btnSubsObjExpand   :setEnabled( oSub:whatsThis() == "Objects" )
+      WITH OBJECT ::oUI
+         :btnSubsWatchSelText:setEnabled( oSub:whatsThis() == "Watches" )
+         :btnSubsWatchAdd    :setEnabled( oSub:whatsThis() == "Watches" )
+         :btnSubsWatchSave   :setEnabled( oSub:whatsThis() == "Watches" )
+         :btnSubsWatchLoad   :setEnabled( oSub:whatsThis() == "Watches" )
+         :btnSubsWatchDel    :setEnabled( oSub:whatsThis() == "Watches" )
+         :btnSubsWatchClear  :setEnabled( oSub:whatsThis() == "Watches" )
+         :btnSubsDbu         :setEnabled( oSub:whatsThis() == "Areas"   )
+         :btnSubsCopyStruct  :setEnabled( oSub:whatsThis() == "Record"  )
+         :btnSubsObjBack     :setEnabled( oSub:whatsThis() == "Objects" )
+         :btnSubsObjExpand   :setEnabled( oSub:whatsThis() == "Objects" )
+      ENDWITH
       EXIT
    ENDSWITCH
    RETURN NIL
@@ -2608,7 +2473,6 @@ METHOD IdeDebugger:resizeSubWindows()
 METHOD IdeDebugger:restUIState( cState )
    LOCAL aState := hb_ATokens( cState, "|" )
    LOCAL i, a_, oSub
-
    IF Len( aState ) >= 10
       FOR i := 2 TO Len( aState )
          a_:= hb_ATokens( aState[ i ], "," )
@@ -2635,10 +2499,8 @@ METHOD IdeDebugger:restUIState( cState )
 METHOD IdeDebugger:getUIState()
    LOCAL hBrowser, oRect
    LOCAL cState := ""
-
    FOR EACH hBrowser IN ::hBrowsers
       oRect := hBrowser[ "mdi" ]:frameGeometry()
-
       cState += ::cActiveBrowser + "|"
       cState += hBrowser[ "id" ] + "," + ;
                 iif( hBrowser[ "mdi" ]:isMinimized(), "1", iif( hBrowser[ "mdi" ]:isMaximized(), "2", "0" ) ) + "," + ;
@@ -2652,42 +2514,36 @@ METHOD IdeDebugger:getUIState()
 
 
 METHOD IdeDebugger:buildBrowsers()
-
    SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
-
    WITH OBJECT ::oUI:mdiBrowsers
       :setOption( QMdiArea_DontMaximizeSubWindowOnActivation, .T. )
       :setViewMode( QMdiArea_TabbedView )
       :setActivationOrder( QMdiArea_CreationOrder )
       :connect( "subWindowActivated(QMdiSubWindow*)", {|oSub| ::execMdiEvent( "subWindowActivated", oSub ) } )
    ENDWITH
-
-   ::oUI:btnSubsTile        :connect( "clicked()", {|| ::execMdiEvent( "showSubsTiled" )     } )
-   ::oUI:btnSubsCascade     :connect( "clicked()", {|| ::execMdiEvent( "showSubsCascaded" )  } )
-   ::oUI:btnSubsMaximized   :connect( "clicked()", {|| ::execMdiEvent( "showSubsMaximized" ) } )
-   ::oUI:btnSubsRest        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsRest"  )   } )
-   ::oUI:btnSubsSave        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsSave"  )   } )
-   ::oUI:btnSubsLoad        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsLoad"  )   } )
-   ::oUI:btnSubsPrint       :connect( "clicked()", {|| ::execMdiEvent( "subWindowsPrint" )   } )
-
-   ::oUI:btnSubsWatchDel    :connect( "clicked()", {|| ::watch_del( .F. ) } )
-   ::oUI:btnSubsWatchClear  :connect( "clicked()", {|| ::watch_del( .T. ) } )
-   ::oUI:btnSubsWatchLoad   :connect( "clicked()", {|| ::watch_rest()     } )
-   ::oUI:btnSubsWatchSave   :connect( "clicked()", {|| ::watch_save()     } )
-   ::oUI:btnSubsWatchAdd    :connect( "clicked()", {|| ::watch_ins( .F. ) } )
-   ::oUI:btnSubsWatchSelText:connect( "clicked()", {|| ::watch_ins( .T. ) } )
-
-   ::oUI:btnSubsDbu         :connect( "clicked()", {|| ::openTableInIdeDBU( "", .F. ) } )
-   ::oUI:btnSubsCopyStruct  :connect( "clicked()", {|| ::copyStructToClipboard() } )
-
-   ::oUI:btnSubsObjBack     :connect( "clicked()", {|| ::manageObjectLevelUp() } )
-   ::oUI:btnSubsObjExpand   :connect( "clicked()", {|| ::expandObject() } )
-
+   WITH OBJECT ::oUI
+      :btnSubsTile        :connect( "clicked()", {|| ::execMdiEvent( "showSubsTiled" )     } )
+      :btnSubsCascade     :connect( "clicked()", {|| ::execMdiEvent( "showSubsCascaded" )  } )
+      :btnSubsMaximized   :connect( "clicked()", {|| ::execMdiEvent( "showSubsMaximized" ) } )
+      :btnSubsRest        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsRest"  )   } )
+      :btnSubsSave        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsSave"  )   } )
+      :btnSubsLoad        :connect( "clicked()", {|| ::execMdiEvent( "subWindowsLoad"  )   } )
+      :btnSubsPrint       :connect( "clicked()", {|| ::execMdiEvent( "subWindowsPrint" )   } )
+      :btnSubsWatchDel    :connect( "clicked()", {|| ::watch_del( .F. ) } )
+      :btnSubsWatchClear  :connect( "clicked()", {|| ::watch_del( .T. ) } )
+      :btnSubsWatchLoad   :connect( "clicked()", {|| ::watch_rest()     } )
+      :btnSubsWatchSave   :connect( "clicked()", {|| ::watch_save()     } )
+      :btnSubsWatchAdd    :connect( "clicked()", {|| ::watch_ins( .F. ) } )
+      :btnSubsWatchSelText:connect( "clicked()", {|| ::watch_ins( .T. ) } )
+      :btnSubsDbu         :connect( "clicked()", {|| ::openTableInIdeDBU( "", .F. ) } )
+      :btnSubsCopyStruct  :connect( "clicked()", {|| ::copyStructToClipboard() } )
+      :btnSubsObjBack     :connect( "clicked()", {|| ::manageObjectLevelUp() } )
+      :btnSubsObjExpand   :connect( "clicked()", {|| ::expandObject() } )
+   ENDWITH
    ::hBrowsers[ "Locals"  ] := ::buildMdiBrowse( "Locals"  , { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
    ::hBrowsers[ "Privates"] := ::buildMdiBrowse( "Privates", { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
    ::hBrowsers[ "Publics" ] := ::buildMdiBrowse( "Publics" , { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
    ::hBrowsers[ "Statics" ] := ::buildMdiBrowse( "Statics" , { "Name"  , "Typ", "Lvl", "Pos", "Value" }, { 10,3,3,3,20 } )
-
    ::hBrowsers[ "Sets"    ] := ::buildMdiBrowse( "Sets"    , { "Set"   , "Value" }                     , { 15,20 } )
    ::hBrowsers[ "Stack"   ] := ::buildMdiBrowse( "Stack"   , { "Source", "Procedure", "Line" }         , { 10,20,5 } )
    ::hBrowsers[ "Areas"   ] := ::buildMdiBrowse( "Areas"   , { "Alias" , "Area", "Rdd", "Records", "Current", "Bof", "Eof", "Found", "Del", ;
@@ -2695,17 +2551,14 @@ METHOD IdeDebugger:buildBrowsers()
                                                                { 10,4,6,8,8,3,3,3,3,3,8,10,10,10,10,10 } )
    ::hBrowsers[ "Record"  ] := ::buildMdiBrowse( "Record"  , { "Field", "Typ", "Len", "Dec", "Value" } , { 10,3,3,3,20 } )
    ::hBrowsers[ "Watches" ] := ::buildMdiBrowse( "Watches" , { "Expression", "Value" }                 , { 20,20 } )
-
    ::hBrowsers[ "Objects" ] := ::buildMdiBrowse( "Objects" , { "Name", "Typ", "Value" }                , { 10,3,20 } )
    ::hBrowsers[ "Expanded"] := ::buildMdiBrowse( "Expanded", { "Name", "Typ", "Value" }                , { 10,3,20 } )
-
    ::hBrowsers[ "Areas"   ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Areas"   , nKey, aXY, oBrw ) }
    ::hBrowsers[ "Locals"  ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Locals"  , nKey, aXY, oBrw ) }
    ::hBrowsers[ "Privates"][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Privates", nKey, aXY, oBrw ) }
    ::hBrowsers[ "Publics" ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Publics" , nKey, aXY, oBrw ) }
    ::hBrowsers[ "Statics" ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Statics" , nKey, aXY, oBrw ) }
    ::hBrowsers[ "Objects" ][ "brw" ]:navigationBlock := {| nKey, aXY, oBrw | ::manageNavigation( "Objects" , nKey, aXY, oBrw ) }
-
    IF Empty( ::oINI:cDebuggerState )
       ::oUI:mdiBrowsers:tileSubWindows()
    ELSE
@@ -2719,11 +2572,9 @@ METHOD IdeDebugger:buildMdiBrowse( cTitle, aFields, aData )
    LOCAL hBrowse := {=>}
    LOCAL aIcons := { 1,2,3,6,9,8,10,12,16,4,13 }
    LOCAL dat_:= {}
-
    STATIC nIcon := 0
-
+   //
    AEval( aData, {|n| AAdd( dat_, Space( n ) ) } )
-
    WITH OBJECT hBrowse[ "mdi" ] := QMdiSubWindow()
       :setWindowFlags( Qt_CustomizeWindowHint + Qt_WindowTitleHint + Qt_WindowMinimizeButtonHint + Qt_WindowMaximizeButtonHint )
       :setWindowIcon( QIcon( hbide_image( "b_" + hb_ntos( aIcons[ ++nIcon ] ) ) ) )
@@ -2734,44 +2585,35 @@ METHOD IdeDebugger:buildMdiBrowse( cTitle, aFields, aData )
    ::oUI:mdiBrowsers:addSubWindow( hBrowse[ "mdi" ] )
    hBrowse[ "mdi" ]:hide()
    hBrowse[ "mdi" ]:show()
-
    hBrowse[ "id"  ] := cTitle
    hBrowse[ "rec" ] := 1
    hBrowse[ "dat" ] := {}
    hBrowse[ "bln" ] := dat_
    hBrowse[ "ttl" ] := ""
-
   ::updateData( hBrowse, { hBrowse[ "bln" ] } )
-
    WITH OBJECT hBrowse[ "brw" ] := HbQtBrowseNew( 0, 0, 5, 30 )
       :colorSpec     := "N/W*, N/BG, W+/R*, W+/B"
-
       :goTopBlock    := {|| hBrowse[ "rec" ] := 1 }
       :goBottomBlock := {|| hBrowse[ "rec" ] := Len( hBrowse[ "dat" ] ) }
       :skipBlock     := {| nSkip, nPos | nPos := hBrowse[ "rec" ], ;
                              hBrowse[ "rec" ] := iif( nSkip > 0, Min( Len( hBrowse[ "dat" ] ), hBrowse[ "rec" ] + nSkip ), ;
                                 Max( 1, hBrowse[ "rec" ] + nSkip ) ), hBrowse[ "rec" ] - nPos }
-
       :goPosBlock    := {|n| hBrowse[ "rec" ] := Max( 1, n ) }
       :phyPosBlock   := {|n| hBrowse[ "rec" ] := Max( 1, n ) }
       :firstPosBlock := {|| 1 }
       :lastPosBlock  := {|| Len( hBrowse[ "dat" ] ) }
-
       :addColumn( HbQtColumnNew( "Sr", {|| hBrowse[ "rec" ] } ) )
       :getColumn( 1 ):width   := 2
       :getColumn( 1 ):picture := "@Z 99"
-
       FOR EACH cField IN aFields
          :addColumn( HbQtColumnNew( cField, __fetchBlock( hBrowse, cField:__enumIndex() ) ) )
       NEXT
       :Configure()
-
       :freeze              := 1
       :editEnabled         := .F.
       :horizontalScrollbar := .T.
       :verticalScrollbar   := .T.
    ENDWITH
-
    hBrowse[ "mdi" ] : setWidget( hBrowse[ "brw" ]:oWidget )
    ::setTitle( hBrowse )
    ::oUI:mdiBrowsers:addSubWindow( hBrowse[ "mdi" ] )
@@ -2785,12 +2627,10 @@ METHOD IdeDebugger:setTitle( hBrowser )
 
 METHOD IdeDebugger:updateData( hBrowse, aData )
    LOCAL i, a_, nLen
-
    IF hb_HHasKey( hBrowse, "brw" ) .AND. HB_ISOBJECT( hBrowse[ "brw" ] )
       hBrowse[ "brw" ]:gotop()
       hBrowse[ "brw" ]:forceStable()
    ENDIF
-
    DO WHILE Len( hBrowse[ "dat" ] ) > 0
       hb_ADel( hBrowse[ "dat" ], 1, .T. )
    ENDDO
@@ -2851,7 +2691,6 @@ STATIC FUNCTION __isRowEmpty( oBrw, aXY, oModelIndex )
 METHOD IdeDebugger:manageNavigation( cBrowse, nKey, aXY, oBrw )
    LOCAL oModelIndex, nRow, nCol, cAlias, cOldVal, cValue, cVType, cType, dat_
    LOCAL cObject, cOType
-
    SWITCH nKey
    CASE K_LDBLCLK
       SWITCH cBrowse
@@ -2936,7 +2775,6 @@ METHOD IdeDebugger:manageNavigation( cBrowse, nKey, aXY, oBrw )
          EXIT
       ENDSWITCH
       EXIT
-
    CASE K_ENTER
       SWITCH cBrowse
       CASE "Areas"

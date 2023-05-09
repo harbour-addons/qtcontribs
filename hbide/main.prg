@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -127,34 +127,27 @@ FUNCTION Main( ... )
 
    hb_cdpSelect( "UTF8EX" )
    SET EPOCH TO 1950
-
+   SET DATE TO ANSI
+   SET CENTURY ON
    hb_SetEnv( "__HBIDE__", hb_dirBase() )
-
-   #ifdef HB_IDE_DISTRO
-      LOCAL cBse := hb_dirBase() + ".."
-
-      /* Set the path env variable to Qt's run-time which is used to compile Harbour binaries */
-      hb_setEnv( "PATH", cBse + hb_ps() + "qt" + hb_ps() + "lib" + ;
-                                      hb_osPathListSeparator() + hb_getEnv( "PATH" ) )
-
-      /* Variable is used in hbide.env */
-      hb_setEnv( "HB_IDE_INSTALL", cBse )
-   #endif
-
+#ifdef HB_IDE_DISTRO
+   LOCAL cBse := hb_dirBase() + ".."
+   /* Set the path env variable to Qt's run-time which is used to compile Harbour binaries */
+   hb_setEnv( "PATH", cBse + hb_ps() + "qt" + hb_ps() + "lib" + ;
+                                   hb_osPathListSeparator() + hb_getEnv( "PATH" ) )
+   /* Variable is used in hbide.env */
+   hb_setEnv( "HB_IDE_INSTALL", cBse )
+#endif
    IF hb_FileExists( tmp := hb_dirBase() + hb_libName( "rddads" + hb_libPostfix() ) )
       hRDDADS := hb_libLoad( tmp )
       IF ! Empty( hRDDADS )
          hbide_setAdsAvailable( .t. )
-         // hb_rddadsRegister()
       ENDIF
    ENDIF
-
-   SET DATE TO ANSI
-   SET CENTURY ON
-
-   oTmp := HbIde():new( hb_aParams() )
-   oTmp:create()
-
+   IF .T.
+      oTmp := HbIde():new( hb_aParams() )
+      oTmp:create()
+   ENDIF
    RETURN NIL
 
 
@@ -206,8 +199,6 @@ CLASS HbIde
    DATA   aSrcOnCmdLine                           INIT   {}
    DATA   aHbpOnCmdLine                           INIT   {}
    DATA   aDbfOnCmdLine                           INIT   {}
-
-   //DATA   qLayout
 
    DATA   qTabWidget
    DATA   oTabParent
@@ -348,7 +339,6 @@ CLASS HbIde
    DATA   oDebugStack
    DATA   oDebugWorkAreas
 
-
    METHOD init( aParams )
    METHOD create( aParams )
    METHOD destroy()
@@ -393,9 +383,7 @@ METHOD HbIde:destroy()
 
 
 METHOD HbIde:init( aParams )
-
    hb_HCaseMatch( ::hHeaderFiles, .F. )
-
    DEFAULT aParams TO ::aParams
    ::aParams := aParams
    RETURN self
@@ -407,162 +395,123 @@ METHOD HbIde:create( aParams )
 
    ::oColorizeEffect := QGraphicsColorizeEffect()
 
-   qPixmap := QPixmap( ":/resources/hbide-2017.png" )
-   qSplash := QSplashScreen()
-   qSplash:setPixmap( qPixmap )
-   qSplash:show()
+   qPixmap := QPixmap( ":/resources/hbide-2023.png" )
+   WITH OBJECT qSplash := QSplashScreen()
+      :setPixmap( qPixmap )
+      :show()
+   ENDWITH 
    ::showApplicationCursor( Qt_BusyCursor )
    QApplication():processEvents()
-
    DEFAULT aParams TO ::aParams
    ::aParams := aParams
    ::parseParams()
-
    /* Setup GUI Error Reporting System*/
    hbqt_errorsys()
-
    /* Post self to set/get function - object variables may be needed on functions level */
    hbide_setIde( Self )
-
    /* Editor's Font - TODO: User Managed Interface */
-   ::oFont := XbpFont():new()
-   ::oFont:fixed := .t.
-   ::oFont:create( "10.Courier" )
-
+   WITH OBJECT ::oFont := XbpFont():new()
+      :fixed := .t.
+      :create( "10.Courier" )
+   ENDWITH 
    /* Functions Tag Manager */
    ::oFN := IdeFunctions():new( Self ):create()
-
    /* Skeletons Manager     */
    ::oSK := IdeSkeletons():new( Self ):create()
-
    /* Initiate UI Source Manager */
    ::oUiS := IdeUISrcManager():new( Self ):create()
-
    /* Initiate Project Wizard */
    ::oPWZ := IdeProjectWizard():new( Self ):create()
-
    /* Initialte Project Manager */
    ::oPM := IdeProjManager():new( Self ):create()
-
    /* INI Manager - array base to be removed later */
    ::oINI := IdeINI():new( Self ):create()
    IF ::nRunMode == HBIDE_RUN_MODE_INI
       ::oINI:load( ::cProjIni )
    ENDIF
-
    /* Load Persistent Scripts - hbide_persist_*.prg | hbs */
    hbide_loadPersistentScripts()
-
    /* Load User Dictionaries */
    hbide_loadUserDictionaries( Self )
-
    /* Shortcuts */
    ::oSC := IdeShortcuts():new( Self ):create()
-
    /* Insert command line projects */
    aeval( ::aHbpOnCmdLine, {|e| aadd( ::oINI:aProjFiles, e ) } )
    /* Insert command line sources */
    aeval( ::aSrcOnCmdLine, {|e| aadd( ::oINI:aFiles, hbide_parseSourceComponents( e ) ) } )
-
    /* Store to restore when all preliminary operations are completed */
    cView := ::cWrkView
-
    /* Setup Manager */
    ::oSetup := IdeSetup():new( Self ):create()
    ::oSetup:setBaseColor()
-
    /* Load Code Skeletons */
    hbide_loadSkltns( Self )
-
    /* Parts Manager */
    ::oParts := IdeParts():new( Self ):create()
-
    /* Load IDE|User defined Themes */
    ::oTH := IdeThemes():new( Self, ::oINI:getThemesFile() ):create()
-
    /* DOCKing windows and ancilliary windows */
    ::oDK := IdeDocks():new( Self ):create()
-
    /* Tools Manager */
    ::oTM := IdeToolsManager():new( Self ):create()
-
    /* Actions */
    ::oAC := IdeActions():new( Self ):create()
-
    /* IDE's Main Window */
    ::oDK:buildDialog()
-
    /* Docking Widgets */
    ::oDK:buildDockWidgets()
-
    /* Toolbars */
    ::oAC:buildToolBars()
-
    /* Main Menu */
    ::oAC:buildMainMenu()
-
    /* Initialize ChangeLog Manager */
    ::oCL := IdeChangeLog():new( Self ):create()
-
    /* Initialize Doc Writer Manager */
    ::oDW := IdeDocWriter():new( Self ):create()
-
    /* Once create Find/Replace dialog */
    ::oFR := IdeFindReplace():new( Self ):create()
    ::oFF := IdeFindInFiles():new( Self ):create()
    ::oFM := IdeFunctionsMap():new( Self ):create()
-
    /* Sources Manager */
    ::oSM := IdeSourcesManager():new( Self ):create()
-
    /* Edits Manager */
    ::oEM := IdeEditsManager():new( Self ):create()
-
    /* Harbour Help Object */
    ::oHL := ideHarbourHelp():new( Self ):create()
-
    /* Load Environments */
    ::oEV := IdeEnvironments():new( Self ):create()
-
    /* Home Implementation */
    ::oHM := IdeHome():new( Self ):create()
-
    /* Browser Manager */
    ::oBM := IdeDbuMGR():new( Self ):create()
-
    /* HbIDE debugger */
    ::oDebugger := IdeDebugger():new( Self ):create()
-
    /* Reports Manager */
    //::oRM := HbpReports():new():create( ::oParts:oStackReports )
-
    /* Code Formatter Manager */
    ::oFmt := IdeFormat():new( Self ):create()
-
    /* Console Editor */
    ::oCUI := IdeConsole():new( Self ):create()
-
+   /* Announce application widget */
    __hbqtAppWidget( ::oDlg:oWidget )
-
-   ::oDlg:show()     /* Shifted here - it gives the effect that time opening HbIDE is much less */
-   qSplash:raise()
-
+   IF .T.
+      ::oDlg:show()     /* Shifted here - it gives the effect that time opening HbIDE is much less */
+      qSplash:raise()
+   ENDIF
    /* Fill various elements of the IDE */
    ::oPM:populate()
+   /* Load sources tabs from the last run */
    ::oSM:loadSources()
-
+   /* Titlebar */
    ::updateTitleBar()
    /* Set some last settings */
    ::oPM:setCurrentProject( ::cWrkProject, .f. )
-
    /* Again to be displayed in Statusbar */
    ::setCodec( ::cWrkCodec, .F. )
    ::oDK:setStatusText( SB_PNL_THEME, ::cWrkTheme )
-
    /* Display cWrkEnvironment in StatusBar */
    ::oDK:dispEnvironment( ::cWrkEnvironment )
-
-   #if 0 /* for screen capture */
+#if 0 /* for screen capture */
    n := seconds()
    DO WHILE .t.
       IF seconds() > n + 10
@@ -570,12 +519,10 @@ METHOD HbIde:create( aParams )
       ENDIF
       QApplication():processEvents()
    ENDDO
-   #endif
-
+#endif
    IF empty( ::cWrkFolderLast )
       ::cWrkFolderLast := hb_dirBase() + "projects" + hb_ps()
    ENDIF
-
    /* Request Main Window to Appear on the Screen */
    ::oHM:refresh()
 
@@ -583,16 +530,15 @@ METHOD HbIde:create( aParams )
 
    /* Refresh Stylesheet for all components at once */
    ::oDK:animateComponents( ::nAnimantionMode )
-
    /* Restore Settings - just before making application visible */
    hbide_restSettings( Self )
    IF ! ::oINI:lShowHideDocks
       ::oINI:lShowHideDocks := .t.
       ::oINI:showHideDocks()
    ENDIF
-
-   ::oDockB2:hide() /* This widget never contains anything so must be forced to hide */
-
+   /* This widget never contains anything so must be forced to hide */
+   ::oDockB2:hide() 
+   /* Manage Dock Windoes */
    IF ::nRunMode == HBIDE_RUN_MODE_PRG
       ::oDockPT:hide()
       ::oDockED:hide()
@@ -607,36 +553,34 @@ METHOD HbIde:create( aParams )
       ::oDK:setView( "Main" )
       ::oDK:setView( cView )
    ENDIF
-
-   IF ! empty( ::aDbfOnCmdLine )      /* Will take priority and allot more width to browser than editor : logical */
+   /* Will take priority and allot more width to browser than editor : logical */
+   IF ! empty( ::aDbfOnCmdLine )      
       ::oBM:oDbu:open( ::aDbfOnCmdLine )
       ::oParts:setStack( IDE_PART_DBU )
    ENDIF
-
-   ::qTabWidget:setCurrentIndex( -1 )
-   ::qTabWidget:setCurrentIndex( 0 )
-   ::qTabWidget:setCurrentIndex( ::qTabWidget:count() - 1 )
-   ::qTabWidget:setCurrentIndex( val( ::oINI:cRecentTabIndex ) )
-
-   ::showApplicationCursor()
-   qSplash:close()
-   qSplash := NIL
-   qPixMap := NIL
-
+   WITH OBJECT ::qTabWidget
+      :setCurrentIndex( -1 )
+      :setCurrentIndex( 0 )
+      :setCurrentIndex( ::qTabWidget:count() - 1 )
+      :setCurrentIndex( val( ::oINI:cRecentTabIndex ) )
+   ENDWITH
+   IF .T.
+      ::showApplicationCursor()
+      qSplash:close()
+      qSplash := NIL
+      qPixMap := NIL
+   ENDIF
    /* Load tags last tagged projects */
    ::oFN:loadTags( ::oINI:aTaggedProjects, .F. )
-
    /* Run Auto Scripts */
    hbide_execAutoScripts()
-
    /* Initialize plugins  */
    hbide_loadPlugins( Self, "1.0" )
-
    /* Fill auto completion lists - it must be the last action and be present here always */
    ::oEM:updateCompleter()
    ::oAC:qSelToolbar:hide()
-
-   DO WHILE .t.
+   /* Enter the application event loop */
+   DO WHILE .T. 
       nEvent := AppEvent( @mp1, @mp2, @oXbp )
       IF nEvent != 0
          IF nEvent == xbeP_Quit
@@ -644,7 +588,6 @@ METHOD HbIde:create( aParams )
             ::oINI:save()
             EXIT
          ENDIF
-
          IF nEvent == xbeP_Close .AND. oXbp == ::oDlg
             IF hbide_setClose()
                ::lQuitting := .t.
@@ -654,13 +597,12 @@ METHOD HbIde:create( aParams )
                EXIT
             ENDIF
          ENDIF
-
          oXbp:handleEvent( nEvent, mp1, mp2 )
       ENDIF
    ENDDO
-
+   /* Announce to other parts of hbIDE to quit the operation, if any, as we are quitting */
    hbide_setExitCuiEd( .t. )
-
+   /* Cleanup */
    DbCloseAll()
    ::cProjIni := NIL
    hbide_setIde( NIL )
@@ -671,10 +613,8 @@ METHOD HbIde:create( aParams )
 METHOD HbIde:parseParams()
    LOCAL s, cPath, cName, cExt, cCurPath
    LOCAL aIni := {}
-
    FOR EACH s IN ::aParams
       s := alltrim( s )
-
       DO CASE
       CASE left( s, 1 ) == "-"
          // Switches, futuristic
@@ -708,7 +648,6 @@ METHOD HbIde:parseParams()
          ENDCASE
       ENDCASE
    NEXT
-
    IF !empty( aIni )                       /* Discard aHbp */
       ::cProjIni := aIni[ 1 ]
       ::nRunMode := HBIDE_RUN_MODE_INI
@@ -730,7 +669,6 @@ METHOD HbIde:parseParams()
 
 METHOD HbIde:showApplicationCursor( nCursor )
    LOCAL qCrs
-
    IF empty( nCursor )
       QApplication():restoreOverrideCursor()
    ELSE
@@ -741,7 +679,6 @@ METHOD HbIde:showApplicationCursor( nCursor )
 
 
 METHOD HbIde:execAction( cKey )
-
    SWITCH cKey
    CASE "Hide"                 ; ::oINI:showHideDocks()       ; EXIT
    CASE "SaveState"            ; ::oINI:save()                ; EXIT
@@ -840,14 +777,14 @@ METHOD HbIde:execAction( cKey )
    CASE "ToggleBuildInfo"
    CASE "ToggleFuncList"       ;                                               ; EXIT
    ENDSWITCH
-   ::manageFocusInEditor()
+   IF .T.
+      ::manageFocusInEditor()
+   ENDIF
    RETURN nil
 
 
 METHOD HbIde:execEditorAction( cKey )
-
    SWITCH cKey
-
    CASE "Print"                ;  ::oEM:printPreview()           ;  EXIT
    CASE "Undo"                 ;  ::oEM:undo()                   ;  EXIT
    CASE "Redo"                 ;  ::oEM:redo()                   ;  EXIT
@@ -935,11 +872,10 @@ METHOD HbIde:execProjectAction( cKey )
 
 METHOD HbIde:setPosAndSizeByIniEx( qWidget, cParams )
    LOCAL aRect
-
    IF !empty( cParams )
       aRect := hb_atokens( cParams, "," )
       aeval( aRect, {|e,i| aRect[ i ] := val( e ) } )
-
+      //
       qWidget:move( aRect[ 1 ], aRect[ 2 ] )
       qWidget:resize( aRect[ 3 ], aRect[ 4 ] )
    ENDIF
@@ -948,11 +884,9 @@ METHOD HbIde:setPosAndSizeByIniEx( qWidget, cParams )
 
 METHOD HbIde:setPosByIniEx( qWidget, cParams )
    LOCAL aRect
-
    IF !empty( cParams )
       aRect := hb_atokens( cParams, "," )
       aeval( aRect, {|e,i| aRect[ i ] := val( e ) } )
-
       qWidget:move( aRect[ 1 ], aRect[ 2 ] )
    ENDIF
    RETURN Self
@@ -960,7 +894,6 @@ METHOD HbIde:setPosByIniEx( qWidget, cParams )
 
 METHOD HbIde:manageFocusInEditor()
    LOCAL qEdit
-
    IF !empty( qEdit := ::oEM:getEditCurrent() )
       qEdit:setFocus( 0 )
    ENDIF
@@ -969,7 +902,6 @@ METHOD HbIde:manageFocusInEditor()
 
 METHOD HbIde:removeProjectTree( aPrj )
    LOCAL oProject, nIndex, oParent, oP, n
-
    oProject := IdeProject():new( Self, aPrj )
    IF empty( oProject:title )
       RETURN Self
@@ -986,9 +918,7 @@ METHOD HbIde:removeProjectTree( aPrj )
          hb_adel( ::aProjData, n, .t. )
       ENDDO
    ENDIF
-
    oP := oParent
-
    SWITCH oProject:type
    CASE "Executable"
       oParent := ::aProjData[ 1, 1 ]
@@ -1000,7 +930,6 @@ METHOD HbIde:removeProjectTree( aPrj )
       oParent := ::aProjData[ 3, 1 ]
       EXIT
    ENDSWITCH
-
    nIndex := aScan( ::aProjData, {|e_| e_[ TRE_OITEM ] == oP } )
    oParent:delItem( oP )
    hb_adel( ::aProjData, nIndex, .t. )
@@ -1009,13 +938,11 @@ METHOD HbIde:removeProjectTree( aPrj )
 
 METHOD HbIde:updateProjectTree( aPrj )
    LOCAL oProject, n, oSource, oItem, nProjExists, oP, oParent, a_:={}, b_
-
+   //
    oProject := IdeProject():new( Self, aPrj )
-
    IF empty( oProject:title )
       RETURN Self
    ENDIF
-
    SWITCH oProject:type
    CASE "Executable"
       oParent := ::aProjData[ 1, 1 ]
@@ -1027,9 +954,7 @@ METHOD HbIde:updateProjectTree( aPrj )
       oParent := ::aProjData[ 3, 1 ]
       EXIT
    ENDSWITCH
-
    nProjExists := aScan( ::aProjData, {|e_| e_[ TRE_TYPE ] == "Project Name" .AND. e_[ TRE_ORIGINAL ] == oProject:title } )
-
    IF nProjExists > 0
       nProjExists := aScan( oParent:aChilds, {|o| o:caption == oProject:title } )
       IF nProjExists > 0
@@ -1070,15 +995,13 @@ METHOD HbIde:updateProjectTree( aPrj )
 
 METHOD HbIde:manageItemSelected( oXbpTreeItem )
    LOCAL n, cHbp, cSource, cExt
-
-   IF     oXbpTreeItem == ::oProjRoot
+   IF oXbpTreeItem == ::oProjRoot
       n := -1
    ELSEIF oXbpTreeItem == ::oOpenedSources
       n := -2
    ELSE
       n := ascan( ::aProjData, {|e_| e_[ 1 ] == oXbpTreeItem } )
    ENDIF
-
    DO CASE
    CASE n ==  0  // Source File - nothing to do
    CASE n == -2  // "Files"
@@ -1086,7 +1009,6 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
    CASE ::aProjData[ n, TRE_TYPE ] == "Project Name"
       cHbp := ::oPM:getProjectFileNameFromTitle( ::aProjData[ n, TRE_ORIGINAL ] )
       ::oPM:loadProperties( cHbp, .f., .t., .f. )
-
    CASE ::aProjData[ n, TRE_TYPE ] == "Source File"
       cSource := AllTrim( hbide_stripFilter( ::aProjData[ n, TRE_ORIGINAL ] ) )
       IF Left( cSource, 2 ) == ".."               /* Assumed that relative paths for upper folder than .hbp base path start with ".." */
@@ -1098,12 +1020,10 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
       ELSE
          ::oSM:editSource( cSource )
       ENDIF
-
    CASE ::aProjData[ n, TRE_TYPE ] == "Opened Source"
       ::oEM:setSourceVisible( ::aProjData[ n, TRE_DATA ] )
-
    CASE ::aProjData[ n, TRE_TYPE ] == "Path"
-
+      //
    ENDCASE
    RETURN Self
 
@@ -1111,9 +1031,7 @@ METHOD HbIde:manageItemSelected( oXbpTreeItem )
 METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
    LOCAL n, cHbp, s, cProjectName
    LOCAL aPops := {}, aSub :={}, aEnv :={}
-
    HB_SYMBOL_UNUSED( mp2 )
-
    IF oXbpTreeItem == ::oProjRoot
       n  := -1
    ELSEIF oXbpTreeItem == ::oOpenedSources
@@ -1121,7 +1039,6 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
    ELSE
       n := ascan( ::aProjData, {|e_| e_[ 1 ] == oXbpTreeItem } )
    ENDIF
-
    DO CASE
    CASE n ==  0  // Source File
    CASE n == -2  // "Files"
@@ -1140,10 +1057,8 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
       ENDIF
       //
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
-
    CASE ::aProjData[ n, TRE_TYPE ] == "Project Name"
       cProjectName := oXbpTreeItem:caption
-
       cHbp := hbide_pathToOSPath( ::oPM:getProjectFileNameFromTitle( ::aProjData[ n, TRE_ORIGINAL ] ) )
       //
       IF !( Alltrim( Upper( ::cWrkProject ) ) == Alltrim( Upper( cProjectName ) ) )
@@ -1184,14 +1099,11 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
       aadd( aPops, { "" } )
       aadd( aPops, { ::oAC:getAction( "Dictionary"      )     , {|v| v := ::oFN:tagProject( ::aProjData[ n, TRE_ORIGINAL ], .F., .F. ), ;
                                                                      MsgBox( iif( Empty( v ), "Not Succeeded", v ), "Dictionary Creation" ) } } )
-
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
-
    CASE ::aProjData[ n, TRE_TYPE ] == "Source File"
       aadd( aPops, { "Collapse Parent", {|| oXbpTreeItem:getParentItem():expand( .F. ) } } )
       //
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
-
    CASE ::aProjData[ n, TRE_TYPE ] == "Opened Source"
       n := ::oEM:getTabBySource( ::aProjData[ n, 5 ] )
       //
@@ -1204,22 +1116,17 @@ METHOD HbIde:manageProjectContext( mp1, mp2, oXbpTreeItem )
       aadd( aPops, { "Apply Theme"                       , {|| ::oEM:getEditorCurrent():applyTheme() } } )
       //
       hbide_ExecPopup( aPops, mp1, ::oProjTree:oWidget )
-
    CASE ::aProjData[ n, 2 ] == "Path"
-
+      //
    ENDCASE
-
    ::manageFocusInEditor()
    RETURN Self
 
 
 METHOD HbIde:updateFuncList( lSorted )
    LOCAL aFunc :={}, a_, nIndex
-
    DEFAULT lSorted TO ::lSortedFuncList
-
    ::lSortedFuncList := lSorted
-
    ::oFuncList:clear()
    IF !empty( ::aTags )
       IF ::lSortedFuncList
@@ -1241,23 +1148,19 @@ METHOD HbIde:updateFuncList( lSorted )
 
 METHOD HbIde:showCodeFregment( oXbp )
    LOCAL xTmp2, n, i, cAnchor, oEdit, lFound, qCursor, nLine, cCode, nVPos
-
    xTmp2 := oXbp:text()
-
    IF ( n := ascan( ::aTags, {|e_| xTmp2 == e_[ 7 ] } ) ) > 0
       nLine := ::aTags[ n,3 ]
       cAnchor := trim( ::aText[ nLine ] )
       IF !empty( oEdit := ::oEM:getEditCurrent() )
          qCursor := oEdit:textCursor()
          nVPos := oEdit:verticalScrollBar():value()
-
          IF ! ( lFound := oEdit:find( cAnchor, QTextDocument_FindCaseSensitively ) )
             lFound := oEdit:find( cAnchor, QTextDocument_FindBackward + QTextDocument_FindCaseSensitively )
          ENDIF
          IF lFound
             oEdit:setTextCursor( QCursor )
             oEdit:verticalScrollBar():setValue( nVPos )
-
             cCode := ""
             qCursor:movePosition( QTextCursor_Start )
             IF Len( ::aTags ) == n
@@ -1289,10 +1192,8 @@ METHOD HbIde:showCodeFregment( oXbp )
 
 METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme, lAutoPrintPreview )
    LOCAL qWidget, qH
-
    DEFAULT cTheme TO "Pritpal's Favourite"
    DEFAULT lAutoPrintPreview TO .F.
-
    WITH OBJECT qWidget := QPlainTextEdit( ::oDlg:oWidget )
       :setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
       :setWindowTitle( cTitle )
@@ -1322,14 +1223,11 @@ METHOD HbIde:showFragment( cCode, cTitle, oIcon, cTheme, lAutoPrintPreview )
 
 METHOD HbIde:showHeaderFile( cCode, cTitle, oIcon, lSave )
    LOCAL qWidget, qH
-
    DEFAULT lSave TO .T.
-
    IF ! hb_HHasKey( ::hHeaderFiles, cTitle ) .OR. Empty( ::hHeaderFiles[ cTitle ] )
-
       WITH OBJECT qWidget := QPlainTextEdit( ::oDlg:oWidget )
          ::hHeaderFiles[ cTitle ] := qWidget
-
+         //
          :setWindowFlags( hb_bitOr( Qt_Sheet, Qt_CustomizeWindowHint, Qt_WindowTitleHint, Qt_WindowCloseButtonHint ) )
          :setWindowTitle( cTitle )
          :setWindowIcon( oIcon )
@@ -1362,20 +1260,19 @@ METHOD HbIde:showHeaderFile( cCode, cTitle, oIcon, lSave )
 
 METHOD HbIde:printFragment( oPlainTextEdit )
    LOCAL qDlg := QPrintPreviewDialog( oPlainTextEdit )
-
-   qDlg:setWindowTitle( "HbIDE Fragment Previewer" )
-   qDlg:connect( "paintRequested(QPrinter*)", {|p| oPlainTextEdit:print( p ) } )
-   qDlg:resize( 500, 600 )
-   qDlg:exec()
+   WITH OBJECT qDlg
+      :setWindowTitle( "HbIDE Fragment Previewer" )
+      :connect( "paintRequested(QPrinter*)", {|p| oPlainTextEdit:print( p ) } )
+      :resize( 500, 600 )
+      :exec()
+   ENDWITH
    RETURN self
 
 
 METHOD HbIde:gotoFunction( mp1, mp2, oListBox )
    LOCAL n, cAnchor, oEdit, lFound, nHPos, nVPos, qCursor
-
    mp1 := oListBox:getData()
    mp2 := oListBox:getItem( mp1 )
-
    IF ( n := ascan( ::aTags, {|e_| mp2 == e_[ 7 ] } ) ) > 0
       cAnchor := trim( ::aText[ ::aTags[ n,3 ] ] )
       IF !empty( oEdit := ::oEM:getEditCurrent() )
@@ -1397,9 +1294,7 @@ METHOD HbIde:gotoFunction( mp1, mp2, oListBox )
 
 METHOD HbIde:manageFuncContext( mp1, mp2, oXbp )
    LOCAL aPops := {}
-
    HB_SYMBOL_UNUSED( mp2 )
-
    IF ::oFuncList:numItems() > 0
       aadd( aPops, { "Show Sorted"           , {|| ::updateFuncList( .t. ) } } )
       aadd( aPops, { "Show in Natural Order" , {|| ::updateFuncList( .f. ) } } )
@@ -1411,9 +1306,7 @@ METHOD HbIde:manageFuncContext( mp1, mp2, oXbp )
       aadd( aPops, { "Print"                 , {|| NIL } } )
       aadd( aPops, { "Delete"                , {|| NIL } } )
       aadd( aPops, { "Move to another source", {|| NIL } } )
-
       hbide_ExecPopup( aPops, mp1, ::oFuncList:oWidget )
-
       ::manageFocusInEditor()
    ENDIF
    RETURN Self
@@ -1422,40 +1315,33 @@ METHOD HbIde:manageFuncContext( mp1, mp2, oXbp )
 METHOD HbIde:createTags()
    LOCAL aSumData := ""
    LOCAL cComments, aSummary, i, cPath, cSource, cExt
-
    ::aTags := {}
-
    FOR i := 1 TO Len( ::aSources )
       HB_FNameSplit( ::aSources[ i ], @cPath, @cSource, @cExt )
-
       IF Upper( cExt ) $ ".PRG.HB.CPP"
          IF !empty( ::aText := hbide_readSource( ::aSources[ i ] ) )
             aSumData  := {}
-
             cComments := CheckComments( ::aText )
             aSummary  := Summarize( ::aText, cComments, @aSumData , iif( Upper( cExt ) $ ".PRG.HB", 9, 1 ) )
             ::aTags   := UpdateTags( ::aSources[ i ], aSummary, aSumData, @::aFuncList, @::aLines, ::aText )
-
-            #if 0
+#if 0
             IF !empty( aTags )
                aeval( aTags, {|e_| aadd( ::aTags, e_ ) } )
                ::hData[ cSource+cExt ] := { a[ i ], aTags, aclone( ::aText ), cComments, ::aFuncList, ::aLines }
                aadd( ::aSrcLines, ::aText   )
                aadd( ::aComments, cComments )
             ENDIF
-            #endif
+#endif
          ENDIF
       ENDIF
    NEXT
    RETURN NIL
-
 
 /* Update the project menu to show current info.
  * 03/01/2010 - 12:48:18 - vailtom
  */
 METHOD HbIde:updateProjectMenu()
    LOCAL oItem := hbide_mnuFindItem( Self, 'Project' )
-
    IF Empty( oItem )
       RETURN Self
    ENDIF
@@ -1474,15 +1360,12 @@ METHOD HbIde:updateProjectMenu()
 METHOD HbIde:updateTitleBar()
    LOCAL cTitle := "Harbour IDE (r" + __HBQT_REVISION__ + ")"
    LOCAL oEdit
-
    IF Empty( ::oDlg )
       RETURN Self
    ENDIF
-
    IF !Empty( ::cWrkProject )
       cTitle += " [" + ::cWrkProject + "] "
    ENDIF
-
    IF !empty( oEdit := ::oEM:getEditorCurrent() )
       IF Empty( oEdit:source() )
          cTitle += " [" + oEdit:oTab:caption + "]"
@@ -1490,7 +1373,6 @@ METHOD HbIde:updateTitleBar()
          cTitle += " [" + oEdit:source() + "]"
       ENDIF
    ENDIF
-
    ::oDlg:Title := cTitle
    ::oDlg:oWidget:setWindowTitle( ::oDlg:Title )
    RETURN Self
@@ -1502,10 +1384,8 @@ METHOD HbIde:setCodePage( cCodePage )
 
 
 METHOD HbIde:setCodec( cCodec, lMenuOption )
-
    DEFAULT cCodec      TO ::cWrkCodec
    DEFAULT lMenuOption TO .T.
-
    IF lMenuOption
       IF hbide_getYesNo( "Want to make this codepage the default ?", "", cCodec, ::oDlg:oWidget )
          ::cWrkCodec := cCodec // hbide_getCDPforID( cCodec )
@@ -1516,15 +1396,13 @@ METHOD HbIde:setCodec( cCodec, lMenuOption )
 
 
 METHOD HbIde:testPainter( qPainter )
-
    HB_TRACE( HB_TR_DEBUG, "qPainter:isActive()", qPainter:isActive() )
-
-   qPainter:setPen( Qt_red )
-   qPainter:drawEllipse( 100,300,100,150 )
-   qPainter:setFont( ::oFont:oWidget )
-   qPainter:drawText( 100,300,"Harbour" )
-
-   //qPainter:fillRect( 100, 100, 500, 500, QColor( 175, 175, 255 ) )
+   WITH OBJECT qPainter
+      :setPen( Qt_red )
+      :drawEllipse( 100,300,100,150 )
+      :setFont( ::oFont:oWidget )
+      :drawText( 100,300,"Harbour" )
+   ENDWITH
    RETURN NIL
 
 

@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2013-2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -4371,24 +4371,19 @@ METHOD HbQtMdiBrowser:selectAField()
 
 STATIC FUNCTION hbide_pathToOSPath( cPath )
    LOCAL n
-
    cPath := strtran( cPath, "//", hb_ps() )
    cPath := strtran( cPath, "/" , hb_ps() )
    cPath := strtran( cPath, "\\", hb_ps() )
    cPath := strtran( cPath, "\" , hb_ps() )
-
    IF ( n := at( ":", cPath ) ) > 0
       cPath := substr( cPath, 1, n - 1 ) + substr( cPath, n )
    ENDIF
-
    RETURN cPath
 
 
 STATIC FUNCTION hbide_array2string( a_, cDlm )
    LOCAL s := ""
-
    aeval( a_, {|e| s += e + cDlm } )
-
    RETURN s
 
 
@@ -4409,7 +4404,6 @@ FUNCTION hbdbu_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lAllowMul
       :setFilter( QDir_AllDirs + QDir_Files + QDir_NoDotAndDotDot )
       :setFileMode( iif( lAllowMulti, QFileDialog_ExistingFiles, QFileDialog_ExistingFile ) )
    ENDWITH
-
    nRes := oDlg:exec()
    IF nRes > 0
       oList := oDlg:selectedFiles()
@@ -4418,7 +4412,6 @@ FUNCTION hbdbu_fetchAFile( oWnd, cTitle, cFilter, cDftDir, cDftSuffix, lAllowMul
       NEXT
    ENDIF
    oDlg:setParent( QWidget() )
-
    RETURN iif( nRes == 0, NIL, iif( lAllowMulti, aFiles, aFiles[ 1 ] ) )
 
 

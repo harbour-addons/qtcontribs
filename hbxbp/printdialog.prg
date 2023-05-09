@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              08Jul2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpPrintDialog INHERIT XbpWindow
 
@@ -96,84 +91,69 @@ CLASS XbpPrintDialog INHERIT XbpWindow
    DATA     pPrinter                               PROTECTED
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrintDialog:init( oParent, oOwner )
-
    ::xbpWindow:init( oParent, oOwner )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrintDialog:create( oParent, oOwner )
-
    ::xbpWindow:create( oParent, oOwner )
-
-   ::oWidget := QPrintDialog()
-
-   ::oWidget:connect( "accepted(QPrinter*)", {|p| ::pPrinter := p } )
-
+   WITH OBJECT ::oWidget := QPrintDialog()
+      :connect( "accepted(QPrinter*)", {|p| ::pPrinter := p } )
+   ENDWITH 
    ::postCreate()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrintDialog:destroy()
-
    IF len( ::aConnections ) > 0
       ::aConnections := {}
    ENDIF
-
    ::oWidget := NIL
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpPrintDialog:display( oXbpPrinter )
    LOCAL nResult, nOpt, n
 
    IF HB_ISOBJECT( oXbpPrinter )
       // Parameters be based onto that
-
    ENDIF
-
-   ::oWidget:setOption( QAbstractPrintDialog_None               , .T.                 )
-   ::oWidget:setOption( QAbstractPrintDialog_PrintToFile        , ::enablePrintToFile )
-   ::oWidget:setOption( QAbstractPrintDialog_PrintSelection     , ::enableMark        )
-   ::oWidget:setOption( QAbstractPrintDialog_PrintPageRange     , ::pageRange[ 1 ] > 0 .and. ::pageRange[ 2 ] > 0 )
-   ::oWidget:setOption( QAbstractPrintDialog_PrintCollateCopies , ::enableCollate     )
-
-   IF ::pageRange[ 1 ] > 0 .and. ::pageRange[ 2 ] > 0
-      ::oWidget:setMinMax( ::pageRange[ 1 ], ::pageRange[ 2 ] )
-      ::oWidget:setFromTo( ::pageRange[ 1 ], ::pageRange[ 2 ] )
-   ENDIF
-
-   DO CASE
-   CASE ::printRange == XBPPDLG_PRINT_ALLPAGES
-      ::oWidget:setPrintRange( QAbstractPrintDialog_AllPages  )
-   CASE ::printRange == XBPPDLG_PRINT_MARK
-      ::oWidget:setPrintRange( QAbstractPrintDialog_Selection )
-   CASE ::printRange == XBPPDLG_PRINT_PAGERANGE
-      ::oWidget:setPrintRange( QAbstractPrintDialog_PageRange )
-   ENDCASE
-
+   WITH OBJECT ::oWidget
+      :setOption( QAbstractPrintDialog_None               , .T.                 )
+      :setOption( QAbstractPrintDialog_PrintToFile        , ::enablePrintToFile )
+      :setOption( QAbstractPrintDialog_PrintSelection     , ::enableMark        )
+      :setOption( QAbstractPrintDialog_PrintPageRange     , ::pageRange[ 1 ] > 0 .and. ::pageRange[ 2 ] > 0 )
+      :setOption( QAbstractPrintDialog_PrintCollateCopies , ::enableCollate     )
+      IF ::pageRange[ 1 ] > 0 .and. ::pageRange[ 2 ] > 0
+         :setMinMax( ::pageRange[ 1 ], ::pageRange[ 2 ] )
+         :setFromTo( ::pageRange[ 1 ], ::pageRange[ 2 ] )
+      ENDIF
+      DO CASE
+      CASE ::printRange == XBPPDLG_PRINT_ALLPAGES
+         :setPrintRange( QAbstractPrintDialog_AllPages  )
+      CASE ::printRange == XBPPDLG_PRINT_MARK
+         :setPrintRange( QAbstractPrintDialog_Selection )
+      CASE ::printRange == XBPPDLG_PRINT_PAGERANGE
+         :setPrintRange( QAbstractPrintDialog_PageRange )
+      ENDCASE
+   ENDWITH
    nResult := ::oWidget:exec()
 
    IF nResult == QDialog_Accepted
-      IF !HB_ISOBJECT( oXbpPrinter )
+      IF ! HB_ISOBJECT( oXbpPrinter )
          oXbpPrinter := XbpPrinter():new()
          oXbpPrinter:oWidget := QPrinter()
       ENDIF
-      oXbpPrinter:oWidget           := QPrinter( ::pPrinter )
-      oXbpPrinter:oPrintEngine      := QPrintEngine()
-      oXbpPrinter:oPrintEngine      := oXbpPrinter:oWidget:printEngine()
-
-      oXbpPrinter:setDevName( oXbpPrinter:oWidget:printerName() )
-
-      ::numCopies   := oXbpPrinter:setNumCopies()
-      ::collate     := oXbpPrinter:setCollationMode()
+      WITH OBJECT oXbpPrinter
+         :oWidget           := QPrinter( ::pPrinter )
+         :oPrintEngine      := QPrintEngine()
+         :oPrintEngine      := oXbpPrinter:oWidget:printEngine()
+         :setDevName( :oWidget:printerName() )
+         ::numCopies   := :setNumCopies()
+         ::collate     := :setCollationMode()
+      ENDWITH
 
       nOpt := ::oWidget:options()
       ::printToFile := hb_bitAnd( nOpt, QAbstractPrintDialog_PrintToFile ) == QAbstractPrintDialog_PrintToFile
@@ -183,9 +163,6 @@ METHOD XbpPrintDialog:display( oXbpPrinter )
 
       ::pageRangeSelected := { oXbpPrinter:oWidget:fromPage(), oXbpPrinter:oWidget:toPage() }
    ENDIF
-
    ::destroy()
-
    RETURN oXbpPrinter
 
-/*----------------------------------------------------------------------*/

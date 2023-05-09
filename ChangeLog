@@ -16,6 +16,132 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2023-05-08 22:27 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r483)
+  * hbqt/qtgui/hbqt_version.ch
+    % Updated for r483.
+
+  * hbdbu/dbu.prg
+
+  * hbide/actions.prg
+  * hbide/changelog.prg
+  * hbide/console.prg
+  * hbide/dbumgr.prg
+  * hbide/debugger.prg
+  * hbide/dict.prg
+  * hbide/docks.prg
+  * hbide/docwriter.prg
+  * hbide/editor.prg
+  * hbide/environ.prg
+  * hbide/findreplace.prg
+  * hbide/format.prg
+  * hbide/functions.prg
+  * hbide/harbourhelp.prg
+  * hbide/hbqtoolbar.prg
+  * hbide/home.prg
+  * hbide/main.prg
+  * hbide/misc.prg
+  * hbide/object.prg
+  * hbide/parts.prg
+  * hbide/plugins.prg
+  * hbide/projectwizard.prg
+  * hbide/projmanager.prg
+  * hbide/saveload.prg
+  * hbide/shortcuts.prg
+  * hbide/skeletons.prg
+  * hbide/sources.prg
+  * hbide/stylesheets.prg
+  * hbide/tags.prg
+  * hbide/themes.prg
+  * hbide/tools.prg
+  * hbide/uisrcmanager.prg
+  * hbide/wizard.prg
+
+  * hbqtwidgets/alert.prg
+  * hbqtwidgets/charts.prg
+  * hbqtwidgets/dashboard.prg
+  * hbqtwidgets/dbucreate.prg
+  * hbqtwidgets/editor.prg
+  * hbqtwidgets/getlist.prg
+  * hbqtwidgets/getsys.prg
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtcolumn.prg
+  * hbqtwidgets/hbqtdbu.prg
+  * hbqtwidgets/hbqtevent.prg
+  * hbqtwidgets/hilighter.prg
+  * hbqtwidgets/httpclient.prg
+  * hbqtwidgets/imageeditor.prg
+  * hbqtwidgets/keyboard.prg
+  * hbqtwidgets/menues.prg
+  * hbqtwidgets/messages.prg
+  * hbqtwidgets/misc.prg
+  * hbqtwidgets/parselogs.prg
+  * hbqtwidgets/previewer.prg
+  * hbqtwidgets/properties.prg
+  * hbqtwidgets/scripts.prg
+  * hbqtwidgets/signature.prg
+  * hbqtwidgets/silverlight.prg
+  * hbqtwidgets/slidinglist.prg
+  * hbqtwidgets/statusbar.prg
+  * hbqtwidgets/timeouts.prg
+  * hbqtwidgets/toolbar.prg
+  * hbqtwidgets/toolbarex.prg
+  * hbqtwidgets/treeview.prg
+  * hbqtwidgets/visualitems.prg
+  * hbqtwidgets/visualizer.prg
+
+  * hbxbp/3state.prg
+  * hbxbp/appevent.prg
+  * hbxbp/bitmap.prg
+  * hbxbp/browse.prg
+  * hbxbp/checkbox.prg
+  * hbxbp/clipboard.prg
+  * hbxbp/combobox.prg
+  * hbxbp/crt.prg
+  * hbxbp/dataref.prg
+  * hbxbp/dialog.prg
+  * hbxbp/filedialog.prg
+  * hbxbp/fontdialog.prg
+  * hbxbp/generic.prg
+  * hbxbp/gra.prg
+  * hbxbp/hbpprocess.prg
+  * hbxbp/htmlviewer.prg
+  * hbxbp/listbox.prg
+  * hbxbp/menubar.prg
+  * hbxbp/mle.prg
+  * hbxbp/parthandler.prg
+  * hbxbp/presspace.prg
+  * hbxbp/printdialog.prg
+  * hbxbp/printer.prg
+  * hbxbp/pushbutton.prg
+  * hbxbp/radiobutton.prg
+  * hbxbp/rtf.prg
+  * hbxbp/scrollbar.prg
+  * hbxbp/sle.prg
+  * hbxbp/spinbutton.prg
+  * hbxbp/static.prg
+  * hbxbp/statusbar.prg
+  * hbxbp/style.prg
+  * hbxbp/tabpage.prg
+  * hbxbp/toolbar.prg
+  * hbxbp/treeview.prg
+  * hbxbp/window.prg
+    % Formatting.
+    % Extensive use of WITH OBJECT / ENDWITH.
+      Enhances the readability and helps constructing the code in better way.
+    % Extensive use of IF .T. / ENDIF.
+      Helps constructing the code in logical groups. 
+    % Removed blank lines as much as possible.
+      Enhances grasping of logic flow of code greatly.
+    % Copyright year bump ????-2023.
+           
+  + hbide/resources/hbide-2023.png
+  * hbide/hbide.qrc
+  + hbqtwidgets/resources/hbdbu-2023.png
+  * hbqtwidgets/hbqtwidgets.qrc
+  + hbdbu/resources/hbdbu-2023.png
+  * hbdbu/dbu.qrc
+    + Added: HbIDE and HbDBU splash images displaying current copyright year.
+
 2023-05-01 08:54 UTC-0800 Pritpal Bedi (bedipritpal at hotmail.com)(r482)
   * hbqt/qtgui/hbqt_version.ch
     % Updated for r482

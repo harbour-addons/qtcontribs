@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2013-2016 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -137,46 +137,47 @@ STATIC s_oMem
 
 
 FUNCTION Main( ... )
-   LOCAL oMgr, oSplash
-
-   s_oMem := QSharedMemory( "HbDBU" )
-   IF s_oMem:create( 255 )
-      s_isDbfServer := .T.
-   ELSE
-      IF HB_ISARRAY( hb_AParams() ) .AND. ! Empty( hb_AParams() )
-         IF Lower( Right( hb_AParams()[ 1 ], 4 ) ) == ".dbf"
-            IF s_oMem:error() == QSharedMemory_AlreadyExists
-               s_oMem:attach()
-               s_oMem:hbWriteData( hb_AParams()[ 1 ] )
-               s_oMem:detach()
-               RETURN NIL
+   LOCAL oSplash
+   
+   WITH OBJECT s_oMem := QSharedMemory( "HbDBU" )
+      IF s_oMem:create( 255 )
+         s_isDbfServer := .T.
+      ELSE
+         IF HB_ISARRAY( hb_AParams() ) .AND. ! Empty( hb_AParams() )
+            IF Lower( Right( hb_AParams()[ 1 ], 4 ) ) == ".dbf"
+               IF :error() == QSharedMemory_AlreadyExists
+                  :attach()
+                  :hbWriteData( hb_AParams()[ 1 ] )
+                  :detach()
+                  RETURN NIL
+               ENDIF
             ENDIF
          ENDIF
       ENDIF
-   ENDIF
-
+   ENDWITH  
    hbqt_errorSys()
    QResource():registerResource_1( hbqtres_dbu() )
-
-   oSplash := QSplashScreen( QPixmap( __hbqtImage( "hbdbu-2017" ) ) )
-   oSplash:show()
-   QApplication():processEvents()
-
-   SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
-   ReadInsert( .T. )
-
-   oMgr := DbuMGR():new( hb_AParams() )
-   oMgr:create()
-
-   oSplash:close()
-   oSplash:setParent( QWidget() )
-
-   QApplication():exec()
-
+   WITH OBJECT oSplash := QSplashScreen( QPixmap( __hbqtImage( "hbdbu-2023" ) ) )
+      :show()
+   ENDWITH 
+   IF .T.
+      QApplication():processEvents()
+      SetKey( K_INS, {|| ReadInsert( ! ReadInsert() ) } )
+      ReadInsert( .T. )
+   ENDIF
+   WITH OBJECT DbuMGR():new( hb_AParams() )
+      :create()
+   ENDWITH 
+   WITH OBJECT oSplash
+      :close()
+      :setParent( QWidget() )
+   ENDWITH 
+   IF .T.
+      QApplication():exec()
+   ENDIF
    IF HB_ISOBJECT( s_oMem )
       s_oMem:detach()
    ENDIF
-
    RETURN NIL
 
 
@@ -186,13 +187,11 @@ CREATE CLASS DbuMGR
    DATA   oDbu
    DATA   oScripts
    DATA   oHbQtEditor
-
    DATA   oDashBoard
    DATA   oLayDash
    DATA   aDash                                   INIT {}
    DATA   oTimerDash
    DATA   oSplash
-
    DATA   oExitAct
    DATA   oDashAct
    DATA   oInfoAct
@@ -204,18 +203,14 @@ CREATE CLASS DbuMGR
    DATA   oScriptAct
    DATA   oSep1, oSep2, oSep3
    DATA   oErrorLog
-
    DATA   oLogAnalyzer
-
    DATA   oContextMenu
-
    DATA   lCache                                  INIT .F.
    DATA   lAds                                    INIT .F.
    DATA   aParams                                 INIT {}
    DATA   hConxns                                 INIT {=>}
    DATA   aConxns                                 INIT {}
    DATA   hDbuData                                INIT {=>}
-
    DATA   cSettingsPath                           INIT ""
    DATA   cSettingsFile                           INIT "settings.dbu"
    DATA   cDefaultRDD                             INIT "DBFCDX"
@@ -223,11 +218,10 @@ CREATE CLASS DbuMGR
    DATA   oTimer
    DATA   cLastTable                              INIT ""
 
-   METHOD getImage( cName )                       INLINE QIcon( ":/dbu/resources/" + cName + ".png" )
-
    METHOD new( aParams )
    METHOD create()
    METHOD exit( lAsk, oEvent )
+   METHOD getImage( cName )                       INLINE QIcon( ":/dbu/resources/" + cName + ".png" )
    METHOD online()
    METHOD openConnections( aConxns )
    METHOD populateProdTables()
@@ -259,18 +253,17 @@ CREATE CLASS DbuMGR
    METHOD buildOnlineHelp()
    METHOD navigate( oItem )
    METHOD checkForDbfs()
-
    METHOD errorLog()
 
    ENDCLASS
 
 
 METHOD DbuMGR:new( aParams )
-
-   hb_HCaseMatch( ::hConxns , .F. )
-   hb_HCaseMatch( ::hDbuData, .F. )
-   hb_HKeepOrder( ::hDbuData, .T. )
-
+   IF .T.
+      hb_HCaseMatch( ::hConxns , .F. )
+      hb_HCaseMatch( ::hDbuData, .F. )
+      hb_HKeepOrder( ::hDbuData, .T. )
+   ENDIF
    ::aParams := aParams
 #ifdef __CACHE__
    ::lCache := .T.
@@ -278,13 +271,11 @@ METHOD DbuMGR:new( aParams )
 #ifdef __ADS__
    ::lAds := .T.
 #endif
-
    ::fetchDbuData()
    ::setDatabaseParams()
    IF hb_HHasKey( ::hDbuData, "CacheServer" )
       ::openConnections( ::hDbuData[ "CacheServer" ] )
    ENDIF
-
    RETURN Self
 
 
@@ -293,30 +284,26 @@ METHOD DbuMGR:create()
    LOCAL aRdds := {}
    LOCAL lDbf := .F.
    LOCAL lDbu := .F.
-
 #if defined(__CACHE__)
    AAdd( aRdds, "CACHERDD" )
 #endif
 #ifdef __ADS__
    AAdd( aRdds, "ADS" )
 #endif
-
 #ifdef __CACHE__
    cTitle := "CacheMGR - " + ::hConxns[ "Default_ServerIP" ]
 #else
    cTitle := "HbDBU"
 #endif
-
    WITH OBJECT ::oUI := hbqtui_dbu()
-      :dockCache:hide()
-      :dockAdvantage:hide()
+      :dockCache():hide()
+      :dockAdvantage():hide()
       :setWindowIcon( QIcon( __hbqtImage( "harbour" ) ) )
       :setWindowTitle( cTitle )
       :statusBar():hide()
       :connect( QEvent_Close, {|oEvent| ::exit( .T., oEvent ) } )
    ENDWITH
    __hbqtAppWidget( ::oUI:widget() )
-
    WITH OBJECT ::oExitAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "exit" ) ) )
       :setTooltip( "Exit DbuMGR" )
@@ -340,31 +327,26 @@ METHOD DbuMGR:create()
       :setTooltip( "Load Environment From..." )
       :connect( "triggered()", {|| ::restEnvFrom() } )
    ENDWITH
-
    WITH OBJECT ::oDbuAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "cube-2" ) ) )
       :setTooltip( "HbDBU" )
       :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_DBU__ ) } )
    ENDWITH
-
    WITH OBJECT ::oScriptAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "build-run-48" ) ) )
       :setTooltip( "Harbour Scripts" )
       :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_SCRIPTS__ ) } )
    ENDWITH
-
    WITH OBJECT ::oInfoAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "info" ) ) )
       :setTooltip( "About HbDBU" )
       :connect( "triggered()", {|| dbu_help( 1 ) } )
    ENDWITH
-
    WITH OBJECT ::oHelpAct := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "help-1" ) ) )
       :setTooltip( "HbDBU Help" )
       :connect( "triggered()", {|| ::oUI:stackedWidget:setCurrentIndex( __PAGE_HELP__ ) } )
    ENDWITH
-
    WITH OBJECT ::oOnline := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "online" ) ) )
       :setTooltip( "Online Help" )
@@ -373,13 +355,11 @@ METHOD DbuMGR:create()
       :setEnabled( .F. )
 #endif
    ENDWITH
-
    WITH OBJECT ::oErrorLog := QAction( ::oUI:oWidget )
       :setIcon( QIcon( __hbqtImage( "analysis-2" ) ) )
       :setTooltip( "ErrorLog Analyzer" )
       :connect( "triggered()", {|| ::errorLog() } )
    ENDWITH
-
    WITH OBJECT ::oSep1 := QToolButton()
       :setEnabled( .F. )
       :setAutoRaise( .T. )
@@ -392,7 +372,6 @@ METHOD DbuMGR:create()
       :setEnabled( .F. )
       :setAutoRaise( .T. )
    ENDWITH
-
    WITH OBJECT ::oToolbar := QToolBar( ::oUI:oWidget )
       :setObjectName( "MainToolBar" )
       :setIconSize( QSize( 24,24 ) )
@@ -410,8 +389,9 @@ METHOD DbuMGR:create()
       :addAction( ::oHelpAct )
       :addAction( ::oOnline )
    ENDWITH
-   ::oUI:oWidget:addToolbar( Qt_TopToolBarArea, ::oToolbar )
-
+   IF .T.
+      ::oUI:oWidget:addToolbar( Qt_TopToolBarArea, ::oToolbar )
+   ENDIF
    WITH OBJECT ::oDbu := HbQtDBU():new():create( ::oUI:stackedWidget )
       :connectionsBlock     := {|cDriver                     | ::setMyConnections( cDriver )                   }
       :selectTableBlock     := {|cDriver,xConxn,oDbu         | ::selectMyTable( cDriver, xConxn, oDbu )        }
@@ -422,43 +402,37 @@ METHOD DbuMGR:create()
       :rddsBlock            := {|| aRdds }
       :saveTableBlock       := {|cDriver,xConxn,aStruct,aIndex,oDbu| ::saveMyTable( cDriver,xConxn,aStruct,aIndex,oDbu ) }
    ENDWITH
-   ::oUI:stackedWidget:addWidget( ::oDbu:oWidget )
-   ::oUI:stackedWidget:setCurrentIndex( __PAGE_DBU__ )
-
-   ::oUI:helpBrowser:setSource( QUrl( "qrc:///dbu/resources/hbdbu.htm" ) )
-
-   ::oScripts := HbQTScripts():new():create( ::oUI:pageScripts )
-
+   WITH OBJECT ::oUI
+      :stackedWidget:addWidget( ::oDbu:oWidget )
+      :stackedWidget:setCurrentIndex( __PAGE_DBU__ )
+      :helpBrowser:setSource( QUrl( "qrc:///dbu/resources/hbdbu.htm" ) )
+      ::oScripts := HbQTScripts():new():create( :pageScripts() )
+   ENDWITH
    WITH OBJECT ::oTimer := QTimer()
       :setInterval( 2000 )
       :connect( "timeout()", {|| ::checkForDbfs() } )
    ENDWITH
-
    /* Process command line params */
    FOR EACH cParam IN ::aParams
       IF At( ",", cParam ) > 0 .AND. Len( hb_ATokens( cParam, "," ) ) > 0
          ::oDBU:openATable( cParam )
-
       ELSEIF ".dbu" $ Lower( cParam )
          ::getPath( cParam )
          lDbu := .T.
-
       ELSEIF ".dbf" $ Lower( cParam )
          IF ! Empty( cParam )
             ::oDBU:openATable( cParam )
             lDbf := .T.
          ENDIF
-
       ELSEIF Upper( cParam ) $ "DBFCDX,DBFNTX,DBFNSX" + iif( ::lAds, ",ADS", "" ) + iif( ::lCache, ",CACHERDD", "" )
          ::cDefaultRDD := Upper( cParam )
          ::oDbu:setCurrentDriver( ::cDefaultRDD )
-
       ENDIF
    NEXT
-
-   ::populateProdTables()
-
-   ::oUI:dockCache:hide()
+   IF .T.
+      ::populateProdTables()
+      ::oUI:dockCache:hide()
+   ENDIF
    IF ! lDbf
       ::restEnvironment()
    ENDIF
@@ -466,11 +440,11 @@ METHOD DbuMGR:create()
       ::cSettingsPath := ""
       ::cSettingsFile := ""
    ENDIF
-
-   ::oUI:oWidget:show()
-   ::oTimer:start()
-
-   ::oDbu:setCurrentDriver( ::cDefaultRDD )
+   IF .T.
+      ::oUI:oWidget:show()
+      ::oTimer:start()
+      ::oDbu:setCurrentDriver( ::cDefaultRDD )
+   ENDIF
    RETURN Self
 
 
@@ -478,7 +452,7 @@ METHOD DbuMGR:checkForDbfs()
    LOCAL cTable
    IF HB_ISOBJECT( s_oMem ) .AND. s_oMem:isAttached()
       cTable := Trim( s_oMem:hbReadData() )
-      IF ! ( cTable == ::cLastTable )
+      IF ! cTable == ::cLastTable
          ::cLastTable := cTable
          ::oDBU:openATable( cTable )
       ENDIF
@@ -495,7 +469,6 @@ METHOD DbuMGR:navigate( oItem )
 #if defined( __PLATFORM__WINDOWS )
 STATIC FUNCTION __addTreeItem( oTree, cText, cWhatsThis )
    LOCAL oItem
-
    WITH OBJECT oItem := QTreeWidgetItem()
       :setText( 0, cText )
       :setWhatsThis( 0, cWhatsThis )
@@ -507,7 +480,6 @@ STATIC FUNCTION __addTreeItem( oTree, cText, cWhatsThis )
 METHOD DbuMGR:buildOnlineHelp()
 #if defined( __PLATFORM__WINDOWS )
    LOCAL oXbp, oTree
-
    IF .T.
       WITH OBJECT oTree := ::oUI:treeOnline
          :setColumnCount( 1 )
@@ -521,25 +493,25 @@ METHOD DbuMGR:buildOnlineHelp()
          :setContextMenuPolicy( Qt_CustomContextMenu )
          :connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|oItem| ::navigate( oItem ) } )
       ENDWITH
-      __addTreeItem( oTree, "Harbour Home"          , "https://harbour.github.io/" )
-      __addTreeItem( oTree, "Harbour Docs"          , "https://harbour.github.io/doc/" )
-      __addTreeItem( oTree, "Clipper Docs"          , "https://harbour.github.io/doc/clc53.html" )
-      __addTreeItem( oTree, "Clipper Tools 3 Docs"  , "https://harbour.github.io/doc/clct3.html" )
-      __addTreeItem( oTree, "QtContribs"            , "http://qtcontribs.sourceforge.net/" )
-      __addTreeItem( oTree, "CacheRDD"              , "http://cacherdd.sourceforge.net/" )
-
-      oXbp := WvgWindow():new( , , { 0, 0 }, { 640, 400 }, , .T. )
-      oXbp:hWnd := ::oUI:frameOnline:winID()
-
-      ::oActiveX := WvgActiveXControl():new( oXbp, , { 0, 0 }, { 100, 100 }, , .t. )
-      ::oActiveX:CLSID := "Shell.Explorer.2"
-
-      ::oActiveX:create()
-
-      ::oActiveX:navigate( "http://qtcontribs.sourceforge.net/index.html#hbdbu.html" )
-      ::oUI:frameOnline:connect( QEvent_Resize, {|| ::oActiveX:setSize( { ::oUI:frameOnline:width(), ::oUI:frameOnline:height() } ) } )
-      ::oActiveX:setSize( { ::oUI:frameOnline:width(), ::oUI:frameOnline:height() } )
-      ::oActiveX:show()
+      IF .T.
+         __addTreeItem( oTree, "Harbour Home"          , "https://harbour.github.io/" )
+         __addTreeItem( oTree, "Harbour Docs"          , "https://harbour.github.io/doc/" )
+         __addTreeItem( oTree, "Clipper Docs"          , "https://harbour.github.io/doc/clc53.html" )
+         __addTreeItem( oTree, "Clipper Tools 3 Docs"  , "https://harbour.github.io/doc/clct3.html" )
+         __addTreeItem( oTree, "QtContribs"            , "http://qtcontribs.sourceforge.net/" )
+         __addTreeItem( oTree, "CacheRDD"              , "http://cacherdd.sourceforge.net/" )
+      ENDIF
+      WITH OBJECT oXbp := WvgWindow():new( , , { 0, 0 }, { 640, 400 }, , .T. )
+         :hWnd := ::oUI:frameOnline:winID()
+      ENDWITH 
+      WITH OBJECT ::oActiveX := WvgActiveXControl():new( oXbp, , { 0, 0 }, { 100, 100 }, , .t. )
+         :CLSID := "Shell.Explorer.2"
+         :create()
+         :navigate( "http://qtcontribs.sourceforge.net/index.html#hbdbu.html" )
+         ::oUI:frameOnline:connect( QEvent_Resize, {|| ::oActiveX:setSize( { ::oUI:frameOnline:width(), ::oUI:frameOnline:height() } ) } )
+         :setSize( { ::oUI:frameOnline:width(), ::oUI:frameOnline:height() } )
+         :show()
+      ENDWITH 
    ENDIF
 #endif
    RETURN Self
@@ -547,16 +519,16 @@ METHOD DbuMGR:buildOnlineHelp()
 
 METHOD DbuMGR:errorLog()
    IF Empty( ::oLogAnalyzer )
-      ::oLogAnalyzer := HbQtLogAnalyzer():new():create()
-      ::oUI:hLayLogsAnaluzer:addWidget( ::oLogAnalyzer:widget )
-      ::oLogAnalyzer:show()
+      WITH OBJECT ::oLogAnalyzer := HbQtLogAnalyzer():new():create()
+         ::oUI:hLayLogsAnaluzer:addWidget( :widget )
+         :show()
+      ENDWITH 
    ENDIF
    ::oUI:stackedWidget:setCurrentIndex( __PAGE_MISC__ )
    RETURN Self
 
 
 METHOD DbuMGR:online()
-
    IF ! HB_ISOBJECT( ::oActiveX )
       ::buildOnlineHelp()
    ENDIF
@@ -566,7 +538,6 @@ METHOD DbuMGR:online()
 
 METHOD DbuMGR:exit( lAsk, oEvent )
    LOCAL lExit := .T.
-
    IF lAsk
       lExit := Alert( "Exit HbDBU ?", { "Yes", "No" } ) == 1
    ENDIF
@@ -586,27 +557,26 @@ METHOD DbuMGR:setDatabaseParams()
 #ifdef __CACHE__
    LOCAL i, cServerIP, cPort, cNameSpace, cUser, cPassword, nConxn
 #endif
-
-   SET( _SET_EVENTMASK, INKEY_ALL )
-   SET SCOREBOARD OFF
-   SET EPOCH TO 1950
-
+   IF .T.
+      SET( _SET_EVENTMASK, INKEY_ALL )
+      SET SCOREBOARD OFF
+      SET EPOCH TO 1950
+   ENDIF
 #ifdef __ADS__
    RddSetDefault( "ADS" )
    AdsSetFileType( 2 )
    SET SERVER REMOTE
    AdsLocking( .T. )
 #endif
-
 #ifdef __CACHE__
    ASize( ::aParams, Max( 5, Len( ::aParams ) ) )
-
+   //
    cServerIP  := ::aParams[ 1 ]
    cPort      := ::aParams[ 2 ]
    cNameSpace := ::aParams[ 3 ]
    cUser      := ::aParams[ 4 ]
    cPassword  := ::aParams[ 5 ]
-
+   //
    CacheSetServerParams( cServerIP, val( cPort ), cUser, cPassword, 30 )
    FOR i = 1 to 3
       IF ( nConxn := CacheAddConnectionEx( cServerIP, val( cPort ), cUser, cPassword, 30, cNameSpace ) ) > 0
@@ -626,14 +596,15 @@ METHOD DbuMGR:setDatabaseParams()
       ::hConxns[ "Default_Alias"      ] := "Default"
       ::hConxns[ "Default_Alternate"  ] := "Default"
    ENDIF
-
    IF UserLogin()                                 /* Will implement later */
       CacheSetUserInfo( "QDBU" )
    ELSE
       CacheSetUserInfo( "QDBU" )
    ENDIF
-   CacheLockTimeout( 0 )
-   CacheSetUseExclusive( 1 )
+   IF .T.
+      CacheLockTimeout( 0 )
+      CacheSetUseExclusive( 1 )
+   ENDIF
 #endif
    RETURN .T.
 
@@ -641,25 +612,23 @@ METHOD DbuMGR:setDatabaseParams()
 METHOD DbuMGR:openConnections( aConxns )
 #ifdef __CACHE__
    LOCAL cConxn, nConxn, a_
-
    IF ::lCache
       FOR EACH cConxn IN aConxns
          IF ! Empty( cConxn )
-         a_:= hb_atokens( cConxn, ";" )
-         CacheSetServerParams( a_[ 2 ], val( a_[ 3 ] ), DecryptPass( a_[ 5 ],2 ), DecryptPass( a_[ 6 ],3 ), 20 )
-         nConxn := CacheAddConnectionEx( a_[ 2 ], val( a_[ 3 ] ), DecryptPass( a_[ 5 ],2 ), DecryptPass( a_[ 6 ],3 ), 20, a_[ 4 ] )
-         IF nConxn > 0
-            ::hConxns[ a_[ 1 ] + "_ServerIP"   ] := a_[ 2 ]
-            ::hConxns[ a_[ 1 ] + "_ServerPort" ] := a_[ 3 ]
-            ::hConxns[ a_[ 1 ] + "_Namespace"  ] := a_[ 4 ]
-            ::hConxns[ a_[ 1 ] + "_User"       ] := DecryptPass( a_[ 5 ],2 )
-            ::hConxns[ a_[ 1 ] + "_Password"   ] := DecryptPass( a_[ 6 ],3 )
-            ::hConxns[ a_[ 1 ] + "_Connection" ] := nConxn
-            ::hConxns[ a_[ 1 ] + "_Alias"      ] := a_[ 1 ]
-            ::hConxns[ a_[ 1 ] + "_Alternate"  ] := a_[ 7 ]
-
-            AAdd( ::aConxns, a_[ 1 ] )
-         ENDIF
+            a_:= hb_atokens( cConxn, ";" )
+            CacheSetServerParams( a_[ 2 ], val( a_[ 3 ] ), DecryptPass( a_[ 5 ],2 ), DecryptPass( a_[ 6 ],3 ), 20 )
+            nConxn := CacheAddConnectionEx( a_[ 2 ], val( a_[ 3 ] ), DecryptPass( a_[ 5 ],2 ), DecryptPass( a_[ 6 ],3 ), 20, a_[ 4 ] )
+            IF nConxn > 0
+               ::hConxns[ a_[ 1 ] + "_ServerIP"   ] := a_[ 2 ]
+               ::hConxns[ a_[ 1 ] + "_ServerPort" ] := a_[ 3 ]
+               ::hConxns[ a_[ 1 ] + "_Namespace"  ] := a_[ 4 ]
+               ::hConxns[ a_[ 1 ] + "_User"       ] := DecryptPass( a_[ 5 ],2 )
+               ::hConxns[ a_[ 1 ] + "_Password"   ] := DecryptPass( a_[ 6 ],3 )
+               ::hConxns[ a_[ 1 ] + "_Connection" ] := nConxn
+               ::hConxns[ a_[ 1 ] + "_Alias"      ] := a_[ 1 ]
+               ::hConxns[ a_[ 1 ] + "_Alternate"  ] := a_[ 7 ]
+               AAdd( ::aConxns, a_[ 1 ] )
+            ENDIF
          ENDIF
       NEXT
       AAdd( ::aConxns, "Default" )
@@ -674,7 +643,6 @@ METHOD DbuMGR:openConnections( aConxns )
 
 METHOD DbuMGR:populateTree( cTable,cDriver,cConxn )
    LOCAL cPath, cName, cExt
-
    IF cDriver == "CACHERDD"
 #ifdef __CACHE__
       RETURN { "CACHERDD", ::hConxns[ cConxn + "_Alternate" ], Upper( cTable ), cTable, cDriver, cConxn }
@@ -704,7 +672,6 @@ METHOD DbuMGR:selectMyTable( cDriver, cConxn /*, oDbu */ )
 
 METHOD DbuMGR:saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
    LOCAL cTable := NIL
-
 #ifdef __CACHE__
    LOCAL nConxn, nArea, aIdx, lCreate := .F.
 
@@ -752,11 +719,12 @@ METHOD DbuMGR:saveMyTable( cDriver, cConxn, aStruct, aIndexes/*, oDbu */)
 #endif
    RETURN cTable
 
+
 METHOD DbuMGR:openMyTable( cTable, cAlias, cDriver, cConxn )
-
-   HB_SYMBOL_UNUSED( cTable )
-   HB_SYMBOL_UNUSED( cAlias )
-
+   IF .T.
+      HB_SYMBOL_UNUSED( cTable )
+      HB_SYMBOL_UNUSED( cAlias )
+   ENDIF
    IF cDriver == "CACHERDD" .AND. ::lCache .AND. cConxn + "_ServerIP" $ ::hConxns
 #ifdef __CACHE__
       CacheSetConnection( ::hConxns[ cConxn + "_Connection" ] )
@@ -773,9 +741,9 @@ METHOD DbuMGR:openMyTable( cTable, cAlias, cDriver, cConxn )
 
 
 METHOD DbuMGR:checkIfTableExists( cTable, cDriver, cConxn )
-
-   HB_SYMBOL_UNUSED( cTable )
-
+   IF .T.
+      HB_SYMBOL_UNUSED( cTable )
+   ENDIF
    IF cDriver == "CACHERDD" .AND. ::lCache .AND. cConxn + "_ServerIP" $ ::hConxns
 #ifdef __CACHE__
       RETURN CacheExistTable( cTable, ::hConxns[ cConxn + "_Connection" ] )
@@ -791,7 +759,6 @@ METHOD DbuMGR:getATable( cConxn )
 #else
    LOCAL aTables := {}
 #endif
-
    IF ! empty( aTables )
       qStrList := QStringList():new()
       FOR EACH cTable IN aTables
@@ -805,17 +772,17 @@ METHOD DbuMGR:getATable( cConxn )
 
 
 METHOD DbuMGR:fetchDbuData()
-   LOCAL cText, s, n, a_, cKey, cValue
-
-   cText := hb_memoread( hb_dirBase() + "hbdbu.ini" )
-   IF !( hb_eol() == Chr( 10 ) )
+   LOCAL cText, s, n, cKey, cValue
+   IF .T.
+      cText := hb_memoread( hb_dirBase() + "hbdbu.ini" )
+   ENDIF
+   IF ! hb_eol() == Chr( 10 ) 
       cText := StrTran( cText, hb_eol(), Chr( 10 ) )
    ENDIF
-   IF !( hb_eol() == Chr( 13 ) + Chr( 10 ) )
+   IF ! hb_eol() == Chr( 13 ) + Chr( 10 ) 
       cText := StrTran( cText, Chr( 13 ) + Chr( 10 ), Chr( 10 ) )
    ENDIF
-   a_:= hb_aTokens( cText, chr( 10 ) )
-   FOR EACH s IN a_
+   FOR EACH s IN hb_aTokens( cText, chr( 10 ) )
       s := alltrim( s )
       IF ! ( left( s,1 ) $ "#/*" )
          IF ( n := at( "=", s ) ) > 0
@@ -833,17 +800,14 @@ METHOD DbuMGR:fetchDbuData()
 
 METHOD DbuMGR:populateProdTables()
    LOCAL aTables := {}, cTables, cTable
-
    IF ! ::lCache
       RETURN NIL
    ENDIF
-
    FOR EACH cTables IN ::hDbuData[ "OpenViaCache" ]
       FOR EACH cTable IN hb_ATokens( cTables, ";" )
          AAdd( aTables, cTable )
       NEXT
    NEXT
-
    FOR EACH cTable IN aTables
       IF ! Empty( cTable )
          ::oDbu:populateTree( "CACHERDD", "Production", cTable, cTable, "CACHERDD", "ECP_1", NIL )
@@ -858,7 +822,6 @@ METHOD DbuMGR:populateProdTables()
 
 
 METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
-
    WITH OBJECT oHbQtBrowse
       :horizontalScrollbar := .T.
       :verticalScrollbar   := .T.
@@ -879,7 +842,6 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
       :phyPosBlock         := {| | oMdiBrowse:recNo()   }
 #endif
    ENDWITH
-
    /* Indicate that the table belongs TO production environment and hence be modified WITH care */
    IF oMdiBrowse:connection() $ "ECP_1,ECP_2,ECP_3,Cluster"
       oHbQtBrowse:showIndicator( "red" )
@@ -889,9 +851,9 @@ METHOD DbuMGR:configureBrowser( oHbQtBrowse, oMdiBrowse, oDBU )
 
 METHOD DbuMGR:saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
    LOCAL cColumn, n, nField, aStruct
-
-   HB_SYMBOL_UNUSED( oHbQtBrowse )
-
+   IF .T.
+      HB_SYMBOL_UNUSED( oHbQtBrowse )
+   ENDIF
    IF oMdiBrowse:lock()
       FOR EACH cColumn IN aData[ 2 ]
          n := cColumn:__enumIndex()
@@ -911,19 +873,17 @@ METHOD DbuMGR:saveRecord( aMod, aData, oHbQtBrowse, oMdiBrowse )
 
 METHOD DbuMGR:manageExSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
    LOCAL nRec
-
-   HB_SYMBOL_UNUSED( nMode )
-
+   IF .T.
+      HB_SYMBOL_UNUSED( nMode )
+   ENDIF
    IF oMdiBrowse:indexOrd() > 0
       nRec := ( oMdiBrowse:alias() )->( RecNo() )
-
       SWITCH oMdiBrowse:indexKeyType()
       CASE "C" ; xValue := xValue                 ; EXIT
       CASE "N" ; xValue := Val( xValue )          ; EXIT
       CASE "D" ; xValue := CToD( xValue )         ; EXIT
       CASE "L" ; xValue := Lower( xValue ) $ "ty" ; EXIT
       ENDSWITCH
-
       IF ! ( oMdiBrowse:alias() )->( dbSeek( xValue ) )
          ( oMdiBrowse:alias() )->( dbGoto( nRec ) )
       ELSE
@@ -934,7 +894,6 @@ METHOD DbuMGR:manageExSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 
 
 METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
-
    IF xValue == NIL .AND. oHbQtBrowse == NIL
       // Nothing TO do
    ELSEIF xValue == NIL
@@ -957,37 +916,32 @@ METHOD DbuMGR:manageSearch( xValue, nMode, oHbQtBrowse, oMdiBrowse )
 METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
    LOCAL i, xResult, nRec, xValue, aRecList, aList //, aStr, aMnu, oCol
    LOCAL lHandelled := .T.
-
-   HB_SYMBOL_UNUSED( xData )
-   HB_SYMBOL_UNUSED( oDbu )
-
-   oMdiBrowse:dispInfo()
-
+   IF .T.
+      HB_SYMBOL_UNUSED( xData )
+      HB_SYMBOL_UNUSED( oDbu )
+   ENDIF
+   IF .T.
+      oMdiBrowse:dispInfo()
+   ENDIF
    DO CASE
    CASE nKey == K_ALT_O
       oHbQtBrowse:activateIndexMenu()
-
    CASE nKey == K_F5
       oHbQtBrowse:Scroll()
-
    CASE nKey == K_F1
       oHbQtBrowse:help()
-
    CASE nKey == K_F2
       oMdiBrowse:setOrder( 0 )
       oMdiBrowse:dispInfo()
-
    CASE nKey == K_F3
       IF ! Empty( nRec := HbQtBulkGet( 0, "Goto?", "@Z 999999999999" ) )
          oMdiBrowse:goto( nRec )
          oMdiBrowse:dispInfo()
       ENDIF
-
    CASE nKey == K_F8
       oHbQtBrowse:freeze++
    CASE nKey == K_SH_F8
       oHbQtBrowse:freeze--
-
    CASE nKey == K_F7
       IF ::getSearchValue( oMdiBrowse, @xValue )    /* Seek      */
          oMdiBrowse:search( xValue, .F., .F. )
@@ -1003,49 +957,39 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
          oMdiBrowse:search( xValue, .T., .F. )
          oMdiBrowse:dispInfo()
       ENDIF
-
    CASE nKey == K_SH_F5
       oHbQtBrowse:moveRight()
    CASE nKey == K_SH_F6
       oHbQtBrowse:moveLeft()
-
    CASE nKey == K_ALT_F6
       IF oHbQtBrowse:colCount > 1
          oHbQtBrowse:DelColumn( oHbQtBrowse:colPos )
          oHbQtBrowse:RefreshAll()
       ENDIF
-
    CASE nKey == K_ALT_F5                          /* Insert Column */
       oHbQtBrowse:activateColumnsMenu()
-
    CASE nKey == K_ALT_P                           /* SET SCOPE */
       IF oMdiBrowse:indexOrd() > 0
          oMdiBrowse:setScope()
       ELSE
          Alert( "Please set an index on current table !" )
       ENDIF
-
    CASE nKey == K_ALT_W                           /* clear SCOPE */
       IF oMdiBrowse:indexOrd() > 0
          oMdiBrowse:clearScope()
       ENDIF
-
    CASE nKey == K_ALT_INS                         /* append BLANK */
       oMdiBrowse:append()
-
    CASE nKey == K_ALT_DEL                         /* delete RECORD */
       oMdiBrowse:delete( .T. )
-
    CASE nKey == K_ALT_L                           /* Lock RECORD */
       IF ! oMdiBrowse:lock()
          Alert( "Could not lock record!" )
       ENDIF
-
    CASE nKey == K_ALT_U                           /* Unlock RECORD */
       IF ! oMdiBrowse:unLock()
          Alert( "Could not unlock record!" )
       ENDIF
-
    CASE nKey == K_ALT_K                           /* Unlock a selective RECORD */
       IF ! Empty( aRecList := oMdiBrowse:dbrLockList() )
          aList := {}
@@ -1054,17 +998,13 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
             oMdiBrowse:unLock( aRecList[ nRec ] )
          ENDIF
       ENDIF
-
    CASE nKey ==  K_ALT_F                          /* FILTER */
       oMdiBrowse:setFilter()
-
    CASE nKey == K_ALT_R                           /* clear FILTER */
       oMdiBrowse:clearFilter()
       oMdiBrowse:goTop()
-
    CASE nKey == K_ALT_T
       ::showStats( oMdiBrowse )
-
    CASE nKey == K_ENTER
       IF oMdiBrowse:lock()
          xResult := oHbQtBrowse:editCell()
@@ -1075,7 +1015,6 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
          ENDIF
          oMdiBrowse:unLock()
       ENDIF
-
    CASE nKey == K_ALT_ENTER
       IF oMdiBrowse:lock()
          FOR i := oHbQtBrowse:colPos TO oHbQtBrowse:colCount()
@@ -1092,7 +1031,6 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
          oMdiBrowse:dbCommit()
          oMdiBrowse:unLock()
       ENDIF
-
    CASE nKey == K_CTRL_ENTER
       DO WHILE .T.
          IF oMdiBrowse:lock()
@@ -1110,25 +1048,21 @@ METHOD DbuMGR:handleOptions( nKey, xData, oHbQtBrowse, oMdiBrowse, oDbu )
             ENDIF
          ENDIF
       ENDDO
-
    CASE nKey == K_CTRL_F1
       oHbQtBrowse:search( NIL, NIL, HBQTBRW_SEARCH_BYFIELD )
-
    CASE nKey >= 32 .AND. nKey <= 127 .AND. oMdiBrowse:indexOrd() > 0
       oHbQtBrowse:searchEx( Chr( nKey ) )
-
    OTHERWISE
       lHandelled := .F.
-
    ENDCASE
    RETURN lHandelled
 
 
 METHOD DbuMGR:manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu )
    LOCAL oContextMenu
-
-   HB_SYMBOL_UNUSED( oDbu )
-
+   IF .T.
+      HB_SYMBOL_UNUSED( oDbu )
+   ENDIF
    WITH OBJECT oContextMenu := HbQtMenu():new():create()
       :addItem( { "Seek"           , {||
                                         LOCAL xValue
@@ -1155,33 +1089,36 @@ METHOD DbuMGR:manageContextMenu( aPos, oHbQtBrowse, oMdiBrowse, oDbu )
       :addItem( { "Add Record"     , {|| oMdiBrowse:append() } } )
       :addItem( { "Delete Record"  , {|| oMdiBrowse:delete( .T. ) } } )
    ENDWITH
-
-   oContextMenu:popUp( aPos )
+   IF .T.
+      oContextMenu:popUp( aPos )
+   ENDIF
    RETURN Self
 
 
 METHOD DbuMGR:showStats( oMdiBrowse )
    LOCAL aStats := {}
-
-   aadd( aStats, pad( '   Generic'                                    ,                32 ) + "." )
+   IF .T.
+      aadd( aStats, pad( '   Generic'                                    ,                32 ) + "." )
 #ifdef __CACHE__
-   aadd( aStats, pad( 'Server Time     = ' + CacheGetServerTime(),                     32 ) + "." )
-   aadd( aStats, pad( 'Server Date     = ' + DToC( CacheGetServerDate()  ),            32 ) + "." )
-   aadd( aStats, pad( 'Insert Lock Mode= ' + hb_ntos( CacheInsertLockMode() ),         32 ) + "." )
+      aadd( aStats, pad( 'Server Time     = ' + CacheGetServerTime(),                     32 ) + "." )
+      aadd( aStats, pad( 'Server Date     = ' + DToC( CacheGetServerDate()  ),            32 ) + "." )
+      aadd( aStats, pad( 'Insert Lock Mode= ' + hb_ntos( CacheInsertLockMode() ),         32 ) + "." )
 #endif
-   aadd( aStats, pad( 'LastRec()       = ' + hb_ntos( oMdiBrowse:lastRec()  ),         32 ) + "." )
-   aadd( aStats, pad( 'OrdKeyNo()      = ' + hb_ntos( oMdiBrowse:ordKeyNo() ),         32 ) + "." )
-   aadd( aStats, pad( 'OrdKeyCount()   = ' + hb_ntos( oMdiBrowse:ordKeyCount() ),      32 ) + "." )
-   aadd( aStats, pad( '   Field Info'                                           ,      32 ) + "." )
-   aadd( aStats, pad( 'FCount()        = ' + hb_ntos( oMdiBrowse:fCount() ),           32 ) + "." )
-   aadd( aStats, pad( 'DbFieldInfo()   = ' + hb_ntos( oMdiBrowse:dbFieldInfo( 1,1 ) ), 32 ) + "." )
-   aadd( aStats, pad( '   Index Info'                              ,                   32 ) + "." )
-   aadd( aStats, pad( 'IndexKey()      = ' + hb_ntos( oMdiBrowse:indexKey() ),         32 ) + "." )
-   aadd( aStats, pad( 'IndexOrd()      = ' + hb_ntos( oMdiBrowse:indexOrd() ),         32 ) + "." )
-   aadd( aStats, pad( 'IndexExt()      = ' + hb_ntos( oMdiBrowse:indexExt() ),         32 ) + "." )
-   aadd( aStats, Pad( 'OrdKey()        = ' + hb_ntos( oMdiBrowse:ordKey() ),           32 ) + "." )
-
-   Alert( aStats, , , , "Various Statistics" )
+      aadd( aStats, pad( 'LastRec()       = ' + hb_ntos( oMdiBrowse:lastRec()  ),         32 ) + "." )
+      aadd( aStats, pad( 'OrdKeyNo()      = ' + hb_ntos( oMdiBrowse:ordKeyNo() ),         32 ) + "." )
+      aadd( aStats, pad( 'OrdKeyCount()   = ' + hb_ntos( oMdiBrowse:ordKeyCount() ),      32 ) + "." )
+      aadd( aStats, pad( '   Field Info'                                           ,      32 ) + "." )
+      aadd( aStats, pad( 'FCount()        = ' + hb_ntos( oMdiBrowse:fCount() ),           32 ) + "." )
+      aadd( aStats, pad( 'DbFieldInfo()   = ' + hb_ntos( oMdiBrowse:dbFieldInfo( 1,1 ) ), 32 ) + "." )
+      aadd( aStats, pad( '   Index Info'                              ,                   32 ) + "." )
+      aadd( aStats, pad( 'IndexKey()      = ' + hb_ntos( oMdiBrowse:indexKey() ),         32 ) + "." )
+      aadd( aStats, pad( 'IndexOrd()      = ' + hb_ntos( oMdiBrowse:indexOrd() ),         32 ) + "." )
+      aadd( aStats, pad( 'IndexExt()      = ' + hb_ntos( oMdiBrowse:indexExt() ),         32 ) + "." )
+      aadd( aStats, Pad( 'OrdKey()        = ' + hb_ntos( oMdiBrowse:ordKey() ),           32 ) + "." )
+   ENDIF
+   IF .T.
+      Alert( aStats, NIL, NIL, NIL, "Various Statistics" )
+   ENDIF
    RETURN NIL
 
 
@@ -1198,21 +1135,18 @@ METHOD DbuMGR:getSearchValue( oMdiBrowse, xValue )
 
 METHOD DbuMGR:saveEnvAs()
    LOCAL cFile
-
    cFile := hbdbu_saveAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
    IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
       ::getPath( cFile )
       ::saveEnvironment()
    ENDIF
-
    RETURN Self
 
 
 METHOD DbuMGR:saveEnvironment()
-   LOCAL oSettings
    LOCAL oWgt := ::oUI:oWidget
    LOCAL cFile := ::getPath()
-
+   LOCAL oSettings
    WITH OBJECT oSettings := QSettings( cFile, QSettings_IniFormat )
       :setValue( "dbuSettings"     , QVariant( oWgt:saveState() ) )
       :setValue( "dbuSplitter"     , QVariant( ::oDbu:splitter:saveState() ) )
@@ -1225,82 +1159,77 @@ METHOD DbuMGR:saveEnvironment()
       :setValue( "dbuLinksInfo"    , QVariant( __arrayToString( ::oDbu:getLinksInfo() , "~" ) ) )
       :setValue( "dbuDriver"       , QVariant( ::oDbu:currentDriver() ) )
    ENDWITH
-
    RETURN oSettings
 
 
 METHOD DbuMGR:restEnvironment()
-   LOCAL oSettings, oRect, lVal, cInfo
+   LOCAL oRect, lVal, cInfo
    LOCAL oWgt := ::oUI:oWidget
    LOCAL cFile := ::getPath()
-
-   oSettings := QSettings( cFile, QSettings_IniFormat )
-   oWgt:restoreState( oSettings:value( "dbuSettings" ):toByteArray() )
-
-   IF oSettings:contains( "dbuPosAndSize" )
-      oRect := oSettings:value( "dbuPosAndSize" ):toRect()
-      oWgt:move( oRect:x(), oRect:y() )
-      oWgt:resize( oRect:width(), oRect:height() )
-   ENDIF
-
-   IF oSettings:contains( "dbuTablesVisible" )
-      lVal := oSettings:value( "dbuTablesVisible" ):toBool()
-      IF lVal
-         IF ! ::oDbu:tablesPanel:isVisible()
-            ::oDbu:tablesPanel:show()
-         ENDIF
-      ELSE
-         IF ::oDbu:tablesPanel:isVisible()
-            ::oDbu:tablesPanel:hide()
-         ENDIF
+   WITH OBJECT QSettings( cFile, QSettings_IniFormat )
+      oWgt:restoreState( :value( "dbuSettings" ):toByteArray() )
+      IF :contains( "dbuPosAndSize" )
+         oRect := :value( "dbuPosAndSize" ):toRect()
+         oWgt:move( oRect:x(), oRect:y() )
+         oWgt:resize( oRect:width(), oRect:height() )
       ENDIF
-   ENDIF
-   IF oSettings:contains( "dbuStructVisible" )
-      lVal := oSettings:value( "dbuStructVisible" ):toBool()
-      IF lVal
-         IF ! ::oDbu:structPanel:isVisible()
-            ::oDbu:structPanel:show()
-         ENDIF
-      ELSE
-         IF ::oDbu:structPanel:isVisible()
-            ::oDbu:structPanel:hide()
-         ENDIF
-      ENDIF
-   ENDIF
-   IF oSettings:contains( "dbuSplitter" )
-      ::oDbu:splitter:restoreState( oSettings:value( "dbuSplitter" ):toByteArray() )
-   ENDIF
-
-   IF oSettings:contains( "dbuPanelNames" )
-      ::oDbu:addPanels( hb_ATokens( oSettings:value( "dbuPanelNames" ):toString(), "~" ) )
-   ENDIF
-   IF oSettings:contains( "dbuPanelsInfo" )
-      ::oDbu:loadTables( hb_ATokens( oSettings:value( "dbuPanelsInfo" ):toString(), "~" ) )
-   ENDIF
-
-   IF oSettings:contains( "dbuTreeInfo" )
-      FOR EACH cInfo IN hb_ATokens( oSettings:value( "dbuTreeInfo" ):toString(), "~" )
-         IF ! Empty( cInfo )
-            IF ! ( "CACHERDD" $ cInfo )
-               ::oDbu:populateTree( hb_ATokens( cInfo, " " ) )
+      IF :contains( "dbuTablesVisible" )
+         lVal := :value( "dbuTablesVisible" ):toBool()
+         IF lVal
+            IF ! ::oDbu:tablesPanel:isVisible()
+               ::oDbu:tablesPanel:show()
+            ENDIF
+         ELSE
+            IF ::oDbu:tablesPanel:isVisible()
+               ::oDbu:tablesPanel:hide()
             ENDIF
          ENDIF
-      NEXT
-   ENDIF
-   IF oSettings:contains( "dbuLinksInfo" )
-     ::oDbu:setLinksInfo( hb_ATokens( oSettings:value( "dbuLinksInfo" ):toString(), "~" ) )
-   ENDIF
-   IF oSettings:contains( "dbuDriver" )
-      ::cDefaultRDD := Upper( oSettings:value( "dbuDriver" ):toString() )
-   ENDIF
-
+      ENDIF
+      IF :contains( "dbuStructVisible" )
+         lVal := :value( "dbuStructVisible" ):toBool()
+         IF lVal
+            IF ! ::oDbu:structPanel:isVisible()
+               ::oDbu:structPanel:show()
+            ENDIF
+         ELSE
+            IF ::oDbu:structPanel:isVisible()
+               ::oDbu:structPanel:hide()
+            ENDIF
+         ENDIF
+      ENDIF
+      IF :contains( "dbuSplitter" )
+         ::oDbu:splitter:restoreState( :value( "dbuSplitter" ):toByteArray() )
+      ENDIF
+      IF :contains( "dbuPanelNames" )
+         ::oDbu:addPanels( hb_ATokens( :value( "dbuPanelNames" ):toString(), "~" ) )
+      ENDIF
+      IF :contains( "dbuPanelsInfo" )
+         ::oDbu:loadTables( hb_ATokens( :value( "dbuPanelsInfo" ):toString(), "~" ) )
+      ENDIF
+      IF :contains( "dbuTreeInfo" )
+         FOR EACH cInfo IN hb_ATokens( :value( "dbuTreeInfo" ):toString(), "~" )
+            IF ! Empty( cInfo )
+               IF ! ( "CACHERDD" $ cInfo )
+                  ::oDbu:populateTree( hb_ATokens( cInfo, " " ) )
+               ENDIF
+            ENDIF
+         NEXT
+      ENDIF
+      IF :contains( "dbuLinksInfo" )
+        ::oDbu:setLinksInfo( hb_ATokens( :value( "dbuLinksInfo" ):toString(), "~" ) )
+      ENDIF
+      IF :contains( "dbuDriver" )
+         ::cDefaultRDD := Upper( :value( "dbuDriver" ):toString() )
+      ENDIF
+   ENDWITH 
    RETURN NIL
 
 
 METHOD DbuMGR:restEnvFrom()
    LOCAL cFile, oProcess
-
-   cFile := hbdbu_fetchAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   IF .T.
+      cFile := hbdbu_fetchAFile( ::oUI:oWidget, "Select HbDBU Env File", "HbDBU Env File (*.dbu)", ::cSettingsPath )
+   ENDIF
    IF ! Empty( cFile ) .AND. ".dbu" $ Lower( cFile )
       IF hb_FileExists( cFile )                   // execute another copy of HbDBU
          oProcess := QProcess()
@@ -1311,17 +1240,15 @@ METHOD DbuMGR:restEnvFrom()
          oProcess := NIL
       ENDIF
    ENDIF
-
    RETURN Self
 
 
 METHOD DbuMGR:getPath( cFile )
    LOCAL cPath, cName, cExt
-
-   DEFAULT cFile TO ( ::cSettingsPath + ::cSettingsFile )
-
-   hb_FNameSplit( cFile, @cPath, @cName, @cExt )
-
+   IF .T.
+      DEFAULT cFile TO ( ::cSettingsPath + ::cSettingsFile )
+      hb_FNameSplit( cFile, @cPath, @cName, @cExt )
+   ENDIF
    IF Lower( cExt ) == ".dbu"
       IF Empty( cPath )
 #if defined( __PLATFORM__WINDOWS )
@@ -1337,65 +1264,63 @@ METHOD DbuMGR:getPath( cFile )
       ELSEIF Left( cPath, 2 ) == ".."
          cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps() + cPath
       ENDIF
-
-      ::cSettingsPath := cPath
-      ::cSettingsFile := cName + cExt
-
-      ::oUI:oWidget:setWindowTitle( "HbDBU [" + ::cSettingsPath + ::cSettingsFile + "]" )
+      IF .T.
+         ::cSettingsPath := cPath
+         ::cSettingsFile := cName + cExt
+         ::oUI:oWidget:setWindowTitle( "HbDBU [" + ::cSettingsPath + ::cSettingsFile + "]" )
+      ENDIF
    ELSE
       IF Empty( cPath )
          cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps()
       ELSEIF Left( cPath, 2 ) == ".."
          cPath := hb_CurDrive() + hb_osDriveSeparator() + hb_ps() + CurDir() + hb_ps() + cPath
       ENDIF
-
    ENDIF
-
    RETURN cPath + cName + cExt
 
 
 METHOD DbuMGR:helpInfo()
    LOCAL v_:= {}
-
-   aadd( v_, 'F2       Sets the index to 0 for natural record order' )
-   aadd( v_, 'F3                              Set a new index order' )
-   aadd( v_, 'F4                   Goto a specific record by number' )
-   aadd( v_, 'F5        Auto scrolls the browser current-bottom-top' )
-   aadd( v_, 'F7               Search for a record by Current Index' )
-   aadd( v_, 'F8                           Freezes leftmoost column' )
-   aadd( v_, 'F10           Toggles locks status of currents record' )
-   aadd( v_, 'Sh+F8                   UnFreezes last freezed column' )
-   aadd( v_, 'Sh+F5         Moves current column right one position' )
-   aadd( v_, 'Sh+F6           Moves current column left on position' )
-   aadd( v_, 'Alt+F5              Insert column at current location' )
-   aadd( v_, 'Alt+F6             Deletes currently hilighted column' )
-   aadd( v_, '                                                     ' )
-   aadd( v_, 'ENTER                               Edit current cell' )
-   aadd( v_, 'Alt+ENTER      Edit current row starting current cell' )
-   aadd( v_, 'Ctrl+ENTER          Edit current column then next row' )
-   aadd( v_, '                                                     ' )
-   aadd( v_, 'Alt_E                                       Seek Last' )
-   aadd( v_, 'Alt_Y                                       Seek Soft' )
-   aadd( v_, 'ALT_Z                                    Skip Records' )
-   aadd( v_, 'Alt_F                                    Set a Filter' )
-   aadd( v_, 'Alt_R                                    Clear Filter' )
-   aadd( v_, 'Alt_P                                       Set Scope' )
-   aadd( v_, 'Alt_O                                     Clear Scope' )
-   aadd( v_, 'Alt_INS                         Append a blank Record' )
-   aadd( v_, 'Alt_DEL                         Delete Current Record' )
-   aadd( v_, 'Alt_T                                 Show Statistics' )
-// aadd( v_, 'Alt_V                               Performance Stats' )
-// aadd( v_, 'Alt_X                            Sum Average High Low' )
-   aadd( v_, 'Ctrl_F1                                 Find in field' )
-   aadd( v_, '                                                     ' )
-   aadd( v_, 'Alt_L                             Lock Current Record' )
-   aadd( v_, 'Alt_U                           Unlock Current Record' )
-   aadd( v_, 'Alt_K                       Unlock a Selective Record' )
-   aadd( v_, 'Alt_S                          List of Locked Records' )
-// aadd( v_, 'Alt_I                                       Lock Info' )
-// aadd( v_, 'Alt_G                            List of Global Locks' )
-// aadd( v_, 'Alt_X                       Lock Info Column (Toggle)' )
-
+   IF .T.
+      aadd( v_, 'F2       Sets the index to 0 for natural record order' )
+      aadd( v_, 'F3                              Set a new index order' )
+      aadd( v_, 'F4                   Goto a specific record by number' )
+      aadd( v_, 'F5        Auto scrolls the browser current-bottom-top' )
+      aadd( v_, 'F7               Search for a record by Current Index' )
+      aadd( v_, 'F8                           Freezes leftmoost column' )
+      aadd( v_, 'F10           Toggles locks status of currents record' )
+      aadd( v_, 'Sh+F8                   UnFreezes last freezed column' )
+      aadd( v_, 'Sh+F5         Moves current column right one position' )
+      aadd( v_, 'Sh+F6           Moves current column left on position' )
+      aadd( v_, 'Alt+F5              Insert column at current location' )
+      aadd( v_, 'Alt+F6             Deletes currently hilighted column' )
+      aadd( v_, '                                                     ' )
+      aadd( v_, 'ENTER                               Edit current cell' )
+      aadd( v_, 'Alt+ENTER      Edit current row starting current cell' )
+      aadd( v_, 'Ctrl+ENTER          Edit current column then next row' )
+      aadd( v_, '                                                     ' )
+      aadd( v_, 'Alt_E                                       Seek Last' )
+      aadd( v_, 'Alt_Y                                       Seek Soft' )
+      aadd( v_, 'ALT_Z                                    Skip Records' )
+      aadd( v_, 'Alt_F                                    Set a Filter' )
+      aadd( v_, 'Alt_R                                    Clear Filter' )
+      aadd( v_, 'Alt_P                                       Set Scope' )
+      aadd( v_, 'Alt_O                                     Clear Scope' )
+      aadd( v_, 'Alt_INS                         Append a blank Record' )
+      aadd( v_, 'Alt_DEL                         Delete Current Record' )
+      aadd( v_, 'Alt_T                                 Show Statistics' )
+   // aadd( v_, 'Alt_V                               Performance Stats' )
+   // aadd( v_, 'Alt_X                            Sum Average High Low' )
+      aadd( v_, 'Ctrl_F1                                 Find in field' )
+      aadd( v_, '                                                     ' )
+      aadd( v_, 'Alt_L                             Lock Current Record' )
+      aadd( v_, 'Alt_U                           Unlock Current Record' )
+      aadd( v_, 'Alt_K                       Unlock a Selective Record' )
+      aadd( v_, 'Alt_S                          List of Locked Records' )
+   // aadd( v_, 'Alt_I                                       Lock Info' )
+   // aadd( v_, 'Alt_G                            List of Global Locks' )
+   // aadd( v_, 'Alt_X                       Lock Info Column (Toggle)' )
+   ENDIF
    RETURN v_
 
 
@@ -1408,10 +1333,8 @@ STATIC FUNCTION __arrayToString( aStrings, cDlm )
 METHOD DbuMGR:execDashboard()
    LOCAL oDock := ::oUI:dockCache
    LOCAL cConxn, oDash
-
    IF Empty( ::oDashBoard )
       ::oDashBoard := QWidget()
-
       FOR EACH cConxn IN ::aConxns
          IF cConxn != "Default"
             IF hb_HHasKey( ::hConxns, cConxn + "_ServerIP" )
@@ -1432,16 +1355,15 @@ METHOD DbuMGR:execDashboard()
          ENDIF
          :addStretch( 0 )
       ENDWITH
-
-      ::oDashBoard:setLayout( ::oLayDash )
-
-      ::oTimerDash := QTimer( ::oDashBoard )
-      ::oTimerDash:setInterval( 10000 )
-      ::oTimerDash:connect( "timeout()", {|| ::updateDashBoard() } )
-
-      oDock:setWidget( ::oDashBoard )
+      IF .T.
+         ::oDashBoard:setLayout( ::oLayDash )
+         WITH OBJECT ::oTimerDash := QTimer( ::oDashBoard )
+            :setInterval( 10000 )
+            :connect( "timeout()", {|| ::updateDashBoard() } )
+         ENDWITH 
+         oDock:setWidget( ::oDashBoard )
+      ENDIF
    ENDIF
-
    IF ::oUI:dockCache:isVisible()
       ::oUI:dockCache:hide()
       ::oTimerDash:stop()
@@ -1450,7 +1372,6 @@ METHOD DbuMGR:execDashboard()
       ::updateDashboard()
       ::oTimerDash:start()
    ENDIF
-
    RETURN Self
 
 
@@ -1461,25 +1382,20 @@ METHOD DbuMGR:updateDashboard()
    NEXT
    RETURN NIL
 
-
 /*----------------------------------------------------------------------*/
 //                            CLASS DashBoard
 /*----------------------------------------------------------------------*/
 
-
 CLASS DashBoard
-
    DATA   oDbuMGR
    DATA   cServerIP
    DATA   cConxn
-
    DATA   oWidget
    DATA   oLay
    DATA   oHLay
    DATA   oHLayD
    DATA   oFrameTop
    DATA   oFrameBtm
-
    DATA   oLabelLic
    DATA   oLabelLicUsed
    DATA   oLabelLockAvail
@@ -1496,45 +1412,43 @@ CLASS DashBoard
 
 METHOD DashBoard:new( oDbuMGR, cServerIP, cConxn )
    LOCAL n, cSrv, oLabel
-
-   ::oDbuMGR := oDbuMGR
-   ::cServerIP := cServerIP
-   ::cConxn    := cConxn
-
-   n    := RAt( ".", ::cServerIP )
-   cSrv := SubStr( ::cServerIP, n+1 )
-
-   ::oWidget   := QFrame()
-
-   ::oLay      := QVBoxLayout( ::oWidget )
-   ::oLay:setContentsMargins( 0,0,0,0 )
-   ::oLay:setSpacing( 0 )
-
-   ::oWidget   :  setLayout( ::oLay )
-
-   ::oFrameTop := QFrame( ::oWidget )
-   ::oFrameTop:setMaximumHeight( 50 )
-   ::oFrameBtm := QFrame( ::oWidget )
-   ::oFrameBtm:setMaximumHeight( 35 )
-
-   ::oHLay     := QHBoxLayout( ::oFrameTop )
-   ::oHLayD    := QHBoxLayout( ::oFrameBtm )
-
-   ::oLay      :  addWidget( ::oFrameTop )
-   ::oLay      :  addWidget( ::oFrameBtm )
-
-   ::oHLay:setSpacing( 0 )
-
-   ::oHLay:addStretch( 0 )
-   FOR n := 1 TO Len( cSrv )
-      WITH OBJECT oLabel := QLabel( ::oWidget )
-         :setPixmap( QPixmap( ":/dbu/resources/n-" + SubStr( cSrv, n, 1 ) + ".png" ):scaled( 24,24 ) )
-         :setTooltip( ::cServerIP + "  " + ::cConxn )
-      ENDWITH
-      ::oHLay:addWidget( oLabel )
-   NEXT
-   ::oHLay:addStretch( 0 )
-
+   IF .T.
+      ::oDbuMGR := oDbuMGR
+      ::cServerIP := cServerIP
+      ::cConxn := cConxn
+      n := RAt( ".", ::cServerIP )
+      cSrv := SubStr( ::cServerIP, n + 1 )
+   ENDIF
+   WITH OBJECT ::oWidget := QFrame()
+      WITH OBJECT ::oLay := QVBoxLayout( ::oWidget )
+         :setContentsMargins( 0,0,0,0 )
+         :setSpacing( 0 )
+      ENDWITH 
+      :setLayout( ::oLay )
+   ENDWITH 
+   WITH OBJECT ::oFrameTop := QFrame( ::oWidget )
+      :setMaximumHeight( 50 )
+   ENDWITH 
+   WITH OBJECT ::oFrameBtm := QFrame( ::oWidget )
+      :setMaximumHeight( 35 )
+   ENDWITH 
+   WITH OBJECT ::oHLay := QHBoxLayout( ::oFrameTop )
+      ::oHLayD := QHBoxLayout( ::oFrameBtm )
+      WITH OBJECT ::oLay
+         :addWidget( ::oFrameTop )
+         :addWidget( ::oFrameBtm )
+      ENDWITH 
+      :setSpacing( 0 )
+      :addStretch( 0 )
+      FOR n := 1 TO Len( cSrv )
+         WITH OBJECT oLabel := QLabel( ::oWidget )
+            :setPixmap( QPixmap( ":/dbu/resources/n-" + SubStr( cSrv, n, 1 ) + ".png" ):scaled( 24,24 ) )
+            :setTooltip( ::cServerIP + "  " + ::cConxn )
+         ENDWITH
+         :addWidget( oLabel )
+      NEXT
+      :addStretch( 0 )
+   ENDWITH 
    WITH OBJECT ::oLabelLic       := QLabel()
       :setAlignment( Qt_AlignRight + Qt_AlignVCenter )
       :setStyleSheet( "background-color: pink;" )
@@ -1555,43 +1469,41 @@ METHOD DashBoard:new( oDbuMGR, cServerIP, cConxn )
       :setAlignment( Qt_AlignRight + Qt_AlignVCenter )
       :setStyleSheet( "background-color: yellow;" )
    ENDWITH
-
-   ::oHLayD:addWidget( ::oLabelLic       )
-   ::oHLayD:addWidget( ::oLabelLicUsed   )
-   ::oHLayD:addWidget( ::oLabelLockAvail )
-   ::oHLayD:addWidget( ::oLabelLockUsed  )
-   ::oHLayD:addWidget( ::oLabelLocks     )
-
-   ::update()
-
+   WITH OBJECT ::oHLayD
+      :addWidget( ::oLabelLic       )
+      :addWidget( ::oLabelLicUsed   )
+      :addWidget( ::oLabelLockAvail )
+      :addWidget( ::oLabelLockUsed  )
+      :addWidget( ::oLabelLocks     )
+   ENDWITH 
+   IF .T.
+      ::update()
+   ENDIF
    RETURN Self
 
 
 METHOD DashBoard:update()
 #ifdef __CACHE__
-   LOCAL cText, aLInfo
+   LOCAL aLInfo
    LOCAL nConxn    := ::oDbuMGR:hConxns[ ::cConxn + "_Connection" ]
    LOCAL a_        := CacheGetLicenseInfo( nConxn )
    LOCAL cLockInfo := CacheGetLockTableInfo( nConxn )
    LOCAL cLockList := CacheGetLockList( nConxn )
-
-   aLInfo := hb_ATokens( cLockInfo, "," )
-   ASize( aLInfo, 4 )
-   DEFAULT aLInfo[1] TO "0"
-   DEFAULT aLInfo[2] TO "0"
-   DEFAULT aLInfo[3] TO "0"
-   DEFAULT aLInfo[4] TO "0"
-
-   cText := a_[ 6 ]
-   ::oLabelLic       : setText( cText )
-   cText := a_[ 11 ]
-   ::oLabelLicUsed   : setText( cText )
-   cText := aLInfo[ 2 ]
-   ::oLabelLockAvail : setText( cText )
-   cText := aLInfo[ 4 ]
-   ::oLabelLockUsed  : setText( cText )
-   cText := cLockList
-   ::oLabelLocks     : setText( cText )
+   IF .T.
+      aLInfo := hb_ATokens( cLockInfo, "," )
+      ASize( aLInfo, 4 )
+      DEFAULT aLInfo[1] TO "0"
+      DEFAULT aLInfo[2] TO "0"
+      DEFAULT aLInfo[3] TO "0"
+      DEFAULT aLInfo[4] TO "0"
+   ENDIF
+   IF .T.
+      ::oLabelLic       : setText( a_[ 6 ] )
+      ::oLabelLicUsed   : setText( a_[ 11 ] )
+      ::oLabelLockAvail : setText( aLInfo[ 2 ] )
+      ::oLabelLockUsed  : setText( aLInfo[ 4 ] )
+      ::oLabelLocks     : setText( cLockList )
+   ENDIF
 #endif
    RETURN Self
 
@@ -1599,7 +1511,6 @@ METHOD DashBoard:update()
 FUNCTION dbu_help( nOption )
    LOCAL txt_:= {}
    LOCAL cTitle, s
-
    SWITCH nOption
    CASE 1
       cTitle := 'About HbDBU'
@@ -1618,7 +1529,6 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, "<a href='https://harbour.github.io/'>Harbour Project</a>" )
       AAdd( txt_, "<a href='http://qtcontribs.sourceforge.net/'>HbDBU Project</a>" )
       EXIT
-
    CASE 2
       cTitle := 'Mailing List'
       AAdd( txt_, "<b>Harbour Development Mailing List</b>" )
@@ -1630,7 +1540,6 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, "" )
       AAdd( txt_, "<a href='http://groups.google.com/group/qtcontribs/'>http://groups.google.com/group/qtcontribs/</a>" )
       EXIT
-
    CASE 4
       cTitle := 'About Harbour'
       AAdd( txt_, "<b>About Harbour</b>" )
@@ -1645,15 +1554,11 @@ FUNCTION dbu_help( nOption )
       AAdd( txt_, "Get downloads, samples, contribs and much more at:" )
       AAdd( txt_, "<a href='https://harbour.github.io/'>Harbour Project</a>" )
       EXIT
-
    END
-
    IF !Empty( txt_ )
       s := ""
       AEval( txt_, {|e| s += e + Chr( 10 ) } )
       HbQtMsgBox( s, cTitle )
    ENDIF
-
    RETURN nil
-
 

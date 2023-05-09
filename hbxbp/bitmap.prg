@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               04Jul2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -72,7 +68,6 @@
 #include "gra.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpBitmap
 
@@ -107,7 +102,6 @@ CLASS XbpBitmap
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:create( oPS )
 
@@ -118,13 +112,11 @@ METHOD XbpBitmap:create( oPS )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:draw()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:getColorTable( nNumColors )
 
@@ -132,13 +124,11 @@ METHOD XbpBitmap:getColorTable( nNumColors )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:getDefaultBGColor()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:load( cDLLName, cID )
    LOCAL lSuccess := .f.
@@ -148,7 +138,6 @@ METHOD XbpBitmap:load( cDLLName, cID )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:loadFile( cImageFileName )
    LOCAL lSuccess
@@ -161,7 +150,6 @@ METHOD XbpBitmap:loadFile( cImageFileName )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:make( nXsize, nYsize, nPlanes, nBits )
 
@@ -172,7 +160,6 @@ METHOD XbpBitmap:make( nXsize, nYsize, nPlanes, nBits )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:presSpace( oPS )
    LOCAL oPresSpace := NIL
@@ -181,7 +168,6 @@ METHOD XbpBitmap:presSpace( oPS )
 
    RETURN oPresSpace
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:saveFile( cImageFileName, nFormat, nCompression )
    LOCAL lSuccess
@@ -205,7 +191,6 @@ METHOD XbpBitmap:saveFile( cImageFileName, nFormat, nCompression )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:setBuffer( cBuffer, nFormat, nCompression )
 
@@ -215,14 +200,12 @@ METHOD XbpBitmap:setBuffer( cBuffer, nFormat, nCompression )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:getIPicture()
    LOCAL oPicture := NIL
 
    RETURN oPicture
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBitmap:setIPicture( oPicture )
    LOCAL lSuccess := .f.
@@ -231,4 +214,3 @@ METHOD XbpBitmap:setIPicture( oPicture )
 
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/

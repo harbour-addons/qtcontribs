@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -59,8 +57,6 @@
  *                               01Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "hbqtgui.ch"
@@ -68,9 +64,7 @@
 #include "hbclass.ch"
 
 /*----------------------------------------------------------------------*/
-//
 //                           Class IdeEnvironments
-//
 /*----------------------------------------------------------------------*/
 
 CLASS IdeEnvironments INHERIT IdeObject
@@ -95,54 +89,44 @@ CLASS IdeEnvironments INHERIT IdeObject
 
    ENDCLASS
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:init( oIde )
    ::oIde := oIde
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:create( oIde )
-
-   DEFAULT oIde     TO ::oIde
-   ::oIde  := oIde
-
+   DEFAULT oIde TO ::oIde
+   ::oIde := oIde
    IF hb_fileExists( ::oINI:getEnvFile() )
       ::parse( ::oINI:getEnvFile() )
    ENDIF
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:destroy()
-
    IF !empty( ::oUI )
       ::oUI:destroy()
    ENDIF
    IF !empty( ::oUI_1 )
       ::oUI_1:destroy()
    ENDIF
-
    ::aNames           := NIL
    ::aEnvrns          := NIL
    ::aShellContents   := NIL
    ::aCommons         := NIL
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:parse( cEnvFile )
    LOCAL s, cPart, cEnv, a_, cKey, cVal
    LOCAL aContents := hbide_readSource( cEnvFile )
-
-   ::aNames  := {}
-   ::aEnvrns := {}
-   a_        := {}
-   cEnv      := ""
-
+   IF .T.
+      ::aNames  := {}
+      ::aEnvrns := {}
+      a_        := {}
+      cEnv      := ""
+   ENDIF
    FOR EACH s IN aContents
       s := alltrim( s )
       IF empty( s ) .OR. left( s, 1 ) == "#"                     /* Remark */
@@ -178,14 +162,11 @@ METHOD IdeEnvironments:parse( cEnvFile )
       aadd( ::aNames, cEnv )
       aadd( ::aEnvrns, { cKey, a_ } )
    ENDIF
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:getHbmk2Commands( cEnvName )
    LOCAL n, s, a_, aCmd := {}
-
    IF ( n := ascan( ::aEnvrns, {|e_| e_[ 1 ] == cEnvName } ) ) > 0
       FOR EACH a_ IN ::aEnvrns[ n, 2 ]
          s := a_[ 1 ]
@@ -194,14 +175,11 @@ METHOD IdeEnvironments:getHbmk2Commands( cEnvName )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aCmd
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:getShellCommands( cEnvName )
    LOCAL n, s, a_, aCmd := {}
-
    IF ( n := ascan( ::aEnvrns, {|e_| e_[ 1 ] == cEnvName } ) ) > 0
       FOR EACH a_ IN ::aEnvrns[ n, 2 ]
          s := a_[ 1 ]
@@ -210,16 +188,12 @@ METHOD IdeEnvironments:getShellCommands( cEnvName )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aCmd
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:prepareBatch( cEnvName, lDebug )
    LOCAL cPath, n, s, a_, aCmd := {}
-
    DEFAULT lDebug TO .F.
-
    IF ( n := ascan( ::aEnvrns, {|e_| e_[ 1 ] == cEnvName } ) ) > 0
       FOR EACH a_ IN ::aEnvrns[ n, 2 ]
          s := lower( a_[ 1 ] )
@@ -229,73 +203,58 @@ METHOD IdeEnvironments:prepareBatch( cEnvName, lDebug )
       NEXT
    ELSE
       cPath := ::oINI:getHarbourPath()
-
-      #if   defined( __PLATFORM__UNIX )
-         IF ! empty( cPath )
-            aadd( aCmd, "export PATH=" + cPath + "bin" + ":$PATH" )
-         ELSE
-            aadd( aCmd, "export PATH=$PATH" )
-         ENDIF
-         IF lDebug
-            AAdd( aCmd, "export __HBIDE_DEBUG__=yes" )
-         ENDIF
-      #else
-         IF ! empty( cPath )
-            aadd( aCmd, "SET PATH=" + cPath + "bin" + ";%PATH%" )
-         ELSE
-            aadd( aCmd, "SET PATH=%PATH%" )
-         ENDIF
-         IF lDebug
-            AAdd( aCmd, "SET __HBIDE_DEBUG__=yes" )
-         ENDIF
-      #endif
+#if defined( __PLATFORM__UNIX )
+      IF ! empty( cPath )
+         aadd( aCmd, "export PATH=" + cPath + "bin" + ":$PATH" )
+      ELSE
+         aadd( aCmd, "export PATH=$PATH" )
+      ENDIF
+      IF lDebug
+         AAdd( aCmd, "export __HBIDE_DEBUG__=yes" )
+      ENDIF
+#else
+      IF ! empty( cPath )
+         aadd( aCmd, "SET PATH=" + cPath + "bin" + ";%PATH%" )
+      ELSE
+         aadd( aCmd, "SET PATH=%PATH%" )
+      ENDIF
+      IF lDebug
+         AAdd( aCmd, "SET __HBIDE_DEBUG__=yes" )
+      ENDIF
+#endif
    ENDIF
-
    RETURN hbide_getShellCommandsTempFile( aCmd )
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:show()
-
    IF empty( ::oUI )
-      ::oUI := hbide_getUI( "environments" )
-
-      ::oEnvironDock:oWidget:setWidget( ::oUI:oWidget )
-
-      ::oUI:buttonCn      :connect( "clicked()", {|| ::oEnvironDock:hide() } )
-      ::oUI:buttonSave    :connect( "clicked()", {|| ::saveEnv()    } )
-      ::oUI:buttonSaveExit:connect( "clicked()", {|| ::saveEnv(), ::oEnvironDock:hide() } )
-
-      ::oUI:editCompilers:setFont( ::oFont:oWidget )
+      WITH OBJECT ::oUI := hbide_getUI( "environments" )
+         ::oEnvironDock:oWidget:setWidget( :oWidget )
+         //
+         :buttonCn      :connect( "clicked()", {|| ::oEnvironDock:hide() } )
+         :buttonSave    :connect( "clicked()", {|| ::saveEnv()    } )
+         :buttonSaveExit:connect( "clicked()", {|| ::saveEnv(), ::oEnvironDock:hide() } )
+         :editCompilers:setFont( ::oFont:oWidget )
+      ENDWITH 
    ENDIF
    ::oUI:editCompilers:setPlainText( hb_memoread( ::oINI:getEnvFile() ) )
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:saveEnv()
    LOCAL cText
-
    IF !empty( cText := ::oUI:editCompilers:toPlainText() )
       hb_MemoWrit( ::oINI:getEnvFile(), cText )
       ::parse( ::oINI:getEnvFile() )
    ENDIF
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
-//                 New Interface to Environments : TODO
-/*------------------------------------------------------------------------*/
 
 METHOD IdeEnvironments:fetchNew()
-
    IF empty( ::oUI_1 )
       ::oUI_1 := hbide_getUI( "environ" )
       ::oUI_1:setWindowFlags( Qt_Sheet )
    ENDIF
    ::oUI_1:show()
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/

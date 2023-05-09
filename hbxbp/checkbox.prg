@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               14Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpCheckBox  INHERIT  XbpWindow, DataRef
 
@@ -94,15 +89,11 @@ CLASS XbpCheckBox  INHERIT  XbpWindow, DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -126,73 +117,57 @@ METHOD XbpCheckBox:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:execSlot( cSlot, p )
-
    SWITCH cSlot
    CASE "stateChanged(int)"
       ::sl_editBuffer := ( p != 0 )
       ::selected( ::sl_editBuffer )
       EXIT
    ENDSWITCH
+   RETURN NIL 
 
-   RETURN nil
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
+   //
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:connect()
    ::oWidget:connect( "stateChanged(int)", {|i| ::execSlot( "stateChanged(int)", i ) } )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:disconnect()
    ::oWidget:disconnect( "stateChanged(int)" )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:destroy()
-
    ::disconnect()
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:setCaption( xCaption )
-
    IF HB_ISSTRING( xCaption )
       ::caption := xCaption
       ::oWidget:setText( xCaption )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCheckBox:selected( ... )
    LOCAL a_:= hb_aParams()
+   
    IF len( a_ ) == 1 .AND. HB_ISBLOCK( a_[ 1 ] )
       ::sl_lbClick := a_[ 1 ]
    ELSEIF len( a_ ) >= 1 .AND. HB_ISBLOCK( ::sl_lbClick )
@@ -200,4 +175,3 @@ METHOD XbpCheckBox:selected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/

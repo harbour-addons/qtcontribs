@@ -1,9 +1,9 @@
-/*
+      /*
  * $Id$
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -71,14 +71,12 @@ CLASS HbqToolbar
    DATA   oParent
    DATA   hItems                                  INIT   {=>}
    DATA   hActions                                INIT   {=>}
-
    DATA   allowedAreas                            INIT   Qt_TopToolBarArea + Qt_LeftToolBarArea + Qt_BottomToolBarArea + Qt_RightToolBarArea
    DATA   initialArea                             INIT   Qt_TopToolBarArea
    DATA   orientation                             INIT   Qt_Horizontal
    DATA   size
    DATA   moveable                                INIT   .T.
    DATA   floatable                               INIT   .T.
-
    DATA   lPressed                                INIT   .f.
    DATA   qPos
    DATA   qDrag
@@ -106,15 +104,12 @@ CLASS HbqToolbar
 
 
 METHOD HbqToolbar:init( cName, oParent )
-
    ::cName   := cName
    ::oParent := oParent
-
    RETURN Self
 
 
 METHOD HbqToolbar:create( cName, oParent )
-
    STATIC nID := 0
 
    DEFAULT cName   TO ::cName
@@ -123,7 +118,6 @@ METHOD HbqToolbar:create( cName, oParent )
    ::oParent := oParent
 
    DEFAULT ::cName TO "HbqToolbar_" + hb_ntos( ++nID )
-
    DEFAULT ::size TO QSize( 16,16 )
 
    WITH OBJECT ::oWidget := QToolbar( ::oParent )
@@ -136,13 +130,11 @@ METHOD HbqToolbar:create( cName, oParent )
       :setFocusPolicy( Qt_NoFocus )
       :setAttribute( Qt_WA_AlwaysShowToolTips, .T. )
    ENDWITH
-
    RETURN Self
 
 
 METHOD HbqToolbar:onError( ... )
    LOCAL cMsg := __GetMessage()
-
    IF SubStr( cMsg, 1, 1 ) == "_"
       cMsg := SubStr( cMsg, 2 )
    ENDIF
@@ -151,7 +143,6 @@ METHOD HbqToolbar:onError( ... )
 
 METHOD HbqToolbar:destroy()
    LOCAL xTmp
-
    FOR EACH xTmp IN ::hItems
       IF xTmp:className() == "QTOOLBUTTON"
          xTmp:disconnect( QEvent_MouseButtonPress   )
@@ -162,144 +153,128 @@ METHOD HbqToolbar:destroy()
       ENDIF
       xTmp := NIL
    NEXT
-   ::cName              := NIL
-   ::oParent            := NIL
-   ::hItems             := NIL
-   ::allowedAreas       := NIL
-   ::initialArea        := NIL
-   ::orientation        := NIL
-   ::size               := NIL
-   ::moveable           := NIL
-   ::floatable          := NIL
-   ::lPressed           := NIL
-   ::qPos               := NIL
-   ::qDrag              := NIL
-   ::qMime              := NIL
-   ::qDropAction        := NIL
-   ::qPix               := NIL
-   ::qByte              := NIL
-   ::oWidget            := NIL
-
-   ::hActions           := NIL
-
+   IF .T.
+      ::cName              := NIL
+      ::oParent            := NIL
+      ::hItems             := NIL
+      ::allowedAreas       := NIL
+      ::initialArea        := NIL
+      ::orientation        := NIL
+      ::size               := NIL
+      ::moveable           := NIL
+      ::floatable          := NIL
+      ::lPressed           := NIL
+      ::qPos               := NIL
+      ::qDrag              := NIL
+      ::qMime              := NIL
+      ::qDropAction        := NIL
+      ::qPix               := NIL
+      ::qByte              := NIL
+      ::oWidget            := NIL
+      ::hActions           := NIL
+   ENDIF
    RETURN Self
 
 
 METHOD HbqToolbar:execEvent( cEvent, p, p1 )
-   LOCAL qEvent, qRC
-
-   qEvent := p
+   LOCAL qRC
+   LOCAL qEvent := p
 
    SWITCH cEvent
    CASE "QEvent_MouseLeave"
       EXIT
-
    CASE "QEvent_MouseMove"
       qRC := QRect( ::qPos:x() - 5, ::qPos:y() - 5, 10, 10 ):normalized()
       IF qRC:contains( qEvent:pos() )
          ::qByte := QByteArray( ::hItems[ p1 ]:objectName() )
 
-         ::qMime := QMimeData()
-         ::qMime:setData( "application/x-toolbaricon", ::qByte )
-         ::qMime:setHtml( ::hItems[ p1 ]:objectName() )
-
-         ::qPix  := QIcon( ::hItems[ p1 ]:icon ):pixmap( 16,16 )
-
-         ::qDrag := QDrag( hbide_setIde():oDlg:oWidget )
-         ::qDrag:setMimeData( ::qMime )
-         ::qDrag:setPixmap( ::qPix )
-         ::qDrag:setHotSpot( QPoint( 15,15 ) )
-         ::qDrag:setDragCursor( ::qPix, Qt_CopyAction + Qt_IgnoreAction )
+         WITH OBJECT ::qMime := QMimeData()
+            :setData( "application/x-toolbaricon", ::qByte )
+            :setHtml( ::hItems[ p1 ]:objectName() )
+         ENDWITH 
+         ::qPix := QIcon( ::hItems[ p1 ]:icon ):pixmap( 16,16 )
+         WITH OBJECT ::qDrag := QDrag( hbide_setIde():oDlg:oWidget )
+            :setMimeData( ::qMime )
+            :setPixmap( ::qPix )
+            :setHotSpot( QPoint( 15,15 ) )
+            :setDragCursor( ::qPix, Qt_CopyAction + Qt_IgnoreAction )
+         ENDWITH 
          ::qDropAction := ::qDrag:exec( Qt_CopyAction + Qt_IgnoreAction )  /* Why this is not terminated GPF's */
-
-         ::qDrag := NIL
-         ::qPos  := NIL
-         ::hItems[ p1 ]:setChecked( .f. )
-         ::hItems[ p1 ]:setWindowState( 0 )
+         IF .T.
+            ::qDrag := NIL
+            ::qPos  := NIL
+            ::hItems[ p1 ]:setChecked( .f. )
+            ::hItems[ p1 ]:setWindowState( 0 )
+         ENDIF
       ENDIF
       EXIT
-
    CASE "QEvent_MouseRelease"
       ::qDrag := NIL
       EXIT
-
    CASE "QEvent_MousePress"
       ::qPos := qEvent:pos()
       EXIT
-
    CASE "buttonNew_clicked"
       EXIT
-
    ENDSWITCH
-
    RETURN NIL
 
 
 METHOD HbqToolbar:addWidget( cName, qWidget )
    LOCAL qAction
-
    DEFAULT cName TO hbide_getNextIDasString( "IdeToolButtonWidget" )
-
-   qAction := QWidgetAction( ::oWidget )
-   qAction:setDefaultWidget( qWidget )
+   WITH OBJECT qAction := QWidgetAction( ::oWidget )
+      :setDefaultWidget( qWidget )
+   ENDWITH 
    ::oWidget:addAction( qAction )
-
-   ::hItems[ cName ] := qWidget
-   ::hActions[ cName ] := qAction
-
+   IF .T.
+      ::hItems[ cName ] := qWidget
+      ::hActions[ cName ] := qAction
+   ENDIF
    RETURN NIL
 
 
 METHOD HbqToolbar:addSeparator()
-   LOCAL qAction
    LOCAL cName := hbide_getNextIDasString( "IdeToolButtonSeparator" )
-
-   qAction := ::oWidget:addSeparator()
-
-   ::hItems[ cName ] := cName
-   ::hActions[ cName ] := qAction
-
+   IF .T.
+      ::hItems[ cName ] := cName
+      ::hActions[ cName ] := ::oWidget:addSeparator()
+   ENDIF
    RETURN NIL
 
 
 METHOD HbqToolbar:addAction( cName, qAction, bBlock )
    LOCAL qAct
-
    DEFAULT cName TO hbide_getNextIdAsString( "IdeToolButtonAction" )
-
    IF __objGetClsName( qAction ) == "QACTION"
       ::oWidget:addAction( qAction )
-
       ::hItems[ cName ] := cName
       ::hActions[ cName ] := qAction
       IF HB_ISBLOCK( bBlock )
          qAction:connect( "triggered()", bBlock )
       ENDIF
-
    ELSEIF __objGetClsName( qAction ) == "QTOOLBUTTON"
-      qAct := QWidgetAction( ::oWidget )
-      qAct:setDefaultWidget( qAction )
+      WITH OBJECT qAct := QWidgetAction( ::oWidget )
+         :setDefaultWidget( qAction )
+         IF HB_ISBLOCK( bBlock )
+            :connect( "triggered()", bBlock )
+         ENDIF
+      ENDWITH 
       ::oWidget:addAction( qAct )
-
       ::hItems[ cName ] := qAction
       ::hActions[ cName ] := qAct
-      IF HB_ISBLOCK( bBlock )
-         qAct:connect( "triggered()", bBlock )
-      ENDIF
-
    ENDIF
-
    RETURN NIL
 
 
 METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDragEnabled )
-   LOCAL oButton, oActBtn
-
-   DEFAULT cName        TO hbide_getNextIDasString( "IdeToolButton" )
-   DEFAULT cDesc        TO ""
-   DEFAULT lCheckable   TO .f.
-   DEFAULT lDragEnabled TO .f.
-
+   LOCAL oButton
+   IF .T.
+      DEFAULT cName        TO hbide_getNextIDasString( "IdeToolButton" )
+      DEFAULT cDesc        TO ""
+      DEFAULT lCheckable   TO .f.
+      DEFAULT lDragEnabled TO .f.
+   ENDIF 
    WITH OBJECT oButton := QToolButton( ::oWidget )
       :setObjectName( cName )
       :setTooltip( cDesc )
@@ -315,22 +290,19 @@ METHOD HbqToolbar:addToolButton( cName, cDesc, cImage, bAction, lCheckable, lDra
          :connect( QEvent_MouseMove         , {|p| ::execEvent( "QEvent_MouseMove"   , p, cName ) } )
          :connect( QEvent_Enter             , {|p| ::execEvent( "QEvent_MouseEnter"  , p, cName ) } )
       ENDIF
+      IF HB_ISBLOCK( bAction )
+         :connect( "clicked()", bAction )
+      ENDIF
    ENDWITH
-
-   IF HB_ISBLOCK( bAction )
-      oButton:connect( "clicked()", bAction )
+   IF .T.
+      ::hItems[ cName ] := oButton
+      ::hActions[ cName ] := ::oWidget:addWidget( oButton )
    ENDIF
-   oActBtn := ::oWidget:addWidget( oButton )
-
-   ::hItems[ cName ] := oButton
-   ::hActions[ cName ] := oActBtn
-
    RETURN oButton
 
 
 METHOD HbqToolbar:setItemChecked( cName, lState )
    LOCAL lOldState
-
    IF hb_hHasKey( ::hActions, cName )
       IF ::hActions[ cName ]:isCheckable()
          lOldState := ::hActions[ cName ]:isChecked()
@@ -339,32 +311,27 @@ METHOD HbqToolbar:setItemChecked( cName, lState )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN lOldState
 
 
 METHOD HbqToolbar:setItemEnabled( cName, lEnabled )
    LOCAL lOldEnabled
-
    IF hb_hHasKey( ::hActions, cName )
       lOldEnabled := ::hActions[ cName ]:isEnabled()
       IF HB_ISLOGICAL( lEnabled )
          ::hActions[ cName ]:setEnabled( lEnabled )
       ENDIF
    ENDIF
-
    RETURN lOldEnabled
 
 
 METHOD HbqToolbar:itemToggle( cName )
    LOCAL lOldState
-
    IF hb_hHasKey( ::hActions, cName )
       IF ::hActions[ cName ]:isCheckable()
          lOldState := ::hActions[ cName ]:isChecked()
          ::hActions[ cName ]:setChecked( ! lOldState )
       ENDIF
    ENDIF
-
    RETURN lOldState
 

@@ -1,12 +1,12 @@
 /*
- * $Id: hbqtbrowse.prg 208 2013-04-19 02:44:23Z bedipritpal $
+ * $Id$
  */
 
 /*
  * Harbour Project source code:
  *
  *
- * Copyright 2013 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2013-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it AND/OR modify
@@ -73,7 +73,7 @@
 
 #define __toolbarButton_clicked__                 1001
 
-/*----------------------------------------------------------------------*/
+
 
 CLASS HbQtCharts
 
@@ -1400,7 +1400,7 @@ METHOD HbQtCharts:printChart( oPrinter )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+//----------------------------------------------------------------------//
 
 CLASS HbQtChartsPiece
 
@@ -1479,7 +1479,7 @@ METHOD HbQtChartsPiece:setPercent( nPerc )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+//----------------------------------------------------------------------//
 
 CLASS HbQtPair
 
@@ -1500,7 +1500,7 @@ CLASS HbQtPair
 METHOD HbQtPair:init()
    RETURN Self
 
-/*----------------------------------------------------------------------*/
+//----------------------------------------------------------------------//
 
 CLASS HbQtList
 

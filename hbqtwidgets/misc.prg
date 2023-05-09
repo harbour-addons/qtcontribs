@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -133,6 +133,7 @@ FUNCTION __hbqtBroadcastEventClose( oEvent )
 FUNCTION __hbqtManageEditEvents( oWidget )
    oWidget:connect( QEvent_KeyRelease, {|oEvent| __hbqtManageEditEventKeyRelease( oEvent, oWidget ) } )
    RETURN NIL
+
 
 STATIC FUNCTION __hbqtManageEditEventKeyRelease( oEvent, oWidget )
    SWITCH oEvent:key()

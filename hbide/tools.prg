@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -59,15 +57,12 @@
  *                               20Mar2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
 #include "common.ch"
 #include "hbclass.ch"
 #include "hbqtgui.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define __buttonAdd_clicked__                     2000
 #define __buttonDelete_clicked__                  2001
@@ -85,7 +80,6 @@
 #define __checkToolActive_stateChanged__          2013
 #define __User_Toolbar_clicked__                  2014
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeToolsManager INHERIT IdeObject
 
@@ -140,21 +134,15 @@ CLASS IdeToolsManager INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:init( oIde )
-
    ::oIde := oIde
-
    ::cSetsFolderLast := oIde:oINI:getINIPath()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:setStyleSheet( cCSS )
    LOCAL oToolbar
-
    FOR EACH oToolbar IN ::aToolbars
       IF !empty( oToolbar )
          oToolbar:setStyleSheet( cCSS )
@@ -162,13 +150,10 @@ METHOD IdeToolsManager:setStyleSheet( cCSS )
    NEXT
    ::qToolsMenu:setStyleSheet( GetStyleSheet( "QMenuPop", ::nAnimantionMode ) )
    ::qPanelsMenu:setStyleSheet( GetStyleSheet( "QMenuPop", ::nAnimantionMode ) )
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
 
@@ -180,45 +165,43 @@ METHOD IdeToolsManager:create( oIde )
       DEFAULT ::oINI:aUserToolbars[ 4 ] TO { "","YES","","","YES","YES","YES" }
       DEFAULT ::oINI:aUserToolbars[ 5 ] TO { "","YES","","","YES","YES","YES" }
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:destroy()
    LOCAL qAct, xTmp
-
    IF !empty( ::oUI )
-      FOR EACH qAct IN ::aAct
-         qAct:disconnect( "triggered(bool)" )
-         qAct := NIL
-      NEXT
-      FOR EACH qAct IN ::aPanelsAct
-         qAct:disconnect( "triggered(bool)" )
-         qAct := NIL
-      NEXT
-      ::qToolsButton:disconnect( "clicked()" )
-      ::qToolsButton := NIL
-      ::clearList()
-
-      ::qPanelsButton           :disconnect( "clicked()" )
-      ::oUI:buttonAdd           :disconnect( "clicked()" )
-      ::oUI:buttonDelete        :disconnect( "clicked()" )
-      ::oUI:buttonUp            :disconnect( "clicked()" )
-      ::oUI:buttonDown          :disconnect( "clicked()" )
-      ::oUI:buttonExec          :disconnect( "clicked()" )
-      ::oUI:buttonBrowse        :disconnect( "clicked()" )
-      ::oUI:buttonUpdate        :disconnect( "clicked()" )
-      ::oUI:buttonClose         :disconnect( "clicked()" )
-      ::oUI:buttonSetImage      :disconnect( "clicked()" )
-      ::oUI:buttonUserToolbarUpd:disconnect( "clicked()" )
-      ::oUI:comboToolbarAsgnd   :disconnect( "currentIndexChanged(int)" )
-      ::oUI:listToolbars        :disconnect( "itemSelectionChanged()"   )
-      ::oUI:listNames           :disconnect( "itemSelectionChanged()"   )
-
-      ::oUI:destroy()
+      WITH OBJECT ::oUI
+         FOR EACH qAct IN ::aAct
+            qAct:disconnect( "triggered(bool)" )
+            qAct := NIL
+         NEXT
+         FOR EACH qAct IN ::aPanelsAct
+            qAct:disconnect( "triggered(bool)" )
+            qAct := NIL
+         NEXT
+         ::qToolsButton:disconnect( "clicked()" )
+         ::qToolsButton := NIL
+         ::clearList()
+         ::qPanelsButton      :disconnect( "clicked()" )
+         //
+         :buttonAdd           :disconnect( "clicked()" )
+         :buttonDelete        :disconnect( "clicked()" )
+         :buttonUp            :disconnect( "clicked()" )
+         :buttonDown          :disconnect( "clicked()" )
+         :buttonExec          :disconnect( "clicked()" )
+         :buttonBrowse        :disconnect( "clicked()" )
+         :buttonUpdate        :disconnect( "clicked()" )
+         :buttonClose         :disconnect( "clicked()" )
+         :buttonSetImage      :disconnect( "clicked()" )
+         :buttonUserToolbarUpd:disconnect( "clicked()" )
+         :comboToolbarAsgnd   :disconnect( "currentIndexChanged(int)" )
+         :listToolbars        :disconnect( "itemSelectionChanged()"   )
+         :listNames           :disconnect( "itemSelectionChanged()"   )
+         //
+         :destroy()
+      ENDWITH
    ENDIF
-
    FOR EACH xTmp IN ::aBtns
       xTmp:disconnect( "clicked()" )
       xTmp := NIL
@@ -226,129 +209,122 @@ METHOD IdeToolsManager:destroy()
    FOR EACH xTmp IN ::aToolbars
       xTmp := NIL
    NEXT
-
-   ::aAct            := NIL
-   ::qToolsMenu      := NIL
-   ::qToolsButton    := NIL
-   ::aPanelsAct      := NIL
-   ::qPanelsButton   := NIL
-   ::qPanelsMenu     := NIL
-   ::oProcess        := NIL
-   ::lExecuting      := NIL
-   ::aHdr            := NIL
-   ::aBtns           := NIL
-   ::aToolbars       := NIL
-   ::aPlugins        := NIL
-
+   IF .T.
+      ::aAct            := NIL
+      ::qToolsMenu      := NIL
+      ::qToolsButton    := NIL
+      ::aPanelsAct      := NIL
+      ::qPanelsButton   := NIL
+      ::qPanelsMenu     := NIL
+      ::oProcess        := NIL
+      ::lExecuting      := NIL
+      ::aHdr            := NIL
+      ::aBtns           := NIL
+      ::aToolbars       := NIL
+      ::aPlugins        := NIL
+   ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:show()
-   LOCAL oTbl, hdr_, n, qItm
-
+   LOCAL hdr_, n, qItm
+   
    IF empty( ::oUI )
-      ::oUI := hbide_getUI( "toolsutilities", ::oDlg:oWidget )
-
-      ::oUI:setWindowFlags( Qt_Sheet )
-
-      ::oUI:setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
-      ::oUI:setMaximumWidth( ::oUI:width() )
-      ::oUI:setMinimumWidth( ::oUI:width() )
-      ::oUI:setMaximumHeight( ::oUI:height() )
-      ::oUI:setMinimumHeight( ::oUI:height() )
-
-      ::oUI:buttonAdd   :connect( "clicked()", {|| ::execEvent( __buttonAdd_clicked__    ) } )
-      ::oUI:buttonDelete:connect( "clicked()", {|| ::execEvent( __buttonDelete_clicked__ ) } )
-      ::oUI:buttonUp    :connect( "clicked()", {|| ::execEvent( __buttonUp_clicked__     ) } )
-      ::oUI:buttonDown  :connect( "clicked()", {|| ::execEvent( __buttonDown_clicked__   ) } )
-      ::oUI:buttonExec  :connect( "clicked()", {|| ::execEvent( __buttonExec_clicked__   ) } )
-      ::oUI:buttonBrowse:connect( "clicked()", {|| ::execEvent( __buttonBrowse_clicked__ ) } )
-      ::oUI:buttonUpdate:connect( "clicked()", {|| ::execEvent( __buttonUpdate_clicked__ ) } )
-      ::oUI:buttonClose :connect( "clicked()", {|| ::execEvent( __buttonClose_clicked__  ) } )
-
-      ::oUI:listNames   :connect( "itemSelectionChanged()", {|| ::execEvent( __listNames_itemSelectionChanged__ ) } )
-
-      ::oUI:buttonBtnDown :setIcon( QIcon( hbide_image( "dc_down" ) ) )
-      ::oUI:buttonBtnUp   :setIcon( QIcon( hbide_image( "dc_up"   ) ) )
-
-      ::oUI:buttonSetImage:setIcon( QIcon( hbide_image( "open"    ) ) )
-      ::oUI:buttonSetImage:connect( "clicked()", {|| ::execEvent( __buttonSetImage_clicked__ ) } )
-
-      ::oUI:buttonUserToolbarUpd:connect( "clicked()", {|| ::execEvent( __buttonUserToolbarUpd_clicked__ ) } )
-
-      ::oUI:comboToolbarAsgnd:addItem( "User_Toolbar_1" )
-      ::oUI:comboToolbarAsgnd:addItem( "User_Toolbar_2" )
-      ::oUI:comboToolbarAsgnd:addItem( "User_Toolbar_3" )
-      ::oUI:comboToolbarAsgnd:addItem( "User_Toolbar_4" )
-      ::oUI:comboToolbarAsgnd:addItem( "User_Toolbar_5" )
-      ::oUI:comboToolbarAsgnd:setCurrentIndex( -1 )
-      ::oUI:comboToolbarAsgnd:connect( "currentIndexChanged(int)", {|p| ::execEvent( __comboToolbarAsgnd_currentIndexChanged__, p ) } )
-
-      ::oUI:listToolbars:addItem( "User_Toolbar_1" )
-      ::oUI:listToolbars:addItem( "User_Toolbar_2" )
-      ::oUI:listToolbars:addItem( "User_Toolbar_3" )
-      ::oUI:listToolbars:addItem( "User_Toolbar_4" )
-      ::oUI:listToolbars:addItem( "User_Toolbar_5" )
-      ::oUI:listToolbars:connect( "itemSelectionChanged()", {|| ::execEvent( __listToolbars_itemSelectionChanged__ ) } )
-
-      ::oUI:comboInitPos:addItem( "Left"   )
-      ::oUI:comboInitPos:addItem( "Top"    )
-      ::oUI:comboInitPos:addItem( "Right"  )
-      ::oUI:comboInitPos:addItem( "Bottom" )
-      ::oUI:comboToolbarAsgnd:setCurrentIndex( -1 )
-
-      ::oUI:checkDockTop   :setChecked( .f. )
-      ::oUI:checkDockLeft  :setChecked( .t. )
-      ::oUI:checkDockBottom:setChecked( .t. )
-      ::oUI:checkDockRight :setChecked( .t. )
-      ::oUI:checkFloatable :setChecked( .t. )
-
-      ::oUI:checkToolActive:setChecked( .t. )
-      ::oUI:checkInactive:connect( "stateChanged(int)", {|p| ::execEvent( __checkToolActive_stateChanged__, p ) } )
-
-      hdr_:= { { "Img", 30 }, { "Tool", 218 } }
-      oTbl := ::oUI:tableButtons
-      //
-      oTbl:verticalHeader():hide()
-      oTbl:horizontalHeader():setStretchLastSection( .t. )
-      oTbl:setAlternatingRowColors( .t. )
-      oTbl:setColumnCount( Len( hdr_ ) )
-      oTbl:setShowGrid( .t. )
-      oTbl:setSelectionMode( QAbstractItemView_SingleSelection )
-      oTbl:setSelectionBehavior( QAbstractItemView_SelectRows )
-      FOR n := 1 TO Len( hdr_ )
-         qItm := QTableWidgetItem()
-         qItm:setText( hdr_[ n,1 ] )
-         oTbl:setHorizontalHeaderItem( n-1, qItm )
-         oTbl:setColumnWidth( n-1, hdr_[ n,2 ] )
-         aadd( ::aHdr, qItm )
-      NEXT
-
-      ::oUI:listToolbars:setCurrentRow( 0 )
+      WITH OBJECT ::oUI := hbide_getUI( "toolsutilities", ::oDlg:oWidget )
+         :setWindowFlags( Qt_Sheet )
+         :setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
+         :setMaximumWidth( :width() )
+         :setMinimumWidth( :width() )
+         :setMaximumHeight( :height() )
+         :setMinimumHeight( :height() )
+         :buttonAdd   :connect( "clicked()", {|| ::execEvent( __buttonAdd_clicked__    ) } )
+         :buttonDelete:connect( "clicked()", {|| ::execEvent( __buttonDelete_clicked__ ) } )
+         :buttonUp    :connect( "clicked()", {|| ::execEvent( __buttonUp_clicked__     ) } )
+         :buttonDown  :connect( "clicked()", {|| ::execEvent( __buttonDown_clicked__   ) } )
+         :buttonExec  :connect( "clicked()", {|| ::execEvent( __buttonExec_clicked__   ) } )
+         :buttonBrowse:connect( "clicked()", {|| ::execEvent( __buttonBrowse_clicked__ ) } )
+         :buttonUpdate:connect( "clicked()", {|| ::execEvent( __buttonUpdate_clicked__ ) } )
+         :buttonClose :connect( "clicked()", {|| ::execEvent( __buttonClose_clicked__  ) } )
+         :listNames   :connect( "itemSelectionChanged()", {|| ::execEvent( __listNames_itemSelectionChanged__ ) } )
+         :buttonBtnDown :setIcon( QIcon( hbide_image( "dc_down" ) ) )
+         :buttonBtnUp :setIcon( QIcon( hbide_image( "dc_up"   ) ) )
+         WITH OBJECT :buttonSetImage()
+            :setIcon( QIcon( hbide_image( "open"    ) ) )
+            :connect( "clicked()", {|| ::execEvent( __buttonSetImage_clicked__ ) } )
+         ENDWITH 
+         :buttonUserToolbarUpd:connect( "clicked()", {|| ::execEvent( __buttonUserToolbarUpd_clicked__ ) } )
+         WITH OBJECT :comboToolbarAsgnd()
+            :addItem( "User_Toolbar_1" )
+            :addItem( "User_Toolbar_2" )
+            :addItem( "User_Toolbar_3" )
+            :addItem( "User_Toolbar_4" )
+            :addItem( "User_Toolbar_5" )
+            :setCurrentIndex( -1 )
+            :connect( "currentIndexChanged(int)", {|p| ::execEvent( __comboToolbarAsgnd_currentIndexChanged__, p ) } )
+         ENDWITH
+         WITH OBJECT :listToolbars()
+            :addItem( "User_Toolbar_1" )
+            :addItem( "User_Toolbar_2" )
+            :addItem( "User_Toolbar_3" )
+            :addItem( "User_Toolbar_4" )
+            :addItem( "User_Toolbar_5" )
+            :connect( "itemSelectionChanged()", {|| ::execEvent( __listToolbars_itemSelectionChanged__ ) } )
+         ENDWITH 
+         WITH OBJECT :comboInitPos()
+            :addItem( "Left"   )
+            :addItem( "Top"    )
+            :addItem( "Right"  )
+            :addItem( "Bottom" )
+         ENDWITH 
+         :comboToolbarAsgnd:setCurrentIndex( -1 )
+         :checkDockTop   :setChecked( .f. )
+         :checkDockLeft  :setChecked( .t. )
+         :checkDockBottom:setChecked( .t. )
+         :checkDockRight :setChecked( .t. )
+         :checkFloatable :setChecked( .t. )
+         :checkToolActive:setChecked( .t. )
+         :checkInactive:connect( "stateChanged(int)", {|p| ::execEvent( __checkToolActive_stateChanged__, p ) } )
+         hdr_:= { { "Img", 30 }, { "Tool", 218 } }
+         WITH OBJECT :tableButtons()
+            :verticalHeader():hide()
+            :horizontalHeader():setStretchLastSection( .t. )
+            :setAlternatingRowColors( .t. )
+            :setColumnCount( Len( hdr_ ) )
+            :setShowGrid( .t. )
+            :setSelectionMode( QAbstractItemView_SingleSelection )
+            :setSelectionBehavior( QAbstractItemView_SelectRows )
+            FOR n := 1 TO Len( hdr_ )
+               WITH OBJECT qItm := QTableWidgetItem()
+                  :setText( hdr_[ n,1 ] )
+               ENDWITH 
+               :setHorizontalHeaderItem( n-1, qItm )
+               :setColumnWidth( n-1, hdr_[ n,2 ] )
+               aadd( ::aHdr, qItm )
+            NEXT
+         ENDWITH 
+         IF .T.
+            :listToolbars:setCurrentRow( 0 )
+         ENDIF
+      ENDWITH 
    ENDIF
-
-   ::populatePlugins( .t. )
-   ::clearList()
-   ::populateList( ::oINI:aTools )
-   ::oUI:listNames:setCurrentRow( 0 )
-   ::oIde:setPosByIniEx( ::oUI:oWidget, ::oINI:cToolsDialogGeometry )
-   ::oUI:show()
-
+   IF .T.
+      ::populatePlugins( .t. )
+      ::clearList()
+      ::populateList( ::oINI:aTools )
+      ::oUI:listNames:setCurrentRow( 0 )
+      ::oIde:setPosByIniEx( ::oUI:oWidget, ::oINI:cToolsDialogGeometry )
+      ::oUI:show()
+   ENDIF
    RETURN Nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:execEvent( nEvent, p )
    LOCAL cFile, cFileName, nIndex, qItem, cName, nRow
    LOCAL aTools := ::oINI:aTools
-
    HB_SYMBOL_UNUSED( p )
-
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH nEvent
    CASE __checkToolActive_stateChanged__
       nRow := ::oUI:listToolbars:currentRow()
@@ -446,25 +422,20 @@ METHOD IdeToolsManager:execEvent( nEvent, p )
       ::execTool( p )
       EXIT
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_toolBlock( o, a_ )
    LOCAL cTool := a_[ 1 ]
    RETURN {|| o:execEvent( __User_Toolbar_clicked__, cTool ) }
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:buildUserToolbars()
    LOCAL a_:={}, b_, qTbar, qTBtn, nn, nIndex
    LOCAL area_:= { Qt_LeftToolBarArea, Qt_TopToolBarArea, Qt_RightToolBarArea, Qt_BottomToolBarArea }
    LOCAL aIndex := {}
-
    FOR nIndex := 0 TO 4
       nn := nIndex + 1
-
       FOR EACH b_ IN ::aTools
          IF !empty( b_[ 7 ] ) .AND. val( b_[ 7 ] ) == nIndex
             aadd( a_, b_ )
@@ -472,32 +443,32 @@ METHOD IdeToolsManager:buildUserToolbars()
          ENDIF
       NEXT
       IF !empty( a_ )
-         qTBar := QToolBar()
-         qTBar:setStyleSheet( GetStyleSheet( "QToolBarLR5", ::nAnimantionMode ) )
-         qTBar:setObjectName( "User_Toolbar_" + hb_ntos( nIndex ) )
-         qTBar:setWindowTitle( "User Toolbar : " + hb_ntos( nIndex ) )
-         qTBar:setIconSize( QSize( 16,16 ) )
-         qTBar:setToolButtonStyle( Qt_ToolButtonIconOnly )
-         qTBar:setAllowedAreas( iif( ::aUserToolbars[ nn,4 ] == "YES", Qt_TopToolBarArea   , 0 ) + ;
-                                iif( ::aUserToolbars[ nn,5 ] == "YES", Qt_LeftToolBarArea  , 0 ) + ;
-                                iif( ::aUserToolbars[ nn,6 ] == "YES", Qt_BottomToolBarArea, 0 ) + ;
-                                iif( ::aUserToolbars[ nn,7 ] == "YES", Qt_RightToolBarArea , 0 ) )
-
+         WITH OBJECT qTBar := QToolBar()
+            :setStyleSheet( GetStyleSheet( "QToolBarLR5", ::nAnimantionMode ) )
+            :setObjectName( "User_Toolbar_" + hb_ntos( nIndex ) )
+            :setWindowTitle( "User Toolbar : " + hb_ntos( nIndex ) )
+            :setIconSize( QSize( 16,16 ) )
+            :setToolButtonStyle( Qt_ToolButtonIconOnly )
+            :setAllowedAreas( iif( ::aUserToolbars[ nn,4 ] == "YES", Qt_TopToolBarArea   , 0 ) + ;
+                              iif( ::aUserToolbars[ nn,5 ] == "YES", Qt_LeftToolBarArea  , 0 ) + ;
+                              iif( ::aUserToolbars[ nn,6 ] == "YES", Qt_BottomToolBarArea, 0 ) + ;
+                              iif( ::aUserToolbars[ nn,7 ] == "YES", Qt_RightToolBarArea , 0 ) )
+         ENDWITH    
          FOR EACH b_ IN a_
-            qTBtn := QToolButton( qTBar )
-            qTBtn:setText( b_[ 1 ] )
-            qTBtn:setTooltip( b_[ 10 ] )
-            qTBtn:setIcon( QIcon( hbide_pathToOSPath( b_[ 9 ] ) ) )
-            qTBtn:setMaximumWidth( 20 )
-            qTBtn:setMaximumHeight( 20 )
-            qTBtn:connect( "clicked()", hbide_toolBlock( Self, b_ ) )
-            qTBar:addWidget( qTBtn )
-            IF !( b_[ 8 ] == "YES" )
+            WITH OBJECT qTBtn := QToolButton( qTBar )
+               :setText( b_[ 1 ] )
+               :setTooltip( b_[ 10 ] )
+               :setIcon( QIcon( hbide_pathToOSPath( b_[ 9 ] ) ) )
+               :setMaximumWidth( 20 )
+               :setMaximumHeight( 20 )
+               :connect( "clicked()", hbide_toolBlock( Self, b_ ) )
+               :addWidget( qTBtn )
+            ENDWITH 
+            IF ! b_[ 8 ] == "YES"
                qTBtn:setEnabled( .f. )
             ENDIF
             aadd( ::aBtns, qTBtn )
          NEXT
-
          ::oDlg:oWidget:addToolBar( area_[ val( ::aUserToolbars[ nn,4 ] ) + 1 ], qTBar )
          IF ::aUserToolbars[ nn, 3 ] == "YES"
             qTBar:hide()
@@ -506,61 +477,53 @@ METHOD IdeToolsManager:buildUserToolbars()
          a_:= {}
       ENDIF
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:populateButtonsTable( nIndex )
-   LOCAL a_:={}, b_, q0, q1, oTbl, nRow
-
-   oTbl := ::oUI:tableButtons
-   oTbl:clearContents()
-
-   IF nIndex > -1
-      FOR EACH b_ IN ::aTools
-         IF !empty( b_[ 7 ] ) .AND. val( b_[ 7 ] ) == nIndex
-            aadd( a_, b_ )
-         ENDIF
-      NEXT
-
-      oTbl:setRowCount( Len( a_ ) )
-
-      IF !empty( a_ )
-         FOR EACH b_ IN a_
-            nRow := b_:__enumIndex()-1
-
-            q0 := QTableWidgetItem()
-            q0:setIcon( QIcon( hbide_pathToOSPath( b_[ 9 ] ) ) )
-            q0:setTooltip( b_[ 10 ] )
-            oTbl:setItem( nRow, 0, q0 )
-
-            q1 := QTableWidgetItem()
-            q1:setText( b_[ 1 ] )
-            oTbl:setItem( nRow, 1, q1 )
-
-            oTbl:setRowHeight( nRow, 16 )
+   LOCAL a_:={}, b_, q0, q1, nRow
+   WITH OBJECT ::oUI:tableButtons
+      :clearContents()
+      IF nIndex > -1
+         FOR EACH b_ IN ::aTools
+            IF !empty( b_[ 7 ] ) .AND. val( b_[ 7 ] ) == nIndex
+               aadd( a_, b_ )
+            ENDIF
          NEXT
+         :setRowCount( Len( a_ ) )
+         IF !empty( a_ )
+            FOR EACH b_ IN a_
+               nRow := b_:__enumIndex() - 1
+               WITH OBJECT q0 := QTableWidgetItem()
+                  :setIcon( QIcon( hbide_pathToOSPath( b_[ 9 ] ) ) )
+                  :setTooltip( b_[ 10 ] )
+               ENDWITH 
+               :setItem( nRow, 0, q0 )
+               WITH OBJECT q1 := QTableWidgetItem()
+                  :setText( b_[ 1 ] )
+               ENDWITH 
+               :setItem( nRow, 1, q1 )
+               :setRowHeight( nRow, 16 )
+            NEXT
+         ENDIF
       ENDIF
-   ENDIF
-
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:ini2toolbarControls( nIndex, nMode )
-
    IF nIndex > -1
       nIndex++
       IF nMode == 1
-         ::oUI:comboInitPos   :setCurrentIndex( val( ::aUserToolBars[ nIndex, 1 ] ) )
-         ::oUI:checkFloatable :setChecked( ::aUserToolBars[ nIndex, 2 ] == "YES" )
-         ::oUI:checkInactive  :setChecked( ::aUserToolBars[ nIndex, 3 ] == "YES" )
-         ::oUI:checkDockTop   :setChecked( ::aUserToolBars[ nIndex, 4 ] == "YES" )
-         ::oUI:checkDockLeft  :setChecked( ::aUserToolBars[ nIndex, 5 ] == "YES" )
-         ::oUI:checkDockBottom:setChecked( ::aUserToolBars[ nIndex, 6 ] == "YES" )
-         ::oUI:checkDockRight :setChecked( ::aUserToolBars[ nIndex, 7 ] == "YES" )
-
+         WITH OBJECT ::oUI
+            :comboInitPos   :setCurrentIndex( val( ::aUserToolBars[ nIndex, 1 ] ) )
+            :checkFloatable :setChecked( ::aUserToolBars[ nIndex, 2 ] == "YES" )
+            :checkInactive  :setChecked( ::aUserToolBars[ nIndex, 3 ] == "YES" )
+            :checkDockTop   :setChecked( ::aUserToolBars[ nIndex, 4 ] == "YES" )
+            :checkDockLeft  :setChecked( ::aUserToolBars[ nIndex, 5 ] == "YES" )
+            :checkDockBottom:setChecked( ::aUserToolBars[ nIndex, 6 ] == "YES" )
+            :checkDockRight :setChecked( ::aUserToolBars[ nIndex, 7 ] == "YES" )
+         ENDWITH
       ELSE
          ::aUserToolBars[ nIndex, 1 ] := hb_ntos( ::oUI:comboInitPos:currentIndex() )
          ::aUserToolBars[ nIndex, 2 ] := iif( ::oUI:checkFloatable :isChecked(), "YES", "NO" )
@@ -569,109 +532,89 @@ METHOD IdeToolsManager:ini2toolbarControls( nIndex, nMode )
          ::aUserToolBars[ nIndex, 5 ] := iif( ::oUI:checkDockLeft  :isChecked(), "YES", "NO" )
          ::aUserToolBars[ nIndex, 6 ] := iif( ::oUI:checkDockBottom:isChecked(), "YES", "NO" )
          ::aUserToolBars[ nIndex, 7 ] := iif( ::oUI:checkDockRight :isChecked(), "YES", "NO" )
-
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:ini2controls( nIndex )
-
-   IF nIndex > 0
-      ::oUI:editName         :setText( ::aTools[ nIndex, 1 ] )
-      ::oUI:editCmdLine      :setText( ::aTools[ nIndex, 2 ] )
-      ::oUI:editParams       :setText( ::aTools[ nIndex, 3 ] )
-      ::oUI:editStayIn       :setText( ::aTools[ nIndex, 4 ] )
-      ::oUI:checkCapture     :setChecked( !empty( ::aTools[ nIndex, 5 ] ) )
-      ::oUI:checkOpenCons    :setChecked( !empty( ::aTools[ nIndex, 6 ] ) )
-
-      ::oUI:comboToolbarAsgnd:setCurrentIndex( iif( empty( ::aTools[ nIndex, 7 ] ), -1, val( ::aTools[ nIndex, 7 ] ) ) )
-      ::oUI:checkToolActive  :setChecked( ::aTools[ nIndex, 8 ] == "YES" )
-      ::oUI:editImage        :setText( hbide_pathNormalized( ::aTools[ nIndex, 9 ], .f. ) )
-      ::oUI:buttonSetImage   :setIcon( QIcon( iif( empty( ::aTools[ nIndex, 9 ] ), hbide_image( "open" ), ;
-                                                               hbide_pathToOsPath( ::aTools[ nIndex, 9 ] ) ) ) )
-      ::oUI:editTooltip      :setText( ::aTools[ nIndex, 10 ] )
-      ::oUI:comboPlugin      :setCurrentIndex( ascan( ::aPlugins, {|e| ::aTools[ nIndex, 11 ] == e } ) - 1 )
-      ::oUI:checkPlugInit    :setChecked( ::aTools[ nIndex, 12 ] == "YES" )
-
-   ELSE
-      ::oUI:editName         :setText( "" )
-      ::oUI:editCmdLine      :setText( "" )
-      ::oUI:editParams       :setText( "" )
-      ::oUI:editStayIn       :setText( "" )
-      ::oUI:checkCapture     :setChecked( .f. )
-      ::oUI:checkOpenCons    :setChecked( .f. )
-
-      ::oUI:comboToolbarAsgnd:setCurrentIndex( -1 )
-      ::oUI:checkToolActive  :setChecked( .t. )
-      ::oUI:editImage        :setText( "" )
-      ::oUI:buttonSetImage   :setIcon( QIcon( hbide_image( "open" ) ) )
-      ::oUI:editTooltip      :setText( "" )
-      ::oUI:comboPlugin      :setCurrentIndex( -1 )
-      ::oUI:checkPlugInit    :setChecked( .f. )
-
-   ENDIF
-
+   WITH OBJECT ::oUI
+      IF nIndex > 0
+         :editName         :setText( ::aTools[ nIndex, 1 ] )
+         :editCmdLine      :setText( ::aTools[ nIndex, 2 ] )
+         :editParams       :setText( ::aTools[ nIndex, 3 ] )
+         :editStayIn       :setText( ::aTools[ nIndex, 4 ] )
+         :checkCapture     :setChecked( !empty( ::aTools[ nIndex, 5 ] ) )
+         :checkOpenCons    :setChecked( !empty( ::aTools[ nIndex, 6 ] ) )
+         :comboToolbarAsgnd:setCurrentIndex( iif( empty( ::aTools[ nIndex, 7 ] ), -1, val( ::aTools[ nIndex, 7 ] ) ) )
+         :checkToolActive  :setChecked( ::aTools[ nIndex, 8 ] == "YES" )
+         :editImage        :setText( hbide_pathNormalized( ::aTools[ nIndex, 9 ], .f. ) )
+         :buttonSetImage   :setIcon( QIcon( iif( empty( ::aTools[ nIndex, 9 ] ), hbide_image( "open" ), ;
+                                                             hbide_pathToOsPath( ::aTools[ nIndex, 9 ] ) ) ) )
+         :editTooltip      :setText( ::aTools[ nIndex, 10 ] )
+         :comboPlugin      :setCurrentIndex( ascan( ::aPlugins, {|e| ::aTools[ nIndex, 11 ] == e } ) - 1 )
+         :checkPlugInit    :setChecked( ::aTools[ nIndex, 12 ] == "YES" )
+      ELSE
+         :editName         :setText( "" )
+         :editCmdLine      :setText( "" )
+         :editParams       :setText( "" )
+         :editStayIn       :setText( "" )
+         :checkCapture     :setChecked( .f. )
+         :checkOpenCons    :setChecked( .f. )
+         :comboToolbarAsgnd:setCurrentIndex( -1 )
+         :checkToolActive  :setChecked( .t. )
+         :editImage        :setText( "" )
+         :buttonSetImage   :setIcon( QIcon( hbide_image( "open" ) ) )
+         :editTooltip      :setText( "" )
+         :comboPlugin      :setCurrentIndex( -1 )
+         :checkPlugInit    :setChecked( .f. )
+      ENDIF
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:controls2ini( nIndex )
-
    IF empty( nIndex )
       aadd( ::oINI:aTools, {} )
       nIndex := Len( ::oINI:aTools )
    ENDIF
-
    ::oINI:aTools[ nIndex ] := { ::oUI:editName:text()   , ;
-                                    hbide_pathNormalized( ::oUI:editCmdLine:text() ), ;
-                                    hbide_pathNormalized( ::oUI:editParams:text()  ), ;
-                                    hbide_pathNormalized( ::oUI:editStayIn:text()  ), ;
-                                    iif( ::oUI:checkCapture :isChecked(), "YES", "" ), ;
-                                    iif( ::oUI:checkOpenCons:isChecked(), "YES", "" ), ;
-                                    ;
-                                    hb_ntos( ::oUI:comboToolbarAsgnd:currentIndex() ), ;
-                                    iif( ::oUI:checkToolActive:isChecked(), "YES", "NO" ), ;
-                                    ::oUI:editImage:text(), ;
-                                    ::oUI:editTooltip:text(), ;
-                                    ::oUI:comboPlugin:currentText(), ;
-                                    iif( ::oUI:checkPlugInit:isChecked(), "YES", "NO" ) ;
+                                 hbide_pathNormalized( ::oUI:editCmdLine:text() ), ;
+                                 hbide_pathNormalized( ::oUI:editParams:text()  ), ;
+                                 hbide_pathNormalized( ::oUI:editStayIn:text()  ), ;
+                                 iif( ::oUI:checkCapture :isChecked(), "YES", "" ), ;
+                                 iif( ::oUI:checkOpenCons:isChecked(), "YES", "" ), ;
+                                 ;
+                                 hb_ntos( ::oUI:comboToolbarAsgnd:currentIndex() ), ;
+                                 iif( ::oUI:checkToolActive:isChecked(), "YES", "NO" ), ;
+                                 ::oUI:editImage:text(), ;
+                                 ::oUI:editTooltip:text(), ;
+                                 ::oUI:comboPlugin:currentText(), ;
+                                 iif( ::oUI:checkPlugInit:isChecked(), "YES", "NO" ) ;
                               }
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:clearList()
-
    ::oUI:listNames:clear()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:populateList( aList )
    LOCAL a_
-
    DEFAULT aList TO ::oINI:aTools
-
    FOR EACH a_ IN aList
       ::oUI:listNames:addItem( a_[ 1 ] )
    NEXT
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:populatePlugins( lClear )
    LOCAL cDir, aDir, aFile
-
    IF lClear
       ::oUI:comboPlugin:clear()
    ENDIF
    ::aPlugins := {}
-
    cDir := hb_dirBase() + "plugins" + hb_ps()
    aDir := directory( cDir + "*" )
    IF !empty( aDir )
@@ -681,43 +624,37 @@ METHOD IdeToolsManager:populatePlugins( lClear )
       NEXT
       ::oUI:comboPlugin:setCurrentIndex( -1 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:buildToolsButton()
    LOCAL a_, qAct
-
-   ::qToolsMenu := QMenu()
-   ::qToolsMenu:setStyleSheet( GetStyleSheet( "QMenuPop", ::nAnimantionMode ) )
+   WITH OBJECT ::qToolsMenu := QMenu()
+      :setStyleSheet( GetStyleSheet( "QMenuPop", ::nAnimantionMode ) )
+   ENDWITH
    FOR EACH a_ IN ::aTools
       qAct := ::qToolsMenu:addAction( a_[ 1 ] )
       qAct:connect( "triggered(bool)", {|| ::execTool( a_[ 1 ] ) } )
       aadd( ::aAct, qAct )
    NEXT
-   ::qToolsButton := QToolButton()
-   ::qToolsButton:setTooltip( "Tools & Utilities" )
-   ::qToolsButton:setIcon( QIcon( hbide_image( "tools" ) ) )
-   ::qToolsButton:setPopupMode( QToolButton_MenuButtonPopup )
-   ::qToolsButton:setMenu( ::qToolsMenu )
-
-   ::qToolsButton:connect( "clicked()", {|| ::show() } )
-
+   WITH OBJECT ::qToolsButton := QToolButton()
+      :setTooltip( "Tools & Utilities" )
+      :setIcon( QIcon( hbide_image( "tools" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::qToolsMenu )
+      :connect( "clicked()", {|| ::show() } )
+   ENDWITH 
    RETURN ::qToolsButton
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:execToolByParams( cCmd, cParams, cStartIn, lCapture, lOpen )
    LOCAL cArg, lTokened
-
-   ::oProcess := HbpProcess():new()
-
-   ::oProcess:output      := {|cOut, mp2, oHbp| ::showOutput( cOut, mp2, oHbp ) }
-   ::oProcess:finished    := {|nEC , nES, oHbp| ::finished( nEC, nES, oHbp ) }
-   ::oProcess:workingPath := cStartIn
-   ::oProcess:lDetached   := !( lCapture )
-
+   WITH OBJECT ::oProcess := HbpProcess():new()
+      :output      := {|cOut, mp2, oHbp| ::showOutput( cOut, mp2, oHbp ) }
+      :finished    := {|nEC , nES, oHbp| ::finished( nEC, nES, oHbp ) }
+      :workingPath := cStartIn
+      :lDetached   := !( lCapture )
+   ENDWITH 
    IF empty( cCmd )
       lTokened := .f.
       cCmd := hbide_getShellCommand()
@@ -726,33 +663,31 @@ METHOD IdeToolsManager:execToolByParams( cCmd, cParams, cStartIn, lCapture, lOpe
       lTokened := .t.
       cArg := ""
    ENDIF
-
    cArg += hbide_parseMacros( cParams )
-
    IF lCapture
       IF lOpen
          ::oDockB2:show()
       ENDIF
-      ::oOutputResult:oWidget:clear()
-      ::oOutputResult:oWidget:append( cCmd )
-      ::oOutputResult:oWidget:append( cArg )
-      ::oOutputResult:oWidget:append( hbide_outputLine() )
+      WITH OBJECT ::oOutputResult:oWidget
+         :clear()
+         :append( cCmd )
+         :append( cArg )
+         :append( hbide_outputLine() )
+      ENDWITH 
    ENDIF
-   ::oProcess:addArg( cArg, lTokened )
-   ::oProcess:start( cCmd )
-
+   WITH OBJECT ::oProcess
+      :addArg( cArg, lTokened )
+      :start( cCmd )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:execTool( ... )
    LOCAL nIndex, cCmd, cParams, cStayIn, lCapture, lOpen, aParam, cPlugin, a_
-
    aParam := hb_aParams()
    IF Len( aParam ) == 1
       IF ( nIndex := ascan( ::aTools, {|e_| e_[ 1 ] == aParam[ 1 ] } ) ) > 0
          hb_fNameSplit( ::aTools[ nIndex, 11 ], , @cPlugin )
-
          cCmd     := hbide_pathToOSPath( ::aTools[ nIndex, 2 ] )
          cParams  := ::aTools[ nIndex, 3 ]
          cParams  := iif( "http://" $ lower( cParams ) .OR. !empty( cPlugin ), cParams, hbide_pathToOSPath( cParams ) )
@@ -760,18 +695,16 @@ METHOD IdeToolsManager:execTool( ... )
          cStayIn  := hbide_pathToOSPath( ::aTools[ nIndex, 4 ] )
          lCapture := ::aTools[ nIndex, 5 ] == "YES"
          lOpen    := ::aTools[ nIndex, 6 ] == "YES"
-
       ENDIF
-
    ELSEIF Len( aParam ) > 1
       asize( aParam, 5 )
-
-      DEFAULT aParam[ 1 ] TO ""
-      DEFAULT aParam[ 2 ] TO ""
-      DEFAULT aParam[ 3 ] TO ""
-      DEFAULT aParam[ 4 ] TO ""
-      DEFAULT aParam[ 5 ] TO ""
-
+      IF .T.
+         DEFAULT aParam[ 1 ] TO ""
+         DEFAULT aParam[ 2 ] TO ""
+         DEFAULT aParam[ 3 ] TO ""
+         DEFAULT aParam[ 4 ] TO ""
+         DEFAULT aParam[ 5 ] TO ""
+      ENDIF
       cCmd     := hbide_pathToOSPath( aParam[ 1 ] )
       cParams  := aParam[ 2 ]
       cParams  := iif( "http://" $ lower( cParams ), cParams, hbide_pathToOSPath( cParams ) )
@@ -779,9 +712,7 @@ METHOD IdeToolsManager:execTool( ... )
       cStayIn  := hbide_pathToOSPath( aParam[ 3 ] )
       lCapture := iif( HB_ISLOGICAL( aParam[ 4 ] ), aParam[ 4 ], aParam[ 4 ] == "YES" )
       lOpen    := iif( HB_ISLOGICAL( aParam[ 5 ] ), aParam[ 5 ], aParam[ 5 ] == "YES" )
-
    ENDIF
-
    IF HB_ISLOGICAL( lCapture )
       IF !empty( cPlugin )
          a_:= hb_aTokens( cParams, " " )
@@ -789,50 +720,35 @@ METHOD IdeToolsManager:execTool( ... )
             cParams := hbide_evalAsis( cParams )
          NEXT
          hbide_execPlugin( cPlugin, ::oIde, hb_arrayToParams( a_ ) )
-
       ELSE
          ::execToolByParams( cCmd, cParams, cStayIn, lCapture, lOpen )
-
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:showOutput( cOut, mp2, oHbp )
-
    HB_SYMBOL_UNUSED( mp2 )
    HB_SYMBOL_UNUSED( oHbp )
-
    hbide_convertBuildStatusMsgToHtml( cOut, ::oOutputResult:oWidget )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:finished( nEC, nES, oHbp )
-
    HB_SYMBOL_UNUSED( oHbp )
-
    ::oOutputResult:oWidget:append( hbide_outputLine() )
    ::oOutputResult:oWidget:append( "Finished: Exit Code = " + hb_ntos( nEC ) + " Status = " + hb_ntos( nES ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_blockView( oSelf, cView )
    RETURN {|| oSelf:execView( cView ) }
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:buildViewsButton()
    LOCAL a_, b_, qAct, aSettings, cPath, cView
-
    cPath := ::oINI:getIniPath()
    b_:= directory( cPath + "*.ide"  )
-
    aSettings := {}
    aadd( aSettings, "Browse..." )
    aadd( aSettings, "..." )
@@ -854,40 +770,34 @@ METHOD IdeToolsManager:buildViewsButton()
       ENDIF
       aadd( ::aSetAct, { qAct, cView } )
    NEXT
-   ::qViewsButton := QToolButton()
-   ::qViewsButton:setObjectName( "HbIDE Views" )
-   ::qViewsButton:setTooltip( "HbIDE Views" )
-   ::qViewsButton:setIcon( QIcon( hbide_image( "view_docks" ) ) )
-   ::qViewsButton:setPopupMode( QToolButton_MenuButtonPopup )
-   ::qViewsButton:setMenu( ::qViewsMenu )
-   ::qViewsButton:connect( "clicked()", {|| ::saveView() } )
-
+   WITH OBJECT ::qViewsButton := QToolButton()
+      :setObjectName( "HbIDE Views" )
+      :setTooltip( "HbIDE Views" )
+      :setIcon( QIcon( hbide_image( "view_docks" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::qViewsMenu )
+      :connect( "clicked()", {|| ::saveView() } )
+   ENDWITH 
    RETURN ::qViewsButton
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:saveView()
    LOCAL cView, qAct
-
    cView := hbide_saveAFile( ::oDlg, "Select a HbIDE Settings File", { { "HbIDE Settings", "*.ide" } }, ::cSetsFolderLast, "ide" )
    IF ! empty( cView )
       ::cSetsFolderLast := cView
       cView := lower( hbide_pathNormalized( cView ) )
       hbide_saveEnvironment( ::oIde, cView )
-
       IF ascan( ::aSetAct, {|e_| e_[ 2 ] == cView } ) == 0
          qAct := ::qViewsMenu:addAction( cView )
          qAct:connect( "triggered(bool)", hbide_blockView( Self, cView ) )
          aadd( ::aAct, { qAct, cView } )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:execView( cView )
-
    IF cView == "Browse..."
       cView := hbide_fetchAFile( ::oDlg, "Select a HbIDE Settings File", { { "HbIDE Settings", "*.ide" } }, ::cSetsFolderLast, "ide", .f. )
       IF empty( cView )
@@ -900,95 +810,88 @@ METHOD IdeToolsManager:execView( cView )
    ELSE
       hbide_restEnvironment( ::oIde, cView )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:buildPanelsButton()
    LOCAL s, a_
-
-   ::qPanelsMenu := QMenu()
-   ::qPanelsMenu:setStyleSheet( GetStyleSheet( "QMenuPop", ::nAnimantionMode ) )
+   WITH OBJECT ::qPanelsMenu := QMenu()
+      :setStyleSheet( GetStyleSheet( "QMenuPop", ::nAnimantionMode ) )
+   ENDWITH 
    FOR EACH s IN ::oINI:aViews
       a_:= hb_atokens( s, "," )
       ::addPanelsMenu( a_[ 1 ] )
    NEXT
-   ::qPanelsButton := QToolButton()
-   ::qPanelsButton:setTooltip( "Panels" )
-   ::qPanelsButton:setIcon( QIcon( hbide_image( "b_20" ) ) ) //panel_8" ) ) )
-   ::qPanelsButton:setPopupMode( QToolButton_MenuButtonPopup )
-   ::qPanelsButton:setMenu( ::qPanelsMenu )
-
-// ::qPanelsButton:connect( "clicked()", {|| ::oDK:setView( "New..." ) } )
-   ::qPanelsButton:connect( "clicked()", {|| ::managePanels() } )
-
+   WITH OBJECT ::qPanelsButton := QToolButton()
+      :setTooltip( "Panels" )
+      :setIcon( QIcon( hbide_image( "b_20" ) ) ) //panel_8" ) ) )
+      :setPopupMode( QToolButton_MenuButtonPopup )
+      :setMenu( ::qPanelsMenu )
+      :connect( "clicked()", {|| ::managePanels() } )
+   ENDWITH 
    RETURN ::qPanelsButton
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:addPanelsMenu( cPrompt )
    LOCAL qAct
-
-   qAct := ::qPanelsMenu:addAction( cPrompt )
-   qAct:setIcon( QIcon( ::oDK:getPanelIcon( cPrompt ) ) )
-   qAct:connect( "triggered(bool)", {|| ::oDK:setView( cPrompt ) } )
+   WITH OBJECT qAct := ::qPanelsMenu:addAction( cPrompt )
+      :setIcon( QIcon( ::oDK:getPanelIcon( cPrompt ) ) )
+      :connect( "triggered(bool)", {|| ::oDK:setView( cPrompt ) } )
+   ENDWITH 
    aadd( ::aPanelsAct, qAct )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:managePanels()
    LOCAL a_
-
    IF empty( ::oUIPnls )
-      ::oUIPnls := ui_panels():new( ::oDlg:oWidget )
-
-      ::oUIPnls:listOrder:setDragEnabled( .t. )
-      ::oUIPnls:listOrder:setAcceptDrops( .t. )
-      ::oUIPnls:listOrder:setDragDropMode( QAbstractItemView_InternalMove )
-
-      ::oUIPnls:comboPos:addItem( "Top" )
-      ::oUIPnls:comboPos:addItem( "Bottom" )
-      ::oUIPnls:comboPos:addItem( "Left" )
-      ::oUIPnls:comboPos:addItem( "Right" )
-      ::oUIPnls:comboPos:setCurrentIndex( ::oINI:nPanelsTabPosition )
-
-      ::oUIPnls:comboShape:addItem( "Round" )
-      ::oUIPnls:comboShape:addItem( "Triangular" )
-      ::oUIPnls:comboShape:setCurrentIndex( ::oINI:nPanelsTabShape )
-
-      ::oUIPnls          : connect( QEvent_Close, {|| ::oUIPnls:hide()  } )
+      WITH OBJECT ::oUIPnls := ui_panels():new( ::oDlg:oWidget )
+         WITH OBJECT :listOrder()
+            :setDragEnabled( .t. )
+            :setAcceptDrops( .t. )
+            :setDragDropMode( QAbstractItemView_InternalMove )
+         ENDWITH 
+         WITH OBJECT :comboPos()
+            :addItem( "Top" )
+            :addItem( "Bottom" )
+            :addItem( "Left" )
+            :addItem( "Right" )
+            :setCurrentIndex( ::oINI:nPanelsTabPosition )
+         ENDWITH
+         WITH OBJECT :comboShape()
+            :addItem( "Round" )
+            :addItem( "Triangular" )
+            :setCurrentIndex( ::oINI:nPanelsTabShape )
+         ENDWITH
+         //
+         :connect( QEvent_Close, {|| ::oUIPnls:hide()  } )
+      ENDWITH 
       ::oUIPnls:btnOk    : connect( "clicked()" , {|| ::oUIPnls:hide(), ::arrangePanels() } )
       ::oUIPnls:btnCancel: connect( "clicked()" , {|| ::oUIPnls:hide()  } )
    ENDIF
-
-   ::oUIPnls:move( ::qPanelsButton:mapToGlobal( QPoint( 0, 20 ) ) )
-   ::oUIPnls:listOrder:clear()
-   ::oUIPnls:comboDelete:clear()
-   FOR EACH a_ IN ::oDK:aViewsInfo
-      ::oUIPnls:listOrder:addItem( a_[ 1 ] )
-      ::oUIPnls:comboDelete:addItem( a_[ 1 ] )
-   NEXT
-   ::oUIPnls:comboDelete:setCurrentIndex( -1 )
-   ::oUIPnls:show()
-
+   //
+   WITH OBJECT ::oUIPnls
+      :move( ::qPanelsButton:mapToGlobal( QPoint( 0, 20 ) ) )
+      :listOrder:clear()
+      :comboDelete:clear()
+      FOR EACH a_ IN ::oDK:aViewsInfo
+         :listOrder:addItem( a_[ 1 ] )
+         :comboDelete:addItem( a_[ 1 ] )
+      NEXT
+      :comboDelete:setCurrentIndex( -1 )
+      :show()
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:arrangePanels()
    LOCAL a_:={}, v_:={}, w_:={}, n, i, cView
    LOCAL lOrder := .f.
-
    ::oINI:nPanelsTabShape := ::oUIPnls:comboShape:currentIndex()
    ::oINI:nPanelsTabPosition := ::oUIPnls:comboPos:currentIndex()
-
    /* These are easy */
    ::oDK:oStackedWidget:setTabShape( ::oINI:nPanelsTabShape )
    ::oDK:oStackedWidget:setTabPosition( ::oINI:nPanelsTabPosition )
-
    /* Rearrange panels */
    FOR i := 1 TO ::oUIPnls:listOrder:count()
       cView := ::oUIPnls:listOrder:item( i - 1 ):text()
@@ -1006,7 +909,6 @@ METHOD IdeToolsManager:arrangePanels()
       ::oDK:aViewsInfo := v_
       ::oIde:aViews    := w_
    ENDIF
-
    /* tobe done at the end after re-order */
    IF ! empty( cView := trim( ::oUIPnls:editView:text() ) )
       ::oDK:setView( cView )
@@ -1018,19 +920,15 @@ METHOD IdeToolsManager:arrangePanels()
    IF lOrder
       MsgBox( "You will need to close HbIDE for panels re-order to take effect !" )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeToolsManager:deletePanel( cView )
    LOCAL nTab, n, pTab, oEdit
-
    ::oDK:setView( cView )
    IF ! hbide_getYesNo( "Are you sure to remove - " + cView + " - panel ?" )
       RETURN NIL
    ENDIF
-
    DO WHILE ::oIde:qTabWidget:count() > 0
       pTab  := ::oIde:qTabWidget:widget( 0 )
       IF ( nTab  := ascan( ::oIde:aTabs, {|e_| hbqt_IsEqual( e_[ 1 ]:oWidget, pTab ) } ) ) > 0
@@ -1040,7 +938,7 @@ METHOD IdeToolsManager:deletePanel( cView )
          ENDIF
       ENDIF
    ENDDO
-
+   //
    n := ascan( ::oDK:aViewsInfo, {|e_| e_[ 1 ] == cView } )
    //
    ::oStackedWidget:oWidget:removeSubWindow( ::oIde:aMdies[ n ] )
@@ -1048,8 +946,5 @@ METHOD IdeToolsManager:deletePanel( cView )
    hb_adel( ::oIde:aMdies   , n, .t. )
    hb_adel( ::oDK:aViewsInfo, n, .t. )
    hb_adel( ::oIde:aViews   , n, .t. )
-
    RETURN Self
-
-/*----------------------------------------------------------------------*/
 

@@ -80,47 +80,39 @@ FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
 
    FOR i := 1 TO Len( aSummary )
       cSyntax := lTrim( Substr( aSummary[ i ], 8 ) )
-
       IF LEFT( cSyntax,14 ) == "HB_FUNC_STATIC"
          cType   := "HB_FUNC_STATIC"
          cSyntax := AllTrim( StrTran( StrTran( Substr( cSyntax, 15 ), "(", "" ), ")", "" ) )
          cName   := cSyntax
          cSyntax += "(void)"
-
       ELSEIF LEFT( cSyntax, 7 ) == "HB_FUNC"
          cType   := "HB_FUNC"
          cSyntax := AllTrim( StrTran( StrTran( Substr( cSyntax,8 ), "(", "" ), ")", "" ) )
          cName   := cSyntax
          cSyntax += "(void)"
-
       ELSE
          cType := Upper( Left( cSyntax, At( " ", cSyntax ) - 1 ) )
          IF LEFTEQUAL( cType, "INIT" ) .OR. LEFTEQUAL( cType, "EXIT" )
             cSyntax := LTrim( Substr( cSyntax, 6 ) )
             cType +=" "+Upper( Left( cSyntax, ( n := At( " ", cSyntax ) ) - 1 ) )
             cSyntax := LTrim( Substr( cSyntax, n + 1 ) )
-
          ELSEIF LEFTEQUAL( cType, "STATIC" )
             cSyntax := LTrim( Substr( cSyntax, 7 ) )
             cType += " " + Upper( Left( cSyntax, ( n := At( " ", cSyntax ) ) - 1 ) )
             cSyntax := LTrim( Substr( cSyntax, n + 1 ) )
-
          ELSEIF LEFTEQUAL( cType, "DLL" )
             cSyntax := LTrim( Substr( cSyntax, 4 ) )
             cType += " " + Upper( Left( cSyntax, ( n := At( " ", cSyntax ) ) - 1 ) )
             cSyntax := LTrim( Substr( cSyntax, n + 1 ) )
-
          ELSEIF LEFTEQUAL( cType, "DLL32" )
             cSyntax := LTrim( Substr( cSyntax, 6 ) )
             cType += " " + Upper( Left( cSyntax, ( n := At( " ", cSyntax ) ) - 1 ) )
             cSyntax := LTrim( Substr( cSyntax, n + 1 ) )
-
          ELSEIF cType == "CLASS"
             cSyntax := LTrim( SubStr( cSyntax, 7 ) )
          ELSE
             cSyntax := LTrim( SubStr( cSyntax, Len( cType ) + 1 ) )
          ENDIF
-
          IF ( n := RAt( "(", cSyntax ) ) > 0
             cName := Trim( Left( cSyntax, n-1 ) )
             FOR m := Len( cName ) TO 1 STEP -1
@@ -128,13 +120,11 @@ FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
                   EXIT
                ENDIF
             NEXT
-
             IF m > 0
                cType   += " " + Left( cSyntax, m - 1 )
                cSyntax := SubStr( cSyntax, m + 1 )
                cName   := SubStr( cName, m + 1 )
             ENDIF
-
             IF LEFTEQUAL( cType, "METH" )
                IF ( n := Rat( " CLASS ", cSyntax ) ) > 0
                   cClassName := Upper( AllTrim( Substr( cSyntax, n + 7 ) ) )
@@ -142,7 +132,6 @@ FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
                   cClassName := cClassName
                ENDIF
             ENDIF
-
          ELSEIF LEFTEQUAL( cType, "METH" )
             IF ( n := Rat( " CLASS ", cSyntax ) ) > 0
                cName      := Left( cSyntax, n - 1 )
@@ -154,14 +143,11 @@ FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
          ELSE
             cName := cSyntax
          ENDIF
-
          IF cType == "CLASS"
             cClassName := Upper( cName )
             cClassName := Left( cClassName, At( " ", cClassName + " " ) - 1 ) // remove INHERIT
          ENDIF
-
       ENDIF
-
       IF !aSumData[ i,1 ]  // not commented out !
          aAdd( aTags, { Upper( Trim( cName ) ) ,;
                         iif( LEFTEQUAL( cType, "METH" ), iif( !Empty( cClassName ), cClassName + ":" + Upper( cType ), Upper( cType ) ), Upper( cType ) ),;
@@ -174,11 +160,9 @@ FUNCTION UpdateTags( cModule, aSummary, aSumData, aFuncList, aLines, aText )
                      };
              )
       ENDIF
-
       AAdd( aFuncList, { iif( LEFTEQUAL( cType, "METH" ), "", "" ) + cSyntax, aSumData[ i, 2 ], aSumData[ i, 1 ] } )
       AAdd( aLines, i )
    NEXT
-
    RETURN aTags
 
 
@@ -197,9 +181,7 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
 
    FOR i := 1 TO n
       cline := Upper( AllTrim( aText[ i ] ) )
-
       IF nType == 9 .OR. nType == 10 // PRG code
-
          IF ! lInClass  .OR. LEFTEQUAL( cLine, "METH" )
             IF LEFTEQUAL( cLine, 'FUNCTION '         ) .OR. ;
                LEFTEQUAL( cLine, 'PROCEDURE '        ) .OR. ;
@@ -227,7 +209,6 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
                AEval( a, {|x| c += x } )
                c := AllTrim( c )
                nLine := i
-
                DO WHILE Right( c, 1 ) == ";"
                   i++
                   c := Left( c, Len( c ) - 1 )
@@ -235,7 +216,6 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
                   AEval( a,{|x| c += x } )
                   c := AllTrim( c )
                ENDDO
-
                IF lInClass
                   IF LEFTEQUAL( cLine, 'METH' )
                      IF " INLINE " $ Upper( c )
@@ -245,15 +225,12 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
                      ENDIF
                   ENDIF
                ENDIF
-
                IF ( j := At( ";", c ) ) > 0
                   c := Left( c, j-1 )
                ENDIF
-
                lInComment := ( Asc( substr( cComments, nLine, 1 ) ) == 3 )
                aAdd( aSumData, { lInComment, nLine } )
                aAdd( aSummary, Str( nLine, 5, 0 ) + ': ' +  c )
-
                IF ! lInClass
                   lInClass := LEFTEQUAL( cLine, 'CLASS ' ) .OR. LEFTEQUAL( cLine, 'CREATE CLASS ' )
                ENDIF
@@ -265,9 +242,7 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
          ELSE
             lInClass := ( cline # 'END' )
          ENDIF
-
       ELSE   // C code
-
         IF LEFTEQUAL( cLine, "#PRAGMA ENDDUMP" )
             nType := nFileType
             ELSE
@@ -277,7 +252,6 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
                      a := ParsExpr( aText[ i ], .F., @lInComment , , .F., .F. )
                      ccLine := ""
                      c := ""
-
                      AEval( a, {|x| c += x, nNest := Max( 0, nNest + iif( x == "{", 1, iif( x == "}", -1, 0 ) ) ) } )
                      ccLine := AllTrim( c )
                   ELSE
@@ -298,14 +272,12 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
                         nLine := i+1
                      ENDIF
                   ENDIF
-
                   IF "){" $ ccLine  // this is a function call
                      ccline := Left( ccline, At( "){", ccline ) )
                      aAdd( aSumData, { lInComment, nLine } )
                      aAdd( aSummary, Str( nLine, 5, 0 ) + ': ' + ccline ) //lTrim( ::aText[ i ] ) )
                      ccLine := ""
                   ENDIF
-
               ELSE
                  a := ParsExpr( aText[ i ], .F. , @lInComment, , .F., .F.)
                  AEval( a, {| x | nNest := Max( 0, nNest + iif( x == "{", 1, iif( x == "}", -1, 0 ) ) ) } )
@@ -315,9 +287,7 @@ FUNCTION Summarize( aText, cComments, aSumData, nFileType )
           ENDIF
       ENDIF
    NEXT
-
    RETURN aSummary
-
 
 /*
    updates comments of the whole file or down from line nline (if supplied)
@@ -338,16 +308,13 @@ FUNCTION CheckComments( aText )
    cComments := Pad( cComments, nLines, chr( 0 ) )
 
    FOR i := nLine TO nLines
-
       nState   := iif( lInComment, 1, 0 )
       lChanged := .F.
       cText    := aText[ i ]
 
       IF "*" $ cText .OR. "/" $ cText  // quick test
          nPos  := 0
-
          DO WHILE .T.
-
             // check if terminated
             IF lInComment
                IF ( nPos := At( "*/", cText ) ) > 0
@@ -356,27 +323,21 @@ FUNCTION CheckComments( aText )
                   cText      := SubStr( cText, nPos + 2 )
                ENDIF
             ENDIF
-
             // check for comment start
             IF !lInComment
                DO WHILE ( nPos := hb_at( "//", cText, nPos+1 ) ) > 0   // is the line commented out ?
                   IF ! IsInString( cText, nPos, 1 )                    // or is it just part of the string ?
                      cText := Left( cText, nPos - 1 )
-
                      IF Empty( cText )
                         lInComment   := .T.
                         lLineComment := .T.
                      ENDIF
-
                      EXIT
                   ENDIF
                ENDDO
             ENDIF
-
             IF ( nPos := At( "/*", cText ) ) > 0      // does start of comment exits on that line
-
                IF ( lInstring := IsInString( cText, nPos, 1, @cQuote ) )
-
                   // find the end of the string
                   FOR j := nPos+1 TO Len( cText )
                       IF substr( cText, j, 1 ) == cQuote
@@ -389,36 +350,29 @@ FUNCTION CheckComments( aText )
                   IF j > Len( cText ) .AND. lInString
                      cText := ""
                   ENDIF
-
                ELSE
                   lChanged   := .T.
                   lInComment := .T.
                   cText := Substr( cText, nPos + 2 )
                ENDIF
-
             ENDIF
-
             IF nPos == 0 .OR. Empty( cText )
                EXIT
             ENDIF
          ENDDO
       ENDIF
-
       cComments := substr( cComments, 1, i-1 ) + chr( nState + ( iif( lInComment, 2, 0 ) + iif( lChanged, 4, 0 ) ) ) + substr( cComments, i+1 )
       IF nState == 0 .AND. lLineComment
          lInComment := .F.
       ENDIF
       lLineComment := .F.
-
    NEXT
-
    RETURN cComments
 
 
 STATIC FUNCTION IsInString( cText, nPos, nStart, cQuote )
    LOCAL j, cTkn
    LOCAL lInString := .F.
-
    STATIC cAnyQuote  := '"' + "'"
 
    FOR j := nStart TO nPos-1          // check if string did not begin before it
@@ -434,6 +388,5 @@ STATIC FUNCTION IsInString( cText, nPos, nStart, cQuote )
          ENDIF
       ENDIF
    NEXT
-
    RETURN lInString
 

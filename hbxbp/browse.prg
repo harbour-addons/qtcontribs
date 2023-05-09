@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * Navigation Based on TBrowse.prg
@@ -53,8 +53,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -64,8 +62,6 @@
  *                            Pritpal Bedi
  *                              10Jul2009
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
@@ -121,7 +117,6 @@
 
 #define ISFROZEN( n )         ( ascan( ::aLeftFrozen, n ) > 0 .OR. ascan( ::aRightFrozen, n ) > 0 )
 
-/*----------------------------------------------------------------------*/
 
 #define __ev_keypress__                    1                /* Keypress Event */
 #define __ev_mousepress_on_frozen__        31               /* Mousepress on Frozen */
@@ -146,9 +141,8 @@
 #define __ev_frame_resized__               2001
 #define __ev_contextMenuRequested__        2002
 
-/*----------------------------------------------------------------------*/
 
-CREATE CLASS XbpBrowse INHERIT XbpWindow
+CLASS XbpBrowse INHERIT XbpWindow
 
    VAR cargo                  AS USUAL          EXPORTED    // 01. User-definable variable
 
@@ -478,7 +472,6 @@ EXPORTED:
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:destroy()
    LOCAL i
@@ -548,7 +541,6 @@ METHOD XbpBrowse:destroy()
 
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:connect()
 
@@ -577,7 +569,6 @@ METHOD XbpBrowse:connect()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:disconnect()
 
@@ -606,10 +597,7 @@ METHOD XbpBrowse:disconnect()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-
 /* Just to retain TBrowse functionality: in the future */
-//METHOD XbpBrowse:init( nTop, nLeft, nBottom, nRight )
 METHOD XbpBrowse:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
@@ -625,15 +613,11 @@ METHOD XbpBrowse:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:openPersistentEditor()
-
    ::oTableView:openPersistentEditor( ::oDbfModel:index( ::rowPos - 1, ::colPos - 1 ) )
-
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD XbpBrowse:buildLeftFreeze()
 
@@ -678,7 +662,6 @@ METHOD XbpBrowse:buildLeftFreeze()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:buildRightFreeze()
    LOCAL oVHdr
@@ -720,7 +703,6 @@ METHOD XbpBrowse:buildRightFreeze()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    LOCAL qRect
@@ -832,12 +814,9 @@ METHOD XbpBrowse:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::oTableView:setEditTriggers( QAbstractItemView_AnyKeyPressed )
 
    ::connect()
-
    ::postCreate()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:execSlot( nEvent, p1, p2, p3 )
    LOCAL oPoint
@@ -936,12 +915,9 @@ METHOD XbpBrowse:execSlot( nEvent, p1, p2, p3 )
    CASE __ev_frame_resized__
       ::manageFrameResized()
       RETURN .T.
-
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageFrameResized()
    LOCAL nRowPos, nColPos, nOff
@@ -969,10 +945,8 @@ METHOD XbpBrowse:manageFrameResized()
       /* I think we can honor this STEP directly instead of populating the event queue */
       ::skipRows( nOff )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageCommitData( qWidget )
    LOCAL cTxt    := qWidget:property( "text" ):toString()
@@ -993,7 +967,6 @@ METHOD XbpBrowse:manageCommitData( qWidget )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageEditorClosed( pWidget, nHint )
 
@@ -1001,13 +974,11 @@ METHOD XbpBrowse:manageEditorClosed( pWidget, nHint )
 //HB_TRACE( HB_TR_DEBUG, nHint, QAbstractItemDelegate_NoHint, QAbstractItemDelegate_SubmitModelCache )
    DO CASE
    CASE nHint == QAbstractItemDelegate_NoHint                 /* 0  RETURN is presses    */
-
+      //
    CASE nHint == QAbstractItemDelegate_EditNextItem           /* 1  TAB is pressed       */
       SetAppEvent( xbeBRW_Navigate, XBPBRW_Navigate_SkipCols, 1, Self )
-
    CASE nHint == QAbstractItemDelegate_EditPreviousItem       /* 2  SHIFT_TAB is pressed */
       SetAppEvent( xbeBRW_Navigate, XBPBRW_Navigate_SkipCols, -1, Self )
-
    CASE nHint == QAbstractItemDelegate_SubmitModelCache       /* 3  ENTER is pressed     */
       #if 0
       IF ::colPos < ::colCount
@@ -1016,34 +987,25 @@ METHOD XbpBrowse:manageEditorClosed( pWidget, nHint )
       ENDIF
       #endif
    CASE nHint == QAbstractItemDelegate_RevertModelCache       /* 4  ESC is pressed       */
-
+      //
    ENDCASE
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageScrollContents( nX, nY )
-
    HB_SYMBOL_UNUSED( nY )
-
    IF nX != 0
       ::setHorzOffset()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageMouseDblClick( oMouseEvent )
-
    IF oMouseEvent:button() == Qt_LeftButton
       SetAppEvent( xbeBRW_ItemSelected, NIL, NIL, Self )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageMouseWheel( oWheelEvent )
 
@@ -1060,10 +1022,8 @@ METHOD XbpBrowse:manageMouseWheel( oWheelEvent )
          SetAppEvent( xbeBRW_Navigate, XBPBRW_Navigate_SkipCols, -1, Self )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:manageMousePress( oMouseEvent )
    HB_TRACE( HB_TR_DEBUG, __objGetClsName( oMouseEvent ), valtype( oMouseEvent:pos() ), ProcName( 1 ), procName( 2 ), ProcName( 3 ) )
@@ -1082,10 +1042,8 @@ METHOD XbpBrowse:manageMousePress( oMouseEvent )
       SetAppEvent( xbeBRW_ItemRbDown, { oMouseEvent:x(), oMouseEvent:y() }, { ::rowPos, ::colPos }, Self )
 
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
    LOCAL lNavgt := .t.
@@ -1137,22 +1095,16 @@ METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
       ELSE
          ::keyboard( mp1 )
       ENDIF
-
    CASE nEvent == xbeBRW_ItemSelected
       ::itemSelected( mp1, mp2 )
-
    CASE nEvent == xbeBRW_ItemMarked
       ::itemMarked( mp1, mp2 )
-
    CASE nEvent == xbeBRW_ItemRbDown
       ::itemRbDown( mp1, mp2 )
-
    CASE nEvent == xbeBRW_ForceStable
       ::forceStable()
-
    CASE nEvent == xbeBRW_HeaderRbDown
       ::headerRBDown( mp1, mp2 )
-
    CASE nEvent == xbeBRW_Pan
       DO CASE
       CASE mp1 == XBPBRW_Pan_Left
@@ -1161,7 +1113,6 @@ METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
       CASE mp1 == XBPBRW_Pan_LastCol
       CASE mp1 == XBPBRW_Pan_Track
       ENDCASE
-
    CASE nEvent == xbeBRW_Navigate
       DO CASE
       CASE mp1 == XBPBRW_Navigate_NextLine
@@ -1197,15 +1148,12 @@ METHOD XbpBrowse:handleEvent( nEvent, mp1, mp2 )
       OTHERWISE
          lNavgt := .f.
       ENDCASE
-
       IF lNavgt
          ::navigate( mp1, mp2 )
       ENDIF
    ENDCASE
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:skipCols( nCols )
    LOCAL i
@@ -1219,10 +1167,8 @@ METHOD XbpBrowse:skipCols( nCols )
          ::right()
       NEXT
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:skipRows( nRows )
    LOCAL i
@@ -1236,34 +1182,25 @@ METHOD XbpBrowse:skipRows( nRows )
          ::down()
       NEXT
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:navigate( p1, p2 )
-
    IF HB_ISBLOCK( p1 )
       ::sl_xbeBRW_Navigate := p1
-
    ELSEIF HB_ISNUMERIC( p1 )
       /* ::handleEvent( xbeBRW_Navigate, p1, p2 ) */
-
       IF HB_ISBLOCK( ::sl_xbeBRW_Navigate )
          eval( ::sl_xbeBRW_Navigate, p1, p2, self )
       ENDIF
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:supplyInfo( nMode, nCall, nRole, nX, nY )
-
    IF nCall == HBQT_QAIM_headerData .AND. nX == Qt_Vertical
       RETURN NIL
    ENDIF
-
    IF nCall == HBQT_QAIM_flags
       RETURN Qt_ItemIsEnabled + Qt_ItemIsSelectable + Qt_ItemIsEditable
    ENDIF
@@ -1288,7 +1225,7 @@ METHOD XbpBrowse:supplyInfo( nMode, nCall, nRole, nX, nY )
          RETURN ::fetchColumnInfo( nCall, nRole, 0, 0, nY+1 )
       ENDIF
       RETURN nil
-
+      
    CASE nMode == 142       /* Main View Footer */
       IF nCall == HBQT_QAIM_columnCount
          IF ::colCount > 0
@@ -1301,7 +1238,7 @@ METHOD XbpBrowse:supplyInfo( nMode, nCall, nRole, nX, nY )
          RETURN ::fetchColumnInfo( nCall, nRole, 1, 0, nY+1 )
       ENDIF
       RETURN nil
-
+      
    CASE nMode == 151       /* Left Frozen Header|Data */
       IF nCall == HBQT_QAIM_columnCount
          IF ::nLeftFrozen > 0
@@ -1319,7 +1256,7 @@ METHOD XbpBrowse:supplyInfo( nMode, nCall, nRole, nX, nY )
          RETURN ::fetchColumnInfo( nCall,nRole, 0, 0, ::aLeftFrozen[ nY+1 ] )
       ENDIF
       RETURN nil
-
+      
    CASE nMode == 152       /* Left Frozen Footer */
       IF nCall == HBQT_QAIM_columnCount
          IF ::nLeftFrozen > 0
@@ -1360,12 +1297,9 @@ METHOD XbpBrowse:supplyInfo( nMode, nCall, nRole, nX, nY )
       ELSEIF nCall == HBQT_QAIM_headerData
          RETURN ::fetchColumnInfo( nCall,nRole, 1, 0, ::aRightFrozen[ nY+1 ] )
       ENDIF
-
    ENDCASE
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
    LOCAL aColor
@@ -1373,7 +1307,6 @@ METHOD XbpBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
 
    SWITCH nCall
    CASE HBQT_QAIM_data
-
       SWITCH ( nRole )
       CASE Qt_ForegroundRole
          IF HB_ISBLOCK( oCol:colorBlock )
@@ -1451,30 +1384,22 @@ METHOD XbpBrowse:fetchColumnInfo( nCall, nRole, nArea, nRow, nCol )
       ENDIF
       RETURN nil
    ENDSWITCH
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:compatColor( nColor )
-
    IF ! hb_hHasKey( ::hColors, nColor )
       ::hColors[ nColor ] := QColor( nColor )
    ENDIF
-
    RETURN ::hColors[ nColor ]
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:compatIcon( cIcon )
-
    IF ! hb_hHasKey( ::hIcons, cIcon )
       ::hIcons[ cIcon ] := QIcon( QPixmap( Trim( cIcon ) ) )
    ENDIF
-
    RETURN ::hIcons[ cIcon ]
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setVertScrollBarRange( lPageStep )
    LOCAL nMin, nMax
@@ -1490,10 +1415,8 @@ METHOD XbpBrowse:setVertScrollBarRange( lPageStep )
          ::oVScrollBar:setPageStep( ::rowCount() )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setHorzScrollBarRange( lPageStep )
 
@@ -1506,7 +1429,6 @@ METHOD XbpBrowse:setHorzScrollBarRange( lPageStep )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:updatePosition()
 
@@ -1516,21 +1438,15 @@ METHOD XbpBrowse:updatePosition()
       ::forceStable()
       ::setCurrentIndex()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:updateVertScrollBar()
-
    ::oVScrollBar:setValue( eval( ::posBlock ) - 1 )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setHorzOffset()
-
    IF ::colPos == ::colCount
       ::oHeaderView:setOffsetToLastSection()
       ::oFooterView:setOffsetToLastSection()
@@ -1538,10 +1454,8 @@ METHOD XbpBrowse:setHorzOffset()
       ::oHeaderView:setOffsetToSectionPosition( ::colPos - 1 )
       ::oFooterView:setOffsetToSectionPosition( ::colPos - 1 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setCurrentIndex( lReset )
 
@@ -1558,10 +1472,8 @@ METHOD XbpBrowse:setCurrentIndex( lReset )
       ENDIF
    ENDIF
    ::oTableView:setCurrentIndex( ::oDbfModel:index( ::rowPos - 1, ::colPos - 1 ) )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:hScroll( lYes )
 
@@ -1570,10 +1482,8 @@ METHOD XbpBrowse:hScroll( lYes )
       ::setUnstable()
       ::configure( 128 )
    ENDIF
-
    RETURN ::lHScroll
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:vScroll( lYes )
 
@@ -1582,10 +1492,8 @@ METHOD XbpBrowse:vScroll( lYes )
       ::setUnstable()
       ::configure( 128 )
    ENDIF
-
    RETURN ::lHScroll
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:sizeCols( lYes )
 
@@ -1594,10 +1502,8 @@ METHOD XbpBrowse:sizeCols( lYes )
       ::setUnstable()
       ::configure( 128 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:cursorMode( nMode )
 
@@ -1606,10 +1512,8 @@ METHOD XbpBrowse:cursorMode( nMode )
       ::setUnstable()
       ::configure( 128 )
    ENDIF
-
    RETURN ::nCursorMode
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setRightFrozen( aColFrozens )
    LOCAL aFrozen := aclone( ::aRightFrozen )
@@ -1621,10 +1525,8 @@ METHOD XbpBrowse:setRightFrozen( aColFrozens )
       ::configure( 128 )
       ::forceStable()
    ENDIF
-
    RETURN aFrozen
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setLeftFrozen( aColFrozens )
    LOCAL aFrozen := aclone( ::aLeftFrozen )
@@ -1636,10 +1538,8 @@ METHOD XbpBrowse:setLeftFrozen( aColFrozens )
       ::configure( 128 )
       ::forceStable()
    ENDIF
-
    RETURN aFrozen
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setCellHeight( nCellHeight )
    LOCAL i
@@ -1655,7 +1555,6 @@ METHOD XbpBrowse:setCellHeight( nCellHeight )
    NEXT
    RETURN Self
 
-/*------------------------------------------------------------------------*/
 
 METHOD XbpBrowse:doConfigure()
    LOCAL oCol
@@ -1943,7 +1842,6 @@ METHOD XbpBrowse:doConfigure()
       ENDIF
    NEXT
 
-
    nRowCount := ::rowCount
    IF nRowCount == 0
       _GENLIMITRTE()
@@ -2003,10 +1901,8 @@ METHOD XbpBrowse:doConfigure()
       //::oRightDbfModel:hbSetRowColumns( ::rowCount - 1, ::nRightFrozen - 1 )
       ::oRightDbfModel:reset()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:footerRbDown( p1, p2 )
    IF HB_ISBLOCK( p1 )
@@ -2017,7 +1913,6 @@ METHOD XbpBrowse:footerRbDown( p1, p2 )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:headerRbDown( p1, p2 )
    IF HB_ISBLOCK( p1 )
@@ -2028,7 +1923,6 @@ METHOD XbpBrowse:headerRbDown( p1, p2 )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:itemMarked( p1 )
    IF HB_ISBLOCK( p1 )
@@ -2039,7 +1933,6 @@ METHOD XbpBrowse:itemMarked( p1 )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:itemRbDown( p1, p2 )
    IF HB_ISBLOCK( p1 )
@@ -2050,60 +1943,44 @@ METHOD XbpBrowse:itemRbDown( p1, p2 )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:itemSelected( p1 )
-
    IF HB_ISBLOCK( p1 )
       ::sl_xbeBRW_ItemSelected := p1
-
    ELSEIF HB_ISBLOCK( ::sl_xbeBRW_ItemSelected )
       eval( ::sl_xbeBRW_ItemSelected, NIL, NIL, self )
-
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:pan( p1 )
-
    IF HB_ISBLOCK( p1 )
       ::sl_xbeBRW_Pan := p1
-
    ELSEIF HB_ISNUMERIC( p1 )
       ::handleEvent( xbeBRW_Pan, p1, NIL )
-
       IF HB_ISBLOCK( ::sl_xbeBRW_Pan )
          eval( ::sl_xbeBRW_Pan, p1, NIL, self )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION _SKIP_RESULT( xResult )
    RETURN iif( HB_ISNUMERIC( xResult ), Int( xResult ), 0 )
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:configure( nMode )
-
    IF !HB_ISNUMERIC( nMode ) .OR. nMode == 0 .OR. nMode > _TBR_CONF_ALL
       nMode := _TBR_CONF_ALL
    ENDIF
    ::nConfigure := HB_BITOR( ::nConfigure, nMode )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:forceStable()
    DO WHILE !::stabilize() ; ENDDO
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:stabilize()
    LOCAL nRowCount, nToMove, nMoved
@@ -2115,9 +1992,7 @@ METHOD XbpBrowse:stabilize()
 
    IF !::lStable .OR. ::lInvalid .OR. ::lFrames .OR. ::lRefresh .OR. ;
                      ::nMoveOffset != 0 .OR. ::nBufferPos != ::nRowPos
-
       nRowCount := ::rowCount
-
       IF ::lRefresh
          AFill( ::aCellStatus, .F. )
          ::nLastRow    := nRowCount
@@ -2188,7 +2063,6 @@ METHOD XbpBrowse:stabilize()
 
       ::lStable := .T.
       ::lInvalid := .F.
-
    ENDIF
 
    IF ::autoLite
@@ -2202,10 +2076,8 @@ METHOD XbpBrowse:stabilize()
          eval( ::bStableBlock( Self ) )
       ENDIF
    ENDIF
-
    RETURN .T.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setPosition()
    LOCAL nMoved
@@ -2278,12 +2150,9 @@ METHOD XbpBrowse:setPosition()
    IF lSetPos
       ::nRowPos := ::nBufferPos
    ENDIF
-
    ::nMoveOffset := 0
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:scrollBuffer( nRows )
    LOCAL nRowCount := ::rowCount
@@ -2324,10 +2193,8 @@ METHOD XbpBrowse:scrollBuffer( nRows )
          ::lReset := .t.
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:readRecord( nRow )
    LOCAL aCol
@@ -2381,10 +2248,8 @@ METHOD XbpBrowse:readRecord( nRow )
       ::aCellStatus[ nRow ] := .T.
       ::aDispStatus[ nRow ] := .T.
    ENDIF
-
    RETURN lRead
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:cellValue( nRow, nCol )
 
@@ -2394,30 +2259,23 @@ METHOD XbpBrowse:cellValue( nRow, nCol )
 
       RETURN ::aCellValues[ nRow, nCol ]
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:cellValueA( nRow, nCol )
-
    IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
       nCol >= 1 .AND. nCol <= ::colCount .AND. ;
       ::aCellStatus[ nRow ]
 
       RETURN ::aCellValuesA[ nRow, nCol ]
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:setUnstable()
-
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
-
    IF ::lHiLited
       ::deHilite()
    ENDIF
@@ -2425,23 +2283,18 @@ METHOD XbpBrowse:setUnstable()
    ::lHitTop    := .F.
    ::lHitBottom := .F.
    ::lStable    := .F.
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:invalidate()
-
    ::setUnstable()
    ::lInvalid := .T.
    ::lFrames := .T.
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:refreshAll()
-
    ::setUnstable()
 
    Eval( ::bSkipBlock, 1 - ::nBufferPos )
@@ -2451,16 +2304,13 @@ METHOD XbpBrowse:refreshAll()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:refreshCurrent()
-
    ::setUnstable()
 
    IF ::nRowPos >= 1 .AND. ::nRowPos <= ::rowCount
       ::aCellStatus[ ::nRowPos ] := .F.
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -2479,7 +2329,6 @@ METHOD XbpBrowse:up()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:down()
    LOCAL lReset := ::rowPos >= ::rowCount
@@ -2493,7 +2342,6 @@ METHOD XbpBrowse:down()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:pageUp()
 
@@ -2506,7 +2354,6 @@ METHOD XbpBrowse:pageUp()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:pageDown()
 
@@ -2519,7 +2366,6 @@ METHOD XbpBrowse:pageDown()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:goTop()
 
@@ -2542,7 +2388,6 @@ METHOD XbpBrowse:goTop()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:goBottom()
    LOCAL nMoved
@@ -2598,10 +2443,8 @@ METHOD XbpBrowse:left()
 
       ::oHScrollBar:setValue( ::colPos - 1 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:right()
    LOCAL n, n1, n2, nLnWidth, nCol
@@ -2642,10 +2485,8 @@ METHOD XbpBrowse:right()
          ::oHScrollBar:setValue( ::colPos - 1 )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:firstCol()
    LOCAL n, nCol
@@ -2676,7 +2517,6 @@ METHOD XbpBrowse:firstCol()
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:lastCol()
    LOCAL n, n1, n2, nCol
@@ -2712,10 +2552,8 @@ METHOD XbpBrowse:lastCol()
       ENDIF
       ::oHScrollBar:setValue( ::colPos - 1 )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:home()
 
@@ -2724,7 +2562,6 @@ METHOD XbpBrowse:home()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:end()
 
@@ -2737,7 +2574,6 @@ METHOD XbpBrowse:end()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:panHome()
 
@@ -2747,7 +2583,6 @@ METHOD XbpBrowse:panHome()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:panEnd()
    LOCAL nOffset
@@ -2764,7 +2599,6 @@ METHOD XbpBrowse:panEnd()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:panLeft()
    LOCAL nLeftVisible := ::oHeaderView:visualIndexAt( 1 )+1
@@ -2777,7 +2611,6 @@ METHOD XbpBrowse:panLeft()
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpBrowse:panRight()
    LOCAL nNewPos
@@ -2789,11 +2622,10 @@ METHOD XbpBrowse:panRight()
       ::nLeftVisible := 0
       ::nRightVisible := nNewPos
    ENDIF
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*                                                                      */
+//                        Supporting Functions
 /*----------------------------------------------------------------------*/
 
 STATIC PROCEDURE _GENLIMITRTE()
@@ -2814,7 +2646,6 @@ STATIC PROCEDURE _GENLIMITRTE()
 
    RETURN
 
-/*----------------------------------------------------------------------*/
 /* helper function to take headings and footing data */
 STATIC FUNCTION _DECODE_FH( cName, nHeight, nWidth )
    LOCAL i
@@ -2842,7 +2673,6 @@ STATIC FUNCTION _DECODE_FH( cName, nHeight, nWidth )
       /* nHeight := 1 */
       cName := ""
    ENDIF
-
    RETURN nHeight != 0
 
 
@@ -2878,10 +2708,8 @@ STATIC FUNCTION _MAXFREEZE( nColumns, aColData, nWidth )
     */
    IF nWidth > 0 .OR. ;
       nWidth == 0 .AND. _NEXTCOLUMN( aColData, nColumns + 1 ) == 0
-
       RETURN nColumns
    ENDIF
-
    nWidth := nTot
 
    RETURN 0
@@ -2897,18 +2725,20 @@ STATIC FUNCTION _NEXTCOLUMN( aColData, nCol )
       ENDIF
       ++nCol
    ENDDO
-
    RETURN 0
+
 
 METHOD XbpBrowse:dispFrames()
    /* GUI do not implements it */
    ::lFrames := .F.
    RETURN Self
 
+
 METHOD XbpBrowse:dispRow( nRow )
    /* GUI do not implements it */
    HB_SYMBOL_UNUSED( nRow )
    RETURN Self
+
 
 METHOD XbpBrowse:colorRect( aRect, aColors )
    /* GUI does not implements it */
@@ -2981,6 +2811,7 @@ METHOD XbpBrowse:colorValue( nColorIndex )
    ENDIF
    RETURN ::aColors[ _TBC_CLR_STANDARD ]
 
+
 METHOD XbpBrowse:cellColor( nRow, nCol )
    IF nRow >= 1 .AND. nRow <= ::rowCount .AND. ;
       nCol >= 1 .AND. nCol <= ::colCount .AND. ;
@@ -2989,6 +2820,7 @@ METHOD XbpBrowse:cellColor( nRow, nCol )
       RETURN ::aCellColors[ nRow, nCol ]
    ENDIF
    RETURN NIL
+
 
 STATIC FUNCTION _DECODECOLORS( cColorSpec )
    LOCAL aColors := {}
@@ -3014,6 +2846,7 @@ STATIC FUNCTION _DECODECOLORS( cColorSpec )
    ENDDO
    RETURN aColors
 
+
 STATIC FUNCTION _COLDEFCOLORS( aDefColorsIdx, nMaxColorIndex )
    LOCAL aColorsIdx := { _TBC_CLR_STANDARD, _TBC_CLR_SELECTED, ;
                          _TBC_CLR_STANDARD, _TBC_CLR_STANDARD }
@@ -3033,8 +2866,8 @@ STATIC FUNCTION _COLDEFCOLORS( aDefColorsIdx, nMaxColorIndex )
          ENDIF
       NEXT
    ENDIF
-
    RETURN aColorsIdx
+
 
 STATIC FUNCTION _CELLCOLORS( aCol, xValue, nMaxColorIndex )
    LOCAL aColors := { aCol[ _TBCI_DEFCOLOR ][ _TBC_CLR_STANDARD ], ;
@@ -3056,6 +2889,7 @@ STATIC FUNCTION _CELLCOLORS( aCol, xValue, nMaxColorIndex )
       NEXT
    ENDIF
    RETURN aColors
+
 
 METHOD XbpBrowse:setCursorPos()
    LOCAL aCol
@@ -3084,6 +2918,7 @@ METHOD XbpBrowse:setCursorPos()
          ENDDO
       ENDIF
       SetPos( ::n_Row, ::n_Col )
+      //
       RETURN .T.
    ENDIF
    RETURN .F.
@@ -3092,8 +2927,10 @@ METHOD XbpBrowse:setCursorPos()
 METHOD XbpBrowse:setVisible()
    RETURN Self
 
+
 METHOD XbpBrowse:hiLite()
    RETURN Self
+
 
 METHOD XbpBrowse:deHilite()
    RETURN Self
@@ -3138,6 +2975,7 @@ METHOD XbpBrowse:freeze( nColumns )
    ENDIF
    RETURN ::nFrozen
 
+
 METHOD XbpBrowse:colorSpec( cColorSpec )
    IF cColorSpec != NIL
       ::cColorSpec := __eInstVar53( Self, "COLORSPEC", cColorSpec, "C", 1001 )
@@ -3145,14 +2983,17 @@ METHOD XbpBrowse:colorSpec( cColorSpec )
    ENDIF
    RETURN ::cColorSpec
 
+
 METHOD XbpBrowse:colCount()
    RETURN Len( ::columns )
+
 
 METHOD XbpBrowse:rowCount()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::nRowsInView
+
 
 METHOD XbpBrowse:setRowPos( nRowPos )
    LOCAL nRow
@@ -3168,11 +3009,13 @@ METHOD XbpBrowse:setRowPos( nRowPos )
    ENDIF
    RETURN ::nRowPos
 
+
 METHOD XbpBrowse:getRowPos()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::nRowPos
+
 
 METHOD XbpBrowse:setColPos( nColPos )
    IF ::nConfigure != 0
@@ -3185,17 +3028,20 @@ METHOD XbpBrowse:setColPos( nColPos )
    ENDIF
    RETURN ::nColPos
 
+
 METHOD XbpBrowse:getColPos()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::nColPos
 
+
 METHOD XbpBrowse:getTopFlag()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::lHitTop
+
 
 METHOD XbpBrowse:setTopFlag( lTop )
    IF ::nConfigure != 0
@@ -3207,11 +3053,13 @@ METHOD XbpBrowse:setTopFlag( lTop )
    ::lHitTop := lTop
    RETURN lTop
 
+
 METHOD XbpBrowse:getBottomFlag()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::lHitBottom
+
 
 METHOD XbpBrowse:setBottomFlag( lBottom )
    IF ::nConfigure != 0
@@ -3223,11 +3071,13 @@ METHOD XbpBrowse:setBottomFlag( lBottom )
    ::lHitBottom := lBottom
    RETURN lBottom
 
+
 METHOD XbpBrowse:getAutoLite()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::lAutoLite
+
 
 METHOD XbpBrowse:setAutoLite( lAutoLite )
    IF ::nConfigure != 0
@@ -3239,11 +3089,13 @@ METHOD XbpBrowse:setAutoLite( lAutoLite )
    ::lAutoLite := lAutoLite
    RETURN lAutoLite
 
+
 METHOD XbpBrowse:getStableFlag()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::lStable
+
 
 METHOD XbpBrowse:setStableFlag( lStable )
    IF ::nConfigure != 0
@@ -3255,11 +3107,13 @@ METHOD XbpBrowse:setStableFlag( lStable )
    ::lStable := lStable
    RETURN lStable
 
+
 METHOD XbpBrowse:leftVisible()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::nLeftVisible
+
 
 METHOD XbpBrowse:rightVisible()
    IF ::nConfigure != 0
@@ -3305,19 +3159,20 @@ METHOD XbpBrowse:setColumn( nColumn, oCol )
 METHOD XbpBrowse:getColumn( nColumn )
    RETURN iif( nColumn >= 1 .AND. nColumn <= ::colCount, ::columns[ nColumn ], NIL )
 
+
 METHOD XbpBrowse:footSep( cFootSep )
    IF cFootSep != NIL
       ::cFootSep := __eInstVar53( Self, "FOOTSEP", cFootSep, "C", 1001 )
    ENDIF
    RETURN ::cFootSep
 
-METHOD XbpBrowse:colSep( cColSep )
 
+METHOD XbpBrowse:colSep( cColSep )
    IF cColSep != NIL
       ::cColSep := __eInstVar53( Self, "COLSEP", cColSep, "C", 1001 )
    ENDIF
-
    RETURN ::cColSep
+
 
 METHOD XbpBrowse:headSep( cHeadSep )
    IF cHeadSep != NIL
@@ -3325,11 +3180,13 @@ METHOD XbpBrowse:headSep( cHeadSep )
    ENDIF
    RETURN ::cHeadSep
 
+
 METHOD XbpBrowse:skipBlock( bSkipBlock )
    IF bSkipBlock != NIL
       ::bSkipBlock := __eInstVar53( Self, "SKIPBLOCK", bSkipBlock, "B", 1001 )
    ENDIF
    RETURN ::bSkipBlock
+
 
 METHOD XbpBrowse:goTopBlock( bBlock )
    IF bBlock != NIL
@@ -3337,11 +3194,13 @@ METHOD XbpBrowse:goTopBlock( bBlock )
    ENDIF
    RETURN ::bGoTopBlock
 
+
 METHOD XbpBrowse:goBottomBlock( bBlock )
    IF bBlock != NIL
       ::bGoBottomBlock := __eInstVar53( Self, "GOBOTTOMBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bGoBottomBlock
+
 
 METHOD XbpBrowse:firstPosBlock( bBlock )
    IF bBlock != NIL
@@ -3349,11 +3208,13 @@ METHOD XbpBrowse:firstPosBlock( bBlock )
    ENDIF
    RETURN ::bFirstPosBlock
 
+
 METHOD XbpBrowse:lastPosBlock( bBlock )
    IF bBlock != NIL
       ::bLastPosBlock := __eInstVar53( Self, "LASTPOSBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bLastPosBlock
+
 
 METHOD XbpBrowse:phyPosBlock( bBlock )
    IF bBlock != NIL
@@ -3361,11 +3222,13 @@ METHOD XbpBrowse:phyPosBlock( bBlock )
    ENDIF
    RETURN ::bPhyPosBlock
 
+
 METHOD XbpBrowse:posBlock( bBlock )
    IF bBlock != NIL
       ::bPosBlock := __eInstVar53( Self, "POSBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bPosBlock
+
 
 METHOD XbpBrowse:goPosBlock( bBlock )
    IF bBlock != NIL
@@ -3373,11 +3236,13 @@ METHOD XbpBrowse:goPosBlock( bBlock )
    ENDIF
    RETURN ::bGoPosBlock
 
+
 METHOD XbpBrowse:hitBottomBlock( bBlock )
    IF bBlock != NIL
       ::bHitBottomBlock := __eInstVar53( Self, "HITBOTTOMBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bHitBottomBlock
+
 
 METHOD XbpBrowse:hitTopBlock( bBlock )
    IF bBlock != NIL
@@ -3385,47 +3250,43 @@ METHOD XbpBrowse:hitTopBlock( bBlock )
    ENDIF
    RETURN ::bHitTopBlock
 
+
 METHOD XbpBrowse:stableBlock( bBlock )
    IF bBlock != NIL
       ::bStableBlock := __eInstVar53( Self, "STABLEBLOCK", bBlock, "B", 1001 )
    ENDIF
    RETURN ::bStableBlock
 
-METHOD XbpBrowse:nTop( nTop )
 
+METHOD XbpBrowse:nTop( nTop )
    IF nTop != NIL
-         ::n_Top := __eInstVar53( Self, "NTOP", nTop, "N", 1001 )
-         IF !Empty( ::cBorder )
-            ::n_Top++
-         ENDIF
+      ::n_Top := __eInstVar53( Self, "NTOP", nTop, "N", 1001 )
+      IF !Empty( ::cBorder )
+         ::n_Top++
+      ENDIF
       ::configure( _TBR_CONF_COLUMNS )
    ENDIF
-
-      IF !Empty( ::cBorder )
-         RETURN ::n_Top - 1
-      ENDIF
-
+   IF !Empty( ::cBorder )
+      RETURN ::n_Top - 1
+   ENDIF
    RETURN ::n_Top
 
 
 METHOD XbpBrowse:nLeft( nLeft )
-
    IF nLeft != NIL
-         ::n_Left := __eInstVar53( Self, "NLEFT", nLeft, "N", 1001 )
-         IF !Empty( ::cBorder )
-            ::n_Left++
-         ENDIF
+      ::n_Left := __eInstVar53( Self, "NLEFT", nLeft, "N", 1001 )
+      IF !Empty( ::cBorder )
+         ::n_Left++
+      ENDIF
       ::configure( _TBR_CONF_COLUMNS )
    ENDIF
-
-      IF !Empty( ::cBorder )
-         RETURN ::n_Left - 1
-      ENDIF
-
+   IF !Empty( ::cBorder )
+      RETURN ::n_Left - 1
+   ENDIF
    RETURN ::n_Left
 
-METHOD XbpBrowse:nBottom( nBottom )
 
+METHOD XbpBrowse:nBottom( nBottom )
    IF nBottom != NIL
       ::n_Bottom := __eInstVar53( Self, "NBOTTOM", nBottom, "N", 1001, {| o, x | x >= o:nTop } )
       IF !Empty( ::cBorder )
@@ -3433,15 +3294,13 @@ METHOD XbpBrowse:nBottom( nBottom )
       ENDIF
       ::configure( _TBR_CONF_COLUMNS )
    ENDIF
-
    IF !Empty( ::cBorder )
       RETURN ::n_Bottom + 1
    ENDIF
-
    RETURN ::n_Bottom
 
-METHOD XbpBrowse:nRight( nRight )
 
+METHOD XbpBrowse:nRight( nRight )
    IF nRight != NIL
       ::n_Right := __eInstVar53( Self, "NRIGHT", nRight, "N", 1001, {| o, x | x >= o:nLeft } )
       IF !Empty( ::cBorder )
@@ -3449,12 +3308,11 @@ METHOD XbpBrowse:nRight( nRight )
       ENDIF
       ::configure( _TBR_CONF_COLUMNS )
    ENDIF
-
    IF !Empty( ::cBorder )
       RETURN ::n_Right + 1
    ENDIF
-
    RETURN ::n_Right
+
 
 METHOD XbpBrowse:viewArea()
    LOCAL nWidth, nFrozenWidth
@@ -3473,11 +3331,13 @@ METHOD XbpBrowse:viewArea()
             ::n_Right,;
             nFrozenWidth }
 
+
 METHOD XbpBrowse:firstScrCol()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN iif( ::leftVisible == 0, 0, ::aColData[ ::leftVisible ][ _TBCI_COLPOS ] )
+
 
 METHOD XbpBrowse:nRow()
    IF ::nConfigure != 0
@@ -3485,16 +3345,19 @@ METHOD XbpBrowse:nRow()
    ENDIF
    RETURN ::n_Row
 
+
 METHOD XbpBrowse:nCol()
    IF ::nConfigure != 0
       ::doConfigure()
    ENDIF
    RETURN ::n_Col
 
+
 METHOD XbpBrowse:hitTest( mRow, mCol )
    HB_SYMBOL_UNUSED( mRow )
    HB_SYMBOL_UNUSED( mCol )
    RETURN HTNOWHERE
+
 
 STATIC PROCEDURE _mBrwPos( oBrw, mRow, mCol )
    HB_SYMBOL_UNUSED( oBrw )
@@ -3502,15 +3365,19 @@ STATIC PROCEDURE _mBrwPos( oBrw, mRow, mCol )
    HB_SYMBOL_UNUSED( mCol )
    RETURN
 
+
 METHOD XbpBrowse:mRowPos()
    RETURN 0
+
 
 METHOD XbpBrowse:mColPos()
    RETURN 0
 
+
 METHOD XbpBrowse:border( cBorder )
    HB_SYMBOL_UNUSED( cBorder )
    RETURN ::cBorder
+
 
 METHOD XbpBrowse:message( cMessage )
    IF cMessage != NIL
@@ -3524,12 +3391,10 @@ METHOD XbpBrowse:applyKey( nKey )
 
    IF bBlock == NIL
       bBlock := ::SetKey( 0 )
-
       IF bBlock == NIL
          RETURN TBR_EXCEPTION
       ENDIF
    ENDIF
-
    RETURN Eval( bBlock, Self, nKey )
 
 
@@ -3553,24 +3418,16 @@ METHOD XbpBrowse:setStyle( nStyle, lNewValue )
       nStyle <= 4096 /* some reasonable limit for maximum number of styles */
       ASize( ::styles, nStyle )
    ENDIF
-
    IF HB_ISLOGICAL( lNewValue )
       ::styles[ nStyle ] := lNewValue
    ENDIF
-
    RETURN ::styles[ nStyle ]
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-//
 //                             XbpColumn
-//
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
-CREATE CLASS XbpColumn  INHERIT XbpWindow, DataRef
+CLASS XbpColumn  INHERIT XbpWindow, DataRef
 
    EXPORTED:
 
@@ -3633,165 +3490,118 @@ CREATE CLASS XbpColumn  INHERIT XbpWindow, DataRef
    METHOD destroy()
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:datalink( bBlock )
-
    IF bBlock != NIL
       ::bBlock := __eInstVar53( Self, "BLOCK", bBlock, "B", 1001 )
    ENDIF
-
    RETURN ::bBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:block( bBlock )
-
    IF bBlock != NIL
       ::bBlock := __eInstVar53( Self, "BLOCK", bBlock, "B", 1001 )
    ENDIF
-
    RETURN ::bBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:colorBlock( bColorBlock )
-
    IF bColorBlock != NIL
       ::bColorBlock := __eInstVar53( Self, "COLORBLOCK", bColorBlock, "B", 1001 )
    ENDIF
-
    RETURN ::bColorBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:defColor( aDefColor )
-
    IF aDefColor != NIL
       ::aDefColor := __eInstVar53( Self, "DEFCOLOR", aDefColor, "A", 1001 )
    ENDIF
-
    RETURN ::aDefColor
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:colSep( cColSep )
-
    IF cColSep != NIL
       ::cColSep := __eInstVar53( Self, "COLSEP", cColSep, "C", 1001 )
    ENDIF
-
    RETURN ::cColSep
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:heading( cHeading )
-
    IF cHeading != NIL
       ::cHeading := __eInstVar53( Self, "HEADING", cHeading, "C", 1001 )
    ENDIF
-
    RETURN ::cHeading
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:footing( cFooting )
-
    IF cFooting != NIL
       ::cFooting := __eInstVar53( Self, "FOOTING", cFooting, "C", 1001 )
    ENDIF
-
    RETURN ::cFooting
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:headSep( cHeadSep )
-
    IF cHeadSep != NIL
       ::cHeadSep := __eInstVar53( Self, "HEADSEP", cHeadSep, "C", 1001 )
    ENDIF
-
    RETURN ::cHeadSep
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:footSep( cFootSep )
-
    IF cFootSep != NIL
       ::cFootSep := __eInstVar53( Self, "FOOTSEP", cFootSep, "C", 1001 )
    ENDIF
-
    RETURN ::cFootSep
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:width( nWidth )
-
    IF nWidth != NIL
       ::nWidth := __eInstVar53( Self, "WIDTH", nWidth, "N", 1001 )
    ENDIF
-
    RETURN ::nWidth
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:preBlock( bPreBlock )
-
    IF bPreBlock != NIL
       ::bPreBlock := __eInstVar53( Self, "PREBLOCK", bPreBlock, "B", 1001 )
    ENDIF
-
    RETURN ::bPreBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:postBlock( bPostBlock )
-
    IF bPostBlock != NIL
       ::bPostBlock := __eInstVar53( Self, "POSTBLOCK", bPostBlock, "B", 1001 )
    ENDIF
-
    RETURN ::bPostBlock
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:setStyle( nStyle, lNewValue )
    IF nStyle > Len( ::aSetStyle ) .AND. nStyle <= 4096
       ASize( ::aSetStyle, nStyle )
    ENDIF
-
    IF HB_ISLOGICAL( lNewValue )
       ::aSetStyle[ nStyle ] := lNewValue
    ENDIF
-
    RETURN ::aSetStyle[ nStyle ]
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:new( cHeading, bBlock )
-
    ::cHeading := cHeading
    ::bBlock := bBlock
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::valtype       := valtype( ::setData() )
    ::blankVariable := iif( ::valtype == "N", 0, iif( ::valtype == "D", ctod( "" ), iif( ::valtype == "L", .f., "" ) ) )
 
    ::configure()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:destroy()
-
    ::bPreBlock       := NIL
    ::bPostBlock      := NIL
    ::bBlock          := NIL
@@ -3799,12 +3609,8 @@ METHOD XbpColumn:destroy()
 
    ::clearSlots()
    ::xbpPartHandler:destroy()
-
-   //::xbpWindow:destroy()
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpColumn:configure()
    LOCAL n
@@ -3864,19 +3670,10 @@ METHOD XbpColumn:configure()
       ::fAlignment := hbxbp_ConvertAFactFromXBP( "Alignment_H", ::aPresParams[ n,2 ] )
       ::fAlignment += Qt_AlignVCenter
    ENDIF
-
    RETURN Self
 
-
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-//
 //                              XbpCellGroup
-//
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 CLASS XbpCellGroup INHERIT XbpWindow
@@ -3909,110 +3706,73 @@ CLASS XbpCellGroup INHERIT XbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:new()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:create()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:configure()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:destroy()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:cellFromPos( aPos )
-
    HB_SYMBOL_UNUSED( aPos )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:cellRect( nRowPos, lInnerRect )
-
    HB_SYMBOL_UNUSED( nRowPos )
    HB_SYMBOL_UNUSED( lInnerRect )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:drawCell( naRowPos, lRepaint )
-
    HB_SYMBOL_UNUSED( naRowPos )
    HB_SYMBOL_UNUSED( lRepaint )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:getCell( nRowPos )
-
    HB_SYMBOL_UNUSED( nRowPos )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:getCellColor()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:hiliteCell()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:rowCount()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:scrollDown()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:scrollUp()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:setCellColor()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:itemMarked()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCellGroup:itemSelected()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/

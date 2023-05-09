@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2009-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,6 @@ CLASS IdeObject
    DATA   xD
    DATA   xD1
    DATA   xD2
-
    DATA   oIde
    DATA   oUI
    DATA   qContextMenu
@@ -100,16 +99,13 @@ CLASS IdeObject
    ACCESS oPWZ                                    INLINE ::oIde:oPWZ
    ACCESS oParts                                  INLINE ::oIde:oParts
    ACCESS oFM                                     INLINE ::oIde:oFM
-
    ACCESS aMeta                                   INLINE ::oIde:aMeta
    ACCESS aTags                                   INLINE ::oIde:aTags
-
    ACCESS oFont                                   INLINE ::oIde:oFont
    ACCESS oSBar                                   INLINE ::oIde:oSBar
    ACCESS oProgBar                                INLINE ::oIde:oProgBar
    ACCESS oDlg                                    INLINE ::oIde:oDlg
    ACCESS oDA                                     INLINE ::oIde:oDA
-
    ACCESS qLayout                                 INLINE ::oIde:qLayout
    ACCESS qCurEdit                                INLINE ::oIde:qCurEdit
    ACCESS qCurDocument                            INLINE ::oIde:qCurDocument
@@ -121,13 +117,11 @@ CLASS IdeObject
    ACCESS qHelpBrw                                INLINE ::oIde:qHelpBrw
    ACCESS qAnimateAction                          INLINE ::oIde:qAnimateAction
    ACCESS qStatusBarAction                        INLINE ::oIde:qStatusBarAction
-
    ACCESS qTBarLines                              INLINE ::oIde:qTBarLines
    ACCESS qTBarPanels                             INLINE ::oIde:qTBarPanels
    ACCESS qCompleter                              INLINE ::oIde:qCompleter
    ACCESS qCompModel                              INLINE ::oIde:qCompModel
    ACCESS qProtoList                              INLINE ::oIde:qProtoList
-
    ACCESS cWrkProject                             INLINE ::oIde:cWrkProject
    ACCESS cWrkTheme                               INLINE ::oIde:cWrkTheme
    ACCESS cWrkCodec                               INLINE ::oIde:cWrkCodec
@@ -142,13 +136,11 @@ CLASS IdeObject
    ACCESS cPathShortcuts                          INLINE ::oIde:cPathShortcuts
    ACCESS cTextExtensions                         INLINE ::oIde:cTextExtensions
    ACCESS cWrkFolderLast                          INLINE ::oIde:cWrkFolderLast
-   //
    ACCESS resPath                                 INLINE ::oIde:resPath
    ACCESS pathSep                                 INLINE ::oIde:pathSep
    ACCESS cLastFileOpenPath                       INLINE ::oIde:cLastFileOpenPath
    ACCESS nAnimantionMode                         INLINE ::oIde:nAnimantionMode
    ACCESS nModeUI                                 INLINE ::oIde:nModeUI
-
    ACCESS aProjects                               INLINE ::oIde:aProjects
    ACCESS aSources                                INLINE ::oIde:aSources
    ACCESS aEditorPath                             INLINE ::oIde:aEditorPath
@@ -157,12 +149,10 @@ CLASS IdeObject
    ACCESS aViews                                  INLINE ::oIde:aViews
    ACCESS aSkltns                                 INLINE ::oIde:aSkltns
    ACCESS aUserDict                               INLINE ::oIde:aUserDict
-
    ACCESS nTabSpaces                              INLINE ::oIde:nTabSpaces
    ACCESS cTabSpaces                              INLINE ::oIde:cTabSpaces
    ACCESS cSeparator                              INLINE ::oIde:cSeparator
    ACCESS cPathSkltns                             INLINE ::oIde:cPathSkltns
-
    ACCESS oDockPT                                 INLINE ::oIde:oDockPT
    ACCESS oProjTree                               INLINE ::oIde:oProjTree
    ACCESS oProjRoot                               INLINE ::oIde:oProjRoot
@@ -204,7 +194,6 @@ CLASS IdeObject
    ACCESS oUISrcDock                              INLINE ::oIde:oUISrcDock
    ACCESS oFunctionsMapDock                       INLINE ::oIde:oFunctionsMapDock
    ACCESS oDebuggerDock                           INLINE ::oIde:oDebuggerDock
-
    ACCESS lProjTreeVisible                        INLINE ::oIde:lProjTreeVisible
    ACCESS lDockRVisible                           INLINE ::oIde:lDockRVisible
    ACCESS lDockBVisible                           INLINE ::oIde:lDockBVisible
@@ -214,7 +203,6 @@ CLASS IdeObject
    ACCESS lHorzRulerVisible                       INLINE ::oIde:lHorzRulerVisible
    ACCESS lStatusBarVisible                       INLINE ::oIde:lStatusBarVisible
    ACCESS lCurrentLineHighlightEnabled            INLINE ::oIde:lCurrentLineHighlightEnabled
-
    ACCESS aMarkTBtns                              INLINE ::oIde:aMarkTBtns
    ACCESS lQuitting                               INLINE ::oIde:lQuitting
 
@@ -222,7 +210,6 @@ CLASS IdeObject
    DATA   aEvents                                 INIT   {}
 
    METHOD init()
-   
    METHOD createTags( ... )                       INLINE ::oIde:createTags( ... )
    METHOD addSourceInTree( ... )                  INLINE ::oIde:addSourceInTree( ... )
    METHOD setPosAndSizeByIni( ... )               INLINE ::oIde:setPosAndSizeByIni( ... )
@@ -240,7 +227,6 @@ CLASS IdeObject
    METHOD setCodec( ... )                         INLINE ::oIde:setCodec( ... )
    METHOD updateTitleBar( ... )                   INLINE ::oIde:updateTitleBar( ... )
    METHOD showApplicationCursor( ... )            INLINE ::oIde:showApplicationCursor( ... )
-
    METHOD editSource( ... )                       INLINE ::oSM:editSource( ... )
    METHOD getEditorByIndex( ... )                 INLINE ::oSM:getEditorByIndex( ... )
 

@@ -1,9 +1,9 @@
-/*
+                        /*
  * $Id$
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -47,8 +47,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -58,8 +56,6 @@
  *                 Pritpal Bedi <bedipritpal@hotmail.com>
  *                               14Mar2010
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 #include "hbide.ch"
@@ -107,13 +103,10 @@
 
 #define qqNumVrbls                                18
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_getSVNHeader()
-
    RETURN "/* " + hb_eol() + " * $Id: " + "$" + hb_eol() + " */" + hb_eol() + hb_eol()
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_populateParam( txt_, cToken, cParam )
    LOCAL a_
@@ -124,7 +117,6 @@ FUNCTION hbide_populateParam( txt_, cToken, cParam )
    ENDIF
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_ar2paramList( aArg )
    LOCAL s, cList := ""
@@ -134,18 +126,14 @@ FUNCTION hbide_ar2paramList( aArg )
    NEXT
    RETURN cList
 
-/*----------------------------------------------------------------------*/
 
 FUNCTION hbide_arg2memo( aArg )
    LOCAL s, cMemo := ""
-
    FOR EACH s IN aArg
       cMemo += "<" + s + ">" + iif( s:__enumIndex() < Len( aArg ), hb_eol(), "" )
    NEXT
-
    RETURN cMemo
 
-/*----------------------------------------------------------------------*/
 
 CLASS IdeDocWriter INHERIT IdeObject
 
@@ -183,137 +171,105 @@ CLASS IdeDocWriter INHERIT IdeObject
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:init( oIde )
-
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:destroy()
-
    ::oEdit := NIL
-
    IF !empty( ::oUI )
       ::oUI:destroy()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:show()
-
    IF empty( ::oUI )
       ::oUI := hbide_getUI( "docwriter" )
-
       ::oDocWriteDock:oWidget:setWidget( ::oUI:oWidget )
-
       ::setImages()
       ::installSignals()
       ::setParameters()
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:dispTitle( cTitle )
-
    ::oDocWriteDock:oWidget:setWindowTitle( "Documentation Writer" + iif( Empty( cTitle ), "", ": " + cTitle ) )
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:setImages()
-
-   ::oUI:buttonLoadFromDocFile :setIcon( QIcon( hbide_image( "load_3"      ) ) )
-   ::oUI:buttonLoadFromSource  :setIcon( QIcon( hbide_image( "load_2"      ) ) )
-   ::oUI:buttonLoadFromCurFunc :setIcon( QIcon( hbide_image( "load_1"      ) ) )
-
-   ::oUI:buttonArgs            :setIcon( QIcon( hbide_image( "arguments"   ) ) )
-   ::oUI:buttonDesc            :setIcon( QIcon( hbide_image( "description" ) ) )
-   ::oUI:buttonExamples        :setIcon( QIcon( hbide_image( "example"     ) ) )
-
-   ::oUI:buttonClear           :setIcon( QIcon( hbide_image( "clean"       ) ) )
-   ::oUI:buttonSaveInFunc      :setIcon( QIcon( hbide_image( "unload_1"    ) ) )
-   ::oUI:buttonSave            :setIcon( QIcon( hbide_image( "helpdoc"     ) ) )
-
-   ::oUI:buttonCloseArgs       :setIcon( QIcon( hbide_image( "closetab"    ) ) )
-   ::oUI:buttonCloseDesc       :setIcon( QIcon( hbide_image( "closetab"    ) ) )
-   ::oUI:buttonCloseExamples   :setIcon( QIcon( hbide_image( "closetab"    ) ) )
-
+   WITH OBJECT ::oUI
+      :buttonLoadFromDocFile :setIcon( QIcon( hbide_image( "load_3"      ) ) )
+      :buttonLoadFromSource  :setIcon( QIcon( hbide_image( "load_2"      ) ) )
+      :buttonLoadFromCurFunc :setIcon( QIcon( hbide_image( "load_1"      ) ) )
+      :buttonArgs            :setIcon( QIcon( hbide_image( "arguments"   ) ) )
+      :buttonDesc            :setIcon( QIcon( hbide_image( "description" ) ) )
+      :buttonExamples        :setIcon( QIcon( hbide_image( "example"     ) ) )
+      :buttonClear           :setIcon( QIcon( hbide_image( "clean"       ) ) )
+      :buttonSaveInFunc      :setIcon( QIcon( hbide_image( "unload_1"    ) ) )
+      :buttonSave            :setIcon( QIcon( hbide_image( "helpdoc"     ) ) )
+      :buttonCloseArgs       :setIcon( QIcon( hbide_image( "closetab"    ) ) )
+      :buttonCloseDesc       :setIcon( QIcon( hbide_image( "closetab"    ) ) )
+      :buttonCloseExamples   :setIcon( QIcon( hbide_image( "closetab"    ) ) )
+   ENDWITH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:installSignals()
-
-   ::oUI:buttonArgs           :connect( "toggled(bool)", {|p| ::execEvent( __buttonArgs_clicked__        , p ) } )
-   ::oUI:buttonDesc           :connect( "toggled(bool)", {|p| ::execEvent( __buttonDesc_clicked__        , p ) } )
-   ::oUI:buttonExamples       :connect( "toggled(bool)", {|p| ::execEvent( __buttonExample_clicked__     , p ) } )
-   ::oUI:buttonCloseArgs      :connect( "clicked()"    , {| | ::execEvent( __buttonCloseArgs_clicked__       ) } )
-   ::oUI:buttonCloseDesc      :connect( "clicked()"    , {| | ::execEvent( __buttonCloseDesc_clicked__       ) } )
-   ::oUI:buttonCloseExamples  :connect( "clicked()"    , {| | ::execEvent( __buttonCloseExample_clicked__    ) } )
-   ::oUI:buttonClear          :connect( "clicked()"    , {| | ::execEvent( __buttonClear_clicked__           ) } )
-   ::oUI:buttonSaveInFunc     :connect( "clicked()"    , {| | ::execEvent( __buttonSaveInFunc_clicked__      ) } )
-   ::oUI:buttonSave           :connect( "clicked()"    , {| | ::execEvent( __buttonSave_clicked__            ) } )
-   ::oUI:buttonLoadFromCurFunc:connect( "clicked()"    , {| | ::execEvent( __buttonLoadFromCurFunc_clicked__ ) } )
-   ::oUI:buttonLoadFromDocFile:connect( "clicked()"    , {| | ::execEvent( __buttonLoadFromDocFile_clicked__ ) } )
-   ::oUI:comboFunctions       :connect( "currentIndexChanged(QString)", {|p| ::execEvent( __comboFunctions_currentIndexChanged__, p ) } )
-
+   WITH OBJECT ::oUI
+      :buttonArgs           :connect( "toggled(bool)", {|p| ::execEvent( __buttonArgs_clicked__        , p ) } )
+      :buttonDesc           :connect( "toggled(bool)", {|p| ::execEvent( __buttonDesc_clicked__        , p ) } )
+      :buttonExamples       :connect( "toggled(bool)", {|p| ::execEvent( __buttonExample_clicked__     , p ) } )
+      :buttonCloseArgs      :connect( "clicked()"    , {| | ::execEvent( __buttonCloseArgs_clicked__       ) } )
+      :buttonCloseDesc      :connect( "clicked()"    , {| | ::execEvent( __buttonCloseDesc_clicked__       ) } )
+      :buttonCloseExamples  :connect( "clicked()"    , {| | ::execEvent( __buttonCloseExample_clicked__    ) } )
+      :buttonClear          :connect( "clicked()"    , {| | ::execEvent( __buttonClear_clicked__           ) } )
+      :buttonSaveInFunc     :connect( "clicked()"    , {| | ::execEvent( __buttonSaveInFunc_clicked__      ) } )
+      :buttonSave           :connect( "clicked()"    , {| | ::execEvent( __buttonSave_clicked__            ) } )
+      :buttonLoadFromCurFunc:connect( "clicked()"    , {| | ::execEvent( __buttonLoadFromCurFunc_clicked__ ) } )
+      :buttonLoadFromDocFile:connect( "clicked()"    , {| | ::execEvent( __buttonLoadFromDocFile_clicked__ ) } )
+      :comboFunctions       :connect( "currentIndexChanged(QString)", {|p| ::execEvent( __comboFunctions_currentIndexChanged__, p ) } )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:setParameters()
-
-   ::oUI:buttonArgs    :setCheckable( .t. )
-   ::oUI:buttonDesc    :setCheckable( .t. )
-   ::oUI:buttonExamples:setCheckable( .t. )
-
-   ::oUI:buttonArgs    :setChecked( .t. )
-   ::oUI:buttonDesc    :setChecked( .t. )
-   ::oUI:buttonExamples:setChecked( .t. )
-
-   //::oUI:frameExamples:hide()
-
-   ::oUI:comboTemplate:addItem( "Function"  )
-   ::oUI:comboTemplate:addItem( "Procedure" )
-   ::oUI:comboTemplate:addItem( "Class"     )
-   ::oUI:comboTemplate:addItem( "Document"  )
-   ::oUI:comboTemplate:addItem( "Command"   )
-   ::oUI:comboTemplate:addItem( "Run time error" )
-
-   ::qHiliter  := ::oTH:SetSyntaxHilighting( ::oUI:plainExamples, "Pritpal's Favourite" )
-
-   ::oUI:plainExamples:setFont( ::oFont:oWidget )
-
-   ::oUI:frameGeneral:setSizePolicy( QSizePolicy_Preferred, QSizePolicy_Fixed )
-
+   WITH OBJECT ::oUI
+      :buttonArgs    :setCheckable( .t. )
+      :buttonArgs    :setChecked( .t. )
+      :buttonDesc    :setCheckable( .t. )
+      :buttonDesc    :setChecked( .t. )
+      :buttonExamples:setCheckable( .t. )
+      :buttonExamples:setChecked( .t. )
+      WITH OBJECT :comboTemplate
+         :addItem( "Function"  )
+         :addItem( "Procedure" )
+         :addItem( "Class"     )
+         :addItem( "Document"  )
+         :addItem( "Command"   )
+         :addItem( "Run time error" )
+      ENDWITH 
+      ::qHiliter := ::oTH:SetSyntaxHilighting( :plainExamples, "Pritpal's Favourite" )
+      :plainExamples:setFont( ::oFont:oWidget )
+      :frameGeneral:setSizePolicy( QSizePolicy_Preferred, QSizePolicy_Fixed )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:execEvent( nMode, p )
-
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH nMode
    CASE __buttonArgs_clicked__
       IF p
@@ -336,7 +292,6 @@ METHOD IdeDocWriter:execEvent( nMode, p )
          ::oUI:frameExamples:hide()
       ENDIF
       EXIT
-
    CASE __buttonCloseArgs_clicked__
       ::oUI:buttonArgs:setChecked( .f. )
       EXIT
@@ -346,7 +301,6 @@ METHOD IdeDocWriter:execEvent( nMode, p )
    CASE __buttonCloseExample_clicked__
       ::oUI:buttonExamples:setChecked( .f. )
       EXIT
-
    CASE __comboFunctions_currentIndexChanged__
       ::loadAFunction( p )
       EXIT
@@ -365,105 +319,90 @@ METHOD IdeDocWriter:execEvent( nMode, p )
    CASE __buttonSave_clicked__
       ::saveInDocFile()
       EXIT
-
    ENDSWITCH
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:clear()
-
-   ::oEdit       := NIL
-   ::cFuncPtoto  := ""
-   ::nFuncLine   := 0
-   ::nTagsIndex  := 0
-   ::cSourceFile := ""
-
-   ::fillForm()
-   ::dispTitle()
-
+   IF .T.
+      ::oEdit       := NIL
+      ::cFuncPtoto  := ""
+      ::nFuncLine   := 0
+      ::nTagsIndex  := 0
+      ::cSourceFile := ""
+      ::fillForm()
+      ::dispTitle()
+   ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:getTemplateIndex( cTemplate )
    LOCAL aTmplt := { "Function", "Procedure", "Class", "Document", "Command", "Run time error" }
    LOCAL nIndex := AScan( aTmplt, cTemplate )
-
    RETURN iif( nIndex == 0, 0, nIndex - 1 )
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:fillForm( aFacts )
-
    hb_default( @aFacts,  afill( array( qqNumVrbls ), "" ) )
-
-   ::oUI:editVersion     :setText     ( aFacts[ qqVersion     ] )
-   ::oUI:editStatus      :setText     ( aFacts[ qqStatus      ] )
-   ::oUI:editCompliance  :setText     ( aFacts[ qqCompliance  ] )
-   ::oUI:editPlatforms   :setText     ( aFacts[ qqPlatforms   ] )
-   ::oUI:editCategory    :setText     ( aFacts[ qqCategory    ] )
-   ::oUI:editSubCategory :setText     ( aFacts[ qqSubCategory ] )
-   ::oUI:editName        :setText     ( aFacts[ qqName        ] )
-   ::oUI:editExtLink     :setText     ( aFacts[ qqExtLink     ] )
-   ::oUI:editOneLiner    :setText     ( aFacts[ qqOneLiner    ] )
-   ::oUI:editSyntax      :setPlainText( aFacts[ qqSyntax      ] )
-   ::oUI:editReturns     :setPlainText( aFacts[ qqReturns     ] )
-   ::oUI:editSeeAlso     :setText     ( aFacts[ qqSeeAlso     ] )
-   ::oUI:editFiles       :setPlainText( aFacts[ qqFiles       ] )
-   ::oUI:plainArgs       :setPlainText( aFacts[ qqArgs        ] )
-   ::oUI:plainDesc       :setPlainText( aFacts[ qqDesc        ] )
-   ::oUI:plainExamples   :setPlainText( aFacts[ qqExamples    ] )
-
-   ::oUI:comboTemplate:setCurrentIndex( ::getTemplateIndex( aFacts[ qqVersion ] ) )
-
+   WITH OBJECT ::oUI
+      :editVersion     :setText     ( aFacts[ qqVersion     ] )
+      :editStatus      :setText     ( aFacts[ qqStatus      ] )
+      :editCompliance  :setText     ( aFacts[ qqCompliance  ] )
+      :editPlatforms   :setText     ( aFacts[ qqPlatforms   ] )
+      :editCategory    :setText     ( aFacts[ qqCategory    ] )
+      :editSubCategory :setText     ( aFacts[ qqSubCategory ] )
+      :editName        :setText     ( aFacts[ qqName        ] )
+      :editExtLink     :setText     ( aFacts[ qqExtLink     ] )
+      :editOneLiner    :setText     ( aFacts[ qqOneLiner    ] )
+      :editSyntax      :setPlainText( aFacts[ qqSyntax      ] )
+      :editReturns     :setPlainText( aFacts[ qqReturns     ] )
+      :editSeeAlso     :setText     ( aFacts[ qqSeeAlso     ] )
+      :editFiles       :setPlainText( aFacts[ qqFiles       ] )
+      :plainArgs       :setPlainText( aFacts[ qqArgs        ] )
+      :plainDesc       :setPlainText( aFacts[ qqDesc        ] )
+      :plainExamples   :setPlainText( aFacts[ qqExamples    ] )
+      :comboTemplate   :setCurrentIndex( ::getTemplateIndex( aFacts[ qqVersion ] ) )
+   ENDWITH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:fillFormByObject( oFunc )
-
-   ::oUI:editVersion     :setText(      oFunc:cVersion      )
-   ::oUI:editStatus      :setText(      oFunc:cStatus       )
-   ::oUI:editCompliance  :setText(      oFunc:cCompliance   )
-   ::oUI:editPlatforms   :setText(      oFunc:cPlatForms    )
-   ::oUI:editCategory    :setText(      oFunc:cCategory     )
-   ::oUI:editSubCategory :setText(      oFunc:cSubCategory  )
-   ::oUI:editName        :setText(      oFunc:cName         )
-   ::oUI:editExtLink     :setText(      oFunc:cExternalLink )
-   ::oUI:editOneLiner    :setText(      oFunc:cOneLiner     )
-   ::oUI:editSyntax      :setPlainText( hbide_arrayTOmemo( oFunc:aSyntax      ) )
-   ::oUI:editReturns     :setPlainText( hbide_arrayTOmemo( oFunc:aReturns     ) )
-   ::oUI:editSeeAlso     :setText(      oFunc:cSeeAlso      )
-   ::oUI:editFiles       :setPlainText( hbide_arrayTOmemo( oFunc:aFiles       ) )
-   ::oUI:plainArgs       :setPlainText( hbide_arrayTOmemo( oFunc:aArguments   ) )
-   ::oUI:plainDesc       :setPlainText( hbide_arrayTOmemo( oFunc:aDescription ) )
-   ::oUI:plainExamples   :setPlainText( hbide_arrayTOmemo( oFunc:aExamples    ) )
-
-   ::oUI:comboTemplate:setCurrentIndex( ::getTemplateIndex( oFunc:cTemplate ) )
-
-   IF ::oUI:buttonExamples:isDown()
-      ::oUI:buttonExamples:click()
-   ENDIF
-   IF AScan( oFunc:aExamples, {|e| ! Empty( e ) } ) > 0
-      ::oUI:buttonExamples:click()
-   ENDIF
-
+   WITH OBJECT ::oUI
+      :editVersion     :setText(      oFunc:cVersion      )
+      :editStatus      :setText(      oFunc:cStatus       )
+      :editCompliance  :setText(      oFunc:cCompliance   )
+      :editPlatforms   :setText(      oFunc:cPlatForms    )
+      :editCategory    :setText(      oFunc:cCategory     )
+      :editSubCategory :setText(      oFunc:cSubCategory  )
+      :editName        :setText(      oFunc:cName         )
+      :editExtLink     :setText(      oFunc:cExternalLink )
+      :editOneLiner    :setText(      oFunc:cOneLiner     )
+      :editSyntax      :setPlainText( hbide_arrayTOmemo( oFunc:aSyntax      ) )
+      :editReturns     :setPlainText( hbide_arrayTOmemo( oFunc:aReturns     ) )
+      :editSeeAlso     :setText(      oFunc:cSeeAlso      )
+      :editFiles       :setPlainText( hbide_arrayTOmemo( oFunc:aFiles       ) )
+      :plainArgs       :setPlainText( hbide_arrayTOmemo( oFunc:aArguments   ) )
+      :plainDesc       :setPlainText( hbide_arrayTOmemo( oFunc:aDescription ) )
+      :plainExamples   :setPlainText( hbide_arrayTOmemo( oFunc:aExamples    ) )
+      :comboTemplate   :setCurrentIndex( ::getTemplateIndex( oFunc:cTemplate ) )
+      IF :buttonExamples:isDown()
+         :buttonExamples:click()
+      ENDIF
+      IF AScan( oFunc:aExamples, {|e| ! Empty( e ) } ) > 0
+         :buttonExamples:click()
+      ENDIF
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:removeDocHelp( nLineFrom, oEdit )
    LOCAL i, cLine, n, lExists, lDone, nFrom, nTo
-
+   //
    n       := 0
    lExists := .f.
    lDone   := .f.
-
    FOR i := ( nLineFrom - 1 ) TO 1 STEP -1
       cLine := oEdit:getLine( i )
-
       IF "$END$" $ cLine
          nTo := i + 1
          lExists := .t.
@@ -479,40 +418,33 @@ METHOD IdeDocWriter:removeDocHelp( nLineFrom, oEdit )
          EXIT
       ENDIF
    NEXT
-
    IF !empty( nFrom ) .AND. !empty( nTo )
       oEdit:goto( nFrom )
       FOR i := 1 TO ( nTo - nFrom + 1 )
          oEdit:deleteLine()
       NEXT
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:pullDocFromSource( nLineFrom, oEdit )
    LOCAL aDoc, i, cLine, n, lExists, lDone, a_
-
+   //
    aDoc    := {}
    n       := 0
    lExists := .f.
    lDone   := .f.
-
    FOR i := ( nLineFrom - 1 ) TO 1 STEP -1
       cLine := oEdit:getLine( i )
-
       IF "$END$" $ cLine
          lExists := .t.
       ENDIF
       IF "$DOC$" $ cLine
          lDone := .t.
       ENDIF
-
       IF lExists
          aadd( aDoc, cLine )
       ENDIF
-
       IF ++n > 4 .AND. ! lExists /* Search must terminate after 4 lines if document is not in sight */
          EXIT
       ENDIF
@@ -520,27 +452,22 @@ METHOD IdeDocWriter:pullDocFromSource( nLineFrom, oEdit )
          EXIT
       ENDIF
    NEXT
-
    a_:={}
    IF lDone
       FOR i := Len( aDoc ) TO 1 STEP -1
          aadd( a_, aDoc[ i ] )
       NEXT
    ENDIF
-
    RETURN a_
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:loadCurrentFuncDoc()
    LOCAL oEdit, nCurLine, n, cProto, nProtoLine, aFacts, aDoc, oFunc
-
    IF !empty( oEdit := ::oEM:getEditObjectCurrent() )
       IF oEdit:isModified()
          MsgBox( oEdit:oEditor:source() + " is modified.", "Please save the source first" )
          RETURN Self
       ENDIF
-
       IF !empty( ::aTags )
          nCurLine := oEdit:getLineNo()
          IF Len( ::aTags ) == 1
@@ -553,7 +480,6 @@ METHOD IdeDocWriter:loadCurrentFuncDoc()
          IF n > 0
             nProtoLine := ::aTags[ n, 3 ]
             cProto := oEdit:getLine( nProtoLine )
-
             IF ! Empty( aFacts := ::parsePrototype( cProto ) )
                ::clear()
                ::oEdit       := oEdit
@@ -574,14 +500,12 @@ METHOD IdeDocWriter:loadCurrentFuncDoc()
          ENDIF
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:parsePrototype( cProto )
    LOCAL aFacts, n, n1, cPre, cArg, aArg, cSyn, cTpl, cFun, s
-
+   //
    IF ( n := at( "(", cProto ) ) > 0
       IF ( n1 := at( ")", cProto ) ) > 0
          cPre := alltrim( substr( cProto, 1, n - 1 ) )
@@ -593,10 +517,8 @@ METHOD IdeDocWriter:parsePrototype( cProto )
          n := rat( " ", cPre )                       /* and it must be */
          cTpl := alltrim( substr( cPre, 1, n - 1 ) )
          cFun := alltrim( substr( cPre, n + 1 ) )
-
          cSyn := cFun + "( " + hbide_ar2paramList( aArg ) + " )"
          cSyn := strtran( cSyn, "(  )", "()" )
-
          aFacts := afill( array( qqNumVrbls ), "" )
          cTpl   := lower( cTpl )
          aFacts[ qqTemplate    ] := iif( "comm"   $ cTpl, "Command"  , ;
@@ -604,7 +526,6 @@ METHOD IdeDocWriter:parsePrototype( cProto )
                                     iif( "func"   $ cTpl, "Function" , ;
                                     iif( "proc"   $ cTpl, "Procedure", ;
                                     iif( "class"  $ cTpl, "Class"    , "Function" ) ) ) ) )
-
          aFacts[ qqVersion     ] := ""
          aFacts[ qqStatus      ] := ""
          aFacts[ qqCompliance  ] := ""
@@ -622,25 +543,19 @@ METHOD IdeDocWriter:parsePrototype( cProto )
          aFacts[ qqDesc        ] := ""
          aFacts[ qqExamples    ] := ""
          aFacts[ qqTests       ] := ""
-
       ENDIF
    ENDIF
-
    RETURN aFacts
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:saveInFunction()
    LOCAL nCurLine, oEdit, qCursor, a_
-
    /* Bring it on top and make it current */
    ::oSM:editSource( ::cSourceFile, , , , , , .f. )
-
    IF !empty( oEdit := ::oEM:getEditObjectCurrent() )
       IF oEdit:lReadOnly
          RETURN Self
       ENDIF
-
       IF oEdit:isModified()
          MsgBox( oEdit:oEditor:source() + " is modified.", "Please save the source first!" )
          RETURN Self
@@ -651,30 +566,22 @@ METHOD IdeDocWriter:saveInFunction()
             // This is possible user might have edited the source; just issue warning
             MsgBox( "Source is modified, anyway proceeding.", "Documentation Save Alert" )
          ENDIF
-
          qCursor := oEdit:qEdit:textCursor()
          qCursor:beginEditBlock()
-
          ::removeDocHelp( nCurLine, oEdit )
-
          a_:= ::buildDocument( .T. )
-
          oEdit:home()
          oEdit:insertText( a_ )
-
          qCursor:endEditBlock()
          oEdit:qEdit:setTextCursor( qCursor )
          oEdit:qEdit:centerCursor()
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:loadFromDocFile( cFile )
    LOCAL hFile, hDoc, cBuffer
-
    IF Empty( cFile ) .OR. ! hb_FileExists( cFile )
       cFile := hbide_fetchAFile( ::oDlg, "Select a document(.txt) file", , hbide_SetWrkFolderLast() )
    ENDIF
@@ -682,13 +589,10 @@ METHOD IdeDocWriter:loadFromDocFile( cFile )
       RETURN NIL
    ENDIF
    hbide_SetWrkFolderLast( cFile )
-
    ::cSourceFile := cFile
    ::dispTitle( cFile )
-
    cBuffer := hb_MemoRead( cFile )
    hFile := __hbdoc_FromSource( cBuffer )
-
    ::oUI:comboFunctions:clear()
    FOR EACH hDoc IN hFile
       IF "NAME" $ hDoc
@@ -696,14 +600,11 @@ METHOD IdeDocWriter:loadFromDocFile( cFile )
       ENDIF
    NEXT
    ::oUI:comboFunctions:setCurrentIndex( 0 )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:loadAFunction( cName )
    LOCAL cBuffer, hFile, oFunc, hDoc
-
    IF ! Empty( cName )
       cBuffer := hb_MemoRead( ::cSourceFile )
       hFile := __hbdoc_FromSource( cBuffer )
@@ -715,16 +616,13 @@ METHOD IdeDocWriter:loadAFunction( cName )
          ENDIF
       NEXT
    ENDIF
-
    IF ! Empty( oFunc )
       ::fillFormByObject( oFunc )
    ELSE
       ::fillForm()
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:saveInDocFile()
    LOCAL cFile, cBuffer, hNewDoc, hDoc, cName, hFile, cFiltered, hD
@@ -739,10 +637,8 @@ METHOD IdeDocWriter:saveInDocFile()
    ENDIF
    cFile := hbide_saveAFile( ::oDlg, "Provide filename to save documentation", ;
                                     { { "Harbour Documentation File", "*.txt" } }, cFile, "txt" )
-
    IF ! Empty( cFile )
       cFile := hbide_pathToOsPath( cFile )
-
       cBuffer := hb_MemoRead( cFile )
       hFile := __hbdoc_FromSource( cBuffer )
       cFiltered := hbide_stripTrailingBlanks( __hbdoc_FilterOut( cBuffer ) )
@@ -764,27 +660,21 @@ METHOD IdeDocWriter:saveInDocFile()
             ENDIF
          NEXT
       ENDIF
-
       IF Empty( cFiltered )
          cFiltered := hbide_getSVNHeader()
       ENDIF
       hb_memowrit( cFile, cFiltered + hb_eol() + __hbdoc_ToSource( hFile ) )
-
       ::cSourceFile := cFile
       ::dispTitle( cFile )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD IdeDocWriter:buildDocument( lText, hDoc )
    LOCAL s
    LOCAL cTemplate := ::oUI:comboTemplate:currentText()
    LOCAL hEntry := { => }
-
    hb_HKeepOrder( hEntry, .T. )
-
    hEntry[ "TEMPLATE" ] := iif( Empty( cTemplate ), "Function", cTemplate )
    IF !empty( s := ::oUI:editName:text() ) .OR. "NAME" $ hDoc
       hEntry[ "NAME"         ] := s
@@ -834,13 +724,10 @@ METHOD IdeDocWriter:buildDocument( lText, hDoc )
    IF !empty( s := ::oUI:editSeeAlso:text() ) .OR. "SEEALSO" $ hDoc
       hEntry[ "SEEALSO"      ] := s
    ENDIF
-
    RETURN iif( lText, hbide_stripPreceedingBlanks( hbide_stripTrailingBlanks( __hbdoc_ToSource( { hEntry } ) ) ), hEntry )
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_stripTrailingBlanks( cMemo )
-
    DO WHILE .T.
       cMemo := RTrim( cMemo )
       IF Right( cMemo, 2 ) == Chr( 13 ) + Chr( 10 )
@@ -851,13 +738,10 @@ STATIC FUNCTION hbide_stripTrailingBlanks( cMemo )
          EXIT
       ENDIF
    ENDDO
-
    RETURN cMemo
 
-/*----------------------------------------------------------------------*/
 
 STATIC FUNCTION hbide_stripPreceedingBlanks( cMemo )
-
    DO WHILE .T.
       cMemo := LTrim( cMemo )
       IF Left( cMemo, 2 ) == Chr( 13 ) + Chr( 10 )
@@ -868,7 +752,5 @@ STATIC FUNCTION hbide_stripPreceedingBlanks( cMemo )
          EXIT
       ENDIF
    ENDDO
-
    RETURN cMemo
 
-/*----------------------------------------------------------------------*/

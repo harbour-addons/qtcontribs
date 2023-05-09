@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -68,29 +68,22 @@ CLASS IdeParts INHERIT IdeObject
 
    DATA   oIde
    DATA   nCurStacksIndex                         INIT   IDE_PART_EDITOR
-
    DATA   oLayoutDA
    DATA   oLayoutEditor
    DATA   oLayoutDbu
    DATA   oLayoutReports
-
    DATA   oStackWidget
-
    DATA   oStackEditor
    DATA   oStackDbu
    DATA   oStackReports
-
    DATA   oSettings
 
    METHOD init( oIde )
    METHOD create( oIde )
    METHOD destroy()                               VIRTUAL
-
    METHOD buildParts()
    METHOD buildLayout( nLayout )
-
    METHOD setStack( nIndex )                      INLINE ::oStackWidget:setCurrentIndex( nIndex )
-
    METHOD execStackIndexChanged( nIndex )
    METHOD addWidget( nPart, oWidget, nFromRow, nFromColumn, nRowSpan, nColumnSpan )
 
@@ -98,24 +91,19 @@ CLASS IdeParts INHERIT IdeObject
 
 
 METHOD IdeParts:init( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeParts:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeParts:buildLayout( nLayout )
    LOCAL oLayout
-
    SWITCH nLayout
    CASE 0
       oLayout := QGridLayout()
@@ -128,43 +116,42 @@ METHOD IdeParts:buildLayout( nLayout )
    CASE 2  /* QVBoxLayout */
       EXIT
    ENDSWITCH
-
    RETURN oLayout
 
 
 METHOD IdeParts:buildParts()
-
-   ::oLayoutDA      := ::buildLayout( 0 )
-   ::oLayoutDbu     := ::buildLayout( 0 )
-   ::oLayoutEditor  := ::buildLayout( 0 )
-   ::oLayoutReports := ::buildLayout( 0 )
-
-   ::oDa:setLayout( ::oLayoutDA )
-
-   ::oStackWidget  := QStackedWidget( ::oDa:oWidget )
-   //
-   ::oStackEditor  := QWidget( ::oStackWidget )
-   ::oStackDbu     := QWidget( ::oStackWidget )
-   ::oStackReports := QWidget( ::oStackWidget )
-   //
-   ::oStackWidget:addWidget( ::oStackEditor  )
-   ::oStackWidget:addWidget( ::oStackDbu     )
-   ::oStackWidget:addWidget( ::oStackReports )
-
-   ::oStackEditor :setLayout( ::oLayoutEditor  )
-   ::oStackDbu    :setLayout( ::oLayoutDbu     )
-   ::oStackReports:setLayout( ::oLayoutReports )
-
-   ::oLayoutDA:addWidget( ::oStackWidget, 0, 0, 1, 1 )
-
-   ::oStackWidget:setCurrentIndex( 0 )
-   ::oStackWidget:connect( "currentChanged(int)", {|i| ::execStackIndexChanged( i ) } )
-
+   IF .T.
+      ::oLayoutDA := ::buildLayout( 0 )
+      ::oDa:setLayout( ::oLayoutDA )
+      //
+      ::oLayoutDbu     := ::buildLayout( 0 )
+      ::oLayoutEditor  := ::buildLayout( 0 )
+      ::oLayoutReports := ::buildLayout( 0 )
+   
+      ::oStackWidget   := QStackedWidget( ::oDa:oWidget )
+      //
+      ::oStackDbu      := QWidget( ::oStackWidget )
+      ::oStackEditor   := QWidget( ::oStackWidget )
+      ::oStackReports  := QWidget( ::oStackWidget )
+      //
+      ::oStackDbu      : setLayout( ::oLayoutDbu     )
+      ::oStackEditor   : setLayout( ::oLayoutEditor  )
+      ::oStackReports  : setLayout( ::oLayoutReports )
+   ENDIF
+   WITH OBJECT ::oStackWidget
+      :addWidget( ::oStackEditor  )
+      :addWidget( ::oStackDbu     )
+      :addWidget( ::oStackReports )
+      //
+      ::oLayoutDA:addWidget( ::oStackWidget, 0, 0, 1, 1 )
+      //
+      :setCurrentIndex( 0 )
+      :connect( "currentChanged(int)", {|i| ::execStackIndexChanged( i ) } )
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeParts:execStackIndexChanged( nIndex )
-
    IF ::lQuitting
       RETURN NIL
    ENDIF
@@ -172,47 +159,34 @@ METHOD IdeParts:execStackIndexChanged( nIndex )
       ::oDlg:oWidget:restoreState( ::oSettings )
    ENDIF
    ::oSettings := ::oDlg:oWidget:saveState()
-
    SWITCH nIndex
-
    CASE IDE_PART_EDITOR
       ::oIde:oSBar:show()
       EXIT
-
    CASE IDE_PART_DBU
       ::oIde:oSBar:hide()
       ::oDK:hideAllDocks()
       EXIT
-
    CASE IDE_PART_REPORTSDESIGNER
       ::oIde:oSBar:hide()
       ::oDK:hideAllDocks()
       EXIT
-
    ENDSWITCH
-
    ::nCurStacksIndex := nIndex
-
    RETURN Self
 
 
 METHOD IdeParts:addWidget( nPart, oWidget, nFromRow, nFromColumn, nRowSpan, nColumnSpan )
-
    SWITCH nPart
-
    CASE IDE_PART_EDITOR
       ::oLayoutEditor:addWidget( oWidget, nFromRow, nFromColumn, nRowSpan, nColumnSpan )
       EXIT
-
    CASE IDE_PART_DBU
       ::oLayoutDbu:addWidget( oWidget, nFromRow, nFromColumn, nRowSpan, nColumnSpan )
       EXIT
-
    CASE IDE_PART_REPORTSDESIGNER
       ::oLayoutReports:addWidget( oWidget, nFromRow, nFromColumn, nRowSpan, nColumnSpan )
       EXIT
-
    ENDSWITCH
-
    RETURN Self
 

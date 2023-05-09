@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               14Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpRadioButton  INHERIT  XbpWindow, DataRef
 
@@ -88,31 +83,23 @@ CLASS XbpRadioButton  INHERIT  XbpWindow, DataRef
    METHOD   disconnect()
    METHOD   handleEvent( nEvent, mp1, mp2 )
    METHOD   execSlot( cSlot, p )
-
    METHOD   setCaption( xCaption )
-
    METHOD   selected( ... )                       SETGET
 
    ENDCLASS
-/*----------------------------------------------------------------------*/
+
 
 METHOD XbpRadioButton:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::oWidget := QRadioButton( ::oParent:oWidget )
    IF ::selection
       ::oWidget:setChecked( .t. )
    ENDIF
-
    ::connect()
    ::setPosAndSize()
    IF ::visible
@@ -120,74 +107,56 @@ METHOD XbpRadioButton:create( oParent, oOwner, aPos, aSize, aPresParams, lVisibl
    ENDIF
    ::oParent:AddChild( SELF )
    ::postCreate()
-
    ::setCaption( ::caption )
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:execSlot( cSlot, p )
-
    HB_SYMBOL_UNUSED( p )
 
    IF cSlot == "clicked()"
       ::sl_editBuffer := .t.
       ::selected( ::sl_editBuffer )
    ENDIF
-
    RETURN nil
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
+   //
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:connect()
    ::oWidget:connect( "clicked()", {|| ::execSlot( "clicked()" ) } )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:disconnect()
    ::oWidget:disconnect( "clicked()" )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:destroy()
-
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:setCaption( xCaption )
-
    IF HB_ISSTRING( xCaption )
       ::caption := xCaption
       ::oWidget:setText( xCaption )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpRadioButton:selected( ... )
    LOCAL a_:= hb_aParams()
@@ -198,4 +167,3 @@ METHOD XbpRadioButton:selected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/

@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2012-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2012-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -129,164 +129,153 @@ CLASS IdeProjectWizard INHERIT IdeObject
 
 
 METHOD IdeProjectWizard:init( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    RETURN Self
 
 
 METHOD IdeProjectWizard:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
    ::oProject := IdeExProject():new()
-
    RETURN Self
 
 
 METHOD IdeProjectWizard:destroy()
-
    RETURN Self
 
 
 METHOD IdeProjectWizard:clear()
-
-   ::oUI:comboProjType    : setCurrentIndex( 0 )
-   ::oUI:comboGT          : setCurrentIndex( 9 )
-
-   ::oUI:treeProps        : clear()
-   ::loadSwichesSections()
-
-   ::oUI:treeSrc          : clear()
-   ::loadSourcesSections()
-
-   ::oProject:loadUI( Self, UI_LOAD_DEFAULTS )
-
-   ::lEdited := .f.
-
+   WITH OBJECT ::oUI
+      :comboProjType    : setCurrentIndex( 0 )
+      :comboGT          : setCurrentIndex( 9 )
+      :treeProps        : clear()
+      :treeSrc          : clear()
+      ::loadSwichesSections()
+      ::loadSourcesSections()
+      ::oProject:loadUI( Self, UI_LOAD_DEFAULTS )
+      ::lEdited := .F.
+   ENDWITH
    RETURN Self
 
 
 METHOD IdeProjectWizard:show()
    LOCAL oBrush
-
    IF empty( ::oUI )
-      ::oUI := ui_projectWizard():new(  ::oIde:oDlg:oWidget )
-      ::oUI:oWidget:connect( QEvent_Close, {|| ::oUI:oWidget:done( 0 ) } )
-
-      ::oUI:btnSwAZ     : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "az"    ) } )
-      ::oUI:btnSwZA     : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "za"    ) } )
-      ::oUI:btnSwUpper  : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "upper" ) } )
-      ::oUI:btnSwLower  : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "lower" ) } )
-      ::oUI:btnSwDelete : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "delete") } )
-
-      ::oUI:btnNext     : connect( "clicked()", {|| ::execEvent( __btnNext_clicked__        ) } )
-      ::oUI:btnBack     : connect( "clicked()", {|| ::execEvent( __btnBack_clicked__        ) } )
-      ::oUI:btnNew      : connect( "clicked()", {|| ::execEvent( __btnNew_clicked__         ) } )
-      ::oUI:btnSave     : connect( "clicked()", {|| ::execEvent( __btnSave_clicked__        ) } )
-      ::oUI:btnCancel   : connect( "clicked()", {|| ::oUI:oWidget:done( 0 ) } )
-
-      ::oUI:btnSwMax    : connect( "clicked()", {|| ::execEvent( __btnSwMax_clicked__       ) } )
-      ::oUI:btnSwMin    : connect( "clicked()", {|| ::execEvent( __btnSwMin_clicked__       ) } )
-
-      ::oUI:toolSrcGet  : connect( "clicked()", {|| ::execEvent( __toolSrcGet_clicked__     ) } )
-      ::oUI:toolSrcMax  : connect( "clicked()", {|| ::execEvent( __toolSrcMax_clicked__     ) } )
-      ::oUI:toolSrcMin  : connect( "clicked()", {|| ::execEvent( __toolSrcMin_clicked__     ) } )
-      ::oUI:toolSrcDel  : connect( "clicked()", {|| ::execEvent( __toolSrcDel_clicked__     ) } )
-
-      ::oUI:comboProjType : addItem( "Executable"        )
-      ::oUI:comboProjType : addItem( "Library"           )
-      ::oUI:comboProjType : addItem( "DLL - Without HVM" )
-      ::oUI:comboProjType : addItem( "DLL - With HVM"    )
-
-      ::oUI:comboGT : addItem( "gtCGI" )
-      ::oUI:comboGT : addItem( "gtCRS" )
-      ::oUI:comboGT : addItem( "gtDOS" )
-      ::oUI:comboGT : addItem( "gtGUI" )
-      ::oUI:comboGT : addItem( "gtOS2" )
-      ::oUI:comboGT : addItem( "gtPCA" )
-      ::oUI:comboGT : addItem( "gtSLN" )
-      ::oUI:comboGT : addItem( "gtSTD" )
-      ::oUI:comboGT : addItem( "gtTRM" )
-      ::oUI:comboGT : addItem( "gtWIN" )
-      ::oUI:comboGT : addItem( "gtWVT" )
-      ::oUI:comboGT : addItem( "gtWVG" )
-      ::oUI:comboGT : addItem( "gtXWC" )
-
-      ::oUI:treeProps:setContextMenuPolicy( Qt_CustomContextMenu )
-      ::oUI:treeProps:setDragEnabled( .t. )
-      ::oUI:treeProps:setAcceptDrops( .t. )
-      ::oUI:treeProps:setDragDropMode( QAbstractItemView_InternalMove )
-      ::oUI:treeProps:setDropIndicatorShown( .t. )
-      ::oUI:treeProps:setRootIsDecorated( .F. ) /* Important to present as a list */
-      ::oUI:treeProps:header():resizeSection( 0, 237 )
-      ::oUI:treeProps:connect( "itemCollapsed(QTreeWidgetItem*)"        , {|p   | ::execEvent( __treeProps_itemCollapsed__       , p     ) } )
-      ::oUI:treeProps:connect( "itemExpanded(QTreeWidgetItem*)"         , {|p   | ::execEvent( __treeProps_itemExpanded__        , p     ) } )
-      ::oUI:treeProps:connect( "customContextMenuRequested(QPoint)"     , {|p   | ::execEvent( __treeProps_contextMenuRequested__, p     ) } )
-      ::oUI:treeProps:connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeProps_doubleClicked__       , p, p1 ) } )
-      ::oUI:treeProps:connect( "itemSelectionChanged()"                 , {|    | ::execEvent( __treeProps_itemSelectionChanged__        ) } )
-
-      oBrush := QBrush( QColor( 248, 248, 248 ) )
-
-      aadd( ::aItmProps, { NIL, ".hbc Files"                    , QBrush( QColor( 136, 136, 136 ) ),  oBrush, NIL, NIL, "background-color: rgb(136,136,136);" } )
-      aadd( ::aItmProps, { NIL, "Libraries"                     , QBrush( QColor( 144, 144, 144 ) ),  oBrush, NIL, NIL, "background-color: rgb(144,144,144);" } )
-      aadd( ::aItmProps, { NIL, "Library Paths"                 , QBrush( QColor( 152, 152, 152 ) ),  oBrush, NIL, NIL, "background-color: rgb(152,152,152);" } )
-      aadd( ::aItmProps, { NIL, "Include Paths"                 , QBrush( QColor( 160, 160, 160 ) ),  oBrush, NIL, NIL, "background-color: rgb(160,160,160);" } )
-      aadd( ::aItmProps, { NIL, "PRG Defines"                   , QBrush( QColor( 168, 168, 168 ) ),  oBrush, NIL, NIL, "background-color: rgb(168,168,168);" } )
-      aadd( ::aItmProps, { NIL, "PRG Undefines"                 , QBrush( QColor( 176, 176, 176 ) ),  oBrush, NIL, NIL, "background-color: rgb(176,176,176);" } )
-      aadd( ::aItmProps, { NIL, "hbmk2 Command-Line Params"     , QBrush( QColor( 184, 184, 184 ) ),  oBrush, NIL, NIL, "background-color: rgb(184,184,184);" } )
-      aadd( ::aItmProps, { NIL, "Batch File Commands"           , QBrush( QColor( 192, 192, 192 ) ),  oBrush, NIL, NIL, "background-color: rgb(192,192,192);" } )
-      aadd( ::aItmProps, { NIL, "Actions after Successful Build", QBrush( QColor( 200, 200, 200 ) ),  oBrush, NIL, NIL, "background-color: rgb(200,200,200);" } )
-      aadd( ::aItmProps, { NIL, "Hbp - Project Files"           , QBrush( QColor( 208, 208, 208 ) ),  oBrush, NIL, NIL, "background-color: rgb(208,208,208);" } )
-
-
-      ::oUI:treeSrc:setContextMenuPolicy( Qt_CustomContextMenu )
-      ::oUI:treeSrc:setDragEnabled( .t. )
-      ::oUI:treeSrc:setDropIndicatorShown( .t. )
-      ::oUI:treeSrc:setAcceptDrops( .t. )
-      ::oUI:treeSrc:setDragDropMode( QAbstractItemView_InternalMove )
-      ::oUI:treeSrc:setRootIsDecorated( .F. ) /* Important to present as a list */
-      ::oUI:treeSrc:header():resizeSection( 0, 393 )
-      ::oUI:treeSrc:connect( "itemCollapsed(QTreeWidgetItem*)"        , {|p   | ::execEvent( __treeSrc_itemCollapsed__       , p     ) } )
-      ::oUI:treeSrc:connect( "itemExpanded(QTreeWidgetItem*)"         , {|p   | ::execEvent( __treeSrc_itemExpanded__        , p     ) } )
-      ::oUI:treeSrc:connect( "customContextMenuRequested(QPoint)"     , {|p   | ::execEvent( __treeSrc_contextMenuRequested__, p     ) } )
-      ::oUI:treeSrc:connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeSrc_doubleClicked__       , p, p1 ) } )
-
-      aadd( ::aItmSrc, { NIL, "PRG Files"      , QBrush( QColor( 184, 184, 184 ) ), oBrush, ".prg", NIL, "background-color: rgb(184,184,184);" } )
-      aadd( ::aItmSrc, { NIL, "C Files"        , QBrush( QColor( 176, 176, 176 ) ), oBrush, ".c"  , NIL, "background-color: rgb(176,176,176);" } )
-      aadd( ::aItmSrc, { NIL, "CPP Files"      , QBrush( QColor( 168, 168, 168 ) ), oBrush, ".cpp", NIL, "background-color: rgb(168,168,168);" } )
-      aadd( ::aItmSrc, { NIL, "CH Files"       , QBrush( QColor( 160, 160, 160 ) ), oBrush, ".ch" , NIL, "background-color: rgb(160,160,160);" } )
-      aadd( ::aItmSrc, { NIL, "H Files"        , QBrush( QColor( 152, 152, 152 ) ), oBrush, ".h"  , NIL, "background-color: rgb(152,152,152);" } )
-      aadd( ::aItmSrc, { NIL, "UI Files"       , QBrush( QColor( 144, 144, 144 ) ), oBrush, ".ui" , NIL, "background-color: rgb(144,144,144);" } )
-      aadd( ::aItmSrc, { NIL, "All Other Files", QBrush( QColor( 136, 136, 136 ) ), oBrush, "*"   , NIL, "background-color: rgb(136,136,136);" } )
-
-      ::clear()
-
-      ::oUI:frameSrc:setAcceptDrops( .t. )
-      ::oUI:frameSrc:connect( QEvent_DragEnter, {|p| ::execEvent( __frameSrc_dragEnterEvent__, p ) } )
-      ::oUI:frameSrc:connect( QEvent_DragMove , {|p| ::execEvent( __frameSrc_dragMoveEvent__ , p ) } )
-      ::oUI:frameSrc:connect( QEvent_Drop     , {|p| ::execEvent( __frameSrc_dropEvent__     , p ) } )
-
+      WITH OBJECT ::oUI := ui_projectWizard():new(  ::oIde:oDlg:oWidget )
+         :oWidget     : connect( QEvent_Close, {|| ::oUI:oWidget:done( 0 ) } )
+         //   
+         :btnSwAZ     : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "az"    ) } )
+         :btnSwZA     : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "za"    ) } )
+         :btnSwUpper  : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "upper" ) } )
+         :btnSwLower  : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "lower" ) } )
+         :btnSwDelete : connect( "clicked()", {|| ::execEvent( __btnSw_clicked__, "delete") } )
+         :btnNext     : connect( "clicked()", {|| ::execEvent( __btnNext_clicked__        ) } )
+         :btnBack     : connect( "clicked()", {|| ::execEvent( __btnBack_clicked__        ) } )
+         :btnNew      : connect( "clicked()", {|| ::execEvent( __btnNew_clicked__         ) } )
+         :btnSave     : connect( "clicked()", {|| ::execEvent( __btnSave_clicked__        ) } )
+         :btnCancel   : connect( "clicked()", {|| ::oUI:oWidget:done( 0 )                   } )
+         :btnSwMax    : connect( "clicked()", {|| ::execEvent( __btnSwMax_clicked__       ) } )
+         :btnSwMin    : connect( "clicked()", {|| ::execEvent( __btnSwMin_clicked__       ) } )
+         WITH OBJECT :toolSrcGet
+            : connect( "clicked()", {|| ::execEvent( __toolSrcGet_clicked__     ) } )
+            : connect( "clicked()", {|| ::execEvent( __toolSrcMax_clicked__     ) } )
+            : connect( "clicked()", {|| ::execEvent( __toolSrcMin_clicked__     ) } )
+            : connect( "clicked()", {|| ::execEvent( __toolSrcDel_clicked__     ) } )
+         ENDWITH
+         WITH OBJECT :comboProjType()
+            : addItem( "Executable"        )
+            : addItem( "Library"           )
+            : addItem( "DLL - Without HVM" )
+            : addItem( "DLL - With HVM"    )
+         ENDWITH
+         WITH OBJECT :comboGT()
+            : addItem( "gtCGI" )
+            : addItem( "gtCRS" )
+            : addItem( "gtDOS" )
+            : addItem( "gtGUI" )
+            : addItem( "gtOS2" )
+            : addItem( "gtPCA" )
+            : addItem( "gtSLN" )
+            : addItem( "gtSTD" )
+            : addItem( "gtTRM" )
+            : addItem( "gtWIN" )
+            : addItem( "gtWVT" )
+            : addItem( "gtWVG" )
+            : addItem( "gtXWC" )
+         ENDWITH    
+         WITH OBJECT :treeProps()     
+            : setContextMenuPolicy( Qt_CustomContextMenu )
+            : setDragEnabled( .t. )
+            : setAcceptDrops( .t. )
+            : setDragDropMode( QAbstractItemView_InternalMove )
+            : setDropIndicatorShown( .t. )
+            : setRootIsDecorated( .F. ) /* Important to present as a list */
+            : header():resizeSection( 0, 237 )
+            : connect( "itemCollapsed(QTreeWidgetItem*)"        , {|p   | ::execEvent( __treeProps_itemCollapsed__       , p     ) } )
+            : connect( "itemExpanded(QTreeWidgetItem*)"         , {|p   | ::execEvent( __treeProps_itemExpanded__        , p     ) } )
+            : connect( "customContextMenuRequested(QPoint)"     , {|p   | ::execEvent( __treeProps_contextMenuRequested__, p     ) } )
+            : connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeProps_doubleClicked__       , p, p1 ) } )
+            : connect( "itemSelectionChanged()"                 , {|    | ::execEvent( __treeProps_itemSelectionChanged__        ) } )
+         ENDWITH
+      
+         oBrush := QBrush( QColor( 248, 248, 248 ) )
+         //
+         aadd( ::aItmProps, { NIL, ".hbc Files"                    , QBrush( QColor( 136, 136, 136 ) ),  oBrush, NIL, NIL, "background-color: rgb(136,136,136);" } )
+         aadd( ::aItmProps, { NIL, "Libraries"                     , QBrush( QColor( 144, 144, 144 ) ),  oBrush, NIL, NIL, "background-color: rgb(144,144,144);" } )
+         aadd( ::aItmProps, { NIL, "Library Paths"                 , QBrush( QColor( 152, 152, 152 ) ),  oBrush, NIL, NIL, "background-color: rgb(152,152,152);" } )
+         aadd( ::aItmProps, { NIL, "Include Paths"                 , QBrush( QColor( 160, 160, 160 ) ),  oBrush, NIL, NIL, "background-color: rgb(160,160,160);" } )
+         aadd( ::aItmProps, { NIL, "PRG Defines"                   , QBrush( QColor( 168, 168, 168 ) ),  oBrush, NIL, NIL, "background-color: rgb(168,168,168);" } )
+         aadd( ::aItmProps, { NIL, "PRG Undefines"                 , QBrush( QColor( 176, 176, 176 ) ),  oBrush, NIL, NIL, "background-color: rgb(176,176,176);" } )
+         aadd( ::aItmProps, { NIL, "hbmk2 Command-Line Params"     , QBrush( QColor( 184, 184, 184 ) ),  oBrush, NIL, NIL, "background-color: rgb(184,184,184);" } )
+         aadd( ::aItmProps, { NIL, "Batch File Commands"           , QBrush( QColor( 192, 192, 192 ) ),  oBrush, NIL, NIL, "background-color: rgb(192,192,192);" } )
+         aadd( ::aItmProps, { NIL, "Actions after Successful Build", QBrush( QColor( 200, 200, 200 ) ),  oBrush, NIL, NIL, "background-color: rgb(200,200,200);" } )
+         aadd( ::aItmProps, { NIL, "Hbp - Project Files"           , QBrush( QColor( 208, 208, 208 ) ),  oBrush, NIL, NIL, "background-color: rgb(208,208,208);" } )
+         WITH OBJECT ::oUI:treeSrc()
+            : setContextMenuPolicy( Qt_CustomContextMenu )
+            : setDragEnabled( .t. )
+            : setDropIndicatorShown( .t. )
+            : setAcceptDrops( .t. )
+            : setDragDropMode( QAbstractItemView_InternalMove )
+            : setRootIsDecorated( .F. ) /* Important to present as a list */
+            : header():resizeSection( 0, 393 )
+            : connect( "itemCollapsed(QTreeWidgetItem*)"        , {|p   | ::execEvent( __treeSrc_itemCollapsed__       , p     ) } )
+            : connect( "itemExpanded(QTreeWidgetItem*)"         , {|p   | ::execEvent( __treeSrc_itemExpanded__        , p     ) } )
+            : connect( "customContextMenuRequested(QPoint)"     , {|p   | ::execEvent( __treeSrc_contextMenuRequested__, p     ) } )
+            : connect( "itemDoubleClicked(QTreeWidgetItem*,int)", {|p,p1| ::execEvent( __treeSrc_doubleClicked__       , p, p1 ) } )
+         ENDWITH
+         aadd( ::aItmSrc, { NIL, "PRG Files"      , QBrush( QColor( 184, 184, 184 ) ), oBrush, ".prg", NIL, "background-color: rgb(184,184,184);" } )
+         aadd( ::aItmSrc, { NIL, "C Files"        , QBrush( QColor( 176, 176, 176 ) ), oBrush, ".c"  , NIL, "background-color: rgb(176,176,176);" } )
+         aadd( ::aItmSrc, { NIL, "CPP Files"      , QBrush( QColor( 168, 168, 168 ) ), oBrush, ".cpp", NIL, "background-color: rgb(168,168,168);" } )
+         aadd( ::aItmSrc, { NIL, "CH Files"       , QBrush( QColor( 160, 160, 160 ) ), oBrush, ".ch" , NIL, "background-color: rgb(160,160,160);" } )
+         aadd( ::aItmSrc, { NIL, "H Files"        , QBrush( QColor( 152, 152, 152 ) ), oBrush, ".h"  , NIL, "background-color: rgb(152,152,152);" } )
+         aadd( ::aItmSrc, { NIL, "UI Files"       , QBrush( QColor( 144, 144, 144 ) ), oBrush, ".ui" , NIL, "background-color: rgb(144,144,144);" } )
+         aadd( ::aItmSrc, { NIL, "All Other Files", QBrush( QColor( 136, 136, 136 ) ), oBrush, "*"   , NIL, "background-color: rgb(136,136,136);" } )
+         //
+         ::clear()
+         //
+         WITH OBJECT :frameSrc()
+            :setAcceptDrops( .t. )
+            :connect( QEvent_DragEnter, {|p| ::execEvent( __frameSrc_dragEnterEvent__, p ) } )
+            :connect( QEvent_DragMove , {|p| ::execEvent( __frameSrc_dragMoveEvent__ , p ) } )
+            :connect( QEvent_Drop     , {|p| ::execEvent( __frameSrc_dropEvent__     , p ) } )
+         ENDWITH 
+      ENDWITH 
    ENDIF
-
    IF ::loadDefaults()
       ::oUI:exec()
       ::oUI:oWidget:hide()
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
    LOCAL cText, qItm, n, i, oFont, aMenu, aFiles, aFilt, cFile, lTop, nChildren, qChild
    LOCAL qMime, qUrl, qList, aItm
-
-   HB_SYMBOL_UNUSED( p1 )
-
+   IF .T.
+      HB_SYMBOL_UNUSED( p1 )
+   ENDIF
    SWITCH nEvent
-
    CASE __frameSrc_dragMoveEvent__
    CASE __frameSrc_dragEnterEvent__
       p:acceptProposedAction()
@@ -404,7 +393,6 @@ METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
       aadd( aFilt, { "H Files"      , "*.h"   } )
       aadd( aFilt, { "CH Files"     , "*.ch"  } )
       aadd( aFilt, { "All Others"   , "*"     } )
-
       aFiles := hbide_fetchAFile( ::oDlg, "Select Sources", aFilt, ::cProjPath, , .t. )
       IF ! empty( aFiles )
          oFont := QFont( "Courier New" )
@@ -475,9 +463,8 @@ METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
       IF ::oUI:treeProps:indexOfTopLevelItem( qItm ) >= 0
          IF p == "plus"
            ::addTreeItem( qItm )
-
          ELSEIF ( nChildren := qItm:childCount() ) > 0
-            IF     p == "az"
+            IF p == "az"
                qItm:sortChildren( 0, Qt_AscendingOrder )
             ELSEIF p == "za"
                qItm:sortChildren( 0, Qt_DescendingOrder )
@@ -488,7 +475,7 @@ METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
             ELSE
                FOR i := 1 TO nChildren
                   qChild := qItm:child( i-1 )
-                  IF     p == "upper" ; qChild:setText( 0, upper( qChild:text( 0 ) ) )
+                  IF p == "upper" ; qChild:setText( 0, upper( qChild:text( 0 ) ) )
                   ELSEIF p == "lower" ; qChild:setText( 0, lower( qChild:text( 0 ) ) )
                   ENDIF
                NEXT
@@ -529,26 +516,21 @@ METHOD IdeProjectWizard:execEvent( nEvent, p, p1 )
       ENDIF
       EXIT
    ENDSWITCH
-
    RETURN NIL
 
 
 METHOD IdeProjectWizard:addSourceFile( cFile )
-   LOCAL oParent, qItm, cExt, n, cSource, lExists, i
-   LOCAL oFont := QFont( "Courier New" )
-
-   oFont:setPointSize( 8 )
-
+   LOCAL oParent, qItm, cExt, n, cSource, lExists, i, oFont
+   WITH OBJECT oFont := QFont( "Courier New" )
+      :setPointSize( 8 )
+   ENDWITH
    IF hbide_isValidText( cFile )
       hb_fNameSplit( cFile, , , @cExt )
       IF ( n := ascan( ::aItmSrc, {|e_| e_[ 5 ] == lower( cExt ) } ) ) == 0
          n := len( ::aItmSrc )
       ENDIF
       oParent := ::aItmSrc[ n,1 ]
-
-   // cSource := hbide_prepareSourceForHbp( hbide_stripRoot( ::cProjPath, cFile ) ) /* this action be performed on final .hbp */
       cSource := cFile
-
       lExists := .f.
       IF ( n := oParent:childCount() ) > 0
          FOR i := 1 TO n
@@ -558,145 +540,140 @@ METHOD IdeProjectWizard:addSourceFile( cFile )
             ENDIF
          NEXT
       ENDIF
-
       IF ! lExists
          oParent:setExpanded( .t. )
-         qItm := QTreeWidgetItem()
+         WITH OBJECT qItm := QTreeWidgetItem()
+            :setFlags( 0 )
+            :setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDragEnabled, Qt_ItemIsEnabled ) )
+            :setText( 0, cSource )
+            :setTooltip( 0, cFile )
+            :setFont( 0, oFont )
+            :setBackground( 0, QBrush( QColor( 250, 250, 250 ) ) )
+         ENDWITH 
          oParent:addChild( qItm )
-         qItm:setFlags( 0 )
-         qItm:setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDragEnabled, Qt_ItemIsEnabled ) )
-         qItm:setText( 0, cSource )
-         qItm:setTooltip( 0, cFile )
-         qItm:setFont( 0, oFont )
-         qItm:setBackground( 0, QBrush( QColor( 250, 250, 250 ) ) )
       ENDIF
    ENDIF
-
    RETURN .t.
 
 
 METHOD IdeProjectWizard:addTreeItem( oParent )
    LOCAL oFont, qItm
-
-   oFont := QFont( "Courier New" )
-   oFont:setPointSize( 8 )
-
-   oParent:setExpanded( .t. )
-
-   qItm := QTreeWidgetItem()
-   oParent:addChild( qItm )
-   qItm:setFlags( 0 )
-   qItm:setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDragEnabled, Qt_ItemIsEnabled, Qt_ItemIsEditable ) )
-   qItm:setText( 0, "" )
-   qItm:setFont( 0, oFont )
-   qItm:setBackground( 0, QBrush( QColor( 250, 250, 250 ) ) )
-   qItm:setFirstColumnSpanned( .t. )
-
-   oParent:treeWidget():editItem( qItm, 0 )
-
+   WITH OBJECT oFont := QFont( "Courier New" )
+      : setPointSize( 8 )
+   ENDWITH
+   WITH OBJECT qItm := QTreeWidgetItem()
+      : setFlags( 0 )
+      : setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDragEnabled, Qt_ItemIsEnabled, Qt_ItemIsEditable ) )
+      : setText( 0, "" )
+      : setFont( 0, oFont )
+      : setBackground( 0, QBrush( QColor( 250, 250, 250 ) ) )
+      : setFirstColumnSpanned( .t. )
+   ENDWITH 
+   WITH OBJECT oParent
+      : addChild( qItm )
+      : setExpanded( .t. )
+      : treeWidget():editItem( qItm, 0 )
+   ENDWITH
    RETURN .t.
 
 
 METHOD IdeProjectWizard:deleteTreeItem( oChild )
-   LOCAL oParent
-
-   oParent := oChild:parent()
-   oParent:removeChild( oChild )
-   IF oParent:childCount() == 0
-      oParent:setExpanded( .f. )
-      oParent:setSelected( .t. )
-   ENDIF
-
+   LOCAL oParent := oChild:parent()
+   WITH OBJECT oParent
+      : removeChild( oChild )
+      IF : childCount() == 0
+         : setExpanded( .f. )
+         : setSelected( .t. )
+      ENDIF
+   ENDWITH 
    RETURN .t.
 
 
 METHOD IdeProjectWizard:addDropIndicator( oTree, oNode, nMsg, cCSS, nIndex )
    LOCAL qTBtn := QToolButton( oTree )
-
-   qTBtn:setIcon( QIcon( hbide_image( "expand_m" ) ) )
-   qTBtn:setAutoFillBackground( .t. )
-   qTBtn:setAutoRaise( .t. )
-   qTBtn:setMaximumWidth( 20 )
-   qTBtn:setMaximumHeight( 20 )
-   qTBtn:setStyleSheet( "" )
-   qTBtn:setStyleSheet( cCSS )
-   qTBtn:connect( "clicked()", {|| ::execEvent( nMsg, nIndex ) } )
+   WITH OBJECT qTBtn
+      : setIcon( QIcon( hbide_image( "expand_m" ) ) )
+      : setAutoFillBackground( .t. )
+      : setAutoRaise( .t. )
+      : setMaximumWidth( 20 )
+      : setMaximumHeight( 20 )
+      : setStyleSheet( "" )
+      : setStyleSheet( cCSS )
+      : connect( "clicked()", {|| ::execEvent( nMsg, nIndex ) } )
+   ENDWITH
    oTree:setItemWidget( oNode, 1, qTBtn )
-
    RETURN qTBtn
 
 
 METHOD IdeProjectWizard:loadSwichesSections()
    LOCAL oTree := ::oUI:treeProps
    LOCAL qItm, aAct, oFont
-
-   oFont := QTreeWidgetItem():font( 0 )
-   oFont:setBold( .t. )
+   WITH OBJECT oFont := QTreeWidgetItem():font( 0 )
+      :setBold( .t. )
+   ENDWITH 
    FOR EACH aAct IN ::aItmProps
-      qItm := QTreeWidgetItem()
+      WITH OBJECT qItm := QTreeWidgetItem()
+         : setFlags( 0 )
+         : setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDropEnabled, Qt_ItemIsEnabled ) )
+         : setText( 0, space( 7 ) + aAct[ PROPS_PROPNAME ] )
+         : setBackground( 0, aAct[ 3 ] )
+         : setForeground( 0, QBrush( QColor( 255,255,255 ) ) )
+         : setFont( 0, oFont )
+         : setTooltip( 0, "Double-click to add a value !" )
+         : setChildIndicatorPolicy( QTreeWidgetItem_ShowIndicator )
+      ENDWITH 
+      WITH OBJECT oTree
+         : addTopLevelItem( qItm )
+         : setFirstItemColumnSpanned( qItm, .t. )
+      ENDWITH    
       aAct[ PROPS_TREENODE ] := qItm
-      qItm:setFlags( 0 )
-      qItm:setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDropEnabled, Qt_ItemIsEnabled ) )
-      qItm:setText( 0, space( 7 ) + aAct[ PROPS_PROPNAME ] )
-      qItm:setBackground( 0, aAct[ 3 ] )
-      qItm:setForeground( 0, QBrush( QColor( 255,255,255 ) ) )
-      qItm:setFont( 0, oFont )
-      qItm:setTooltip( 0, "Double-click to add a value !" )
-      oTree:addTopLevelItem( qItm )
-      oTree:setFirstItemColumnSpanned( qItm, .t. )
-      qItm:setChildIndicatorPolicy( QTreeWidgetItem_ShowIndicator )
-
       aAct[ PROPS_TREEBUTTON ] := ::addDropIndicator( oTree, aAct[ PROPS_TREENODE ], __qTBtn_clicked__, aAct[ 7 ], aAct:__enumIndex() )
    NEXT
-
    RETURN Self
 
 
 METHOD IdeProjectWizard:loadSourcesSections()
    LOCAL oTree := ::oUI:treeSrc
    LOCAL qItm, aAct, oFont
-
-   oFont := QTreeWidgetItem():font( 0 )
-   oFont:setBold( .t. )
+   WITH OBJECT oFont := QTreeWidgetItem():font( 0 )
+      oFont:setBold( .t. )
+   ENDWITH 
    FOR EACH aAct IN ::aItmSrc
-      qItm := QTreeWidgetItem()
+      WITH OBJECT qItm := QTreeWidgetItem()
+         : setFlags( 0 )
+         : setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDropEnabled, Qt_ItemIsEnabled ) )
+         : setText( 0, space( 7 ) + aAct[ PROPS_PROPNAME ] )
+         : setBackground( 0, aAct[ 3 ] )
+         : setForeground( 0, QBrush( QColor( 255,255,255 ) ) )
+         : setFont( 0, oFont )
+         : setTooltip( 0, "Drag and drop a source OR select with open icon at the top !" )
+         : setChildIndicatorPolicy( QTreeWidgetItem_ShowIndicator )
+      ENDWITH 
+      WITH OBJECT oTree
+         : addTopLevelItem( qItm )
+         : setFirstItemColumnSpanned( qItm, .t. )
+      ENDWITH
       aAct[ PROPS_TREENODE ] := qItm
-      qItm:setFlags( 0 )
-      qItm:setFlags( hb_bitOr( Qt_ItemIsSelectable, Qt_ItemIsDropEnabled, Qt_ItemIsEnabled ) )
-      qItm:setText( 0, space( 7 ) + aAct[ PROPS_PROPNAME ] )
-      qItm:setBackground( 0, aAct[ 3 ] )
-      qItm:setForeground( 0, QBrush( QColor( 255,255,255 ) ) )
-      qItm:setFont( 0, oFont )
-      qItm:setTooltip( 0, "Drag and drop a source OR select with open icon at the top !" )
-      oTree:addTopLevelItem( qItm )
-      oTree:setFirstItemColumnSpanned( qItm, .t. )
-      qItm:setChildIndicatorPolicy( QTreeWidgetItem_ShowIndicator )
-
       aAct[ PROPS_TREEBUTTON ] := ::addDropIndicator( oTree, aAct[ PROPS_TREENODE ], __qSBtn_clicked__, aAct[ 7 ], aAct:__enumIndex() )
    NEXT
-
    RETURN Self
 
 
 METHOD IdeProjectWizard:loadDefaults()
    LOCAL cProjPath, cPath, cName, cExt, lExists
-
    cProjPath := ::oUI:editProjPath:text()
    IF empty( cProjPath )
       cProjPath := hbide_fetchAFile( ::oDlg, "Create a Harbour Project File", { { "Harbour Project", ".hbp" } }, hb_dirBase() + "projects" + hb_ps(), "hbp" )
       IF empty( cProjPath )
          RETURN .f.
       ENDIF
-
       hb_fNameSplit( cProjPath, @cPath, @cName, @cExt )
       IF ! ( lower( cExt ) == ".hbp" )
          MsgBox( "Wrong type of project name!" )
          RETURN .f.
       ENDIF
       ::cProjPath := cPath
-
       lExists := hb_fileExists( cProjPath )
-
       IF lExists
          MsgBox( "Project already exists, loading..." )
          ::oProject:load( cPath + cName + ".hbp" )
@@ -706,20 +683,18 @@ METHOD IdeProjectWizard:loadDefaults()
          ::oUI:editProjName:setText( upper( substr( cName, 1, 1 ) ) + lower( substr( cName, 2 ) ) )
          ::oUI:editOutName:setText( cName )
       ENDIF
-
       ::lEdited := .t.
    ENDIF
-
    RETURN .t.
 
 
 METHOD IdeProjectWizard:saveProject()
    LOCAL cPath, cFile, cExt
-
-   ::oProject:saveUI( Self )
-   hb_fNameSplit( ::oUI:editProjPath:text(), @cPath, @cFile, @cExt )
-   ::oProject:save( cPath + cFile + ".hbp" )
-
+   IF .T.
+      ::oProject:saveUI( Self )
+      hb_fNameSplit( ::oUI:editProjPath:text(), @cPath, @cFile, @cExt )
+      ::oProject:save( cPath + cFile + ".hbp" )
+   ENDIF
    RETURN Self
 
 /*----------------------------------------------------------------------*/
@@ -729,9 +704,7 @@ METHOD IdeProjectWizard:saveProject()
 CREATE CLASS IdeExProject
 
    DATA   cTmplt                                  INIT ""
-
    DATA   cPathHbp
-
    DATA   cProjPath
    DATA   cProjName
    DATA   cProjType
@@ -830,27 +803,20 @@ CREATE CLASS IdeExProject
 
 
 METHOD IdeExProject:init( cPathHbp )
-
    hb_default( cPathHbp, ::cPathHbp )
-
    ::cPathHbp := cPathHbp
-
    RETURN Self
 
 
 METHOD IdeExProject:create( cPathHbp )
-
    hb_default( cPathHbp, ::cPathHbp )
-
    ::cPathHbp := cPathHbp
-
    ::defaults()
-
    RETURN Self
 
 
 METHOD IdeExProject:defaults()
-
+   //
    ::cProjPath             := ""
    ::cProjName             := ""
    ::cProjType             := ""
@@ -924,84 +890,83 @@ METHOD IdeExProject:defaults()
    ::aSrcHs                := {}
    ::aSrcUIs               := {}
    ::aSrcOthers            := {}
-
+   //
    RETURN Self
 
 
 METHOD IdeExProject:loadUI( oWizard, nMode )
-   LOCAL oUI := oWizard:oUI
-
    IF nMode == 1
       ::defaults()
    ENDIF
-
-   oUI:editProjPath     : setText( ::cProjPath      )
-   oUI:editProjName     : setText( ::cProjName      )
-   oUI:editOutName      : setText( ::cOutName       )
-   oUI:editOutPath      : setText( ::cOutPath       )
-   oUI:editWorkPath     : setText( ::cWorkPath      )
-   oUI:editWorkPath     : setText( ::cWorkPath      )
-   oUI:editLaunchExe    : setText( ::cLaunchExe     )
-   oUI:editLaunchParams : setText( ::cLaunchParams  )
-   oUI:editStayIn       : setText( ::cStayIn        )
-   oUi:chkXhb           : setChecked( ::lXhb        )
-   oUi:chkXBase         : setChecked( ::lXBase      )
-   oUi:chkHbQt          : setChecked( ::lHbQt       )
-   oUi:chkXbp           : setChecked( ::lXbp        )
-   oUi:chkFWH           : setChecked( ::lFWH        )
-   oUi:chkHMG           : setChecked( ::lHMG        )
-   oUi:chkOther         : setChecked( ::lOther      )
-   oUi:chkA             : setChecked( ::lA          )
-   oUi:chkB             : setChecked( ::lB          )
-   oUi:chkES            : setChecked( ::lES         )
-   oUi:chkG             : setChecked( ::lG          )
-   oUi:chkJ             : setChecked( ::lJ          )
-   oUi:chkL             : setChecked( ::lL          )
-   oUi:chkM             : setChecked( ::lM          )
-   oUi:chkN             : setChecked( ::lN          )
-   oUi:chkV             : setChecked( ::lV          )
-   oUi:chkW             : setChecked( ::lW          )
-   oUi:chkZ             : setChecked( ::lZ          )
-   oUi:chkQ             : setChecked( ::lQ          )
-   oUi:chkBuild         : setChecked( ::lBuild      )
-   oUi:chkCredits       : setChecked( ::lCredits    )
-   oUi:chkInc           : setChecked( ::lInc        )
-   oUi:chkGui           : setChecked( ::lGui        )
-   oUi:chkInfo          : setChecked( ::lInfo       )
-   oUi:chkShared        : setChecked( ::lShared     )
-   oUi:chkMt            : setChecked( ::lMt         )
-   oUi:chkTrace         : setChecked( ::lTrace      )
-   oUi:chkFullstatic    : setChecked( ::lFullstatic )
-   oUi:chkGtgui         : setChecked( ::lGtgui      )
-   oUi:chkGtwin         : setChecked( ::lGtwin      )
-   oUi:chkGtwvt         : setChecked( ::lGtwvt      )
-   oUi:chkGtwvg         : setChecked( ::lGtwvg      )
-   oUi:chkGtxwc         : setChecked( ::lGtxwc      )
-   oUi:chkGttrm         : setChecked( ::lGttrm      )
-   oUi:chkGtstd         : setChecked( ::lGtstd      )
-   oUi:chkGtsln         : setChecked( ::lGtsln      )
-   oUi:chkGtpca         : setChecked( ::lGtpca      )
-   oUi:chkGtos2         : setChecked( ::lGtos2      )
-   oUi:chkGtcrs         : setChecked( ::lGtcrs      )
-   oUi:chkGtcgi         : setChecked( ::lGtcgi      )
-   oUI:editES           : setText( ::cES            )
-   oUI:editG            : setText( ::cG             )
-   oUI:editM            : setText( ::cM             )
-   oUI:editQ            : setText( ::cQ             )
-   oUI:editW            : setText( ::cW             )
-
-   ::loadProps( oWizard )
-   ::loadSources( oWizard )
-   ::loadExtras( oWizard )
-
+   WITH OBJECT oWizard:oUI
+      : editProjPath     : setText( ::cProjPath      )
+      : editProjName     : setText( ::cProjName      )
+      : editOutName      : setText( ::cOutName       )
+      : editOutPath      : setText( ::cOutPath       )
+      : editWorkPath     : setText( ::cWorkPath      )
+      : editWorkPath     : setText( ::cWorkPath      )
+      : editLaunchExe    : setText( ::cLaunchExe     )
+      : editLaunchParams : setText( ::cLaunchParams  )
+      : editStayIn       : setText( ::cStayIn        )
+      : chkXhb           : setChecked( ::lXhb        )
+      : chkXBase         : setChecked( ::lXBase      )
+      : chkHbQt          : setChecked( ::lHbQt       )
+      : chkXbp           : setChecked( ::lXbp        )
+      : chkFWH           : setChecked( ::lFWH        )
+      : chkHMG           : setChecked( ::lHMG        )
+      : chkOther         : setChecked( ::lOther      )
+      : chkA             : setChecked( ::lA          )
+      : chkB             : setChecked( ::lB          )
+      : chkES            : setChecked( ::lES         )
+      : chkG             : setChecked( ::lG          )
+      : chkJ             : setChecked( ::lJ          )
+      : chkL             : setChecked( ::lL          )
+      : chkM             : setChecked( ::lM          )
+      : chkN             : setChecked( ::lN          )
+      : chkV             : setChecked( ::lV          )
+      : chkW             : setChecked( ::lW          )
+      : chkZ             : setChecked( ::lZ          )
+      : chkQ             : setChecked( ::lQ          )
+      : chkBuild         : setChecked( ::lBuild      )
+      : chkCredits       : setChecked( ::lCredits    )
+      : chkInc           : setChecked( ::lInc        )
+      : chkGui           : setChecked( ::lGui        )
+      : chkInfo          : setChecked( ::lInfo       )
+      : chkShared        : setChecked( ::lShared     )
+      : chkMt            : setChecked( ::lMt         )
+      : chkTrace         : setChecked( ::lTrace      )
+      : chkFullstatic    : setChecked( ::lFullstatic )
+      : chkGtgui         : setChecked( ::lGtgui      )
+      : chkGtwin         : setChecked( ::lGtwin      )
+      : chkGtwvt         : setChecked( ::lGtwvt      )
+      : chkGtwvg         : setChecked( ::lGtwvg      )
+      : chkGtxwc         : setChecked( ::lGtxwc      )
+      : chkGttrm         : setChecked( ::lGttrm      )
+      : chkGtstd         : setChecked( ::lGtstd      )
+      : chkGtsln         : setChecked( ::lGtsln      )
+      : chkGtpca         : setChecked( ::lGtpca      )
+      : chkGtos2         : setChecked( ::lGtos2      )
+      : chkGtcrs         : setChecked( ::lGtcrs      )
+      : chkGtcgi         : setChecked( ::lGtcgi      )
+      : editES           : setText( ::cES            )
+      : editG            : setText( ::cG             )
+      : editM            : setText( ::cM             )
+      : editQ            : setText( ::cQ             )
+      : editW            : setText( ::cW             )
+   ENDWITH
+   IF .T.
+      ::loadProps( oWizard )
+      ::loadSources( oWizard )
+      ::loadExtras( oWizard )
+   ENDIF
    RETURN Self
 
 
 METHOD IdeExProject:saveUI( oWizard )
    LOCAL oUI := oWizard:oUI
-
-   ::defaults()  /* Clean the variables */
-
+   /* Clean the variables */
+   ::defaults()  
+   //
    ::cProjPath     := oUI:editProjPath     : text()
    ::cProjName     := oUI:editProjName     : text()
    ::cProjType     := oUI:comboProjType    : currentText()
@@ -1057,17 +1022,16 @@ METHOD IdeExProject:saveUI( oWizard )
    ::lGtPca        := oUI:chkGtPca         : isChecked()
    ::lGtOs2        := oUI:chkGtOs2         : isChecked()
    ::lGtCrs        := oUI:chkGtCrs         : isChecked()
-
+   //
    ::retrieveProps( oWizard )
    ::retrieveSources( oWizard )
    ::retrieveExtras( oWizard )
-
+   //
    RETURN Self
 
 
 METHOD IdeExProject:retrieveProps( oWizard )
    LOCAL a_, n, cNode, cText
-
    FOR EACH a_ IN oWizard:aItmProps
       IF hb_isObject( a_[ PROPS_TREENODE ] )
          cNode := alltrim( a_[ PROPS_TREENODE ]:text( 0 ) )
@@ -1088,13 +1052,11 @@ METHOD IdeExProject:retrieveProps( oWizard )
          NEXT
       ENDIF
    NEXT
-
    RETURN Self
 
 
 METHOD IdeExProject:retrieveSources( oWizard )
    LOCAL a_, n, cNode, cText
-
    FOR EACH a_ IN oWizard:aItmSrc
       IF hb_isObject( a_[ PROPS_TREENODE ] )
          cNode := alltrim( a_[ PROPS_TREENODE ]:text( 0 ) )
@@ -1112,23 +1074,19 @@ METHOD IdeExProject:retrieveSources( oWizard )
          NEXT
       ENDIF
    NEXT
-
    RETURN Self
 
 
 METHOD IdeExProject:retrieveExtras( oWizard )
    LOCAL s, a_:= hbide_memoToArray( oWizard:oUI:plainExtras:toPlainText() )
-
    FOR EACH s IN a_
       aadd( ::aExtras, alltrim( s ) )
    NEXT
-
    RETURN Self
 
 
 METHOD IdeExProject:loadProps( oWizard )
    LOCAL a_, aValues, cValue, qItm
-
    FOR EACH a_ IN oWizard:aItmProps
       IF hb_isObject( a_[ PROPS_TREENODE ] )
          SWITCH alltrim( a_[ PROPS_TREENODE ]:text( 0 ) )
@@ -1155,13 +1113,11 @@ METHOD IdeExProject:loadProps( oWizard )
          a_[ PROPS_TREENODE ]:setExpanded( .t. )
       ENDIF
    NEXT
-
    RETURN Self
 
 
 METHOD IdeExProject:loadSources( oWizard )
    LOCAL a_, aValues, cValue, qItm
-
    FOR EACH a_ IN oWizard:aItmSrc
       IF hb_isObject( a_[ PROPS_TREENODE ] )
          SWITCH alltrim( a_[ PROPS_TREENODE ]:text( 0 ) )
@@ -1186,20 +1142,16 @@ METHOD IdeExProject:loadSources( oWizard )
          a_[ PROPS_TREENODE ]:setExpanded( .t. )
       ENDIF
    NEXT
-
    RETURN Self
 
 
 METHOD IdeExProject:loadExtras( oWizard )
-
    oWizard:oUI:plainExtras : setPlainText( hbide_arrayToMemo( ::aExtras ) )
-
    RETURN Self
 
 
 METHOD IdeExProject:addSection( aTxt, cSection, aValues )
    LOCAL s, a_:={}
-
    FOR EACH s IN aValues
       IF "=" $ s
          IF ! empty( substr( s, at( "=", s ) + 1 ) )
@@ -1209,7 +1161,6 @@ METHOD IdeExProject:addSection( aTxt, cSection, aValues )
          aadd( a_, s )
       ENDIF
    NEXT
-
    IF ! empty( a_ )
       AAdd( aTxt, SPCFILL( "# HbIDE       <" + cSection + ">" ) )
       FOR EACH s IN a_
@@ -1217,13 +1168,12 @@ METHOD IdeExProject:addSection( aTxt, cSection, aValues )
       NEXT
       AAdd( aTxt, SPCFILL( "# HbIDE       </" + cSection + ">" ) )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeExProject:save( cPathHbp )
    LOCAL cTxt, aGen :={}, aTxt := {}
-
+   //
    AAdd( aGen, "cProjPath        = " + ::cProjPath         )
    AAdd( aGen, "cProjName        = " + ::cProjName         )
    AAdd( aGen, "cProjType        = " + ::cProjType         )
@@ -1279,7 +1229,7 @@ METHOD IdeExProject:save( cPathHbp )
    AAdd( aGen, "lGtPca           = " + iif( ::lGtPca      , "YES", "" ) )
    AAdd( aGen, "lGtOs2           = " + iif( ::lGtOs2      , "YES", "" ) )
    AAdd( aGen, "lGtCrs           = " + iif( ::lGtCrs      , "YES", "" ) )
-
+   //
    AAdd( aTxt, ( "# " ) )
    AAdd( aTxt, ( "# $Id: " ) )
    AAdd( aTxt, ( "# " ) )
@@ -1309,23 +1259,21 @@ METHOD IdeExProject:save( cPathHbp )
    //
    AAdd( aTxt, SPCFILL( "# HbIDE    </Version:2.0>" ) )
    AAdd( aTxt, SPCFILL( "# HbIDE </Project>" ) )
-
    // hbp consumable stuff
    AAdd( aTxt, "" )
-
+   //
    cTxt := ""
    aeval( aTxt, {|e| cTxt += e + hb_eol() } )
-
    RETURN hb_memowrit( cPathHbp, cTxt )
 
 
 METHOD IdeExProject:sectionToArray( cBuffer, cSection )
    LOCAL cTxt, n, nn, cTknB, cTknE
    LOCAL a_:={}
-
-   cTknB := "<" + cSection + ">"
-   cTknE := "</" + cSection + ">"
-
+   IF .T.
+      cTknB := "<" + cSection + ">"
+      cTknE := "</" + cSection + ">"
+   ENDIF
    IF ( n := at( cTknB, cBuffer ) ) > 0
       IF( nn := at( cTknE, cBuffer ) ) > 0
          cTxt := SubStr( cBuffer, n + Len( cTknB ), nn - 1 - ( n + Len( cTknB ) ) )
@@ -1334,30 +1282,25 @@ METHOD IdeExProject:sectionToArray( cBuffer, cSection )
          a_:= hb_ATokens( cTxt, Chr( 10 ) )
       ENDIF
    ENDIF
-
    RETURN a_
 
 
 METHOD IdeExProject:getKeyValuePair( cStr )
    LOCAL n
-
    cStr := SPCPULL( cStr )
    IF ( n := at( "=", cStr ) ) > 0
       RETURN { alltrim( substr( cStr, 1, n - 1 ) ), alltrim( substr( cStr, n + 1 ) ) }
    ENDIF
-
    RETURN {}
 
 
 METHOD IdeExProject:retrieveSection( cBuffer, cSection, aPost )
    LOCAL s
-
    FOR EACH s IN ::sectiontoArray( cBuffer, cSection )
       IF left( s, 8 ) == "# HbIDE "
          AAdd( aPost, alltrim( strtran( SPCPULL( s ), "# HbIDE " ) ) )
       ENDIF
    NEXT
-
    RETURN Self
 
 
@@ -1365,27 +1308,24 @@ METHOD IdeExProject:load( cPathHbp )
    LOCAL cBuffer := hb_memoRead( cPathHbp )
    LOCAL cValid := "# HbIDE <Project>"
    LOCAL s, a_, lConvert := .f.
-
-   IF ! ( cValid $ cBuffer )
+   IF ! cValid $ cBuffer 
       IF ! hbide_getYesNo( "This is not a HbIDE constructed project file, should convert ?" )
          RETURN Self
       ELSE
          lConvert := .t.
       ENDIF
    ENDIF
-
-   IF !( hb_eol() == Chr( 10 ) )
+   IF ! hb_eol() == Chr( 10 ) 
       cBuffer := StrTran( cBuffer, hb_eol(), Chr( 10 ) )
    ENDIF
-   IF !( hb_eol() == Chr( 13 ) + Chr( 10 ) )
+   IF ! hb_eol() == Chr( 13 ) + Chr( 10 ) 
       cBuffer := StrTran( cBuffer, Chr( 13 ) + Chr( 10 ), Chr( 10 ) )
    ENDIF
    IF lConvert
       cBuffer := ::convert( cBuffer )
    ENDIF
-
-   ::defaults()  /* Clear variables */
-
+   /* Clear variables */
+   ::defaults()  
    FOR EACH s IN ::sectionToArray( cBuffer, "GENERAL" )
       IF left( s, 8 ) == "# HbIDE " .AND. ! empty( a_:= ::getKeyValuePair( strtran( s, "# HbIDE " ) ) )
          SWITCH a_[ 1 ]
@@ -1447,34 +1387,32 @@ METHOD IdeExProject:load( cPathHbp )
          ENDSWITCH
       ENDIF
    NEXT
-
-   ::retrieveSection( cBuffer, "EXTRAS"             , ::aExtras       )
-   ::retrieveSection( cBuffer, "HBCS"               , ::aPrpHbcs      )
-   ::retrieveSection( cBuffer, "LIBS"               , ::aPrpLibs      )
-   ::retrieveSection( cBuffer, "LIBPATHS"           , ::aPrpLPaths    )
-   ::retrieveSection( cBuffer, "INCLUDEPATHS"       , ::aPrpIPaths    )
-   ::retrieveSection( cBuffer, "DEFINES"            , ::aPrpDefines   )
-   ::retrieveSection( cBuffer, "UNDEFINES"          , ::aPrpUnDefines )
-   ::retrieveSection( cBuffer, "HBMK2CMDLINEPARAMS" , ::aPrpHbmk2     )
-   ::retrieveSection( cBuffer, "BATCHCOMMANDS"      , ::aPrpBatch     )
-   ::retrieveSection( cBuffer, "ACTIONSAFTERBUILD"  , ::aPrpAActions  )
-   ::retrieveSection( cBuffer, "SUBPROJECTS"        , ::ahbp          )
-   ::retrieveSection( cBuffer, "SOURCESPRG"         , ::aSrcPrgs      )
-   ::retrieveSection( cBuffer, "SOURCESC"           , ::aSrcCs        )
-   ::retrieveSection( cBuffer, "SOURCESCPP"         , ::aSrcCpps      )
-   ::retrieveSection( cBuffer, "SOURCESCH"          , ::aSrcChs       )
-   ::retrieveSection( cBuffer, "SOURCESH"           , ::aSrcHs        )
-   ::retrieveSection( cBuffer, "SOURCESUI"          , ::aSrcUIs       )
-   ::retrieveSection( cBuffer, "SOURCESOTHER"       , ::aSrcOthers    )
-
+   IF .T.
+      ::retrieveSection( cBuffer, "EXTRAS"             , ::aExtras       )
+      ::retrieveSection( cBuffer, "HBCS"               , ::aPrpHbcs      )
+      ::retrieveSection( cBuffer, "LIBS"               , ::aPrpLibs      )
+      ::retrieveSection( cBuffer, "LIBPATHS"           , ::aPrpLPaths    )
+      ::retrieveSection( cBuffer, "INCLUDEPATHS"       , ::aPrpIPaths    )
+      ::retrieveSection( cBuffer, "DEFINES"            , ::aPrpDefines   )
+      ::retrieveSection( cBuffer, "UNDEFINES"          , ::aPrpUnDefines )
+      ::retrieveSection( cBuffer, "HBMK2CMDLINEPARAMS" , ::aPrpHbmk2     )
+      ::retrieveSection( cBuffer, "BATCHCOMMANDS"      , ::aPrpBatch     )
+      ::retrieveSection( cBuffer, "ACTIONSAFTERBUILD"  , ::aPrpAActions  )
+      ::retrieveSection( cBuffer, "SUBPROJECTS"        , ::ahbp          )
+      ::retrieveSection( cBuffer, "SOURCESPRG"         , ::aSrcPrgs      )
+      ::retrieveSection( cBuffer, "SOURCESC"           , ::aSrcCs        )
+      ::retrieveSection( cBuffer, "SOURCESCPP"         , ::aSrcCpps      )
+      ::retrieveSection( cBuffer, "SOURCESCH"          , ::aSrcChs       )
+      ::retrieveSection( cBuffer, "SOURCESH"           , ::aSrcHs        )
+      ::retrieveSection( cBuffer, "SOURCESUI"          , ::aSrcUIs       )
+      ::retrieveSection( cBuffer, "SOURCESOTHER"       , ::aSrcOthers    )
+   ENDIF
    RETURN Self
 
 
 METHOD IdeExProject:convert( cBuffer )
    LOCAL cBuf := ""
-
    HB_SYMBOL_UNUSED( cBuffer )
-
 #if 0
    "hbide_version="
    "hbide_type="
@@ -1488,7 +1426,7 @@ METHOD IdeExProject:convert( cBuffer )
    "hbide_xhb="
    "hbide_xpp="
    "hbide_clp="
-
+   //
    "cProjPath"        ; ::cProjPath
    "cProjName"        ; ::cProjName
    "cProjType"        ; ::cProjType
@@ -1501,6 +1439,5 @@ METHOD IdeExProject:convert( cBuffer )
    "lXhb"             ; ::lXhb
    "lXbase"           ; ::lXbase
 #endif
-
    RETURN cBuf
 

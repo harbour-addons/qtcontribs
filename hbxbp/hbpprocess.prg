@@ -5,7 +5,7 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,13 +60,10 @@
  *                               24Jan2010
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "common.ch"
 #include "hbclass.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define CHN_BGN                                   1
 #define CHN_OUT                                   2
@@ -81,11 +76,6 @@
 #define CHN_RCF                                   9
 #define CHN_REA                                   10
 
-/*----------------------------------------------------------------------*/
-//
-//                           Class HbpProcess
-//
-/*----------------------------------------------------------------------*/
 
 CLASS HbpProcess
 
@@ -126,54 +116,38 @@ CLASS HbpProcess
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:init( cShellCmd )
-
    ::cShellCmd := cShellCmd
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:create( cShellCmd )
-
    DEFAULT cShellCmd TO ::cShellCmd
-
    ::cShellCmd := cShellCmd
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:workingPath( cPath )
-
    IF !empty( cPath )
       ::cWrkDirectory := cPath
    ENDIF
    RETURN ::cWrkDirectory
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:finished( bBlock )
-
    IF HB_ISBLOCK( bBlock )
       ::bFinish := bBlock
    ENDIF
-
    RETURN ::bFinish
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:output( bBlock )
-
    IF HB_ISBLOCK( bBlock )
       ::bOutput := bBlock
    ENDIF
-
    RETURN ::bFinish
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:addArg( cArg, lTokened )
    LOCAL s
@@ -194,57 +168,53 @@ METHOD HbpProcess:addArg( cArg, lTokened )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:start( cShellCmd )
-
    DEFAULT cShellCmd TO ::cShellCmd
 
    ::cShellCmd := cShellCmd
 
-   ::qProcess := QProcess()
-   ::qProcess:setProcessChannelMode( 1 )
-   ::qProcess:setReadChannel( 0 )
-
-   #if 0
-      ::qProcess:connect( "readyRead()"              , {|i| ::read( CHN_REA, i ) } )
-      ::qProcess:connect( "readChannelFinished()"    , {|i| ::read( CHN_RCF, i ) } )
-      ::qProcess:connect( "aboutToClose()"           , {|i| ::read( CHN_CLO, i ) } )
-      ::qProcess:connect( "bytesWritten(qint64)"     , {|i| ::read( CHN_BYT, i ) } )
-      ::qProcess:connect( "stateChanged(int)"        , {|i| ::read( CHN_STT, i ) } )
-      ::qProcess:connect( "error(int)"               , {|i| ::read( CHN_ERE, i ) } )
-   #else
-   IF !( ::lDetached )
-      ::qProcess:connect( "started()"                , {|i| ::read( CHN_BGN, i ) } )
-      ::qProcess:connect( "readyReadStandardOutput()", {|i| ::read( CHN_OUT, i ) } )
-      ::qProcess:connect( "readyReadStandardError()" , {|i| ::read( CHN_ERR, i ) } )
-      ::qProcess:connect( "finished(int,QProcess::ExitStatus)", {|i,ii| ::read( CHN_FIN, i, ii ) } )
-   ENDIF
-   #endif
-
-   IF !empty( ::cWrkDirectory )
+   WITH OBJECT ::qProcess := QProcess()
+      :setProcessChannelMode( 1 )
+      :setReadChannel( 0 )
+#if 0
+      :connect( "readyRead()"              , {|i| ::read( CHN_REA, i ) } )
+      :connect( "readChannelFinished()"    , {|i| ::read( CHN_RCF, i ) } )
+      :connect( "aboutToClose()"           , {|i| ::read( CHN_CLO, i ) } )
+      :connect( "bytesWritten(qint64)"     , {|i| ::read( CHN_BYT, i ) } )
+      :connect( "stateChanged(int)"        , {|i| ::read( CHN_STT, i ) } )
+      :connect( "error(int)"               , {|i| ::read( CHN_ERE, i ) } )
+#else
+      IF ! ::lDetached 
+         :connect( "started()"                , {|i| ::read( CHN_BGN, i ) } )
+         :connect( "readyReadStandardOutput()", {|i| ::read( CHN_OUT, i ) } )
+         :connect( "readyReadStandardError()" , {|i| ::read( CHN_ERR, i ) } )
+         :connect( "finished(int,QProcess::ExitStatus)", {|i,ii| ::read( CHN_FIN, i, ii ) } )
+      ENDIF
+#endif
+   ENDWITH 
+   
+   IF ! empty( ::cWrkDirectory )
       ::qProcess:setWorkingDirectory( ::cWrkDirectory )
    ENDIF
    ::nStarted := seconds()
 
    IF ::lDetached
-      IF !empty( ::qStrList )
+      IF ! empty( ::qStrList )
          ::qProcess:startDetached( ::cShellCmd, ::qStrList )
       ELSE
          ::qProcess:startDetached( ::cShellCmd )
       ENDIF
       ::qProcess:waitForStarted()
    ELSE
-      IF !empty( ::qStrList )
+      IF ! empty( ::qStrList )
          ::qProcess:start( ::cShellCmd, ::qStrList )
       ELSE
          ::qProcess:start( ::cShellCmd )
       ENDIF
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:read( nMode, i, ii )
    LOCAL cLine, nSize
@@ -254,30 +224,24 @@ METHOD HbpProcess:read( nMode, i, ii )
    DO CASE
    CASE nMode == CHN_BGN
       ::outputMe( "CurDir() => " + CurDir() + "   Starting in => " + ::qProcess:workingDirectory(), CHN_BGN )
-
    CASE nMode == CHN_OUT
       ::qProcess:setReadChannel( 0 )
       cLine := space( nSize )
       ::qProcess:read( @cLine, nSize )
       ::outputMe( cLine, CHN_OUT )
-
    CASE nMode == CHN_ERR
       ::qProcess:setReadChannel( 1 )
       cLine := space( nSize )
       ::qProcess:read( @cLine, nSize )
       ::outputMe( cLine, CHN_ERR )
-
    CASE nMode == CHN_FIN
       ::nExitCode   := i
       ::nExitStatus := ii
       ::nEnded      := Seconds()
       ::finish()
-
    ENDCASE
+   RETURN NIL 
 
-   RETURN nil
-
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:outputMe( cLine, nMode )
 
@@ -286,35 +250,32 @@ METHOD HbpProcess:outputMe( cLine, nMode )
    IF HB_ISBLOCK( ::bOutput ) .AND. !empty( cLine )
       eval( ::bOutput, trim( cLine ), NIL, Self )
    ENDIF
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD HbpProcess:finish()
+   WITH OBJECT ::qProcess
+#if 0
+      :disconnect( "readyRead()"               )
+      :disconnect( "readChannelFinished()"     )
+      :disconnect( "aboutToClose()"            )
+      :disconnect( "bytesWritten(qint64)"      )
+      :disconnect( "stateChanged(int)"         )
+      :disconnect( "error(int)"                )
+#endif
+      :disconnect( "started()"                 )
+      :disconnect( "readyReadStandardOutput()" )
+      :disconnect( "readyReadStandardError()"  )
+      :disconnect( "finished(int,QProcess::ExitStatus)" )
 
-   #if 0
-   ::qProcess:disconnect( "readyRead()"               )
-   ::qProcess:disconnect( "readChannelFinished()"     )
-   ::qProcess:disconnect( "aboutToClose()"            )
-   ::qProcess:disconnect( "bytesWritten(qint64)"      )
-   ::qProcess:disconnect( "stateChanged(int)"         )
-   ::qProcess:disconnect( "error(int)"                )
-   #endif
-   ::qProcess:disconnect( "started()"                 )
-   ::qProcess:disconnect( "readyReadStandardOutput()" )
-   ::qProcess:disconnect( "readyReadStandardError()"  )
-   ::qProcess:disconnect( "finished(int,QProcess::ExitStatus)" )
+      IF HB_ISBLOCK( ::bFinish )
+         Eval( ::bFinish, ::nExitCode, ::nExitStatus, Self )
+      ENDIF
+   
+      :kill()
+   ENDWITH
 
-   IF HB_ISBLOCK( ::bFinish )
-      eval( ::bFinish, ::nExitCode, ::nExitStatus, Self )
-   ENDIF
-
-   ::qProcess:kill()
-   //
    ::qProcess := NIL
    ::qStrList := NIL
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/

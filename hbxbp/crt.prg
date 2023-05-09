@@ -5,63 +5,59 @@
 /*
  * Harbour Project source code:
  *
- * Copyright 2011 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2011-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
+ * This program is free software; you can redistribute it AND/OR modify
+ * it under the terms of the GNU General PUBLIC License as published by
+ * the Free Software Foundation; either version 2, OR (at your option)
  * any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This program is distributed IN the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General PUBLIC License FOR more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.  If not, write to
+ * You should have received a copy of the GNU General PUBLIC License
+ * along WITH this software; see the file COPYING.  IF NOT, write TO
  * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA (or visit the web site http://www.gnu.org/).
+ * Boston, MA 02111-1307 USA (OR visit the web site http://www.gnu.org/).
  *
- * As a special exception, the Harbour Project gives permission for
- * additional uses of the text contained in its release of Harbour.
+ * As a special exception, the Harbour Project gives permission FOR
+ * additional uses of the text contained IN its release of Harbour.
  *
- * The exception is that, if you link the Harbour libraries with other
- * files to produce an executable, this does not by itself cause the
- * resulting executable to be covered by the GNU General Public License.
- * Your use of that executable is in no way restricted on account of
+ * The exception is that, IF you link the Harbour libraries WITH other
+ * files TO produce an executable, this does NOT by itself cause the
+ * resulting executable TO be covered by the GNU General PUBLIC License.
+ * Your use of that executable is IN no way restricted on account of
  * linking the Harbour library code into it.
  *
- * This exception does not however invalidate any other reasons why
- * the executable file might be covered by the GNU General Public License.
+ * This exception does NOT however invalidate any other reasons why
+ * the executable file might be covered by the GNU General PUBLIC License.
  *
- * This exception applies only to the code released by the Harbour
- * Project under the name Harbour.  If you copy code from other
- * Harbour Project or Free Software Foundation releases into a copy of
- * Harbour, as the General Public License permits, the exception does
- * not apply to the code that you add in this way.  To avoid misleading
- * anyone as to the status of such modified files, you must delete
- * this exception notice from them.
+ * This exception applies only TO the code released by the Harbour
+ * Project under the name Harbour.  IF you copy code FROM other
+ * Harbour Project OR Free Software Foundation releases into a copy of
+ * Harbour, as the General PUBLIC License permits, the exception does
+ * NOT apply TO the code that you add IN this way.  TO avoid misleading
+ * anyone as TO the status of such modified files, you must delete
+ * this exception notice FROM them.
  *
- * If you write modifications of your own for Harbour, it is your choice
- * whether to permit this exception to apply to your modifications.
- * If you do not wish that, delete this exception notice.
+ * IF you write modifications of your own FOR Harbour, it is your choice
+ * whether TO permit this exception TO apply TO your modifications.
+ * IF you DO NOT wish that, delete this exception notice.
  *
  */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
  *
  *                               EkOnkar
  *                         ( The LORD is ONE )
  *
- *                    Xbase++ Compatible xbpCrt Class
+ *                    Xbase++ Compatible xbpCrt CLASS
  *
  *                 Pritpal Bedi  <bedipritpal@hotmail.com>
  *                              12Apr2011
  *
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
@@ -77,7 +73,6 @@
 #define HB_GTI_DISABLE         2003
 #define HB_GTI_EVENTLOOP       2004
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpCrt  INHERIT  XbpWindow, XbpPartHandler
 
@@ -85,7 +80,7 @@ CLASS XbpCrt  INHERIT  XbpWindow, XbpPartHandler
 
    /*  CONFIGURATION */
    DATA     alwaysOnTop                           INIT  .F.        /* Determines whether the dialog can be covered by other windows */
-   DATA     border                                INIT  0          /* Border type for the XbpCrt window */
+   DATA     border                                INIT  0          /* Border type FOR the XbpCrt window */
    DATA     clipChildren                          INIT  .F.
    DATA     closable                              INIT  .T.
    DATA     fontHeight                            INIT  16
@@ -107,11 +102,11 @@ CLASS XbpCrt  INHERIT  XbpWindow, XbpPartHandler
    DATA     helpLink                              INIT  NIL
    DATA     maxCol                                INIT  79
    DATA     maxRow                                INIT  24
-   DATA     mouseMode                             INIT  1          /* Determines whether mouse coordinates are given as graphics or text coordinates.*/
+   DATA     mouseMode                             INIT  1          /* Determines whether mouse coordinates are given as graphics OR text coordinates.*/
    DATA     modalResult                           INIT  NIL        /* Specifies the result of a modal dialog.                                        */
    DATA     aSyncFlush                            INIT  .F.        /* Determines the display behavior of text-mode output.                           */
    DATA     tooltipText                           INIT  ""
-   DATA     useShortCuts                          INIT  .F.        /* Enables shortcut keys for the system menu                                      */
+   DATA     useShortCuts                          INIT  .F.        /* Enables shortcut keys FOR the system menu                                      */
    DATA     xSize                                 INIT  640 READONLY
    DATA     ySize                                 INIT  400 READONLY
 
@@ -144,13 +139,13 @@ CLASS XbpCrt  INHERIT  XbpWindow, XbpPartHandler
    DATA     sl_close
    DATA     sl_helpRequest
    DATA     sl_keyboard
-   DATA     sl_killDisplayFocus                    /* only for CRT */
+   DATA     sl_killDisplayFocus                    /* only FOR CRT */
    DATA     sl_killInputFocus
    DATA     sl_move
-   DATA     sl_paint                               /* only for gui dialogs */
+   DATA     sl_paint                               /* only FOR gui dialogs */
    DATA     sl_quit
    DATA     sl_resize
-   DATA     sl_setDisplayFocus                     /* only for CRT */
+   DATA     sl_setDisplayFocus                     /* only FOR CRT */
    DATA     sl_setInputFocus
    DATA     sl_dragEnter
    DATA     sl_dragMotion
@@ -261,9 +256,6 @@ CLASS XbpCrt  INHERIT  XbpWindow, XbpPartHandler
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
- *                         Instance Initiation
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -272,13 +264,9 @@ METHOD XbpCrt:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::resizeMode  := 0
    ::mouseMode   := 0
 
-   ::drawingArea := XbpDrawingArea():new( self, , {0,0}, ::aSize, , .t. )
+   ::drawingArea := XbpDrawingArea():new( SELF, , {0,0}, ::aSize, , .t. )
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
- *                              Life Cycle
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -324,18 +312,14 @@ METHOD XbpCrt:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
       ::setParent( ::oParent )
    ENDIF
 
-
    // HB_GtInfo( HB_GTI_NOTIFIERBLOCK, {|nEvent, ...| ::notifier( nEvent, ... ) } )
-
-#if 0
+#IF 0
    hb_gtInfo( HB_GTI_PRESPARAMS, { ::exStyle, ::style, ::aPos[ 1 ], ::aPos[ 2 ], ;
                            ::maxRow+1, ::maxCol+1, ::pGTp, .F., lRowCol, HB_WNDTYPE_CRT } )
    hb_gtInfo( HB_GTI_SETFONT, { ::fontName, ::fontHeight, ::fontWidth } )
-#endif
+#ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -352,789 +336,574 @@ METHOD XbpCrt:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    ::aSize       := aSize
    ::aPresParams := aPresParams
    ::visible     := lVisible
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:destroy()
 
    ::oMDI := NIL
-
    IF HB_ISOBJECT( ::oMenu )
       ::oMenu:destroy()
    ENDIF
-
    IF Len( ::aChildren ) > 0
       aeval( ::aChildren, {|o| o:destroy() } )
    ENDIF
-
    ::pGT  := NIL
    ::pGTp := NIL
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
- *                              Methods
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:currentPos()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:currentSize()
-
    RETURN { hb_gtInfo( HB_GTI_SCREENWIDTH ), hb_gtInfo( HB_GTI_SCREENHEIGHT ) }
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:captureMouse()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:disable()
-
    //hb_gtInfo( HB_GTI_DISABLE, ::pGT )
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:enable()
-
    //hb_gtInfo( HB_GTI_ENABLE, ::pGT )
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:getFrameState()
-#if 0
+#IF 0
    IF WVG_IsIconic( ::hWnd )
       RETURN WVGDLG_FRAMESTAT_MINIMIZED
    ENDIF
    IF WVG_IsZoomed( ::hWnd )
       RETURN WVGDLG_FRAMESTAT_MAXIMIZED
    ENDIF
-
    RETURN WVGDLG_FRAMESTAT_NORMALIZED
-#endif
+#ENDIF
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:getHWND()
-
    RETURN ::hWnd
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:getModalState()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:hasInputFocus()
-
    RETURN ::lHasInputFocus
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:hide()
-
    //hb_gtInfo( HB_GTI_SPEC, HB_GTS_SHOWWINDOW, HB_GTS_SW_HIDE )
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:invalidateRect( nTop, nLeft, nBottom, nRight )
-
    DEFAULT nTop TO 0
    DEFAULT nLeft TO 0
    DEFAULT nBottom TO maxrow()
    DEFAULT nRight TO maxcol()
+   // Wvt_InvalidateRect( nTop, nLeft, nBottom, nRight )
+   RETURN SELF
 
-   //Wvt_InvalidateRect( nTop, nLeft, nBottom, nRight )
-
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:isEnabled()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:isVisible()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:lockPS()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:lockUpdate()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:menuBar()
-
-   IF !( HB_ISOBJECT( ::oMenu ) )
-      ::oMenu := XbpMenuBar():New( self ):create()
+   IF ! HB_ISOBJECT( ::oMenu )
+      ::oMenu := XbpMenuBar():New( SELF ):CREATE()
    ENDIF
-
    RETURN ::oMenu
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setColorBG()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setColorFG()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setFont()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setFontCompoundName()
-
    RETURN ""
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setFrameState( nState )
-   Local lSuccess := .f.
+   LOCAL lSuccess := .f.
 
    HB_SYMBOL_UNUSED( nState )
    DO CASE
-#if 0
+#IF 0
    CASE nState == XBPDLG_FRAMESTAT_MINIMIZED
       lSuccess := ::sendMessage( WM_SYSCOMMAND, SC_MINIMIZE, 0 )
-
    CASE nState == XBPDLG_FRAMESTAT_MAXIMIZED
       lSuccess := ::sendMessage( WM_SYSCOMMAND, SC_MAXIMIZE, 0 )
-
    CASE nState == XBPDLG_FRAMESTAT_NORMALIZED
       lSuccess := ::sendMessage( WM_SYSCOMMAND, SC_RESTORE, 0 )
-#endif
+#ENDIF
    ENDCASE
-
    RETURN lSuccess
-/*----------------------------------------------------------------------*/
+
 
 METHOD XbpCrt:setModalState()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setPointer()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setTrackPointer()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setPos()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setPosAndSize()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setPresParam()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setSize( aSize, lPaint )
-
-   if HB_ISARRAY( aSize )
+   IF HB_ISARRAY( aSize )
       DEFAULT lPaint TO .T.
-
+      
       hb_gtInfo( HB_GTI_SCREENHEIGHT, aSize[ 1 ] )
       hb_gtInfo( HB_GTI_SCREENWIDTH , aSize[ 2 ] )
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:show()
-
    //Hb_GtInfo( HB_GTI_SPEC, HB_GTS_SHOWWINDOW, SW_NORMAL )
    ::lHasInputFocus := .t.
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:showModal()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:toBack()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:toFront()
    //RETURN WVG_SetWindowPosToTop( ::hWnd )
-   RETURN .t.
+   RETURN .T.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:unlockPS()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:winDevice()
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
- *                           Callback Methods
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:enter( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_enter )
-      eval( ::sl_enter, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_enter )
+      eval( ::sl_enter, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_enter := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:leave( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_leave )
-      eval( ::sl_leave, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_leave )
+      Eval( ::sl_leave, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_leave := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:lbClick( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_lbClick )
-      eval( ::sl_lbClick, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_lbClick )
+      Eval( ::sl_lbClick, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_lbClick := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:lbDblClick( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_lbDblClick )
-      eval( ::sl_lbDblClick, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_lbDblClick )
+      eval( ::sl_lbDblClick, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_lbDblClick := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:lbDown( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_lbDown )
-      eval( ::sl_lbDown, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_lbDown )
+      Eval( ::sl_lbDown, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_lbDown := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:lbUp( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_lbUp )
-      eval( ::sl_lbUp, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_lbUp )
+      Eval( ::sl_lbUp, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_lbUp := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:mbClick( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_mbClick )
-      eval( ::sl_mbClick, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_mbClick )
+      Eval( ::sl_mbClick, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_mbClick := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:mbDblClick( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_mbDblClick )
-      eval( ::sl_mbDblClick, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_mbDblClick )
+      eval( ::sl_mbDblClick, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_mbDblClick := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:mbDown( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_mbDown )
-      eval( ::sl_mbDown, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_mbDown )
+      eval( ::sl_mbDown, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_mbDown := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:mbUp( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_mbUp )
-      eval( ::sl_mbUp, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_mbUp )
+      Eval( ::sl_mbUp, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_mbUp := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:motion( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_motion )
-      eval( ::sl_motion, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_motion )
+      Eval( ::sl_motion, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_motion := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:rbClick( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_rbClick )
-      eval( ::sl_rbClick, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_rbClick )
+      Eval( ::sl_rbClick, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_rbClick := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:rbDblClick( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_rbDblClick )
-      eval( ::sl_rbDblClick, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_rbDblClick )
+      Eval( ::sl_rbDblClick, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_rbDblClick := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:rbDown( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_rbDown )
-      eval( ::sl_rbDown, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_rbDown )
+      Eval( ::sl_rbDown, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_rbDown := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:rbUp( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_rbUp )
-      eval( ::sl_rbUp, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_rbUp )
+      Eval( ::sl_rbUp, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_rbUp := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:wheel( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_wheel )
-      eval( ::sl_wheel, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_wheel )
+      Eval( ::sl_wheel, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF 
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_wheel := xParam
       RETURN NIL
-   endif
+   ENDIF 
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
- *                           Other Messages
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:close( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::sl_close )
-      eval( ::sl_close, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::sl_close )
+      eval( ::sl_close, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_close := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:helpRequest( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::sl_helpRequest )
-      eval( ::sl_helpRequest, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::sl_helpRequest )
+      eval( ::sl_helpRequest, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_helpRequest := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:keyboard( xParam )
-
-   if HB_ISNUMERIC( xParam ) .and. HB_ISBLOCK( ::sl_keyboard )
-      eval( ::sl_keyboard, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNUMERIC( xParam ) .AND. HB_ISBLOCK( ::sl_keyboard )
+      eval( ::sl_keyboard, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_keyboard := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:killDisplayFocus( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::sl_killDisplayFocus )
-      eval( ::sl_killDisplayFocus, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::sl_killDisplayFocus )
+      eval( ::sl_killDisplayFocus, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_killDisplayFocus := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:killInputFocus( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::sl_killInputFocus )
-      eval( ::sl_killInputFocus, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::sl_killInputFocus )
+      eval( ::sl_killInputFocus, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_killInputFocus := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:move( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_move )
-      eval( ::sl_move, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_move )
+      eval( ::sl_move, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_move := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:paint( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_paint )
-      eval( ::sl_paint, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_paint )
+      eval( ::sl_paint, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_paint := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:quit( xParam, xParam1 )
-
-   if HB_ISNUMERIC( xParam ) .and. HB_ISBLOCK( ::sl_quit )
-      eval( ::sl_quit, xParam, xParam1, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNUMERIC( xParam ) .AND. HB_ISBLOCK( ::sl_quit )
+      eval( ::sl_quit, xParam, xParam1, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_quit := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:resize( xParam )
-
-   if HB_ISBLOCK( xParam )/* .or. HB_ISNIL( xParam ) */
+   IF HB_ISBLOCK( xParam )/* .OR. HB_ISNIL( xParam ) */
       ::sl_resize := xParam
       RETURN NIL
-   endif
+   ENDIF
    IF empty( xParam )
       //::sendMessage( WM_SIZE, 0, 0 )
    ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setDisplayFocus( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::setDisplayFocus )
-      eval( ::setDisplayFocus, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::setDisplayFocus )
+      eval( ::setDisplayFocus, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::setDisplayFocus := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:setInputFocus( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::sl_setInputFocus )
-      eval( ::sl_setInputFocus, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::sl_setInputFocus )
+      eval( ::sl_setInputFocus, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_setInputFocus := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:dragEnter( xParam, xParam1 )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_dragEnter )
-      eval( ::sl_dragEnter, xParam, xParam1, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_dragEnter )
+      eval( ::sl_dragEnter, xParam, xParam1, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_dragEnter := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:dragMotion( xParam )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_dragMotion )
-      eval( ::sl_dragMotion, xParam, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_dragMotion )
+      eval( ::sl_dragMotion, xParam, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_dragMotion := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:dragLeave( xParam )
-
-   if HB_ISNIL( xParam ) .and. HB_ISBLOCK( ::sl_dragLeave )
-      eval( ::sl_dragLeave, NIL, NIL, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISNIL( xParam ) .AND. HB_ISBLOCK( ::sl_dragLeave )
+      eval( ::sl_dragLeave, NIL, NIL, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_dragLeave := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
-
-/*----------------------------------------------------------------------*/
 
 METHOD XbpCrt:dragDrop( xParam, xParam1 )
-
-   if HB_ISARRAY( xParam ) .and. HB_ISBLOCK( ::sl_dragDrop )
-      eval( ::sl_dragDrop, xParam, xParam1, Self )
-      RETURN Self
-   endif
-
-   if HB_ISBLOCK( xParam ) .or. HB_ISNIL( xParam )
+   IF HB_ISARRAY( xParam ) .AND. HB_ISBLOCK( ::sl_dragDrop )
+      eval( ::sl_dragDrop, xParam, xParam1, SELF )
+      RETURN SELF
+   ENDIF
+   IF HB_ISBLOCK( xParam ) .OR. HB_ISNIL( xParam )
       ::sl_dragDrop := xParam
       RETURN NIL
-   endif
+   ENDIF
+   RETURN SELF
 
-   RETURN Self
 
-/*----------------------------------------------------------------------*/
- *                          HARBOUR SPECIFIC
-/*----------------------------------------------------------------------*/
 METHOD XbpCrt:SetFocus()
-
    //::sendMessage( WM_ACTIVATE, 1, 0 )
    /* ::sendMessage( WM_SETFOCUS, 0, 0 ) */
+   RETURN SELF
 
-   RETURN Self
-/*----------------------------------------------------------------------*/

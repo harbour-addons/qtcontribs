@@ -6,7 +6,7 @@
  * Harbour Project source code:
  *
  *
- * Copyright 2019 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2019-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify

@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               20Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS XbpTreeView  INHERIT  XbpWindow, DataRef
 
@@ -112,36 +107,32 @@ CLASS XbpTreeView  INHERIT  XbpWindow, DataRef
    DATA     textParentSelected                    INIT   ""
    DATA     textItemSelected                      INIT   ""
 
-   #if 0
+#if 0
    METHOD   setColorFG( nRGB )                    INLINE WVG_TreeView_SetTextColor( ::hWnd, nRGB )
    METHOD   setColorBG( nRGB )                    INLINE WVG_TreeView_SetBkColor( ::hWnd, nRGB )
    METHOD   setColorLines( nRGB )                 INLINE WVG_TreeView_SetLineColor( ::hWnd, nRGB )
    METHOD   showExpanded( lExpanded, nLevels )    INLINE Wvg_TreeView_ShowExpanded( ::hWnd, ;
                                                          iif( HB_ISNIL( lExpanded ), .f., lExpanded ), nLevels )
-   #endif
+#endif
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    ::xbpWindow:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
-   ::oWidget := QTreeWidget( ::pParent )
-   ::oWidget:setMouseTracking( .t. )
-   ::oWidget:setColumnCount( 1 )
-   ::oWidget:setHeaderHidden( .t. )
-   ::oWidget:setContextMenuPolicy( Qt_CustomContextMenu )
-
-   #if 0
+   WITH OBJECT ::oWidget := QTreeWidget( ::pParent )
+      :setMouseTracking( .t. )
+      :setColumnCount( 1 )
+      :setHeaderHidden( .t. )
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+   ENDWITH 
+#if 0
    IF ::alwaysShowSelection
       ::style += TVS_SHOWSELALWAYS
    ENDIF
@@ -151,7 +142,7 @@ METHOD XbpTreeView:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
    IF ::hasLines
       ::style += TVS_HASLINES + TVS_LINESATROOT
    ENDIF
-   #endif
+#endif
 
    ::oRootItem          := XbpTreeViewItem():New()
    ::oRootItem:hTree    := ::oWidget
@@ -169,7 +160,6 @@ METHOD XbpTreeView:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:execSlot( cSlot, p )
    LOCAL n, qPt, qItem, oItem
@@ -198,28 +188,23 @@ METHOD XbpTreeView:execSlot( cSlot, p )
             ENDIF
          ENDIF
       ENDIF
-   #if 0
+#if 0
    CASE cSlot == "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)"
    CASE cSlot == "itemPressed(QTreeWidgetItem*,int)"
    CASE cSlot == "itemActivated(QTreeWidgetItem*,int)"
    CASE cSlot == "itemChanged(QTreeWidgetItem*,int)"
    CASE cSlot == "itemSelectionChanged()"
-   #endif
+#endif
    ENDCASE
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:handleEvent( nEvent, mp1, mp2 )
-
    HB_SYMBOL_UNUSED( nEvent )
    HB_SYMBOL_UNUSED( mp1    )
    HB_SYMBOL_UNUSED( mp2    )
-
    RETURN HBXBP_EVENT_UNHANDLED
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:destroy()
    LOCAL i
@@ -242,62 +227,56 @@ METHOD XbpTreeView:destroy()
    ::textItemSelected        := NIL
 
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:connect()
-
-   ::oWidget:connect( "itemCollapsed(QTreeWidgetItem*)"                , {|p1  | ::execSlot( "itemCollapsed(QTreeWidgetItem*)"         , p1    ) } )
-   ::oWidget:connect( "itemExpanded(QTreeWidgetItem*)"                 , {|p1  | ::execSlot( "itemExpanded(QTreeWidgetItem*)"          , p1    ) } )
-*  ::oWidget:connect( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", {|p,p1| ::execSlot( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", p, p1 ) } )
-*  ::oWidget:connect( "itemActivated(QTreeWidgetItem*,int)"            , {|p,p1| ::execSlot( "itemActivated(QTreeWidgetItem*,int)"     , p, p1 ) } )
-*  ::oWidget:connect( "itemChanged(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemChanged(QTreeWidgetItem*,int)"       , p, p1 ) } )
-   ::oWidget:connect( "itemClicked(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemClicked(QTreeWidgetItem*,int)"       , p, p1 ) } )
-   ::oWidget:connect( "itemDoubleClicked(QTreeWidgetItem*,int)"        , {|p,p1| ::execSlot( "itemDoubleClicked(QTreeWidgetItem*,int)" , p, p1 ) } )
-   ::oWidget:connect( "itemEntered(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemEntered(QTreeWidgetItem*,int)"       , p, p1 ) } )
-*  ::oWidget:connect( "itemPressed(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemPressed(QTreeWidgetItem*,int)"       , p, p1 ) } )
-*  ::oWidget:connect( "itemSelectionChanged()"                         , {|p1  | ::execSlot( "itemSelectionChanged()"                  , p1    ) } )
-   ::oWidget:connect( "customContextMenuRequested(QPoint)"             , {|p1  | ::execSlot( "customContextMenuRequested(QPoint)"      , p1    ) } )
-
+   WITH OBJECT ::oWidget
+#if 0
+      :connect( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", {|p,p1| ::execSlot( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)", p, p1 ) } )
+      :connect( "itemActivated(QTreeWidgetItem*,int)"            , {|p,p1| ::execSlot( "itemActivated(QTreeWidgetItem*,int)"     , p, p1 ) } )
+      :connect( "itemChanged(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemChanged(QTreeWidgetItem*,int)"       , p, p1 ) } )
+      :connect( "itemPressed(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemPressed(QTreeWidgetItem*,int)"       , p, p1 ) } )
+      :connect( "itemSelectionChanged()"                         , {|p1  | ::execSlot( "itemSelectionChanged()"                  , p1    ) } )
+#endif      
+      :connect( "itemCollapsed(QTreeWidgetItem*)"                , {|p1  | ::execSlot( "itemCollapsed(QTreeWidgetItem*)"         , p1    ) } )
+      :connect( "itemExpanded(QTreeWidgetItem*)"                 , {|p1  | ::execSlot( "itemExpanded(QTreeWidgetItem*)"          , p1    ) } )
+      :connect( "itemClicked(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemClicked(QTreeWidgetItem*,int)"       , p, p1 ) } )
+      :connect( "itemDoubleClicked(QTreeWidgetItem*,int)"        , {|p,p1| ::execSlot( "itemDoubleClicked(QTreeWidgetItem*,int)" , p, p1 ) } )
+      :connect( "itemEntered(QTreeWidgetItem*,int)"              , {|p,p1| ::execSlot( "itemEntered(QTreeWidgetItem*,int)"       , p, p1 ) } )
+      :connect( "customContextMenuRequested(QPoint)"             , {|p1  | ::execSlot( "customContextMenuRequested(QPoint)"      , p1    ) } )
+   ENDWITH
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:disconnect()
-
-   ::oWidget:disconnect( "itemCollapsed(QTreeWidgetItem*)"                )
-   ::oWidget:disconnect( "itemExpanded(QTreeWidgetItem*)"                 )
-*  ::oWidget:disconnect( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)"   )
-*  ::oWidget:disconnect( "itemActivated(QTreeWidgetItem*,int)"            )
-*  ::oWidget:disconnect( "itemChanged(QTreeWidgetItem*,int)"              )
-   ::oWidget:disconnect( "itemClicked(QTreeWidgetItem*,int)"              )
-   ::oWidget:disconnect( "itemDoubleClicked(QTreeWidgetItem*,int)"        )
-   ::oWidget:disconnect( "itemEntered(QTreeWidgetItem*,int)"              )
-*  ::oWidget:disconnect( "itemPressed(QTreeWidgetItem*,int)"              )
-*  ::oWidget:disconnect( "itemSelectionChanged()"                )
-   ::oWidget:disconnect( "customContextMenuRequested(QPoint)"    )
-
+   WITH OBJECT ::oWidget
+#if 0
+      :disconnect( "currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)"   )
+      :disconnect( "itemActivated(QTreeWidgetItem*,int)"            )
+      :disconnect( "itemChanged(QTreeWidgetItem*,int)"              )
+      :disconnect( "itemPressed(QTreeWidgetItem*,int)"              )
+      :disconnect( "itemSelectionChanged()"                         )
+#endif 
+      :disconnect( "itemCollapsed(QTreeWidgetItem*)"                )
+      :disconnect( "itemExpanded(QTreeWidgetItem*)"                 )
+      :disconnect( "itemClicked(QTreeWidgetItem*,int)"              )
+      :disconnect( "itemDoubleClicked(QTreeWidgetItem*,int)"        )
+      :disconnect( "itemEntered(QTreeWidgetItem*,int)"              )
+      :disconnect( "customContextMenuRequested(QPoint)"             )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    ::Initialize( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:itemFromPos( aPos )
-
    HB_SYMBOL_UNUSED( aPos )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:itemCollapsed( ... )
    LOCAL a_:= hb_aParams()
@@ -308,7 +287,6 @@ METHOD XbpTreeView:itemCollapsed( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:itemExpanded( ... )
    LOCAL a_:= hb_aParams()
@@ -319,7 +297,6 @@ METHOD XbpTreeView:itemExpanded( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:itemMarked( ... )
    LOCAL a_:= hb_aParams()
@@ -330,7 +307,6 @@ METHOD XbpTreeView:itemMarked( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeView:itemSelected( ... )
    LOCAL a_:= hb_aParams()
@@ -342,7 +318,7 @@ METHOD XbpTreeView:itemSelected( ... )
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*                      Class XbpTreeViewItem                           */
+//                      Class XbpTreeViewItem                           
 /*----------------------------------------------------------------------*/
 
 CLASS XbpTreeViewItem  INHERIT  DataRef
@@ -386,10 +362,9 @@ CLASS XbpTreeViewItem  INHERIT  DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:addItem( xItem, xNormalImage, xMarkedImage, xExpandedImage, cDllName, xValue )
-   Local oItem
+   LOCAL oItem
 
    HB_SYMBOL_UNUSED( cDllName )
 
@@ -423,103 +398,75 @@ METHOD XbpTreeViewItem:addItem( xItem, xNormalImage, xMarkedImage, xExpandedImag
    aadd( ::aChilds, oItem )
    aadd( oItem:aChilds, oItem )
    aadd( oItem:oXbpTree:aItems, oItem )
-
+   //
    RETURN oItem
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:init()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:create()
-
-   ::oWidget := QTreeWidgetItem()
-   ::oWidget:setText( 0,::caption )
-
+   WITH OBJECT ::oWidget := QTreeWidgetItem()
+      :setText( 0,::caption )
+   ENDWITH 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:configure()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:destroy()
    LOCAL i
-
    FOR i := 1 TO len( ::aChilds )
       ::aChilds[ i ]:oWidget := NIL
    NEXT
    ::oWidget := NIL
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:setExpandedImage( nResIdoBitmap )
-
    HB_SYMBOL_UNUSED( nResIdoBitmap )
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:setImage( xIcon )
-
    ::oWidget:setIcon( 0, iif( HB_ISSTRING( xIcon ), QIcon( xIcon ), xIcon ) )
-
    RETURN self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:setMarkedImage( nResIdoBitmap )
-
    HB_SYMBOL_UNUSED( nResIdoBitmap )
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:delItem( oItem )
    LOCAL n
-
    IF ( n := ascan( ::aChilds, {|o| o == oItem } ) ) > 0
       ::oWidget:removeChild( ::aChilds[ n ]:oWidget )
       ::aChilds[ n ]:oWidget := NIL
       adel( ::aChilds, n )
       asize( ::aChilds, len( ::aChilds )-1 )
    ENDIF
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:getChildItems()
-
    RETURN ::aChilds
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:getParentItem()
-
    RETURN ::oParent
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpTreeViewItem:insItem()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 /* Another approach - in the making
  */
 METHOD XbpTreeView:setStyle()
-   #if 0
+#if 0
    LOCAL oS
 
    oS := XbpStyle():new()
@@ -529,103 +476,81 @@ METHOD XbpTreeView:setStyle()
    oS:colorBG  := "blue"
    oS:create()
    ::oWidget:setStyleSheet( oS:style )
-   #else
+#else
    LOCAL s := "", txt_:={}
 
-   aadd( txt_, 'QTreeView {                                                                                      ' )
-   aadd( txt_, '     alternate-background-color: yellow;                                                         ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView {                                                                                     ' )
-   aadd( txt_, '     show-decoration-selected: 1;                                                                ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::item {                                                                               ' )
-   aadd( txt_, '      border: 1px solid #d9d9d9;                                                                 ' )
-   aadd( txt_, '     border-top-color: transparent;                                                              ' )
-   aadd( txt_, '     border-bottom-color: transparent;                                                           ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::item:hover {                                                                         ' )
-   aadd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);  ' )
-   aadd( txt_, '     border: 1px solid #bfcde4;                                                                  ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::item:selected {                                                                      ' )
-   aadd( txt_, '     border: 1px solid #567dbc;                                                                  ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::item:selected:active{                                                                ' )
-   aadd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);  ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::item:selected:!active {                                                              ' )
-   aadd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);  ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch {                                                                             ' )
-   aadd( txt_, '         background: palette(base);                                                              ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:has-siblings:!adjoins-item {                                                  ' )
-   aadd( txt_, '         background: cyan;                                                                       ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:has-siblings:adjoins-item {                                                   ' )
-   aadd( txt_, '         background: red;                                                                        ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:!has-children:!has-siblings:adjoins-item {                                    ' )
-   aadd( txt_, '         background: blue;                                                                       ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:closed:has-children:has-siblings {                                            ' )
-   aadd( txt_, '         background: pink;                                                                       ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:has-children:!has-siblings:closed {                                           ' )
-   aadd( txt_, '         background: gray;                                                                       ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:open:has-children:has-siblings {                                              ' )
-   aadd( txt_, '         background: magenta;                                                                    ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:open:has-children:!has-siblings {                                             ' )
-   aadd( txt_, '         background: green;                                                                      ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, 'vline.png   branch-more.png   branch-end.png   branch-closed.png   branch-open.png               ' )
-   aadd( txt_, ' QTreeView::branch:has-siblings:!adjoins-item {                                                  ' )
-   aadd( txt_, '     border-image: url(vline.png) 0;                                                             ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:has-siblings:adjoins-item {                                                   ' )
-   aadd( txt_, '     border-image: url(branch-more.png) 0;                                                       ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:!has-children:!has-siblings:adjoins-item {                                    ' )
-   aadd( txt_, '     border-image: url(branch-end.png) 0;                                                        ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:has-children:!has-siblings:closed,                                            ' )
-   aadd( txt_, ' QTreeView::branch:closed:has-children:has-siblings {                                            ' )
-   aadd( txt_, '         border-image: none;                                                                     ' )
-   aadd( txt_, '         image: url(branch-closed.png);                                                          ' )
-   aadd( txt_, ' }                                                                                               ' )
-   aadd( txt_, '                                                                                                 ' )
-   aadd( txt_, ' QTreeView::branch:open:has-children:!has-siblings,                                              ' )
-   aadd( txt_, ' QTreeView::branch:open:has-children:has-siblings  {                                             ' )
-   aadd( txt_, '         border-image: none;                                                                     ' )
-   aadd( txt_, '         image: url(branch-open.png);                                                            ' )
-   aadd( txt_, ' } ' )
+   AAdd( txt_, 'QTreeView {                                                                                      ' )
+   AAdd( txt_, '     alternate-background-color: yellow;                                                         ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView {                                                                                     ' )
+   AAdd( txt_, '     show-decoration-selected: 1;                                                                ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::item {                                                                               ' )
+   AAdd( txt_, '      border: 1px solid #d9d9d9;                                                                 ' )
+   AAdd( txt_, '     border-top-color: transparent;                                                              ' )
+   AAdd( txt_, '     border-bottom-color: transparent;                                                           ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::item:hover {                                                                         ' )
+   AAdd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e7effd, stop: 1 #cbdaf1);  ' )
+   AAdd( txt_, '     border: 1px solid #bfcde4;                                                                  ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::item:selected {                                                                      ' )
+   AAdd( txt_, '     border: 1px solid #567dbc;                                                                  ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::item:selected:active{                                                                ' )
+   AAdd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6ea1f1, stop: 1 #567dbc);  ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::item:selected:!active {                                                              ' )
+   AAdd( txt_, '     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #6b9be8, stop: 1 #577fbf);  ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch {                                                                             ' )
+   AAdd( txt_, '         background: palette(base);                                                              ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:has-siblings:!adjoins-item {                                                  ' )
+   AAdd( txt_, '         background: cyan;                                                                       ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:has-siblings:adjoins-item {                                                   ' )
+   AAdd( txt_, '         background: red;                                                                        ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:!has-children:!has-siblings:adjoins-item {                                    ' )
+   AAdd( txt_, '         background: blue;                                                                       ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:closed:has-children:has-siblings {                                            ' )
+   AAdd( txt_, '         background: pink;                                                                       ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:has-children:!has-siblings:closed {                                           ' )
+   AAdd( txt_, '         background: gray;                                                                       ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:open:has-children:has-siblings {                                              ' )
+   AAdd( txt_, '         background: magenta;                                                                    ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:open:has-children:!has-siblings {                                             ' )
+   AAdd( txt_, '         background: green;                                                                      ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, 'vline.png   branch-more.png   branch-end.png   branch-closed.png   branch-open.png               ' )
+   AAdd( txt_, ' QTreeView::branch:has-siblings:!adjoins-item {                                                  ' )
+   AAdd( txt_, '     border-image: url(vline.png) 0;                                                             ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:has-siblings:adjoins-item {                                                   ' )
+   AAdd( txt_, '     border-image: url(branch-more.png) 0;                                                       ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:!has-children:!has-siblings:adjoins-item {                                    ' )
+   AAdd( txt_, '     border-image: url(branch-end.png) 0;                                                        ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:has-children:!has-siblings:closed,                                            ' )
+   AAdd( txt_, ' QTreeView::branch:closed:has-children:has-siblings {                                            ' )
+   AAdd( txt_, '         border-image: none;                                                                     ' )
+   AAdd( txt_, '         image: url(branch-closed.png);                                                          ' )
+   AAdd( txt_, ' }                                                                                               ' )
+   AAdd( txt_, ' QTreeView::branch:open:has-children:!has-siblings,                                              ' )
+   AAdd( txt_, ' QTreeView::branch:open:has-children:has-siblings  {                                             ' )
+   AAdd( txt_, '         border-image: none;                                                                     ' )
+   AAdd( txt_, '         image: url(branch-open.png);                                                            ' )
+   AAdd( txt_, ' } '                                                                                               )
 
    aeval( txt_, {|e| s += e + chr( 13 )+chr( 10 ) } )
 
    ::oWidget:setStyleSheet( s )
-
-   #endif
+#endif
    RETURN nil
 
-/*----------------------------------------------------------------------*/

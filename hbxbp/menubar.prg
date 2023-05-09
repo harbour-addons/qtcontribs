@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                               EkOnkar
  *                         ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                              08Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -73,7 +69,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 #define QTC_MENITEM_CAPTION                       1
 #define QTC_MENITEM_BLOCK                         2
@@ -93,7 +88,6 @@
 #define QMF_ENABLED                               7
 #define QMF_GRAYED                                8
 
-/*----------------------------------------------------------------------*/
 
 CLASS xbpMenuBar INHERIT xbpWindow
 
@@ -149,18 +143,13 @@ CLASS xbpMenuBar INHERIT xbpWindow
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:init( oParent, aPresParams, lVisible )
-
    ::xbpWindow:init( oParent, , , , aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:create( oParent, aPresParams, lVisible )
-
    ::xbpWindow:create( oParent, , , , aPresParams, lVisible )
 
    ::oWidget := QMenuBar()
@@ -174,13 +163,11 @@ METHOD xbpMenuBar:create( oParent, aPresParams, lVisible )
    ENDIF
    ::oParent:addChild( self )
    ::postCreate()
-
+   //
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:configure( oParent, aPresParams, lVisible )
-
    DEFAULT oParent     TO ::oParent
    DEFAULT aPresParams TO ::aPresParams
    DEFAULT lVisible    TO ::visible
@@ -188,20 +175,14 @@ METHOD xbpMenuBar:configure( oParent, aPresParams, lVisible )
    ::oParent     := oParent
    ::aPresParams := aPresParams
    ::visible     := lVisible
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:destroy()
-
    ::delAllItems()
-
    ::xbpWindow:destroy()
-
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:delAllItems()
    LOCAL aItem
@@ -210,10 +191,8 @@ METHOD xbpMenuBar:delAllItems()
       ::delItem( @aItem )
    NEXT
    ::aMenuItems := {}
+   RETURN .T. 
 
-   RETURN .t.
-
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:delItem( aItem )
    LOCAL n, oAction
@@ -235,10 +214,8 @@ METHOD xbpMenuBar:delItem( aItem )
       oAction:setVisible( .f. )
       ::oWidget:removeAction( oAction )
    ENDIF
-
    RETURN .t.
 
-/*----------------------------------------------------------------------*/
 /*
  * xCaption : NIL | cPrompt | ncResource | oMenu
  */
@@ -314,7 +291,6 @@ METHOD xbpMenuBar:placeItem( xCaption, bAction, nStyle, nAttrb, nMode, nPos )
       aItem := { QMF_STRING, nMenuItemID, xCaption, bAction, oAction }
 
    CASE cType == "O" .AND. __ObjGetClsName( xCaption ) $ "QACTION,QWIDGETACTION"
-
       oAction := xCaption
 
       oAction:connect( "triggered(bool)", {|| ::execSlot( "triggered(bool)", nMenuItemID ) } )
@@ -356,13 +332,11 @@ METHOD xbpMenuBar:placeItem( xCaption, bAction, nStyle, nAttrb, nMode, nPos )
 
    CASE cType == "N"
       /* Resource ID */
-
    ENDCASE
 
-   IF     nMode == QTC_MENUITEM_ADD
+   IF nMode == QTC_MENUITEM_ADD
       aadd( ::aMenuItems, aItem )
       aadd( ::aOrgItems , { xCaption, bAction, nStyle, nAttrb, NIL } )
-
    ELSEIF nMode == QTC_MENUITEM_INSERT
       asize( ::aMenuItems, ::numItems + 1 )
       asize( ::aOrgItems, ::numItems + 1 )
@@ -370,14 +344,11 @@ METHOD xbpMenuBar:placeItem( xCaption, bAction, nStyle, nAttrb, nMode, nPos )
       ains( ::aOrgItems, nPos )
       ::aMenuItems[ nPos ] := aItem
       ::aOrgItems[ nPos ] := { xCaption, bAction, nStyle, nAttrb, NIL }
-
    ELSEIF nMode == QTC_MENUITEM_REPLACE
-
+      //
    ENDIF
-
    RETURN nItemIndex
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:addItem( aItem )
    LOCAL xCaption, bAction, nStyle, nAttrib
@@ -395,10 +366,8 @@ METHOD xbpMenuBar:addItem( aItem )
    ELSE
       RETURN 0
    ENDIF
-
    RETURN ::placeItem( xCaption, bAction, nStyle, nAttrib, QTC_MENUITEM_ADD )
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:insItem( nItemIndex, aItem )
    LOCAL xCaption, bAction, nStyle, nAttrib
@@ -416,19 +385,14 @@ METHOD xbpMenuBar:insItem( nItemIndex, aItem )
    ELSE
       RETURN 0
    ENDIF
-
    RETURN ::placeItem( xCaption, bAction, nStyle, nAttrib, QTC_MENUITEM_INSERT, nItemIndex )
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:setItem( nItemIndex, aItem )
-
    HB_SYMBOL_UNUSED( nItemIndex )
    HB_SYMBOL_UNUSED( aItem )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:checkItem( nItemIndex, lCheck )
    LOCAL lChecked
@@ -439,10 +403,8 @@ METHOD xbpMenuBar:checkItem( nItemIndex, lCheck )
       ::aMenuItems[ nItemIndex, 5 ]:setChecked( lCheck )
       lChecked := ::aMenuItems[ nItemIndex, 5 ]:isChecked()
    ENDIF
-
    RETURN iif( lCheck, lChecked, !lChecked )
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:enableItem( nItemIndex )
    LOCAL lSuccess := .f.
@@ -451,10 +413,8 @@ METHOD xbpMenuBar:enableItem( nItemIndex )
       ::aMenuItems[ nItemIndex, 5 ]:setEnabled( .t. )
       lSuccess := ::aMenuItems[ nItemIndex, 5 ]:isEnabled()
    ENDIF
-
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:disableItem( nItemIndex )
    LOCAL lSuccess := .f.
@@ -463,10 +423,8 @@ METHOD xbpMenuBar:disableItem( nItemIndex )
       ::aMenuItems[ nItemIndex, 5 ]:setDisabled( .t. )
       lSuccess := !( ::aMenuItems[ nItemIndex, 5 ]:isEnabled() )
    ENDIF
-
    RETURN lSuccess
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:getItem( nItemIndex )
    LOCAL aItem
@@ -474,10 +432,8 @@ METHOD xbpMenuBar:getItem( nItemIndex )
    IF !empty( ::aMenuItems ) .AND. !empty( nItemIndex ) .AND. nItemIndex <= ::numItems
       aItem := ::aOrgItems[ nItemIndex ]
    ENDIF
-
    RETURN aItem
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:isItemChecked( nItemIndex )
    LOCAL lChecked := .f.
@@ -485,10 +441,8 @@ METHOD xbpMenuBar:isItemChecked( nItemIndex )
    IF !empty( ::aMenuItems ) .AND. !empty( nItemIndex ) .AND. nItemIndex <= ::numItems
       lChecked := ::aMenuItems[ nItemIndex, 5 ]:isChecked()
    ENDIF
-
    RETURN lChecked
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:isItemEnabled( nItemIndex )
    LOCAL lEnabled := .t.
@@ -496,20 +450,13 @@ METHOD xbpMenuBar:isItemEnabled( nItemIndex )
    IF !empty( ::aMenuItems ) .AND. !empty( nItemIndex ) .AND. nItemIndex <= ::numItems
       lEnabled := ::aMenuItems[ nItemIndex, 5 ]:isEnabled()
    ENDIF
-
    RETURN lEnabled
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:selectItem( nItemIndex )
-
    HB_SYMBOL_UNUSED( nItemIndex )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
-/*                         Callback Methods                             */
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:execSlot( cSlot, p )
    LOCAL nIndex
@@ -518,23 +465,17 @@ METHOD xbpMenuBar:execSlot( cSlot, p )
       IF cSlot == "triggered(bool)"
          IF HB_ISBLOCK( ::aMenuItems[ nIndex,4 ] )
             eval( ::aMenuItems[ nIndex,4 ], nIndex, NIL, Self )
-
          ELSE
             ::itemSelected( nIndex )
-
          ENDIF
-
       ELSEIF cSlot == "hovered()"
          IF !empty( p )
             ::itemMarked( nIndex )
-
          ENDIF
       ENDIF
    ENDIF
+   RETURN NIL 
 
-   RETURN nil
-
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:beginMenu( ... )
    LOCAL a_:= hb_aParams()
@@ -545,7 +486,6 @@ METHOD xbpMenuBar:beginMenu( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMenuBar:endMenu( ... )
    LOCAL a_:= hb_aParams()
@@ -556,7 +496,6 @@ METHOD XbpMenuBar:endMenu( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMenuBar:itemMarked( ... )
    LOCAL a_:= hb_aParams()
@@ -567,7 +506,6 @@ METHOD XbpMenuBar:itemMarked( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMenuBar:itemSelected( ... )
    LOCAL a_:= hb_aParams()
@@ -578,7 +516,6 @@ METHOD XbpMenuBar:itemSelected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMenuBar:drawItem( ... )
    LOCAL a_:= hb_aParams()
@@ -589,7 +526,6 @@ METHOD XbpMenuBar:drawItem( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMenuBar:measureItem( ... )
    LOCAL a_:= hb_aParams()
@@ -600,7 +536,6 @@ METHOD XbpMenuBar:measureItem( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD XbpMenuBar:onMenuKey( ... )
    LOCAL a_:= hb_aParams()
@@ -611,47 +546,38 @@ METHOD XbpMenuBar:onMenuKey( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenuBar:setStyle()
    LOCAL s, txt_:={}
 
-   aadd( txt_, 'QMenuBar {                                                                ' )
-   aadd( txt_, '    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,             ' )
-   aadd( txt_, '                                      stop:0 lightgray, stop:1 darkgray); ' )
-   aadd( txt_, '}                                                                         ' )
-   aadd( txt_, '                                                                          ' )
-   aadd( txt_, 'QMenuBar::item {                                                          ' )
-   aadd( txt_, '    spacing: 3px; /* spacing between menu bar items */                    ' )
-   aadd( txt_, '    padding: 1px 4px;                                                     ' )
-   aadd( txt_, '    background: transparent;                                              ' )
-   aadd( txt_, '    color: #a8a8a8;                                                       ' )
-   aadd( txt_, '    border-radius: 4px;                                                   ' )
-   aadd( txt_, '}                                                                         ' )
-   aadd( txt_, '                                                                          ' )
-   aadd( txt_, 'QMenuBar::item:selected { /* when selected using mouse or keyboard */     ' )
-   aadd( txt_, '    background: #a8a8a8;                                                  ' )
-   aadd( txt_, '}                                                                         ' )
-   aadd( txt_, '                                                                          ' )
-   aadd( txt_, 'QMenuBar::item:pressed {                                                  ' )
-   aadd( txt_, '    background: #888888;                                                  ' )
-   aadd( txt_, '}                                                                         ' )
+   AAdd( txt_, "QMenuBar {                                                                " )
+   AAdd( txt_, "    background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,             " )
+   AAdd( txt_, "                                      stop:0 lightgray, stop:1 darkgray); " )
+   AAdd( txt_, "}                                                                         " )
+   AAdd( txt_, "                                                                          " )
+   AAdd( txt_, "QMenuBar::item {                                                          " )
+   AAdd( txt_, "    spacing: 3px; /* spacing between menu bar items */                    " )
+   AAdd( txt_, "    padding: 1px 4px;                                                     " )
+   AAdd( txt_, "    background: transparent;                                              " )
+   AAdd( txt_, "    color: #a8a8a8;                                                       " )
+   AAdd( txt_, "    border-radius: 4px;                                                   " )
+   AAdd( txt_, "}                                                                         " )
+   AAdd( txt_, "                                                                          " )
+   AAdd( txt_, "QMenuBar::item:selected { /* when selected using mouse or keyboard */     " )
+   AAdd( txt_, "    background: #a8a8a8;                                                  " )
+   AAdd( txt_, "}                                                                         " )
+   AAdd( txt_, "                                                                          " )
+   AAdd( txt_, "QMenuBar::item:pressed {                                                  " )
+   AAdd( txt_, "    background: #888888;                                                  " )
+   AAdd( txt_, "}                                                                         " )
 
    s := ""
    aeval( txt_, {|e| s += e + chr( 13 )+chr( 10 ) } )
-
    ::oWidget:setStyleSheet( s )
-
    RETURN Self
 
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*
- *                   Xbase++ compatible xbpMenu class
- */
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
+//                   Xbase++ compatible xbpMenu class
 /*----------------------------------------------------------------------*/
 
 CLASS xbpMenu INHERIT xbpMenuBar
@@ -672,20 +598,14 @@ CLASS xbpMenu INHERIT xbpMenuBar
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:init( oParent, aPresParams, lVisible )
-
    DEFAULT lVisible TO .f.
-
    ::xbpWindow:init( oParent, , , , aPresParams, lVisible )
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:create( oParent, aPresParams, lVisible )
-
    DEFAULT lVisible TO ::visible
 
    ::xbpWindow:create( oParent, , , , aPresParams, lVisible )
@@ -698,28 +618,20 @@ METHOD xbpMenu:create( oParent, aPresParams, lVisible )
       ::oParent:addChild( self )
       ::oAction:setVisible( ::visible )
    ENDIF
-
    ::postCreate()
-
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:getTitle()
-
    RETURN ::title
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:setTitle( cTitle )
    LOCAL oldTitle := ::title
-
    ::title := cTitle
    ::oWidget:setTitle( ::normalize( ::title ) )
-
    RETURN oldTitle
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:popUp( oXbp, aPos, nDefaultItem, nControl )
    LOCAL qPoint := QPoint( aPos[ 1 ], aPos[ 2 ] )
@@ -730,96 +642,76 @@ METHOD xbpMenu:popUp( oXbp, aPos, nDefaultItem, nControl )
    HB_SYMBOL_UNUSED( nControl     )
 
    ::oWidget:exec( qPoint )
-
    RETURN .f.
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:normalize( cCaption )
-
    RETURN strtran( cCaption, '~', '&' )
 
-/*----------------------------------------------------------------------*/
 
 METHOD xbpMenu:setStyle()
    LOCAL s, txt_:={}
 
-   aadd( txt_, ' QMenu {                                                                                   ' )
-   aadd( txt_, '     background-color: white;                                                              ' )
-   aadd( txt_, '     margin: 2px; /* some spacing around the menu */                                       ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::item {                                                                             ' )
-   aadd( txt_, '     padding: 2px 25px 2px 20px;                                                           ' )
-   aadd( txt_, '     border: 1px solid transparent; /* reserve space for selection border */               ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::item:selected {                                                                    ' )
-   aadd( txt_, '     border-color: darkblue;                                                               ' )
-   aadd( txt_, '     background: rgba(100, 100, 100, 150);                                                 ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::icon:checked { /* appearance of a "checked" icon */                                ' )
-   aadd( txt_, '     background: gray;                                                                     ' )
-   aadd( txt_, '     border: 1px inset gray;                                                               ' )
-   aadd( txt_, '     position: absolute;                                                                   ' )
-   aadd( txt_, '     top: 1px;                                                                             ' )
-   aadd( txt_, '     right: 1px;                                                                           ' )
-   aadd( txt_, '     bottom: 1px;                                                                          ' )
-   aadd( txt_, '     left: 1px;                                                                            ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::separator {                                                                        ' )
-   aadd( txt_, '     height: 2px;                                                                          ' )
-   aadd( txt_, '     background: lightblue;                                                                ' )
-   aadd( txt_, '     margin-left: 10px;                                                                    ' )
-   aadd( txt_, '     margin-right: 5px;                                                                    ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator {                                                                        ' )
-   aadd( txt_, '     width: 13px;                                                                          ' )
-   aadd( txt_, '     height: 13px;                                                                         ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' /* non-exclusive indicator = check box style indicator (see QActionGroup::setExclusive) */' )
-   aadd( txt_, ' QMenu::indicator:non-exclusive:unchecked {                                                ' )
-   aadd( txt_, '     image: url(:/images/checkbox_unchecked.png);                                          ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator:non-exclusive:unchecked:selected {                                       ' )
-   aadd( txt_, '     image: url(:/images/checkbox_unchecked_hover.png);                                    ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator:non-exclusive:checked {                                                  ' )
-   aadd( txt_, '     image: url(:/images/checkbox_checked.png);                                            ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator:non-exclusive:checked:selected {                                         ' )
-   aadd( txt_, '     image: url(:/images/checkbox_checked_hover.png);                                      ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' /* exclusive indicator = radio button style indicator (see QActionGroup::setExclusive) */ ' )
-   aadd( txt_, ' QMenu::indicator:exclusive:unchecked {                                                    ' )
-   aadd( txt_, '     image: url(:/images/radiobutton_unchecked.png);                                       ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator:exclusive:unchecked:selected {                                           ' )
-   aadd( txt_, '     image: url(:/images/radiobutton_unchecked_hover.png);                                 ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator:exclusive:checked {                                                      ' )
-   aadd( txt_, '     image: url(:/images/radiobutton_checked.png);                                         ' )
-   aadd( txt_, ' }                                                                                         ' )
-   aadd( txt_, '                                                                                           ' )
-   aadd( txt_, ' QMenu::indicator:exclusive:checked:selected {                                             ' )
-   aadd( txt_, '     image: url(:/images/radiobutton_checked_hover.png);                                   ' )
-   aadd( txt_, ' }                                                                                         ' )
+   AAdd( txt_, " QMenu {                                                                                   " )
+   AAdd( txt_, "     background-color: white;                                                              " )
+   AAdd( txt_, "     margin: 2px; /* some spacing around the menu */                                       " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::item {                                                                             " )
+   AAdd( txt_, "     padding: 2px 25px 2px 20px;                                                           " )
+   AAdd( txt_, "     border: 1px solid transparent; /* reserve space for selection border */               " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::item:selected {                                                                    " )
+   AAdd( txt_, "     border-color: darkblue;                                                               " )
+   AAdd( txt_, "     background: rgba(100, 100, 100, 150);                                                 " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, ' QMenu::icon:checked { /* appearance of a "checked" icon */                                ' )
+   AAdd( txt_, "     background: gray;                                                                     " )
+   AAdd( txt_, "     border: 1px inset gray;                                                               " )
+   AAdd( txt_, "     position: absolute;                                                                   " )
+   AAdd( txt_, "     top: 1px;                                                                             " )
+   AAdd( txt_, "     right: 1px;                                                                           " )
+   AAdd( txt_, "     bottom: 1px;                                                                          " )
+   AAdd( txt_, "     left: 1px;                                                                            " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::separator {                                                                        " )
+   AAdd( txt_, "     height: 2px;                                                                          " )
+   AAdd( txt_, "     background: lightblue;                                                                " )
+   AAdd( txt_, "     margin-left: 10px;                                                                    " )
+   AAdd( txt_, "     margin-right: 5px;                                                                    " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator {                                                                        " )
+   AAdd( txt_, "     width: 13px;                                                                          " )
+   AAdd( txt_, "     height: 13px;                                                                         " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " /* non-exclusive indicator = check box style indicator (see QActionGroup::setExclusive) */" )
+   AAdd( txt_, " QMenu::indicator:non-exclusive:unchecked {                                                " )
+   AAdd( txt_, "     image: url(:/images/checkbox_unchecked.png);                                          " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator:non-exclusive:unchecked:selected {                                       " )
+   AAdd( txt_, "     image: url(:/images/checkbox_unchecked_hover.png);                                    " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator:non-exclusive:checked {                                                  " )
+   AAdd( txt_, "     image: url(:/images/checkbox_checked.png);                                            " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator:non-exclusive:checked:selected {                                         " )
+   AAdd( txt_, "     image: url(:/images/checkbox_checked_hover.png);                                      " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " /* exclusive indicator = radio button style indicator (see QActionGroup::setExclusive) */ " )
+   AAdd( txt_, " QMenu::indicator:exclusive:unchecked {                                                    " )
+   AAdd( txt_, "     image: url(:/images/radiobutton_unchecked.png);                                       " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator:exclusive:unchecked:selected {                                           " )
+   AAdd( txt_, "     image: url(:/images/radiobutton_unchecked_hover.png);                                 " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator:exclusive:checked {                                                      " )
+   AAdd( txt_, "     image: url(:/images/radiobutton_checked.png);                                         " )
+   AAdd( txt_, " }                                                                                         " )
+   AAdd( txt_, " QMenu::indicator:exclusive:checked:selected {                                             " )
+   AAdd( txt_, "     image: url(:/images/radiobutton_checked_hover.png);                                   " )
+   AAdd( txt_, " }                                                                                         " )
 
    s := ""
    aeval( txt_, {|e| s += e + chr( 13 )+chr( 10 ) } )
-
    ::oWidget:setStyleSheet( s )
-
    RETURN self
 
-/*----------------------------------------------------------------------*/

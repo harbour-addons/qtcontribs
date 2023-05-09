@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,6 @@ STATIC FUNCTION hbide_htmlImgAnchor( cHref, cImg, nWidth, nHeight )
 
 
 STATIC FUNCTION hbide_htmlAnchor( cHref, cText, cTooltip )
-
    RETURN '<a href="' + cHref + '"' + iif( empty( cTooltip ), '', ' title="' + cTooltip + '"' ) +'>' + cText + '</A>'
 
 
@@ -90,10 +89,8 @@ CLASS IdeHome INHERIT IdeObject
    DATA   oFaqTab
    DATA   qFaqBrowser
    DATA   oView
-
    DATA   cClickedProject
    DATA   cClickedSource
-
    DATA   qCurBrowser
    DATA   qPrnDlg
 
@@ -124,80 +121,73 @@ METHOD IdeHome:init( oIde )
 
 
 METHOD IdeHome:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
+   //
    ::buildView()
-
-   ::oView:oTabWidget:oWidget:setDocumentMode( .t. )
-   ::oView:oTabWidget:oWidget:setStyleSheet( "QTabWidget::tab-bar {left: 5px;}" )
-   ::oView:qLayout:setContentsMargins( 0,0,0,0 )
-
-   ::buildWelcomeTab()
-   ::buildFaqTab()
-
-   ::oView:oTabWidget:oWidget:setCurrentIndex( 0 )
-
-   ::oView:hide()
-
+   WITH OBJECT ::oView
+      :oTabWidget:oWidget:setDocumentMode( .t. )
+      :oTabWidget:oWidget:setStyleSheet( "QTabWidget::tab-bar {left: 5px;}" )
+      :qLayout:setContentsMargins( 0,0,0,0 )
+      IF .T.   
+         ::buildWelcomeTab()
+         ::buildFaqTab()
+         :oTabWidget:oWidget:setCurrentIndex( 0 )
+      ENDIF
+      :hide()
+   ENDWITH
    RETURN Self
 
 
 METHOD IdeHome:show()
-
    IF ::oView:oWidget:isVisible()
       ::oView:hide()
    ELSE
       ::oIde:setPosAndSizeByIniEx( ::oView:oWidget, ::oINI:cStatsDialogGeometry )
       ::oView:show()
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeHome:buildView()
    LOCAL oFrame
-
-   oFrame := XbpWindow():new( ::oDa )
-   oFrame:oWidget := QWidget( ::oDa:oWidget )
-   oFrame:oWidget:resize( 750,300 )
-   oFrame:oWidget:connect( QEvent_Close, {|| ::oINI:cStatsDialogGeometry := hbide_posAndSize( ::oView:oWidget ) } )
-
-   oFrame:oWidget:setWindowFlags( Qt_Sheet )
-   oFrame:oWidget:setObjectName( "Stats" )
-   ::oDa:addChild( oFrame )
-
-   oFrame:hbLayout := HBPLAYOUT_TYPE_VERTBOX
-   oFrame:qLayout:setContentsMargins( 0,0,0,0 )
-
-   oFrame:oTabWidget := XbpTabWidget():new():create( oFrame, , {0,0}, {600,300}, , .t. )
-
-   oFrame:oTabWidget:oWidget:setUsesScrollButtons( .t. )
-   oFrame:oTabWidget:oWidget:setMovable( .t. )
-
-   ::oView := oFrame
-
-   ::oIde:setPosAndSizeByIniEx( oFrame:oWidget, ::oINI:cStatsDialogGeometry )
-
+   WITH OBJECT oFrame := XbpWindow():new( ::oDa )
+      WITH OBJECT :oWidget := QWidget( ::oDa:oWidget )
+         :resize( 750,300 )
+         :connect( QEvent_Close, {|| ::oINI:cStatsDialogGeometry := hbide_posAndSize( ::oView:oWidget ) } )
+         :setWindowFlags( Qt_Sheet )
+         :setObjectName( "Stats" )
+      ENDWITH 
+      ::oDa:addChild( oFrame )
+      //   
+      :hbLayout := HBPLAYOUT_TYPE_VERTBOX
+      :qLayout:setContentsMargins( 0,0,0,0 )
+      WITH OBJECT :oTabWidget := XbpTabWidget():new():create( oFrame, , {0,0}, {600,300}, , .t. )
+         :oWidget:setUsesScrollButtons( .t. )
+         :oWidget:setMovable( .t. )
+      ENDWITH 
+   ENDWITH 
+   IF .T.
+      ::oView := oFrame
+      ::oIde:setPosAndSizeByIniEx( oFrame:oWidget, ::oINI:cStatsDialogGeometry )
+   ENDIF
    RETURN self
 
 
 METHOD IdeHome:destroy()
-
    IF !empty( ::qPrnDlg )
       ::qPrnDlg:disconnect( "paintRequested(QPrinter*)" )
       ::qPrnDlg := NIL
    ENDIF
-
-   ::qWelcomeBrowser:disconnect( "anchorClicked(QUrl)"                )
-   ::qWelcomeBrowser:disconnect( "customContextMenuRequested(QPoint)" )
-   ::qFaqBrowser:disconnect( "customContextMenuRequested(QPoint)" )
-
-   ::oWelcomeTab     := NIL
-   ::qWelcomeBrowser := NIL
-   ::qCurBrowser     := NIL
-
+   IF .T.
+      ::qWelcomeBrowser:disconnect( "anchorClicked(QUrl)"                )
+      ::qWelcomeBrowser:disconnect( "customContextMenuRequested(QPoint)" )
+      ::qFaqBrowser:disconnect( "customContextMenuRequested(QPoint)" )
+      //   
+      ::oWelcomeTab     := NIL
+      ::qWelcomeBrowser := NIL
+      ::qCurBrowser     := NIL
+   ENDIF
    RETURN Self
 
 
@@ -207,7 +197,6 @@ METHOD IdeHome:execEvent( nEvent, p )
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH nEvent
    CASE __tabWidget_currentChanged__
       IF p == 0
@@ -218,14 +207,12 @@ METHOD IdeHome:execEvent( nEvent, p )
       EXIT
    CASE __browserStat_anchorClicked__
       cText := p:toString()
-
       IF "prj-" $ lower( cText )
          ::cClickedProject := substr( cText, 5 )
          ::buildProjectDetails( ::cClickedProject )
 
       ELSEIF "fle-" $ lower( cText )
          ::cClickedSource := substr( cText, 5 )
-
          /* Send it for Editing */
          hb_fNameSplit( ::cClickedSource, , , @cExt )
          IF lower( cExt ) == ".hbp"
@@ -252,31 +239,27 @@ METHOD IdeHome:execEvent( nEvent, p )
 
 
 METHOD IdeHome:activateTab( mp1, mp2, oTab )
-
    HB_SYMBOL_UNUSED( mp1 )
    HB_SYMBOL_UNUSED( mp2 )
-
+   //
    IF oTab == ::oWelcomeTab
       ::qCurBrowser := ::qWelcomeBrowser
    ELSEIF oTab == ::oFaqTab
       ::qCurBrowser := ::qFaqBrowser
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeHome:print()
-
    ::qPrnDlg := NIL
    IF empty( ::qPrnDlg )
-      ::qPrnDlg := QPrintPreviewDialog()
-      ::qPrnDlg:setWindowTitle( "Welcome::Projects" )
-      ::qPrnDlg:setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
-      ::qPrnDlg:connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+      WITH OBJECT ::qPrnDlg := QPrintPreviewDialog()
+         :setWindowTitle( "Welcome::Projects" )
+         :setWindowIcon( QIcon( hbide_image( "hbide" ) ) )
+         :connect( "paintRequested(QPrinter*)", {|p| ::paintRequested( p ) } )
+         :exec()
+      ENDWITH
    ENDIF
-
-   ::qPrnDlg:exec()
-
    RETURN self
 
 
@@ -286,84 +269,80 @@ METHOD IdeHome:paintRequested( qPrinter )
 
 
 METHOD IdeHome:setStyleSheetTextBrowser( qBrw )
-
    qBrw:setStyleSheet( 'QTextBrowser { background-image: url(:/resources/hbidesplashwatermark.png); ' + ;
           'background-attachment: scroll; background-repeat:no-repeat; background-position:center; ' + ;
           'background-color: rgb(255,255,255); }' )
-
    RETURN Self
 
 
 METHOD IdeHome:buildWelcomeTab()
    LOCAL oTab, qBrw, qSList
-
-   //oTab := XbpTabPage():new( ::aViews[ 1 ], , { 5,5 }, { 700,400 }, , .t. )
-   oTab := XbpTabPage():new( ::oView, , { 5,5 }, { 700,400 }, , .t. )
-   oTab:caption     := "Welcome"
-   oTab:minimized   := .F.
-   oTab:create()
-   oTab:tabActivate := {|mp1,mp2,oXbp| ::activateTab( mp1, mp2, oXbp ) }
-
-   oTab:hbLayout    := HBPLAYOUT_TYPE_VERTBOX
-   oTab:qLayout:setContentsMargins( 0,0,0,0 )
-
-   qBrw := QTextBrowser()
+   WITH OBJECT oTab := XbpTabPage():new( ::oView, , { 5,5 }, { 700,400 }, , .t. )
+      :caption     := "Welcome"
+      :minimized   := .F.
+      :create()
+      :tabActivate := {|mp1,mp2,oXbp| ::activateTab( mp1, mp2, oXbp ) }
+      :hbLayout    := HBPLAYOUT_TYPE_VERTBOX
+      :qLayout:setContentsMargins( 0,0,0,0 )
+   ENDWITH 
+   WITH OBJECT qSList := QStringList()
+      :append( hb_dirBase() + "docs" )
+   ENDWITH 
+   WITH OBJECT qBrw := QTextBrowser()
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :setSearchPaths( qSList )
+      :connect( "anchorClicked(QUrl)"               , {|p| ::execEvent( __browserStat_anchorClicked__          , p ) } )
+      :connect( "customContextMenuRequested(QPoint)", {|p| ::execEvent( __browserWelcome_contextMenuRequested__, p ) } )
+   ENDWITH 
    oTab:qLayout:addWidget( qBrw )
-   qBrw:setContextMenuPolicy( Qt_CustomContextMenu )
    ::setStyleSheetTextBrowser( qBrw )
-
-   ::oWelcomeTab     := oTab
-   ::qWelcomeBrowser := qBrw
-   ::qCurBrowser     := qBrw
-
-   qBrw:connect( "anchorClicked(QUrl)"               , {|p| ::execEvent( __browserStat_anchorClicked__          , p ) } )
-   qBrw:connect( "customContextMenuRequested(QPoint)", {|p| ::execEvent( __browserWelcome_contextMenuRequested__, p ) } )
-
-   qSList := QStringList()
-   qSList:append( hb_dirBase() + "docs" )
-   qBrw:setSearchPaths( qSList )
-
+   IF .T.
+      ::oWelcomeTab     := oTab
+      ::qWelcomeBrowser := qBrw
+      ::qCurBrowser     := qBrw
+   ENDIF
    RETURN Self
 
 
 METHOD IdeHome:refresh()
    LOCAL aHtm := {}
-
-   aadd( aHtm, '<html>'                                    )
-   aadd( aHtm, ' <body align=center valign=center>'        )
-   aadd( aHtm, '  <table cols="7" width="95%">'            )
-   aadd( aHtm, '   <tr>'                                   )
-   aadd( aHtm, '    <td align="left" valign="center" colspan="5">' )
-   aadd( aHtm, '     <img src=":/resources/project.png"' + '</img>' + '&nbsp;' + '&nbsp;' + '&nbsp;'      )
-   aadd( aHtm, '     <font face="Times New Roman" color="#FF4719" size="7"><b><U>Projects</u></b></font>' )
-   aadd( aHtm, '     &nbsp;' + '&nbsp;' + '&nbsp;'         )
-   aadd( aHtm, '     <font face="Times New Roman" size="5">' + '( ' + hbide_pathNormalized( ::oIde:cProjIni, .f. )  + ' )' + '</font>'  )
-   aadd( aHtm, '    </td>'                                 )
-   aadd( aHtm, '   </tr>'                                  )
-   aadd( aHtm, '   <tr bgcolor="#F0F0F5">'                 )
-   aadd( aHtm, '    <th width="150"  >Title         </th>' )
-   aadd( aHtm, '    <th width="50"   >Type          </th>' )
-   aadd( aHtm, '    <th width="75"   >Sources       </th>' )
-   aadd( aHtm, '    <th width="300"  >Location      </th>' )
-   aadd( aHtm, '    <th width="120"  >Last Modified </th>' )
-   AADD( aHtm, '   </tr>'                                  )
-   //
-   ::addProjectsInfo( @aHtm )
-   //
-   aadd( aHtm, '  </table>'                                )
-   aadd( aHtm, ' </body>'                                  )
-   aadd( aHtm, '</html>'                                   )
-   //
-   ::qWelcomeBrowser:clear()
-   //
-   ::qWelcomeBrowser:setHTML( hbide_arrayToMemo( aHtm ) )
-
+   IF .T.
+      aadd( aHtm, '<html>'                                    )
+      aadd( aHtm, ' <body align=center valign=center>'        )
+      aadd( aHtm, '  <table cols="7" width="95%">'            )
+      aadd( aHtm, '   <tr>'                                   )
+      aadd( aHtm, '    <td align="left" valign="center" colspan="5">' )
+      aadd( aHtm, '     <img src=":/resources/project.png"' + '</img>' + '&nbsp;' + '&nbsp;' + '&nbsp;'      )
+      aadd( aHtm, '     <font face="Times New Roman" color="#FF4719" size="7"><b><U>Projects</u></b></font>' )
+      aadd( aHtm, '     &nbsp;' + '&nbsp;' + '&nbsp;'         )
+      aadd( aHtm, '     <font face="Times New Roman" size="5">' + '( ' + hbide_pathNormalized( ::oIde:cProjIni, .f. )  + ' )' + '</font>'  )
+      aadd( aHtm, '    </td>'                                 )
+      aadd( aHtm, '   </tr>'                                  )
+      aadd( aHtm, '   <tr bgcolor="#F0F0F5">'                 )
+      aadd( aHtm, '    <th width="150"  >Title         </th>' )
+      aadd( aHtm, '    <th width="50"   >Type          </th>' )
+      aadd( aHtm, '    <th width="75"   >Sources       </th>' )
+      aadd( aHtm, '    <th width="300"  >Location      </th>' )
+      aadd( aHtm, '    <th width="120"  >Last Modified </th>' )
+      aadd( aHtm, '   </tr>'                                  )
+   ENDIF
+   IF .T.
+      ::addProjectsInfo( @aHtm )
+   ENDIF
+   IF .T.
+      aadd( aHtm, '  </table>'                                )
+      aadd( aHtm, ' </body>'                                  )
+      aadd( aHtm, '</html>'                                   )
+   ENDIF
+   WITH OBJECT ::qWelcomeBrowser
+      :clear()
+      :setHTML( hbide_arrayToMemo( aHtm ) )
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeHome:addProjectsInfo( aHtm )
    LOCAL a_, prp_, src_, dir_, cIcon
-
    IF empty( ::aProjects )
       aadd( aHtm, '   <tr>'   )
       aadd( aHtm, '    <td>'  )
@@ -407,10 +386,10 @@ METHOD IdeHome:addProjectsInfo( aHtm )
 METHOD IdeHome:buildProjectDetails( cProjectTitle )
    LOCAL aSrc, cSrc, dir_, cRoot, cExt, cIcon, cName, cPath
    LOCAL aSrcInfo := {}, a_:= {}
-
-   aSrc  := ::oPM:getSourcesByProjectTitle( cProjectTitle )
-   cRoot := ::oPM:getProjectPathFromTitle( cProjectTitle )
-
+   IF .T.
+      aSrc  := ::oPM:getSourcesByProjectTitle( cProjectTitle )
+      cRoot := ::oPM:getProjectPathFromTitle( cProjectTitle )
+   ENDIF
    FOR EACH cSrc IN aSrc
       aadd( a_, hbide_syncProjPath( cRoot, cSrc ) )
    NEXT
@@ -420,130 +399,124 @@ METHOD IdeHome:buildProjectDetails( cProjectTitle )
       cExt  := lower( cExt )
       cIcon := hbide_imageForFileType( cExt )
       IF !empty( dir_:= directory( cSrc ) )
-         //                                                                         bytes        date         time
          aadd( aSrcInfo, { cSrc, hbide_pathNormalized( cPath,.f. ), cName, cExt, cIcon, dir_[ 1,2 ], dir_[ 1,3 ], dir_[ 1,4 ] } )
       ENDIF
    NEXT
-
    IF !empty( aSrcInfo )
       ::buildSourcesInfo( cProjectTitle, aSrcInfo )
    ELSE
       ::refresh()
    ENDIF
-
    RETURN aSrcInfo
 
 
 METHOD IdeHome:buildSourcesInfo( cProjectTitle, aSrcInfo )
    LOCAL aHtm := {}, aSrc
    LOCAL cIcon := hbide_imageForProjectType( ::oPM:getProjectTypeFromTitle( cProjectTitle ) )
-
-   aadd( aHtm, '<html>'                                  )
-   aadd( aHtm, ' <body align=center valign=center>'      )
-   aadd( aHtm, '  <table cols="7" width="95%">'          )
-   aadd( aHtm, '   <tr><td align=left>'                  )
-   aadd( aHtm, '    <img src="' + ':/resources/' + cIcon + '.png' + '"' + '</img>' + '&nbsp;' + '&nbsp;' + '&nbsp;' )
-   aadd( aHtm, '    <font color="#FF4719" size=5><u>' + cProjectTitle + '</u></font>' )
-   aadd( aHtm, '   </td>'                                )
-   aadd( aHtm, '   <tr bgcolor="#F0F0F5">'               )
-   aadd( aHtm, '    <th width="150" >Source</th>'        )
-   aadd( aHtm, '    <th width="50"  >Type</th>'          )
-   aadd( aHtm, '    <th width="60"  >Size</th>'          )
-   aadd( aHtm, '    <th width="250" >Location</th>'      )
-   aadd( aHtm, '    <th width="120" >Last Modified</th>' )
-   AADD( aHtm, '   </tr>'                                )
-   //
+   IF .T.
+      aadd( aHtm, '<html>'                                  )
+      aadd( aHtm, ' <body align=center valign=center>'      )
+      aadd( aHtm, '  <table cols="7" width="95%">'          )
+      aadd( aHtm, '   <tr><td align=left>'                  )
+      aadd( aHtm, '    <img src="' + ':/resources/' + cIcon + '.png' + '"' + '</img>' + '&nbsp;' + '&nbsp;' + '&nbsp;' )
+      aadd( aHtm, '    <font color="#FF4719" size=5><u>' + cProjectTitle + '</u></font>' )
+      aadd( aHtm, '   </td>'                                )
+      aadd( aHtm, '   <tr bgcolor="#F0F0F5">'               )
+      aadd( aHtm, '    <th width="150" >Source</th>'        )
+      aadd( aHtm, '    <th width="50"  >Type</th>'          )
+      aadd( aHtm, '    <th width="60"  >Size</th>'          )
+      aadd( aHtm, '    <th width="250" >Location</th>'      )
+      aadd( aHtm, '    <th width="120" >Last Modified</th>' )
+      aadd( aHtm, '   </tr>'                                )
+   ENDIF
    FOR EACH aSrc IN aSrcInfo
       ::formatSourceInfo( @aHtm, aSrc )
    NEXT
-   //
-   aadd( aHtm, '  </table>'                              )
-   aadd( aHtm, ' </body>'                                )
-   aadd( aHtm, '</html>'                                 )
-   //
-   ::qWelcomeBrowser:clear()
-   //
-   ::qWelcomeBrowser:setHTML( hbide_arrayToMemo( aHtm ) )
-
+   IF .T.
+      aadd( aHtm, '  </table>'                              )
+      aadd( aHtm, ' </body>'                                )
+      aadd( aHtm, '</html>'                                 )
+   ENDIF
+   WITH OBJECT ::qWelcomeBrowser
+      :clear()
+      :setHTML( hbide_arrayToMemo( aHtm ) )
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeHome:formatSourceInfo( aHtm, aSrc )
-
-   aadd( aHtm, '   <tr>'     )
-   aadd( aHtm, '    <td><b>' )
-   aadd( aHtm, '   ' + hbide_htmlImgAnchor( 'fle-' + aSrc[ 1 ], ':/resources/' + aSrc[ 5 ] + '.png' ) + '&nbsp;' )
-   aadd( aHtm, '   ' + hbide_htmlAnchor( 'fle-' + aSrc[ 1 ], aSrc[ 3 ], aSrc[ 1 ] ) )
-   aadd( aHtm, '    </b></td>' )
-   aadd( aHtm, '    <td>'    )
-   aadd( aHtm, '    ' + aSrc[ 4 ]  )
-   aadd( aHtm, '    </td>'   )
-   aadd( aHtm, '    <td align=center>'    )
-   aadd( aHtm, '    ' + hb_ntos( aSrc[ 6 ] ) )
-   aadd( aHtm, '    </td>'   )
-   aadd( aHtm, '    <td align=left>'  )
-   aadd( aHtm, '    ' + aSrc[ 2 ] )
-   aadd( aHtm, '    </td>' )
-   aadd( aHtm, '    <td align=center>'    )
-   aadd( aHtm, '    ' + dtoc( aSrc[ 7 ] ) + " " + aSrc[ 8 ] )
-   aadd( aHtm, '    </td>'   )
-   aadd( aHtm, '   </tr>'  )
-
+   IF .T.
+      aadd( aHtm, '   <tr>'     )
+      aadd( aHtm, '    <td><b>' )
+      aadd( aHtm, '   ' + hbide_htmlImgAnchor( 'fle-' + aSrc[ 1 ], ':/resources/' + aSrc[ 5 ] + '.png' ) + '&nbsp;' )
+      aadd( aHtm, '   ' + hbide_htmlAnchor( 'fle-' + aSrc[ 1 ], aSrc[ 3 ], aSrc[ 1 ] ) )
+      aadd( aHtm, '    </b></td>' )
+      aadd( aHtm, '    <td>'    )
+      aadd( aHtm, '    ' + aSrc[ 4 ]  )
+      aadd( aHtm, '    </td>'   )
+      aadd( aHtm, '    <td align=center>'    )
+      aadd( aHtm, '    ' + hb_ntos( aSrc[ 6 ] ) )
+      aadd( aHtm, '    </td>'   )
+      aadd( aHtm, '    <td align=left>'  )
+      aadd( aHtm, '    ' + aSrc[ 2 ] )
+      aadd( aHtm, '    </td>' )
+      aadd( aHtm, '    <td align=center>'    )
+      aadd( aHtm, '    ' + dtoc( aSrc[ 7 ] ) + " " + aSrc[ 8 ] )
+      aadd( aHtm, '    </td>'   )
+      aadd( aHtm, '   </tr>'  )
+   ENDIF
    RETURN Self
 
 
 METHOD IdeHome:buildFaqTab()
    LOCAL oTab, qBrw, aFaq, aHtm, a_, b_, s
-
-   //oTab := XbpTabPage():new( ::aViews[ 1 ], , { 5,5 }, { 700,400 }, , .t. )
-   oTab := XbpTabPage():new( ::oView, , { 5,5 }, { 700,400 }, , .t. )
-   oTab:caption   := "FAQ's"
-   oTab:minimized := .F.
-   oTab:create()
-   oTab:tabActivate := {|mp1,mp2,oXbp| ::activateTab( mp1, mp2, oXbp ) }
-
-   oTab:hbLayout  := HBPLAYOUT_TYPE_VERTBOX
-   oTab:qLayout:setContentsMargins( 0,0,0,0 )
-
-   qBrw := QTextBrowser()
-   oTab:qLayout:addWidget( qBrw )
-   qBrw:setContextMenuPolicy( Qt_CustomContextMenu )
+   WITH OBJECT oTab := XbpTabPage():new( ::oView, , { 5,5 }, { 700,400 }, , .t. )
+      :caption   := "FAQ's"
+      :minimized := .F.
+      :create()
+      :tabActivate := {|mp1,mp2,oXbp| ::activateTab( mp1, mp2, oXbp ) }
+      :hbLayout  := HBPLAYOUT_TYPE_VERTBOX
+      :qLayout:setContentsMargins( 0,0,0,0 )
+   ENDWITH 
+   WITH OBJECT qBrw := QTextBrowser()
+      :setContextMenuPolicy( Qt_CustomContextMenu )
+      :connect( "customContextMenuRequested(QPoint)", {|p| ::execEvent( __browserFaq_contextMenuRequested__, p  ) } )
+   ENDWITH
    ::setStyleSheetTextBrowser( qBrw )
-
-   qBrw:connect( "customContextMenuRequested(QPoint)", {|p| ::execEvent( __browserFaq_contextMenuRequested__, p  ) } )
-
-   ::oFaqTab     := oTab
-   ::qFaqBrowser := qBrw
-
+   oTab:qLayout:addWidget( qBrw )
+   IF .T.
+      ::oFaqTab     := oTab
+      ::qFaqBrowser := qBrw
+   ENDIF
    aFaq := hbide_getFaqs() ; a_:= aFaq[ 1 ]; b_:= aFaq[ 2 ]
    aHtm := {}
-
-   aadd( aHtm, '<html>'                                  )
-   aadd( aHtm, ' <body align=center valign=center>'      )
-   aadd( aHtm, '  <table cols="7" width="95%">'          )
-   FOR EACH s IN a_
-   aadd( aHtm, '   <tr><td></td></tr>'                   )
-   aadd( aHtm, '   <tr><td>'                             )
-   aadd( aHtm, '    <font color="red" size=4>' + s + '</font>' )
-   aadd( aHtm, '   </td></tr>'                           )
-   aadd( aHtm, '   <tr><td>'                             )
-   aadd( aHtm, '    <font color="black" size=3>' + b_[ s:__enumIndex() ] + '</font>' )
-   aadd( aHtm, '   </td></tr>'                           )
-   NEXT
-   aadd( aHtm, '  </table>'                              )
-   aadd( aHtm, ' </body>'                                )
-   aadd( aHtm, '</html>'                                 )
-   //
-   ::qFaqBrowser:clear()
-   //
-   ::qFaqBrowser:setHTML( hbide_arrayToMemo( aHtm ) )
-
+   IF .T.
+      aadd( aHtm, '<html>'                                  )
+      aadd( aHtm, ' <body align=center valign=center>'      )
+      aadd( aHtm, '  <table cols="7" width="95%">'          )
+      FOR EACH s IN a_
+         aadd( aHtm, '   <tr><td></td></tr>'                )
+         aadd( aHtm, '   <tr><td>'                          )
+         aadd( aHtm, '    <font color="red" size=4>' + s + '</font>' )
+         aadd( aHtm, '   </td></tr>'                        )
+         aadd( aHtm, '   <tr><td>'                          )
+         aadd( aHtm, '    <font color="black" size=3>' + b_[ s:__enumIndex() ] + '</font>' )
+         aadd( aHtm, '   </td></tr>'                        )
+      NEXT
+      aadd( aHtm, '  </table>'                              )
+      aadd( aHtm, ' </body>'                                )
+      aadd( aHtm, '</html>'                                 )
+   ENDIF
+   WITH OBJECT ::qFaqBrowser
+      :clear()
+      :setHTML( hbide_arrayToMemo( aHtm ) )
+   ENDWITH 
    RETURN Self
 
 
 STATIC FUNCTION hbide_getFaqs()
    LOCAL a_:= {}, b_:= {}
-
+   //
    aadd( a_, 'Does HbIDE support editing of same source at more than one place simultaneously ?' )
    aadd( b_, 'Yes. HbIDE provides for splitting an editing window, horizontally and vertically, ' + ;
              'both ways. Right-click anywhere in the editor, point to "Split..." and then ' + ;
@@ -587,6 +560,6 @@ STATIC FUNCTION hbide_getFaqs()
              'beneth the current caret position. ' + hb_eol() + ;
              hb_eol() + ;
              'Code completion tool is almost done with, and probably will make up its presence in the HbIDE soon. ' )
-
+   //
    RETURN { a_, b_ }
 

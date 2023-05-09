@@ -3,7 +3,7 @@
  */
 
 /*
- * Copyright 2010-2015 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2010-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -129,33 +129,28 @@ METHOD IdeFunctions:init( oIde )
 
 
 METHOD IdeFunctions:create( oIde )
-
    DEFAULT oIde TO ::oIde
    ::oIde := oIde
-
-   ::oUI := hbide_getUI( "funclist" )
-
-   ::buildHeader()
-
-   ::oUI:editFunction :connect( "textChanged(QString)"                , {|p| ::execEvent( __editFunc_textChanged__           , p ) } )
-   ::oUI:editFunction :connect( "returnPressed()"                     , {| | ::execEvent( __editFunc_returnPressed__             ) } )
-   ::oUI:buttonMark   :connect( "clicked()"                           , {| | ::execEvent( __buttonMark_clicked__                 ) } )
-   ::oUI:buttonLoad   :connect( "clicked()"                           , {| | ::execEvent( __buttonLoad_clicked__                 ) } )
-   ::oUI:buttonTag    :connect( "clicked()"                           , {| | ::execEvent( __buttonTag_clicked__                  ) } )
-   ::oUI:buttonClose  :connect( "clicked()"                           , {| | ::execEvent( __buttonClose_clicked__                ) } )
-   ::oUI:tableFuncList:connect( "itemSelectionChanged()"              , {| | ::execEvent( __tableFuncList_itemSelectionChanged__ ) } )
-   ::oUI:tableFuncList:connect( "itemDoubleClicked(QTableWidgetItem*)", {|p| ::execEvent( __tableFuncList_itemDoubleClicked__, p ) } )
-
+   WITH OBJECT ::oUI := hbide_getUI( "funclist" )
+      ::buildHeader()
+      //   
+      :editFunction :connect( "textChanged(QString)"                , {|p| ::execEvent( __editFunc_textChanged__           , p ) } )
+      :editFunction :connect( "returnPressed()"                     , {| | ::execEvent( __editFunc_returnPressed__             ) } )
+      :buttonMark   :connect( "clicked()"                           , {| | ::execEvent( __buttonMark_clicked__                 ) } )
+      :buttonLoad   :connect( "clicked()"                           , {| | ::execEvent( __buttonLoad_clicked__                 ) } )
+      :buttonTag    :connect( "clicked()"                           , {| | ::execEvent( __buttonTag_clicked__                  ) } )
+      :buttonClose  :connect( "clicked()"                           , {| | ::execEvent( __buttonClose_clicked__                ) } )
+      :tableFuncList:connect( "itemSelectionChanged()"              , {| | ::execEvent( __tableFuncList_itemSelectionChanged__ ) } )
+      :tableFuncList:connect( "itemDoubleClicked(QTableWidgetItem*)", {|p| ::execEvent( __tableFuncList_itemDoubleClicked__, p ) } )
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeFunctions:execEvent( nEvent, p )
    LOCAL n, nLen
-
    IF ::lQuitting
       RETURN Self
    ENDIF
-
    SWITCH nEvent
    CASE __editFunc_textChanged__
       p    := upper( p )
@@ -193,43 +188,34 @@ METHOD IdeFunctions:execEvent( nEvent, p )
       ENDIF
       EXIT
    ENDSWITCH
-
    RETURN Self
 
 
 METHOD IdeFunctions:buildHeader()
-   LOCAL oTbl, qItm, cHdr, qFnt, qHdr
+   LOCAL qItm, cHdr
    LOCAL cDH := " "
-
-   oTbl := ::oUI:tableFuncList
-
-   qFnt := QFont( "Courier New" )
-   oTbl:setFont( qFnt )
-
-   oTbl:verticalHeader():hide()
-
-   qHdr := oTbl:horizontalHeader()
-   qHdr:setStretchLastSection( .t. )
-
-   oTbl:setColumnCount( 1 )
-
-   cHdr := pad( "Name", ::nPNm ) + cDH + "Typ " + cDH + "  Line" + cDH + ;
-                            pad( "Project", ::nPPr ) + cDH + pad( "Source", ::nPSr )
-
-   qItm := QTableWidgetItem()
-   qItm:setText( cHdr )
-   qItm:setFont( qFnt )
-   qItm:setTextAlignment( Qt_AlignLeft )
-   aadd( ::aHdr, qItm )
-   oTbl:setHorizontalHeaderItem( 0, qItm )
-   oTbl:setColumnWidth( 0, 800 )
-
-   oTbl:setShowGrid( .f. )
-
-   oTbl:setAlternatingRowColors( .t. )
-
-   ::oUI:listProjects:hide()
-
+   LOCAL qFnt := QFont( "Courier New" )
+   WITH OBJECT ::oUI:tableFuncList()   
+      :setFont( qFnt )
+      :verticalHeader():hide()
+      :horizontalHeader():setStretchLastSection( .t. )
+      :setColumnCount( 1 )
+      WITH OBJECT qItm := QTableWidgetItem()
+         cHdr := pad( "Name", ::nPNm ) + cDH + "Typ " + cDH + "  Line" + cDH + ;
+                        pad( "Project", ::nPPr ) + cDH + pad( "Source", ::nPSr )
+         :setText( cHdr )
+         :setFont( qFnt )
+         :setTextAlignment( Qt_AlignLeft )
+      ENDWITH 
+      aadd( ::aHdr, qItm )
+      //
+      :setHorizontalHeaderItem( 0, qItm )
+      :setColumnWidth( 0, 800 )
+      :setShowGrid( .f. )
+      :setAlternatingRowColors( .t. )
+      //
+      ::oUI:listProjects():hide()
+   ENDWITH
    RETURN Self
 
 
@@ -263,19 +249,16 @@ METHOD IdeFunctions:destroy()
 
 METHOD IdeFunctions:clear( lHdrAlso )
    LOCAL qItm
-
    IF lHdrAlso
       FOR EACH qItm IN ::aHdr
          qItm := NIL
       NEXT
       ::aHdr := {}
    ENDIF
-
    FOR EACH qItm IN ::aItems
       qItm := NIL
    NEXT
    ::aItems := {}
-
    IF lHdrAlso
       ::oUI:tableFuncList:clear()
    ELSE
@@ -294,16 +277,13 @@ METHOD IdeFunctions:show()
 
 METHOD IdeFunctions:positionToFunction( cWord, lShowTip )
    LOCAL nLen, p, n, cProto := ""
-
    IF !empty( ::aList )
       p    := upper( cWord )
       nLen := Len( p )
       IF ( n := ascan( ::aList, {|e_| left( e_[ 1 ], nLen ) == p } ) ) > 0
          ::oUI:editFunction:setText( cWord )
          ::oUI:tableFuncList:setCurrentItem( ::aItems[ n ] )
-
          cProto := ::aList[ n, 2 ]
-
          IF lShowTip
             // TODO: where
          ENDIF
@@ -314,7 +294,6 @@ METHOD IdeFunctions:positionToFunction( cWord, lShowTip )
 
 METHOD IdeFunctions:jumpToFunction( cWord )
    LOCAL nLen, lOpened := .f., p, n
-
    IF !empty( ::aList )
       p    := upper( cWord )
       nLen := Len( p )
@@ -324,14 +303,12 @@ METHOD IdeFunctions:jumpToFunction( cWord )
          lOpened := ::openFunction( .t. )
       ENDIF
    ENDIF
-
    RETURN lOpened
 
 
 METHOD IdeFunctions:openFunction( lCheckDuplicates )
    LOCAL n, cFunc, cSource, oEdit, lFound, cProto
    LOCAL lOpened := .f.
-
    IF ( n := ::oUI:tableFuncList:currentRow() ) >= 0
       n++
       cFunc := ::aList[ n, 1 ]
@@ -340,11 +317,9 @@ METHOD IdeFunctions:openFunction( lCheckDuplicates )
          ::oUI:tableFuncList:setFocus()
          RETURN lOpened
       ENDIF
-
       cProto  := ::aList[ n, 2 ]
       cSource := alltrim( substr( ::aList[ n, 3 ], 53 ) )
       ::oSM:editSource( cSource, , , , , , .f. )
-
       IF !empty( oEdit := ::oEM:getEditCurrent() )
          IF !( lFound := oEdit:find( cProto, QTextDocument_FindCaseSensitively ) )
             lFound := oEdit:find( cProto, QTextDocument_FindBackward + QTextDocument_FindCaseSensitively )
@@ -357,13 +332,11 @@ METHOD IdeFunctions:openFunction( lCheckDuplicates )
          ENDIF
       ENDIF
    ENDIF
-
    RETURN lOpened
 
 
 METHOD IdeFunctions:clearProjects()
    LOCAL qItm
-
    IF !empty( ::aProjList )
       FOR EACH qItm IN ::aProjList
          qItm := NIL
@@ -371,51 +344,42 @@ METHOD IdeFunctions:clearProjects()
    ENDIF
    ::aProjList := {}
    ::oUI:listProjects:clear()
-
    RETURN Self
 
 
 METHOD IdeFunctions:listProjects()
    LOCAL s, qItm, oLst := ::oUI:listProjects
-
    ::clearProjects()
-
    FOR EACH s IN ::oPM:getProjectsTitleList()
-      qItm := QListWidgetItem()
-      qItm:setText( s )
-      qItm:setCheckState( Qt_Unchecked )
-      //oLst:addItem_1( qItm )
+      WITH OBJECT qItm := QListWidgetItem()
+         :setText( s )
+         :setCheckState( Qt_Unchecked )
+      ENDWITH 
       oLst:addItem( qItm )
       aadd( ::aProjList, qItm )
    NEXT
-
    RETURN Self
 
 
 METHOD IdeFunctions:getMarkedProjects()
    LOCAL qItm, a_:= {}
-
    FOR EACH qItm IN ::aProjList
       IF qItm:checkState() == 2
          aadd( a_, qItm:text() )
       ENDIF
    NEXT
-
    RETURN a_
 
 
 METHOD IdeFunctions:enableControls( lEnable )
-
    ::inAction := ! lEnable
-
-   ::oUI:buttonMark:setEnabled( lEnable )
-   ::oUI:buttonLoad:setEnabled( lEnable )
-   ::oUI:buttonTag:setEnabled( lEnable )
-
-   ::oUI:editFunction:setEnabled( lEnable )
-
+   WITH OBJECT ::oUI
+      :buttonMark:setEnabled( lEnable )
+      :buttonLoad:setEnabled( lEnable )
+      :buttonTag:setEnabled( lEnable )
+      :editFunction:setEnabled( lEnable )
+   ENDWITH
    ::showApplicationCursor( iif( lEnable, NIL, Qt_BusyCursor ) )
-
    RETURN Self
 
 
@@ -423,28 +387,21 @@ METHOD IdeFunctions:loadTags( aProjects, lPopulateTable )
    LOCAL cProjectTitle, cProjFile, cTagFile, aTags, n, a_
    LOCAL lPopulate := .f.
    LOCAL qApp := QApplication()
-
    DEFAULT aProjects      TO ::getMarkedProjects()
    DEFAULT lPopulateTable TO .F.
-
    IF empty( aProjects )
       RETURN Self
    ENDIF
    a_:= aProjects
-
-   IF !( ::inAction )
+   IF ! ::inAction 
       ::enableControls( .f. )
-
       FOR EACH cProjectTitle IN a_
          cProjFile := ::oPM:getProjectFileNameFromTitle( cProjectTitle )
-
          IF ! empty( cProjFile ) .AND. hb_fileExists( cProjFile )
             cTagFile := hb_FNameExtSet( cProjFile, ".tag" )
             IF hb_fileExists( cTagFile )
                lPopulate := .t.
-
                aTags := hb_deserialize( hb_memoRead( cTagFile ) )
-
                IF ( n := ascan( ::aTags, {|e_| e_[ 1 ] == cProjectTitle } ) ) == 0
                   aadd( ::aTags, { cProjectTitle, aTags } )
                ELSE
@@ -452,20 +409,17 @@ METHOD IdeFunctions:loadTags( aProjects, lPopulateTable )
                ENDIF
             ENDIF
          ENDIF
-
          qApp:processEvents()
          IF ::lQuitting
             EXIT
          ENDIF
       NEXT
-
       IF lPopulate
          ::consolidateList()
       ENDIF
       IF lPopulateTable
          ::populateTable()
       ENDIF
-
       ::enableControls( .t. )
    ENDIF
    ::clearProjects()
@@ -475,7 +429,6 @@ METHOD IdeFunctions:loadTags( aProjects, lPopulateTable )
 METHOD IdeFunctions:buildTags()
    LOCAL cProjectTitle
    LOCAL a_:= ::getMarkedProjects()
-
    IF !empty( a_ )
       FOR EACH cProjectTitle IN a_
          ::tagProject( cProjectTitle )
@@ -483,7 +436,6 @@ METHOD IdeFunctions:buildTags()
       ::oIde:oINI:aTaggedProjects := a_
       ::clearProjects()
    ENDIF
-
    RETURN Self
 
 
@@ -492,61 +444,48 @@ METHOD IdeFunctions:tagProject( cProjectTitle, lGUI )
    LOCAL cComments, aSummary, cPath, cSource, cExt, aTags, aText, aFuncList, aLines
    LOCAL cProjFile, cRoot, aCTags, aSources, cSrc, a_, n
    LOCAL qApp := QApplication()
-
+   //
    hb_default( @lGUI, .T. )
-
-   IF !( ::inAction )
+   IF ! ::inAction
       IF lGUI
          ::enableControls( .f. )
       ENDIF
-
       cProjFile := ::oPM:getProjectFileNameFromTitle( cProjectTitle )
       aSources  := ::oPM:getSourcesByProjectTitle( cProjectTitle )
       cRoot     := ::oPM:getProjectPathFromTitle( cProjectTitle )
-
       FOR EACH cSource IN aSources
          aSources[ cSource:__enumIndex() ] := hbide_syncProjPath( cRoot, cSource )
       NEXT
-
       aCTags := {}
-
       FOR EACH cSrc IN aSources
          aFuncList := {}
          aLines    := {}
-
          HB_FNameSplit( cSrc, @cPath, @cSource, @cExt )
-
          IF upper( cExt ) $ ".PRG.HB.CPP"
             IF !empty( aText := hbide_readSource( cSrc ) )
                aSumData  := {}
                cComments := CheckComments( aText )
                aSummary  := Summarize( aText, cComments, @aSumData , iif( upper( cExt ) $ ".PRG.HB", 9, 1 ) )
                aTags     := UpdateTags( cSrc, aSummary, aSumData, @aFuncList, @aLines, aText )
-
                IF !empty( aTags )
                   aeval( aTags, {|e_| aadd( aCTags, { e_[1],e_[2],e_[3],e_[4],e_[7] } ) } )
                ENDIF
             ENDIF
          ENDIF
-
          qApp:processEvents()
          IF ::lQuitting
             EXIT
          ENDIF
       NEXT
-
       FOR EACH a_ IN aCTags
          a_[ 5 ] := iif( left( a_[ 5 ], 1 ) == ":", substr( a_[ 5 ], 2 ), a_[ 5 ] )
       NEXT
-
       IF ( n := ascan( ::aTags, {|e_| e_[ 1 ] == cProjectTitle } ) ) == 0
          aadd( ::aTags, { cProjectTitle, aCTags } )
       ELSE
          ::aTags[ n, 2 ] := aCTags
       ENDIF
-
       hb_memowrit( hb_FNameExtSet( cProjFile, ".tag" ), hb_serialize( aCTags ) )
-
       IF lGUI
          ::consolidateList()
          ::populateTable()
@@ -559,9 +498,7 @@ METHOD IdeFunctions:tagProject( cProjectTitle, lGUI )
 METHOD IdeFunctions:consolidateList()
    LOCAL s, a_, b_, cProjectTitle
    LOCAL cDL := " "
-
    ::aList := {}
-
    FOR EACH b_ IN ::aTags
       IF !empty( cProjectTitle := b_[ 1 ] )
          FOR EACH a_ IN b_[ 2 ]
@@ -574,66 +511,52 @@ METHOD IdeFunctions:consolidateList()
                  pad( cProjectTitle, ::nPPr ) + ;
                  cDL + ;
                  pad( a_[ 4 ], ::nPSr )
-
-//          aadd( ::aList, { a_[ 1 ], a_[ 5 ], s } )
             aadd( ::aList, { a_[ 1 ], AllTrim( a_[ 5 ] ), s } )
          NEXT
       ENDIF
    NEXT
-
    IF !empty( ::aList )
       asort( ::aList, , , {|e_,f_| e_[ 1 ] < f_[ 1 ] } )
    ENDIF
-
    RETURN Self
 
 
 METHOD IdeFunctions:populateTable()
-   LOCAL oTbl, qItm, a_, n
-   LOCAL qApp := QApplication()
-
+   LOCAL qItm, a_, n
    ::clear( .t. )
    ::buildHeader()
-
-   oTbl := ::oUI:tableFuncList
-   oTbl:setRowCount( Len( ::aList ) )
-
-   n := 0
-   FOR EACH a_ IN ::aList
-      WITH OBJECT qItm := QTableWidgetItem()
-         :setText( a_[ 3 ] )
-         :setTooltip( a_[ 2 ] )
-      ENDWITH
-      oTbl:setItem( n, 0, qItm )
-      oTbl:setRowHeight( n, 16 )
-
-      qApp:processEvents()
-      IF ::lQuitting
-         EXIT
-      ENDIF
-
-      aadd( ::aItems, qItm )
-      n++
-      ::oUI:labelEntries:setText( "Entries: " + hb_ntos( n ) )
-   NEXT
-
+   WITH OBJECT ::oUI:tableFuncList()
+      :setRowCount( Len( ::aList ) )
+      n := 0
+      FOR EACH a_ IN ::aList
+         WITH OBJECT qItm := QTableWidgetItem()
+            :setText( a_[ 3 ] )
+            :setTooltip( a_[ 2 ] )
+         ENDWITH
+         :setItem( n, 0, qItm )
+         :setRowHeight( n, 16 )
+         QApplication():processEvents()
+         IF ::lQuitting
+            EXIT
+         ENDIF
+         aadd( ::aItems, qItm )
+         n++
+         ::oUI:labelEntries:setText( "Entries: " + hb_ntos( n ) )
+      NEXT
+   ENDWITH 
    RETURN Self
 
 
 METHOD IdeFunctions:getFunctionPrototypes()
    LOCAL aProto := {}, a_
-
    FOR EACH a_ IN ::aList
-//    aadd( aProto, alltrim( a_[ 2 ] ) )
       aadd( aProto, a_[ 2 ] )
    NEXT
-
    RETURN aProto
 
 
 STATIC FUNCTION hbide_abbrFuncType( cFunc )
    LOCAL cAbbr := ""
-
    IF "STATIC" $ cFunc
       cAbbr += "S"
    ENDIF
@@ -655,6 +578,5 @@ STATIC FUNCTION hbide_abbrFuncType( cFunc )
          cAbbr += ":D"
       ENDIF
    ENDIF
-
    RETURN padc( cAbbr, 3 )
 
