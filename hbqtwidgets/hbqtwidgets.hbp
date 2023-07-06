@@ -66,6 +66,7 @@ keyboard.prg
 timeouts.prg
 httpclient.prg
 imageeditor.prg
+iconsmanager.prg
 
 hbqtwidgets.qrc
 
@@ -78,6 +79,7 @@ expandtext.ui
 loggraphics.ui
 keyboard.ui
 keyboardn.ui
+iconsmanager.ui
 
 $hb_pkg_install.hbm
 

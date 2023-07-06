@@ -16,6 +16,27 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2023-07-06 15:42 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r484)
+  * hbqt/qtgui/hbqt_version.ch
+    % Updated for r484.
+
+  * hbide/skeletons.prg
+    ! Fixed: omissions in previous commit.
+
+  * hbqt/qtcore/qth/QCoreApplication.qth
+    % Modified to return bool instrad of void for 
+        installTranslator() and removeTranslator() methods.
+        Thanks Luigi Ferraris for the pointer.
+ 
+  * hbqt/qtgui/qth/QWidget.qth
+    + QPixmap grab()
+
+  + hbqtwidgets/iconsmanager.prg
+  + hbqtwidgets/iconsmanager.ui
+  * hbqtwidgets/hbqtwidgets.hbp
+    % Updated to add new widget to manage icons. Will post example later.
+
+
 2023-05-08 22:27 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r483)
   * hbqt/qtgui/hbqt_version.ch
     % Updated for r483.

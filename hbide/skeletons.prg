@@ -404,7 +404,8 @@ METHOD IdeSkeletons:postText( qEdit, cText )
          ENDIF
       ENDIF
    NEXT
-   WITH OBJECT qCursor:insertText( hbide_arrayToMemoEx( a_ ) )
+   WITH OBJECT qCursor
+      :insertText( hbide_arrayToMemoEx( a_ ) )
       :setPosition( nPos )
       IF !empty( nRowCur )
          :movePosition( QTextCursor_Down, QTextCursor_MoveAnchor, nRowCur -1 )
