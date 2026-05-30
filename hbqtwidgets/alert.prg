@@ -58,7 +58,7 @@
 #include "common.ch"
 
 
-FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oParent )
+FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oParent, nAlign )
    LOCAL cMessage, aOptionsOK, cOption, nEval, cColorHigh, xTmp
 
    IF PCount() == 0
@@ -105,13 +105,15 @@ FUNCTION HbQtAlert( xMessage, aOptions, cColorNorm, nDelay, cTitle, nInit, oPare
       aOptionsOK := { "Ok" }
    ENDIF
 
-   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent )
+   RETURN __hbqtAlert( cMessage, aOptionsOK, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent, nAlign )
 
 
-STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent )
+STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cTitle, nInit, oParent, nAlign )
    LOCAL oDlg, oVBLayout, oHBLayout, oLabel, cBtn, oBtn, oTimer, oFocus, nResult, oLabel1, oWidgetInFocus
    LOCAL aButtons := {}
 
+   hb_default( @nAlign, Qt_AlignHCenter )
+   
    oWidgetInFocus := QApplication():focusWidget()
 
    WITH OBJECT oFocus := QFocusFrame()
@@ -142,7 +144,7 @@ STATIC FUNCTION  __hbqtAlert( cMsg, aOptions, cColorNorm, cColorHigh, nDelay, cT
    oLabel1:setMinimumHeight( 10 )
 
    WITH OBJECT oLabel
-      :setAlignment( Qt_AlignHCenter )
+      :setAlignment( nAlign )
       :setText( cMsg )
       :setOpenExternalLinks( .T. )
       :setFont( QFont( "Courier", iif( __hbqtIsMobile(), __hbqtPixelsByDPI( 12 ), 10 ) ) )
@@ -250,7 +252,7 @@ STATIC FUNCTION TerminateAlert( aButtons )
 
 
 FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle, xIcon )
-   LOCAL i, cType, oDlg, nVrbls, nRes, oLay, bWhen, bValid, aCombo
+   LOCAL i, cType, oDlg, nVrbls, nRes, oLay, bWhen, bValid, aCombo, nComboWidth
    LOCAL aVariables := {}
    LOCAL aCaptions  := {}
    LOCAL aPictures  := {}
@@ -258,6 +260,7 @@ FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle, xIco
    LOCAL aValids    := {}
    LOCAL GetList    := {}
    LOCAL SayList    := {}
+   LOCAL oFont      := HbQtSet( _QSET_GETSFONT )
 
    hb_default( @cTitle, "Enter Some Values!" )
 
@@ -310,6 +313,7 @@ FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle, xIco
       ELSEIF HB_ISOBJECT( xIcon )
          :setWindowIcon( xIcon )
       ENDIF
+      :setFont( oFont )
    ENDWITH
 
    FOR i := 1 TO nVrbls
@@ -317,8 +321,10 @@ FUNCTION HbQtBulkGet( xVariable, xCaption, xPicture, xWhen, xValid, cTitle, xIco
       bValid := __getBlock( aValids, i )
       IF HB_ISARRAY( aVariables[ i ] )
          aCombo := aVariables[ i ]
+         nComboWidth := 0
+         AEval( aCombo, {|e| nComboWidth := Max( nComboWidth, Len( e ) ) } )
          aVariables[ i ] := aCombo[ 1 ]
-         @ 1, 1, 1, ( Len( aVariables[ i ] ) + 3 ) QGET aVariables[ i ] COMBOBOX aCombo CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
+         @ 1, 1, 1, ( nComboWidth + 3 ) QGET aVariables[ i ] COMBOBOX aCombo CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
       ELSE
          @ 1, 1 QGET aVariables[ i ] PICTURE aPictures[ i ] CAPTION aCaptions[ i ] WHEN bWhen VALID bValid
       ENDIF

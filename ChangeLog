@@ -16,6 +16,57 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2026-05-29 21:52 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r485)
+  * hbide/misc.prg
+    + Added: can open files in the editor of type .hrb and .o also.
+  * hbqt/qtcore/qth/QProcess.qth
+    + Added: some more methods.
+  * hbqt/hbqtgui.ch 
+    + Added: QProcess_* defines.
+  * hbqt/qtgui/qth/QAbstractScrollArea.qth
+  * hbqt/qtgui/qth/QAction.qth
+  * hbqt/qtgui/qth/QScreen.qth
+    + Added: more methods.  
+  * hbqtwidgets/alert.prg
+  * hbqtwidgets/hbqtbrowse.prg
+  * hbqtwidgets/hbqtwidgets.hbp
+  * hbqtwidgets/hbqtwidgets.qrc
+  + hbqtwidgets/resources/aa-collapse.png
+  + hbqtwidgets/resources/approved-01.png
+  + hbqtwidgets/resources/closetab-02.png
+  + hbqtwidgets/resources/compliance-01.png
+  + hbqtwidgets/resources/compliance-02.png
+  + hbqtwidgets/resources/configuration.png
+  + hbqtwidgets/resources/dashboard-3.png
+  + hbqtwidgets/resources/dashboard-4.png
+  + hbqtwidgets/resources/data-2.png
+  + hbqtwidgets/resources/data.png
+  + hbqtwidgets/resources/devices-01.png
+  + hbqtwidgets/resources/devices-02.png
+  + hbqtwidgets/resources/duplicate-01.png
+  + hbqtwidgets/resources/folder.png
+  + hbqtwidgets/resources/go-service.png
+  + hbqtwidgets/resources/lock-02.png
+  + hbqtwidgets/resources/out-service.png
+  + hbqtwidgets/resources/pause-01.png
+  + hbqtwidgets/resources/power-1.png
+  + hbqtwidgets/resources/push-folder-2.png
+  + hbqtwidgets/resources/push-folder.png
+  + hbqtwidgets/resources/reboot2.png
+  + hbqtwidgets/resources/refresh-01.png
+  + hbqtwidgets/resources/refresh-reload.png
+  + hbqtwidgets/resources/reload-01.png
+  + hbqtwidgets/resources/reload-02.png
+  + hbqtwidgets/resources/restart-1.png
+  + hbqtwidgets/resources/stop-01.png
+  + hbqtwidgets/resources/table-04.png
+  + hbqtwidgets/resources/ticket-add.png
+  + hbqtwidgets/resources/tools-5.png
+  + hbqtwidgets/resources/unlock-01.png
+  + hbqtwidgets/resources/unlock-02.png
+  + hbqtwidgets/resources/upgrade-1.png
+  + hbqtwidgets/resources/upgrade.png
+      
 2023-07-06 15:42 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r484)
   * hbqt/qtgui/hbqt_version.ch
     % Updated for r484.

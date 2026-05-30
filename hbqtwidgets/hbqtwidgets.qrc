@@ -488,5 +488,42 @@
     <file>resources/mail-01.png</file>
     <file>resources/pdf.png</file>
     <file>resources/testing-1.png</file>
+    <file>resources/hbdbu-2023.png</file>
+    <file>resources/restart-1.png</file>
+    <file>resources/power-1.png</file>
+    <file>resources/upgrade-1.png</file>
+    <file>resources/configuration.png</file>
+    <file>resources/go-service.png</file>
+    <file>resources/out-service.png</file>
+    <file>resources/push-folder.png</file>
+    <file>resources/folder.png</file>
+    <file>resources/upgrade.png</file>
+    <file>resources/data.png</file>
+    <file>resources/push-folder-2.png</file>
+    <file>resources/reboot2.png</file>
+    <file>resources/data-2.png</file>
+    <file>resources/tools-5.png</file>
+    <file>resources/refresh-reload.png</file>
+    <file>resources/aa-collapse.png</file>
+    <file>resources/refresh-01.png</file>
+    <file>resources/duplicate-01.png</file>
+    <file>resources/ticket-add.png</file>
+    <file>resources/pause-01.png</file>
+    <file>resources/stop-01.png</file>
+    <file>resources/approved-01.png</file>
+    <file>resources/unlock-01.png</file>
+    <file>resources/unlock-02.png</file>
+    <file>resources/lock-02.png</file>
+    <file>resources/devices-01.png</file>
+    <file>resources/devices-02.png</file>
+    <file>resources/compliance-01.png</file>
+    <file>resources/compliance-02.png</file>
+    <file>resources/reload-01.png</file>
+    <file>resources/closetab-02.png</file>
+    <file>resources/reload-02.png</file>
+    <file>resources/table-04.png</file>
+    <file>resources/dashboard-3.png</file>
+    <file>resources/dashboard-4.png</file>
+    <file>resources/table-3.png</file>
   </qresource>
 </RCC>

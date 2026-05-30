@@ -5,7 +5,7 @@
 /*
  * Harbour Qt wrapper generator control file
  *
- * Copyright 2009-2012 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2020 Pritpal Bedi <bedipritpal@hotmail.com>
  * www - http://www.harbour-project.org
  *
  * See COPYING for licensing terms.
@@ -33,6 +33,7 @@ HB_FUNC( QT_QABSTRACTSCROLLAREA )
 </CODE>
 
 <ENUMS>
+enum SizeAdjustPolicy { AdjustIgnored, AdjustToContents, AdjustToContentsOnFirstShow }
 </ENUMS>
 
 <PROTOS>
@@ -45,9 +46,11 @@ QSize maximumViewportSize () const
 void setCornerWidget ( QWidget * widget )
 void setHorizontalScrollBar ( QScrollBar * scrollBar )
 void setHorizontalScrollBarPolicy ( Qt::ScrollBarPolicy )
+void setSizeAdjustPolicy(QAbstractScrollArea::SizeAdjustPolicy policy)
 void setVerticalScrollBar ( QScrollBar * scrollBar )
 void setVerticalScrollBarPolicy ( Qt::ScrollBarPolicy )
 void setViewport ( QWidget * widget )
+QAbstractScrollArea::SizeAdjustPolicy sizeAdjustPolicy() const
 QScrollBar * verticalScrollBar () const
 Qt::ScrollBarPolicy verticalScrollBarPolicy () const
 QWidget * viewport () const

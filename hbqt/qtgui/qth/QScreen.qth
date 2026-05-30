@@ -45,7 +45,7 @@ QSize   availableVirtualSize() const
 int     depth() const
 qreal   devicePixelRatio() const
 QRect   geometry() const
-QPixmap   grabWindow(WId window, int x = 0, int y = 0, int width = -1, int height = -1)
+QPixmap   grabWindow(WId window = 0, int x = 0, int y = 0, int width = -1, int height = -1)
 //QPlatformScreen *   handle() const
 bool    isLandscape(Qt::ScreenOrientation o) const
 bool    isPortrait(Qt::ScreenOrientation o) const

@@ -59,10 +59,13 @@ QProcess::ProcessError error () const
 int exitCode () const
 QProcess::ExitStatus exitStatus () const
 // Q_PID pid () const
+qint64 processId() const
 ProcessChannelMode processChannelMode () const
 QByteArray readAllStandardError ()
 QByteArray readAllStandardOutput ()
 ProcessChannel readChannel () const
+void setArguments(const QStringList &arguments)
+void setProgram(const QString &program)
 void setEnvironment ( const QStringList & environment )
 void setProcessChannelMode ( ProcessChannelMode mode )
 void setReadChannel ( ProcessChannel channel )

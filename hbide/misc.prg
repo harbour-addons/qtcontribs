@@ -1637,7 +1637,7 @@ FUNCTION app_image( cName )
 
 FUNCTION hbide_isCompilerSource( cSource, cIncList )
    LOCAL cExt, aExt
-   DEFAULT cIncList TO ".c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp"
+   DEFAULT cIncList TO ".c,.cpp,.prg,.hb,.rc,.res,.hbm,.hbc,.qrc,.ui,.hbp,.hrb,.o,"
    aExt := hb_aTokens( Lower( cIncList ), "," )
    cExt := Lower( hb_FNameExt( AllTrim( cSource ) ) )
    RETURN AScan( aExt, {|e| cExt == e } ) > 0

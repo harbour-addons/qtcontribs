@@ -383,6 +383,11 @@ CLASS HbQtBrowse INHERIT TBrowse
    ACCESS leftVisible()                           INLINE ::oHeaderView:visualIndexAt( 1 ) + 1
 
    ACCESS headerView()                            INLINE ::oHeaderView
+   ACCESS footerView()                            INLINE ::oFooterView
+   ACCESS leftHeaderView()                        INLINE ::oLeftHeaderView
+   ACCESS leftFooterView()                        INLINE ::oLeftFooterView
+   ACCESS rightHeaderView()                       INLINE ::oRightHeaderView
+   ACCESS rightFooterView()                       INLINE ::oRightFooterView
    
    ACCESS freeze                                  METHOD getFrozen            // get number of frozen columns
    ASSIGN freeze                                  METHOD freeze               // set number of columns to freeze

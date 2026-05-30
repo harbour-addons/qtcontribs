@@ -44,6 +44,12 @@ HB_FUNC( QT_QACTION )
       __HB_RETPTRGC__( new QAction( hb_parstr_utf8( 1, &pText01, NULL ), hbqt_par_QObject( 2 ) ) );
       hb_strfree( pText01 ); 
    }   
+   else if( hb_pcount() == 1 && HB_ISCHAR( 1 ) )
+   {   
+      void * pText01 = NULL;
+      __HB_RETPTRGC__( new QAction( hb_parstr_utf8( 1, &pText01, NULL ) ) );
+      hb_strfree( pText01 ); 
+   }   
    else if( hb_pcount() == 1 && hbqt_par_isDerivedFrom( 1, "QOBJECT" ) )
    {
       __HB_RETPTRGC__( new QAction( hbqt_par_QObject( 1 ) ) );
