@@ -597,7 +597,7 @@ STATIC FUNCTION uic_to_prg( hbmk, cFileNameSrc, cFileNameDst, cName )
       IF ! Empty( cFile := hb_MemoRead( cFileNameSrc ) )
          IF ! Empty( aLinesPRG := hbqtui_gen_prg( cFile, "hbqtui_" + cName, hbmk ) )
             cFile := ""
-            AEval( aLinesPRG, {| cLine | cFile += cLine + hb_eol() } )
+            AEval( aLinesPRG, {| cLine | cFile += StrTran( cLine, "** #", "#" ) + hb_eol() } )
             IF hb_MemoWrit( cFileNameDst, cFile )
                RETURN .T.
             ELSE

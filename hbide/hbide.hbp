@@ -24,7 +24,6 @@
 
 hbqt.hbc
 hbqtwidgets.hbc
-hbqtmultimedia.hbc
 hbxbp.hbc
 
 hbformat.hbc
@@ -39,7 +38,7 @@ hbsms.hbc
 hbtcpio.hbc
 hbzebra.hbc
 hbziparc.hbc
-hbssl.hbc
+#hbssl.hbc
 {allwin}gtwvg.hbc
 
 -env:HB_DYNLOAD_RDDADS=yes

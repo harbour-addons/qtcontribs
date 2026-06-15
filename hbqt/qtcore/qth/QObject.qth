@@ -59,7 +59,7 @@ void killTimer ( int id )
 #
 virtual const QMetaObject * metaObject () const                   [*R=1*]
 #
-void moveToThread ( QThread * targetThread )
+//void moveToThread ( QThread * targetThread )
 QString objectName () const
 QObject * parent () const
 QVariant property ( const char * name ) const
@@ -90,7 +90,7 @@ void setParent ( QObject * parent ){
 bool setProperty ( const char * name, const QVariant & value )
 bool signalsBlocked () const
 int startTimer ( int interval )
-QThread * thread () const
+//QThread * thread () const
 
 
 // bool connect ( const QObject * sender, const char * signal, const QObject * receiver, const char * method, Qt::ConnectionType type = Qt::AutoConnection )

@@ -345,10 +345,9 @@ METHOD HbQtTouchPoint:init()
 //--------------------------------------------------------------------//
 //                     Hacks to Cover Qt 4.x
 //--------------------------------------------------------------------//
-#ifdef __HB_QT_MAJOR_VER_4__
+
 FUNCTION QApplication_translate( p1, p2 )
    HB_SYMBOL_UNUSED( p1 )
    RETURN p2
-#endif
 
 

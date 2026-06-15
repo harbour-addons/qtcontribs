@@ -58,6 +58,7 @@ QMetaProperty.qth
 QMetaType.qth
 QMimeData.qth
 QModelIndex.qth
+QMutex.qth
 QObject.qth
 QParallelAnimationGroup.qth
 QPauseAnimation.qth
@@ -86,7 +87,7 @@ QTextCodec.qth
 QTextDecoder.qth
 QTextEncoder.qth
 QTextStream.qth
-QThread.qth
+#QThread.qth
 QTime.qth
 QTimeLine.qth
 QTimer.qth

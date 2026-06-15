@@ -44,13 +44,13 @@ enum Priority { IdlePriority, LowestPriority, LowPriority, NormalPriority, ..., 
 </ENUMS>
 
 <PROTOS>
-void exit ( int returnCode = 0 )
-bool isFinished () const
+void exit ( int returnCode = 0 )                   [*V=-0x051100*]
+bool isFinished () const                           
 bool isRunning () const
-Priority priority () const
-void setPriority ( Priority priority )
-void setStackSize ( uint stackSize )
-uint stackSize () const
+Priority priority () const                         [*V=-0x051100*]
+void setPriority ( Priority priority )             [*V=-0x051100*]
+void setStackSize ( uint stackSize )               [*V=-0x051100*]
+uint stackSize () const                            [*V=-0x051100*]
 #bool wait ( unsigned long time = ULONG_MAX )
 bool wait ( ulong time = ULONG_MAX )
 

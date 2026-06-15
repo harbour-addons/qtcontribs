@@ -16,6 +16,41 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2026-06-14 18:58 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r488)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Change - r488.
+    
+  * hbdbu/dbu.prg
+  * hbdbu/hbdbu.hbp
+  * hbide/hbide.hbp
+  * hbide/main.prg
+    - Removed: HBSSL requirement.
+    
+  * hbqt/hbmk2_qt.hb
+    % A potential fix for some Qt Designer version(s) were embedding strings
+      unparsed in the HbQt engine.
+      
+  * hbqt/qtcore/hbqt_misc.prg
+    % Minor.
+    
+  * hbqt/qtcore/qth/QAbstractEventDispatcher.qth
+    - Commented out - QAbstractEventDispatcher * instance
+    
+  * hbqt/qtgui/hbqt_hbqgraphicsscene.h
+    - Commented out - #include <QtMultimedia/QSoundEffect>
+    
+  * hbqt/qtcore/qth/QObject.qth
+    - Commented out - void moveToThread ( QThread * targetThread )
+    
+  * hbqt/qtcore/qth/QThread.qth
+    % Fixed: some methods configured version depenants.
+    
+  * hbqt/qtgui/qth/QWidget.qth
+    % Fixed: some methods configured version depenants.
+
+  * hbqt/qtcore/qth/filelist.hbm
+    % Adjustment - QMutex added, QThread commented out 
+    
 2026-06-14 17:50 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r486)
   * hbqt/qtgui/hbqt_version.ch
     % Version Change.

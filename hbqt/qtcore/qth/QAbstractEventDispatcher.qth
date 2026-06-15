@@ -50,7 +50,7 @@ virtual bool unregisterTimer ( int timerId ) = 0
 virtual bool unregisterTimers ( QObject * object ) = 0
 virtual void wakeUp () = 0
 
-QAbstractEventDispatcher * instance ( QThread * thread = 0 )
+//QAbstractEventDispatcher * instance ( QThread * thread = 0 )
 </PROTOS>
 
 <SLOTS>

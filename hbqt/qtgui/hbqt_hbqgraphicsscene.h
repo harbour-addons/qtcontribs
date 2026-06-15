@@ -75,7 +75,7 @@
 #include <QtWidgets/QGraphicsSceneMouseEvent>
 #include <QtWidgets/QGraphicsLineItem>
 #include <QtWidgets/QGraphicsView>
-#include <QtMultimedia/QSoundEffect>
+//#include <QtMultimedia/QSoundEffect>
 #endif
 
 #include "hbqt_hbqgraphicsitem.h"
