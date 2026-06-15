@@ -16,6 +16,37 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2026-06-14 17:50 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r486)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Change.
+    
+  * hbqt\qtcore\qth\QProcess.qth
+    % Fixed: to be compilable with older Qt versions.
+    
+  * hbqt/qtgui/hbqtgui.ch
+    + Added: QProcess_* defines.
+    
+  * hbqtwidgets/loggraphics.ui
+  * hbqtwidgets/parselogs.ui
+  * hbqtwidgets/parselogs.prg
+    % Some more features.
+    
+  * hbqtwidgets/misc.prg
+    + Added: __hbqtHbColorToQtValueOrg()
+    
+  * hbqtwidgets/visualizer.prg
+    % Formatting.
+    
+  * hbqtwidgets/resources/table-3.png
+    + Added: another image.
+    
+  * hbqtwidgets/tests/hbmk.hbm
+    + Added: hbwin.hbc, hbqtmultimediawidgets.hbc, hbct.hbc
+    
+  * hbxbp/3state.prg
+  * hbxbp/hbpprocess.prg
+    ! Just formatting.
+
 2026-05-29 21:52 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r485)
   * hbide/misc.prg
     + Added: can open files in the editor of type .hrb and .o also.
