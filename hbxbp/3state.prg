@@ -6,7 +6,7 @@
  * Harbour Project source code:
  * Source file for the Xbp*Classes
  *
- * Copyright 2009-2010 Pritpal Bedi <bedipritpal@hotmail.com>
+ * Copyright 2009-2023 Pritpal Bedi <bedipritpal@hotmail.com>
  * http://harbour-project.org
  *
  * This program is free software; you can redistribute it and/or modify
@@ -50,8 +50,6 @@
  *
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 /*
  *                                EkOnkar
  *                          ( The LORD is ONE )
@@ -62,8 +60,6 @@
  *                               14Jun2009
  */
 /*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
 
 #include "hbclass.ch"
 #include "common.ch"
@@ -71,7 +67,6 @@
 #include "xbp.ch"
 #include "appevent.ch"
 
-/*----------------------------------------------------------------------*/
 
 CLASS Xbp3State  INHERIT  XbpWindow, DataRef
 
@@ -94,7 +89,6 @@ CLASS Xbp3State  INHERIT  XbpWindow, DataRef
 
    ENDCLASS
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -102,7 +96,6 @@ METHOD Xbp3State:init( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -127,7 +120,6 @@ METHOD Xbp3State:create( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:execSlot( cSlot, p )
 
@@ -140,7 +132,6 @@ METHOD Xbp3State:execSlot( cSlot, p )
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:handleEvent( nEvent, mp1, mp2 )
 
@@ -150,19 +141,16 @@ METHOD Xbp3State:handleEvent( nEvent, mp1, mp2 )
 
    RETURN 0
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:connect()
    ::oWidget:connect( "stateChanged(int)", {|i| ::execSlot( "stateChanged(int)", i ) } )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:disconnect()
    ::oWidget:disconnect( "stateChanged(int)" )
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:destroy()
 
@@ -171,7 +159,6 @@ METHOD Xbp3State:destroy()
 
    RETURN NIL
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible )
 
@@ -179,7 +166,6 @@ METHOD Xbp3State:configure( oParent, oOwner, aPos, aSize, aPresParams, lVisible 
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:setCaption( xCaption )
 
@@ -190,7 +176,6 @@ METHOD Xbp3State:setCaption( xCaption )
 
    RETURN Self
 
-/*----------------------------------------------------------------------*/
 
 METHOD Xbp3State:selected( ... )
    LOCAL a_:= hb_aParams()
@@ -201,4 +186,3 @@ METHOD Xbp3State:selected( ... )
    ENDIF
    RETURN Self
 
-/*----------------------------------------------------------------------*/

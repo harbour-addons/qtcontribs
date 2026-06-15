@@ -6,12 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>983</width>
-    <height>624</height>
+    <width>1142</width>
+    <height>727</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Graphics</string>
+   <string>LogsAnalyzer - Pritpal Bedi @ Harbour </string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="hbqtwidgets.qrc">
+    <normaloff>:/hbqt/resources/harbour.png</normaloff>:/hbqt/resources/harbour.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0,0,0">
    <property name="spacing">
@@ -151,7 +155,7 @@
                <number>0</number>
               </property>
               <item>
-               <layout class="QHBoxLayout" name="hLayMonthlyDesc" stretch=""/>
+               <layout class="QHBoxLayout" name="hLayMonthlyDesc"/>
               </item>
               <item>
                <layout class="QVBoxLayout" name="vLayMonthlyDesc"/>
@@ -162,6 +166,12 @@
           </layout>
          </widget>
          <widget class="QFrame" name="frameHourly">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>250</height>
+           </size>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -199,6 +209,12 @@
    </item>
    <item>
     <widget class="QFrame" name="frameMonthlyNumbers">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>100</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>

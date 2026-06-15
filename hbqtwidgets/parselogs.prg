@@ -108,6 +108,10 @@
 #define __DFN_OFFSET__                            5
 #define __DFN_ANALYZE__                           6
 
+#define __PAGE_ANALYTICS__                        0
+#define __PAGE_GRAPHICS__                         1
+
+
 
 STATIC s_LastActivity := 0
 
@@ -149,14 +153,17 @@ CLASS HbQtLogAnalyzer
 
    DATA   lRefreshStopped                         INIT .F.
    DATA   nStoppedSeconds                         INIT 0
-
+   DATA   nDefaultPage                            INIT __PAGE_ANALYTICS__
+   DATA   xLogFilename                            INIT NIL 
+   
    METHOD init( oParent )
    METHOD create( oParent )
-
+   METHOD setDefaultPage( nDefaultPage )          INLINE iif( HB_ISNUMERIC( nDefaultPage ), ::nDefaultPage := nDefaultPage, NIL ), ::nDefaultPage
+   
    METHOD show()                                  INLINE ::oWidget:show()
 
    METHOD loadConfiguration( cHlgFile )
-   METHOD loadLog( cLogFile )
+   METHOD loadLog( xLogFile )
    METHOD setSignificantRows( nRows )             INLINE iif( HB_ISNUMERIC( nRows ) .AND. nRows > 0, ::nSignificantRows := nRows, NIL )
    ACCESS significantRows()                       INLINE ::nSignificantRows
 
@@ -189,6 +196,8 @@ CLASS HbQtLogAnalyzer
 METHOD HbQtLogAnalyzer:init( oParent )
    DEFAULT oParent TO ::oParent
    ::oParent := oParent
+   
+   SET EPOCH TO Year( Date() ) - 90
    RETURN Self
 
 
@@ -202,14 +211,15 @@ METHOD HbQtLogAnalyzer:create( oParent )
 
       ::oUI:connect( QEvent_Show, {|| iif( HB_ISOBJECT( ::oChart ), ::oChart:widget():setMaximumHeight( 15000 ), NIL ) } )
 
-      ::oUI:btnOpenErrorLog:connect( "clicked()", {||
-                                       LOCAL cFile := HbQtOpenFileDialog( NIL, "Select ErrorLog", "ErrorLog (*.*)", .F., .F., NIL )
-                                       IF ! Empty( cFile )
-                                          ::oUI:editErrorLog:setText( "" )
-                                          ::oUI:editErrorLog:setText( cFile )
-                                       ENDIF
-                                       RETURN NIL
-                                                  } )
+      ::oUI:btnOpenErrorLog:connect( "clicked()", ;
+               {|| 
+                  LOCAL cFile := HbQtOpenFileDialog( NIL, "Select ErrorLog", "ErrorLog (*.*)", .F., .F., NIL )
+                  IF ! Empty( cFile )
+                     ::oUI:editErrorLog:setText( "" )
+                     ::oUI:editErrorLog:setText( cFile )
+                  ENDIF
+                  RETURN NIL
+               } )
       ::oUI:editErrorLog:connect( "textChanged(QString)", {|cText| ::parseLog( cText ) } )
 
       ::oUI:btnCopySelect:connect( "clicked()", {|| ::copySelections( .F. ) } )
@@ -226,13 +236,14 @@ METHOD HbQtLogAnalyzer:create( oParent )
 
       ::oUI:tableErrorLog:connect( "cellClicked(int,int)", {|nRow,nCol| ::manageTableCellClicked( nRow, nCol ) } )
 
-      ::oUI:tabAnalysis:connect( QEvent_Hide, {||
-                                          LOCAL i
-                                          FOR i := 0 TO ::oUI:tableErrorLog:rowCount() - 1
-                                             ::oUI:tableErrorLog:setRowHidden( i, .F. )
-                                          NEXT
-                                          RETURN NIL
-                                      } )
+      ::oUI:tabAnalysis:connect( QEvent_Hide, ;
+               {||
+                  LOCAL i
+                  FOR i := 0 TO ::oUI:tableErrorLog:rowCount() - 1
+                     ::oUI:tableErrorLog:setRowHidden( i, .F. )
+                  NEXT
+                  RETURN NIL
+               } )
 
       WITH OBJECT ::oChart := HbQtCharts():new( ::oUI:frameCharts ):create()
          :enableShadows( .F. )
@@ -285,9 +296,15 @@ METHOD HbQtLogAnalyzer:create( oParent )
          :connect( QEvent_KeyPress          , {|| s_LastActivity := Seconds() } )
          :connect( QEvent_MouseButtonRelease, {|| s_LastActivity := Seconds() } )
       ENDWITH
-      ::oGraphics := HbQtLogGraphics():new():create( ::oWidget )
-
-      ::oUI:btnGraphics:connect( "clicked()", {|| ::lGraphicsOn := .T., ::oGraphics:show() } )
+      IF .T.
+         ::oGraphics := HbQtLogGraphics():new():create( ::oUI:pageGraphics() )
+         IF ::setDefaultPage() == __PAGE_GRAPHICS__
+            ::oUI:stackedWidget():setCurrentIndex( __PAGE_GRAPHICS__ )
+            ::oParent:showMaximized()
+            ::oParent:raise()
+         ENDIF
+         ::oUI:btnGraphics:connect( "clicked()", {|| ::lGraphicsOn := .T., ::oGraphics:show() } )
+      ENDIF
    ENDIF
    RETURN Self
 
@@ -346,11 +363,23 @@ METHOD HbQtLogAnalyzer:dialogExpandExpression( oEditControl )
    RETURN NIL
 
 
-METHOD HbQtLogAnalyzer:loadLog( cLogFile )
-   IF ! Empty( cLogFile ) .AND. hb_FileExists( cLogFile )
-      ::oUI:editErrorLog:setText( cLogFile )
+METHOD HbQtLogAnalyzer:loadLog( xLogFile )
+   LOCAL cLogFile
+   IF ! Empty( xLogFile )
+      ::xLogFilename := xLogFile
+      IF HB_ISBLOCK( ::xLogFilename )
+         cLogFile := Eval( ::xLogFilename )
+      ELSEIF HB_ISSTRING( ::xLogFilename )
+         cLogFile := ::xLogFilename
+      ENDIF 
+      IF HB_ISSTRING( cLogFile )
+         IF hb_FileExists( cLogFile )        
+            ::oUI:editErrorLog:setText( cLogFile )
+         ENDIF
+      ENDIF
    ENDIF
    RETURN NIL
+
 
 METHOD HbQtLogAnalyzer:switchOnOff( nIndex )
 
@@ -1593,6 +1622,7 @@ CLASS HbQtLogGraphics
    METHOD create( oParent )
 
    METHOD show()
+   METHOD showFullScreen()
    METHOD hide()                                  INLINE ::oWidget:hide()
    METHOD setData( aData )                        INLINE iif( HB_ISARRAY( aData ), ::aData := aData, NIL ), ::refresh()
    METHOD refresh( dToday )
@@ -1622,8 +1652,7 @@ METHOD HbQtLogGraphics:create( oParent )
 
    ::oUI := hbqtui_loggraphics( ::oParent )
    WITH OBJECT ::oWidget := ::oUI:widget()
-      :setWindowFlags( Qt_Sheet )
-      :connect( QEvent_Close, {|oEvent| oEvent:ignore(), ::hide() } )
+      HbQtLayInParent( ::oWidget, ::oParent )
    ENDWITH
 
    WITH OBJECT ::oChartViewDesc := QChartView( ::oWidget )
@@ -1657,6 +1686,12 @@ METHOD HbQtLogGraphics:create( oParent )
    RETURN Self
 
 
+METHOD HbQtLogGraphics:showFullScreen()
+   ::oWidget:showFullScreen()
+   //::oWidget:showMaximized()
+   RETURN NIL 
+   
+   
 METHOD HbQtLogGraphics:show()
    IF HB_ISOBJECT( __hbqtAppWidget() )
       ::oWidget:setGeometry( __hbqtAppWidget():geometry() )

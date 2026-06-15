@@ -3,6 +3,9 @@
 #
 
 hbqtwidgets.hbc
+hbqtmultimediawidgets.hbc
+hbct.hbc
+hbwin.hbc
 
 -w3 -es2
 -mt

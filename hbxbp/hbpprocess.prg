@@ -223,7 +223,7 @@ METHOD HbpProcess:read( nMode, i, ii )
 
    DO CASE
    CASE nMode == CHN_BGN
-      ::outputMe( "CurDir() => " + CurDir() + "   Starting in => " + ::qProcess:workingDirectory(), CHN_BGN )
+      // ::outputMe( "Starting Folder => " + ::qProcess:workingDirectory() + hb_eol(), CHN_BGN )
    CASE nMode == CHN_OUT
       ::qProcess:setReadChannel( 0 )
       cLine := space( nSize )

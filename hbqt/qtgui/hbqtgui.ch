@@ -5785,5 +5785,31 @@
 #define QRubberBand_Line                                     0 // A QRubberBand can represent a vertical or horizontal line. Geometry is still given in rect() and the line will fill the given geometry on most styles.
 #define QRubberBand_Rectangle                                1 // A QRubberBand can represent a rectangle. Some styles will interpret this as a filled (often semi-transparent) rectangle, or a rectangular outline.
 
+#define QProcess_NotRunning                                  0
+#define QProcess_Starting                                    1
+#define QProcess_Running                                     2
+
+#define QProcess_FailedToStart                               0 // The process failed to start. Either the invoked program is missing, or you may have insufficient permissions or resources to invoke the program.
+#define QProcess_Crashed                                     1 // The process crashed some time after starting successfully.
+#define QProcess_Timedout                                    2 // The last waitFor...() function timed out. The state of QProcess is unchanged, and you can try calling waitFor...() again.
+#define QProcess_WriteError                                  4 // An error occurred when attempting to write to the process. For example, the process may not be running, or it may have closed its input channel.
+#define QProcess_ReadError                                   3 // An error occurred when attempting to read from the process. For example, the process may not be running.
+#define QProcess_UnknownError                                5 // An unknown error occurred. This is the default return value of error().
+
+#define QProcess_NormalExit                                  0 // The process exited normally.
+#define QProcess_CrashExit                                   1 // The process crashed.
+
+#define QProcess_ManagedInputChannel                         0 // QProcess manages the input of the running process. This is the default input channel mode of QProcess.
+#define QProcess_ForwardedInputChannel                       1 // QProcess forwards the input of the main process onto the running process. The child process reads its standard input from the same source as the main process. Note that the main process must not try to read its standard input while the child process is running.
+
+#define QProcess_StandardOutput                              0 // The standard output (stdout) of the running process.
+#define QProcess_StandardError                               1 // The standard error (stderr) of the running process.
+
+#define QProcess_SeparateChannels                            0 // QProcess manages the output of the running process, keeping standard output and standard error data in separate internal buffers. You can select the QProcess's current read channel by calling setReadChannel(). This is the default channel mode of QProcess.
+#define QProcess_MergedChannels                              1 // QProcess merges the output of the running process into the standard output channel (stdout). The standard error channel (stderr) will not receive any data. The standard output and standard error data of the running process are interleaved. For detached processes, the merged output of the running process is forwarded onto the main process.
+#define QProcess_ForwardedChannels                           2 // QProcess forwards the output of the running process onto the main process. Anything the child process writes to its standard output and standard error will be written to the standard output and standard error of the main process.
+#define QProcess_ForwardedOutputChannel                      3 // Complementary to ForwardedErrorChannel. (This value was introduced in Qt 5.2.)
+#define QProcess_ForwardedErrorChannel                       4 // QProcess manages the standard output of the running process, but forwards its standard error onto the main process. This reflects the typical use of command line tools as filters, where the standard output is redirected to another process or a file, while standard error is printed to the console for diagnostic purposes. (This value was introduced in Qt 5.2.)
+
 #endif
 

@@ -295,6 +295,64 @@ FUNCTION __hbqtCSSFromColorString( cColor )
 
 
 FUNCTION __hbqtHbColorToQtValue( cColor, nRole )
+   LOCAL lExt, cClr, n, xFore, xBack
+
+   IF Empty( cColor )
+      IF nRole == Qt_BackgroundRole
+         RETURN Qt_white
+      ELSE
+         RETURN Qt_black
+      ENDIF
+   ENDIF
+
+   cColor := Upper( cColor )
+
+   IF ( n := At( "/", cColor ) ) > 0
+      xFore := AllTrim( SubStr( cColor, 1, n-1 ) )
+      xBack := AllTrim( SubStr( cColor, n+1 ) )
+   ELSE
+      xFore := AllTrim( cColor )
+      xBack := ""
+   ENDIF
+   
+   IF nRole == Qt_BackgroundRole
+      IF Left( xBack, 1 ) == "#"
+         RETURN Left( xBack, 7 )
+      ELSE 
+         lExt := "+" $ xBack .OR. "*" $ xBack
+         cClr := StrTran( StrTran( xBack, "+" ), "*" )
+      ENDIF 
+   ELSEIF nRole == Qt_ForegroundRole
+      IF Left( xFore, 1 ) == "#"
+         RETURN Left( xFore, 7 )
+      ELSE 
+         lExt := "+" $ xFore .OR. "*" $ xFore
+         cClr := StrTran( StrTran( xFore, "+" ), "*" )
+      ENDIF 
+   ENDIF
+
+   SWITCH cClr
+   CASE "N"
+      RETURN iif( lExt, Qt_darkGray, Qt_black       )
+   CASE "B"
+      RETURN iif( lExt, Qt_blue    , Qt_darkBlue    )
+   CASE "G"
+      RETURN iif( lExt, Qt_green   , Qt_darkGreen   )
+   CASE "BG"
+      RETURN iif( lExt, Qt_cyan    , Qt_darkCyan    )
+   CASE "R"
+      RETURN iif( lExt, Qt_red     , Qt_darkRed     )
+   CASE "RB"
+      RETURN iif( lExt, Qt_magenta , Qt_darkMagenta )
+   CASE "GR"
+      RETURN iif( lExt, Qt_yellow  , Qt_darkYellow  )
+   CASE "W"
+      RETURN iif( lExt, Qt_white   , Qt_lightGray   )
+   ENDSWITCH
+   RETURN 0
+
+
+FUNCTION __hbqtHbColorToQtValueOrg( cColor, nRole )
 
    LOCAL lExt, cClr, n, xFore, xBack
 
@@ -612,18 +670,23 @@ FUNCTION __hbqtXToS( xVrb )
    CASE "A" ; RETURN hb_ValToExp( xVrb )
    CASE "B" ; RETURN "< block >"
    CASE "O" ; RETURN "< object >"
+   CASE "H" ; RETURN hb_jsonEncode( xVrb, .T. )
    ENDSWITCH
    RETURN ""
 
 
-FUNCTION __hbqtStandardHash( cKey, xValue )
-   LOCAL hHash := {=>}
-
-   hb_HKeepOrder( hHash, .T. )
+FUNCTION __hbqtHash( ... )
+   LOCAL hHash := hb_Hash( ... )
+   //
    hb_HCaseMatch( hHash, .F. )
-   IF HB_ISSTRING( cKey ) .AND. ! Empty( cKey )
-      hHash[ cKey ] := xValue
-   ENDIF
+   hb_HKeepOrder( hHash, .T. )
+   RETURN hHash
+   
+FUNCTION __hbqtStandardHash( ... )
+   LOCAL hHash := hb_Hash( ... )
+   //
+   hb_HCaseMatch( hHash, .F. )
+   hb_HKeepOrder( hHash, .T. )
    RETURN hHash
 
 
@@ -840,7 +903,7 @@ FUNCTION HbQtActivateSilverLight( lActivate, xContent, oColor, lAnimate, aOpacit
       oSilverLight:deactivate()
    ENDIF
 
-   RETURN NIL
+   RETURN .T.
 
 
 FUNCTION __hbqtSetPosAndSizeByCParams( oWidget, cParams )
@@ -1424,6 +1487,8 @@ FUNCTION __hbqtV( cVrb, xValue )
    RETURN l_xValue
 
 
+FUNCTION __hbqtHValue( hHash, cKey, xDefault )
+   RETURN __hbqtHashPullValue( hHash, cKey, xDefault )
 FUNCTION __hbqtHashPullValue( hHash, cKey, xDefault )
    LOCAL xTmp, xTmp1, xRet
 
@@ -1703,6 +1768,32 @@ FUNCTION HbQtLayInParent( oWidget, oParent )
       ENDIF
    ENDIF
    RETURN NIL
+
+
+FUNCTION HbQt_GetRandomInt( nUpto )
+   LOCAL nInt := 0
+
+   DO WHILE .t.
+      nInt := Int( hb_Random( nUpto ) )
+      IF ( nInt > 0 .AND. nInt <= nUpto )
+         EXIT
+      ENDIF
+   ENDDO
+   RETURN nInt
+
+
+FUNCTION HbQt_GetRandomAlphaNumericString( nLength )
+   STATIC s_cAlphaNum := "0a1b2c3d4e5f6g7h8i9jklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   LOCAL i
+   LOCAL cKey := ""
+   LOCAL nLen := Len( s_cAlphaNum )
+
+   FOR i := 1 TO nLength
+      cKey += SubStr( s_cAlphaNum, HbQt_GetRandomInt( nLen ), 1 )
+   NEXT
+   RETURN cKey
+
+
 
 //--------------------------------------------------------------------//
 //           This Section Must be the Last in this Source
