@@ -1,52 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>widgetGets</class>
+ <widget class="QWidget" name="widgetGets">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>481</width>
-    <height>519</height>
+    <width>477</width>
+    <height>522</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Customer Invoices Information</string>
+   <string>Form</string>
   </property>
-  <widget class="QLabel" name="labelTitle">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>10</y>
-     <width>441</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Customer Invoice Details</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
-   </property>
-  </widget>
-  <widget class="QGroupBox" name="groupGets">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>40</y>
-     <width>441</width>
-     <height>151</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string/>
-   </property>
-  </widget>
   <widget class="QFrame" name="frameBrowse">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>200</y>
+     <x>17</x>
+     <y>201</y>
      <width>351</width>
      <height>271</height>
     </rect>
@@ -61,18 +32,133 @@
   <widget class="QListWidget" name="listItems">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>200</y>
+     <x>377</x>
+     <y>201</y>
      <width>81</width>
      <height>181</height>
     </rect>
    </property>
   </widget>
+  <widget class="QGroupBox" name="groupGets">
+   <property name="geometry">
+    <rect>
+     <x>17</x>
+     <y>41</y>
+     <width>441</width>
+     <height>151</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>30</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Customer No</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>60</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Address L#1</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>90</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Address L#2</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>120</y>
+      <width>71</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Address L#3</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineCust">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>30</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineCustName">
+    <property name="geometry">
+     <rect>
+      <x>180</x>
+      <y>30</y>
+      <width>261</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineAddress1">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>60</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineAddress2">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>90</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineAddress3">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>120</y>
+      <width>371</width>
+      <height>20</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
   <widget class="QPushButton" name="btnOpt1">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>390</y>
+     <x>377</x>
+     <y>391</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -81,24 +167,11 @@
     <string>Option 1</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnOpt2">
-   <property name="geometry">
-    <rect>
-     <x>380</x>
-     <y>420</y>
-     <width>81</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Option 2</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btnOpt3">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>450</y>
+     <x>377</x>
+     <y>451</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -110,8 +183,8 @@
   <widget class="QPushButton" name="btnOpt4">
    <property name="geometry">
     <rect>
-     <x>380</x>
-     <y>480</y>
+     <x>377</x>
+     <y>481</y>
      <width>81</width>
      <height>23</height>
     </rect>
@@ -120,11 +193,40 @@
     <string>Option 4</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="btnOpt2">
+   <property name="geometry">
+    <rect>
+     <x>377</x>
+     <y>421</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Option 2</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelTitle">
+   <property name="geometry">
+    <rect>
+     <x>17</x>
+     <y>11</y>
+     <width>441</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Customer Invoice Details</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
   <widget class="QLabel" name="labelStatus">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>484</y>
+     <x>17</x>
+     <y>485</y>
      <width>351</width>
      <height>16</height>
     </rect>

@@ -16,6 +16,17 @@
    The license applies to all entries newer than 2009-04-28.
 */
 
+2026-06-17 18:51 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r489)
+  * hbqt/qtgui/hbqt_version.ch
+    % Version Change - r489.
+    
+  * hbqtwidgets/tests/composite.prg
+  * hbqtwidgets/tests/composite.ui
+    % Reimagined - now it never breaks.
+        The known issue in HbQt is the object destruction part so it 
+        is recommended that we try to design and base our application 
+        on persistent objects way. It is easier and highly maintable.
+
 2026-06-14 18:58 UTC-0700 Pritpal Bedi (bedipritpal at hotmail.com)(r488)
   * hbqt/qtgui/hbqt_version.ch
     % Version Change - r488.
