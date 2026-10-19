@@ -63,8 +63,7 @@ QtBluetooth and QtD-Bus, plus QScintilla (code editing) and QZXing (barcodes).
 * **The Qt docs are the manual.** Same class names, same hierarchy, same methods.
 * **Harbour's own build system.** Builds with hbmk2 through standard .hbp/.hbc
   project files, exactly like a Harbour contrib library.
-* **Commercial-friendly license.** GPL v2 with the Harbour linking exception:
-  executables you build and ship are not covered by the GPL.
+* Harbour linking exception. The exception in the HbQt library code does not by itself impose the GPL on your application. Qt and third-party license obligations still apply; see the licensing disclaimer.
 * **Proven in production.** HbIDE, a full IDE, is itself an HbQt application
   written in Harbour.
 
@@ -123,8 +122,30 @@ From the project's own `CREDITS.txt`:
 * **Carlos Bacco** - HBQT_TYPE enums and optimization review
 * **Teo Fonrouge** - building blocks for porting PRG-level classes to C++
 
+## Qt credit and licensing disclaimer
+
+HbQt brings the Qt framework to Harbour. We gratefully acknowledge the work of The Qt Company and the Qt community. Qt is a registered trademark of The Qt Company Ltd and/or its subsidiaries. qtcontribs is a separate community project; no affiliation with or endorsement by The Qt Company is implied.
+
+The Harbour linking exception applies to the code carrying that exception. It does not waive the licenses of Qt, its modules, or other third-party libraries. Your choice of Qt version, modules and distribution method matters:
+
+* Qt 5.5 and 5.6: LGPLv2.1 remained an option for much of Qt, alongside LGPLv3 and commercial licensing. Not every module offered LGPLv2.1, even in these releases. Check the licenses shipped with the exact modules you use. [1][2]
+* Qt 5.7, including Qt 5.8: Qt removed LGPLv2.1 as an option for its own framework code. Most libraries were offered under LGPLv3, with GPL alternatives and commercial licensing. Some modules, including Qt Charts, Qt Data Visualization and Qt Virtual Keyboard, were offered under GPLv3 or commercial terms, not LGPL. Third-party code may carry other licenses. [3][4]
+* Later Qt 5 and Qt 6: Commercial and open-source options continue, but the available licenses vary by module and release. Do not assume that every Qt component is LGPL, or that a license available in an older release applies to a newer one. [5][6]
+
+Static builds are not a licensing exemption. This also applies when redistributing static HbIDE/HbDBU builds or applications built with a static Qt kit. LGPL distribution requires the applicable notices, license texts and library source obligations to be met, and a way for recipients to use a modified library. With static linking, this can require application object files or source and the materials needed to relink; LGPLv3 also requires installation information where applicable. Static linking does not, by itself, mean that you must buy a commercial Qt license. GPL-licensed modules have different obligations. [7][8]
+
+Before distributing an application or binary package, check the exact Qt release, every included module and dependency, and the license terms supplied with them. This page is a general guide, not legal advice or a statement that a particular build complies. Consult Qt's official licensing documentation and obtain legal advice for your own distribution.
+
+Sources:
+[1] https://doc.qt.io/archives/qt-5.5/licensing.html
+[2] https://doc.qt.io/archives/qt-5.6/licensing.html
+[3] https://www.qt.io/blog/2016/06/16/qt-5-7-released
+[4] https://doc.qt.io/archives/qt-5.8/licensing.html
+[5] https://doc.qt.io/qt-5/licensing.html
+[6] https://doc.qt.io/qt-6/licensing.html
+[7] https://www.qt.io/faq/tag/qt-open-source-licensing
+[8] https://doc.qt.io/qt-6/lgpl.html
+
 ## License
 
-GNU General Public License v2, with the Harbour Project's special exception:
-linking the libraries into your own executable does not place that executable
-under the GPL. Your applications stay yours.
+Code carrying the Harbour Project's linking exception may be linked into an executable without that linking alone placing the executable under the GPL. This exception does not override Qt or third-party licenses. See the Qt credit and licensing disclaimer above.
