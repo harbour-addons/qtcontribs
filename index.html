@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>qtcontribs - Harbour Qt Projects</title>
+<meta name="description" content="qtcontribs is the home of HbQt, Harbour's bindings for the Qt framework, and the tools built with it: HbIDE, HbDBU, HbXBP and hbnetioqt.">
+<style>
+  :root{
+    --ink:#1a2430; --muted:#5d6b77; --bg:#f6f4f1; --card:#ffffff; --line:#e5e1db;
+    --green:#41cd52; --green-ink:#1e7d32; --navy:#101d28; --navy-2:#16283a;
+    --code-bg:#14202c; --code-ink:#d7e3dd;
+  }
+  *{box-sizing:border-box; margin:0; padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+       background:var(--bg); color:var(--ink); line-height:1.6; font-size:16px}
+  .wrap{max-width:1040px; margin:0 auto; padding:0 20px}
+  a{color:var(--green-ink); text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* nav */
+  nav{background:var(--navy); color:#dfe9e2; position:sticky; top:0; z-index:10; border-bottom:1px solid #0a141d}
+  nav .wrap{display:flex; align-items:center; gap:18px; height:54px}
+  nav .brand{display:flex; align-items:center; gap:9px; font-weight:600; letter-spacing:.2px; color:#fff; font-size:17px}
+  nav .brand svg{flex:none}
+  nav .links{margin-left:auto; display:flex; gap:16px; font-size:13.5px; flex-wrap:wrap}
+  nav .links a{color:#b9ccc0}
+  nav .links a:hover{color:#fff; text-decoration:none}
+  @media (max-width:760px){ nav .links{display:none} }
+
+  /* hero */
+  header.hero{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 70%,#1b3040 100%); color:#eef5f0; padding:64px 0 56px}
+  .eyebrow{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; color:var(--green); letter-spacing:1.5px; text-transform:uppercase}
+  .hero h1{font-size:44px; line-height:1.12; font-weight:700; margin:14px 0 16px; letter-spacing:-.02em}
+  .hero p.sub{font-size:18px; color:#c4d4ca; max-width:720px}
+  .hero .cta{margin-top:26px; display:flex; gap:12px; flex-wrap:wrap}
+  .btn{display:inline-block; padding:11px 20px; border-radius:6px; font-size:14.5px; font-weight:600; border:1px solid transparent}
+  .btn.primary{background:var(--green); color:#0c1a10}
+  .btn.primary:hover{background:#4cd95e; text-decoration:none}
+  .btn.ghost{border-color:#3b5468; color:#d8e6dc}
+  .btn.ghost:hover{border-color:var(--green); color:#fff; text-decoration:none}
+  .hero .meta{margin-top:26px; display:flex; gap:10px; flex-wrap:wrap}
+  .chip{font-size:12.5px; padding:5px 11px; border:1px solid #33506b; border-radius:20px; color:#a9c0b2}
+  @media (max-width:600px){ .hero h1{font-size:32px} }
+
+  /* sections */
+  section{padding:52px 0 8px}
+  h2{font-size:26px; letter-spacing:-.01em; margin-bottom:6px}
+  h2 .hash{color:var(--green-ink); font-weight:400}
+  .lede{color:var(--muted); max-width:760px; margin-bottom:22px}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:26px; margin-bottom:16px}
+  .card h3{font-size:18px; margin-bottom:8px}
+  .card p{margin-bottom:12px}
+  .card p:last-child{margin-bottom:0}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px}
+  @media (max-width:860px){ .grid2,.grid3{grid-template-columns:1fr} }
+
+  ul.tick{list-style:none; margin:10px 0 0}
+  ul.tick li{padding:7px 0 7px 26px; position:relative; border-bottom:1px dashed var(--line)}
+  ul.tick li:last-child{border-bottom:none}
+  ul.tick li::before{content:""; position:absolute; left:2px; top:13px; width:8px; height:8px; border-radius:2px; background:var(--green)}
+  ul.tick li b{font-weight:600}
+
+  /* module chips */
+  .mods{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px}
+  .mod{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px; padding:5px 10px; background:#eef4ef; border:1px solid #d4e4d6; border-radius:6px; color:#205c2e}
+  .mod.extra{background:#f3efe8; border-color:#e2d9c8; color:#6b5d3f}
+
+  /* code */
+  pre{background:var(--code-bg); color:var(--code-ink); border-radius:10px; padding:18px 20px; overflow-x:auto;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace; font-size:13.5px; line-height:1.65}
+  pre .c{color:#6d8494} pre .k{color:#7fd0ff} pre .s{color:#8ee29a} pre .f{color:#ffd479}
+  .codecap{font-size:12.5px; color:var(--muted); margin-top:8px}
+
+  /* timeline */
+  .timeline{margin-top:10px}
+  .tl{display:grid; grid-template-columns:110px 1fr; gap:18px; padding:12px 0; border-bottom:1px solid var(--line)}
+  .tl:last-child{border-bottom:none}
+  .tl .when{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; color:var(--green-ink); font-weight:600; padding-top:2px}
+  @media (max-width:560px){ .tl{grid-template-columns:1fr; gap:2px} }
+
+  /* steps */
+  ol.steps{counter-reset:step; list-style:none; margin-top:6px}
+  ol.steps li{counter-increment:step; padding:10px 0 10px 46px; position:relative; border-bottom:1px dashed var(--line)}
+  ol.steps li:last-child{border-bottom:none}
+  ol.steps li::before{content:counter(step); position:absolute; left:0; top:9px; width:30px; height:30px; border-radius:50%;
+      background:var(--navy); color:#fff; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center}
+  code.inl{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; background:#eef1ee; border:1px solid var(--line); padding:1px 6px; border-radius:5px}
+
+  .people{display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; margin-top:10px}
+  @media (max-width:700px){ .people{grid-template-columns:1fr} }
+  .people div{padding:8px 0; border-bottom:1px dashed var(--line)}
+  .people b{display:block; font-size:14.5px}
+  .people span{font-size:13px; color:var(--muted)}
+
+  footer{background:var(--navy); color:#9db3a6; margin-top:60px; padding:30px 0; font-size:13.5px}
+  footer .wrap{display:flex; gap:18px; flex-wrap:wrap; align-items:center}
+  footer a{color:#c8daccd0}
+  footer .spacer{margin-left:auto}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="2.5" y="2.5" width="19" height="19" rx="4.5" stroke="#41cd52" stroke-width="2"/>
+        <path d="M8 8.5h8v7H8z" stroke="#41cd52" stroke-width="1.8"/>
+        <circle cx="15.4" cy="15.4" r="1.6" fill="#41cd52"/>
+      </svg>
+      qtcontribs
+    </span>
+    <div class="links">
+      <a href="#hbqt">HbQt</a>
+      <a href="#ecosystem">Ecosystem</a>
+      <a href="#history">History</a>
+      <a href="#start">Get started</a>
+      <a href="#credits">Credits</a>
+      <a href="https://sourceforge.net/projects/qtcontribs/">SourceForge</a>
+      <a href="https://github.com/harbour-addons/qtcontribs">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">qtcontribs &middot; Harbour Qt Projects</div>
+    <h1>The Qt framework,<br>in the Harbour language.</h1>
+    <p class="sub">qtcontribs is the home of <b>HbQt</b>, Harbour's bindings for Qt, and of the applications built with it: the <b>HbIDE</b> development environment, the <b>HbDBU</b> data utility, the <b>HbXBP</b> compatibility layer, and <b>hbnetioqt</b>. Written and maintained by Pritpal Bedi, with contributions from across the Harbour community.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://sourceforge.net/p/qtcontribs/code/HEAD/tree/">Browse the source</a>
+      <a class="btn ghost" href="https://sourceforge.net/projects/qtcontribs/files/">Download static builds</a>
+      <a class="btn ghost" href="https://github.com/harbour-addons/qtcontribs">GitHub</a>
+    </div>
+    <div class="meta">
+      <span class="chip">GPL v2 with the Harbour linking exception</span>
+      <span class="chip">Windows &middot; Linux &middot; macOS &middot; BSD</span>
+      <span class="chip">In development since 2009</span>
+      <span class="chip">Builds with hbmk2, like any Harbour contrib</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<section id="hbqt">
+  <h2><span class="hash">#</span> HbQt: Harbour's bindings for Qt</h2>
+  <p class="lede">One binding layer, two levels, and the whole Qt API within reach of a .prg file.</p>
+  <div class="card">
+    <p>HbQt wraps Qt the way Qt presents itself: it follows Qt's class hierarchy as is and encapsulates Qt objects the same way Qt does. For every Qt class there is a C++ wrapper named after the class (<code class="inl">QWidget.cpp</code>) and a matching PRG-level class prefixed with <b>T</b> (<code class="inl">TQWidget.prg</code>). The API you call from Harbour is the API the Qt documentation describes, so the Qt docs are the manual.</p>
+    <p>Signals and events connect straight to Harbour code blocks, and the binding covers two dozen Qt modules, from QtCore and QtGui to QtWebEngine, QtCharts and QtBluetooth, plus QScintilla for code editing and QZXing for barcodes.</p>
+
+<pre><span class="c">/* A taste of HbQt, adapted from tests/signalslots.prg */</span>
+<span class="k">#include</span> <span class="s">"hbqtgui.ch"</span>
+
+<span class="k">PROCEDURE</span> <span class="f">Main</span>()
+   <span class="k">LOCAL</span> oMain, oLabel, oScrollBar, oLayout, qApp
+
+   oMain      := <span class="f">QWidget</span>()
+   oLayout    := <span class="f">QVBoxLayout</span>()
+   oScrollBar := <span class="f">QScrollBar</span>()
+   oLabel     := <span class="f">QLabel</span>()
+
+   oLabel:<span class="f">setText</span>( <span class="s">"Move the slider"</span> )
+   oLayout:<span class="f">addWidget</span>( oScrollBar )
+   oLayout:<span class="f">addWidget</span>( oLabel )
+   <span class="f">hbqt_Connect</span>( oScrollBar, <span class="s">"valueChanged(int)"</span>, oLabel, <span class="s">"setNum(int)"</span> )
+
+   oMain:<span class="f">setLayout</span>( oLayout )
+   oMain:<span class="f">show</span>()
+
+   qApp := <span class="f">QApplication</span>()
+   qApp:<span class="f">exec</span>()
+<span class="k">RETURN</span></pre>
+    <p class="codecap">Qt objects as Harbour objects. Signals connected in one line, layouts and widgets the Qt way, all in a .prg.</p>
+
+    <div class="mods">
+      <span class="mod">QtCore</span><span class="mod">QtGui</span><span class="mod">QtWidgets</span><span class="mod">QtNetwork</span><span class="mod">QtSql</span>
+      <span class="mod">QtMultimedia</span><span class="mod">QtMultimediaWidgets</span><span class="mod">QtWebKit</span><span class="mod">QtWebEngine</span>
+      <span class="mod">QtWebSockets</span><span class="mod">QtQml</span><span class="mod">QtQuick</span><span class="mod">QtDeclarative</span><span class="mod">QtDesigner</span>
+      <span class="mod">QtScript</span><span class="mod">QtSvg</span><span class="mod">QtOpenGL</span><span class="mod">QtCharts</span><span class="mod">QtXml</span>
+      <span class="mod">QtSensors</span><span class="mod">QtPositioning</span><span class="mod">QtLocation</span><span class="mod">QtBluetooth</span><span class="mod">QtD-Bus</span>
+      <span class="mod extra">QScintilla</span><span class="mod extra">QZXing</span>
+    </div>
+
+    <ul class="tick">
+      <li><b>The Qt docs are the manual.</b> Same class names, same hierarchy, same methods. What you know about Qt transfers directly to Harbour.</li>
+      <li><b>Harbour's own build system.</b> HbQt builds with hbmk2 through standard .hbp/.hbc project files, exactly like a Harbour contrib library.</li>
+      <li><b>Commercial-friendly license.</b> GPL v2 with the Harbour linking exception: executables you build and ship are not covered by the GPL.</li>
+      <li><b>Proven in production.</b> HbIDE, a full IDE, is itself an HbQt application written in Harbour.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="ecosystem">
+  <h2><span class="hash">#</span> The ecosystem around HbQt</h2>
+  <p class="lede">The libraries and applications that ship in qtcontribs, all built on the same binding.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>HbIDE</h3>
+      <p>An integrated development environment for Harbour, written in Harbour itself. Code editor with syntax highlighting, a visual debugger, project management around hbmk2 <code class="inl">.hbp</code> files, find-in-files, themes, plugins, code skeletons and an integrated DBU panel. It is also the standing proof of how far a pure-Harbour HbQt application can go.</p>
+      <p><a href="https://sourceforge.net/projects/qtcontribs/files/HbIDE/">Static Windows builds on SourceForge</a></p>
+    </div>
+    <div class="card">
+      <h3>HbDBU</h3>
+      <p>The classic DBU idea, rebuilt on Qt: open, browse and edit DBF tables, inspect structures, create tables, and work with your data outside your application. Selected builds add SQL access on top.</p>
+      <p><a href="https://sourceforge.net/projects/qtcontribs/files/HbDBU/">Static Windows builds on SourceForge</a></p>
+    </div>
+    <div class="card">
+      <h3>HbXBP</h3>
+      <p>An Xbase Parts compatibility layer: Xbase++-style classes (Xbp* with the familiar <code class="inl">appevent.ch</code> event model) implemented on top of HbQt, giving Xbase++ GUI code a home in Harbour.</p>
+    </div>
+    <div class="card">
+      <h3>hbqtwidgets</h3>
+      <p>A ready-made widget set written at the PRG level: data-aware browse grids, DBU panels, a syntax-highlighting editor, dashboards, charts, an on-screen keyboard, an icons manager, an HTTP client and common dialogs. The same pieces HbIDE is assembled from.</p>
+    </div>
+    <div class="card">
+      <h3>hbqtqmlparts</h3>
+      <p>A bridge between Harbour and Qt Quick/QML, with ready parts for camera capture, barcode reading and embedded web views.</p>
+    </div>
+    <div class="card">
+      <h3>hbnetioqt</h3>
+      <p>An HbQt management console for hbnetio servers: watch connected clients, manage addresses and terminate sessions from a desktop UI.</p>
+    </div>
+  </div>
+</section>
+
+<section id="history">
+  <h2><span class="hash">#</span> History</h2>
+  <p class="lede">Seventeen years of continuous development, and no commit lost along the way.</p>
+  <div class="card">
+    <div class="timeline">
+      <div class="tl"><div class="when">Mar 2009</div><div>HbQt's first commits land in the Harbour repository as <code class="inl">contrib/hbqt</code>, together with <code class="inl">contrib/hbide</code> and <code class="inl">contrib/hbxbp</code>.</div></div>
+      <div class="tl"><div class="when">Sep 2012</div><div>The Qt contribs move out of Harbour into a project of their own. qtcontribs opens on SourceForge and becomes their new home.</div></div>
+      <div class="tl"><div class="when">2013-2017</div><div>Steady releases: QtContribs setup packages and static HbIDE and HbDBU builds for Qt 4.8 through 5.9 with MinGW.</div></div>
+      <div class="tl"><div class="when">2023-2026</div><div>Active maintenance continues on SourceForge SVN, at revision 489 as of June 2026.</div></div>
+      <div class="tl"><div class="when">2026</div><div>The complete combined history, every commit by every contributor from March 2009 to today, is preserved in git at <a href="https://github.com/harbour-addons/qtcontribs">github.com/harbour-addons/qtcontribs</a>.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <h2><span class="hash">#</span> Get started</h2>
+  <p class="lede">Two ways in: run a ready build, or build the whole tree yourself.</p>
+  <div class="card">
+    <ol class="steps">
+      <li><b>Try it without a compiler.</b> Download a static HbIDE or HbDBU build from <a href="https://sourceforge.net/projects/qtcontribs/files/">SourceForge</a> and run it. No Qt installation needed; everything is linked in.</li>
+      <li><b>Set up a toolchain.</b> You need Harbour 3.2 or later, a Qt development kit (Qt 4.8 or Qt 5.x) and a C++ compiler. Published kits pair MinGW with Qt, including a ready static Qt 5.8 build.</li>
+      <li><b>Get the source.</b> Check out the SVN tree at <a href="https://sourceforge.net/p/qtcontribs/code/HEAD/tree/">SourceForge</a> or the git repository at <a href="https://github.com/harbour-addons/qtcontribs">github.com/harbour-addons/qtcontribs</a>.</li>
+      <li><b>Build.</b> From the trunk, <code class="inl">hbmk2 qtcontribs.hbp</code> builds the libraries; each application has its own .hbp project, like <code class="inl">hbide.hbp</code> and <code class="inl">hbdbu.hbp</code>.</li>
+    </ol>
+  </div>
+</section>
+
+<section id="credits">
+  <h2><span class="hash">#</span> Credits</h2>
+  <p class="lede">qtcontribs is a community project. These names come from the project's own CREDITS.txt.</p>
+  <div class="card">
+    <div class="people">
+      <div><b>Pritpal Bedi</b><span>Author and maintainer of HbQt, HbIDE, HbDBU, HbXBP and hbnetioqt</span></div>
+      <div><b>Marcos Antonio Gambeta</b><span>The first prototype parsing methods HbQt grew from</span></div>
+      <div><b>Viktor Szak&aacute;ts</b><span>Direction, the build system for hbQT and hbIDE, signal/slot and event classes</span></div>
+      <div><b>Francesco Perillo</b><span>The simplified signals/slots mechanism, PRG-level code ported to C++</span></div>
+      <div><b>Przemys&#322;aw Czerpak</b><span>HVM internals, tips and tricks, and a path whenever the project got stuck</span></div>
+      <div><b>Istvan Bisz</b><span>The QPointer concept in the generator, testing across the board</span></div>
+      <div><b>Carlos Bacco</b><span>HBQT_TYPE enums and optimization review</span></div>
+      <div><b>Teo Fonrouge</b><span>Building blocks for porting PRG-level classes to C++</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="license">
+  <h2><span class="hash">#</span> License</h2>
+  <div class="card">
+    <p>qtcontribs is free software under the <b>GNU General Public License v2</b>, with the Harbour Project's special exception: linking the libraries into your own executable does not place that executable under the GPL. Your applications stay yours.</p>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <span><b style="color:#fff">qtcontribs</b> &middot; Harbour Qt Projects</span>
+    <a href="https://sourceforge.net/projects/qtcontribs/">SourceForge project</a>
+    <a href="https://sourceforge.net/p/qtcontribs/code/HEAD/tree/">Source code</a>
+    <a href="https://github.com/harbour-addons/qtcontribs">GitHub</a>
+    <span class="spacer">Harbour is the free software implementation of the xBase language family.</span>
+  </div>
+</footer>
+
+</body>
+</html>
